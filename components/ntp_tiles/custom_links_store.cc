@@ -92,6 +92,12 @@ void CustomLinksStore::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
   user_prefs->RegisterListPref(prefs::kCustomLinksList,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/438302224): Move this to the EnterpriseCustomLinksStore.
+  user_prefs->RegisterListPref(prefs::kEnterpriseCustomLinksPolicyList);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace ntp_tiles

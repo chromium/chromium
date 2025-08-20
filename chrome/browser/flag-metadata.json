@@ -4055,6 +4055,15 @@
     "expiry_milestone": 146
   },
   {
+    "name": "enable-ntp-enterprise-shortcuts",
+    "owners": [
+      "alexwchen@chromium.org",
+      "rtatum@google.com",
+      "tiborg@chromium.org"
+    ],
+    "expiry_milestone": 141
+  },
+  {
     "name": "enable-oauth-ipp",
     "owners": [ "pawliczek@chromium.org", "project-bolton@google.com" ],
     "expiry_milestone": 145

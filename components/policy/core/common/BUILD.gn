@@ -448,6 +448,13 @@ static_library("test_support") {
     ]
   }
 
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    sources += [
+      "field_validation_test_utils.cc",
+      "field_validation_test_utils.h",
+    ]
+  }
+
   public_deps = [
     ":common",
     "//base",

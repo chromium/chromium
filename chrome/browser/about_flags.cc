@@ -13197,7 +13197,17 @@ const FeatureEntry kFeatureEntries[] = {
          lens::features::kLensOverlayTextSelectionContextMenuEntrypoint,
          kLensOverlayTextSelectionContextMenuEntrypointVariations,
          "LensOverlayTextSelectionContextMenuEntrypoint")},
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID),
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"enable-ntp-enterprise-shortcuts",
+     flag_descriptions::kEnableNtpEnterpriseShortcutsName,
+     flag_descriptions::kEnableNtpEnterpriseShortcutsDescription,
+     static_cast<unsigned short>(kOsCrOS | kOsLinux | kOsMac | kOsWin),
+     FEATURE_VALUE_TYPE(ntp_tiles::kNtpEnterpriseShortcuts)},
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     // Add new entries above this line.
 

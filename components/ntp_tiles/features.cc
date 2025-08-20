@@ -21,4 +21,8 @@ BASE_FEATURE(kNtpMostLikelyFaviconsFromServerFeature,
              "NTPMostLikelyFaviconsFromServer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNtpEnterpriseShortcuts,
+             "NTPEnterpriseShortcuts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace ntp_tiles

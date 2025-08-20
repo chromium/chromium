@@ -91,6 +91,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/network_time/network_time_pref_names.h"
+#include "components/ntp_tiles/enterprise/ntp_shortcuts_policy_handler.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
@@ -2568,6 +2569,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           optimization_guide::model_execution::prefs::
               GenAILocalFoundationalModelEnterprisePolicySettings::kMaxValue),
       false));
+  handlers->AddHandler(
+      std::make_unique<NTPShortcutsPolicyHandler>(chrome_schema));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

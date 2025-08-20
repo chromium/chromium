@@ -1753,6 +1753,12 @@ const char kDownloadNotificationServiceUnifiedAPIDescription[] =
     "Migrate download notification service to use new unified API based on "
     "offline item and native persistence";
 
+const char kEnableNtpEnterpriseShortcutsName[] =
+    "Enables enterprise shortcuts for the New Tab Page";
+const char kEnableNtpEnterpriseShortcutsDescription[] =
+    "Enables enterprise shortcuts for the New Tab Page set by the NTPShortcuts "
+    "policy.";
+
 const char kEnablePerfettoSystemTracingName[] =
     "Enable Perfetto system tracing";
 const char kEnablePerfettoSystemTracingDescription[] =

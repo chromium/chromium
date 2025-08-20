@@ -400,10 +400,10 @@ Additional details:
   <message name="IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a shortcut is defined as an empty string.">
     Shortcut can't be empty
   </message>
-  <message name="IDS_SEARCH_POLICY_SETTINGS_NAME_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a name is defined as an empty string.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_NAME_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings, EnterpriseSearchAggregatorSettings, or NTPShortcuts policy when a name is defined as an empty string.">
     Name can't be empty
   </message>
-  <message name="IDS_SEARCH_POLICY_SETTINGS_URL_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a URL is defined as an empty string.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_URL_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings, EnterpriseSearchAggregatorSettings, or NTPShortcuts policy when a URL is defined as an empty string.">
     URL can't be empty
   </message>
   <message name="IDS_SEARCH_POLICY_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a URL doesn't contain the replacement string '{searchTerms}'. Please do not translate '{searchTerms}' because it's part of the expected syntax.">
@@ -432,6 +432,21 @@ Additional details:
   </message>
   <message name="IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_LEVEL" desc="The text displayed in the status column of the DataControlsRules policy when one of its rules contains an unsupported restriction level">
     "<ph name="DATA_CONTROLS_RESTRICTION">$1<ex>SCREENSHOT</ex></ph>" cannot be set to "<ph name="DATA_CONTROLS_LEVEL">$2<ex>WARN</ex></ph>"
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_MAX_SHORTCUTS_LIMIT_ERROR" desc="The text displayed in the status column of the NTPShortcuts policy when the max number of shortcuts is exceeded.">
+    This policy should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>10</ex></ph> shortcuts.
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_NO_VALID_PROVIDER" desc="The text displayed in the status column of the NTPShortcuts policy when there is no valid entry in the policy.">
+    The list contains no valid shortcuts.
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_DUPLICATED_URL" desc="The text displayed in the status column of the NTPShortcuts policy when there is more than one entry using the same URL.">
+    Ignored non-unique URL: <ph name="URL_NAME">$1<ex>https://www.shortcut.com</ex></ph>
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_NAME_TOO_LONG" desc="The text displayed in the status column of the NTPShortcuts policy when there is an entry with a name that is too long.">
+    The name of the shortcut exceeds the maximum allowed length of <ph name="MAX_LENGTH">$1<ex>1000</ex></ph> characters.
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_URL_TOO_LONG" desc="The text displayed in the status column of the NTPShortcuts policy when there is an entry with a url that is too long.">
+    The URL of the shortcut exceeds the maximum allowed length of <ph name="MAX_LENGTH">$1<ex>1000</ex></ph> characters.
   </message>
 
   <!-- chrome://policy -->

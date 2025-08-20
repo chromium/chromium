@@ -91,6 +91,17 @@ static_library("ntp_tiles") {
   if (enable_supervised_users) {
     deps += [ "//components/supervised_user/core/browser" ]
   }
+
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    sources += [
+      "enterprise/ntp_shortcuts_policy_handler.cc",
+      "enterprise/ntp_shortcuts_policy_handler.h",
+    ]
+    deps += [
+      "//components/policy/core/browser",
+      "//components/policy/core/common",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -133,6 +144,11 @@ source_set("unit_tests") {
 
   if (enable_supervised_users) {
     deps += [ "//components/supervised_user/core/browser" ]
+  }
+
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    sources += [ "enterprise/ntp_shortcuts_policy_handler_unittest.cc" ]
+    deps += [ "//components/policy/core/browser:test_support" ]
   }
 }
 

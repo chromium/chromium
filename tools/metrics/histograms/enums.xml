@@ -13755,6 +13755,7 @@ from previous Chrome versions.
   <int value="-152439608" label="download-later-debug-on-wifi"/>
   <int value="-152349324" label="CameraAppMultiPageDocScan:disabled"/>
   <int value="-150820109" label="ProjectorAppDebug:disabled"/>
+  <int value="-150395873" label="NTPEnterpriseShortcuts:enabled"/>
   <int value="-150077791" label="FontAccessChooser:disabled"/>
   <int value="-149667706" label="CameraAppDigitalZoom:enabled"/>
   <int value="-149365748" label="CbdTimeframeRequired:enabled"/>
@@ -16611,6 +16612,7 @@ from previous Chrome versions.
   <int value="880510010" label="enable-permissions-bubbles"/>
   <int value="880552542" label="ImeUsEnglishModelUpdate:enabled"/>
   <int value="880638328" label="DriveFsShowCSEFiles:enabled"/>
+  <int value="880771977" label="NTPEnterpriseShortcuts:disabled"/>
   <int value="881920916" label="CrosWebAppInstallDialog:disabled"/>
   <int value="882103442" label="FloatWindow:disabled"/>
   <int value="882893584" label="UseOfHashAffiliationFetcher:disabled"/>

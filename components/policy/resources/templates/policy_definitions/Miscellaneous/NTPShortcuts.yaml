@@ -42,8 +42,8 @@ schema:
     required:
     - name
     - url
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:141-
+- chrome_os:141-
 tags: []
 type: dict

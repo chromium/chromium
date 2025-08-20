@@ -258,8 +258,6 @@ source_set("unit_tests") {
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
-      "enterprise/field_validation_test_utils.cc",
-      "enterprise/field_validation_test_utils.h",
       "enterprise/search_aggregator_policy_handler_unittest.cc",
       "enterprise/site_search_policy_handler_unittest.cc",
     ]
