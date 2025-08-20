@@ -161,8 +161,7 @@ public class StartupHelper {
 
     private Set<LocalTabGroupId> getLocalTabGroupIds() {
         Set<LocalTabGroupId> localTabGroups = new HashSet<>();
-        for (int i = 0; i < getTabModel().getCount(); i++) {
-            Tab tab = getTabModel().getTabAtChecked(i);
+        for (Tab tab : getTabModel()) {
             LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
             if (localTabGroupId == null) continue;
             localTabGroups.add(localTabGroupId);

@@ -181,6 +181,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
         when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilterSupplier())
                 .thenReturn(mTabGroupModelFilterSupplier);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.iterator()).thenAnswer(invocation -> List.of(tab).iterator());
         when(mTabModel.getCount()).thenReturn(1);
         when(mTabModel.getTabAt(0)).thenReturn(tab);
         when(mTabModel.getTabAtChecked(0)).thenReturn(tab);

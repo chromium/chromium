@@ -2781,8 +2781,8 @@ class TabListMediator implements TabListNotificationHandler {
             // filters the TabObservers should be removed from all the tabs in the previous model.
             // If no observer was added this will no-op. Previously this was only done in
             // destroy(), but that left observers behind on the inactive model.
-            for (int i = 0; i < tabModel.getCount(); i++) {
-                tabModel.getTabAtChecked(i).removeObserver(mTabObserver);
+            for (Tab tab : tabModel) {
+                tab.removeObserver(mTabObserver);
             }
         }
         filter.removeObserver(mTabModelObserver);
