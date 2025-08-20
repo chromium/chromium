@@ -7010,7 +7010,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Reading mode bottom sheet opened at full height
       </message>
       <message name="IDS_READER_MODE_UNAVAILABLE_SNACKBAR_MESSAGE" desc="Snackbar message that shown when the user attempts to enter reader mode, but content extraction fails.">
-        Reader mode is unavailable
+        Reading mode is unavailable
       </message>
       <message name="IDS_READER_MODE_MENU_IPH" desc="In-product help shown to inform the user that reading mode is always available in the app menu.">
         Reading mode is always available here
