@@ -305,6 +305,9 @@ enum VideoCaptureFrameDropReason {
   [MinVersion=5] kGpuMemoryBufferMapFailed,
   [MinVersion=12] kSubCaptureTargetVersionNotCurrent,
   [MinVersion=13] kPostProcessingFailed,
+  [MinVersion=14] kResolutionAdapterFrameIsNotMappable,
+  [MinVersion=14] kResolutionAdapterCannotCreateConvertFrame,
+  [MinVersion=14] kResolutionAdapterConvertAndScaleFailed,
 };
 
 [Stable]

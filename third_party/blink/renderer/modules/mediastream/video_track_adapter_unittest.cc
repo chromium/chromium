@@ -250,7 +250,8 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     testing_render_thread_.Stop();
   }
 
-  void CreateAdapter(media::VideoCaptureFormat capture_format) {
+  void CreateAdapter(media::VideoCaptureFormat capture_format,
+                     bool is_display_capture = false) {
     // Create the MockMediaStreamVideoSource and VideoTrackAdapter instances on
     // |testing_render_thread_|.
     base::WaitableEvent adapter_created(
@@ -259,8 +260,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     testing_render_thread_.task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
           adapter_ = base::MakeRefCounted<VideoTrackAdapter>(
-              platform_support_->GetIOTaskRunner(),
-              /*is_video_desktop_capture_type=*/false);
+              platform_support_->GetIOTaskRunner(), is_display_capture);
           adapter_created.Signal();
         }));
     adapter_created.Wait();
@@ -468,6 +468,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   base::Thread testing_render_thread_;
   scoped_refptr<VideoTrackAdapter> adapter_;
 
+  base::test::ScopedFeatureList feature_list;
   base::WaitableEvent frame_processed_;
   VideoCaptureDeliverFrameCB frame_validation_callback_;
   VideoCaptureNotifyFrameDroppedCB frame_dropped_callback_;
@@ -528,6 +529,107 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_MappableSI) {
         EXPECT_EQ(frame->visible_rect(), kVisibleRect);
         EXPECT_EQ(frame->natural_size(), kDesiredSize);
       };
+  SetFrameValidationCallback(base::BindLambdaForTesting(check_scaled));
+  DeliverAndValidateFrame(mappable_si_frame, base::TimeTicks());
+}
+
+TEST_F(VideoTrackAdapterFixtureTest,
+       DeliverScaledFrameFromDisplayCaptureDevice) {
+  // Attributes for the original input frame.
+  const gfx::Size kCodedSize(1280, 960);
+  const gfx::Rect kVisibleRect(0, 120, 1280, 720);
+  const gfx::Size kNaturalSize(1280, 720);
+  const double kFrameRate = 30.0;
+  auto mappable_si_frame = CreateTestFrame(
+      kCodedSize, kVisibleRect, kNaturalSize,
+      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii_.get());
+
+  // Create an adapter that has a display capture device as its source.
+  const media::VideoCaptureFormat stream_format(kCodedSize, kFrameRate,
+                                                media::PIXEL_FORMAT_NV12);
+  CreateAdapter(stream_format, /*is_display_capture=*/true);
+
+  // Keep the desired size the same as the natural size of the original frame.
+  VideoTrackAdapterSettings settings_nonscaled(kNaturalSize, kFrameRate);
+  ConfigureTrack(settings_nonscaled);
+  auto check_nonscaled = [&](scoped_refptr<media::VideoFrame> frame,
+                             base::TimeTicks estimated_capture_time) {
+    // We should get the original frame as-is here.
+    EXPECT_EQ(frame->storage_type(),
+              media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+    EXPECT_EQ(frame->shared_image(), mappable_si_frame->shared_image());
+    EXPECT_EQ(frame->coded_size(), kCodedSize);
+    EXPECT_EQ(frame->visible_rect(), kVisibleRect);
+    EXPECT_EQ(frame->natural_size(), kNaturalSize);
+  };
+  SetFrameValidationCallback(base::BindLambdaForTesting(check_nonscaled));
+  DeliverAndValidateFrame(mappable_si_frame, base::TimeTicks());
+
+  // Scale the original frame by a factor of 0.5x.
+  const gfx::Size kDesiredSize(640, 360);
+  VideoTrackAdapterSettings settings_scaled(kDesiredSize, kFrameRate);
+  ConfigureTrack(settings_scaled);
+  auto check_scaled = [&](scoped_refptr<media::VideoFrame> frame,
+                          base::TimeTicks estimated_capture_time) {
+    // The original frame should be converted and scaled intp a new frame, with
+    // |kDesiredSize| being the natural size of this cpnverted frame.
+    EXPECT_EQ(frame->storage_type(), media::VideoFrame::STORAGE_OWNED_MEMORY);
+    EXPECT_EQ(frame->coded_size(), kDesiredSize);
+    EXPECT_EQ(frame->visible_rect().size(), kDesiredSize);
+    EXPECT_EQ(frame->natural_size(), kDesiredSize);
+  };
+  SetFrameValidationCallback(base::BindLambdaForTesting(check_scaled));
+  DeliverAndValidateFrame(mappable_si_frame, base::TimeTicks());
+}
+
+TEST_F(
+    VideoTrackAdapterFixtureTest,
+    DeliverScaledFrameFromDisplayCaptureDeviceWithFeatureDisabledCropsFrame) {
+  feature_list.InitAndDisableFeature(kScaleFrameForGetDisplayMedia);
+  // Attributes for the original input frame.
+  const gfx::Size kCodedSize(1280, 960);
+  const gfx::Rect kVisibleRect(0, 120, 1280, 720);
+  const gfx::Size kNaturalSize(1280, 720);
+  const double kFrameRate = 30.0;
+  auto mappable_si_frame = CreateTestFrame(
+      kCodedSize, kVisibleRect, kNaturalSize,
+      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii_.get());
+
+  // Create an adapter that has a display capture device as its source.
+  const media::VideoCaptureFormat stream_format(kCodedSize, kFrameRate,
+                                                media::PIXEL_FORMAT_NV12);
+  CreateAdapter(stream_format, /*is_display_capture=*/true);
+
+  // Keep the desired size the same as the natural size of the original frame.
+  VideoTrackAdapterSettings settings_nonscaled(kNaturalSize, kFrameRate);
+  ConfigureTrack(settings_nonscaled);
+  auto check_nonscaled = [&](scoped_refptr<media::VideoFrame> frame,
+                             base::TimeTicks estimated_capture_time) {
+    // We should get the original frame as-is here.
+    EXPECT_EQ(frame->storage_type(),
+              media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+    EXPECT_EQ(frame->shared_image(), mappable_si_frame->shared_image());
+    EXPECT_EQ(frame->coded_size(), kCodedSize);
+    EXPECT_EQ(frame->visible_rect(), kVisibleRect);
+    EXPECT_EQ(frame->natural_size(), kNaturalSize);
+  };
+  SetFrameValidationCallback(base::BindLambdaForTesting(check_nonscaled));
+  DeliverAndValidateFrame(mappable_si_frame, base::TimeTicks());
+
+  // Scale the original frame by a factor of 0.5x.
+  const gfx::Size kDesiredSize(640, 360);
+  VideoTrackAdapterSettings settings_scaled(kDesiredSize, kFrameRate);
+  ConfigureTrack(settings_scaled);
+  auto check_scaled = [&](scoped_refptr<media::VideoFrame> frame,
+                          base::TimeTicks estimated_capture_time) {
+    // We should get the original frame as-is here.
+    EXPECT_EQ(frame->storage_type(),
+              media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+    EXPECT_EQ(frame->shared_image(), mappable_si_frame->shared_image());
+    EXPECT_EQ(frame->coded_size(), kCodedSize);
+    EXPECT_EQ(frame->visible_rect(), kVisibleRect);
+    EXPECT_EQ(frame->natural_size(), kDesiredSize);
+  };
   SetFrameValidationCallback(base::BindLambdaForTesting(check_scaled));
   DeliverAndValidateFrame(mappable_si_frame, base::TimeTicks());
 }

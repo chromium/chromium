@@ -1588,6 +1588,18 @@ EnumTraits<media::mojom::VideoCaptureFrameDropReason,
           kSubCaptureTargetVersionNotCurrent;
     case media::VideoCaptureFrameDropReason::kPostProcessingFailed:
       return media::mojom::VideoCaptureFrameDropReason::kPostProcessingFailed;
+    case media::VideoCaptureFrameDropReason::
+        kResolutionAdapterFrameIsNotMappable:
+      return media::mojom::VideoCaptureFrameDropReason::
+          kResolutionAdapterFrameIsNotMappable;
+    case media::VideoCaptureFrameDropReason::
+        kResolutionAdapterCannotCreateConvertFrame:
+      return media::mojom::VideoCaptureFrameDropReason::
+          kResolutionAdapterCannotCreateConvertFrame;
+    case media::VideoCaptureFrameDropReason::
+        kResolutionAdapterConvertAndScaleFailed:
+      return media::mojom::VideoCaptureFrameDropReason::
+          kResolutionAdapterConvertAndScaleFailed;
   }
   NOTREACHED();
 }
@@ -1735,6 +1747,21 @@ bool EnumTraits<media::mojom::VideoCaptureFrameDropReason,
       return true;
     case media::mojom::VideoCaptureFrameDropReason::kPostProcessingFailed:
       *output = media::VideoCaptureFrameDropReason::kPostProcessingFailed;
+      return true;
+    case media::mojom::VideoCaptureFrameDropReason::
+        kResolutionAdapterFrameIsNotMappable:
+      *output = media::VideoCaptureFrameDropReason::
+          kResolutionAdapterFrameIsNotMappable;
+      return true;
+    case media::mojom::VideoCaptureFrameDropReason::
+        kResolutionAdapterCannotCreateConvertFrame:
+      *output = media::VideoCaptureFrameDropReason::
+          kResolutionAdapterCannotCreateConvertFrame;
+      return true;
+    case media::mojom::VideoCaptureFrameDropReason::
+        kResolutionAdapterConvertAndScaleFailed:
+      *output = media::VideoCaptureFrameDropReason::
+          kResolutionAdapterConvertAndScaleFailed;
       return true;
   }
   NOTREACHED();

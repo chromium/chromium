@@ -249,7 +249,10 @@ enum class VideoCaptureFrameDropReason {
   kGpuMemoryBufferMapFailed = 28,
   kSubCaptureTargetVersionNotCurrent = 29,
   kPostProcessingFailed = 30,
-  kMaxValue = kPostProcessingFailed
+  kResolutionAdapterFrameIsNotMappable = 31,
+  kResolutionAdapterCannotCreateConvertFrame = 32,
+  kResolutionAdapterConvertAndScaleFailed = 33,
+  kMaxValue = kResolutionAdapterConvertAndScaleFailed
 };
 
 // Assert that the int:frequency mapping is correct.
