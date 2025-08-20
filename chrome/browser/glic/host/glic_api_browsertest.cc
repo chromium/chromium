@@ -1468,9 +1468,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
   ExecuteJsTest();
 }
 
-// TODO(b/431837630): Make this work on mac.
 // Win-asan is flaky.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_testFetchInactiveTabScreenshot \
   DISABLED_testFetchInactiveTabScreenshot
 #else
@@ -1487,9 +1486,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
   ContinueJsTest();
 }
 
-// TODO(b/431837630): Make this work on mac.
 // Win-asan is flaky.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_testFetchInactiveTabScreenshotWhileMinimized \
   DISABLED_testFetchInactiveTabScreenshotWhileMinimized
 #else

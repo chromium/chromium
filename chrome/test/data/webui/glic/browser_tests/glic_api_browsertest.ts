@@ -1139,6 +1139,7 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testFetchInactiveTabScreenshot() {
     const context = await this.fetchInactiveTabScreenshot();
+    assertFalse(checkDefined(context.tabData.isObservable));
     const screenshot = checkDefined(context.viewportScreenshot);
     assertEquals(screenshot.mimeType, 'image/jpeg');
     assertTrue(screenshot.data.byteLength > 0);
@@ -1152,6 +1153,7 @@ class ApiTests extends ApiTestFixtureBase {
     // Ideally this would work, but it currently times out and provides no
     // screenshot on some platforms.
     const context = await this.fetchInactiveTabScreenshot();
+    assertFalse(checkDefined(context.tabData.isObservable));
 
     if (shouldGetScreenshot) {
       assertDefined(context.viewportScreenshot);

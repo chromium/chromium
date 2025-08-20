@@ -1508,22 +1508,8 @@ function timeDeltaFromClient(durationMs: number = 0): TimeDelta {
 function tabContextToClient(
     tabContext: TabContextMojo,
     extras: ResponseExtras): TabContextResultPrivate {
-  const tabData = tabContext.tabData;
-  let favicon: RgbaImage|undefined = undefined;
-  if (tabData.favicon) {
-    favicon = bitmapN32ToRGBAImage(tabData.favicon);
-    if (favicon) {
-      extras.addTransfer(favicon.dataRGBA);
-    }
-  }
-
-  const tabDataResult: TabDataPrivate = {
-    tabId: tabIdToClient(tabData.tabId),
-    windowId: windowIdToClient(tabData.windowId),
-    url: urlToClient(tabData.url),
-    title: optionalToClient(tabData.title),
-    favicon,
-  };
+  const tabDataResult: TabDataPrivate =
+      tabDataToClient(tabContext.tabData, extras);
   const webPageData = tabContext.webPageData;
   let webPageDataResult: WebPageData|undefined = undefined;
   if (webPageData) {
