@@ -318,7 +318,7 @@ TEST_F(IsolatedWebAppThrottleTest, BlockRedirectOutOfIsolatedWebApp) {
   EXPECT_EQ(1u, GetBrowserClient().GetOpenUrlCallCount());
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
       GetBrowserClient().GetLastPageTransition(),
-      ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT));
+      ui::PageTransition::PAGE_TRANSITION_LINK));
 }
 
 TEST_F(IsolatedWebAppThrottleTest, AllowIframeNavigationOutOfApp) {
