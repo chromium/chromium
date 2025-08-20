@@ -103,7 +103,8 @@ public class NewTabAnimationLayout extends Layout {
     private @Nullable Runnable mTimeoutRunnable;
     private @Nullable Callback<Boolean> mVisibilityObserver;
     private @TabId int mNextTabId = Tab.INVALID_TAB_ID;
-    private int mToken = TokenHolder.INVALID_TOKEN;
+    private int mBrowserControlsVisibilityToken = TokenHolder.INVALID_TOKEN;
+    private int mCustomTabCountToken = TokenHolder.INVALID_TOKEN;
     private boolean mSkipForceAnimationToFinish;
     private boolean mRunOnNextLayoutImmediatelyForTesting;
 
@@ -650,8 +651,8 @@ public class NewTabAnimationLayout extends Layout {
         mSkipForceAnimationToFinish = true;
         startHiding();
 
-        if (!isRegularNtp && mToken == TokenHolder.INVALID_TOKEN) {
-            mToken = mBrowserVisibilityDelegate.showControlsPersistent();
+        if (!isRegularNtp && mBrowserControlsVisibilityToken == TokenHolder.INVALID_TOKEN) {
+            mBrowserControlsVisibilityToken = mBrowserVisibilityDelegate.showControlsPersistent();
         }
 
         ToggleTabStackButton tabSwitcherButton =
@@ -668,7 +669,7 @@ public class NewTabAnimationLayout extends Layout {
                                         false);
         assumeNonNull(mTabModelSelector);
         int prevTabCount = mTabModelSelector.getModel(isIncognito).getCount() - 1;
-        mCustomTabCount.set(prevTabCount);
+        mCustomTabCountToken = mCustomTabCount.setCount(prevTabCount);
         @ColorInt
         int toolbarColor =
                 isRegularNtp
@@ -737,7 +738,8 @@ public class NewTabAnimationLayout extends Layout {
                                     // avoid showing the old tab count if the user decides to scroll
                                     // up during AnimationType.NTP_PARTIAL_SCROLL or
                                     // AnimationType.NTP_FULL_SCROLL.
-                                    mCustomTabCount.release();
+                                    mCustomTabCount.releaseCount(mCustomTabCountToken);
+                                    mCustomTabCountToken = TokenHolder.INVALID_TOKEN;
                                 }
 
                                 @Override
@@ -760,7 +762,8 @@ public class NewTabAnimationLayout extends Layout {
                     mTimeoutRunnable = null;
                     mAnimationRunnable = null;
                     cleanUpBackgroundAnimation();
-                    mCustomTabCount.release();
+                    mCustomTabCount.releaseCount(mCustomTabCountToken);
+                    mCustomTabCountToken = TokenHolder.INVALID_TOKEN;
                     if (mVisibilityObserver != null) {
                         visibilitySupplier.removeObserver(mVisibilityObserver);
                         mVisibilityObserver = null;
@@ -795,9 +798,10 @@ public class NewTabAnimationLayout extends Layout {
         mTabCreatedBackgroundAnimation = null;
         mAnimationHostView.removeView(mBackgroundHostView);
         mBackgroundHostView = null;
-        if (mToken != TokenHolder.INVALID_TOKEN) {
-            mBrowserVisibilityDelegate.releasePersistentShowingToken(mToken);
-            mToken = TokenHolder.INVALID_TOKEN;
+        if (mBrowserControlsVisibilityToken != TokenHolder.INVALID_TOKEN) {
+            mBrowserVisibilityDelegate.releasePersistentShowingToken(
+                    mBrowserControlsVisibilityToken);
+            mBrowserControlsVisibilityToken = TokenHolder.INVALID_TOKEN;
         }
     }
 
