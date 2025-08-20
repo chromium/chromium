@@ -213,11 +213,6 @@ bool NativeTheme::ShouldUseDarkColors() const {
   return should_use_dark_colors_;
 }
 
-bool NativeTheme::ShouldUseDarkColorsForSystemIntegratedUI() const {
-  return should_use_dark_colors_for_system_integrated_ui_.value_or(
-      ShouldUseDarkColors());
-}
-
 bool NativeTheme::UserHasContrastPreference() const {
   return GetPreferredContrast() !=
          NativeTheme::PreferredContrast::kNoPreference;

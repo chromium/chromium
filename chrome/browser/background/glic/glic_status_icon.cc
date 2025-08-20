@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/version_info/channel.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/background/glic/glic_controller.h"
@@ -39,22 +40,16 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 
-namespace {
-gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
 #if BUILDFLAG(IS_WIN)
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      glic::GetResourceID(
-          native_theme->ShouldUseDarkColorsForSystemIntegratedUI()
-              ? IDR_GLIC_STATUS_ICON_DARK
-              : IDR_GLIC_STATUS_ICON_LIGHT));
-#else
-  // On Mac and Linux, theming is handled by the system and does not require
-  // different images for light/dark mode.
-  const auto& icon =
-      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_STATUS_ICON);
-  return gfx::CreateVectorIcon(icon, SK_ColorWHITE);
+#include <windows.h>
+
+#include "base/task/sequenced_task_runner.h"
+#include "base/win/registry.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 #endif
-}
+
+namespace {
 
 int GetTooltipMessageId(bool panel_showing) {
   switch (chrome::GetChannel()) {
@@ -76,6 +71,7 @@ int GetTooltipMessageId(bool panel_showing) {
     }
   }
 }
+
 }  // namespace
 
 namespace glic {
@@ -83,24 +79,24 @@ namespace glic {
 GlicStatusIcon::GlicStatusIcon(GlicController* controller,
                                StatusTray* status_tray)
     : controller_(controller), status_tray_(status_tray) {
-  // TODO(crbug.com/382287104): Use correct icon.
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   status_icon_ = status_tray_->CreateStatusIcon(
-      StatusTray::GLIC_ICON, GetIconForTheme(native_theme),
+      StatusTray::GLIC_ICON, GetIcon(),
       l10n_util::GetStringUTF16(GetTooltipMessageId(controller_->IsShowing())));
 
   // If the StatusIcon cannot be created, don't configure it.
   if (!status_icon_) {
     return;
   }
+
 #if BUILDFLAG(IS_LINUX)
-  //  Set a vector icon for proper themeing on Linux.
+  // Set a vector icon for proper theming on Linux.
   status_icon_->SetIcon(
       GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON));
 #else
   // Linux doesn't activate icon on click so no need to observe.
   status_icon_->AddObserver(this);
 #endif
+
 #if BUILDFLAG(IS_MAC)
   if (features::kGlicStatusIconOpenMenuWithSecondaryClick.Get()) {
     status_icon_->SetOpenMenuWithSecondaryClick(true);
@@ -109,10 +105,22 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   // based on contrast with the wallpaper.
   status_icon_->SetImageTemplate(true);
 #endif
+
 #if BUILDFLAG(IS_WIN)
-  // Observe the native theme so we can update the image for the icon to reflect
-  // light/dark mode.
-  native_theme_observer_.Observe(native_theme);
+  if (hkcu_themes_regkey_.Open(
+          HKEY_CURRENT_USER,
+          L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+          KEY_READ | KEY_NOTIFY) == ERROR_SUCCESS) {
+    UpdateForThemesRegkey();
+    // If there's no sequenced task runner handle, we can't be called back for
+    // registry changes. This generally happens in tests.
+    if (base::SequencedTaskRunner::HasCurrentDefault()) {
+      RegisterThemesRegkeyObserver();
+    }
+  } else {
+    // Fall back to the native theme's preferred color scheme.
+    native_theme_observer_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+  }
 #endif
 
   std::unique_ptr<StatusIconMenuModel> menu = CreateStatusIconMenu();
@@ -196,9 +204,13 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
+#if BUILDFLAG(IS_WIN)
 void GlicStatusIcon::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  status_icon_->SetImage(GetIconForTheme(observed_theme));
+  CHECK(!hkcu_themes_regkey_.Valid());
+  in_dark_mode_ = observed_theme->ShouldUseDarkColors();
+  status_icon_->SetImage(GetIcon());
 }
+#endif
 
 void GlicStatusIcon::OnBrowserAdded(Browser* browser) {
   UpdateVisibilityOfExitInContextMenu();
@@ -278,6 +290,20 @@ void GlicStatusIcon::UpdateVisibilityOfShowAndCloseInContextMenu() {
   }
 }
 
+gfx::ImageSkia GlicStatusIcon::GetIcon() const {
+#if BUILDFLAG(IS_WIN)
+  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      glic::GetResourceID(in_dark_mode_ ? IDR_GLIC_STATUS_ICON_DARK
+                                        : IDR_GLIC_STATUS_ICON_LIGHT));
+#else
+  // On Mac and Linux, theming is handled by the system and does not require
+  // different images for light/dark mode.
+  const auto& icon =
+      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_STATUS_ICON);
+  return gfx::CreateVectorIcon(icon, SK_ColorWHITE);
+#endif
+}
+
 std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
   std::unique_ptr<StatusIconMenuModel> menu(new StatusIconMenuModel(this));
   menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_CLOSE,
@@ -300,5 +326,29 @@ std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
 #endif
   return menu;
 }
+
+#if BUILDFLAG(IS_WIN)
+void GlicStatusIcon::RegisterThemesRegkeyObserver() {
+  CHECK(hkcu_themes_regkey_.Valid());
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  hkcu_themes_regkey_.StartWatching(base::BindOnce(
+      [](GlicStatusIcon* icon) {
+        icon->UpdateForThemesRegkey();
+        // `StartWatching()`'s callback is one-shot and must be re-registered
+        // for future notifications.
+        icon->RegisterThemesRegkeyObserver();
+      },
+      base::Unretained(this)));
+}
+
+void GlicStatusIcon::UpdateForThemesRegkey() {
+  CHECK(hkcu_themes_regkey_.Valid());
+  DWORD system_uses_light_theme = 1;
+  hkcu_themes_regkey_.ReadValueDW(L"SystemUsesLightTheme",
+                                  &system_uses_light_theme);
+  in_dark_mode_ = !system_uses_light_theme;
+  status_icon_->SetImage(GetIcon());
+}
+#endif
 
 }  // namespace glic
