@@ -9,80 +9,74 @@
 
 #include "base/strings/pattern.h"
 
-using ::perfetto::protos::pbzero::ChromeThreadDescriptor;
+namespace pbzero_enums = ::perfetto::protos::chrome_enums::pbzero;
 
 namespace tracing {
 
 struct ThreadType {
   const char* name;
-  ChromeThreadDescriptor::ThreadType type;
+  pbzero_enums::ThreadType type;
 };
 
 constexpr auto kThreadTypes = std::to_array<ThreadType>({
-    {"CrBrowserMain", ChromeThreadDescriptor::THREAD_BROWSER_MAIN},
-    {"CrRendererMain", ChromeThreadDescriptor::THREAD_RENDERER_MAIN},
-    {"CrGpuMain", ChromeThreadDescriptor::THREAD_GPU_MAIN},
-    {"CrUtilityMain", ChromeThreadDescriptor::THREAD_UTILITY_MAIN},
-    {"CrPPAPIMain", ChromeThreadDescriptor::THREAD_PPAPI_MAIN},
+    {"CrBrowserMain", pbzero_enums::THREAD_BROWSER_MAIN},
+    {"CrRendererMain", pbzero_enums::THREAD_RENDERER_MAIN},
+    {"CrGpuMain", pbzero_enums::THREAD_GPU_MAIN},
+    {"CrUtilityMain", pbzero_enums::THREAD_UTILITY_MAIN},
+    {"CrPPAPIMain", pbzero_enums::THREAD_PPAPI_MAIN},
     // Catch-all, should appear after all the other main threads.
-    {"Cr*Main", ChromeThreadDescriptor::THREAD_MAIN},
+    {"Cr*Main", pbzero_enums::THREAD_MAIN},
 
-    {"Chrome_ChildIOThread", ChromeThreadDescriptor::THREAD_CHILD_IO},
-    {"Chrome_IOThread", ChromeThreadDescriptor::THREAD_BROWSER_IO},
+    {"Chrome_ChildIOThread", pbzero_enums::THREAD_CHILD_IO},
+    {"Chrome_IOThread", pbzero_enums::THREAD_BROWSER_IO},
     // Catch-all, should appear after the other I/O threads.
-    {"Chrome*IOThread", ChromeThreadDescriptor::THREAD_IO},
+    {"Chrome*IOThread", pbzero_enums::THREAD_IO},
 
-    {"ThreadPoolForegroundWorker*",
-     ChromeThreadDescriptor::THREAD_POOL_FG_WORKER},
-    {"Compositor", ChromeThreadDescriptor::THREAD_COMPOSITOR},
-    {"StackSamplingProfiler", ChromeThreadDescriptor::THREAD_SAMPLING_PROFILER},
-    {"CompositorTileWorker*", ChromeThreadDescriptor::THREAD_COMPOSITOR_WORKER},
-    {"CacheThread_BlockFile", ChromeThreadDescriptor::THREAD_CACHE_BLOCKFILE},
-    {"Media", ChromeThreadDescriptor::ChromeThreadDescriptor::THREAD_MEDIA},
-    {"NetworkService", ChromeThreadDescriptor::THREAD_NETWORK_SERVICE},
-    {"ThreadPoolBackgroundWorker*",
-     ChromeThreadDescriptor::THREAD_POOL_BG_WORKER},
-    {"ThreadPool*ForegroundBlocking*",
-     ChromeThreadDescriptor::THREAD_POOL_FG_BLOCKING},
-    {"ThreadPool*BackgroundBlocking*",
-     ChromeThreadDescriptor::THREAD_POOL_BG_BLOCKING},
-    {"ThreadPoolService*", ChromeThreadDescriptor::THREAD_POOL_SERVICE},
-    {"VizCompositor*", ChromeThreadDescriptor::THREAD_VIZ_COMPOSITOR},
-    {"ServiceWorker*", ChromeThreadDescriptor::THREAD_SERVICE_WORKER},
-    {"MemoryInfra", ChromeThreadDescriptor::THREAD_MEMORY_INFRA},
-    {"AudioOutputDevice", ChromeThreadDescriptor::THREAD_AUDIO_OUTPUTDEVICE},
-    {"GpuMemoryThread", ChromeThreadDescriptor::THREAD_GPU_MEMORY},
-    {"GpuVSyncThread", ChromeThreadDescriptor::THREAD_GPU_VSYNC},
-    {"DXVAVideoDecoderThread", ChromeThreadDescriptor::THREAD_DXA_VIDEODECODER},
-    {"BrowserWatchdog", ChromeThreadDescriptor::THREAD_BROWSER_WATCHDOG},
-    {"WebRTC_Network", ChromeThreadDescriptor::THREAD_WEBRTC_NETWORK},
-    {"Window owner thread", ChromeThreadDescriptor::THREAD_WINDOW_OWNER},
-    {"WebRTC_Signaling", ChromeThreadDescriptor::THREAD_WEBRTC_SIGNALING},
-    {"GpuWatchdog", ChromeThreadDescriptor::THREAD_GPU_WATCHDOG},
-    {"swapper", ChromeThreadDescriptor::THREAD_SWAPPER},
-    {"Gamepad polling thread", ChromeThreadDescriptor::THREAD_GAMEPAD_POLLING},
-    {"AudioInputDevice", ChromeThreadDescriptor::THREAD_AUDIO_INPUTDEVICE},
-    {"WebRTC_Worker", ChromeThreadDescriptor::THREAD_WEBRTC_WORKER},
-    {"WebCrypto", ChromeThreadDescriptor::THREAD_WEBCRYPTO},
-    {"Database thread", ChromeThreadDescriptor::THREAD_DATABASE},
-    {"Proxy Resolver", ChromeThreadDescriptor::THREAD_PROXYRESOLVER},
-    {"Chrome_DevToolsADBThread", ChromeThreadDescriptor::THREAD_DEVTOOLSADB},
-    {"NetworkConfigWatcher",
-     ChromeThreadDescriptor::THREAD_NETWORKCONFIGWATCHER},
-    {"wasapi_render_thread", ChromeThreadDescriptor::THREAD_WASAPI_RENDER},
-    {"LoaderLockSampler", ChromeThreadDescriptor::THREAD_LOADER_LOCK_SAMPLER},
-    {"CompositorGpuThread", ChromeThreadDescriptor::THREAD_COMPOSITOR_GPU},
+    {"ThreadPoolForegroundWorker*", pbzero_enums::THREAD_POOL_FG_WORKER},
+    {"Compositor", pbzero_enums::THREAD_COMPOSITOR},
+    {"StackSamplingProfiler", pbzero_enums::THREAD_SAMPLING_PROFILER},
+    {"CompositorTileWorker*", pbzero_enums::THREAD_COMPOSITOR_WORKER},
+    {"CacheThread_BlockFile", pbzero_enums::THREAD_CACHE_BLOCKFILE},
+    {"Media", pbzero_enums::THREAD_MEDIA},
+    {"NetworkService", pbzero_enums::THREAD_NETWORK_SERVICE},
+    {"ThreadPoolBackgroundWorker*", pbzero_enums::THREAD_POOL_BG_WORKER},
+    {"ThreadPool*ForegroundBlocking*", pbzero_enums::THREAD_POOL_FG_BLOCKING},
+    {"ThreadPool*BackgroundBlocking*", pbzero_enums::THREAD_POOL_BG_BLOCKING},
+    {"ThreadPoolService*", pbzero_enums::THREAD_POOL_SERVICE},
+    {"VizCompositor*", pbzero_enums::THREAD_VIZ_COMPOSITOR},
+    {"ServiceWorker*", pbzero_enums::THREAD_SERVICE_WORKER},
+    {"MemoryInfra", pbzero_enums::THREAD_MEMORY_INFRA},
+    {"AudioOutputDevice", pbzero_enums::THREAD_AUDIO_OUTPUTDEVICE},
+    {"GpuMemoryThread", pbzero_enums::THREAD_GPU_MEMORY},
+    {"GpuVSyncThread", pbzero_enums::THREAD_GPU_VSYNC},
+    {"DXVAVideoDecoderThread", pbzero_enums::THREAD_DXA_VIDEODECODER},
+    {"BrowserWatchdog", pbzero_enums::THREAD_BROWSER_WATCHDOG},
+    {"WebRTC_Network", pbzero_enums::THREAD_WEBRTC_NETWORK},
+    {"Window owner thread", pbzero_enums::THREAD_WINDOW_OWNER},
+    {"WebRTC_Signaling", pbzero_enums::THREAD_WEBRTC_SIGNALING},
+    {"GpuWatchdog", pbzero_enums::THREAD_GPU_WATCHDOG},
+    {"swapper", pbzero_enums::THREAD_SWAPPER},
+    {"Gamepad polling thread", pbzero_enums::THREAD_GAMEPAD_POLLING},
+    {"AudioInputDevice", pbzero_enums::THREAD_AUDIO_INPUTDEVICE},
+    {"WebRTC_Worker", pbzero_enums::THREAD_WEBRTC_WORKER},
+    {"WebCrypto", pbzero_enums::THREAD_WEBCRYPTO},
+    {"Database thread", pbzero_enums::THREAD_DATABASE},
+    {"Proxy Resolver", pbzero_enums::THREAD_PROXYRESOLVER},
+    {"Chrome_DevToolsADBThread", pbzero_enums::THREAD_DEVTOOLSADB},
+    {"NetworkConfigWatcher", pbzero_enums::THREAD_NETWORKCONFIGWATCHER},
+    {"wasapi_render_thread", pbzero_enums::THREAD_WASAPI_RENDER},
+    {"LoaderLockSampler", pbzero_enums::THREAD_LOADER_LOCK_SAMPLER},
+    {"CompositorGpuThread", pbzero_enums::THREAD_COMPOSITOR_GPU},
 });
 
-ChromeThreadDescriptor::ThreadType GetThreadType(
-    const char* const thread_name) {
+pbzero_enums::ThreadType GetThreadType(const char* const thread_name) {
   for (size_t i = 0; i < std::size(kThreadTypes); ++i) {
     if (base::MatchPattern(thread_name, kThreadTypes[i].name)) {
       return kThreadTypes[i].type;
     }
   }
 
-  return ChromeThreadDescriptor::THREAD_UNSPECIFIED;
+  return pbzero_enums::THREAD_UNSPECIFIED;
 }
 
 }  // namespace tracing

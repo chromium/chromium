@@ -32,6 +32,7 @@ proto_library("chrome_track_event") {
 }
 
 protozero_library("chrome_track_event_zero") {
+  proto_in_dir = "//"
   perfetto_root_path = "//third_party/perfetto/"
   sources = chrome_track_event_sources
   import_dirs = [ "//third_party/perfetto/" ]

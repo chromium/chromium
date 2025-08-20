@@ -20,7 +20,6 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/perfetto/include/perfetto/tracing/internal/track_event_internal.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.gen.h"
 
 namespace base {

@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_log.h"
+#include "base/tracing/protos/chrome_enums.pbzero.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
 #include "third_party/perfetto/include/perfetto/tracing/internal/track_event_internal.h"
@@ -47,10 +48,10 @@ void FillThreadTrack(const perfetto::ThreadTrack& track, const char* name) {
   desc.mutable_thread()->set_pid(static_cast<int>(
       base::trace_event::TraceLog::GetInstance()->process_id()));
   desc.mutable_thread()->set_thread_name(name);
-  auto thread_type =
-      static_cast<ChromeThreadDescriptor::ThreadType>(GetThreadType(name));
-  if (thread_type != ChromeThreadDescriptor::THREAD_UNSPECIFIED) {
-    desc.mutable_chrome_thread()->set_thread_type(thread_type);
+  pbzero_enums::ThreadType thread_type = GetThreadType(name);
+  if (thread_type != pbzero_enums::THREAD_UNSPECIFIED) {
+    desc.mutable_chrome_thread()->set_thread_type(
+        static_cast<int32_t>(thread_type));
   }
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
   if (base::GetCurrentProcId() !=
@@ -144,12 +145,7 @@ TrackNameRecorder::GenerateProcessTrackDescriptor(
 
   auto* chrome_process = process_track_desc.mutable_chrome_process();
   if (process_type != pbzero_enums::PROCESS_UNSPECIFIED) {
-    // TODO(crbug.com/429457813): When chrome_enums.proto is rolled into
-    // Perfetto, update ChromeProcessDescriptor to use it and remove this cast.
-    chrome_process->set_process_type(
-        static_cast<
-            perfetto::protos::gen::ChromeProcessDescriptor::ProcessType>(
-            process_type));
+    chrome_process->set_process_type(static_cast<int32_t>(process_type));
   }
 
   if (crash_trace_id) {

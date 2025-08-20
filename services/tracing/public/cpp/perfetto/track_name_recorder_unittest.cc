@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/enum_set.h"
 #include "base/process/process_handle.h"
 #include "base/tracing/protos/chrome_enums.pbzero.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,39 +60,12 @@ TEST(TrackNameRecorderTest, GenerateProcessTrackDescriptor) {
   ASSERT_TRUE(chrome_track_descriptor.has_chrome_process());
   ChromeProcessDescriptor::Decoder chrome_process_descriptor(
       chrome_track_descriptor.chrome_process());
-  EXPECT_EQ(chrome_process_descriptor.process_type(), process_type);
+  EXPECT_EQ(static_cast<pbzero_enums::ProcessType>(
+                chrome_process_descriptor.process_type()),
+            process_type);
   EXPECT_EQ(chrome_process_descriptor.crash_trace_id(), crash_trace_id);
   EXPECT_EQ(chrome_process_descriptor.host_app_package_name().ToStdString(),
             host_app_package_name);
-}
-
-// pbzero_enums::ProcessType values are cast to
-// ChromeProcessDescriptor::ProcessType in
-// TrackNameRecorder::SetProcessTrackDescriptor. Make sure they match.
-// TODO(crbug.com/429457813): When chrome_enums.proto is rolled into Perfetto,
-// update ChromeProcessDescriptor to use it and remove this test.
-TEST(TrackNameRecorderTest, ChromeProcessTypesMatch) {
-  SCOPED_TRACE(
-      "perfetto.protos.chrome_enums.ProcessType is a copy of "
-      "perfetto.protos.ChromeProcessDescriptor.ProcessType in the Perfetto "
-      "repo. To add a new process type, update ChromeProcessDescriptor first, "
-      "then import the change from Perfetto and update "
-      "perfetto.protos.chrome_enums.ProcessType to match.");
-  ASSERT_EQ(static_cast<ChromeProcessDescriptor::ProcessType>(
-                pbzero_enums::ProcessType_MIN),
-            perfetto::protos::pbzero::ChromeProcessDescriptor_ProcessType_MIN);
-  ASSERT_EQ(static_cast<ChromeProcessDescriptor::ProcessType>(
-                pbzero_enums::ProcessType_MAX),
-            perfetto::protos::pbzero::ChromeProcessDescriptor_ProcessType_MAX);
-  for (auto process_type :
-       base::EnumSet<pbzero_enums::ProcessType, pbzero_enums::ProcessType_MIN,
-                     pbzero_enums::ProcessType_MAX>::All()) {
-    EXPECT_STREQ(
-        pbzero_enums::ProcessType_Name(process_type),
-        ChromeProcessDescriptor::ProcessType_Name(
-            static_cast<ChromeProcessDescriptor::ProcessType>(process_type)))
-        << "process_type " << process_type;
-  }
 }
 
 }  // namespace tracing
