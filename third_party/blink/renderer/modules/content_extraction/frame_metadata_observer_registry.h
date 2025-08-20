@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom-blink.h"
 #include "third_party/blink/public/mojom/content_extraction/frame_metadata_observer_registry.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -66,6 +67,8 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
   void OnPaidContentMetadataChanged();
   void OnMetaTagsChanged();
 
+  void UpdateMetaTagsObserver();
+
   void ListenForDomContentLoaded();
 
   void DisconnectHandler(mojo::RemoteSetElementId id);
@@ -79,13 +82,19 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
 
   HeapMojoRemoteSet<mojom::blink::MetaTagsObserver> metatags_observers_;
 
-  // The names of the metatags to observe for each observer. The key is the
-  // RemoteSetElementId of the observer.
-  HeapHashMap<uint32_t, HeapVector<String>> metatags_observer_names_;
+  struct MetaTagsObserverData : public GarbageCollected<MetaTagsObserverData> {
+    void Trace(Visitor* visitor) const { visitor->Trace(names_to_observe); }
 
-  // Whether the observer with the given RemoteSetElementId has sent metatags
-  // before. The key is the RemoteSetElementId of the observer.
-  HashMap<uint32_t, bool> has_sent_metatags_;
+    HeapVector<String> names_to_observe;
+    Vector<mojom::blink::MetaTagPtr> last_sent_meta_tags;
+  };
+
+  // Data for each metatags observer, keyed by RemoteSetElementId.
+  HeapHashMap<uint32_t, Member<MetaTagsObserverData>>
+      remote_id_to_observer_data_;
+  // A map from metatag name to the number of observers that are interested in
+  // it.
+  HashMap<String, int> all_metatag_name_counts_;
 
   Member<DomContentLoadedListener> dom_content_loaded_observer_;
 
