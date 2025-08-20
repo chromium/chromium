@@ -1,302 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.11.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.11.0-alpha09">
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="        /* See {@link android.webkit.WebChromeClient}. */"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwContentsClient.java"
-            line="100"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="        /* See {@link android.webkit.GeolocationPermissions}. */"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwGeolocationPermissions.java"
-            line="30"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* See {@link android.webkit.WebSettings}. */"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwSettings.java"
-            line="69"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* See {@link android.webkit.WebSettings}. */"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwSettings.java"
-            line="82"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* See {@link android.webkit.WebSettings}. */"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwSettings.java"
-            line="84"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param fallbackOnBackPressed Callback executed when a handler claims to intercept back press"
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/back_press/android/java/src/org/chromium/chrome/browser/back_press/BackPressManager.java"
-            line="334"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param intent The intent that was used to bind to the service."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java"
-            line="393"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param srcDir A directory containing a crashpad::CrashReportDatabase."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/CrashReportMimeWriter.java"
-            line="27"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param anrFiles Pairs of serialized ANR proto file names and the versions they happened on."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/CrashReportMimeWriter.java"
-            line="39"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param srcDir A directory containing a crashpad::CrashReportDatabase."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/CrashReportMimeWriter.java"
-            line="52"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param args arguments of the callback."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java"
-            line="338"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @return whether the observerMap was changed as a result of the call."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/dom_distiller/core/android/java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java"
-            line="81"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @return whether the observer was removed as a result of the call."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/dom_distiller/core/android/java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java"
-            line="98"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param requestShipping Whether the merchant requested a shipping address."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/payments/content/android/java/src/org/chromium/components/payments/JourneyLogger.java"
-            line="104"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param methodTypes The list of types of the payment methods, defined in"
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/payments/content/android/java/src/org/chromium/components/payments/JourneyLogger.java"
-            line="127"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param shouldFake Whether to fake the version check."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/share/LensUtils.java"
-            line="30"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param featureName The feature that uses the UKM reporting."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/share/LensUtils.java"
-            line="114"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param success Whether provisioning has succeeded or not."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../media/base/android/java/src/org/chromium/media/MediaDrmBridge.java"
-            line="1545"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* Returns the {@link WebContents} for which the message is intended to be shown. */"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/commerce/merchant_viewer/android/java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageContext.java"
-            line="45"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param delegate Delegate providing the WindowAndroid and Context to display the UI."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/modules/ModuleInstallUi.java"
-            line="50"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* Destroy the single tab card on the {@link NewTabPageLayout}. */"
-        errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPage.java"
-            line="1344"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="             * @param dataType  The type of the data contained in the section."
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/payments/ui/PaymentRequestSection.java"
-            line="854"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="         * @param response The payment response to send to the merchant."
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/payments/content/android/java/src/org/chromium/components/payments/PaymentResponseHelperInterface.java"
-            line="33"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param context The Context to create tha handler for."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/paint_preview/player/android/java/src/org/chromium/components/paintpreview/player/PlayerSwipeRefreshHandler.java"
-            line="35"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param activity The activity the share sheet belongs to."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetBottomSheetContent.java"
-            line="142"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* Destroy and clean up {@link DragStateTracker} to the content view. */"
-        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/TabViewAndroidDelegate.java"
-            line="162"
-            column="29"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * Updates the native {@link WebContents} with a new window. This moves the NativeView and"
-        errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content_public/browser/WebContents.java"
-            line="123"
-            column="27"/>
-    </issue>
+<issues format="6" by="lint 9.0.0-alpha01" type="baseline" client="" dependencies="true" name="" variant="all" version="9.0.0-alpha01">
 
     <issue
         id="ResourceType"
@@ -338,7 +41,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java"
-            line="281"
+            line="290"
             column="17"/>
     </issue>
 
@@ -360,288 +63,13 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java"
-            line="103"
+            line="106"
             column="27"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="`&lt;org.chromium.chrome.browser.base.SplitCompatAppComponentFactory>` requires API level 28 (current min is 26)"
-        errorLine1="  &lt;application android:name=&quot;org.chromium.chrome.browser.base.SplitMonochromeApplication&quot; android:icon=&quot;@drawable/ic_launcher&quot; android:roundIcon=&quot;@drawable/ic_launcher_round&quot; android:label=&quot;@string/app_name&quot; android:memtagMode=&quot;async&quot; android:largeHeap=&quot;false&quot; android:manageSpaceActivity=&quot;@string/manage_space_activity&quot; android:supportsRtl=&quot;true&quot; android:zygotePreloadName=&quot;org.chromium.content_public.app.ZygotePreload&quot; android:allowBackup=&quot;false&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:allowAudioPlaybackCapture=&quot;false&quot; android:appComponentFactory=&quot;org.chromium.chrome.browser.base.SplitCompatAppComponentFactory&quot; android:enableOnBackInvokedCallback=&quot;true&quot; android:multiArch=&quot;true&quot; android:extractNativeLibs=&quot;false&quot;>"
-        errorLine2="  ^">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="259"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="`&lt;org.chromium.content_public.app.ZygotePreload>` requires API level 29 (current min is 26)"
-        errorLine1="  &lt;application android:name=&quot;org.chromium.chrome.browser.base.SplitMonochromeApplication&quot; android:icon=&quot;@drawable/ic_launcher&quot; android:roundIcon=&quot;@drawable/ic_launcher_round&quot; android:label=&quot;@string/app_name&quot; android:memtagMode=&quot;async&quot; android:largeHeap=&quot;false&quot; android:manageSpaceActivity=&quot;@string/manage_space_activity&quot; android:supportsRtl=&quot;true&quot; android:zygotePreloadName=&quot;org.chromium.content_public.app.ZygotePreload&quot; android:allowBackup=&quot;false&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:allowAudioPlaybackCapture=&quot;false&quot; android:appComponentFactory=&quot;org.chromium.chrome.browser.base.SplitCompatAppComponentFactory&quot; android:enableOnBackInvokedCallback=&quot;true&quot; android:multiArch=&quot;true&quot; android:extractNativeLibs=&quot;false&quot;>"
-        errorLine2="  ^">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="259"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `clearAllContentCaptureData`"
-        errorLine1="            contentCaptureController.clearAllContentCaptureData();"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserver.java"
-            line="32"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `clearContentCaptureDataForURLs`"
-        errorLine1="                    contentCaptureController.clearContentCaptureDataForURLs(deletedURLs);"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserver.java"
-            line="37"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `clearAllContentCaptureData`"
-        errorLine1="                    contentCaptureController.clearAllContentCaptureData();"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserver.java"
-            line="43"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `notifyViewAppeared`"
-        errorLine1="        return notifyViewAppeared(parentPlatformSessionData, data);"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentCapturedTask.java"
-            line="25"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="class ContentRemovedTask extends NotificationTask {"
-        errorLine2="                                 ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="12"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="        super(session, platformSession);"
-        errorLine2="        ~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="17"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `log`"
-        errorLine1="        log(&quot;ContentRemovedTask.removeContent&quot;);"
-        errorLine2="        ~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="27"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `buildCurrentSession`"
-        errorLine1="        PlatformSessionData platformSessionData = buildCurrentSession();"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="28"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="        PlatformAPIWrapper.getInstance()"
-        errorLine2="                           ~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="30"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `notifyViewsDisappeared`"
-        errorLine1="                .notifyViewsDisappeared("
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="31"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                        platformSessionData.contentCaptureSession,"
-        errorLine2="                                            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="32"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getRootPlatformSessionData`"
-        errorLine1="                        mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="33"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `autofillId`"
-        errorLine1="                        mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                                                      ~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="33"
-            column="71"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
-        errorLine1="                        mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                        ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="33"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="                PlatformAPIWrapper.getInstance()"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="31"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `newAutofillId`"
-        errorLine1="                        .newAutofillId("
-        errorLine2="                         ~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="32"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                                parentPlatformSessionData.contentCaptureSession,"
-        errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="33"
-            column="59"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getRootPlatformSessionData`"
-        errorLine1="                                mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="34"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `autofillId`"
-        errorLine1="                                mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                                                              ~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="34"
-            column="79"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
-        errorLine1="                                mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="34"
-            column="33"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="        PlatformAPIWrapper.getInstance()"
-        errorLine2="                           ~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="36"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `notifyViewTextChanged`"
-        errorLine1="                .notifyViewTextChanged("
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="37"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                        parentPlatformSessionData.contentCaptureSession,"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="38"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 30 (current min is 26): `collectAndWriteAnrs`"
+        message="Call requires API level 30 (current min is 29): `collectAndWriteAnrs`"
         errorLine1="            List&lt;String> anrs = AnrCollector.collectAndWriteAnrs(anrDir);"
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~~">
         <location
@@ -652,7 +80,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 34 (current min is 26): `logGestureType`"
+        message="Call requires API level 34 (current min is 29): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
@@ -663,7 +91,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 34 (current min is 26): `logGestureType`"
+        message="Call requires API level 34 (current min is 29): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
@@ -674,7 +102,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 34 (current min is 26): `logGestureType`"
+        message="Call requires API level 34 (current min is 29): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
@@ -685,7 +113,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 34 (current min is 26): `logGestureType`"
+        message="Call requires API level 34 (current min is 29): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
@@ -696,150 +124,18 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getDownloadUriForFileName`"
-        errorLine1="        return getDownloadUriForFileName(fileName) != null;"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/download/internal/common/android/java/src/org/chromium/components/download/DownloadCollectionBridge.java"
-            line="259"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `createPendingParams`"
-        errorLine1="                createPendingParams(fileName, mimeType, originalUrl, referrer);"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/download/internal/common/android/java/src/org/chromium/components/download/DownloadCollectionBridge.java"
-            line="375"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getDownloadUriForFileName`"
-        errorLine1="                Uri uri = DownloadCollectionBridge.getDownloadUriForFileName(file.getName());"
-        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DuplicateDownloadClickableSpan.java"
-            line="56"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 30 (current min is 26): `getExitReason`"
+        message="Call requires API level 30 (current min is 29): `getExitReason`"
         errorLine1="            int reason = ProcessExitReasonFromSystem.getExitReason(previousPid);"
         errorLine2="                                                     ~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java"
-            line="152"
+            line="157"
             column="54"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Call requires API level 28 (current min is 26): `getBitmapFromIcon`"
-        errorLine1="        return getBitmapFromIcon(notification.getLargeIcon());"
-        errorLine2="               ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java"
-            line="223"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `getBitmapFromIcon`"
-        errorLine1="        return getBitmapFromIcon(notification.getSmallIcon());"
-        errorLine2="               ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java"
-            line="227"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="abstract class ProcessContentCaptureDataTask extends NotificationTask {"
-        errorLine2="                                                     ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="19"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="        super(session, platformSession);"
-        errorLine2="        ~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="26"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `log`"
-        errorLine1="        log(&quot;ProcessContentTaskBase.processContent&quot;);"
-        errorLine2="        ~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="36"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `buildCurrentSession`"
-        errorLine1="        PlatformSessionData platformSessionData = buildCurrentSession();"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="37"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `createOrGetSession`"
-        errorLine1="                createOrGetSession(parentPlatformSessionData, data);"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="46"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `PlatformSessionData`"
-        errorLine1="                    new PlatformSessionData("
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="67"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                            parentPlatformSessionData.contentCaptureSession, autofillId);"
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="68"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 30 (current min is 26): `getExitReason`"
+        message="Call requires API level 30 (current min is 29): `getExitReason`"
         errorLine1="        recordAsEnumHistogram(umaName, getExitReason(pid));"
         errorLine2="                                       ~~~~~~~~~~~~~">
         <location
@@ -849,278 +145,146 @@
     </issue>
 
     <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="                                () -> PlatformContentCaptureController.getInstance()));"
-        errorLine2="                                                                       ~~~~~~~~~~~">
+        id="ThreadConstraint"
+        message="Statement must run from `@WorkerThread`, incompatible with earlier code that must run from `@{Main,Ui}Thread`"
+        errorLine1="        if (intentDataProvider.isWebappOrWebApkActivity()) initializeForWebappOrWebApk();"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java"
-            line="534"
-            column="72"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `onSelectionModified`"
-        errorLine1="                        mSmartSelectionEventProcessor.onSelectionModified("
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="550"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `onSelectionAction`"
-        errorLine1="                        mSmartSelectionEventProcessor.onSelectionAction("
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="554"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `onSelectionStarted`"
-        errorLine1="                        mSmartSelectionEventProcessor.onSelectionStarted("
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="563"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `onSelectionAction`"
-        errorLine1="                mSmartSelectionEventProcessor.onSelectionAction("
-        errorLine2="                                              ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1746"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `onSelectionModified`"
-        errorLine1="                mSmartSelectionEventProcessor.onSelectionModified("
-        errorLine2="                                              ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1920"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `android.view.SurfaceControl#writeToParcel`"
-        errorLine1="            mSurfaceControl.writeToParcel(out, 0);"
-        errorLine2="                            ~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/common/SurfaceWrapper.java"
-            line="120"
-            column="29"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 27 (current min is 26): `destroy`"
-        errorLine1="        if (mNavigationBarColorController != null) mNavigationBarColorController.destroy();"
-        errorLine2="                                                                                 ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedSystemUiCoordinator.java"
-            line="116"
-            column="82"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="public class TitleUpdateTask extends NotificationTask {"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="16"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="        super(null, platformSession);"
-        errorLine2="        ~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="20"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/BaseCustomTabActivity.java"
+            line="738"
             column="9"/>
     </issue>
 
     <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `log`"
-        errorLine1="        log(&quot;TitleUpdateTask.updateTitle&quot;);"
-        errorLine2="        ~~~">
+        id="ThreadConstraint"
+        message="Call must be from `@{Main,Ui}Thread`, but context is allowing `@BinderThread`"
+        errorLine1="            PostTask.runOrPostTask("
+        errorLine2="                     ^">
         <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="30"
-            column="9"/>
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetServiceImpl.java"
+            line="415"
+            column="22"/>
     </issue>
 
     <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `buildCurrentSession`"
-        errorLine1="        PlatformSessionData parentPlatformSessionData = buildCurrentSession();"
-        errorLine2="                                                        ~~~~~~~~~~~~~~~~~~~">
+        id="ThreadConstraint"
+        message="Call must be from `@{Main,Ui}Thread`, but context is allowing `@BinderThread`"
+        errorLine1="                PostTask.runOrPostTask("
+        errorLine2="                         ^">
         <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="33"
-            column="57"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="                PlatformAPIWrapper.getInstance()"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="36"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `newAutofillId`"
-        errorLine1="                        .newAutofillId("
-        errorLine2="                         ~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="37"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetServiceImpl.java"
+            line="475"
             column="26"/>
     </issue>
 
     <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                                parentPlatformSessionData.contentCaptureSession,"
-        errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~">
+        id="ThreadConstraint"
+        message="Call results in an unsatisfiable thread requirement"
+        errorLine1="        super.performPreInflationStartup();"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="38"
-            column="59"/>
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabActivity.java"
+            line="148"
+            column="15"/>
     </issue>
 
     <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getRootPlatformSessionData`"
-        errorLine1="                                mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="ThreadConstraint"
+        message="Call must be from `@{Main,Ui}Thread`, but super method `AsyncTask.doInBackground(…)` is allowing `@WorkerThread`"
+        errorLine1="                                        || canResolveDownloadItem(item, isSupportedMimeType);"
+        errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="39"
-            column="50"/>
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
+            line="416"
+            column="44"/>
     </issue>
 
     <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `autofillId`"
-        errorLine1="                                mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                                                              ~~~~~~~~~~">
+        id="ThreadConstraint"
+        message="Call must be from `@{Main,Ui}Thread`, but super method `AsyncTask.doInBackground(…)` is allowing `@WorkerThread`"
+        errorLine1="                return getLaunchIntentForDownload("
+        errorLine2="                       ^">
         <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="39"
-            column="79"/>
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
+            line="762"
+            column="24"/>
     </issue>
 
     <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
-        errorLine1="                                mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                ~~~~~~~~~~~~~~~~">
+        id="ThreadConstraint"
+        message="Call must be from `@{Main,Ui}Thread`, but super method `AsyncTask.doInBackground(…)` is allowing `@WorkerThread`"
+        errorLine1="                            return canResolveDownloadItem("
+        errorLine2="                                   ^">
         <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="39"
-            column="33"/>
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
+            line="1070"
+            column="36"/>
     </issue>
 
     <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="        PlatformAPIWrapper.getInstance()"
-        errorLine2="                           ~~~~~~~~~~~">
+        id="ThreadConstraint"
+        message="Call must be from `@{Main,Ui}Thread`, but super method `AsyncTask.doInBackground(…)` is allowing `@WorkerThread`"
+        errorLine1="                                        || canResolveDownloadItem("
+        errorLine2="                                           ^">
         <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="41"
-            column="28"/>
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
+            line="1389"
+            column="44"/>
     </issue>
 
     <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `notifyViewTextChanged`"
-        errorLine1="                .notifyViewTextChanged("
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
+        id="ThreadConstraint"
+        message="Statement must run from `@{Main,Ui}Thread`, incompatible with earlier code that must run from `@WorkerThread`"
+        errorLine1="        mClearDataStrategy.execute(context, uid, uninstalled);"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="42"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                        parentPlatformSessionData.contentCaptureSession,"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="43"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Extending ZygotePreload requires API level 29 (current min is 26): `ZygotePreload`"
-        errorLine1="public class TrichromeZygotePreload extends ZygotePreload {"
-        errorLine2="                                            ~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/app/TrichromeZygotePreload.java"
-            line="16"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `doPreloadCommon`"
-        errorLine1="        doPreloadCommon(appInfo);"
-        errorLine2="        ~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/app/TrichromeZygotePreload.java"
-            line="25"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/browserservices/InstalledWebappBroadcastReceiver.java"
+            line="113"
             column="9"/>
     </issue>
 
     <issue
-        id="WrongConstant"
-        message="Must be one of: ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS"
-        errorLine1="                        ? View.IMPORTANT_FOR_ACCESSIBILITY_AUTO"
-        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="ThreadConstraint"
+        message="Statement must run from `@WorkerThread`, incompatible with earlier code that must run from `@{Main,Ui}Thread`"
+        errorLine1="        PostTask.runOrPostTask("
+        errorLine2="        ^">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="568"
-            column="27"/>
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationServiceImpl.java"
+            line="211"
+            column="9"/>
     </issue>
 
     <issue
-        id="WrongConstant"
-        message="Must be one of: ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS"
-        errorLine1="                        : View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);"
-        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="ThreadConstraint"
+        message="Call results in an unsatisfiable thread requirement"
+        errorLine1="        prefetchUrlInternal("
+        errorLine2="        ^">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="569"
-            column="27"/>
+            file="../../android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibProfile.java"
+            line="91"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ThreadConstraint"
+        message="Call results in an unsatisfiable thread requirement"
+        errorLine1="        prefetchUrlInternal("
+        errorLine2="        ^">
+        <location
+            file="../../android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibProfile.java"
+            line="119"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ThreadConstraint"
+        message="Branch must run from `@WorkerThread`, incompatible with the other that must run from `@{Main,Ui}Thread`"
+        errorLine1="        } else {"
+        errorLine2="               ^">
+        <location
+            file="../../android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibProfile.java"
+            line="139"
+            column="16"/>
     </issue>
 
     <issue
@@ -1130,19 +294,8 @@
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java"
-            line="300"
+            line="318"
             column="53"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ViewCompat.LAYOUT_DIRECTION_LTR, ViewCompat.LAYOUT_DIRECTION_RTL"
-        errorLine1="        if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {"
-        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/ClipDrawableProgressBar.java"
-            line="132"
-            column="52"/>
     </issue>
 
     <issue
@@ -1152,7 +305,7 @@
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/creator/CreatorActionDelegateImpl.java"
-            line="135"
+            line="136"
             column="62"/>
     </issue>
 
@@ -1163,18 +316,18 @@
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/creator/CreatorActionDelegateImpl.java"
-            line="165"
+            line="166"
             column="62"/>
     </issue>
 
     <issue
         id="WrongConstant"
         message="Must be one of: DownloadState.IN_PROGRESS, DownloadState.COMPLETE, DownloadState.CANCELLED, DownloadState.INTERRUPTED, DownloadState.MAX_DOWNLOAD_STATE"
-        errorLine1="        @DownloadState int state = downloadItem.getDownloadInfo().state();"
-        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="        @DownloadState int state = assumeNonNull(downloadItem.getDownloadInfo()).state();"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1296"
+            line="1275"
             column="36"/>
     </issue>
 
@@ -1185,7 +338,7 @@
         errorLine2="                ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1297"
+            line="1276"
             column="17"/>
     </issue>
 
@@ -1196,7 +349,7 @@
         errorLine2="                   ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1298"
+            line="1277"
             column="20"/>
     </issue>
 
@@ -1207,7 +360,7 @@
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java"
-            line="195"
+            line="198"
             column="62"/>
     </issue>
 
@@ -1218,19 +371,8 @@
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java"
-            line="224"
+            line="227"
             column="62"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ViewCompat.LAYOUT_DIRECTION_LTR, ViewCompat.LAYOUT_DIRECTION_RTL"
-        errorLine1="        if (ViewCompat.getLayoutDirection(this) == View.LAYOUT_DIRECTION_RTL) {"
-        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/MaterialProgressBar.java"
-            line="235"
-            column="52"/>
     </issue>
 
     <issue
@@ -1240,7 +382,7 @@
         errorLine2="    ^">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="673"
+            line="689"
             column="5"/>
     </issue>
 
@@ -1333,201 +475,14 @@
     </issue>
 
     <issue
-        id="UseAppTint"
-        message="Must use `app:tint` instead of `android:tint`"
-        errorLine1="        android:tint=&quot;@macro/drag_handlebar_color&quot; />"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0~3, 5, 7, 8, 10~13, 15, 17, 18, 20, 21, 100, 1000, 10000, 100000, 1000000, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Mag-e-expire bukas&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/res/layout/custom_tabs_handle_view.xml"
-            line="35"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseAppTint"
-        message="Must use `app:tint` instead of `android:tint`"
-        errorLine1="        android:tint=&quot;@macro/checked_item&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/multiwindow/java/res/layout/instance_switcher_item.xml"
-            line="85"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseAppTint"
-        message="Must use `app:tint` instead of `android:tint`"
-        errorLine1="            android:tint=&quot;@color/photo_picker_tile_bg_color&quot; />"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_bitmap_view.xml"
-            line="109"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UseAppTint"
-        message="Must use `app:tint` instead of `android:tint`"
-        errorLine1="            android:tint=&quot;@macro/default_icon_color_secondary&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/res/layout/search_widget_template.xml"
-            line="46"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `ResourcesCompat.getDrawable()`"
-        errorLine1="                ret = res.getDrawable(id, null);"
-        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
-            line="79"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `AppCompatResources.getDrawable()`"
-        errorLine1="                    iconDrawable = mContext.getDrawable(iconResId);"
-        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchQuickActionControl.java"
-            line="314"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `AppCompatResources.getDrawable()`"
-        errorLine1="        Drawable clearTextIcon = getContext().getDrawable(R.drawable.ic_clear_text);"
-        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/FlagsFragment.java"
-            line="187"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `AppCompatResources.getDrawable()`"
-        errorLine1="                            mContext.getDrawable(R.drawable.ic_cloud_offline_24dp);"
-        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorControllerV2.java"
-            line="150"
-            column="29"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `AppCompatResources.getDrawable()`"
-        errorLine1="                    final Drawable statusIcon = mContext.getDrawable(R.drawable.ic_globe_24dp);"
-        errorLine2="                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorControllerV2.java"
-            line="178"
-            column="49"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `AppCompatResources.getDrawable()`"
-        errorLine1="                        context.getDrawable("
-        errorLine2="                        ^">
-        <location
-            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="417"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableEndCompat` instead of `android:drawableEnd`"
-        errorLine1="    android:drawableEnd=&quot;@drawable/exclamation_triangle&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/res/layout/os_version_unsupported_text.xml"
-            line="17"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableStartCompat` instead of `android:drawableStart`"
-        errorLine1="        android:drawableStart=&quot;@drawable/ic_alert_error&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/nonembedded/java/res_devui/layout/persistent_error_message.xml"
-            line="26"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
-        errorLine1="                android:drawableTop=&quot;@drawable/delete_icon&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="42"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTint` instead of `android:drawableTint`"
-        errorLine1="                android:drawableTint=&quot;@color/default_icon_color_tint_list&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="43"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
-        errorLine1="                android:drawableTop=&quot;@drawable/save_icon&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="54"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTint` instead of `android:drawableTint`"
-        errorLine1="                android:drawableTint=&quot;@color/default_icon_color_tint_list&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="55"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
-        errorLine1="                android:drawableTop=&quot;@drawable/share_icon&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="65"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTint` instead of `android:drawableTint`"
-        errorLine1="                android:drawableTint=&quot;@color/default_icon_color_tint_list&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="66"
-            column="17"/>
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-tl/components_strings.xml"
+            line="387"
+            column="3"/>
     </issue>
 
     <issue
@@ -1537,7 +492,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-as/components_strings.xml"
-            line="357"
+            line="396"
             column="3"/>
     </issue>
 
@@ -1548,18 +503,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-bn/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;فردا منقضی می‌شود&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fa/components_strings.xml"
-            line="357"
+            line="396"
             column="3"/>
     </issue>
 
@@ -1570,7 +514,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fr-rCA/components_strings.xml"
-            line="357"
+            line="396"
             column="3"/>
     </issue>
 
@@ -1581,7 +525,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fr/components_strings.xml"
-            line="357"
+            line="396"
             column="3"/>
     </issue>
 
@@ -1592,139 +536,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-gu/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Գործողության ժամկետը սպառվում է վաղը&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hy/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ਮਿਆਦ ਕੱਲ੍ਹ ਨੂੰ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pa/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;හෙට කල් ඉකුත් වෙයි&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-si/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Kuphelelwa yisikhathi kusasa&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-zu/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0~3, 5, 7, 8, 10~13, 15, 17, 18, 20, 21, 100, 1000, 10000, 100000, 1000000, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Mag-e-expire bukas&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-tl/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 101, 201, 301, 401, 501, 601, 701, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Poteče jutri&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-sl/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Тэрмін дзеяння заканчваецца заўтра&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-be/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Ističe sutra&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-bs/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Rennur út á morgun&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-is/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Истекува утре&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-mk/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Срок действия истекает завтра&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-ru/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ነገ ጊዜው ያበቃል&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-am/components_strings.xml"
-            line="358"
+            line="397"
             column="3"/>
     </issue>
 
@@ -1735,29 +547,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hi/components_strings.xml"
-            line="358"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ನಾಳೆ ಅವಧಿ ಮುಕ್ತಾಯವಾಗುತ್ತದೆ&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-kn/components_strings.xml"
-            line="358"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Expira amanhã&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pt-rBR/components_strings.xml"
-            line="358"
+            line="397"
             column="3"/>
     </issue>
 
@@ -1768,7 +558,18 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pt-rPT/components_strings.xml"
-            line="358"
+            line="397"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 101, 201, 301, 401, 501, 601, 701, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Poteče jutri&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-sl/components_strings.xml"
+            line="397"
             column="3"/>
     </issue>
 
@@ -1778,19 +579,107 @@
         errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Ističe sutra&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-b+sr+Latn/components_strings.xml"
-            line="358"
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-bs/components_strings.xml"
+            line="397"
             column="3"/>
     </issue>
 
     <issue
         id="ImpliedQuantity"
         message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Istječe sutra&quot;&lt;/item>"
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Rennur út á morgun&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-is/components_strings.xml"
+            line="397"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Истекува утре&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hr/components_strings.xml"
-            line="358"
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-mk/components_strings.xml"
+            line="397"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;فردا منقضی می‌شود&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fa/components_strings.xml"
+            line="398"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Գործողության ժամկետը սպառվում է վաղը&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hy/components_strings.xml"
+            line="398"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ਮਿਆਦ ਕੱਲ੍ਹ ਨੂੰ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pa/components_strings.xml"
+            line="398"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Expira amanhã&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pt-rBR/components_strings.xml"
+            line="398"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;හෙට කල් ඉකුත් වෙයි&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-si/components_strings.xml"
+            line="398"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Kuphelelwa yisikhathi kusasa&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-zu/components_strings.xml"
+            line="398"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Тэрмін дзеяння заканчваецца заўтра&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-be/components_strings.xml"
+            line="398"
             column="3"/>
     </issue>
 
@@ -1801,7 +690,62 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-lt/components_strings.xml"
-            line="358"
+            line="398"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Срок действия истекает завтра&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-ru/components_strings.xml"
+            line="398"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ነገ ጊዜው ያበቃል&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-am/components_strings.xml"
+            line="399"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ನಾಳೆ ಅವಧಿ ಮುಕ್ತಾಯವಾಗುತ್ತದೆ&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-kn/components_strings.xml"
+            line="399"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Ističe sutra&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-b+sr+Latn/components_strings.xml"
+            line="399"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Istječe sutra&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hr/components_strings.xml"
+            line="399"
             column="3"/>
     </issue>
 
@@ -1812,7 +756,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-lv/components_strings.xml"
-            line="358"
+            line="399"
             column="3"/>
     </issue>
 
@@ -1823,7 +767,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-sr/components_strings.xml"
-            line="358"
+            line="399"
             column="3"/>
     </issue>
 
@@ -1834,7 +778,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-uk/components_strings.xml"
-            line="358"
+            line="399"
             column="3"/>
     </issue>
 
@@ -1845,7 +789,7 @@
         errorLine2="  ^">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="259"
+            line="269"
             column="3"/>
     </issue>
 
@@ -1856,7 +800,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/ContentLanguagesPreference.java"
-            line="131"
+            line="139"
             column="29"/>
     </issue>
 
@@ -1933,7 +877,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/firstrun/FirstRunActivity.java"
-            line="291"
+            line="288"
             column="13"/>
     </issue>
 
@@ -1944,7 +888,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/history/HistoryAdapter.java"
-            line="156"
+            line="160"
             column="9"/>
     </issue>
 
@@ -2109,7 +1053,7 @@
         errorLine2="                                                                   ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java"
-            line="350"
+            line="347"
             column="68"/>
     </issue>
 
@@ -2120,7 +1064,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java"
-            line="194"
+            line="200"
             column="47"/>
     </issue>
 
@@ -2131,7 +1075,7 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/storage/StorageSummaryProvider.java"
-            line="97"
+            line="98"
             column="52"/>
     </issue>
 
@@ -2153,7 +1097,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheet.java"
-            line="278"
+            line="283"
             column="20"/>
     </issue>
 
@@ -2164,7 +1108,7 @@
         errorLine2="        ^">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataCheckBoxPreference.java"
-            line="54"
+            line="60"
             column="9"/>
     </issue>
 
@@ -2175,7 +1119,7 @@
         errorLine2="                ^">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataCheckBoxPreference.java"
-            line="55"
+            line="61"
             column="17"/>
     </issue>
 
@@ -2186,7 +1130,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java"
-            line="689"
+            line="730"
             column="20"/>
     </issue>
 
@@ -2197,7 +1141,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/embedder_support/android/java/src/org/chromium/components/embedder_support/view/ContentView.java"
-            line="395"
+            line="458"
             column="20"/>
     </issue>
 
@@ -2296,7 +1240,7 @@
         errorLine2="                ^">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="351"
+            line="360"
             column="17"/>
     </issue>
 
@@ -2340,7 +1284,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/scrim/ScrimView.java"
-            line="81"
+            line="93"
             column="20"/>
     </issue>
 
@@ -2351,7 +1295,7 @@
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListLayout.java"
-            line="324"
+            line="338"
             column="46"/>
     </issue>
 
@@ -2362,7 +1306,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainer.java"
-            line="787"
+            line="798"
             column="20"/>
     </issue>
 
@@ -2373,7 +1317,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="542"
+            line="555"
             column="20"/>
     </issue>
 
@@ -2395,7 +1339,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../ui/android/java/src/org/chromium/ui/DropdownPopupWindowImpl.java"
-            line="178"
+            line="169"
             column="13"/>
     </issue>
 
@@ -2417,7 +1361,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabSideSheetStrategy.java"
-            line="261"
+            line="260"
             column="13"/>
     </issue>
 
