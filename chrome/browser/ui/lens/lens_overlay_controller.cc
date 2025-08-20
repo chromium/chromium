@@ -2086,7 +2086,7 @@ void LensOverlayController::SetOverlayRoundedCorner() {
   const float radius =
       should_round_corner
           ? overlay_web_view_->GetLayoutProvider()->GetCornerRadiusMetric(
-                views::ShapeContextTokens::kSidePanelPageContentRadius)
+                views::ShapeContextTokens::kContentSeparatorRadius)
           : 0;
   const bool right_aligned =
       pref_service_->GetBoolean(prefs::kSidePanelHorizontalAlignment);

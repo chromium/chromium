@@ -35,7 +35,7 @@ gfx::Size ContentsRoundedCorner::CalculatePreferredSize(
   // crash due to compiler optimizations, so CHECKing here ensures we crash.
   CHECK(GetLayoutProvider());
   const float corner_radius = GetLayoutProvider()->GetCornerRadiusMetric(
-      views::ShapeContextTokens::kSidePanelPageContentRadius);
+      views::ShapeContextTokens::kContentSeparatorRadius);
   const float corner_size = corner_radius + views::Separator::kThickness;
   return gfx::Size(corner_size, corner_size);
 }

@@ -1037,7 +1037,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       kLeftAlignedSidePanelSeparatorViewElementId);
   side_panel_rounded_corner_ =
       AddChildView(std::make_unique<ContentsRoundedCorner>(
-          this, views::ShapeContextTokens::kSidePanelPageContentRadius,
+          this, views::ShapeContextTokens::kContentSeparatorRadius,
           base::BindRepeating(&SidePanel::IsRightAligned,
                               base::Unretained(unified_side_panel_))));
   side_panel_rounded_corner_->SetProperty(views::kElementIdentifierKey,
