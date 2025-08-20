@@ -240,17 +240,20 @@ bool AutofillProfileComparator::IsNameVariantOf(
       GetNamePartVariants(name_1_parts.given);
   const std::set<std::u16string> middle_name_variants =
       GetNamePartVariants(name_1_parts.middle);
-  std::u16string_view family_name = name_1_parts.family;
+  const std::set<std::u16string> family_name_variants = {name_1_parts.family,
+                                                         u""};
 
-  // Iterate over all full name variants of profile 2 and see if any of them
-  // match the full name from profile 1.
-  for (const auto& given_name : given_name_variants) {
-    for (const auto& middle_name : middle_name_variants) {
-      std::u16string candidate = base::CollapseWhitespace(
-          base::JoinString({given_name, middle_name, family_name}, kSpace),
-          true);
-      if (candidate == full_name_2) {
-        return true;
+  // Iterate over all full name variants of profile 1 and see if any of them
+  // match the full name from profile 2.
+  for (const std::u16string& given_name : given_name_variants) {
+    for (const std::u16string& middle_name : middle_name_variants) {
+      for (const std::u16string& family_name : family_name_variants) {
+        std::u16string candidate = base::CollapseWhitespace(
+            base::JoinString({given_name, middle_name, family_name}, kSpace),
+            true);
+        if (candidate == full_name_2) {
+          return true;
+        }
       }
     }
   }
@@ -262,7 +265,7 @@ bool AutofillProfileComparator::IsNameVariantOf(
     initials.push_back(name_1_parts.given[0]);
     initials.push_back(name_1_parts.middle[0]);
     std::u16string candidate = base::CollapseWhitespace(
-        base::JoinString({initials, family_name}, kSpace), true);
+        base::JoinString({initials, name_1_parts.family}, kSpace), true);
     if (candidate == full_name_2) {
       return true;
     }

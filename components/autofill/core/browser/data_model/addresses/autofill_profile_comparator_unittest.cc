@@ -1729,6 +1729,30 @@ TEST_F(AutofillProfileComparatorTest,
             std::nullopt);
 }
 
+// Tests that profile with additional last name is mergeable with the
+// existing one and merging works correctly.
+TEST_F(AutofillProfileComparatorTest,
+       ProfileWithAdditionalLastNameIsMergeable) {
+  AutofillProfile p1 = CreateProfileWithName("John", "", "");
+  AutofillProfile p2 = CreateProfileWithName("John", "", "Doe");
+  EXPECT_TRUE(comparator_.HaveMergeableNames(p1, p2));
+
+  AutofillProfile expected = CreateProfileWithName("John", "", "Doe");
+  MergeNamesAndExpect(p1, p2, expected.GetNameInfo());
+}
+
+// Tests that profile with a additional middle name is mergeable with existing
+// one.
+TEST_F(AutofillProfileComparatorTest, ProfileWithExtraMiddleNameIsMergeable) {
+  AutofillProfile p1 = CreateProfileWithName("John", "", "Kennedy");
+  AutofillProfile p2 = CreateProfileWithName("John", "Fitzgerald", "Kennedy");
+  EXPECT_TRUE(comparator_.HaveMergeableNames(p1, p2));
+
+  AutofillProfile expected =
+      CreateProfileWithName("John", "Fitzgerald", "Kennedy");
+  MergeNamesAndExpect(p1, p2, expected.GetNameInfo());
+}
+
 }  // namespace
 
 }  // namespace autofill
