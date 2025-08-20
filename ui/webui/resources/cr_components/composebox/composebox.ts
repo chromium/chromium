@@ -1,6 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './composebox_dropdown.js';
 import './file_carousel.js';
 import './icons.html.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -94,7 +95,7 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      hideFileInputs: {
+      hideFileInputs_: {
         reflect: true,
         type: Boolean,
       },
@@ -136,7 +137,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor input_: string = '';
   protected accessor inputsDisabled_: boolean = false;
   // When enabled, the file input buttons will not be rendered.
-  protected accessor hideFileInputs: boolean = false;
+  protected accessor hideFileInputs_: boolean = false;
   protected accessor submitEnabled_: boolean = false;
   protected accessor submitting_: boolean = false;
   protected accessor showErrorScrim_: boolean = false;

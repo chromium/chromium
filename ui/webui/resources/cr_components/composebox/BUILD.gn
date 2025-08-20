@@ -12,8 +12,8 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 
   public_deps = [
-    "//components/omnibox/composebox:mojo_bindings",
     "//components/omnibox/browser:mojo_bindings",
+    "//components/omnibox/composebox:mojo_bindings",
     "//mojo/public//mojom/base",
   ]
 }
@@ -24,6 +24,10 @@ build_webui("build") {
     "common.ts",
     "composebox.html.ts",
     "composebox.ts",
+    "composebox_dropdown.html.ts",
+    "composebox_dropdown.ts",
+    "composebox_match.ts",
+    "composebox_match.html.ts",
     "file_carousel.html.ts",
     "file_carousel.ts",
     "file_thumbnail.ts",
@@ -33,6 +37,8 @@ build_webui("build") {
   ]
   css_files = [
     "composebox.css",
+    "composebox_dropdown.css",
+    "composebox_match.css",
     "file_carousel.css",
     "file_thumbnail.css",
   ]

@@ -250,7 +250,7 @@
   display: flex;
 }
 
-:host([hide-file-inputs]) #uploadContainer {
+:host([hide-file-inputs_]) #uploadContainer {
   display: none;
 }
 
