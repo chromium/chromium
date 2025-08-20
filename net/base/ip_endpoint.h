@@ -11,6 +11,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/address_family.h"
@@ -41,7 +42,7 @@ class NET_EXPORT IPEndPoint {
  public:
   // Function signatures of if_nametoindex() and if_indextoname().
   using NameToIndexFunc = uint32_t (*)(const char*);
-  using IndexToNameFunc = char* (*)(unsigned int, char*);
+  using IndexToNameFunc = char* (*)(unsigned int, base::span<char>);
 
   // Set fake if_nametoindex() and if_indextoname() functions for testing.
   static void SetNameToIndexFuncForTesting(NameToIndexFunc func);
