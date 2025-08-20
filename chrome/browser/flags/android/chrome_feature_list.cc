@@ -442,6 +442,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTraceBinderIpc,
     &kStartSurfaceReturnTime,
     &kUmaBackgroundSessions,
+    &kUmaSessionCorrectnessFixes,
     &kUpdateCompositorForSurfaceControl,
     &kUseActivityManagerForTabActivation,
     &kUseInitialNetworkStateAtStartup,
@@ -1511,6 +1512,11 @@ BASE_FEATURE(kStartSurfaceReturnTime,
 BASE_FEATURE(kUmaBackgroundSessions,
              "UMABackgroundSessions",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Correctness fixes to Activity tagging for UMA sessions.
+BASE_FEATURE(kUmaSessionCorrectnessFixes,
+             "UmaSessionCorrectnessFixes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Actively update the compositor surface when surface control is enabled.
 BASE_FEATURE(kUpdateCompositorForSurfaceControl,

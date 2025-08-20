@@ -248,7 +248,6 @@ public class SearchActivity extends AsyncInitializationActivity
     private UmaActivityObserver mUmaActivityObserver;
 
     public SearchActivity() {
-        mUmaActivityObserver = new UmaActivityObserver(this);
         mStartupMetricsTracker = new StartupMetricsTracker(mTabModelSelectorSupplier);
         mLocationBarUiOverrides.setForcedPhoneStyleOmnibox();
     }
@@ -400,6 +399,15 @@ public class SearchActivity extends AsyncInitializationActivity
         setIntent(intent);
         mIntentOrigin = SearchActivityUtils.getIntentOrigin(intent);
         mSearchType = SearchActivityUtils.getIntentSearchType(intent);
+
+        if (mUmaActivityObserver != null) mUmaActivityObserver.endUmaSession();
+        mUmaActivityObserver =
+                new UmaActivityObserver(
+                        this,
+                        getLifecycleDispatcher(),
+                        mIntentOrigin == IntentOrigin.CUSTOM_TAB
+                                ? ActivityType.CUSTOM_TAB
+                                : ActivityType.TABBED);
 
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_INTENT_ORIGIN, mIntentOrigin, IntentOrigin.COUNT);
@@ -592,12 +600,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     /** Initiate new UMA session, associating metrics with appropriate Activity type. */
     private void umaSessionResume() {
-        mUmaActivityObserver.startUmaSession(
-                mIntentOrigin == IntentOrigin.CUSTOM_TAB
-                        ? ActivityType.CUSTOM_TAB
-                        : ActivityType.TABBED,
-                null,
-                getWindowAndroid());
+        mUmaActivityObserver.startUmaSession(null, getWindowAndroid());
     }
 
     /** Mark that the UMA session has ended. */

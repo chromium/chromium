@@ -64,7 +64,6 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -108,7 +107,10 @@ import java.util.Set;
             SearchActivityUnitTest.ShadowRevenueStats.class,
             SearchActivityUnitTest.ShadowTabBuilder.class,
         })
-@EnableFeatures({ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID})
+@EnableFeatures({
+    ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID,
+    ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES
+})
 public class SearchActivityUnitTest {
     private static final String TEST_URL = "https://abc.xyz/";
     private static final String TEST_REFERRER = "com.package.name";
@@ -230,7 +232,6 @@ public class SearchActivityUnitTest {
 
         SearchActivity.setDelegateForTests(mDelegate);
         mActivity.setLocationBarLayoutForTesting(mLocationBar);
-        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
         mProfileProviderSupplier = mActivity.createProfileProvider();
 
         mAnchorView = new View(mActivity);
@@ -994,18 +995,20 @@ public class SearchActivityUnitTest {
     @Test
     public void onResumeWithNative_fromSearchWidget() {
         mActivity.onNewIntent(buildTestWidgetIntent(IntentOrigin.SEARCH_WIDGET));
+        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
         mActivity.onResumeWithNative();
 
-        verify(mUmaObserver).startUmaSession(eq(ActivityType.TABBED), eq(null), any());
+        verify(mUmaObserver).startUmaSession(eq(null), any());
         verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
     }
 
     @Test
     public void onResumeWithNative_fromQuickActionWidget() {
         mActivity.onNewIntent(buildTestWidgetIntent(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET));
+        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
         mActivity.onResumeWithNative();
 
-        verify(mUmaObserver).startUmaSession(eq(ActivityType.TABBED), eq(null), any());
+        verify(mUmaObserver).startUmaSession(eq(null), any());
         verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
     }
 
@@ -1013,6 +1016,7 @@ public class SearchActivityUnitTest {
     public void onResumeWithNative_fromCustomTabs_withoutPackage() {
         ChromeFeatureList.sSearchinCctApplyReferrerId.setForTesting(true);
         mActivity.onNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB));
+        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
 
         try (var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1020,7 +1024,7 @@ public class SearchActivityUnitTest {
             mActivity.onResumeWithNative();
         }
 
-        verify(mUmaObserver).startUmaSession(eq(ActivityType.CUSTOM_TAB), eq(null), any());
+        verify(mUmaObserver).startUmaSession(eq(null), any());
         verify(mSetCustomTabSearchClient).onResult(null);
         verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
     }
@@ -1033,6 +1037,7 @@ public class SearchActivityUnitTest {
                         .setReferrer(TEST_REFERRER)
                         .setResolutionType(ResolutionType.SEND_TO_CALLER)
                         .build());
+        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
 
         try (var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1040,7 +1045,7 @@ public class SearchActivityUnitTest {
             mActivity.onResumeWithNative();
         }
 
-        verify(mUmaObserver).startUmaSession(eq(ActivityType.CUSTOM_TAB), eq(null), any());
+        verify(mUmaObserver).startUmaSession(eq(null), any());
         verify(mSetCustomTabSearchClient).onResult("app-cct-" + TEST_REFERRER);
         verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
     }
@@ -1049,6 +1054,7 @@ public class SearchActivityUnitTest {
     public void onResumeWithNative_fromCustomTabs_propagationDisabled() {
         ChromeFeatureList.sSearchinCctApplyReferrerId.setForTesting(false);
         mActivity.onNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB));
+        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
 
         try (var watcher =
                 HistogramWatcher.newBuilder()
@@ -1057,13 +1063,14 @@ public class SearchActivityUnitTest {
             mActivity.onResumeWithNative();
         }
 
-        verify(mUmaObserver).startUmaSession(eq(ActivityType.CUSTOM_TAB), eq(null), any());
+        verify(mUmaObserver).startUmaSession(eq(null), any());
         verify(mSetCustomTabSearchClient, never()).onResult(any());
         verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
     }
 
     @Test
     public void onPauseWithNative() {
+        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
         mActivity.onPauseWithNative();
 
         verify(mUmaObserver).endUmaSession();

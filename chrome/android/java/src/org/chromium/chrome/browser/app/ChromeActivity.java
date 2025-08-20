@@ -354,7 +354,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             new ObservableSupplierImpl<>();
     private TabContentManager mTabContentManager;
 
-    private final UmaActivityObserver mUmaActivityObserver;
+    private UmaActivityObserver mUmaActivityObserver;
 
     private boolean mPartnerBrowserRefreshNeeded;
 
@@ -428,7 +428,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
         sNextActivityId++;
         mActivityId = sNextActivityId;
-        mUmaActivityObserver = new UmaActivityObserver(this);
     }
 
     private void incrementCounter(String key) {
@@ -506,6 +505,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void performPreInflationStartup() {
+        mUmaActivityObserver =
+                new UmaActivityObserver(this, getLifecycleDispatcher(), getActivityType());
         setupUnownedUserDataSuppliers();
 
         View rootView = getWindow().getDecorView().getRootView();
@@ -984,7 +985,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     public void onStartWithNative() {
         assert mNativeInitialized : "onStartWithNative was called before native was initialized.";
 
-        startUmaSession();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
+            startUmaSession();
+        }
 
         super.onStartWithNative();
 
@@ -1165,6 +1168,18 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void onTopResumedActivityChangedWithNative(boolean isTopResumedActivity) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
+            if (isTopResumedActivity) {
+                startUmaSession();
+            }
+        } else {
+            if (isTopResumedActivity
+                    && getActivityType() != UmaActivityObserver.getCurrentActivityType()) {
+                endUmaSession();
+                startUmaSession();
+            }
+        }
+
         super.onTopResumedActivityChangedWithNative(isTopResumedActivity);
 
         View view = isTopResumedActivity ? getWindow().getDecorView() : null;
@@ -1284,7 +1299,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
         getManualFillingComponent().onPause();
         super.onPauseWithNative();
-        endUmaSession();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
+            endUmaSession();
+        }
     }
 
     @Override
@@ -1460,12 +1477,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
-        if (isTopResumedActivity
-                && mNativeInitialized
-                && getActivityType() != UmaActivityObserver.getCurrentActivityType()) {
-            endUmaSession();
-            startUmaSession();
-        }
         if (mNativeInitialized
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY)) {
             ChildProcessLauncherHelper.setIgnoreMainFrameVisibilityForImportance();
@@ -1823,6 +1834,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     @Override
     public void finishNativeInitialization() {
         mNativeInitialized = true;
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
+            startUmaSession();
+        }
+
         OfflineContentAggregatorNotificationBridgeUiFactory.instance();
         maybeRemoveWindowBackground();
         DownloadManagerService.getDownloadManagerService()
@@ -2274,7 +2290,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (mNativeInitialized) {
             recordMultiWindowModeChanged(isInMultiWindowMode, /* isDeferredStartup= */ false);
 
-            if (!isInMultiWindowMode
+            // With UMA_SESSION_CORRECTNESS_FIXES, onPause no longer ends the session, so we should
+            // restart the session every time multi-window changes.
+            if ((!isInMultiWindowMode
+                            || ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES))
                     && ApplicationStatus.getStateForActivity(this) == ActivityState.RESUMED) {
                 // Start a new UMA session when exiting multi-window mode if the activity is
                 // currently resumed. When entering multi-window Android recents gains focus, so
@@ -2697,8 +2717,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     protected void startUmaSession() {
-        mUmaActivityObserver.startUmaSession(
-                getActivityType(), getTabModelSelector(), getWindowAndroid());
+        mUmaActivityObserver.startUmaSession(getTabModelSelector(), getWindowAndroid());
     }
 
     /** Mark that the UMA session has ended. */
