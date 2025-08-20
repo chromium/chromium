@@ -16,7 +16,7 @@
       await testRunner.loadScriptAbsolute('../resources/http-interceptor.js');
   const httpInterceptor = await (new HttpInterceptor(testRunner, bp)).init();
   httpInterceptor.setDisableRequestedUrlsLogging(true);
-  httpInterceptor.addFavIconResponse('https://example.com');
+
   httpInterceptor.addResponse('https://example.com/index.html', `
     <html>
       <body>
