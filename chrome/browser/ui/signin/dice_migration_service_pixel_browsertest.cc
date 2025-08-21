@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/signin/dice_migration_service_factory.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
@@ -171,6 +172,54 @@ DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest, Toast) {
                   Screenshot(toasts::ToastView::kToastViewId,
                              /*screenshot_name=*/"dice_migration_toast",
                              /*baseline_cl=*/kScreenshotBaselineCL));
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest, IdentityPill) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  constexpr char16_t kNewUrl[] = u"chrome://version";
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  RunTestSequence(
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshots not supported in all testing environments."),
+
+      // The identity pill is not expanded by default.
+      Screenshot(kToolbarAvatarButtonElementId,
+                 /*screenshot_name=*/"dice_migration_identity_pill_closed",
+                 /*baseline_cl=*/kScreenshotBaselineCL),
+
+      TriggerDialog(),
+
+      WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+      // Navigate to another page using the omnibox.
+      // NOTE: This is only done to introduce some delay to finish setting up
+      // the expanded identity pill and avoid flakiness.
+      // TODO(crbug.com/440020019): Look for a way to avoid this workaround.
+      InstrumentTab(kActiveTab), EnterText(kOmniboxElementId, kNewUrl),
+      Confirm(kOmniboxElementId),
+      WaitForWebContentsNavigation(kActiveTab, GURL(kNewUrl)),
+
+      // The identity pill is expanded when the dialog is shown.
+      Screenshot(kToolbarAvatarButtonElementId,
+                 /*screenshot_name=*/"dice_migration_identity_pill_open",
+                 /*baseline_cl=*/kScreenshotBaselineCL),
+
+      // Press the "Got it" button.
+      PressButton(DiceMigrationService::kAcceptButtonElementId),
+
+      WaitForHide(DiceMigrationService::kAcceptButtonElementId),
+
+      // The identity pill is collapsed again.
+      Screenshot(kToolbarAvatarButtonElementId,
+                 /*screenshot_name=*/"dice_migration_identity_pill_closed",
+                 /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
 }  // namespace

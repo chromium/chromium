@@ -507,4 +507,35 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
                   EnsurePresent(toasts::ToastView::kToastViewId));
 }
 
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                      IdentityPillExpandsWhenShowingDialog) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  RunTestSequence(
+      // The identity pill is not expanded by default.
+      CheckViewProperty(kToolbarAvatarButtonElementId,
+                        &views::LabelButton::GetText, u""),
+
+      TriggerDialog(),
+
+      WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+      // The identity pill is expanded when the dialog is shown.
+      CheckViewProperty(kToolbarAvatarButtonElementId,
+                        &views::LabelButton::GetText, u"test@gmail.com"),
+
+      // Press the avatar button.
+      PressButton(kToolbarAvatarButtonElementId),
+
+      WaitForHide(DiceMigrationService::kAcceptButtonElementId),
+
+      // The identity pill is collapsed again.
+      CheckViewProperty(kToolbarAvatarButtonElementId,
+                        &views::LabelButton::GetText, u""));
+}
+
 }  // namespace
