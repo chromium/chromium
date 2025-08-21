@@ -454,7 +454,7 @@ public class WebsitePermissionsFetcher {
                 // convert the embedder to add the scheme or the wildcard to create a
                 // unique key (and thus row) per pattern.
                 if (mSiteSettingsDelegate.isDisplayWildcardInContentSettingsEnabled()
-                        && embedder != null) {
+                        && embedder != null && !embedder.isEmpty()) {
                     embedder =
                             containsPatternWildcards(embedder)
                                     ? embedder
