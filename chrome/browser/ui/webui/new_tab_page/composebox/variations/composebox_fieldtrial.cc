@@ -7,8 +7,12 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ntp_composebox {
@@ -100,8 +104,46 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
 
 }  // namespace
 
-// If enabled, the Composebox will appear upon clicking the NTP Compose
-// entrypoint and will be configured based on the supplied configuration param.
+bool IsNtpComposeboxEnabled(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  // The AimEligibilityService depends on the TemplateURLService. If the
+  // TemplateURLService does not exist for this profile, then the
+  // AimEligibilityService cannot be created.
+  if (!TemplateURLServiceFactory::GetForProfile(profile)) {
+    return false;
+  }
+
+  auto* feature_list = base::FeatureList::GetInstance();
+  if (feature_list && feature_list->IsFeatureOverridden(kNtpComposebox.name) &&
+      !base::FeatureList::IsEnabled(kNtpComposebox)) {
+    return false;
+  }
+
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  if (!aim_eligibility_service) {
+    return false;
+  }
+
+  // If the server eligibility is enabled, check overall eligibility alone.
+  // The service will control locale rollout so there's no need to check locale
+  // or the state of kNtpComposebox below.
+  if (aim_eligibility_service->IsServerEligibilityEnabled()) {
+    return aim_eligibility_service->IsAimEligible();
+  }
+
+  // If not locally eligible, return false.
+  if (!aim_eligibility_service->IsAimLocallyEligible()) {
+    return false;
+  }
+
+  // Otherwise, check the generic composebox feature.
+  return base::FeatureList::IsEnabled(kNtpComposebox);
+}
+
 BASE_FEATURE(kNtpComposebox,
              "NtpComposebox",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -118,9 +160,7 @@ const base::FeatureParam<bool> kShowComposeboxZps(&kNtpComposebox,
                                                   "ShowComposeboxZps",
                                                   false);
 
-FeatureConfig::FeatureConfig()
-    : enabled(base::FeatureList::IsEnabled(kNtpComposebox)),
-      config(GetNTPComposeboxConfig()) {}
+FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
 FeatureConfig::FeatureConfig(const FeatureConfig&) = default;
 FeatureConfig::FeatureConfig(FeatureConfig&&) = default;

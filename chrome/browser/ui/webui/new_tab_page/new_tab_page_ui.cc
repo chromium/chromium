@@ -555,11 +555,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "searchboxShowComposeEntrypoint",
       (ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(profile) ||
-       ntp_composebox::FeatureConfig::Get().enabled) &&
-          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
+       ntp_composebox::IsNtpComposeboxEnabled(profile)));
   source->AddBoolean("searchboxShowComposebox",
-                     ntp_composebox::FeatureConfig::Get().enabled &&
-                         omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
+                     ntp_composebox::IsNtpComposeboxEnabled(profile));
   source->AddBoolean("composeboxShowZps",
                      ntp_composebox::kShowComposeboxZps.Get());
 

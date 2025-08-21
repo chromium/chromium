@@ -8332,6 +8332,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/new_tab_footer:unit_tests",
       "//chrome/browser/ui/webui/new_tab_page/composebox",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+      "//chrome/browser/ui/webui/new_tab_page/composebox/variations:unit_tests",
       "//chrome/browser/ui/webui/new_tab_page/ntp_promo:unit_tests",
       "//chrome/browser/ui/webui/privacy_sandbox:unit_tests",
       "//chrome/browser/ui/webui/settings",

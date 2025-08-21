@@ -183,7 +183,6 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
     // Set all the feature params here to keep the test consistent if future
     // default values are changed.
-    scoped_config_.Get().enabled = true;
 
     auto* image_upload = scoped_config_.Get()
                              .config.mutable_composebox()

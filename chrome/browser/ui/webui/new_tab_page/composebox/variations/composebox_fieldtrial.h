@@ -7,15 +7,21 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "third_party/omnibox_proto/ntp_composebox_config.pb.h"
+
+class Profile;
 
 namespace ntp_composebox {
 
 inline constexpr char kConfigParamParseSuccessHistogram[] =
     "NewTabPage.Composebox.ConfigParseSuccess";
 
+// If overridden to false, disables the feature (kill switch). If true, enables
+// the feature.
 BASE_DECLARE_FEATURE(kNtpComposebox);
+
 // The serialized base64 encoded `omnibox::NTPComposeboxConfig`.
 extern const base::FeatureParam<std::string> kConfigParam;
 // Whether to send the lns_surface parameter.
@@ -25,10 +31,10 @@ extern const base::FeatureParam<bool> kSendLnsSurfaceParam;
 // Whether to show zps suggestions under the composebox.
 extern const base::FeatureParam<bool> kShowComposeboxZps;
 
+bool IsNtpComposeboxEnabled(Profile* profile);
+
 class FeatureConfig : public omnibox_feature_configs::Config<FeatureConfig> {
  public:
-  // Whether the feature is enabled.
-  bool enabled = false;
   // The configuration proto for the feature.
   omnibox::NTPComposeboxConfig config;
 
