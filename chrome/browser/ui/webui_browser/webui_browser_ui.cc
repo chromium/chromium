@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/webui_util.h"
 
@@ -106,7 +107,7 @@ void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
         receiver) {
   // Make sure BrowserView and WebUIBrowserWindow use the same context.
-  // In this case, they both use the container widget as context.
+  // In this case, they both defer to ElementTrackerViews to compute contexts.
   // This allows the following code to work in both Webium and BrowserView.
   //
   //   ui::ElementContext context(BrowserElements::From(browser)->GetContext());
@@ -118,7 +119,8 @@ void WebUIBrowserUI::BindInterface(
   // TODO(webium): use BrowserElements::From(browser)->GetContext(). This
   // requires adding a BrowserElementsWebUI.
   const ui::ElementContext context =
-      ui::ElementContext(browser_window()->widget());
+      views::ElementTrackerViews::GetContextForWidget(
+          browser_window()->widget());
   tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
       web_ui()->GetWebContents(), std::move(receiver), context,
       GetKnownElementIdentifiers());

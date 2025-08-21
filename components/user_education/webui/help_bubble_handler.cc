@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/pass_key.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/webui/help_bubble_webui.h"
@@ -589,7 +590,7 @@ HelpBubbleHandler::HelpBubbleHandler(
           std::make_unique<ClientProvider>(std::move(pending_client)),
           std::make_unique<VisibilityProvider>(),
           identifiers,
-          ui::ElementContext(controller)),
+          ui::ElementContext(controller, base::PassKey<HelpBubbleHandler>())),
       receiver_(this, std::move(pending_handler)),
       controller_(controller) {
   DCHECK(controller);

@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 namespace {
 
@@ -149,7 +150,8 @@ void WebUIBrowserPageHandler::OpenAppMenu() {
   ui::TrackedElement* app_menu_button =
       ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
           kToolbarAppMenuButtonElementId,
-          ui::ElementContext(GetBrowserWindow()->widget()));
+          views::ElementTrackerViews::GetContextForWidget(
+              GetBrowserWindow()->widget()));
   CHECK(app_menu_button) << "App menu button not found";
   menu_model_ =
       std::make_unique<AppMenuModel>(GetBrowserWindow(), GetBrowser());

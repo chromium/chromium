@@ -177,7 +177,8 @@ class ShortcutIntegrationInteractionTestPrivate::ShortcutTracker {
                   << " while not expecting new files.";
       } else {
         shortcut = std::make_unique<TrackedShortcut>(
-            next_shortcut_identifier_, ui::ElementContext(this), path);
+            next_shortcut_identifier_,
+            ui::ElementContext::CreateFakeContextForTesting(this), path);
       }
       const auto [it, inserted] = shortcuts_.emplace(path, std::move(shortcut));
       next_shortcut_identifier_ = {};

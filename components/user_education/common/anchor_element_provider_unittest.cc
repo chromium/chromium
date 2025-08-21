@@ -13,8 +13,10 @@ namespace user_education {
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId2);
-const ui::ElementContext kTestElementContext1(1);
-const ui::ElementContext kTestElementContext2(2);
+constexpr ui::ElementContext kTestElementContext1 =
+    ui::ElementContext::CreateFakeContextForTesting(1);
+constexpr ui::ElementContext kTestElementContext2 =
+    ui::ElementContext::CreateFakeContextForTesting(2);
 }  // namespace
 
 TEST(AnchorElementProviderTest,

@@ -7,13 +7,24 @@
 
 #include <stdint.h>
 
+#include <concepts>
+#include <cstdint>
 #include <ostream>
 #include <set>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/types/pass_key.h"
 #include "ui/base/class_property.h"
+
+namespace views {
+class ElementTrackerViews;
+}
+
+namespace user_education {
+class HelpBubbleHandler;
+}
 
 // Overview:
 // ElementIdentifier provides a named opaque value that can be used to identify
@@ -203,12 +214,13 @@ class COMPONENT_EXPORT(UI_BASE) ElementContext {
  public:
   ElementContext() = default;
 
-  template <class T>
-  explicit ElementContext(T* value)
+  // Only specific classes are allowed to be authoritative sources of element
+  // contexts. All other code should defer to these classes.
+  template <class T, class U>
+    requires std::same_as<U, views::ElementTrackerViews> ||
+             std::same_as<U, user_education::HelpBubbleHandler>
+  explicit ElementContext(T* value, base::PassKey<U>)
       : value_(reinterpret_cast<uintptr_t>(value)) {}
-
-  template <class T>
-  explicit ElementContext(T value) : value_(static_cast<uintptr_t>(value)) {}
 
   explicit operator const void*() const {
     return reinterpret_cast<const void*>(value_);
@@ -222,7 +234,21 @@ class COMPONENT_EXPORT(UI_BASE) ElementContext {
   friend auto operator<=>(const ElementContext&,
                           const ElementContext&) = default;
 
+  // Use this to create a fake context for testing. For normal contexts, rely
+  // on one of the classes explicitly allowed by `ElementContext(T*)` above.
+  template <typename T>
+  static ElementContext CreateFakeContextForTesting(T* value) {
+    return ElementContext(reinterpret_cast<uintptr_t>(value));
+  }
+  template <typename T>
+    requires std::convertible_to<T, uintptr_t>
+  static consteval ElementContext CreateFakeContextForTesting(T value) {
+    return ElementContext(static_cast<uintptr_t>(value));
+  }
+
  private:
+  explicit constexpr ElementContext(uintptr_t value) : value_(value) {}
+
   uintptr_t value_ = 0;
 };
 

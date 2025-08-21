@@ -56,7 +56,8 @@ class TrackedElementHandlerTest : public views::test::WidgetTest {
     mojo::PendingRemote<tracked_element::mojom::TrackedElementHandler> remote;
     handler_ = std::make_unique<TrackedElementHandler>(
         web_contents_.get(), remote.InitWithNewPipeAndPassReceiver(),
-        ui::ElementContext(web_contents_.get()),
+        // When there is a consistent way of assigning contexts, use that.
+        ui::ElementContext::CreateFakeContextForTesting(web_contents_.get()),
         std::vector<ui::ElementIdentifier>{kTestElementIdentifier1,
                                            kTestElementIdentifier2});
     tracked_element_handler_remote_.Bind(std::move(remote));

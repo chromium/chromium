@@ -176,7 +176,8 @@ InteractiveAshTest::InteractiveAshTest() {
   // the home button, shelf, etc. appear once per display.
   views::ElementTrackerViews::SetContextOverrideCallback(
       base::BindRepeating([](views::Widget* widget) {
-        return ui::ElementContext(ash::Shell::GetPrimaryRootWindow());
+        return ui::ElementContext::CreateFakeContextForTesting(
+            ash::Shell::GetPrimaryRootWindow());
       }));
 }
 

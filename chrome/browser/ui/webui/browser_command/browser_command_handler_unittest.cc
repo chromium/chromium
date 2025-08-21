@@ -24,6 +24,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
@@ -55,8 +56,6 @@ std::vector<Command> supported_commands = {
     Command::kOpenGlicSettings,
     Command::kPrewarmGlicFre,
 };
-
-const ui::ElementContext kTestContext1(1);
 
 class TestCommandHandler : public BrowserCommandHandler {
  public:

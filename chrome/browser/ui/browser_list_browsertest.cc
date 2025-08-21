@@ -71,7 +71,8 @@ IN_PROC_BROWSER_TEST_F(BrowserListBrowserTest,
       BrowserElements::From(browser2)->GetContext());
   EXPECT_EQ(browser2, result);
 
-  result = chrome::FindBrowserWithUiElementContext(ui::ElementContext(100));
+  result = chrome::FindBrowserWithUiElementContext(
+      ui::ElementContext::CreateFakeContextForTesting(100));
   EXPECT_EQ(nullptr, result);
 }
 

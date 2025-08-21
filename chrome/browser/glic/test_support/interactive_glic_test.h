@@ -45,6 +45,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -253,8 +254,8 @@ class InteractiveGlicTestT : public T {
     switch (window_mode) {
       case GlicWindowMode::kAttached:
         return Api::PressButton(kGlicButtonElementId)
-            .SetContext(
-                ui::ElementContext(browser()->TopContainer()->GetWidget()));
+            .SetContext(views::ElementTrackerViews::GetContextForView(
+                browser()->TopContainer()));
       case GlicWindowMode::kDetached:
         return Api::Do(
             [this] { window_controller().ShowDetachedForTesting(); });

@@ -58,8 +58,10 @@ using ActionRecord = std::tuple<ActionType,
                                 ElementContext,
                                 InteractionTestUtil::InputType>;
 
-const ui::ElementContext kTestContext1(1);
-const ui::ElementContext kTestContext2(2);
+constexpr ui::ElementContext kTestContext1 =
+    ui::ElementContext::CreateFakeContextForTesting(1);
+constexpr ui::ElementContext kTestContext2 =
+    ui::ElementContext::CreateFakeContextForTesting(2);
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId2);

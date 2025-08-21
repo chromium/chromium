@@ -37,9 +37,12 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier3);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType2);
-const ElementContext kTestContext1(1);
-const ElementContext kTestContext2(2);
-const ElementContext kTestContext3(3);
+constexpr ElementContext kTestContext1 =
+    ElementContext::CreateFakeContextForTesting(1);
+constexpr ElementContext kTestContext2 =
+    ElementContext::CreateFakeContextForTesting(2);
+constexpr ElementContext kTestContext3 =
+    ElementContext::CreateFakeContextForTesting(3);
 
 }  // namespace
 

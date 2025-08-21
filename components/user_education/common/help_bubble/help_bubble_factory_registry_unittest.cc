@@ -24,8 +24,10 @@ namespace {
 
 // Placeholder ID and context for test elements.
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementIdentifier);
-const ui::ElementContext kTestElementContext(1U);
-const ui::ElementContext kTestElementContext2(2U);
+constexpr ui::ElementContext kTestElementContext =
+    ui::ElementContext::CreateFakeContextForTesting(1U);
+constexpr ui::ElementContext kTestElementContext2 =
+    ui::ElementContext::CreateFakeContextForTesting(2U);
 
 }  // namespace
 

@@ -26,8 +26,10 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier1);
 const char* const kElementIdentifier1Name = "kElementIdentifier1";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier2);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
-const ElementContext kElementContext1(1);
-const ElementContext kElementContext2(2);
+constexpr ElementContext kElementContext1 =
+    ElementContext::CreateFakeContextForTesting(1);
+constexpr ElementContext kElementContext2 =
+    ElementContext::CreateFakeContextForTesting(2);
 
 struct EventTestStruct {
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType2);

@@ -21,7 +21,8 @@ namespace ui::test {
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementIdentifier);
-const ElementContext kTestElementContext(1);
+constexpr ElementContext kTestElementContext =
+    ElementContext::CreateFakeContextForTesting(1);
 
 class MockInteractionSimulator : public InteractionTestUtil::Simulator {
  public:

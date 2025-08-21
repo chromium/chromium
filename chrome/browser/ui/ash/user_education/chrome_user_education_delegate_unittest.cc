@@ -59,6 +59,8 @@ using ::testing::NiceMock;
 
 // Element identifiers.
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementId);
+constexpr auto kElementContext =
+    ui::ElementContext::CreateFakeContextForTesting(1);
 
 // Mocks -----------------------------------------------------------------------
 
@@ -161,8 +163,7 @@ TEST_F(ChromeUserEducationDelegateTest, RegisterTutorial) {
 // `AbortTutorial()` will abort the tutorial.
 TEST_F(ChromeUserEducationDelegateTest, StartAndAbortTutorial) {
   // Create a test element.
-  const ui::ElementContext element_context(1);
-  ui::test::TestElement test_element(kElementId, element_context);
+  ui::test::TestElement test_element(kElementId, kElementContext);
 
   // Create a tutorial description.
   user_education::TutorialDescription tutorial_description;
@@ -183,7 +184,7 @@ TEST_F(ChromeUserEducationDelegateTest, StartAndAbortTutorial) {
   // Attempt to start the tutorial.
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, aborted_callback);
   delegate()->StartTutorial(
-      account_id(), ash::TutorialId::kTest1, element_context,
+      account_id(), ash::TutorialId::kTest1, kElementContext,
       /*completed_callback=*/base::BindLambdaForTesting([]() { FAIL(); }),
       aborted_callback.Get());
 
@@ -207,8 +208,7 @@ TEST_F(ChromeUserEducationDelegateTest, AbortSpecificTutorial) {
       ash::user_education_util::ToString(ash::TutorialId::kTest1);
 
   // Create a test element.
-  const ui::ElementContext element_context(1);
-  ui::test::TestElement test_element(kElementId, element_context);
+  ui::test::TestElement test_element(kElementId, kElementContext);
 
   // Create a tutorial description.
   user_education::TutorialDescription tutorial_description;
@@ -228,7 +228,7 @@ TEST_F(ChromeUserEducationDelegateTest, AbortSpecificTutorial) {
 
   // Attempt to start the tutorial.
   delegate()->StartTutorial(account_id(), ash::TutorialId::kTest1,
-                            element_context,
+                            kElementContext,
                             /*completed_callback=*/base::DoNothing(),
                             /*aborted_callback=*/base::DoNothing());
 

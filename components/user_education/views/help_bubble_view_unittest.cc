@@ -44,7 +44,8 @@ namespace user_education {
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
-const ui::ElementContext kTestElementContext{1};
+constexpr ui::ElementContext kTestElementContext =
+    ui::ElementContext::CreateFakeContextForTesting(1);
 constexpr gfx::Rect kWidgetBounds{400, 200, 200, 200};
 }  // namespace
 

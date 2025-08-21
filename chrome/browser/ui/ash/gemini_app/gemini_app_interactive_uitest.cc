@@ -229,7 +229,8 @@ class GeminiAppInteractiveUiTestBase
     // cross-widget CUJs as is the case in this test suite.
     views::ElementTrackerViews::SetContextOverrideCallback(
         base::BindRepeating([](views::Widget* widget) {
-          return ui::ElementContext(ash::Shell::GetPrimaryRootWindow());
+          return ui::ElementContext::CreateFakeContextForTesting(
+              ash::Shell::GetPrimaryRootWindow());
         }));
   }
 

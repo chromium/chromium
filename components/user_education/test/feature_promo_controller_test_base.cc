@@ -29,8 +29,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FeaturePromoControllerTestBase,
                                       kAnchorElementId);
 
 // static
-const ui::ElementContext FeaturePromoControllerTestBase::kAnchorElementContext(
-    1);
+const ui::ElementContext FeaturePromoControllerTestBase::kAnchorElementContext =
+    ui::ElementContext::CreateFakeContextForTesting(1);
 
 // static
 constexpr char

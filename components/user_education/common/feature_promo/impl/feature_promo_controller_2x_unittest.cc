@@ -22,6 +22,7 @@
 #include "components/user_education/test/feature_promo_controller_test_base.h"
 #include "components/user_education/test/mock_user_education_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence_test_util.h"
@@ -46,7 +47,8 @@ BASE_FEATURE(kIPHTestWithArrowCallback,
              "IPH_TestWithArrowCallback",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const ui::ElementContext kAlternateContext(2);
+constexpr ui::ElementContext kAlternateContext =
+    ui::ElementContext::CreateFakeContextForTesting(2);
 
 using PriorityInfo = FeaturePromoPriorityProvider::PromoPriorityInfo;
 using PromoPriority = FeaturePromoPriorityProvider::PromoPriority;

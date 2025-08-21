@@ -67,10 +67,11 @@ class TestHelpBubbleHandler : public HelpBubbleHandlerBase {
   explicit TestHelpBubbleHandler(
       const std::vector<ui::ElementIdentifier>& identifiers,
       std::unique_ptr<VisibilityProvider> visibility_provider)
-      : HelpBubbleHandlerBase(std::make_unique<ClientProvider>(),
-                              std::move(visibility_provider),
-                              identifiers,
-                              ui::ElementContext(this)) {}
+      : HelpBubbleHandlerBase(
+            std::make_unique<ClientProvider>(),
+            std::move(visibility_provider),
+            identifiers,
+            ui::ElementContext::CreateFakeContextForTesting(this)) {}
 
   ~TestHelpBubbleHandler() override = default;
 

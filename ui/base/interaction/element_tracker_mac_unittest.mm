@@ -35,8 +35,10 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier3);
 
-const ElementContext kElementContext1(1);
-const ElementContext kElementContext2(2);
+constexpr ElementContext kElementContext1 =
+    ElementContext::CreateFakeContextForTesting(1);
+constexpr ElementContext kElementContext2 =
+    ElementContext::CreateFakeContextForTesting(2);
 
 class ExpectedCall {
  public:

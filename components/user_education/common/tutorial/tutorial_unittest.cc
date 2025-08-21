@@ -46,7 +46,8 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 
 const char kTestElementName1[] = "ELEMENT_NAME_1";
 
-const ui::ElementContext kTestContext1(1);
+constexpr ui::ElementContext kTestContext1 =
+    ui::ElementContext::CreateFakeContextForTesting(1);
 
 const TutorialIdentifier kTestTutorial1{"kTestTutorial1"};
 const TutorialIdentifier kTestTutorial2{"kTestTutorial2"};

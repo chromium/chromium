@@ -24,7 +24,8 @@ BASE_FEATURE(kTestSimplePromo,
              base::FEATURE_DISABLED_BY_DEFAULT);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestAnchorElement);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestAnchorElement2);
-const ui::ElementContext kTestContext(1);
+constexpr ui::ElementContext kTestContext =
+    ui::ElementContext::CreateFakeContextForTesting(1);
 }  // namespace
 
 TEST(FeaturePromoSpecificationTest, HelpBubbleArrow) {

@@ -33,6 +33,8 @@ namespace {
 BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_ENABLED_BY_DEFAULT);
 using TestLifecycleData =
     ui::test::ScopedTypedData<std::unique_ptr<FeaturePromoLifecycle>>;
+constexpr ui::ElementContext kTestContext =
+    ui::ElementContext::CreateFakeContextForTesting(1);
 }
 
 TEST(CommonPreconditionsTest,
@@ -139,7 +141,6 @@ TEST(CommonPreconditionsTest, ContextValidPrecondition) {
 
 TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId);
-  static const ui::ElementContext kTestContext(1);
   ui::test::TestElement el(kTestId, kTestContext);
   el.Show();
   test::MockAnchorElementProvider provider;
@@ -181,7 +182,6 @@ TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
 TEST(CommonPreconditionsTest,
      AnchorElementPrecondition_ExtractCachedDataReturnsElement) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId);
-  static const ui::ElementContext kTestContext(1);
   ui::test::TestElement el(kTestId, kTestContext);
   el.Show();
 
@@ -212,7 +212,6 @@ TEST(CommonPreconditionsTest,
 
 TEST(CommonPreconditionsTest,
      AnchorElementPrecondition_ExtractCachedDataReturnsNull) {
-  static const ui::ElementContext kTestContext(1);
 
   test::MockAnchorElementProvider provider;
   AnchorElementPrecondition precond(provider, kTestContext, false);
