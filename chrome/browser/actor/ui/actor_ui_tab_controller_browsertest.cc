@@ -71,8 +71,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   ASSERT_NE(state_manager, nullptr);
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
-  ActorUiTabControllerInterface* controller =
-      tab->GetTabFeatures()->actor_ui_tab_controller();
+  ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab);
   ASSERT_NE(controller, nullptr);
 
   // Initially, the indicator should not be visible.
@@ -115,8 +114,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   ASSERT_NE(state_manager, nullptr);
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
-  ActorUiTabControllerInterface* controller =
-      tab->GetTabFeatures()->actor_ui_tab_controller();
+  ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab);
   ASSERT_NE(controller, nullptr);
 
   TestFuture<void> future;
@@ -196,8 +194,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
   ASSERT_NE(state_manager, nullptr);
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
-  ActorUiTabControllerInterface* controller =
-      tab->GetTabFeatures()->actor_ui_tab_controller();
+  ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab);
   ASSERT_NE(controller, nullptr);
 
   TestFuture<void> future;

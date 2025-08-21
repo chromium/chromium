@@ -11,10 +11,6 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace tabs {
-class TabInterface;
-}
-
 namespace actor::ui {
 
 class MockActorUiStateManager : public ActorUiStateManagerInterface {
@@ -27,10 +23,6 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               (AsyncUiEvent event, UiCompleteCallback callback),
               (override));
   MOCK_METHOD(void, OnUiEvent, (SyncUiEvent event), (override));
-  MOCK_METHOD(ActorUiTabControllerInterface*,
-              GetUiTabController,
-              (tabs::TabInterface * tab),
-              (override));
   MOCK_METHOD(void, MaybeShowToast, (BrowserWindowInterface * bwi), (override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterActorTaskStateChange,

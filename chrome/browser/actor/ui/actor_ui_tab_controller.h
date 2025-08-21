@@ -37,7 +37,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
       std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory);
   ~ActorUiTabController() override;
   DECLARE_USER_DATA(ActorUiTabController);
-  static ActorUiTabController* From(tabs::TabInterface* tab);
 
   // ActorUiTabControllerInterface:
   void OnUiTabStateChange(const UiTabState& ui_tab_state,
@@ -51,6 +50,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   void SetOverlayHoverStatus(bool is_hovering) override;
   void SetHandoffButtonHoverStatus(bool is_hovering) override;
   void SetCallbackForTesting(base::OnceClosure callback) override;
+  UiTabState GetCurrentUiTabState() const override;
   bool ShouldShowActorTabIndicator() override;
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
 

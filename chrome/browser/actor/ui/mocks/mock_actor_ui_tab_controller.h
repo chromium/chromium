@@ -6,14 +6,25 @@
 #define CHROME_BROWSER_ACTOR_UI_MOCKS_MOCK_ACTOR_UI_TAB_CONTROLLER_H_
 
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace actor::ui {
 
 class MockActorUiTabController : public ActorUiTabControllerInterface {
  public:
-  MockActorUiTabController();
+  explicit MockActorUiTabController(tabs::MockTabInterface& mock_tab);
   ~MockActorUiTabController() override;
+
+  // Sets up the default mock expectations to connect a mock tab to a mock
+  // browser window and UnownedUserDataHost.
+  static void SetupDefaultBrowserWindow(
+      tabs::MockTabInterface& mock_tab,
+      MockBrowserWindowInterface& mock_browser_window_interface,
+      ::ui::UnownedUserDataHost& user_data_host);
 
   MOCK_METHOD(void,
               OnUiTabStateChange,
@@ -61,6 +72,7 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
               RegisterActorTabIndicatorStateChangedCallback,
               (ActorTabIndicatorStateChangedCallback callback),
               (override));
+  MOCK_METHOD(UiTabState, GetCurrentUiTabState, (), (const, override));
 
  private:
   base::WeakPtrFactory<MockActorUiTabController> weak_factory_{this};

@@ -88,31 +88,25 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ControllerExistsForNormalBrowsers) {
   // Normal browser window
   Browser* const normal_browser = browser();
   ASSERT_NE(ActorOverlayWindowController::From(normal_browser), nullptr);
-  ASSERT_NE(normal_browser->browser_window_features()
-                ->tab_strip_model()
-                ->GetActiveTab()
-                ->GetTabFeatures()
-                ->actor_ui_tab_controller(),
+  ASSERT_NE(ActorUiTabController::From(normal_browser->browser_window_features()
+                                           ->tab_strip_model()
+                                           ->GetActiveTab()),
             nullptr);
 
   // Popup window
   Browser* const popup_browser = CreateBrowserForPopup(profile);
   ASSERT_EQ(ActorOverlayWindowController::From(popup_browser), nullptr);
-  ASSERT_EQ(popup_browser->browser_window_features()
-                ->tab_strip_model()
-                ->GetActiveTab()
-                ->GetTabFeatures()
-                ->actor_ui_tab_controller(),
+  ASSERT_EQ(ActorUiTabController::From(popup_browser->browser_window_features()
+                                           ->tab_strip_model()
+                                           ->GetActiveTab()),
             nullptr);
 
   // App window
   Browser* const app_browser = CreateBrowserForApp("test_app_name", profile);
   ASSERT_EQ(ActorOverlayWindowController::From(app_browser), nullptr);
-  ASSERT_EQ(app_browser->browser_window_features()
-                ->tab_strip_model()
-                ->GetActiveTab()
-                ->GetTabFeatures()
-                ->actor_ui_tab_controller(),
+  ASSERT_EQ(ActorUiTabController::From(app_browser->browser_window_features()
+                                           ->tab_strip_model()
+                                           ->GetActiveTab()),
             nullptr);
 
   // Picture-in-Picture window
@@ -182,11 +176,8 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, SendStartEventAndStopEvent) {
   tabs::TabHandle tab_handle =
       browser()->tab_strip_model()->GetActiveTab()->GetHandle();
   TestFuture<void> future;
-  ActorUiTabControllerInterface* controller = browser()
-                                                  ->tab_strip_model()
-                                                  ->GetActiveTab()
-                                                  ->GetTabFeatures()
-                                                  ->actor_ui_tab_controller();
+  ActorUiTabControllerInterface* controller =
+      ActorUiTabController::From(browser()->tab_strip_model()->GetActiveTab());
   controller->SetCallbackForTesting(future.GetCallback());
   TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(StartingToActOnTab(tab_handle, TaskId(1)),
@@ -212,11 +203,8 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayHidesOnTabBackgrounding) {
       browser()->tab_strip_model()->GetActiveTab()->GetHandle();
   // Set up callback logic.
   TestFuture<void> future;
-  ActorUiTabControllerInterface* controller = browser()
-                                                  ->tab_strip_model()
-                                                  ->GetActiveTab()
-                                                  ->GetTabFeatures()
-                                                  ->actor_ui_tab_controller();
+  ActorUiTabControllerInterface* controller =
+      ActorUiTabController::From(browser()->tab_strip_model()->GetActiveTab());
   controller->SetCallbackForTesting(future.GetCallback());
   TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(StartingToActOnTab(tab_handle, TaskId(1)),
@@ -254,8 +242,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
 
   // Set up callback logic after tab_2 is created.
   TestFuture<void> future;
-  ActorUiTabControllerInterface* controller =
-      tab_2->GetTabFeatures()->actor_ui_tab_controller();
+  ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab_2);
   controller->SetCallbackForTesting(future.GetCallback());
 
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
@@ -346,8 +333,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
   ASSERT_NE(tab_1, nullptr);
   // Set up callback logic after tab_1 is created.
   TestFuture<void> future;
-  ActorUiTabControllerInterface* controller =
-      tab_1->GetTabFeatures()->actor_ui_tab_controller();
+  ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab_1);
   controller->SetCallbackForTesting(future.GetCallback());
   TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(StartingToActOnTab(tab_1->GetHandle(), TaskId(1)),
@@ -441,31 +427,25 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayDisabledTest,
   // is still enabled.
   Browser* const normal_browser = browser();
   ASSERT_EQ(ActorOverlayWindowController::From(normal_browser), nullptr);
-  ASSERT_NE(normal_browser->browser_window_features()
-                ->tab_strip_model()
-                ->GetActiveTab()
-                ->GetTabFeatures()
-                ->actor_ui_tab_controller(),
+  ASSERT_NE(ActorUiTabController::From(normal_browser->browser_window_features()
+                                           ->tab_strip_model()
+                                           ->GetActiveTab()),
             nullptr);
 
   // Popup window
   Browser* const popup_browser = CreateBrowserForPopup(profile);
   ASSERT_EQ(ActorOverlayWindowController::From(popup_browser), nullptr);
-  ASSERT_EQ(popup_browser->browser_window_features()
-                ->tab_strip_model()
-                ->GetActiveTab()
-                ->GetTabFeatures()
-                ->actor_ui_tab_controller(),
+  ASSERT_EQ(ActorUiTabController::From(popup_browser->browser_window_features()
+                                           ->tab_strip_model()
+                                           ->GetActiveTab()),
             nullptr);
 
   // App window
   Browser* const app_browser = CreateBrowserForApp("test_app_name", profile);
   ASSERT_EQ(ActorOverlayWindowController::From(app_browser), nullptr);
-  ASSERT_EQ(app_browser->browser_window_features()
-                ->tab_strip_model()
-                ->GetActiveTab()
-                ->GetTabFeatures()
-                ->actor_ui_tab_controller(),
+  ASSERT_EQ(ActorUiTabController::From(app_browser->browser_window_features()
+                                           ->tab_strip_model()
+                                           ->GetActiveTab()),
             nullptr);
 
   // Picture-in-Picture window

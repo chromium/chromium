@@ -24,8 +24,6 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // ActorUiStateManagerInterface:
   void OnUiEvent(AsyncUiEvent event, UiCompleteCallback callback) override;
   void OnUiEvent(SyncUiEvent event) override;
-  ActorUiTabControllerInterface* GetUiTabController(
-      tabs::TabInterface* tab) override;
   void MaybeShowToast(BrowserWindowInterface* bwi) override;
 
   base::CallbackListSubscription RegisterActorTaskStateChange(

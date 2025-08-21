@@ -252,11 +252,6 @@ class TabFeatures {
 
   TabUIHelper* tab_ui_helper() { return tab_ui_helper_.get(); }
 
-  // actor_ui_tab_controller_ is only initialized for normal browser windows
-  actor::ui::ActorUiTabControllerInterface* actor_ui_tab_controller() const {
-    return actor_ui_tab_controller_.get();
-  }
-
   // Note: Temporary until there is a more uniform way to swap out features for
   // testing.
   TabResourceUsageTabHelper* SetResourceUsageHelperForTesting(

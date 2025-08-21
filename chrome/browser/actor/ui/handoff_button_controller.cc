@@ -251,7 +251,7 @@ tabs::TabDialogManager* HandoffButtonController::GetTabDialogManager() {
 }
 
 ActorUiTabControllerInterface* HandoffButtonController::GetTabController() {
-  return tab_interface_->GetTabFeatures()->actor_ui_tab_controller();
+  return ActorUiTabControllerInterface::From(&tab_interface_.get());
 }
 
 }  // namespace actor::ui

@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -78,7 +79,7 @@ TabAlertController::TabAlertController(TabInterface& tab)
               base::Unretained(this)));
 
   if (auto* actor_ui_tab_controller =
-          tab.GetTabFeatures()->actor_ui_tab_controller()) {
+          actor::ui::ActorUiTabController::From(&tab)) {
     callback_subscriptions_.emplace_back(
         actor_ui_tab_controller->RegisterActorTabIndicatorStateChangedCallback(
             base::BindRepeating(

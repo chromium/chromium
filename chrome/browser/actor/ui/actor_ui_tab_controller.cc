@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
@@ -41,7 +42,8 @@ ActorUiTabController::ActorUiTabController(
     tabs::TabInterface& tab,
     ActorKeyedService* actor_service,
     std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory)
-    : tab_(tab),
+    : ActorUiTabControllerInterface(tab),
+      tab_(tab),
       actor_keyed_service_(actor_service),
       controller_factory_(std::move(controller_factory)),
       update_ui_debounce_timer_(
@@ -67,10 +69,6 @@ void ActorUiTabController::RegisterTabSubscriptions() {
   tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
       base::BindRepeating(&ActorUiTabController::OnTabActiveStatusChanged,
                           weak_factory_.GetWeakPtr(), /*is_activated=*/false)));
-}
-
-ActorUiTabController* ActorUiTabController::From(tabs::TabInterface* tab) {
-  return Get(tab->GetUnownedUserDataHost());
 }
 
 void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,
@@ -257,6 +255,10 @@ void ActorUiTabController::SetCallbackForTesting(base::OnceClosure callback) {
 base::WeakPtr<ActorUiTabControllerInterface>
 ActorUiTabController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+UiTabState ActorUiTabController::GetCurrentUiTabState() const {
+  return current_ui_tab_state_;
 }
 
 }  // namespace actor::ui

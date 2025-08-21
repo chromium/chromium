@@ -36,9 +36,6 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   virtual void BindOverlay(
       mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver);
 
-  // Returns the tab-specific ActorUiTabController.
-  virtual ActorUiTabControllerInterface* GetTabController();
-
   // Updates the visibility and state of the Actor Overlay for this tab. Called
   // by ActorUiTabController when the tab's active status or foreground status
   // changes. It orchestrates the creation, showing, or hiding of the overlay

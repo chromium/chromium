@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/ui/actor_overlay_view_controller.h"
 
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -35,15 +36,12 @@ void ActorOverlayViewController::BindOverlay(
   receiver_.Bind(std::move(receiver));
 }
 
-ActorUiTabControllerInterface* ActorOverlayViewController::GetTabController() {
-  return tab_interface_->GetTabFeatures()->actor_ui_tab_controller();
-}
-
 // TODO(crbug.com/422540636): Might not be sufficient to determine when the
 // handoff button should be visible. Look into ways of tracking mouse movements
 // directly.
 void ActorOverlayViewController::OnHoverStatusChanged(bool is_hovering) {
-  GetTabController()->SetOverlayHoverStatus(is_hovering);
+  ActorUiTabControllerInterface::From(&tab_interface_.get())
+      ->SetOverlayHoverStatus(is_hovering);
 }
 
 void ActorOverlayViewController::UpdateState(const ActorOverlayState& state,

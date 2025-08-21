@@ -28,11 +28,6 @@ class ActorUiStateManagerInterface {
   // Handles a UiEvent that must be processed synchronously.
   virtual void OnUiEvent(SyncUiEvent event) = 0;
 
-  // Gets the relevant UiTabController if the `tab`
-  // exists. Can be stubbed out to do nothing in tests.
-  virtual ActorUiTabControllerInterface* GetUiTabController(
-      tabs::TabInterface* tab) = 0;
-
   // Shows toast that notifies user the Actor is working in the background.
   // Shows a maximum of kToastShownMax per profile.
   virtual void MaybeShowToast(BrowserWindowInterface* bwi) = 0;

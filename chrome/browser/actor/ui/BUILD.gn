@@ -33,6 +33,7 @@ source_set("ui") {
     "actor_ui_state_manager_prefs.h",
     "actor_ui_tab_controller.cc",
     "actor_ui_tab_controller.h",
+    "actor_ui_tab_controller_interface.cc",
     "actor_ui_tab_controller_interface.h",
     "handoff_button_controller.cc",
     "handoff_button_controller.h",
@@ -128,6 +129,8 @@ source_set("test_support") {
   testonly = true
   public_deps = [
     "//base",
+    "//chrome/browser/ui:test_support",
+    "//components/tabs:test_support",
     "//testing/gmock",
   ]
   deps = [

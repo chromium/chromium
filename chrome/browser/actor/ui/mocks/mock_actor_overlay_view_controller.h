@@ -20,7 +20,6 @@ class MockActorOverlayViewController : public ActorOverlayViewController {
               BindOverlay,
               (mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver),
               (override));
-  MOCK_METHOD(ActorUiTabControllerInterface*, GetTabController, (), (override));
   MOCK_METHOD(void,
               UpdateState,
               (const ActorOverlayState& state, bool is_visible),

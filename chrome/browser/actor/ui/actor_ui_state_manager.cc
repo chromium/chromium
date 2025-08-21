@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -69,9 +70,9 @@ struct TabUiUpdate {
 
 auto GetNewUiStateFn(ActorUiStateManager& manager) {
   return absl::Overload{
-      [&manager](const StartingToActOnTab& e) -> TabUiUpdate {
+      [](const StartingToActOnTab& e) -> TabUiUpdate {
         auto* tab = e.tab_handle.Get();
-        if (auto* tab_controller = manager.GetUiTabController(tab)) {
+        if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
           tab_controller->SetActiveTaskId(e.task_id);
         }
         return TabUiUpdate{tab, GetActorControlledUiTabState()};
@@ -151,7 +152,7 @@ void ActorUiStateManager::OnActorTaskStateChange(
       break;
   }
   for (const auto& tab : GetTabs(task_id)) {
-    if (auto* tab_controller = GetUiTabController(tab)) {
+    if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
       tab_controller->OnUiTabStateChange(ui_tab_state,
                                          base::BindOnce(&LogUiChangeError));
     }
@@ -161,18 +162,6 @@ void ActorUiStateManager::OnActorTaskStateChange(
       FROM_HERE, kProfileScopedUiUpdateDebounceDelay,
       base::BindOnce(&ActorUiStateManager::NotifyActorTaskStateChange,
                      weak_factory_.GetWeakPtr()));
-}
-
-ActorUiTabControllerInterface* ActorUiStateManager::GetUiTabController(
-    tabs::TabInterface* tab) {
-  if (!tab) {
-    LOG(ERROR) << "Tab does not exist.";
-    return nullptr;
-  }
-  auto* tab_controller = tab->GetTabFeatures()->actor_ui_tab_controller();
-  DCHECK(tab_controller)
-      << "TabController should always exist for a valid tab.";
-  return tab_controller;
 }
 
 std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
@@ -194,7 +183,8 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
                                     UiCompleteCallback callback) {
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     const TabUiUpdate update = std::visit(GetNewUiStateFn(*this), event);
-    if (auto* tab_controller = GetUiTabController(update.tab)) {
+    if (auto* tab_controller =
+            ActorUiTabControllerInterface::From(update.tab)) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
@@ -229,9 +219,10 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
           [this](const TaskStateChanged& e) {
             this->OnActorTaskStateChange(e.task_id, e.state);
           },
-          [this](const StoppedActingOnTab& e) {
+          [](const StoppedActingOnTab& e) {
             auto* tab = e.tab_handle.Get();
-            if (auto* tab_controller = GetUiTabController(tab)) {
+            if (auto* tab_controller =
+                    ActorUiTabControllerInterface::From(tab)) {
               tab_controller->ClearActiveTaskId();
               tab_controller->OnUiTabStateChange(
                   GetCompletedUiTabState(), base::BindOnce(&LogUiChangeError));

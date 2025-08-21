@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -31,9 +32,7 @@ using ::ui::MouseEvent;
 class TestHandoffButtonController : public HandoffButtonController {
  public:
   explicit TestHandoffButtonController(tabs::TabInterface& tab_interface)
-      : HandoffButtonController(tab_interface) {
-    mock_tab_controller_ = std::make_unique<MockActorUiTabController>();
-  }
+      : HandoffButtonController(tab_interface) {}
   ~TestHandoffButtonController() override = default;
 
   void SetWidgetAndButtonForTest(std::unique_ptr<HandoffButtonWidget> widget,
@@ -58,25 +57,25 @@ class TestHandoffButtonController : public HandoffButtonController {
     return update_visibility_call_count_;
   }
 
-  MockActorUiTabController* GetTabController() override {
-    return mock_tab_controller_.get();
-  }
-
   void PressButton() { OnButtonPressed(); }
 
  private:
   int close_button_call_count_ = 0;
   int update_bounds_call_count_ = 0;
   int update_visibility_call_count_ = 0;
-  std::unique_ptr<MockActorUiTabController> mock_tab_controller_;
 };
 
 class HandoffButtonControllerTest : public views::ViewsTestBase {
  public:
+  HandoffButtonControllerTest() {
+    MockActorUiTabController::SetupDefaultBrowserWindow(
+        mock_tab_, mock_browser_window_interface_, user_data_host_);
+    mock_actor_ui_tab_controller_.emplace(mock_tab_);
+  }
+
   void SetUp() override {
     views::ViewsTestBase::SetUp();
-    controller_ =
-        std::make_unique<TestHandoffButtonController>(mock_tab_interface_);
+    controller_ = std::make_unique<TestHandoffButtonController>(mock_tab_);
 
     parent_widget_ =
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -115,13 +114,20 @@ class HandoffButtonControllerTest : public views::ViewsTestBase {
     views::ViewsTestBase::TearDown();
   }
 
+  MockActorUiTabController* mock_actor_ui_tab_controller() {
+    return &mock_actor_ui_tab_controller_.value();
+  }
+
  protected:
   std::unique_ptr<views::Widget> parent_widget_;
   raw_ptr<HandoffButtonWidget> widget_;
   raw_ptr<views::LabelButton> button_ = nullptr;
   std::unique_ptr<views::WidgetDelegate> delegate_;
-  tabs::MockTabInterface mock_tab_interface_;
+  ::ui::UnownedUserDataHost user_data_host_;
+  tabs::MockTabInterface mock_tab_;
+  MockBrowserWindowInterface mock_browser_window_interface_;
   std::unique_ptr<TestHandoffButtonController> controller_;
+  std::optional<MockActorUiTabController> mock_actor_ui_tab_controller_;
 };
 
 TEST_F(HandoffButtonControllerTest,
@@ -173,7 +179,7 @@ TEST_F(HandoffButtonControllerTest,
   actor_state.controller = kActor;
   controller_->UpdateState(actor_state, /*is_visible=*/true);
 
-  EXPECT_CALL(*controller_->GetTabController(), SetActorTaskPaused());
+  EXPECT_CALL(*mock_actor_ui_tab_controller(), SetActorTaskPaused());
 
   controller_->PressButton();
 }
@@ -185,7 +191,7 @@ TEST_F(HandoffButtonControllerTest,
   client_state.controller = kClient;
   controller_->UpdateState(client_state, /*is_visible=*/true);
 
-  EXPECT_CALL(*controller_->GetTabController(), SetActorTaskResume());
+  EXPECT_CALL(*mock_actor_ui_tab_controller(), SetActorTaskResume());
 
   controller_->PressButton();
 }

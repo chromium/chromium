@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace actor::ui {
 class HandoffButtonController;
@@ -48,7 +49,9 @@ class ActorUiTabControllerFactoryInterface {
 
 class ActorUiTabControllerInterface {
  public:
-  virtual ~ActorUiTabControllerInterface() = default;
+  DECLARE_USER_DATA(ActorUiTabControllerInterface);
+  explicit ActorUiTabControllerInterface(tabs::TabInterface& tab);
+  virtual ~ActorUiTabControllerInterface();
 
   // Called whenever the UiTabState changes. These calls will be debounced by a
   // kUpdateUiDebounceDelay period of time. This means the callback will always
@@ -92,11 +95,21 @@ class ActorUiTabControllerInterface {
   // Sets a callback to run when the controller is idle, for tests.
   virtual void SetCallbackForTesting(base::OnceClosure callback) = 0;
 
+  // Retrieves an ActorUiTabControllerInterface from the provided tab, or
+  // nullptr if it does not exist.
+  static ActorUiTabControllerInterface* From(tabs::TabInterface* tab);
+  // Returns the current UiTabState.
+  virtual UiTabState GetCurrentUiTabState() const = 0;
+
   using ActorTabIndicatorStateChangedCallback =
       base::RepeatingCallback<void(bool)>;
   virtual base::CallbackListSubscription
   RegisterActorTabIndicatorStateChangedCallback(
       ActorTabIndicatorStateChangedCallback callback) = 0;
+
+ private:
+  ::ui::ScopedUnownedUserData<ActorUiTabControllerInterface>
+      scoped_unowned_user_data_;
 };
 
 }  // namespace actor::ui
