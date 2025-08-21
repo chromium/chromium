@@ -30,8 +30,6 @@ enum class NonStandardGroupId;
 
 namespace blink {
 
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(WebRtcUnshipDeprecatedStats);
-
 // A thin wrapper around a webrtc::RTCStatsReport.
 // TODO(https://crbug.com/1443999): Delete this class, it does not provide any
 // value anymore and blink is allowed to use webrtc classes directly.
