@@ -127,4 +127,7 @@ const char kWebViewStartupTasksYieldToNative[] =
 
 const char kWebViewUseBackgroundThreadForGms[] =
     "webview-use-background-thread-for-gms";
+
+const char kStartupNonBlockingWebViewConstructor[] =
+    "startup-non-blocking-webview-constructor";
 }  // namespace switches

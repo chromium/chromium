@@ -70,8 +70,10 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.R;
+import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
@@ -740,8 +742,13 @@ class WebViewChromium
 
             // Needed for https://crbug.com/1417872
             mWebView.setDefaultFocusHighlightEnabled(false);
+            if (CommandLine.getInstance()
+                    .hasSwitch(AwSwitches.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR)) {
+                mAwInit.postChromiumStartupIfNeeded(CallSite.WEBVIEW_INSTANCE);
+            } else {
+                mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
+            }
 
-            mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 // Check that the current thread is the UI thread, which will throw if it was
                 // already started using a different thread as the UI thread.

@@ -810,7 +810,7 @@ public class WebViewChromiumAwInit {
      * <p>Postcondition: Chromium startup is finished when this method returns.
      */
     void triggerAndWaitForChromiumStarted(@CallSite int callSite) {
-        if (triggerChromiumStartupAndReturnTrueIfStartupIsFinished(callSite)) {
+        if (triggerChromiumStartupAndReturnTrueIfStartupIsFinished(callSite, false)) {
             return;
         }
         // For threadSafe WebView APIs that can trigger startup, holding a lock while waiting for
@@ -843,16 +843,33 @@ public class WebViewChromiumAwInit {
     }
 
     /**
-     * Triggers Chromium startup. Directly runs startup if called from the UI thread, else, posts
-     * startup to the UI thread to be completed in the near future.
+     * If UI thread is not set, Android main looper will be set as the UI thread.
      *
-     * <p>If UI thread is not set, Android main looper will be set as the UI thread.
+     * <p>Postcondition: Chromium startup will be finished in the near future.
+     */
+    void postChromiumStartupIfNeeded(@CallSite int callSite) {
+        if (triggerChromiumStartupAndReturnTrueIfStartupIsFinished(callSite, true)) {
+            return;
+        }
+    }
+
+    /**
+     * Triggers Chromium startup.
+     *
+     * <p>If `alwaysPost` is true, startup is always posted to the UI thread.
+     *
+     * <p>If `alwaysPost` is false, startup is posted to UI thread if not called on the UI thread
+     * and startup will be run synchronously if called on the UI thread.
+     *
+     * <p>If the UI thread is not set explicitly before calling this method, the main looper is
+     * chosen as the UI thread.
      *
      * @returns true if Chromium startup if finished, false if startup will be finished in the near
      *     future. If false, caller may choose to wait on the {@code mStartupFinished} latch, or
      *     {@link WebViewStartUpCallback}.
      */
-    private boolean triggerChromiumStartupAndReturnTrueIfStartupIsFinished(@CallSite int callSite) {
+    private boolean triggerChromiumStartupAndReturnTrueIfStartupIsFinished(
+            @CallSite int callSite, boolean alwaysPost) {
         if (mInitState.get() == INIT_FINISHED) { // Early-out for the common case.
             return true;
         }
@@ -860,12 +877,11 @@ public class WebViewChromiumAwInit {
                 ScopedSysTraceEvent.scoped(
                         "WebViewChromiumFactoryProvider.triggerChromiumStartupAndReturnTrueIfStartupIsFinished")) {
             maybeSetChromiumUiThread(Looper.getMainLooper());
+            boolean runSynchronously = !alwaysPost && ThreadUtils.runningOnUiThread();
             mChromiumFirstStartupRequestMode.compareAndSet(
                     StartupTasksRunner.UNSET,
-                    ThreadUtils.runningOnUiThread()
-                            ? StartupTasksRunner.SYNC
-                            : StartupTasksRunner.ASYNC);
-            if (ThreadUtils.runningOnUiThread()) {
+                    runSynchronously ? StartupTasksRunner.SYNC : StartupTasksRunner.ASYNC);
+            if (runSynchronously) {
                 mWebViewStartUpDiagnostics.setSynchronousChromiumInitLocation(
                         new Throwable(
                                 "Location where Chromium init was started synchronously on the UI"
@@ -1069,7 +1085,7 @@ public class WebViewChromiumAwInit {
                     }
                     callback.onSuccess(mWebViewStartUpDiagnostics);
                 });
-        triggerChromiumStartupAndReturnTrueIfStartupIsFinished(CallSite.ASYNC_WEBVIEW_STARTUP);
+        postChromiumStartupIfNeeded(CallSite.ASYNC_WEBVIEW_STARTUP);
     }
 
     @Retention(RetentionPolicy.SOURCE)
