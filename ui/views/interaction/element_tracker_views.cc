@@ -37,6 +37,13 @@ gfx::Rect TrackedElementViews::GetScreenBounds() const {
   return view()->GetBoundsInScreen();
 }
 
+gfx::NativeView TrackedElementViews::GetNativeView() const {
+  if (!view()->GetWidget()) {
+    return gfx::NativeView();
+  }
+  return view()->GetWidget()->GetNativeView();
+}
+
 std::string TrackedElementViews::ToString() const {
   auto result = TrackedElement::ToString();
   result.append(" with view ");

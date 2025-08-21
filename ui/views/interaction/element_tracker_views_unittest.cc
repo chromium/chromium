@@ -777,6 +777,34 @@ TEST_F(ElementTrackerViewsTest, AssignTemporaryId) {
                          ui::ElementTracker::kTemporaryIdentifier, context()));
 }
 
+TEST_F(ElementTrackerViewsTest, GetNativeView) {
+  // A view not in a widget has no native view.
+  auto button = std::make_unique<LabelButton>();
+  TrackedElementViews element_no_widget(button.get(), kTestElementID,
+                                        ui::ElementContext());
+  EXPECT_EQ(gfx::NativeView(), element_no_widget.GetNativeView());
+
+  // Once added to a widget, it should have the widget's native view.
+  auto* button_in_widget = widget_->SetContentsView(std::move(button));
+  EXPECT_EQ(widget_->GetNativeView(), element_no_widget.GetNativeView());
+
+  // The element returned from the tracker should also have the correct native
+  // view.
+  button_in_widget->SetProperty(kElementIdentifierKey, kTestElementID);
+  TrackedElementViews* tracked_element =
+      ElementTrackerViews::GetInstance()->GetElementForView(button_in_widget);
+  ASSERT_NE(nullptr, tracked_element);
+  EXPECT_EQ(widget_->GetNativeView(), tracked_element->GetNativeView());
+}
+
+TEST_F(ElementTrackerViewsTest, TestElementSetAndGetNativeView) {
+  ui::test::TestElement e(kTestElementID, context());
+  EXPECT_EQ(gfx::NativeView(), e.GetNativeView());
+  gfx::NativeView view = widget_->GetNativeView();
+  e.SetNativeView(view);
+  EXPECT_EQ(view, e.GetNativeView());
+}
+
 // The following tests ensure conformity with the different platforms' Views
 // implementation to ensure that Views are reported as visible to the user at
 // the correct times, including during Widget close/delete.

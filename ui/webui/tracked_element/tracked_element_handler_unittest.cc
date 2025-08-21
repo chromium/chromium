@@ -21,6 +21,9 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/widget.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
@@ -34,14 +37,17 @@ constexpr gfx::RectF kElementBounds{10, 20, 30, 40};
 
 }  // namespace
 
-class TrackedElementHandlerTest : public testing::Test {
+class TrackedElementHandlerTest : public views::test::WidgetTest {
  public:
+  TrackedElementHandlerTest()
+      : views::test::WidgetTest(std::unique_ptr<base::test::TaskEnvironment>(
+            std::make_unique<content::BrowserTaskEnvironment>())) {}
   ~TrackedElementHandlerTest() override = default;
 
   void SetUp() override {
-    testing::Test::SetUp();
     content::SetBrowserClientForTesting(&test_browser_client_);
     rvh_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
+    views::test::WidgetTest::SetUp();
 
     browser_context_ = std::make_unique<content::TestBrowserContext>();
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
@@ -62,11 +68,7 @@ class TrackedElementHandlerTest : public testing::Test {
     web_contents_.reset();
     browser_context_.reset();
     rvh_enabler_.reset();
-    testing::Test::TearDown();
-  }
-
-  content::BrowserTaskEnvironment* task_environment() {
-    return &task_environment_;
+    views::test::WidgetTest::TearDown();
   }
 
  protected:
@@ -76,7 +78,6 @@ class TrackedElementHandlerTest : public testing::Test {
 
   TrackedElementHandler* handler() { return handler_.get(); }
 
-  content::BrowserTaskEnvironment task_environment_;
   content::ContentBrowserClient test_browser_client_;
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_enabler_;
   std::unique_ptr<content::BrowserContext> browser_context_;
@@ -230,6 +231,35 @@ TEST_F(TrackedElementHandlerTest, DestroyHandlerCleansUpElement) {
   tracked_element_handler_remote_.FlushForTesting();
   EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
       kTestElementIdentifier1, context));
+}
+
+TEST_F(TrackedElementHandlerTest, GetNativeView) {
+  handler_remote()->TrackedElementVisibilityChanged(
+      kTestElementIdentifier1.GetName(), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+  EXPECT_TRUE(element->IsA<TrackedElementWebUI>());
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::TYPE_WINDOW);
+  params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
+  widget->Init(std::move(params));
+  widget->Show();
+
+  auto* webview = widget->SetClientContentsView(
+      std::make_unique<views::WebView>(browser_context_.get()));
+  webview->SetWebContents(web_contents_.get());
+
+  // The element should return the native view of the widget.
+  EXPECT_EQ(widget->GetNativeView(), element->GetNativeView());
+
+  webview->SetWebContents(nullptr);
+  widget->CloseNow();
 }
 
 // TODO(crbug.com/40243115): add tests for element screen bounds. This requires

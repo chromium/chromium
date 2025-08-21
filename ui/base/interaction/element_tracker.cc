@@ -196,6 +196,10 @@ gfx::Rect TrackedElement::GetScreenBounds() const {
   return gfx::Rect();
 }
 
+gfx::NativeView TrackedElement::GetNativeView() const {
+  return gfx::NativeView();
+}
+
 std::string TrackedElement::ToString() const {
   std::ostringstream oss;
   oss << GetImplementationName() << "(" << identifier() << ", " << context()

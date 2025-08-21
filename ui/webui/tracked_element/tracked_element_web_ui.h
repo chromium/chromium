@@ -28,6 +28,7 @@ class TrackedElementWebUI : public ui::TrackedElement {
 
   // ui::TrackedElement:
   gfx::Rect GetScreenBounds() const override;
+  gfx::NativeView GetNativeView() const override;
 
  private:
   friend class TrackedElementHandler;

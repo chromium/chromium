@@ -37,6 +37,7 @@ class VIEWS_EXPORT TrackedElementViews : public ui::TrackedElement {
 
   // TrackedElement:
   gfx::Rect GetScreenBounds() const override;
+  gfx::NativeView GetNativeView() const override;
   std::string ToString() const override;
 
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()

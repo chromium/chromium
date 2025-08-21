@@ -126,6 +126,7 @@ component("gfx") {
     "interpolated_transform.h",
     "monogram_utils.cc",
     "monogram_utils.h",
+    "native_window_util.h",
     "overlay_layer_id.cc",
     "overlay_layer_id.h",
     "overlay_plane_data.cc",
@@ -203,6 +204,7 @@ component("gfx") {
       "mac/nswindow_frame_controls.mm",
       "mac/scoped_cocoa_disable_screen_updates.h",
       "mac/scoped_cocoa_disable_screen_updates.mm",
+      "native_window_util_mac.mm",
       "platform_font_mac.h",
       "platform_font_mac.mm",
       "scoped_cg_context_save_gstate_mac.h",
@@ -447,6 +449,10 @@ component("gfx") {
       "nine_image_painter.cc",
       "nine_image_painter.h",
     ]
+  }
+
+  if (use_aura) {
+    sources += [ "native_window_util_aura.cc" ]
   }
 }
 

@@ -20,6 +20,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ui {
 
@@ -62,6 +63,10 @@ class COMPONENT_EXPORT(UI_BASE) TrackedElement
   // implementations that need to do additional tracking can implement their own
   // methods.
   virtual gfx::Rect GetScreenBounds() const;
+
+  // Returns the native view associated with this element, if any. This view is
+  // used as the parent window for anchoring secondary UIs.
+  virtual gfx::NativeView GetNativeView() const;
 
   // FrameworkSpecificImplementation:
   std::string ToString() const override;
