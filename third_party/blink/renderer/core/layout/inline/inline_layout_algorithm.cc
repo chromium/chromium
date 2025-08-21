@@ -304,7 +304,13 @@ class LineFitter {
 
  public:
   LineFitter(const InlineNode node, LineInfo* line_info)
-      : node_(node), line_info_(*line_info) {}
+      : node_(node),
+        line_info_(*line_info),
+        items_data_(node_.ItemsData(line_info->UseFirstLineStyle())),
+        shaper_(items_data_.text_content),
+        spacing_(items_data_.text_content),
+        device_pixel_ratio_(node.GetDocument().GetFrame()->DevicePixelRatio()),
+        epsilon_(2.0 * device_pixel_ratio_) {}
 
   // Updates text scaling factor of InlineItemResults in `line_info`.
   // Returns true if LogicalLineBuilder needs to scale line-height.
@@ -313,16 +319,18 @@ class LineFitter {
  private:
   const InlineNode node_;
   LineInfo& line_info_;
+  const InlineItemsData& items_data_;
+  HarfBuzzShaper shaper_;
+  ShapeResultSpacing<String> spacing_;
+  const double device_pixel_ratio_;
+  const LayoutUnit epsilon_;
 };
 
 bool LineFitter::FitLine() {
-  const double device_pixel_ratio =
-      node_.GetDocument().GetFrame()->DevicePixelRatio();
-  LayoutUnit epsilon = LayoutUnit(2.0 * device_pixel_ratio);
   LayoutUnit original_width = line_info_.Width();
   LayoutUnit container_width = line_info_.AvailableWidth();
   LayoutUnit diff = container_width - original_width;
-  if (diff.Abs() < epsilon) {
+  if (diff.Abs() < epsilon_) {
     return false;
   }
   const FitText& text_grow = node_.Style().TextGrow();
@@ -339,18 +347,15 @@ bool LineFitter::FitLine() {
   // Measure the static parts and the flexible parts in the items.
   LayoutUnit static_total_size;
   LayoutUnit flexible_total_size;
-  const auto& items_data = node_.ItemsData(line_info_.UseFirstLineStyle());
-  HarfBuzzShaper shaper(items_data.text_content);
-  ShapeResultSpacing<String> spacing(items_data.text_content);
   // TODO(crbug.com/4173061029): Apply TextAutoSpace as well as letter-spacing
   // and word-spacing.
   for (auto& item : *line_info_.MutableResults()) {
     if (item.item->Type() == InlineItem::kText) {
       if (fit_text.Method() == FitTextMethod::kFontSize &&
-          spacing.SetSpacing(item.item->Style()->GetFontDescription())) {
+          spacing_.SetSpacing(item.item->Style()->GetFontDescription())) {
         ShapeResult* nospacing_shape =
-            ShapeForFit(item, shaper, *item.item->Style()->GetFont(),
-                        items_data.segments.get());
+            ShapeForFit(item, shaper_, *item.item->Style()->GetFont(),
+                        items_data_.segments.get());
         LayoutUnit size = nospacing_shape->SnappedWidth().ClampNegativeToZero();
         flexible_total_size += size;
         static_total_size += item.inline_size - size;
@@ -371,7 +376,7 @@ bool LineFitter::FitLine() {
   if (!is_grow) {
     if (const auto* settings = node_.GetDocument().GetSettings()) {
       if (int min_size = settings->GetMinimumFontSize(); min_size > 0) {
-        float physical_min = min_size * device_pixel_ratio;
+        float physical_min = min_size * device_pixel_ratio_;
         limit = limit ? std::max(*limit, physical_min) : physical_min;
       }
     }
@@ -412,12 +417,12 @@ bool LineFitter::FitLine() {
                                     item_scale);
         Font* scaled_font =
             MakeGarbageCollected<Font>(scaled_desc, font.GetFontSelector());
-        ShapeResult* shape_result =
-            ShapeForFit(item, shaper, *scaled_font, items_data.segments.get());
+        ShapeResult* shape_result = ShapeForFit(item, shaper_, *scaled_font,
+                                                items_data_.segments.get());
         LayoutUnit size_without_spacing =
             shape_result->SnappedWidth().ClampNegativeToZero();
-        if (spacing.SetSpacing(scaled_desc)) {
-          shape_result->ApplySpacing(spacing);
+        if (spacing_.SetSpacing(scaled_desc)) {
+          shape_result->ApplySpacing(spacing_);
           item.inline_size = shape_result->SnappedWidth().ClampNegativeToZero();
         } else {
           item.inline_size = size_without_spacing;
@@ -435,7 +440,7 @@ bool LineFitter::FitLine() {
       // scaling for an item was restricted by specifying a minimum or maximum
       // value.
       if (!restricted &&
-          (container_width - line_info_.ComputeWidth()).Abs() >= epsilon) {
+          (container_width - line_info_.ComputeWidth()).Abs() >= epsilon_) {
         scale_factor =
             (container_width - static_total_size) / flexible_total_size;
         ScaleLine(is_grow, scale_factor, /* is_scaled_inline_only */ false,
