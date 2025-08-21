@@ -39,6 +39,10 @@
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/system_headers/linux_time.h"
 
+#if !defined(MAP_DROPPABLE)
+#define MAP_DROPPABLE 0x08  // Zero memory under memory pressure.
+#endif
+
 #if BUILDFLAG(IS_LINUX) && !defined(__arm__) && !defined(__aarch64__) && \
     !defined(PTRACE_GET_THREAD_AREA)
 // Also include asm/ptrace-abi.h since ptrace.h in older libc (for instance
@@ -238,10 +242,14 @@ ResultExpr RestrictMmapFlags() {
   const uint64_t kArchSpecificAllowedMask = 0;
 #endif
   // The flags MAP_HUGETLB and MAP_POPULATE are specifically not permitted.
+  // MAP_DROPPABLE originally added for getrandom() vDSO implementation:
+  // https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/lib/vdso/getrandom.c#n86
+  // ...for which glibc support landed in 2.41:
+  // https://sourceware.org/git/?p=glibc.git;a=commit;h=461cab1de747f3842f27a5d24977d78d561d45f9
   // TODO(davidung), remove MAP_DENYWRITE with updated Tegra libraries.
   const uint64_t kAllowedMask = MAP_SHARED | MAP_PRIVATE | MAP_ANONYMOUS |
                                 MAP_STACK | MAP_NORESERVE | MAP_FIXED |
-                                MAP_DENYWRITE | MAP_LOCKED |
+                                MAP_DENYWRITE | MAP_LOCKED | MAP_DROPPABLE |
                                 kArchSpecificAllowedMask;
   const Arg<int> flags(3);
   return If((flags & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS());
