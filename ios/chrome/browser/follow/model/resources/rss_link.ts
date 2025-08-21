@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * @fileoverview Functions used to parse RSS links from a web page.
@@ -27,4 +27,6 @@ function getRSSLinks(): string[] {
   return rssLinks;
 }
 
-gCrWebLegacy.rssLink = {getRSSLinks};
+const rssLinkApi = new CrWebApi();
+rssLinkApi.addFunction('getRSSLinks', getRSSLinks);
+gCrWeb.registerApi('rssLink', rssLinkApi);
