@@ -42,6 +42,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /** Coordinator for the bookmark bar which provides users with bookmark access from top chrome. */
 @NullMarked
@@ -59,6 +60,9 @@ public class BookmarkBarCoordinator
     private final Callback<@Nullable Void> mHeightChangeCallback;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ViewResourceFrameLayout mViewResourceFrameLayout;
+    private final ViewResourceAdapter mViewResourceAdapter;
+    private boolean mIsResourceRegistered;
+    private final BookmarkBarSceneLayer mBookmarkBarSceneLayer;
 
     // Tracks whether or not the bookmark bar should be shown at all. We keep this state in addition
     // to setting visibility directly on |mView| because we need to differentiate the Android
@@ -90,6 +94,11 @@ public class BookmarkBarCoordinator
             TopControlsStacker topControlsStacker) {
         mView = (BookmarkBar) viewStub.inflate();
         mViewResourceFrameLayout = mView.findViewById(R.id.bookmark_bar_view_resource_frame_layout);
+        mViewResourceAdapter = mViewResourceFrameLayout.getResourceAdapter();
+        registerResource();
+
+        mBookmarkBarSceneLayer = new BookmarkBarSceneLayer(mViewResourceFrameLayout.getId());
+        mBookmarkBarSceneLayer.setVisibility(true);
 
         mHeightChangeCallback = heightChangeCallback;
         mView.addOnLayoutChangeListener(this);
@@ -178,6 +187,29 @@ public class BookmarkBarCoordinator
         mMediator.destroy();
         mView.removeOnLayoutChangeListener(this);
         mBrowserControlsStateProvider.removeObserver(this);
+        if (mIsResourceRegistered) unregisterResource();
+        mBookmarkBarSceneLayer.setVisibility(false);
+    }
+
+    private void registerResource() {
+        if (mIsResourceRegistered) return;
+
+        // TODO(crbug.com/430058443): Register with ResourceManager.
+
+        mIsResourceRegistered = true;
+    }
+
+    private void unregisterResource() {
+        if (!mIsResourceRegistered) return;
+        mViewResourceAdapter.dropCachedBitmap();
+
+        // TODO(crbug.com/430058443): Unregister with ResourceManager.
+
+        mIsResourceRegistered = false;
+    }
+
+    public BookmarkBarSceneLayer getSceneLayer() {
+        return mBookmarkBarSceneLayer;
     }
 
     public boolean isVisible() {
@@ -187,6 +219,12 @@ public class BookmarkBarCoordinator
     public void setVisibility(boolean isVisible) {
         mShouldBookmarkBarBeShown = isVisible;
         mMediator.setVisibility(isVisible);
+        mBookmarkBarSceneLayer.setVisibility(isVisible);
+        if (!isVisible) {
+            unregisterResource();
+        } else {
+            registerResource();
+        }
     }
 
     /** Requests focus within the bookmark bar. */

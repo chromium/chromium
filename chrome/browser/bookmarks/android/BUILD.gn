@@ -95,6 +95,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManager.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProvider.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarProperties.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSceneLayer.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarViewBinder.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarVisibilityProvider.java",
@@ -127,6 +128,7 @@ android_library("java") {
     "//chrome/browser/sync/android:ui_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/favicon:java",
+    "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/toolbar:java",
@@ -163,6 +165,7 @@ android_library("java") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:ax_base_java",
+    "//ui/accessibility:keyboard_focus_java",
     "//ui/android:ui_java",
     "//url:url_java",
   ]
@@ -174,8 +177,10 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSceneLayer.java",
+  ]
 }
 
 java_cpp_enum("java_enum_srcjar") {
@@ -215,6 +220,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManagerTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProviderTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSceneLayerTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtilsTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarVisibilityProviderTest.java",
   ]

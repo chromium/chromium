@@ -78,6 +78,8 @@ public class BookmarkBarCoordinatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJniMock;
+
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private FaviconHelperJni mFaviconHelperJni;
     @Mock private Callback<Void> mHeightChangeCallback;
@@ -101,6 +103,7 @@ public class BookmarkBarCoordinatorTest {
         mModel = FakeBookmarkModel.createModel();
         mDesktopFolderId = mModel.getDesktopFolderId();
         mProfileSupplier = new ObservableSupplierImpl<>(mProfile);
+        BookmarkBarSceneLayerJni.setInstanceForTesting(mBookmarkBarSceneLayerJniMock);
 
         when(mFaviconHelperJni.init()).thenReturn(1L);
 

@@ -72,6 +72,8 @@ public class BookmarkBarRenderTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
 
+    @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJniMock;
+
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private Tab mCurrentTab;
     @Mock private BookmarkOpener mBookmarkOpener;
@@ -90,6 +92,7 @@ public class BookmarkBarRenderTest {
     public void setUp() {
         final Activity activity = mActivityTestRule.launchActivity(null);
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        BookmarkBarSceneLayerJni.setInstanceForTesting(mBookmarkBarSceneLayerJniMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final var contentView = new CoordinatorLayoutForPointer(activity, null);
