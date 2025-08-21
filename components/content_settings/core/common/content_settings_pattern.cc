@@ -676,7 +676,8 @@ GURL ContentSettingsPattern::ToRepresentativeUrl() const {
   return GURL();
 }
 
-ContentSettingsPattern::SchemeType ContentSettingsPattern::GetScheme() const {
+ContentSettingsPattern::SchemeType ContentSettingsPattern::GetSchemeType()
+    const {
   if (parts_.is_scheme_wildcard)
     return SCHEME_WILDCARD;
 
@@ -685,6 +686,10 @@ ContentSettingsPattern::SchemeType ContentSettingsPattern::GetScheme() const {
       return static_cast<SchemeType>(i);
   }
   return SCHEME_OTHER;
+}
+
+const std::string& ContentSettingsPattern::GetScheme() const {
+  return parts_.scheme;
 }
 
 const std::string& ContentSettingsPattern::GetHost() const {

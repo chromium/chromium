@@ -371,10 +371,11 @@ bool IsPatternValidForType(const std::string& pattern_string,
   // WebUI permissions are controlled by ContentSettingsRegistry
   // AllowlistedSchemes and WebUIAllowlist. Users shouldn't be able to grant
   // extra permissions or revoke existing permissions.
-  if (pattern.GetScheme() == ContentSettingsPattern::SCHEME_CHROME ||
-      pattern.GetScheme() == ContentSettingsPattern::SCHEME_CHROMEUNTRUSTED ||
-      pattern.GetScheme() == ContentSettingsPattern::SCHEME_DEVTOOLS ||
-      pattern.GetScheme() == ContentSettingsPattern::SCHEME_CHROMESEARCH) {
+  if (pattern.GetSchemeType() == ContentSettingsPattern::SCHEME_CHROME ||
+      pattern.GetSchemeType() ==
+          ContentSettingsPattern::SCHEME_CHROMEUNTRUSTED ||
+      pattern.GetSchemeType() == ContentSettingsPattern::SCHEME_DEVTOOLS ||
+      pattern.GetSchemeType() == ContentSettingsPattern::SCHEME_CHROMESEARCH) {
     *out_error = l10n_util::GetStringUTF8(IDS_SETTINGS_NOT_VALID_WEB_ADDRESS);
     return false;
   }

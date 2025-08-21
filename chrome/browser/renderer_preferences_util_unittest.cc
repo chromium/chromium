@@ -104,9 +104,9 @@ TEST_F(RendererPreferencesUtilTest, WebRTCIPHandlingURLValidEntries) {
 
   ASSERT_EQ(renderer_preferences.webrtc_ip_handling_urls.size(), 2u);
 
-  EXPECT_EQ(
-      renderer_preferences.webrtc_ip_handling_urls[0].url_pattern.GetScheme(),
-      ContentSettingsPattern::SCHEME_WILDCARD);
+  EXPECT_EQ(renderer_preferences.webrtc_ip_handling_urls[0]
+                .url_pattern.GetSchemeType(),
+            ContentSettingsPattern::SCHEME_WILDCARD);
   EXPECT_EQ(
       renderer_preferences.webrtc_ip_handling_urls[0].url_pattern.GetHost(),
       "example.com");
@@ -118,9 +118,9 @@ TEST_F(RendererPreferencesUtilTest, WebRTCIPHandlingURLValidEntries) {
   EXPECT_EQ(renderer_preferences.webrtc_ip_handling_urls[0].handling,
             blink::mojom::WebRtcIpHandlingPolicy::kDisableNonProxiedUdp);
 
-  EXPECT_EQ(
-      renderer_preferences.webrtc_ip_handling_urls[1].url_pattern.GetScheme(),
-      ContentSettingsPattern::SCHEME_WILDCARD);
+  EXPECT_EQ(renderer_preferences.webrtc_ip_handling_urls[1]
+                .url_pattern.GetSchemeType(),
+            ContentSettingsPattern::SCHEME_WILDCARD);
   EXPECT_EQ(
       renderer_preferences.webrtc_ip_handling_urls[1].url_pattern.GetHost(),
       "google.com");

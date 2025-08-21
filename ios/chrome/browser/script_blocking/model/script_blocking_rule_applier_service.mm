@@ -18,15 +18,52 @@
 #import "components/fingerprinting_protection_filter/ios/content_rule_list_data.h"
 #import "components/privacy_sandbox/tracking_protection_settings.h"
 #import "ios/web/public/content_manager/content_rule_list_manager.h"
+#import "third_party/re2/src/re2/re2.h"
 
 namespace {
 
-base::Value::Dict CreateExceptionRule(const std::string& domain) {
+base::Value::Dict CreateExceptionRule(const std::string& scheme,
+                                      const std::string& domain) {
+  // Escape any special regex characters in the scheme and domain.
+  std::string escaped_scheme = RE2::QuoteMeta(scheme);
+  std::string escaped_domain = RE2::QuoteMeta(domain);
+
+  // This regex is constructed to match the given domain and all of its
+  // subdomains for a specific scheme. For example, for the site
+  // "example.com", it should match "https://example.com",
+  // "https://sub.example.com", but not "http://example.com" or
+  // "https://another-example.com".
+  // - `^`: Matches the beginning of the URL.
+  // - `(?:[^/.]*\\.)*`: A non-capturing group that matches any subdomain.
+  //   It is optional to also match the bare domain.
+  // - `(?:/.*)?`: An optional capturing group that matches the path, if any.
+  // - `$`: Matches the end of the URL.
+  base::Value::List top_url_list;
+  top_url_list.Append("^" + escaped_scheme + "://(?:[^/.]*\\.)*" +
+                      escaped_domain + "(?:/.*)?$");
+
+  // The "trigger" dictionary specifies the conditions under which the rule's
+  // action should be executed.
+  base::Value::Dict trigger;
+  // "if-top-url" provides a list of regular expressions to match against the
+  // top-level URL of a page. If the page's URL matches any of these, the
+  // condition is met.
+  trigger.Set("if-top-url", std::move(top_url_list));
+  // "url-filter" is a regular expression that is matched against the URL of a
+  // network request. ".*" matches all requests.
+  trigger.Set("url-filter", ".*");
+
+  // The "action" dictionary defines what to do when the trigger conditions are
+  // met.
+  base::Value::Dict action;
+  // "ignore-previous-rules" action type allows requests that would have been
+  // blocked by earlier rules in the list. This effectively creates an
+  // exception to the blocking rules.
+  action.Set("type", "ignore-previous-rules");
+
   base::Value::Dict rule;
-  rule.SetByDottedPath("action.type", "ignore-previous-rules");
-  rule.SetByDottedPath("trigger.if-domain",
-                       base::Value::List().Append("*" + domain));
-  rule.SetByDottedPath("trigger.url-filter", ".*");
+  rule.Set("trigger", std::move(trigger));
+  rule.Set("action", std::move(action));
   return rule;
 }
 
@@ -119,7 +156,8 @@ void ScriptBlockingRuleApplierService::ApplyRules(
       tracking_protection_settings_->GetTrackingProtectionExceptions();
   for (const auto& exception : exceptions) {
     rules_list.Append(
-        CreateExceptionRule(exception.secondary_pattern.GetHost()));
+        CreateExceptionRule(exception.secondary_pattern.GetScheme(),
+                            exception.secondary_pattern.GetHost()));
   }
 
   std::string rules_json;
