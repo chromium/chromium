@@ -228,6 +228,7 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
+  __weak __typeof(self) weakSelf = self;
 
   if (backgroundConfiguration &&
       !backgroundConfiguration.thumbnailURL.is_empty()) {
@@ -237,9 +238,15 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
                                            completion:^(UIImage* image,
                                                         NSError* error) {
                                              if (error) {
-                                               // Hide the cell if the thumbnail
-                                               // image failed to load.
-                                               cell.hidden = YES;
+                                               // Delete the cell if the
+                                               // thumbnail image failed to
+                                               // load.
+                                               [weakSelf
+                                                   deleteBackgroundCell:
+                                                       backgroundConfiguration
+                                                           .configurationID
+                                                     forItemAtIndexPath:
+                                                         indexPath];
                                              } else {
                                                [cell
                                                    updateBackgroundImage:image];
@@ -258,6 +265,35 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 }
 
 #pragma mark - Private
+
+// Removes a background cell for the given configurationID.
+- (void)deleteBackgroundCell:(NSString*)configurationID
+          forItemAtIndexPath:(NSIndexPath*)indexPath {
+  [_backgroundCustomizationConfigurationMap removeObjectForKey:configurationID];
+
+  BackgroundCollectionConfiguration* backgroundCollectionConfiguration =
+      _backgroundCollectionConfigurations[indexPath.section];
+  if (backgroundCollectionConfiguration) {
+    [backgroundCollectionConfiguration.configurations
+        removeObjectForKey:configurationID];
+
+    NSUInteger indexOfConfigurationOrder =
+        [backgroundCollectionConfiguration.configurationOrder
+            indexOfObjectPassingTest:^BOOL(NSString* id, NSUInteger index,
+                                           BOOL* stop) {
+              return configurationID == id;
+            }];
+    if (indexOfConfigurationOrder != NSNotFound) {
+      [backgroundCollectionConfiguration.configurationOrder
+          removeObjectAtIndex:indexOfConfigurationOrder];
+    }
+  }
+
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>* snapshot =
+      [_diffableDataSource snapshot];
+  [snapshot deleteItemsWithIdentifiers:@[ configurationID ]];
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+}
 
 // Creates a skeleton snapshot representing the loading content of the
 // collection view.
