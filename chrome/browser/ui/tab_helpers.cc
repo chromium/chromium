@@ -97,6 +97,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
@@ -652,7 +653,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     SearchEngineChoiceTabHelper::CreateForWebContents(web_contents);
   }
 
-  SadTabHelper::CreateForWebContents(web_contents);
+  if (!webui_browser::IsWebUIBrowserEnabled()) {
+    SadTabHelper::CreateForWebContents(web_contents);
+  }
   SearchTabHelper::CreateForWebContents(web_contents);
   TabDialogs::CreateForWebContents(web_contents);
   if (base::FeatureList::IsEnabled(features::kTabHoverCardImages) ||
