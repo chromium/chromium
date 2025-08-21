@@ -9,7 +9,12 @@
 
 // Mutator for the AIM prototype.
 @protocol AIMPrototypeMutator
+
+/// Sends `text` to start a query.
 - (void)sendText:(NSString*)text;
+/// Sets `enabled` state for AIM.
+- (void)setAIModeEnabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AIM_PROTOTYPE_UI_AIM_PROTOTYPE_MUTATOR_H_

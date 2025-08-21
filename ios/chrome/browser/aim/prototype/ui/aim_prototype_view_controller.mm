@@ -454,6 +454,7 @@ const CGFloat kGenericButtonHeight = 32.0f;
 - (void)aimButtonTapped {
   _aiModeEnabled = !_aiModeEnabled;
   [self updateAIMButtonAppearance];
+  [self.mutator setAIModeEnabled:_aiModeEnabled];
 }
 
 - (void)plusButtonTouchDown {

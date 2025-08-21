@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "net/base/url_util.h"
 #import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
 
@@ -34,6 +35,8 @@
   std::unique_ptr<ComposeboxQueryControllerIOS> _composeboxQueryController;
   // The observer bridge for file upload status.
   std::unique_ptr<ComposeboxFileUploadObserverBridge> _observerBridge;
+  // Whether AI mode is enabled.
+  BOOL _AIModeEnabled;
 }
 
 - (instancetype)initWithUrlLoadingBrowserAgent:
@@ -92,12 +95,20 @@
 #pragma mark - AIMPrototypeMutator
 
 - (void)sendText:(NSString*)text {
-  GURL url = _composeboxQueryController->CreateAimUrl(
+  GURL URL = _composeboxQueryController->CreateAimUrl(
       base::SysNSStringToUTF8(text), base::Time::Now());
-  UrlLoadParams params = UrlLoadParams::InCurrentTab(url);
+  // TODO(crbug.com/40280872): Handle AIM enabled in the query controller.
+  if (!_AIModeEnabled) {
+    URL = net::AppendOrReplaceQueryParameter(URL, "udm", "24");
+  }
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
   _urlLoadingBrowserAgent->Load(params);
   [self.delegate dismissAimPrototype];
+}
+
+- (void)setAIModeEnabled:(BOOL)enabled {
+  _AIModeEnabled = enabled;
 }
 
 #pragma mark - ComposeboxFileUploadObserver
