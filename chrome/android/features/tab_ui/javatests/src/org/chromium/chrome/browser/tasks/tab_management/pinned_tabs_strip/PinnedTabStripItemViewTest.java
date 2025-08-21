@@ -34,7 +34,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -171,8 +170,8 @@ public class PinnedTabStripItemViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mView.setTitle("Test Title");
+                    mView.setSelected(/* isSelected= */ true, /* isIncognito= */ false);
                     mView.setFaviconIcon(mFetcher, /* isSelected= */ true);
-                    mView.setSelected(true, false, TabGroupColorId.GREY);
                     mView.setGridCardSize(new Size(STRIP_ITEM_WIDTH, -1));
                 });
         mRenderTestRule.render(mView, "pinned_tab_strip_item_view_selected");
@@ -185,8 +184,8 @@ public class PinnedTabStripItemViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mView.setTitle("Test Title");
+                    mView.setSelected(/* isSelected= */ false, /* isIncognito= */ false);
                     mView.setFaviconIcon(mFetcher, /* isSelected= */ true);
-                    mView.setSelected(false, false, TabGroupColorId.GREY);
                     mView.setGridCardSize(new Size(STRIP_ITEM_WIDTH, -1));
                 });
         mRenderTestRule.render(mView, "pinned_tab_strip_item_view_not_selected");
@@ -199,8 +198,8 @@ public class PinnedTabStripItemViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mView.setTitle("Test Title");
+                    mView.setSelected(/* isSelected= */ true, /* isIncognito= */ true);
                     mView.setFaviconIcon(mFetcher, /* isSelected= */ true);
-                    mView.setSelected(true, true, TabGroupColorId.GREY);
                     mView.setGridCardSize(new Size(STRIP_ITEM_WIDTH, -1));
                 });
         mRenderTestRule.render(mView, "pinned_tab_strip_item_view_incognito");

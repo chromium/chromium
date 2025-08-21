@@ -174,8 +174,13 @@ found in the LICENSE file.
     <dimen name="hub_search_tab_group_image_span_edge_size">12sp</dimen>
 
     <!-- Dimens for pinned tab strip -->
-    <dimen name="pinned_tab_strip_item_horizontal_padding">16dp</dimen>
+    <dimen name="pinned_tab_strip_item_horizontal_padding">12dp</dimen>
     <dimen name="pinned_tab_strip_item_bg_radius">16dp</dimen>
     <dimen name="pinned_tab_strip_item_height">40dp</dimen>
-    <dimen name="pinned_tab_strip_item_icon_size">16dp</dimen>
+    <dimen name="pinned_tab_strip_item_icon_size">18dp</dimen>
+    <dimen name="pinned_tab_strip_item_horizontal_margin">8dp</dimen>
+    <dimen name="pinned_tab_strip_item_favicon_height">18dp</dimen>
+    <dimen name="pinned_tab_strip_item_title_padding_start">11dp</dimen>
+    <dimen name="pinned_tab_strip_recycler_view_padding_horizontal">8dp</dimen>
+    <dimen name="pinned_tab_strip_item_vertical_margin">16dp</dimen>
 </resources>

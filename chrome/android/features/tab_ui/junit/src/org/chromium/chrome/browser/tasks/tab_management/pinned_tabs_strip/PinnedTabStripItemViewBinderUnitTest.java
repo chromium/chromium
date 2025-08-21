@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -103,7 +102,7 @@ public final class PinnedTabStripItemViewBinderUnitTest {
         mModel.set(TabProperties.IS_SELECTED, true);
         PinnedTabStripItemViewBinder.bind(
                 mModel, mPinnedTabStripItemView, TabProperties.IS_SELECTED);
-        verify(mPinnedTabStripItemView).setSelected(eq(true), eq(false), anyInt());
+        verify(mPinnedTabStripItemView).setSelected(eq(true), eq(false));
     }
 
     @Test

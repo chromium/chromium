@@ -30,12 +30,9 @@ public class PinnedTabStripItemViewBinder {
         } else if (TabProperties.GRID_CARD_SIZE.equals(propertyKey)) {
             itemView.setGridCardSize(model.get(TabProperties.GRID_CARD_SIZE));
         } else if (TabProperties.IS_SELECTED.equals(propertyKey)) {
-            itemView.setSelected(
-                    model.get(TabProperties.IS_SELECTED),
-                    model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.TAB_GROUP_CARD_COLOR));
-            itemView.setFaviconIcon(
-                    model.get(TabProperties.FAVICON_FETCHER), model.get(TabProperties.IS_SELECTED));
+            boolean isSelected = model.get(TabProperties.IS_SELECTED);
+            itemView.setSelected(isSelected, model.get(TabProperties.IS_INCOGNITO));
+            itemView.setFaviconIcon(model.get(TabProperties.FAVICON_FETCHER), isSelected);
         } else if (TabProperties.TAB_CLICK_LISTENER.equals(propertyKey)) {
             TabActionListener listener = model.get(TabProperties.TAB_CLICK_LISTENER);
             if (listener == null) return;

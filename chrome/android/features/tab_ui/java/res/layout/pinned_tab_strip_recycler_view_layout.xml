@@ -12,7 +12,6 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
-    android:paddingStart="8dp"
-    android:paddingEnd="8dp"
+    android:paddingHorizontal="@dimen/pinned_tab_strip_recycler_view_padding_horizontal"
     android:visibility="invisible"
     tools:ignore="UnusedResources" />

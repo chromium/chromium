@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Size;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,13 +18,13 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
-import org.chromium.components.tab_groups.TabGroupColorId;
 
 /** View for a pinned tab strip item. */
 @NullMarked
@@ -112,8 +113,8 @@ public class PinnedTabStripItemView extends FrameLayout {
      * @param size The {@link Size} of the tab grid card.
      */
     void setGridCardSize(@Nullable Size size) {
-        LayoutParams layoutParams = (LayoutParams) getLayoutParams();
         if (size == null) return;
+        ViewGroup.LayoutParams layoutParams = getLayoutParams();
         if (size.getWidth() != -1) {
             layoutParams.width = size.getWidth();
         }
@@ -128,22 +129,30 @@ public class PinnedTabStripItemView extends FrameLayout {
      *
      * @param isSelected Whether the tab is selected.
      * @param isIncognito Whether the tab is incognito.
-     * @param colorId The {@link TabGroupColorId} for the tab group color.
      */
-    void setSelected(boolean isSelected, boolean isIncognito, @TabGroupColorId int colorId) {
+    void setSelected(boolean isSelected, boolean isIncognito) {
         Context context = getContext();
         getBackground().mutate();
 
         final @ColorInt int backgroundColor =
                 TabCardThemeUtil.getCardViewBackgroundColor(
-                        context, isIncognito, isSelected, colorId);
+                        context, isIncognito, isSelected, /* colorId= */ null);
         ViewCompat.setBackgroundTintList(
                 this,
                 TabCardThemeUtil.getCardViewBackgroundColorStateList(
                         context, isIncognito, backgroundColor));
 
-        if (mTitle == null) return;
-        mTitle.setTextColor(
-                TabCardThemeUtil.getTitleTextColor(context, isIncognito, isSelected, colorId));
+        if (mTitle != null) {
+            mTitle.setTextColor(
+                    TabCardThemeUtil.getTitleTextColor(
+                            context, isIncognito, isSelected, /* colorId= */ null));
+        }
+
+        if (mTrailingIcon != null) {
+            ImageViewCompat.setImageTintList(
+                    mTrailingIcon,
+                    TabCardThemeUtil.getActionButtonTintList(
+                            context, isIncognito, isSelected, /* colorId= */ null));
+        }
     }
 }
