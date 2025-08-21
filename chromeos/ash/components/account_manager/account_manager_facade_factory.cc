@@ -28,17 +28,24 @@ crosapi::AccountManagerMojoService* GetAccountManagerMojoService(
   return account_manager_mojo_service;
 }
 
+// Map from |profile_path| to AccountManagerFacade.
+std::map<std::string,
+         std::unique_ptr<account_manager::AccountManagerFacadeImpl>>&
+GetMap() {
+  static base::NoDestructor<std::map<
+      std::string, std::unique_ptr<account_manager::AccountManagerFacadeImpl>>>
+      account_manager_facade_map;
+  return *account_manager_facade_map.get();
+}
+
 }  // namespace
 
 account_manager::AccountManagerFacade* GetAccountManagerFacade(
     const std::string& profile_path) {
-  // Map from |profile_path| to AccountManagerFacade.
-  static base::NoDestructor<std::map<
-      std::string, std::unique_ptr<account_manager::AccountManagerFacadeImpl>>>
-      account_manager_facade_map;
+  auto& account_manager_facade_map = GetMap();
 
-  auto it = account_manager_facade_map->find(profile_path);
-  if (it == account_manager_facade_map->end()) {
+  auto it = account_manager_facade_map.find(profile_path);
+  if (it == account_manager_facade_map.end()) {
     mojo::Remote<crosapi::mojom::AccountManager> remote;
     GetAccountManagerMojoService(profile_path)
         ->BindReceiver(remote.BindNewPipeAndPassReceiver());
@@ -57,11 +64,16 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
             std::move(remote), remote_version,
             account_manager_for_tests->GetWeakPtr());
     it = account_manager_facade_map
-             ->emplace(profile_path, std::move(account_manager_facade))
+             .emplace(profile_path, std::move(account_manager_facade))
              .first;
   }
 
   return it->second.get();
+}
+
+void DeleteAccountManagerFacadeInstanceForTesting(
+    const std::string& profile_path) {
+  GetMap().erase(profile_path);
 }
 
 }  // namespace ash

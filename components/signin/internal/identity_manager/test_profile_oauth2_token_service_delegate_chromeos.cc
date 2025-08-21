@@ -7,8 +7,7 @@
 #include <limits>
 
 #include "base/functional/callback_helpers.h"
-#include "components/account_manager_core/account_manager_facade_impl.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -18,26 +17,17 @@ TestProfileOAuth2TokenServiceDelegateChromeOS::
     TestProfileOAuth2TokenServiceDelegateChromeOS(
         SigninClient* client,
         AccountTrackerService* account_tracker_service,
-        crosapi::AccountManagerMojoService* account_manager_mojo_service,
+        account_manager::AccountManagerFacade* account_manager_facade,
         bool is_regular_profile)
     : ProfileOAuth2TokenServiceDelegate(/*use_backoff=*/true) {
   if (!network::TestNetworkConnectionTracker::HasInstance()) {
     owned_tracker_ = network::TestNetworkConnectionTracker::CreateInstance();
   }
 
-  mojo::Remote<crosapi::mojom::AccountManager> remote;
-  account_manager_mojo_service->BindReceiver(
-      remote.BindNewPipeAndPassReceiver());
-  account_manager_facade_ =
-      std::make_unique<account_manager::AccountManagerFacadeImpl>(
-          std::move(remote),
-          /*remote_version=*/std::numeric_limits<uint32_t>::max(),
-          /*account_manager_for_tests=*/nullptr);
-
   delegate_ = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
       client, account_tracker_service,
       network::TestNetworkConnectionTracker::GetInstance(),
-      account_manager_facade_.get(), is_regular_profile);
+      account_manager_facade, is_regular_profile);
   // This still mimics in product behavior as the `delegate_` 's only
   // observer is this class. When `OnRefreshTokenRevoked()` is called, `This`
   // calls `FireRefreshTokenAvailable()` which has the callback set correctly.

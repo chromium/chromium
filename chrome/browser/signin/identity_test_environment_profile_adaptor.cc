@@ -78,17 +78,9 @@ std::unique_ptr<KeyedService>
 IdentityTestEnvironmentProfileAdaptor::BuildIdentityManagerForTests(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-#if BUILDFLAG(IS_CHROMEOS)
-  return signin::IdentityTestEnvironment::BuildIdentityManagerForTests(
-      ChromeSigninClientFactory::GetForProfile(profile), profile->GetPrefs(),
-      profile->GetPath(),
-      g_browser_process->platform_part()->GetAccountManagerFactory(),
-      ash::GetAccountManagerFacade(profile->GetPath().value()));
-#else
   return signin::IdentityTestEnvironment::BuildIdentityManagerForTests(
       ChromeSigninClientFactory::GetForProfile(profile), profile->GetPrefs(),
       profile->GetPath());
-#endif
 }
 
 IdentityTestEnvironmentProfileAdaptor::IdentityTestEnvironmentProfileAdaptor(

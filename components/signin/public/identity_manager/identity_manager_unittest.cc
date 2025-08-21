@@ -62,11 +62,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/signin/internal/identity_manager/test_profile_oauth2_token_service_delegate_chromeos.h"
 #endif
 
@@ -368,25 +368,14 @@ class IdentityManagerTest : public testing::Test {
             &test_url_loader_factory_));
     ash_account_manager->SetPrefService(&pref_service_);
 
-    auto* ash_account_manager_mojo_service =
-        GetAccountManagerFactory()->GetAccountManagerMojoService(
-            temp_profile_dir_.GetPath().value());
-
-    mojo::Remote<crosapi::mojom::AccountManager> remote;
-    ash_account_manager_mojo_service->BindReceiver(
-        remote.BindNewPipeAndPassReceiver());
-    account_manager_facade_ =
-        std::make_unique<account_manager::AccountManagerFacadeImpl>(
-            std::move(remote),
-            /*remote_version=*/std::numeric_limits<uint32_t>::max(),
-            /*account_manager_for_tests=*/
-            ash_account_manager->GetWeakPtr());
+    auto* account_manager_facade =
+        ash::GetAccountManagerFacade(temp_profile_dir_.GetPath().value());
 
     auto token_service = std::make_unique<CustomFakeProfileOAuth2TokenService>(
         &pref_service_,
         std::make_unique<TestProfileOAuth2TokenServiceDelegateChromeOS>(
             &signin_client_, account_tracker_service.get(),
-            ash_account_manager_mojo_service,
+            account_manager_facade,
             /*is_regular_profile=*/true));
 #else
     auto token_service =
@@ -450,7 +439,7 @@ class IdentityManagerTest : public testing::Test {
         primary_account_manager.get(), &pref_service_);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-    init_params.account_manager_facade = account_manager_facade_.get();
+    init_params.account_manager_facade = account_manager_facade;
 #endif
     init_params.signin_client = &signin_client_;
     init_params.account_fetcher_service = std::move(account_fetcher_service);
@@ -510,8 +499,6 @@ class IdentityManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 #if BUILDFLAG(IS_CHROMEOS)
   ash::AccountManagerFactory account_manager_factory_;
-  std::unique_ptr<account_manager::AccountManagerFacadeImpl>
-      account_manager_facade_;
 #endif
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;

@@ -28,16 +28,6 @@ class IdentityTestEnvironmentProfileAdaptor;
 class PrefService;
 class TestSigninClient;
 
-#if BUILDFLAG(IS_CHROMEOS)
-namespace account_manager {
-class AccountManagerFacade;
-}
-
-namespace ash {
-class AccountManagerFactory;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace sync_preferences {
 class TestingPrefServiceSyncable;
 }
@@ -50,6 +40,24 @@ namespace signin {
 
 class IdentityManagerDependenciesOwner;
 class TestIdentityManagerObserver;
+
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/421058020): This is needed for managing lifetime of
+// AccountManagerFactoryFacadeImpl. Remove this once we've integrated the facade
+// factory into AccountManagerFactory.
+class ScopedIdentityTestEnvironmentTracker {
+ public:
+  ScopedIdentityTestEnvironmentTracker();
+  ScopedIdentityTestEnvironmentTracker(
+      const ScopedIdentityTestEnvironmentTracker&) = delete;
+  ScopedIdentityTestEnvironmentTracker& operator=(
+      const ScopedIdentityTestEnvironmentTracker&) = delete;
+  ~ScopedIdentityTestEnvironmentTracker();
+
+ private:
+  static int count_;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Arguments for `IdentityTestEnvironment::MakeAccountAvailable()`. Keeps
 // references, so do not rely on it for storage.
@@ -416,20 +424,13 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   static std::unique_ptr<IdentityManager> BuildIdentityManagerForTests(
       SigninClient* signin_client,
       PrefService* pref_service,
-      base::FilePath user_data_dir
-#if BUILDFLAG(IS_CHROMEOS)
-      ,
-      ash::AccountManagerFactory* account_manager_factory,
-      account_manager::AccountManagerFacade* account_manager_facade
-#endif
-  );
+      base::FilePath user_data_dir);
 
   static std::unique_ptr<IdentityManager> FinishBuildIdentityManagerForTests(
       std::unique_ptr<AccountTrackerService> account_tracker_service,
       std::unique_ptr<ProfileOAuth2TokenService> token_service,
       SigninClient* signin_client,
-      PrefService* pref_service,
-      base::FilePath user_data_dir
+      PrefService* pref_service
 #if BUILDFLAG(IS_CHROMEOS)
       ,
       account_manager::AccountManagerFacade* account_manager_facade
@@ -493,6 +494,11 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
 
   base::OnceClosure on_access_token_requested_callback_;
   std::vector<AccessTokenRequestState> requesters_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  ScopedIdentityTestEnvironmentTracker
+      scoped_identity_test_environment_tracker_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::WeakPtrFactory<IdentityTestEnvironment> weak_ptr_factory_{this};
 };
