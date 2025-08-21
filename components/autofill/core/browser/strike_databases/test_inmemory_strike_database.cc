@@ -97,12 +97,13 @@ void TestInMemoryStrikeDatabase::SetStrikeData(const std::string& key,
   strike_map_cache_[key] = data;
 }
 
-int64_t TestInMemoryStrikeDatabase::GetLastUpdatedTimestamp(
+base::Time TestInMemoryStrikeDatabase::GetLastUpdatedTimestamp(
     const std::string& key) {
   auto iter = strike_map_cache_.find(key);
-  return (iter != strike_map_cache_.end())
-             ? iter->second.last_update_timestamp()
-             : 0;
+  return iter != strike_map_cache_.end()
+             ? base::Time::FromDeltaSinceWindowsEpoch(
+                   base::Microseconds(iter->second.last_update_timestamp()))
+             : base::Time();
 }
 
 }  // namespace autofill

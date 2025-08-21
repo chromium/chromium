@@ -49,9 +49,8 @@ StrikeDatabaseIntegratorBase::GetStrikeDatabaseDecision(
   // the last strike was logged for candidate with `id`. Note that some features
   // don't specify a required delay.
   if (GetRequiredDelaySinceLastStrike().has_value() &&
-      (base::Time::Now() -
-       base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-           strike_database_->GetLastUpdatedTimestamp(GetKey(id))))) <
+      base::Time::Now() -
+              strike_database_->GetLastUpdatedTimestamp(GetKey(id)) <
           GetRequiredDelaySinceLastStrike()) {
     return StrikeDatabaseDecision::kRequiredDelayNotPassed;
   }

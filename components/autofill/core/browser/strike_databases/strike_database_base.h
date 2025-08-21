@@ -13,6 +13,10 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 
+namespace base {
+class Time;
+}
+
 namespace autofill {
 
 class StrikeData;
@@ -66,7 +70,7 @@ class StrikeDatabaseBase : public KeyedService {
   virtual void SetStrikeData(const std::string& key, int num_strikes) = 0;
 
   // Returns the timestamp when the records for |key| were last updated.
-  virtual int64_t GetLastUpdatedTimestamp(const std::string& key) = 0;
+  virtual base::Time GetLastUpdatedTimestamp(const std::string& key) = 0;
 
  protected:
   friend class StrikeDatabaseIntegratorBase;
