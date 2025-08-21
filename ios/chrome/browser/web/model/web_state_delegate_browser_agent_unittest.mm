@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 
+#import "base/run_loop.h"
+#import "base/test/bind.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
@@ -191,4 +193,40 @@ TEST_F(WebStateDelegateBrowserAgentTest, GetJavaScriptDialogPresenter) {
   OverlayRequest* request = queue->front_request();
   EXPECT_TRUE(request);
   EXPECT_TRUE(request->GetConfig<JavaScriptAlertDialogRequest>());
+}
+
+// Tests that copy is allowed by default for non-enterprise profiles.
+TEST_F(WebStateDelegateBrowserAgentTest, ShouldAllowCopy) {
+  web::WebState* web_state = InsertNewWebState(GURL(kURL1));
+  base::RunLoop run_loop;
+  delegate()->ShouldAllowCopy(web_state,
+                              base::BindLambdaForTesting([&](bool allowed) {
+                                EXPECT_TRUE(allowed);
+                                run_loop.Quit();
+                              }));
+  run_loop.Run();
+}
+
+// Tests that paste is allowed by default for non-enterprise profiles.
+TEST_F(WebStateDelegateBrowserAgentTest, ShouldAllowPaste) {
+  web::WebState* web_state = InsertNewWebState(GURL(kURL1));
+  base::RunLoop run_loop;
+  delegate()->ShouldAllowPaste(web_state,
+                               base::BindLambdaForTesting([&](bool allowed) {
+                                 EXPECT_TRUE(allowed);
+                                 run_loop.Quit();
+                               }));
+  run_loop.Run();
+}
+
+// Tests that cut is allowed by default for non-enterprise profiles.
+TEST_F(WebStateDelegateBrowserAgentTest, ShouldAllowCut) {
+  web::WebState* web_state = InsertNewWebState(GURL(kURL1));
+  base::RunLoop run_loop;
+  delegate()->ShouldAllowCut(web_state,
+                             base::BindLambdaForTesting([&](bool allowed) {
+                               EXPECT_TRUE(allowed);
+                               run_loop.Quit();
+                             }));
+  run_loop.Run();
 }
