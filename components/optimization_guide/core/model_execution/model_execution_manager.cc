@@ -91,6 +91,37 @@ void RecordModelExecutionResultHistogram(ModelBasedCapabilityKey feature,
       result);
 }
 
+// The maximum number of parallel `ExecuteModel()` calls allowed for the
+// `feature`. Must be at least 1.
+// If a new model execution request exceeds this limited, the oldest pending
+// execution is cancelled.
+size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
+  switch (feature) {
+    case ModelBasedCapabilityKey::kCompose:
+    case ModelBasedCapabilityKey::kTabOrganization:
+    case ModelBasedCapabilityKey::kWallpaperSearch:
+    case ModelBasedCapabilityKey::kTest:
+    case ModelBasedCapabilityKey::kTextSafety:
+    case ModelBasedCapabilityKey::kPromptApi:
+    case ModelBasedCapabilityKey::kHistorySearch:
+    case ModelBasedCapabilityKey::kSummarize:
+    case ModelBasedCapabilityKey::kHistoryQueryIntent:
+    case ModelBasedCapabilityKey::kBlingPrototyping:
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+    case ModelBasedCapabilityKey::kScamDetection:
+    case ModelBasedCapabilityKey::kPermissionsAi:
+    case ModelBasedCapabilityKey::kProofreaderApi:
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
+    case ModelBasedCapabilityKey::kEnhancedCalendar:
+    case ModelBasedCapabilityKey::kZeroStateSuggestions:
+      return 1;
+    case ModelBasedCapabilityKey::kFormsClassifications:
+      // Since there can be multiple forms on a single page, multiple parallel
+      // executions are allowed for `kFormsClassifications`.
+      return 10;
+  }
+}
+
 }  // namespace
 
 using ModelExecutionError =
@@ -148,14 +179,6 @@ void ModelExecutionManager::ExecuteModel(
     return;
   }
 
-  auto previous_fetcher_it = active_model_execution_fetchers_.find(feature);
-  if (previous_fetcher_it != active_model_execution_fetchers_.end()) {
-    // Cancel the existing fetcher and let the new one continue.
-    active_model_execution_fetchers_.erase(previous_fetcher_it);
-    CHECK(active_model_execution_fetchers_.find(feature) ==
-          active_model_execution_fetchers_.end());
-  }
-
   if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
@@ -195,14 +218,22 @@ void ModelExecutionManager::ExecuteModel(
     log_ai_data_request = std::make_unique<proto::LogAiDataRequest>();
   }
 
-  auto fetcher_it = active_model_execution_fetchers_.emplace(
-      std::piecewise_construct, std::forward_as_tuple(feature),
+  ActiveFeatureExecutions& fetchers_for_feature =
+      active_model_execution_fetchers_[feature];
+  if (fetchers_for_feature.size() == GetMaxParallelFeatureExecutions(feature)) {
+    // Cancel the fetcher with the smallest ID. Since IDs are assigned in
+    // increasing order, this cancels the oldest one.
+    fetchers_for_feature.erase(fetchers_for_feature.begin());
+  }
+  FetcherId fetcher_id = next_model_execution_fetcher_id++;
+  auto fetcher_it = fetchers_for_feature.emplace(
+      std::piecewise_construct, std::forward_as_tuple(fetcher_id),
       std::forward_as_tuple(url_loader_factory_, model_execution_service_url_,
                             optimization_guide_logger_));
   fetcher_it.first->second.ExecuteModel(
       feature, identity_manager_, request_metadata, timeout,
       base::BindOnce(&ModelExecutionManager::OnModelExecuteResponse,
-                     weak_ptr_factory_.GetWeakPtr(), feature,
+                     weak_ptr_factory_.GetWeakPtr(), feature, fetcher_id,
                      std::move(log_ai_data_request), std::move(callback)));
 }
 
@@ -247,11 +278,12 @@ on_device_model::Capabilities ModelExecutionManager::GetOnDeviceCapabilities() {
 
 void ModelExecutionManager::OnModelExecuteResponse(
     ModelBasedCapabilityKey feature,
+    FetcherId fetcher_id,
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
     OptimizationGuideModelExecutionResultCallback callback,
     base::expected<const proto::ExecuteResponse,
                    OptimizationGuideModelExecutionError> execute_response) {
-  active_model_execution_fetchers_.erase(feature);
+  active_model_execution_fetchers_[feature].erase(fetcher_id);
   ScopedModelExecutionResponseLogger scoped_logger(feature,
                                                    optimization_guide_logger_);
 

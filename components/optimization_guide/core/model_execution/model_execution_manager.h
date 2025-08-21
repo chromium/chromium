@@ -99,9 +99,16 @@ class ModelExecutionManager final {
   void Shutdown();
 
  private:
+  // Identifies a ModelExecutionFetcher.
+  using FetcherId = size_t;
+
+  // All active executions for a certain feature.
+  using ActiveFeatureExecutions = std::map<FetcherId, ModelExecutionFetcher>;
+
   // Invoked when the model execution result is available.
   void OnModelExecuteResponse(
       ModelBasedCapabilityKey feature,
+      FetcherId fetcher_id,
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
       OptimizationGuideModelExecutionResultCallback callback,
       base::expected<const proto::ExecuteResponse,
@@ -124,8 +131,11 @@ class ModelExecutionManager final {
   // The endpoint for the model execution service.
   const GURL model_execution_service_url_;
 
+  // The next available `FetcherId`. Assigned in increasing order.
+  FetcherId next_model_execution_fetcher_id = 0;
+
   // The active fetchers per ModelExecutionFeature.
-  std::map<ModelBasedCapabilityKey, ModelExecutionFetcher>
+  std::map<ModelBasedCapabilityKey, ActiveFeatureExecutions>
       active_model_execution_fetchers_;
 
   // Model execution results to override in tests.
