@@ -542,7 +542,7 @@ BASE_FEATURE(kAutofillReplaceFormElementObserver,
 // TODO(crbug.com/324199622) When abandoned, remove FormFieldData::is_visible.
 BASE_FEATURE(kAutofillDetectFieldVisibility,
              "AutofillDetectFieldVisibility",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, new heuristics are applied for disambiguating multiple possible
 // types in a form field. Otherwise, only the already established heuristic for
