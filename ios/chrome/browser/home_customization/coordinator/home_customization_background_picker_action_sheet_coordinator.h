@@ -17,7 +17,8 @@
 
 // Initializes the background picker action sheet coordinator.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser;
+                                   browser:(Browser*)browser
+                                sourceView:(UIView*)sourceView;
 
 // A provider responsible for supplying a logo vendor object.
 @property(nonatomic, weak) id<HomeCustomizationSearchEngineLogoMediatorProvider>

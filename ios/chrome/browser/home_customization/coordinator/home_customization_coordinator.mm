@@ -288,14 +288,14 @@ CGFloat const kSheetCornerRadius = 30;
 
 #pragma mark - HomeCustomizationBackgroundPickerPresentationDelegate
 
-- (void)showBackgroundPickerOptions {
+- (void)showBackgroundPickerOptionsFromSourceView:(UIView*)sourceView {
   _backgroundPickerActionSheetCoordinator =
       [[HomeCustomizationBackgroundPickerActionSheetCoordinator alloc]
           initWithBaseViewController:self.mainViewController
-                             browser:self.browser];
+                             browser:self.browser
+                          sourceView:sourceView];
   _backgroundPickerActionSheetCoordinator.searchEngineLogoMediatorProvider =
       self;
-
   [_backgroundPickerActionSheetCoordinator start];
 }
 

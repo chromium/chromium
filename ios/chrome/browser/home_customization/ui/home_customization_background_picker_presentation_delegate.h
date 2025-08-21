@@ -17,7 +17,7 @@
 
 // Presents a background picker alert with options such as gallery, camera roll,
 // or color selection.
-- (void)showBackgroundPickerOptions;
+- (void)showBackgroundPickerOptionsFromSourceView:(UIView*)sourceView;
 
 @end
 

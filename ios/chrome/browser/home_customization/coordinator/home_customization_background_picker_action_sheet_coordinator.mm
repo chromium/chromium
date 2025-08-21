@@ -63,6 +63,9 @@ CGFloat const kSheetCornerRadius = 30;
 
   // The main view controller presented by the base view controller.
   UIViewController* _mainViewController;
+
+  // The view to which the action sheet popover should be anchored.
+  UIView* _sourceView;
 }
 
 @end
@@ -70,12 +73,17 @@ CGFloat const kSheetCornerRadius = 30;
 @implementation HomeCustomizationBackgroundPickerActionSheetCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
+                                   browser:(Browser*)browser
+                                sourceView:(UIView*)sourceView {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                                      title:nil
                                    message:nil
                              barButtonItem:nil];
+
+  if (self) {
+    _sourceView = sourceView;
+  }
   return self;
 }
 
@@ -132,6 +140,15 @@ CGFloat const kSheetCornerRadius = 30;
                   }
                    style:UIAlertActionStyleDefault];
 
+  // On iPad, an action sheet is presented as a popover and needs a source view
+  // to anchor to, otherwise it will crash.
+  if (self.alertController.popoverPresentationController) {
+    UIView* presentingView = self.baseViewController.view;
+    self.alertController.popoverPresentationController.sourceView =
+        presentingView;
+    self.alertController.popoverPresentationController.sourceRect =
+        [presentingView convertRect:_sourceView.bounds fromView:_sourceView];
+  }
   [super start];
 }
 

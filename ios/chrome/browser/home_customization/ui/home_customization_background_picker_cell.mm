@@ -59,7 +59,7 @@ const CGFloat kSymbolAddBackgroundPointSize = 12;
 // Handles tap gesture by notifying the delegate to display background picker
 // options.
 - (void)handleTap {
-  [self.delegate showBackgroundPickerOptions];
+  [self.delegate showBackgroundPickerOptionsFromSourceView:self.contentView];
 }
 
 @end
