@@ -219,7 +219,6 @@ void GlicKeyedService::CloseUI() {
   window_controller_->Shutdown();
   host().Shutdown();
   fre_controller_->Shutdown();
-  SetContextAccessIndicator(false);
 }
 
 void GlicKeyedService::PrepareForOpen() {
@@ -349,7 +348,6 @@ void GlicKeyedService::CreateTab(
 
 void GlicKeyedService::ClosePanel() {
   window_controller_->Close();
-  SetContextAccessIndicator(false);
   screenshot_capturer_->CloseScreenPicker();
 }
 

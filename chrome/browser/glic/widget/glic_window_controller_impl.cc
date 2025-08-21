@@ -852,6 +852,10 @@ void GlicWindowControllerImpl::OnViewChanged(mojom::CurrentView view) {
   floaty_state_change_callback_list_.Notify(state(), view);
 }
 
+void GlicWindowControllerImpl::ContextAccessIndicatorChanged(bool enabled) {
+  glic_service_->SetContextAccessIndicator(enabled && IsShowing());
+}
+
 void GlicWindowControllerImpl::GlicLoadedAndReadyToDisplay() {
   login_page_committed_ = false;
   if (state_ == State::kClosed || state_ == State::kOpen) {
@@ -1501,6 +1505,9 @@ void GlicWindowControllerImpl::SetWindowState(State new_state) {
     return;
   }
   state_ = new_state;
+
+  glic_service_->SetContextAccessIndicator(
+      IsShowing() && host().IsContextAccessIndicatorEnabled());
 
   if (auto* actor_keyed_service = actor::ActorKeyedService::Get(profile_)) {
     // Show toast if floaty is closed.

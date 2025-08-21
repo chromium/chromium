@@ -1050,7 +1050,7 @@ class GlicWebClientHandler
   }
 
   void SetContextAccessIndicator(bool enabled) override {
-    glic_service_->SetContextAccessIndicator(enabled);
+    glic_service_->host().SetContextAccessIndicator(this, enabled);
   }
 
   void GetUserProfileInfo(GetUserProfileInfoCallback callback) override {
@@ -1413,9 +1413,6 @@ class GlicWebClientHandler
 
   void Uninstall() {
     SetAudioDucking(false, base::DoNothing());
-    // TODO(b/409332639): centralize access indicator resetting in a single
-    // class.
-    glic_service_->SetContextAccessIndicator(false);
     glic_service_->host().SetWebClient(page_handler_, nullptr);
     pref_change_registrar_.Reset();
     local_state_pref_change_registrar_.Reset();

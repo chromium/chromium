@@ -53,6 +53,7 @@ class Host {
     virtual void WebUiStateChanged(mojom::WebUiState state) {}
     // Called when the current view changes in the glic WebUI.
     virtual void OnViewChanged(mojom::CurrentView view) {}
+    virtual void ContextAccessIndicatorChanged(bool enabled) {}
   };
 
   explicit Host(Profile* profile);
@@ -101,6 +102,8 @@ class Host {
                     GlicWebClientAccess* web_client);
   void WebClientInitializeFailed(GlicWebClientAccess* web_client);
 
+  void SetContextAccessIndicator(GlicWebClientAccess*, bool enabled);
+
   WebUIContentsContainer* contents_container() { return contents_.get(); }
   // Returns the WebUI web contents. May be null.
   content::WebContents* webui_contents();
@@ -124,6 +127,7 @@ class Host {
 
   // Whether the primary web client is connected.
   bool IsReady() const;
+  bool IsContextAccessIndicatorEnabled() const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -163,11 +167,15 @@ class Host {
     // True if the response to PanelWillOpen was received. Cleared when
     // PanelWasClosed() is called.
     bool open_complete = false;
+    bool context_access_indicator_enabled = false;
     raw_ptr<GlicWebClientAccess> web_client = nullptr;
   };
   void PanelWillOpenComplete(GlicWebClientAccess* client,
                              mojom::OpenPanelInfoPtr open_info);
   PageHandlerInfo* FindInfo(GlicPageHandler* handler);
+  const PageHandlerInfo* FindInfo(GlicPageHandler* handler) const {
+    return const_cast<Host*>(this)->FindInfo(handler);
+  }
   PageHandlerInfo* FindInfoForClient(GlicWebClientAccess* client);
   PageHandlerInfo* FindInfoForWebUiContents(content::WebContents* web_contents);
 

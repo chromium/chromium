@@ -111,6 +111,8 @@ void Host::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
       // soon.
       WebUiStateChanged(primary_page_handler_,
                         mojom::WebUiState::kUninitialized);
+      // This reverts any observed state on the existing client.
+      SetWebClient(page_handler, nullptr);
       primary_page_handler_ = nullptr;
     }
     primary_page_handler_ = page_handler;
@@ -204,6 +206,12 @@ void Host::SetWebClient(GlicPageHandler* page_handler,
   CHECK(info);
   info->web_client = web_client;
 
+  // Revert any observed state from the web client.
+  if (!web_client && info->page_handler == primary_page_handler_) {
+    if (info->context_access_indicator_enabled) {
+      observers_.Notify(&Observer::ContextAccessIndicatorChanged, false);
+    }
+  }
   if (invocation_source_ && web_client) {
     web_client->PanelWillOpen(
         mojom::PanelOpeningData::New(delegate_->GetPanelState().Clone(),
@@ -222,6 +230,23 @@ void Host::WebClientInitializeFailed(GlicWebClientAccess* web_client) {
   if (primary_info && primary_info->web_client == web_client) {
     observers_.Notify(&Observer::WebClientInitializeFailed);
   }
+}
+
+void Host::SetContextAccessIndicator(GlicWebClientAccess* web_client,
+                                     bool enabled) {
+  Host::PageHandlerInfo* info = FindInfoForClient(web_client);
+  if (info->context_access_indicator_enabled == enabled) {
+    return;
+  }
+  info->context_access_indicator_enabled = enabled;
+  if (info->page_handler == primary_page_handler_) {
+    observers_.Notify(&Observer::ContextAccessIndicatorChanged, enabled);
+  }
+}
+
+bool Host::IsContextAccessIndicatorEnabled() const {
+  const Host::PageHandlerInfo* info = FindInfo(primary_page_handler_);
+  return info ? info->context_access_indicator_enabled : false;
 }
 
 GlicWebClientAccess* Host::GetPrimaryWebClient() {
