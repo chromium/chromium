@@ -14916,7 +14916,7 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDsDisabled) {
   QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();
-  EXPECT_TRUE(config.trust_anchor_ids.empty());
+  EXPECT_FALSE(config.trust_anchor_ids);
 }
 
 TEST_P(QuicSessionPoolTest, CreateSessionAttempt) {
