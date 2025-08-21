@@ -118,6 +118,9 @@ public interface ChromeAndroidTask {
     /** Returns whether this {@link ChromeAndroidTask} is currently maximized. */
     boolean isMaximized();
 
+    /** Returns true if the window is minimized. */
+    boolean isMinimized();
+
     /**
      * Returns the most recent timestamp when this {@link ChromeAndroidTask} became active, i.e.,
      * when its state changed from nonexistent or inactive (minimized/unfocused), to the active
@@ -130,6 +133,9 @@ public interface ChromeAndroidTask {
     /** Returns current bounds of the window. */
     Rect getBounds();
 
+    /** Returns true if the window is visible. */
+    boolean isVisible();
+
     /** Closes this {@link ChromeAndroidTask}. */
     void close();
 
@@ -141,6 +147,9 @@ public interface ChromeAndroidTask {
 
     /** Maximize this {@link ChromeAndroidTask}. */
     void maximize();
+
+    /** Minimizes this {@link ChromeAndroidTask}. */
+    void minimize();
 
     /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
     List<ChromeAndroidTaskFeature> getAllFeaturesForTesting();

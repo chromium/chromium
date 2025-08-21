@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -214,6 +215,11 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
+    public boolean isMinimized() {
+        return !isVisible();
+    }
+
+    @Override
     public long getLastActivatedTimeMillis() {
         long lastActivatedTimeMillis = mLastActivatedTimeMillis.get();
         assert lastActivatedTimeMillis > 0;
@@ -224,6 +230,16 @@ final class ChromeAndroidTaskImpl
     public Rect getBounds() {
         synchronized (mActivityWindowAndroidLock) {
             return getBoundsInternalLocked();
+        }
+    }
+
+    @Override
+    public boolean isVisible() {
+        synchronized (mActivityWindowAndroidLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) return false;
+            return ApplicationStatus.isTaskVisible(getActivity(activityWindowAndroid).getTaskId());
         }
     }
 
@@ -312,6 +328,16 @@ final class ChromeAndroidTaskImpl
             // prevents the other activity from being brought back to the top of the stack.
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             activity.startActivity(intent, options.toBundle());
+        }
+    }
+
+    @Override
+    public void minimize() {
+        synchronized (mActivityWindowAndroidLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) return;
+            getActivity(activityWindowAndroid).moveTaskToBack(/* nonRoot= */ true);
         }
     }
 

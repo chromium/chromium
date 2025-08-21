@@ -36,6 +36,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -264,6 +265,57 @@ public class ChromeAndroidTaskIntegrationTest {
 
         // Assert: by default, app is maximized in non desktop windowing mode.
         assertTrue(chromeAndroidTask.isMaximized());
+    }
+
+    @Test
+    @MediumTest
+    public void isVisible_trueByDefault() {
+        // Arrange
+        mFreshCtaTransitTestRule.startOnBlankPage();
+        Activity activity = mFreshCtaTransitTestRule.getActivity();
+        int taskId = activity.getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
+        assertNotNull(chromeAndroidTask);
+
+        // Assert Initial states
+        assertTrue(chromeAndroidTask.isVisible());
+    }
+
+    @Test
+    @MediumTest
+    public void isMinimized_falseByDefault() {
+        // Arrange
+        mFreshCtaTransitTestRule.startOnBlankPage();
+        Activity activity = mFreshCtaTransitTestRule.getActivity();
+        int taskId = activity.getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
+        assertNotNull(chromeAndroidTask);
+
+        // Assert Initial states
+        assertFalse(chromeAndroidTask.isMinimized());
+    }
+
+    @Test
+    @MediumTest
+    public void minimize_moveTaskToBack() {
+        // Arrange
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
+        mFreshCtaTransitTestRule.startOnBlankPage();
+        Activity activity = mFreshCtaTransitTestRule.getActivity();
+        int taskId = activity.getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
+        assertNotNull(chromeAndroidTask);
+
+        // Assert Initial states
+        assertTrue(chromeAndroidTask.isVisible());
+        assertFalse(chromeAndroidTask.isMinimized());
+
+        // Act
+        chromeAndroidTask.minimize();
+
+        // Assert
+        CriteriaHelper.pollUiThread(
+                AsyncInitializationActivity::wasMoveTaskToBackInterceptedForTesting);
     }
 
     /**

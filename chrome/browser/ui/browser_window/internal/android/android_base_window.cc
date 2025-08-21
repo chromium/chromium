@@ -51,7 +51,8 @@ bool AndroidBaseWindow::IsMaximized() const {
 }
 
 bool AndroidBaseWindow::IsMinimized() const {
-  NOTREACHED();
+  return Java_AndroidBaseWindow_isMinimized(AttachCurrentThread(),
+                                            java_android_base_window_);
 }
 
 bool AndroidBaseWindow::IsFullscreen() const {
@@ -87,7 +88,8 @@ void AndroidBaseWindow::Hide() {
 }
 
 bool AndroidBaseWindow::IsVisible() const {
-  NOTREACHED();
+  return Java_AndroidBaseWindow_isVisible(AttachCurrentThread(),
+                                          java_android_base_window_);
 }
 
 void AndroidBaseWindow::ShowInactive() {
@@ -114,7 +116,8 @@ void AndroidBaseWindow::Maximize() {
 }
 
 void AndroidBaseWindow::Minimize() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_minimize(AttachCurrentThread(),
+                                  java_android_base_window_);
 }
 
 void AndroidBaseWindow::Restore() {

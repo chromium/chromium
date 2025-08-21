@@ -58,10 +58,20 @@ final class AndroidBaseWindow {
     }
 
     @CalledByNative
+    private boolean isMinimized() {
+        return mChromeAndroidTask.isMinimized();
+    }
+
+    @CalledByNative
     @JniType("std::vector<int>")
     private int[] getBounds() {
         Rect bounds = mChromeAndroidTask.getBounds();
         return new int[] {bounds.left, bounds.top, bounds.width(), bounds.height()};
+    }
+
+    @CalledByNative
+    private boolean isVisible() {
+        return mChromeAndroidTask.isVisible();
     }
 
     @CalledByNative
@@ -77,6 +87,11 @@ final class AndroidBaseWindow {
     @CalledByNative
     private void maximize() {
         mChromeAndroidTask.maximize();
+    }
+
+    @CalledByNative
+    private void minimize() {
+        mChromeAndroidTask.minimize();
     }
 
     @CalledByNative
