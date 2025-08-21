@@ -1,0 +1,16 @@
+#  Copyright 2025 The Chromium Authors. All rights reserved.
+#  Use of this source code is governed by a BSD-style license that can be
+#  found in the LICENSE file.
+
+import("//pdf/features.gni")
+
+assert(enable_pdf_save_to_drive)
+
+source_set("get_account_impl") {
+  sources = [ "get_account.cc" ]
+  public_deps = [ "//components/signin/public/identity_manager" ]
+  deps = [
+    "//chrome/browser/ui/save_to_drive:get_account",
+    "//content/public/browser",
+  ]
+}

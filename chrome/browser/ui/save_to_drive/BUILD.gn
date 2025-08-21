@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//pdf/features.gni")
+
+assert(enable_pdf_save_to_drive)
 
 source_set("save_to_drive") {
   sources = [
@@ -28,4 +31,10 @@ source_set("test_support") {
     ":save_to_drive",
     "//testing/gmock",
   ]
+}
+
+source_set("get_account") {
+  sources = [ "get_account.h" ]
+  public_deps = [ "//components/signin/public/identity_manager" ]
+  deps = [ "//base" ]
 }
