@@ -333,7 +333,7 @@ class EntityInstance final {
     bool is_subset = false;
   };
 
-  // - If `this` is a proper superset of `newer`,
+  // - If `newer` is a proper superset of `this`,
   //   `EntityMergeability::mergeable_attributes` contains the list of
   //   attributes that `newer` has, but `this` does not. These attributes can be
   //   set on `this` to update it.
