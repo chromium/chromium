@@ -509,7 +509,8 @@ const base::FeatureParam<std::string> kGlicAllowedOriginsOverride{
     "https://gemini.google.com https://gemini-autopush.corp.google.com "
     "https://gemini-preprod.corp.google.com "
     "https://gemini-staging.corp.google.com https://gemini-dev.corp.google.com "
-    "https://www.google.com"};
+    "https://www.google.com "
+    "https://login.corp.google.com"};
 
 // Enable/disable Glic web client responsiveness check feature.
 BASE_FEATURE(GlicClientResponsivenessCheck, base::FEATURE_ENABLED_BY_DEFAULT);
