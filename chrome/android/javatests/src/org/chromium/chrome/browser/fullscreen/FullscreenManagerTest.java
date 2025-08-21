@@ -10,7 +10,6 @@ import android.graphics.Point;
 import android.os.SystemClock;
 import android.view.View;
 
-import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -219,7 +218,6 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
-    @DisabledTest(message = "crbug.com/1489541")
     public void testBackPressExitPersistentFullscreen_backGestureRefactor() {
         testBackPressExitPersistentFullscreenInternal(true);
     }
@@ -229,7 +227,8 @@ public class FullscreenManagerTest {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE, isFullscreenInsetsApiMigrationEnabled);
         Assert.assertTrue(getPersistentFullscreenMode());
 
-        Espresso.pressBack();
+        ThreadUtils.runOnUiThreadBlocking(
+                mActivityTestRule.getActivity().getOnBackPressedDispatcher()::onBackPressed);
 
         Assert.assertFalse(getPersistentFullscreenMode());
     }
