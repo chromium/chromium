@@ -446,6 +446,18 @@ TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_LogsWordsHeard) {
       ReadAnythingAppController::kWordsHeardHistogramName, 123, 1);
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeHidden_ReadAloudDisabled_DoesNotLogWordsHeard) {
+  DisableReadAloud();
+  base::HistogramTester histogram_tester;
+  controller().UpdateWordsHeard(123);
+
+  controller().OnReadingModeHidden();
+
+  histogram_tester.ExpectTotalCount(
+      ReadAnythingAppController::kWordsHeardHistogramName, 0);
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsHeard) {
   controller().UpdateWordsHeard(123);
   controller().OnReadingModeHidden();

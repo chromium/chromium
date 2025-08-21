@@ -745,9 +745,12 @@ void ReadAnythingAppController::RecordEstimatedWordsSeen() {
 }
 
 void ReadAnythingAppController::RecordEstimatedWordsHeard() {
-  VLOG(1) << "Words heard: " << model_.words_heard();
-  base::UmaHistogramCustomCounts(kWordsHeardHistogramName, model_.words_heard(),
-                                 1, kMaxWordsConsumed, kWordsConsumedBuckets);
+  if (IsReadAloudEnabled()) {
+    VLOG(1) << "Words heard: " << model_.words_heard();
+    base::UmaHistogramCustomCounts(kWordsHeardHistogramName,
+                                   model_.words_heard(), 1, kMaxWordsConsumed,
+                                   kWordsConsumedBuckets);
+  }
   model_.set_words_heard(0);
 }
 
