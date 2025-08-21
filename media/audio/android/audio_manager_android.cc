@@ -588,7 +588,10 @@ AudioParameters AudioManagerAndroid::GetInputStreamParameters(
   // Use mono as preferred number of input channels on Android to save
   // resources. Using mono also avoids a driver issue seen on Samsung
   // Galaxy S3 and S4 devices. See http://crbug.com/256851 for details.
-  const ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Mono();
+  const ChannelLayoutConfig channel_layout_config =
+      base::FeatureList::IsEnabled(features::kAudioStereoInputStreamParameters)
+          ? ChannelLayoutConfig::Stereo()
+          : ChannelLayoutConfig::Mono();
 
   int sample_rate;
   if (UseAAudioPerStreamDeviceSelection()) {

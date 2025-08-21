@@ -44,6 +44,11 @@ BASE_FEATURE(AlwaysUseAudioManagerOutputFramesPerBuffer,
 // Enables the AudioDeviceListener, which listens for changes to the list of
 // audio devices exposed by the OS.
 BASE_FEATURE(AndroidAudioDeviceListener, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use stereo channel layout for input stream parameters.
+// TODO(crbug.com/440210010): Remove when the experiment is done.
+BASE_FEATURE(AudioStereoInputStreamParameters,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // This feature flag controls whether the WebAudio destination resampler is
