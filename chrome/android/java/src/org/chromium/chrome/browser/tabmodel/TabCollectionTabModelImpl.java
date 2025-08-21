@@ -1742,12 +1742,18 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         // If we are using an existing group that the destination tab is not part of we need to
         // move the group to the index of the destination tab.
         int adoptedTabGroupIndex = INVALID_TAB_INDEX;
+        int originalDestinationIndex = indexOf(destinationTab);
         if (adoptCandidateGroupId) {
             List<Tab> tabsInAdoptedGroup = getTabsInGroup(destinationTabGroupId);
             adoptedTabGroupIndex = indexOf(tabsInAdoptedGroup.get(0));
+            // If the undo operation will move the adopted group to a higher index, we need to
+            // offset the restored index of the adopted group to account for its size.
+            if (originalDestinationIndex < adoptedTabGroupIndex) {
+                adoptedTabGroupIndex += tabsInAdoptedGroup.size() - 1;
+            }
             assert indexInGroup == null
                     : "indexInGroup should not be set when adopting a candidate group.";
-            moveGroupToIndex(destinationTabGroupId, indexOf(destinationTab));
+            moveGroupToIndex(destinationTabGroupId, originalDestinationIndex);
         }
 
         // Move the destination tab into the group if it is not already part of the group.
@@ -1757,7 +1763,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             undoGroupDestinationTabData =
                     new UndoGroupTabData(
                             destinationTab,
-                            destinationTabIndex,
+                            originalDestinationIndex,
                             destinationTab.getIsPinned(),
                             destinationTab.getTabGroupId());
             moveTabInternal(

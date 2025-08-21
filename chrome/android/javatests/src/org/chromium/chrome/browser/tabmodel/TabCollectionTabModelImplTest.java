@@ -2085,6 +2085,71 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    public void testUndoGroupOperation_GroupIntoSingleTab() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        Tab tab4 = createTab();
+        Tab tab5 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
+
+        AtomicReference<UndoGroupMetadata> undoGroupMetadataRef = new AtomicReference<>();
+        CallbackHelper showUndoSnackbarHelper = new CallbackHelper();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Create group with tab1, tab2.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab2, tab3, tab4), tab2, /* notify= */ false);
+                    Token groupId = tab2.getTabGroupId();
+                    assertNotNull(groupId);
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
+
+                    TabGroupModelFilterObserver observer =
+                            new TabGroupModelFilterObserver() {
+                                @Override
+                                public void showUndoGroupSnackbar(
+                                        UndoGroupMetadata undoGroupMetadata) {
+                                    undoGroupMetadataRef.set(undoGroupMetadata);
+                                    showUndoSnackbarHelper.notifyCalled();
+                                }
+                            };
+                    mCollectionModel.addTabGroupObserver(observer);
+
+                    // Merge group into the tab.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab2, tab3, tab4), tab0, /* notify= */ true);
+
+                    mCollectionModel.removeTabGroupObserver(observer);
+
+                    assertEquals(groupId, tab0.getTabGroupId());
+                    assertEquals(4, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab0, tab2, tab3, tab4, tab1, tab5));
+                });
+
+        showUndoSnackbarHelper.waitForOnly();
+        assertNotNull(undoGroupMetadataRef.get());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.performUndoGroupOperation(undoGroupMetadataRef.get());
+
+                    // State should be restored.
+                    Token groupId = tab2.getTabGroupId();
+                    assertNull(tab0.getTabGroupId());
+                    assertNull(tab1.getTabGroupId());
+                    assertNull(tab5.getTabGroupId());
+                    assertNotNull(groupId);
+                    assertEquals(groupId, tab3.getTabGroupId());
+                    assertEquals(groupId, tab4.getTabGroupId());
+                    assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
+                });
+    }
+
+    @Test
+    @MediumTest
     public void testUndoGroupOperation_SingleTabIntoGroup() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
