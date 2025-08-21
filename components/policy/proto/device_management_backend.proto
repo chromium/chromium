@@ -2528,6 +2528,16 @@ message ChromeOsUserReportRequest {
   repeated AndroidAppInfo android_app_infos = 2;
 }
 
+// Payload including fields needed to perform attestation,.
+message AttestationPayload {
+  // Timestamp for when the report is generated, in microseconds since epoch.
+  optional string timestamp = 1;
+  // A nonce for the report to prevent replay.
+  optional string nonce = 2;
+  // Blob generated for attestation.
+  optional string attestation_blob = 3;
+}
+
 // Report user level status on all platforms. It includes the information of the
 // profile that user has signed in plus some basic browser and OS information.
 message ChromeProfileReportRequest {
@@ -2549,6 +2559,9 @@ message ChromeProfileReportRequest {
 
   // The type of report that is being sent.
   optional ReportType report_type = 4;
+
+  // Info related to the attestation process, currently only used on Android.
+  optional AttestationPayload attestation_payload = 5;
 }
 
 // A validation issue from validating a policy value that was contained in
