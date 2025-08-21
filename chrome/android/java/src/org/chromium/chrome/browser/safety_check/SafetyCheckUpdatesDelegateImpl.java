@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.safety_check;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omaha.OmahaBase.UpdateStatus;
 import org.chromium.chrome.browser.omaha.OmahaService;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
@@ -20,6 +21,7 @@ import java.lang.ref.WeakReference;
  * while Safety check is modularized in //chrome/browser. Once Omaha is
  * modularized as well, this class will not be needed anymore.
  */
+@NullMarked
 public class SafetyCheckUpdatesDelegateImpl implements SafetyCheckUpdatesDelegate {
     private final OmahaService mOmaha;
 

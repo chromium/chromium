@@ -16,6 +16,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
+import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
@@ -47,7 +48,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
     private static @Nullable OmahaService sInstance;
     private static boolean sHasPendingJob;
 
-    public static @Nullable OmahaService getInstance() {
+    public static OmahaService getInstance() {
         synchronized (DELEGATE_LOCK) {
             if (sInstance == null) sInstance = new OmahaService();
             return sInstance;

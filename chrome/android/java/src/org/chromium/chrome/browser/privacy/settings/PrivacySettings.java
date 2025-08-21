@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
 import android.content.Context;
@@ -26,6 +27,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
@@ -77,6 +79,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /** Fragment to keep track of the all the privacy related preferences. */
+@NullMarked
 public class PrivacySettings extends ChromeBaseSettingsFragment
         implements Preference.OnPreferenceChangeListener {
     private static final String PREF_CAN_MAKE_PAYMENT = "can_make_payment";
@@ -118,7 +121,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
     /** Creates {@link SpanInfo} for link which has the passed-in tag. */
     private static SpanApplier.SpanInfo createLink(
-            Context context, String tag, @Nullable Consumer<Context> clickCallback) {
+            Context context, String tag, Consumer<Context> clickCallback) {
         String startTag = "<" + tag + ">";
         String endTag = "</" + tag + ">";
         Callback<View> onClickCallback =
@@ -283,7 +286,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     .getExtras()
                     .putString(
                             SingleCategorySettings.EXTRA_TITLE,
-                            thirdPartyCookies.getTitle().toString());
+                            assumeNonNull(thirdPartyCookies.getTitle()).toString());
         }
 
         Preference javascriptOptimizerPref = findPreference(PREF_JAVASCRIPT_OPTIMIZER);
@@ -294,7 +297,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                 .getExtras()
                 .putString(
                         SingleCategorySettings.EXTRA_TITLE,
-                        javascriptOptimizerPref.getTitle().toString());
+                        assumeNonNull(javascriptOptimizerPref.getTitle()).toString());
 
         Bundle arguments = getArguments();
         if (arguments != null
@@ -335,8 +338,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                                         ManageSyncSettings.createArguments(false));
                     }
                 };
-        if (IdentityServicesProvider.get()
-                        .getIdentityManager(getProfile())
+        if (assumeNonNull(IdentityServicesProvider.get().getIdentityManager(getProfile()))
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
                 == null) {
             // User is signed out, show the string with one link to "Google Services".

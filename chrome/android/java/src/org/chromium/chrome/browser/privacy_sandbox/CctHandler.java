@@ -12,11 +12,14 @@ import android.provider.Browser;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 
 /** Handles the requests which should be handled by CCT (Custom Chrome Tabs). */
+@NullMarked
 public class CctHandler {
-    private Intent mIntent;
+    private @Nullable Intent mIntent;
     private final Context mContext;
 
     /**
@@ -60,7 +63,7 @@ public class CctHandler {
         return this;
     }
 
-    Intent getIntent() {
+    @Nullable Intent getIntent() {
         return mIntent;
     }
 }
