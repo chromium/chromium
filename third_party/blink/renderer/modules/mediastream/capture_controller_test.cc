@@ -1141,10 +1141,10 @@ class CaptureControllerScrollParametersValidationTest
   static constexpr gfx::Point kDivAtOffset = gfx::Point(40, 80);
 
   static constexpr gfx::Point kTopLeft = gfx::Point(0, 0);
-  static constexpr gfx::Point kTopRight = gfx::Point(0, kDivWidth - 1);
-  static constexpr gfx::Point kBottomLeft = gfx::Point(kDivHeight - 1, 0);
+  static constexpr gfx::Point kTopRight = gfx::Point(kDivWidth - 1, 0);
+  static constexpr gfx::Point kBottomLeft = gfx::Point(0, kDivHeight - 1);
   static constexpr gfx::Point kBottomRight =
-      gfx::Point(kDivHeight - 1, kDivWidth - 1);
+      gfx::Point(kDivWidth - 1, kDivHeight - 1);
   static constexpr gfx::Point kCenter =
       gfx::Point((kDivWidth - 1) / 2, (kDivHeight - 1) / 2);
 
