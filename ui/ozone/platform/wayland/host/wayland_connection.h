@@ -60,6 +60,7 @@ class WaylandOutputManager;
 class WaylandSeat;
 class WaylandTabletManager;
 class WaylandWindowDragController;
+class WaylandZcrColorManager;
 class WaylandZwpPointerConstraints;
 class WaylandZwpPointerGestures;
 class WaylandZwpRelativePointerManager;
@@ -170,6 +171,10 @@ class WaylandConnection {
 
   WaylandBufferManagerHost* buffer_manager_host() const {
     return buffer_manager_host_.get();
+  }
+
+  WaylandZcrColorManager* zcr_color_manager() const {
+    return zcr_color_manager_.get();
   }
 
   WaylandWpColorManager* wp_color_manager() const {
@@ -327,6 +332,7 @@ class WaylandConnection {
   friend class WaylandZwpPointerConstraints;
   friend class WaylandZwpPointerGestures;
   friend class WaylandZwpRelativePointerManager;
+  friend class WaylandZcrColorManager;
   friend class WaylandCursorShape;
   friend class WaylandWpColorManager;
   friend class XdgActivation;
@@ -444,6 +450,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandOutputManager> output_manager_;
   std::unique_ptr<WaylandTabletManager> tablet_manager_;
   std::unique_ptr<WaylandCursorPosition> cursor_position_;
+  std::unique_ptr<WaylandZcrColorManager> zcr_color_manager_;
   std::unique_ptr<WaylandWpColorManager> wp_color_manager_;
   std::unique_ptr<WaylandCursorShape> cursor_shape_;
   std::unique_ptr<WaylandZwpPointerConstraints> zwp_pointer_constraints_;
