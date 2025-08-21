@@ -389,8 +389,9 @@ void DoOpen(Browser* browser,
       const tab_groups::TabGroupVisualData* current_visual_data =
           group->visual_data();
       tab_groups::TabGroupVisualData new_visual_data(
-          folder_title.value(), current_visual_data->color(),
-          current_visual_data->is_collapsed());
+          SuggestUniqueTabGroupName(folder_title.value(),
+                                    tab_group_sync_service),
+          current_visual_data->color(), current_visual_data->is_collapsed());
       model->ChangeTabGroupVisuals(group->id(), new_visual_data);
 
       model->OpenTabGroupEditor(new_group_id.value());
@@ -706,6 +707,36 @@ void GetURLsAndFoldersForTabGroup(
     bookmark_data.title = title;
     folder_data->push_back(bookmark_data);
   }
+}
+
+std::u16string SuggestUniqueTabGroupName(
+    std::u16string folder_title,
+    const tab_groups::TabGroupSyncService* tab_group_sync_service) {
+  if (!tab_group_sync_service) {
+    return folder_title;
+  }
+
+  std::vector<tab_groups::SavedTabGroup> saved_groups =
+      tab_group_sync_service->GetAllGroups();
+  base::flat_set<std::u16string> existing_titles;
+  for (const auto& group : saved_groups) {
+    existing_titles.insert(group.title());
+  }
+
+  if (!base::Contains(existing_titles, folder_title)) {
+    return folder_title;
+  }
+
+  constexpr int kMaxAttempts = 100;
+  for (int i = 1; i < kMaxAttempts; ++i) {
+    std::u16string new_title =
+        folder_title + u" (" + base::NumberToString16(i) + u")";
+    if (!base::Contains(existing_titles, new_title)) {
+      return new_title;
+    }
+  }
+
+  return folder_title + u" (" + base::NumberToString16(kMaxAttempts) + u")";
 }
 
 }  // namespace bookmarks

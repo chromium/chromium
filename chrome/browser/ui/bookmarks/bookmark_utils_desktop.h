@@ -25,6 +25,10 @@ class BrowserContext;
 class NavigationHandle;
 }  // namespace content
 
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
+
 namespace bookmarks {
 class BookmarkNode;
 
@@ -133,6 +137,11 @@ void GetURLsAndFoldersForTabGroup(
     const Browser* browser,
     const TabGroup& tab_group,
     std::vector<BookmarkEditor::EditDetails::BookmarkData>* folder_data);
+
+// Suggest a unique name for tab group based on the bookmark folder's name.
+std::u16string SuggestUniqueTabGroupName(
+    std::u16string folder_title,
+    const tab_groups::TabGroupSyncService* tab_group_sync_service);
 
 }  // namespace bookmarks
 

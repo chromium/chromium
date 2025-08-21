@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -18,6 +19,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -28,6 +30,14 @@ class BookmarkTest : public BrowserWithTestWindowTest {
     return {TestingProfile::TestingFactory{
         BookmarkModelFactory::GetInstance(),
         BookmarkModelFactory::GetDefaultFactory()}};
+  }
+
+  void AddGroup(const std::u16string& title,
+                tab_groups::TabGroupSyncService* service) {
+    tab_groups::SavedTabGroup group(
+        title, tab_groups::TabGroupColorId::kGrey, {}, std::nullopt,
+        base::Uuid::GenerateRandomV4(), std::nullopt);
+    service->AddGroup(std::move(group));
   }
 };
 
@@ -259,4 +269,51 @@ TEST_F(BookmarkTest, GetURLsAndFoldersForTabGroup) {
   for (size_t i = 0; i < urls.size(); ++i) {
     EXPECT_EQ(folder_data[urls.size() - 1 - i].url.value(), urls[i]);
   }
+}
+
+TEST_F(BookmarkTest, SuggestsUniqueTabGroupName) {
+  auto service = std::make_unique<tab_groups::FakeTabGroupSyncService>();
+
+  const std::u16string base_title = u"Test";
+
+  // No existing groups, should return the original title.
+  EXPECT_EQ(base_title,
+            bookmarks::SuggestUniqueTabGroupName(base_title, service.get()));
+
+  // Group with same name exists, should return "Test (1)".
+  AddGroup(base_title, service.get());
+  EXPECT_EQ(base_title + u" (1)",
+            bookmarks::SuggestUniqueTabGroupName(base_title, service.get()));
+
+  // "Test" and "Test (1)" exist, should return "Test (2)".
+  AddGroup(base_title + u" (1)", service.get());
+  EXPECT_EQ(base_title + u" (2)",
+            bookmarks::SuggestUniqueTabGroupName(base_title, service.get()));
+
+  // "Test", "Test (1)", "Test (3)" exist, should return "Test (2)".
+  AddGroup(base_title + u" (3)", service.get());
+  EXPECT_EQ(base_title + u" (2)",
+            bookmarks::SuggestUniqueTabGroupName(base_title, service.get()));
+}
+
+TEST_F(BookmarkTest, SuggestsUniqueTabGroupNameReachesLimit) {
+  auto service = std::make_unique<tab_groups::FakeTabGroupSyncService>();
+
+  const std::u16string base_title = u"Test";
+  AddGroup(base_title, service.get());
+  for (int i = 1; i < 100; ++i) {
+    AddGroup(base_title + u" (" + base::NumberToString16(i) + u")",
+             service.get());
+  }
+
+  // All names from "Test" to "Test (99)" are taken. Should suggest "Test
+  // (100)".
+  EXPECT_EQ(base_title + u" (100)",
+            bookmarks::SuggestUniqueTabGroupName(base_title, service.get()));
+
+  // Add "Test (100)" as well. Should still suggest "Test (100)" as it's the
+  // fallback.
+  AddGroup(base_title + u" (100)", service.get());
+  EXPECT_EQ(base_title + u" (100)",
+            bookmarks::SuggestUniqueTabGroupName(base_title, service.get()));
 }
