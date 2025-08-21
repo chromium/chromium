@@ -163,9 +163,6 @@ void CaptionControllerBase::OnCaptionStyleUpdated() {
 
 void CaptionControllerBase::AddListener(std::unique_ptr<Listener> listener) {
   listeners_.push_back(std::move(listener));
-  if (listeners_.size() == 1) {
-    OnFirstListenerAdded();
-  }
 }
 
 void CaptionControllerBase::RemoveListener(Listener* listener) {
@@ -179,10 +176,6 @@ void CaptionControllerBase::RemoveListener(Listener* listener) {
     }
 
     listeners_.erase(iter);
-
-    if (listeners_.empty()) {
-      OnLastListenerRemoved();
-    }
     return;
   }
   NOTREACHED();

@@ -1383,10 +1383,6 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption) {
   EXPECT_TRUE(live_caption_toggle_button->GetIsOn());
   EXPECT_TRUE(live_translate_toggle_button->GetEnabled());
   EXPECT_FALSE(live_translate_toggle_button->GetIsOn());
-
-  // Turn off LiveCaption, because leaving it on breaks the test harness when it
-  // tries to destroy the UI.
-  profile().GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
 }
 
 TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption_MouseClickOutside) {
