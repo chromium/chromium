@@ -1,123 +1,92 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>
-      offlineaudiocontext-constructor.html
-    </title>
+    <title>offlineaudiocontext-constructor.html</title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let audit = Audit.createTaskRunner();
+    <script>
+      test(t => {
+        let context;
+        // Make sure we don't crash when giving 0 as number of frames.
+        assert_throws_dom(
+            'NotSupportedError',
+            () => new OfflineAudioContext(1, 0, 44100),
+            'new OfflineAudioContext(1, 0, 44100)');
+        // Make sure we don't throw exceptions for supported ranges of
+        // sample rates for an OfflineAudioContext.
+        assert_throws_dom(
+            'NotSupportedError',
+            () => context = new OfflineAudioContext(2, 512, 2999),
+            'context0 = new OfflineAudioContext(2, 512, 2999)');
 
-      audit.define(
-          {label: 'test', description: 'OfflineAudioContext constructor'},
-          (task, should) => {
-            let context;
-            // Make sure we don't crash when giving 0 as number of frames.
-            should(
-                () => new OfflineAudioContext(1, 0, 44100),
-                'new OfflineAudioContext(1, 0, 44100)')
-                .throw();
-            // Make sure we don't throw exceptions for supported ranges of
-            // sample rates for an OfflineAudioContext.
-            should(
-                () => context = new OfflineAudioContext(2, 512, 2999),
-                'context0 = new OfflineAudioContext(2, 512, 2999)')
-                .throw();
-            should(
-                () => context = new OfflineAudioContext(2, 512, 3000),
-                'context1 = new OfflineAudioContext(2, 512, 3000)')
-                .notThrow();
-            should(context.length, 'context1.length').beEqualTo(512);
-            should(
-                () => context = new OfflineAudioContext(2, 1024, 768000),
-                'context2 = new OfflineAudioContext(2, 1024, 768000)')
-                .notThrow();
-            should(context.length, 'context2.length').beEqualTo(1024);
-            should(
-                () => context = new OfflineAudioContext(2, 1024, 768001),
-                'context3 = new OfflineAudioContext(2, 1024, 768001)')
-                .throw();
-            should(
-                () => context = new OfflineAudioContext(2, 2048, 8000),
-                'context4 = new OfflineAudioContext(2, 2048, 8000)')
-                .notThrow();
-            should(context.length, 'context4.length').beEqualTo(2048);
-            should(
-                () => context = new OfflineAudioContext(2, 4096, 11025),
-                'context5 = new OfflineAudioContext(2, 4096, 11025)')
-                .notThrow();
-            should(context.length, 'context5.length').beEqualTo(4096);
-            should(
-                () => context = new OfflineAudioContext(2, 512, 22050),
-                'context6 = new OfflineAudioContext(2, 512, 22050)')
-                .notThrow();
-            should(context.length, 'context6.length').beEqualTo(512);
-            should(
-                () => context = new OfflineAudioContext(2, 512, 44100),
-                'context7 = new OfflineAudioContext(2, 512, 44100)')
-                .notThrow();
-            should(context.length, 'context7.length').beEqualTo(512);
-            should(
-                () => context = new OfflineAudioContext(2, 512, 48000),
-                'context8 = new OfflineAudioContext(2, 512, 48000)')
-                .notThrow();
-            should(context.length, 'context8.length').beEqualTo(512);
+        context = new OfflineAudioContext(2, 512, 3000);
+        assert_equals(context.length, 512, 'context1.length');
 
-            should(
-                () => context = new OfflineAudioContext(2, 512, 88200),
-                'context9 = new OfflineAudioContext(2, 512, 88200)')
-                .notThrow();
-            should(context.length, 'context9.length').beEqualTo(512);
+        context = new OfflineAudioContext(2, 1024, 768000);
+        assert_equals(context.length, 1024, 'context2.length');
 
-            // Make sure length is read-only.
-            should(() => context.length = 99, 'context9.length = 99')
-                .notThrow();
-            should(context.length, 'context9.length after illegal setter value')
-                .beEqualTo(512);
-            should(
-                () => context = new OfflineAudioContext(2, 512, 96000),
-                'context10 = new OfflineAudioContext(2, 512, 96000)')
-                .notThrow();
-            // Make sure we throw exceptions for non-finite sample rates.
-            should(
-                () => context = new OfflineAudioContext(1, 0, NaN),
-                'context11 = new OfflineAudioContext(1, 0, NaN)')
-                .throw();
-            should(
-                () => context = new OfflineAudioContext(1, 0, Infinity),
-                'context12 = new OfflineAudioContext(1, 0, Infinity)')
-                .throw();
-            // Verify channel counts and other destination attributes are set
-            // correctly.
-            should(
-                () => context = new OfflineAudioContext(7, 512, 48000),
-                'context13 = new OfflineAudioContext(7, 512, 48000)')
-                .notThrow();
-            should(
-                context.destination.channelCount,
-                'context13.destination.channelCount')
-                .beEqualTo(7);
-            should(
-                context.destination.maxChannelCount,
-                'context13.destination.maxChannelCount')
-                .beEqualTo(7);
-            should(
-                context.destination.channelCountMode,
-                'context13.destination.channelCountMode')
-                .beEqualTo('explicit');
-            should(
-                context.destination.channelInterpretation,
-                'context13.destination.channelInterpretation')
-                .beEqualTo('speakers');
+        assert_throws_dom(
+            'NotSupportedError',
+            () => new OfflineAudioContext(2, 1024, 768001),
+            'context3 = new OfflineAudioContext(2, 1024, 768001)');
 
-            task.done();
-          });
+        context = new OfflineAudioContext(2, 2048, 8000);
+        assert_equals(context.length, 2048, 'context4.length');
 
-      audit.run();
+        context = new OfflineAudioContext(2, 4096, 11025);
+        assert_equals(context.length, 4096, 'context5.length');
+
+        context = new OfflineAudioContext(2, 512, 22050);
+        assert_equals(context.length, 512, 'context6.length');
+
+        context = new OfflineAudioContext(2, 512, 44100);
+        assert_equals(context.length, 512, 'context7.length');
+
+        context = new OfflineAudioContext(2, 512, 48000);
+        assert_equals(context.length, 512, 'context8.length');
+
+        context = new OfflineAudioContext(2, 512, 88200);
+        assert_equals(context.length, 512, 'context9.length');
+        // Make sure length is read-only.
+        context.length = 99;
+        assert_equals(
+            context.length, 512, 'context9.length after illegal setter value');
+
+        context = new OfflineAudioContext(2, 512, 96000);
+
+        // Make sure we throw exceptions for non-finite sample rates.
+        assert_throws_js(
+            TypeError,
+            () => new OfflineAudioContext(1, 0, NaN),
+            'context11 = new OfflineAudioContext(1, 0, NaN)');
+        assert_throws_js(
+            TypeError,
+            () => new OfflineAudioContext(1, 0, Infinity),
+            'context12 = new OfflineAudioContext(1, 0, Infinity)');
+
+        // Verify channel counts and other destination attributes
+        // are set correctly.
+        context = new OfflineAudioContext(7, 512, 48000);
+
+        assert_equals(
+            context.destination.channelCount,
+            7,
+            'context13.destination.channelCount');
+        assert_equals(
+            context.destination.maxChannelCount,
+            7,
+            'context13.destination.maxChannelCount');
+        assert_equals(
+            context.destination.channelCountMode,
+            'explicit',
+            'context13.destination.channelCountMode');
+        assert_equals(
+            context.destination.channelInterpretation,
+            'speakers',
+            'context13.destination.channelInterpretation');
+      }, 'OfflineAudioContext constructor behavior validation');
     </script>
   </body>
 </html>
