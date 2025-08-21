@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/web_package/test_support/signed_web_bundles/key_pair.h"
+#include "components/web_package/test_support/signed_web_bundles/signing_keys.h"
 
 #include <cstdint>
 
-namespace web_package::test {
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/test_support/signed_web_bundles/key_pair.h"
+
+namespace {
 
 constexpr std::array<uint8_t, 32> kEd25519PublicKey = {
     0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51,
@@ -31,6 +34,10 @@ constexpr std::array<uint8_t, 32> kEcdsaP256PrivateKey = {
     0x24, 0xAB, 0xA9, 0x6A, 0x44, 0x4B, 0xEB, 0xE9, 0x3C, 0xD2, 0x88,
     0x47, 0x22, 0x63, 0x02, 0xB8, 0xE4, 0xA0, 0x16, 0x1A, 0x0E, 0x95,
     0xAA, 0x36, 0x95, 0x26, 0x83, 0x49, 0xEE, 0xCD, 0x27, 0x1A};
+
+}  // namespace
+
+namespace web_package::test {
 
 Ed25519KeyPair GetDefaultEd25519KeyPair() {
   return Ed25519KeyPair(kEd25519PublicKey, kEd25519PrivateKey);

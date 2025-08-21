@@ -65,8 +65,8 @@ source_set("web_applications") {
       "//components/site_engagement/content",
       "//components/url_formatter",
       "//components/user_education/common",
-      "//components/webapps/common",
       "//components/webapps/browser",
+      "//components/webapps/common",
       "//content/public/browser",
       "//skia:skia_core_public_headers",
       "//ui/actions:actions_headers",
@@ -309,6 +309,7 @@ source_set("browser_tests") {
     "//components/site_engagement/content",
     "//components/webapps/browser",
     "//components/webapps/common",
+    "//components/webapps/isolated_web_apps/test_support",
   ]
 
   if (is_chromeos) {

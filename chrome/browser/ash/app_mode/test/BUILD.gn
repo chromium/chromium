@@ -63,6 +63,7 @@ source_set("browser_tests") {
     "//components/web_package",
     "//components/web_package/test_support",
     "//components/webapps/isolated_web_apps",
+    "//components/webapps/isolated_web_apps/test_support",
     "//content/test:test_support",
     "//extensions/components/native_app_window",
     "//testing/gtest",

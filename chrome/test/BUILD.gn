@@ -2799,6 +2799,7 @@ if (!is_android) {
       "//components/webapps/browser:test_support",
       "//components/webapps/common",
       "//components/webapps/isolated_web_apps",
+      "//components/webapps/isolated_web_apps/test_support",
       "//components/webapps/services/web_app_origin_association/test:test_support",
       "//components/webauthn/core/browser",
       "//components/webauthn/core/browser:passkey_model",
@@ -8350,6 +8351,7 @@ test("unit_tests") {
       "//components/passage_embeddings:test_support",
       "//components/tab_groups",
       "//components/webapps/isolated_web_apps",
+      "//components/webapps/isolated_web_apps/test_support",
     ]
 
     # TODO(crbug.com/437811373): Remove this dependency when
@@ -10939,6 +10941,7 @@ if (!is_android) {
       "//components/user_manager",
       "//components/webapps/browser",
       "//components/webapps/common",
+      "//components/webapps/isolated_web_apps/test_support",
       "//content/public/browser",
       "//extensions/buildflags",
       "//google_apis",

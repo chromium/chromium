@@ -20,7 +20,6 @@
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"

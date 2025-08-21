@@ -25,7 +25,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "components/web_package/test_support/signed_web_bundles/key_pair.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -147,7 +147,7 @@ class IsolatedWebAppDeviceAttributesBrowserTest
   }
 
   IsolatedWebAppUrlInfo InstallApp() {
-    auto web_bundle_id = web_package::test::GetDefaultEd25519WebBundleId();
+    auto web_bundle_id = test::GetDefaultEd25519WebBundleId();
     auto iwa_url_info =
         web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
             web_bundle_id);
@@ -157,8 +157,7 @@ class IsolatedWebAppDeviceAttributesBrowserTest
 
     isolated_web_app_update_server_mixin_.AddBundle(
         IsolatedWebAppBuilder(GetIwaManifestBuilder())
-            .BuildBundle(web_bundle_id,
-                         {web_package::test::GetDefaultEd25519KeyPair()}));
+            .BuildBundle(web_bundle_id, {test::GetDefaultEd25519KeyPair()}));
     web_app::test::AddForceInstalledIwaToPolicy(
         profile()->GetPrefs(),
         isolated_web_app_update_server_mixin_.CreateForceInstallPolicyEntry(

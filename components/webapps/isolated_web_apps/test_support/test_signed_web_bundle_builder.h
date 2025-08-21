@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_TEST_SIGNED_WEB_BUNDLE_BUILDER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_TEST_SIGNED_WEB_BUNDLE_BUILDER_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TEST_SUPPORT_TEST_SIGNED_WEB_BUNDLE_BUILDER_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TEST_SUPPORT_TEST_SIGNED_WEB_BUNDLE_BUILDER_H_
 
 #include <string_view>
 #include <vector>
@@ -15,22 +15,7 @@
 #include "components/web_package/web_bundle_builder.h"
 #include "url/gurl.h"
 
-class SkBitmap;
-
 namespace web_app {
-
-namespace test {
-
-std::string EncodeAsPng(const SkBitmap& bitmap);
-
-// Pieces related to Ed25519 keys:
-using web_package::test::GetDefaultEd25519KeyPair;
-using web_package::test::GetDefaultEd25519WebBundleId;
-
-// Pieces related to EcdsaP256 keys:
-using web_package::test::GetDefaultEcdsaP256KeyPair;
-using web_package::test::GetDefaultEcdsaP256WebBundleId;
-}  // namespace test
 
 struct TestSignedWebBundle {
   TestSignedWebBundle(std::vector<uint8_t> data,
@@ -165,4 +150,4 @@ class TestSignedWebBundleBuilder {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_TEST_SIGNED_WEB_BUNDLE_BUILDER_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TEST_SUPPORT_TEST_SIGNED_WEB_BUNDLE_BUILDER_H_

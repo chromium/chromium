@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
+#include "components/webapps/isolated_web_apps/test_support/test_signed_web_bundle_builder.h"
 
 #include <memory>
 #include <string_view>
 #include <variant>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
-#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "net/base/mime_util.h"
 #include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -58,16 +60,6 @@ web_package::SignedWebBundleId GetWebBundleIdWithFallback(
       key_pair);
 }
 }  // namespace
-
-namespace test {
-
-std::string EncodeAsPng(const SkBitmap& bitmap) {
-  sk_sp<SkData> icon_skdata = skia::EncodePngAsSkData(bitmap.pixmap());
-  CHECK(icon_skdata);
-  return std::string(static_cast<const char*>(icon_skdata->data()),
-                     icon_skdata->size());
-}
-}  // namespace test
 
 TestSignedWebBundle::TestSignedWebBundle(
     std::vector<uint8_t> data,
@@ -214,7 +206,15 @@ TestSignedWebBundle TestSignedWebBundleBuilder::BuildDefault(
       build_options.base_url_.has_value()
           ? build_options.base_url_.value().Resolve(kTestIconUrl).spec()
           : kTestIconUrl,
-      test::EncodeAsPng(CreateSquareIcon(256, SK_ColorGREEN)));
+      [] {
+        // Creates a png-encoded green rectangle.
+        SkBitmap bitmap;
+        bitmap.allocN32Pixels(256, 256);
+        bitmap.eraseColor(SK_ColorGREEN);
+        sk_sp<SkData> icon_skdata = skia::EncodePngAsSkData(bitmap.pixmap());
+        return std::string(static_cast<const char*>(icon_skdata->data()),
+                           icon_skdata->size());
+      }());
 
   if (build_options.index_html_content_.has_value()) {
     builder.AddHtml(
