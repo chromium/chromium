@@ -121,14 +121,7 @@ void AdTracker::Shutdown() {
   local_root_ = nullptr;
 }
 
-int AdTracker::ScriptAtTopOfStack() {
-  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
-  return v8::StackTrace::CurrentScriptId(isolate);
-}
-
-ExecutionContext* AdTracker::GetCurrentExecutionContext() {
-  // Determine the current ExecutionContext.
-  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
+ExecutionContext* AdTracker::GetCurrentExecutionContext(v8::Isolate* isolate) {
   if (!isolate) {
     return nullptr;
   }
@@ -325,7 +318,8 @@ bool AdTracker::IsAdScriptInStackHelper(
     return true;
   }
 
-  ExecutionContext* execution_context = GetCurrentExecutionContext();
+  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
+  ExecutionContext* execution_context = GetCurrentExecutionContext(isolate);
   if (!execution_context)
     return false;
 
@@ -374,7 +368,7 @@ bool AdTracker::IsAdScriptInStackHelper(
   // (e.g., when v8 is executed) but not the entire stack. For a small cost we
   // can also check the top of the stack (this is much cheaper than getting the
   // full stack from v8).
-  int top_script_id = ScriptAtTopOfStack();
+  int top_script_id = v8::StackTrace::CurrentScriptId(isolate);
   if (top_script_id <= 0) {
     return false;
   }

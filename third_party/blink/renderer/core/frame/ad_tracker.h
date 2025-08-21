@@ -191,12 +191,6 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   AdTracker& operator=(const AdTracker&) = delete;
   virtual ~AdTracker();
 
- protected:
-  // Protected for testing.
-  // Note that this outputs the `out_top_script` even when it's not an ad.
-  virtual int ScriptAtTopOfStack();
-  virtual ExecutionContext* GetCurrentExecutionContext();
-
  private:
   friend class FrameFetchContextSubresourceFilterTest;
   friend class AdTrackerSimTest;
@@ -206,6 +200,8 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
     AdScriptIdentifier id;
     std::unique_ptr<AdProvenance> provenance;
   };
+
+  ExecutionContext* GetCurrentExecutionContext(v8::Isolate*);
 
   // Similar to the public IsAdScriptInStack method but instead of returning an
   // ancestry chain, it returns only one script (the most immediate one).
