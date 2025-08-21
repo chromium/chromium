@@ -98,13 +98,13 @@ suite('SetupListTest', () => {
     let setupList = getPromoAt(0);
     assertFalse(setupList.completed);
     assertEquals(promos[0]!.bodyText, setupList.$.bodyText.innerText);
-    assertEquals(promos[0]!.buttonText, setupList.$.actionButton.ariaLabel);
+    assertEquals(promos[0]!.buttonText, setupList.$.backing.ariaLabel);
 
     // Then completed promos.
     setupList = getPromoAt(1);
     assertTrue(setupList.completed);
     assertEquals(promos[1]!.bodyText, setupList.$.bodyText.innerText);
-    assertNull(setupList.querySelector('#actionButton'));
+    assertNull(setupList.querySelector('#actionIcon'));
 
   });
 
@@ -121,8 +121,7 @@ suite('SetupListTest', () => {
     for (let i = 0; i < MAX_SETUP_LIST_ENTRIES; ++i) {
       assertFalse(getPromoAt(i).completed);
       assertEquals(promos[i]!.bodyText, getPromoAt(i).$.bodyText.innerText);
-      assertEquals(
-          promos[i]!.buttonText, getPromoAt(i).$.actionButton.ariaLabel);
+      assertEquals(promos[i]!.buttonText, getPromoAt(i).$.backing.ariaLabel);
     }
   });
 });

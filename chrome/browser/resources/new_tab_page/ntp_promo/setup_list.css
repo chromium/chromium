@@ -22,22 +22,17 @@
 
 #promos {
   background-color: var(--setup-list-background);
-
   border: none;
   border-radius: var(--setup-list-border-radius);
   margin: var(--setup-list-margin);
-  padding: var(--setup-list-padding);
+  overflow: hidden;
 }
 
 setup-list-item {
   border-block-end: var(--setup-list-separator-size) solid
-                    var(--setup-list-separator-color);
-  margin-block-end: var(--setup-list-item-spacing);
-  padding-block-end: var(--setup-list-item-spacing);
+    var(--setup-list-separator-color);
 }
 
 setup-list-item:last-child {
   border-block-end: none;
-  margin-block-end: 0;
-  padding-block-end: 0;
 }

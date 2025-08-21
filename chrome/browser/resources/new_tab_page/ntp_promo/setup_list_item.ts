@@ -7,7 +7,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 import './ntp_promo_icons.html.js';
 
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './setup_list_item.css.js';
@@ -15,7 +15,8 @@ import {getHtml} from './setup_list_item.html.js';
 
 export interface SetupListItemElement {
   $: {
-    actionButton: CrIconButtonElement,
+    actionIcon: CrIconElement,
+    backing: HTMLElement,
     bodyIcon: HTMLElement,
     bodyText: HTMLElement,
   };
@@ -53,7 +54,7 @@ export class SetupListItemElement extends CrLitElement {
   accessor completed: boolean = false;
   accessor promoId: string = '';
 
-  protected onButtonClick_() {
+  protected onClick_() {
     const event = new CustomEvent(
         'ntp-promo-click',
         {composed: true, bubbles: true, detail: this.promoId});

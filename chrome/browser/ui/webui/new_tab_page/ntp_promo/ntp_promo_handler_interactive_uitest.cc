@@ -46,8 +46,9 @@ const InteractiveBrowserTestApi::DeepQuery kPathToSimplePromo = {
 const InteractiveBrowserTestApi::DeepQuery kPathToSetupList = {
     "ntp-app", "setup-list-module-wrapper", "setup-list", "setup-list-item"};
 constexpr char kActionButtonId[] = "#actionButton";
-constexpr char kActionTextId[] = "#bodyText";
-constexpr char kActionIconId[] = "#bodyIcon";
+constexpr char kActionIconId[] = "#actionIcon";
+constexpr char kPromoTextId[] = "#bodyText";
+constexpr char kPromoIconId[] = "#bodyIcon";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNtpElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestPromoShownEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestPromoClickedEvent);
@@ -130,13 +131,15 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
   }
 
   auto GetActionButtonPath() const {
-    return GetFirstPromoPath() + kActionButtonId;
+    return GetFirstPromoPath() + (GetParam() == NtpBrowserPromoType::kSimple
+                                      ? kActionButtonId
+                                      : kActionIconId);
   }
 
-  auto GetActionIconPath() const { return GetFirstPromoPath() + kActionIconId; }
+  auto GetPromoIconPath() const { return GetFirstPromoPath() + kPromoIconId; }
 
-  auto WaitForActionIcon(std::string_view expected_icon) {
-    const auto path = GetActionIconPath();
+  auto WaitForPromoIcon(std::string_view expected_icon) {
+    const auto path = GetPromoIconPath();
     auto steps = Steps(
         WaitForElementVisible(kNtpElementId, path),
         // Verify the icon shows the correct image.
@@ -149,11 +152,11 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
     MultiStep steps;
     switch (eligibility) {
       case Eligibility::kEligible:
-        steps += WaitForActionIcon("ntp-promo:chrome-filled");
+        steps += WaitForPromoIcon("ntp-promo:chrome-filled");
         steps += WaitForElementVisible(kNtpElementId, GetActionButtonPath());
         break;
       case Eligibility::kCompleted:
-        steps += WaitForActionIcon("cr:check");
+        steps += WaitForPromoIcon("cr:check");
         steps += EnsureNotVisible(kNtpElementId, GetActionButtonPath());
         break;
       case Eligibility::kIneligible:
@@ -164,7 +167,7 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
   }
 
   auto VerifyTestPromoText() {
-    return CheckJsResultAt(kNtpElementId, GetFirstPromoPath() + kActionTextId,
+    return CheckJsResultAt(kNtpElementId, GetFirstPromoPath() + kPromoTextId,
                            "el => el.innerText",
                            l10n_util::GetStringUTF8(IDS_NTP_SIGN_IN_PROMO))
         .AddDescriptionPrefix(__func__);
