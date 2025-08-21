@@ -5732,14 +5732,14 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPHONE_14_18_2",
+                "SIM_IPHONE_14_26_0",
             ],
         ),
         targets.bundle(
             targets = "ios_vm_unittests",
             variants = [
-                "SIM_IPAD_10TH_GEN_18_2",
-                "SIM_IPHONE_14_18_2",
+                "SIM_IPAD_10TH_GEN_26_0",
+                "SIM_IPHONE_14_26_0",
             ],
         ),
     ],
