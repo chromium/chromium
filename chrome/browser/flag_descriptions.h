@@ -1513,6 +1513,9 @@ extern const char kLensOverlaySimplifiedSelectionDescription[];
 extern const char kLensOverlayStraightToSrpName[];
 extern const char kLensOverlayStraightToSrpDescription[];
 
+extern const char kLensOverlayTextSelectionContextMenuEntrypointName[];
+extern const char kLensOverlayTextSelectionContextMenuEntrypointDescription[];
+
 extern const char kLensOverlayTranslateButtonName[];
 extern const char kLensOverlayTranslateButtonDescription[];
 
