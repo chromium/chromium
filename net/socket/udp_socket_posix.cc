@@ -25,6 +25,7 @@
 #include <memory>
 
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -216,7 +217,13 @@ void UDPSocketPosix::Close() {
     // because it may have been reused by another thread in the meantime. We may
     // leak file handles here and cause a crash indirectly later. See
     // https://crbug.com/40732798.
-    PCHECK(errno == ENOTCONN || errno == EPROTOTYPE);
+    if (errno != ENOTCONN && errno != EPROTOTYPE) {
+      // TODO(crbug.com/437414746): Remove this once the new crash has been
+      // diagnosed.
+      SCOPED_CRASH_KEY_NUMBER("UdpSocketPosix", "guarded_close_np_errno",
+                              errno);
+      PLOG(FATAL) << "Unexpected errno from guarded_close_np";
+    }
   }
 #else
   PCHECK(IGNORE_EINTR(close(socket_)) == 0);
