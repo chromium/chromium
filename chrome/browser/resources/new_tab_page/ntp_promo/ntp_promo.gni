@@ -2,13 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-ntp_promo_ts_files = [
-  "ntp_promo/ntp_promo_proxy.ts",
-  "ntp_promo/ntp_single_promo.html.ts",
-  "ntp_promo/ntp_single_promo.ts",
-]
+ntp_promo_ts_files = [ "ntp_promo/ntp_promo_proxy.ts" ]
 
 ntp_promo_web_component_files = [
+  "ntp_promo/ntp_single_promo.ts",
   "ntp_promo/setup_list.ts",
   "ntp_promo/setup_list_item.ts",
   "ntp_promo/setup_list_module_wrapper.ts",

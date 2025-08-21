@@ -10,7 +10,6 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 import './ntp_promo_icons.html.js';
 
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -21,13 +20,10 @@ import {getCss} from './ntp_single_promo.css.js';
 import {getHtml} from './ntp_single_promo.html.js';
 
 export interface NtpSinglePromoElement {
-  $: {
-    actionButton: CrIconButtonElement,
-    bodyIcon: HTMLElement,
-    bodyText: HTMLElement,
-  };
+  $: {promos: HTMLElement};
 }
 
+const DEFAULT_MAX_PROMOS = 1;
 export class NtpSinglePromoElement extends CrLitElement {
   static get is() {
     return 'ntp-single-promo';
@@ -43,15 +39,14 @@ export class NtpSinglePromoElement extends CrLitElement {
 
   static override get properties() {
     return {
-      promoId: {type: String, reflect: true, useDefault: true},
+      eligiblePromos_: {type: Array},
+      maxPromos: {type: Number, reflect: true, useDefault: true},
     };
   }
 
-  accessor promoId: string = '';
 
-  protected bodyIconName_: string = '';
-  protected bodyText_: string = '';
-  protected actionButtonText_: string = '';
+  accessor eligiblePromos_: Promo[] = [];
+  accessor maxPromos: number = DEFAULT_MAX_PROMOS;
 
   private handler_: NtpPromoHandlerInterface;
   private callbackRouter_: NtpPromoClientCallbackRouter;
@@ -82,30 +77,24 @@ export class NtpSinglePromoElement extends CrLitElement {
 
   // Public for testing purposes only.
   onSetPromos(eligible: Promo[]) {
-    if (eligible.length > 0) {
-      const promo: Promo = eligible[0]!;
-      this.bodyIconName_ = promo.iconName;
-      this.bodyText_ = promo.bodyText;
-      this.actionButtonText_ = promo.buttonText;
-      this.promoId = promo.id;
+    this.eligiblePromos_ =
+        eligible.slice(0, Math.min(this.maxPromos, eligible.length));
+
+    if (this.eligiblePromos_.length > 0) {
       this.style.display = 'block';
     } else {
-      this.promoId = '';
-      this.bodyIconName_ = '';
-      this.bodyText_ = '';
-      this.actionButtonText_ = '';
       this.style.display = 'none';
     }
     if (!this.notifiedShown_) {
       this.notifiedShown_ = true;
-      const shown: string[] = this.promoId ? [this.promoId] : [];
+      const shown = this.eligiblePromos_.map(p => p.id);
       this.handler_.onPromosShown(shown, []);
     }
   }
 
-  protected onButtonClick_() {
-    assert(this.promoId, 'Button should not be able to display if no promoId.');
-    this.handler_.onPromoClicked(this.promoId);
+  protected onClick_(promoId: string) {
+    assert(promoId, 'Button should not be able to display if no promoId.');
+    this.handler_.onPromoClicked(promoId);
   }
 }
 

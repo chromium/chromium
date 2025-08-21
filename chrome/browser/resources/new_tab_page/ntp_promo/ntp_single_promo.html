@@ -1,0 +1,15 @@
+<!-- Copyright 2025 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<div id="promos">
+  ${this.eligiblePromos_.map(item => html`
+  <div id="promo" @click="${this.onClick_.bind(this, item.id)}" role="button"
+    aria-label="${item.buttonText}"
+  >
+    <cr-icon id="bodyIcon" icon="ntp-promo:${item.iconName}"></cr-icon>
+    <p id="bodyText">${item.bodyText}</p>
+    <cr-icon id="actionIcon" icon="cr:chevron-right"></cr-icon>
+  </div>
+  `)}
+</div>

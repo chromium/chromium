@@ -45,7 +45,6 @@ const InteractiveBrowserTestApi::DeepQuery kPathToSimplePromo = {
     "ntp-app", "ntp-single-promo"};
 const InteractiveBrowserTestApi::DeepQuery kPathToSetupList = {
     "ntp-app", "setup-list-module-wrapper", "setup-list", "setup-list-item"};
-constexpr char kActionButtonId[] = "#actionButton";
 constexpr char kActionIconId[] = "#actionIcon";
 constexpr char kPromoTextId[] = "#bodyText";
 constexpr char kPromoIconId[] = "#bodyIcon";
@@ -131,9 +130,7 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
   }
 
   auto GetActionButtonPath() const {
-    return GetFirstPromoPath() + (GetParam() == NtpBrowserPromoType::kSimple
-                                      ? kActionButtonId
-                                      : kActionIconId);
+    return GetFirstPromoPath() + kActionIconId;
   }
 
   auto GetPromoIconPath() const { return GetFirstPromoPath() + kPromoIconId; }
