@@ -75,11 +75,22 @@ if (current_toolchain == default_toolchain) {
   # toolchain. This prevents unnecessary copies in multi-toolchain builds and
   # allows Siso to use its precomputed tree for the default toolchain's `gen`
   # directory.
+  #
+  # Note: there are setups where clang_modules is enabled for some, but not all,
+  # toolchains (see https://crrev.com/c/6849070). So, this copy must happen
+  # unconditionally.
   copy("copy_libcxx_headers") {
     sources = libcxx_headers
     outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
+
+    # Rely on `:libcxx_headers` instead: it abstract away the default toolchain
+    # optimization and the internal copy.
+    visibility = [ ":libcxx_headers" ]
   }
 
+  # Note: there are setups where clang_modules is enabled for some, but not all,
+  # toolchains (see https://crrev.com/c/6849070). So, this copy must happen
+  # unconditionally.
   copy("copy_custom_headers") {
     sources = [
       "__assertion_handler",
@@ -88,6 +99,26 @@ if (current_toolchain == default_toolchain) {
     outputs = [
       "${root_gen_dir}/third_party/libc++/src/include/{{source_file_part}}",
     ]
+
+    # Rely on `:custom_headers` instead: it abstract away the default toolchain
+    # optimization and the internal copy.
+    visibility = [ ":custom_headers" ]
+  }
+}
+
+# TODO(https://crbug.com/440260716): This intermediate target can be removed
+# once Cronet's gn2bp supports copy targets with multiple outputs.
+group("libcxx_headers") {
+  if (use_clang_modules) {
+    deps = [ ":copy_libcxx_headers($default_toolchain)" ]
+  }
+}
+
+# TODO(https://crbug.com/440260716): This intermediate target can be removed
+# once Cronet's gn2bp supports copy targets with multiple outputs.
+group("custom_headers") {
+  if (use_clang_modules) {
+    deps = [ ":copy_custom_headers($default_toolchain)" ]
   }
 }
 
@@ -1012,7 +1043,11 @@ target(libcxx_target_type, "libc++") {
                "//build/config/compiler:rtti",
              ]
 
-  deps = [ "//third_party/llvm-libc:llvm-libc-shared" ]
+  deps = [
+    ":custom_headers",
+    ":libcxx_headers",
+    "//third_party/llvm-libc:llvm-libc-shared",
+  ]
 
   if (use_clang_modules) {
     # TODO(https://github.com/llvm/llvm-project/issues/127012): We don't enable
@@ -1023,12 +1058,8 @@ target(libcxx_target_type, "libc++") {
     # This removes deps to libc++'s modules from libc++'s build as libc++
     # doesn't support modules build itself.
     use_libcxx_modules = false
-
-    deps += [
-      ":copy_custom_headers($default_toolchain)",
-      ":copy_libcxx_headers($default_toolchain)",
-    ]
   }
+
   if ((is_android || is_apple) && libcxx_is_shared) {
     # Use libc++_chrome to avoid conflicting with system libc++
     output_name = "libc++_chrome"

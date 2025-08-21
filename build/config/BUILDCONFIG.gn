@@ -571,12 +571,12 @@ foreach(_target_type,
       }
 
       if (is_clang) {
-        # When clang is used, some target may use clang module and we need to use
-        # libc++ headers copied in gen directory, regardless of whether the libc++
+        # When clang is used, some target may use clang module. This dependency
+        # is required for things to work, regardless of whether the libc++
         # module is used in this target or not.
         public_deps += [
-          "//buildtools/third_party/libc++:copy_custom_headers($default_toolchain)",
-          "//buildtools/third_party/libc++:copy_libcxx_headers($default_toolchain)",
+          "//buildtools/third_party/libc++:custom_headers",
+          "//buildtools/third_party/libc++:libcxx_headers",
         ]
       }
 
@@ -692,12 +692,12 @@ foreach(_target_type,
       }
 
       if (is_clang) {
-        # When clang is used, some target may use clang module and we need to use
-        # libc++ headers copied in gen directory, regardless of whether the libc++
+        # When clang is used, some target may use clang module. This dependency
+        # is required for things to work, regardless of whether the libc++
         # module is used in this target or not.
         public_deps += [
-          "//buildtools/third_party/libc++:copy_custom_headers($default_toolchain)",
-          "//buildtools/third_party/libc++:copy_libcxx_headers($default_toolchain)",
+          "//buildtools/third_party/libc++:custom_headers",
+          "//buildtools/third_party/libc++:libcxx_headers",
         ]
       }
 
