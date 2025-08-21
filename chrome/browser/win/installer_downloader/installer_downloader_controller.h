@@ -66,6 +66,8 @@ class InstallerDownloaderController final
   using GetActiveWebContentsCallback =
       base::RepeatingCallback<content::WebContents*()>;
 
+  using ShouldShowInfobarForProfileCallback = base::RepeatingCallback<bool()>;
+
   InstallerDownloaderController(
       ShowInfobarCallback show_infobar_callback,
       base::RepeatingCallback<bool()> is_metrics_enabled_callback);
@@ -98,6 +100,9 @@ class InstallerDownloaderController final
 
   void SetActiveWebContentsCallbackForTesting(
       GetActiveWebContentsCallback callback);
+
+  void SetShouldShowInfobarForProfileCallbackForTesting(
+      ShouldShowInfobarForProfileCallback callback);
 
  private:
   using BrowserAndActiveTabTrackerMap = std::map<
@@ -154,6 +159,8 @@ class InstallerDownloaderController final
   // 1. Close tab.
   // 2. Close browser window.
   bool user_initiated_info_bar_close_pending_ = false;
+
+  ShouldShowInfobarForProfileCallback should_show_infobar_for_profile_callback_;
 };
 
 }  // namespace installer_downloader

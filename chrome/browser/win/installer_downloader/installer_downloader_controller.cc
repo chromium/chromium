@@ -93,7 +93,10 @@ InstallerDownloaderController::InstallerDownloaderController(
       model_(std::make_unique<InstallerDownloaderModelImpl>(
           std::make_unique<SystemInfoProviderImpl>())),
       get_active_web_contents_callback_(
-          base::BindRepeating(&GetActiveWebContents)) {
+          base::BindRepeating(&GetActiveWebContents)),
+      should_show_infobar_for_profile_callback_(base::BindRepeating(
+          &InstallerDownloaderController::ShouldShowInfobarForCurrentProfile,
+          base::Unretained(this))) {
   RegisterBrowserWindowEvents();
 }
 
@@ -105,7 +108,10 @@ InstallerDownloaderController::InstallerDownloaderController(
       show_infobar_callback_(std::move(show_infobar_callback)),
       model_(std::move(model)),
       get_active_web_contents_callback_(
-          base::BindRepeating(&GetActiveWebContents)) {
+          base::BindRepeating(&GetActiveWebContents)),
+      should_show_infobar_for_profile_callback_(base::BindRepeating(
+          &InstallerDownloaderController::ShouldShowInfobarForCurrentProfile,
+          base::Unretained(this))) {
   RegisterBrowserWindowEvents();
 }
 
@@ -169,7 +175,7 @@ void InstallerDownloaderController::MaybeShowInfoBar() {
     return;
   }
 
-  if (!ShouldShowInfobarForCurrentProfile()) {
+  if (!should_show_infobar_for_profile_callback_.Run()) {
     return;
   }
 
@@ -314,6 +320,12 @@ void InstallerDownloaderController::OnDownloadCompleted(
 void InstallerDownloaderController::SetActiveWebContentsCallbackForTesting(
     GetActiveWebContentsCallback callback) {
   get_active_web_contents_callback_ = std::move(callback);
+}
+
+void InstallerDownloaderController::
+    SetShouldShowInfobarForProfileCallbackForTesting(
+        ShouldShowInfobarForProfileCallback callback) {
+  should_show_infobar_for_profile_callback_ = std::move(callback);
 }
 
 void InstallerDownloaderController::OnInfoBarDismissed() {
