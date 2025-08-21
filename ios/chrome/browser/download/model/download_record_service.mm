@@ -47,6 +47,21 @@ std::vector<DownloadRecord> DownloadRecordService::GetAllDownloads() const {
   return records;
 }
 
+web::DownloadTask* DownloadRecordService::GetDownloadTask(
+    const std::string& download_id) const {
+  // TODO: Implement logic to retrieve the download task by ID
+  return nullptr;
+}
+
+bool DownloadRecordService::RemoveDownload(const std::string& download_id) {
+  auto it = downloads_.find(download_id);
+  if (it != downloads_.end()) {
+    downloads_.erase(it);
+    return true;
+  }
+  return false;
+}
+
 void DownloadRecordService::AddObserver(DownloadRecordObserver* observer) {
   observers_.AddObserver(observer);
 }

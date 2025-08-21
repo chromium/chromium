@@ -4,6 +4,10 @@
 
 source_set("ui") {
   sources = [
+    "download_list_consumer.h",
+    "download_list_mutator.h",
+    "download_list_view_controller.h",
+    "download_list_view_controller.mm",
     "download_manager_consumer.h",
     "download_manager_state.h",
     "download_manager_state_view.h",
@@ -29,6 +33,7 @@ source_set("ui") {
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",

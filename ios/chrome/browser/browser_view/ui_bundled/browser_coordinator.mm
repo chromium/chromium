@@ -98,6 +98,7 @@
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_coordinator.h"
+#import "ios/chrome/browser/download/coordinator/download_list_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/download_manager_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/pass_kit_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/safari_download_coordinator.h"
@@ -230,6 +231,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
+#import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
@@ -371,6 +373,7 @@ enum class ToolbarKind {
     CountryCodePickerCommands,
     DefaultBrowserGenericPromoCommands,
     DefaultPromoNonModalPresentationDelegate,
+    DownloadListCommands,
     DriveFilePickerCommands,
     EnhancedCalendarCommands,
     EditMenuBuilder,
@@ -506,6 +509,9 @@ enum class ToolbarKind {
 // Coordinator that manages the presentation of Download Manager UI.
 @property(nonatomic, strong)
     DownloadManagerCoordinator* downloadManagerCoordinator;
+
+// Coordinator that manages the presentation of Download List UI.
+@property(nonatomic, strong) DownloadListCoordinator* downloadListCoordinator;
 
 // The coordinator that manages enterprise prompts.
 @property(nonatomic, strong)
@@ -881,6 +887,9 @@ enum class ToolbarKind {
   [self stopSaveToPhotos];
   [self hideSaveToDrive];
   [self hideDriveFilePicker];
+  if (IsDownloadListEnabled()) {
+    [self hideDownloadList];
+  }
 
   [self.passKitCoordinator stop];
   self.passKitCoordinator = nil;
@@ -1157,6 +1166,7 @@ enum class ToolbarKind {
     @protocol(ContextualPanelEntrypointIPHCommands),
     @protocol(ContextualSheetCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
+    @protocol(DownloadListCommands),
     @protocol(DriveFilePickerCommands),
     @protocol(EnhancedCalendarCommands),
     @protocol(FeedCommands),
@@ -1451,6 +1461,11 @@ enum class ToolbarKind {
 
   [self.downloadManagerCoordinator stop];
   self.downloadManagerCoordinator = nil;
+
+  if (IsDownloadListEnabled()) {
+    [self.downloadListCoordinator stop];
+    self.downloadListCoordinator = nil;
+  }
 
   [self.browserContainerCoordinator stop];
   self.browserContainerCoordinator = nil;
@@ -2249,6 +2264,10 @@ enum class ToolbarKind {
 }
 
 - (void)showDownloadsFolder {
+  if (IsDownloadListEnabled()) {
+    [self showDownloadList];
+    return;
+  }
   NSURL* URL = GetFilesAppUrl();
   if (!URL) {
     return;
@@ -4773,6 +4792,21 @@ enum class ToolbarKind {
     (TrustedVaultReauthenticationCoordinator*)coordinator {
   CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator);
   [self stopTrustedVaultReauthentication];
+}
+
+#pragma mark - DownloadListCommands
+
+- (void)hideDownloadList {
+  DCHECK(self.downloadListCoordinator);
+  [self.downloadListCoordinator stop];
+  self.downloadListCoordinator = nil;
+}
+
+- (void)showDownloadList {
+  self.downloadListCoordinator = [[DownloadListCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.downloadListCoordinator start];
 }
 
 @end

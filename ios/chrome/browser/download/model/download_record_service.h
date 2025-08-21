@@ -37,6 +37,14 @@ class DownloadRecordService : public KeyedService,
   // Returns all downloads.
   std::vector<DownloadRecord> GetAllDownloads() const;
 
+  // Gets download task from record.
+  // Returns nullptr if the download ID does not exist.
+  web::DownloadTask* GetDownloadTask(const std::string& download_id) const;
+
+  // Removes a download record by ID.
+  // Will return true if the record was found and removed.
+  bool RemoveDownload(const std::string& download_id);
+
   // Observer management.
   void AddObserver(DownloadRecordObserver* observer);
   void RemoveObserver(DownloadRecordObserver* observer);

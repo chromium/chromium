@@ -6,6 +6,10 @@ source_set("coordinator") {
   sources = [
     "ar_quick_look_coordinator.h",
     "ar_quick_look_coordinator.mm",
+    "download_list_coordinator.h",
+    "download_list_coordinator.mm",
+    "download_list_mediator.h",
+    "download_list_mediator.mm",
     "download_manager_coordinator.h",
     "download_manager_coordinator.mm",
     "download_manager_mediator.h",
