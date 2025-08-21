@@ -90,6 +90,10 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // Gets the frame output configuration.
   const FrameOutputConfig& ImageOutputConfig() const;
 
+  // testing::Environment implementation.
+  void SetUp() override;
+  void TearDown() override;
+
  private:
   // TODO(crbug.com/40228467): merge |use_vbr| and |bitrate| into a single
   // Bitrate-typed field.
