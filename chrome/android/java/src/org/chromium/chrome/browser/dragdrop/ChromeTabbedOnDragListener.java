@@ -100,9 +100,11 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                         || mLayoutStateProviderSupplier
                                 .get()
                                 .isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-                    // TODO(crbug.com/404074503): Metric for multi-tab drop.
                     DragDropMetricUtils.recordDragDropResult(
-                            DragDropResult.IGNORED_TAB_SWITCHER, isInDesktopWindow, isTabGroupDrop);
+                            DragDropResult.IGNORED_TAB_SWITCHER,
+                            isInDesktopWindow,
+                            isTabGroupDrop,
+                            isMultiTabDrop);
                     return false;
                 }
                 if (clipDescription == null) return false;
@@ -144,7 +146,12 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
     private boolean handleTabDrop(DragEvent dragEvent, boolean isInDesktopWindow) {
         DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
         Tab draggedTab = ChromeDragDropUtils.getTabFromGlobalState(globalState);
-        if (!validDragEvent(globalState, draggedTab, isInDesktopWindow, /* isTabGroup= */ false)) {
+        if (!validDragEvent(
+                globalState,
+                draggedTab,
+                isInDesktopWindow,
+                /* isTabGroup= */ false,
+                /* isMultiTab= */ false)) {
             return false;
         }
 
@@ -167,14 +174,22 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                 Collections.singletonList(draggedTab),
                 destIndex);
         DragDropMetricUtils.recordDragDropType(
-                DragDropType.TAB_STRIP_TO_CONTENT, isInDesktopWindow, /* isTabGroup= */ false);
+                DragDropType.TAB_STRIP_TO_CONTENT,
+                isInDesktopWindow,
+                /* isTabGroup= */ false,
+                /* isMultiTab= */ false);
         return true;
     }
 
     private boolean handleMultiTabDrop(DragEvent dragEvent, boolean isInDesktopWindow) {
         DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
         List<Tab> draggedTabs = ChromeDragDropUtils.getTabsFromGlobalState(globalState);
-        if (!validDragEvent(globalState, draggedTabs, isInDesktopWindow, /* isTabGroup= */ false)) {
+        if (!validDragEvent(
+                globalState,
+                draggedTabs,
+                isInDesktopWindow,
+                /* isTabGroup= */ false,
+                /* isMultiTab= */ true)) {
             return false;
         }
 
@@ -190,7 +205,10 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
         mMultiInstanceManager.moveTabsToWindow(
                 mWindowAndroid.getActivity().get(), draggedTabs, destIndex);
         DragDropMetricUtils.recordDragDropType(
-                DragDropType.TAB_STRIP_TO_CONTENT, isInDesktopWindow, /* isTabGroup= */ false);
+                DragDropType.TAB_STRIP_TO_CONTENT,
+                isInDesktopWindow,
+                /* isTabGroup= */ false,
+                /* isMultiTab= */ true);
         return true;
     }
 
@@ -200,7 +218,11 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                 ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(globalState);
 
         if (!validDragEvent(
-                globalState, tabGroupMetadata, isInDesktopWindow, /* isTabGroup= */ true)) {
+                globalState,
+                tabGroupMetadata,
+                isInDesktopWindow,
+                /* isTabGroup= */ true,
+                /* isMultiTab= */ false)) {
             return false;
         }
 
@@ -216,28 +238,34 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
         mMultiInstanceManager.moveTabGroupToWindow(
                 mWindowAndroid.getActivity().get(), tabGroupMetadata, destIndex);
         DragDropMetricUtils.recordDragDropType(
-                DragDropType.TAB_STRIP_TO_CONTENT, isInDesktopWindow, /* isTabGroup= */ true);
+                DragDropType.TAB_STRIP_TO_CONTENT,
+                isInDesktopWindow,
+                /* isTabGroup= */ true,
+                /* isMultiTab= */ false);
         return true;
     }
 
-    @Contract("null, _, _, _ -> false; _, null, _, _ -> false")
+    @Contract("null, _, _, _, _ -> false; _, null, _, _, _ -> false")
     private boolean validDragEvent(
             @Nullable DragDropGlobalState globalState,
             @Nullable Object draggedData,
             boolean isInDesktopWindow,
-            boolean isTabGroup) {
+            boolean isTabGroup,
+            boolean isMultiTab) {
         if (globalState == null || draggedData == null) {
             DragDropMetricUtils.recordDragDropResult(
                     DragDropResult.ERROR_CONTENT_NOT_FOUND,
                     isInDesktopWindow,
-                    /* isTabGroup= */ isTabGroup);
+                    /* isTabGroup= */ isTabGroup,
+                    /* isMultiTab= */ isMultiTab);
             return false;
         }
         if (globalState.isDragSourceInstance(mMultiInstanceManager.getCurrentInstanceId())) {
             DragDropMetricUtils.recordDragDropResult(
                     DragDropResult.IGNORED_SAME_INSTANCE,
                     isInDesktopWindow,
-                    /* isTabGroup= */ isTabGroup);
+                    /* isTabGroup= */ isTabGroup,
+                    /* isMultiTab= */ isMultiTab);
             return false;
         }
         return true;

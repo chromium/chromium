@@ -81,8 +81,9 @@ public class ChromeDragDropUtils {
         return switch (intent.getIntExtra(
                 IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN)) {
             case UrlIntentSource.LINK -> DragDropType.LINK_TO_NEW_INSTANCE;
-            case UrlIntentSource.TAB_IN_STRIP, UrlIntentSource.TAB_GROUP_IN_STRIP -> DragDropType
-                    .TAB_STRIP_TO_NEW_INSTANCE;
+            case UrlIntentSource.TAB_IN_STRIP,
+                    UrlIntentSource.TAB_GROUP_IN_STRIP,
+                    UrlIntentSource.MULTI_TAB_IN_STRIP -> DragDropType.TAB_STRIP_TO_NEW_INSTANCE;
             default -> DragDropType.UNKNOWN_TO_NEW_INSTANCE;
         };
     }

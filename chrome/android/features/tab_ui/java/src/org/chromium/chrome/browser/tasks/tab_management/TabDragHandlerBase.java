@@ -241,6 +241,12 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
                 != null;
     }
 
+    protected boolean isMultiTabDrop() {
+        return ChromeDragDropUtils.getTabsFromGlobalState(
+                        getDragDropGlobalState(/* dragEvent= */ null))
+                != null;
+    }
+
     protected boolean doesBelongToCurrentModel(boolean draggedIncognito) {
         return getTabModelSelector().getCurrentModel().isIncognitoBranded() == draggedIncognito;
     }
@@ -338,6 +344,7 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
                         ? dragDropGlobalState.getDragSourceInstance()
                         : INVALID_WINDOW_ID;
         boolean isTabGroupDrop = isTabGroupDrop();
+        boolean isMultiTabDrop = isMultiTabDrop();
 
         clearDragDropGlobalState();
 
@@ -347,8 +354,12 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
         // Only record for source strip to avoid duplicate.
         if (dropHandled) {
             DragDropMetricUtils.recordDragDropResult(
-                    DragDropResult.SUCCESS, mIsAppInDesktopWindowSupplier.get(), isTabGroupDrop);
-            DragDropMetricUtils.recordDragDropClosedWindow(didCloseWindow, isTabGroupDrop);
+                    DragDropResult.SUCCESS,
+                    mIsAppInDesktopWindowSupplier.get(),
+                    isTabGroupDrop,
+                    isMultiTabDrop);
+            DragDropMetricUtils.recordDragDropClosedWindow(
+                    didCloseWindow, isTabGroupDrop, isMultiTabDrop);
         } else if (MultiWindowUtils.getInstanceCount() >= MultiWindowUtils.getMaxInstances()) {
             Context context = getActivity().getWindow().getContext();
             Toast.makeText(
@@ -363,7 +374,8 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
             DragDropMetricUtils.recordDragDropResult(
                     DragDropResult.IGNORED_MAX_INSTANCES,
                     mIsAppInDesktopWindowSupplier.get(),
-                    isTabGroupDrop);
+                    isTabGroupDrop,
+                    isMultiTabDrop);
         }
     }
 

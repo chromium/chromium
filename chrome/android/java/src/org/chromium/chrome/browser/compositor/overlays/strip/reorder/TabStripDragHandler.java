@@ -321,7 +321,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                     DragDropMetricUtils.recordDragDropResult(
                             DragDropResult.IGNORED_TOOLBAR,
                             mIsAppInDesktopWindowSupplier.get(),
-                            isTabGroupDrop());
+                            isTabGroupDrop(),
+                            isMultiTabDrop());
                     res = false;
                 }
                 break;
@@ -397,7 +398,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         helper.stopReorderMode();
         if (isDragSource()) {
             DragDropMetricUtils.recordReorderStripWithDragDrop(
-                    mDragEverLeftStrip, isTabGroupDrop());
+                    mDragEverLeftStrip, isTabGroupDrop(), isMultiTabDrop());
             return true;
         }
 
@@ -451,7 +452,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,
                 mIsAppInDesktopWindowSupplier.get(),
-                /* isTabGroup= */ false);
+                /* isTabGroup= */ false,
+                /* isMultiTab= */ false);
         return true;
     }
 
@@ -485,7 +487,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,
                 mIsAppInDesktopWindowSupplier.get(),
-                /* isTabGroup= */ false);
+                /* isTabGroup= */ false,
+                /* isMultiTab= */ true);
         return true;
     }
 
@@ -519,7 +522,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,
                 mIsAppInDesktopWindowSupplier.get(),
-                /* isTabGroup= */ true);
+                /* isTabGroup= */ true,
+                /* isMultiTab= */ false);
         return true;
     }
 
@@ -613,7 +617,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         DragDropMetricUtils.recordDragDropResult(
                 DragDropResult.IGNORED_MHTML_TAB,
                 mIsAppInDesktopWindowSupplier.get(),
-                /* isTabGroup= */ true);
+                /* isTabGroup= */ true,
+                /* isMultiTab= */ false);
         return true;
     }
 

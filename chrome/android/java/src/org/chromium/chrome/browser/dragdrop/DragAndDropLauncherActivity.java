@@ -45,6 +45,8 @@ public class DragAndDropLauncherActivity extends Activity {
     static final String ACTION_DRAG_DROP_VIEW = "org.chromium.chrome.browser.dragdrop.action.VIEW";
     static final String LAUNCHED_FROM_LINK_USER_ACTION = "MobileNewInstanceLaunchedFromDraggedLink";
     static final String LAUNCHED_FROM_TAB_USER_ACTION = "MobileNewInstanceLaunchedFromDraggedTab";
+    static final String LAUNCHED_FROM_MULTI_TAB_USER_ACTION =
+            "MobileNewInstanceLaunchedFromDraggedMultiTab";
     static final String LAUNCHED_FROM_TAB_GROUP_USER_ACTION =
             "MobileNewInstanceLaunchedFromDraggedTabGroup";
 
@@ -195,7 +197,7 @@ public class DragAndDropLauncherActivity extends Activity {
      */
     @VisibleForTesting
     static Intent getMultiTabIntent(Intent intent, @Nullable List<Tab> tabs) {
-        intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.TAB_IN_STRIP);
+        intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.MULTI_TAB_IN_STRIP);
         IntentHandler.setMultiTabMetadata(intent, MultiTabMetadata.create(tabs));
         return intent;
     }

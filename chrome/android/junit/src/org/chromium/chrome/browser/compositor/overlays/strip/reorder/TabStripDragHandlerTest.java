@@ -1127,8 +1127,8 @@ public class TabStripDragHandlerTest {
     }
 
     private void doTestOnDragDropInStripSource_multiTab() {
-        String resultHistogram = "Android.DragDrop.Tab.FromStrip.Result";
-        String reorderHistogram = "Android.DragDrop.Tab.ReorderStripWithDragDrop";
+        String resultHistogram = "Android.DragDrop.MultiTab.FromStrip.Result";
+        String reorderHistogram = "Android.DragDrop.MultiTab.ReorderStripWithDragDrop";
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(resultHistogram, DragDropResult.SUCCESS)
@@ -1200,7 +1200,7 @@ public class TabStripDragHandlerTest {
     }
 
     private void doTestOnDragDropInToolbarContainerSource_multiTab() {
-        String resultHistogram = "Android.DragDrop.Tab.FromStrip.Result";
+        String resultHistogram = "Android.DragDrop.MultiTab.FromStrip.Result";
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(resultHistogram, DragDropResult.IGNORED_TOOLBAR)
@@ -1442,8 +1442,8 @@ public class TabStripDragHandlerTest {
     }
 
     private void doTestDropInDestinationDifferentModel_multiTab() {
-        String resultHistogram = "Android.DragDrop.Tab.FromStrip.Result";
-        String typeHistogram = "Android.DragDrop.Tab.Type";
+        String resultHistogram = "Android.DragDrop.MultiTab.FromStrip.Result";
+        String typeHistogram = "Android.DragDrop.MultiTab.Type";
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(resultHistogram, DragDropResult.SUCCESS)
@@ -1533,7 +1533,7 @@ public class TabStripDragHandlerTest {
     }
 
     private void doTestDropInDestinationToolbarContainer_multiTab() {
-        String resultHistogram = "Android.DragDrop.Tab.FromStrip.Result";
+        String resultHistogram = "Android.DragDrop.MultiTab.FromStrip.Result";
 
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
@@ -1628,8 +1628,8 @@ public class TabStripDragHandlerTest {
     }
 
     private void doTestExitIntoSourceToolbarAndRenterStripAndDrop_multiTab() {
-        String resultHistogram = "Android.DragDrop.Tab.FromStrip.Result";
-        String reorderHistogram = "Android.DragDrop.Tab.ReorderStripWithDragDrop";
+        String resultHistogram = "Android.DragDrop.MultiTab.FromStrip.Result";
+        String reorderHistogram = "Android.DragDrop.MultiTab.ReorderStripWithDragDrop";
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(resultHistogram, DragDropResult.SUCCESS)

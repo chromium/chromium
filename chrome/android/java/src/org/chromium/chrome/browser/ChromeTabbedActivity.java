@@ -2728,7 +2728,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
                 AppHeaderUtils.isAppInDesktopWindow(
                         mRootUiCoordinator.getDesktopWindowStateManager()),
-                /* isTabGroup= */ false);
+                /* isTabGroup= */ false,
+                /* isMultiTab= */ false);
         return true;
     }
 
@@ -2753,7 +2754,12 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
         mMultiInstanceManager.moveTabsToWindow(this, tabs, /* atIndex= */ 0);
 
-        // TODO(crbug.com/404074503): Add metrics for multi tab drag.
+        DragDropMetricUtils.recordDragDropType(
+                ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
+                AppHeaderUtils.isAppInDesktopWindow(
+                        mRootUiCoordinator.getDesktopWindowStateManager()),
+                /* isTabGroup= */ false,
+                /* isMultiTab= */ true);
         return true;
     }
 
@@ -2773,7 +2779,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
                 AppHeaderUtils.isAppInDesktopWindow(
                         mRootUiCoordinator.getDesktopWindowStateManager()),
-                /* isTabGroup= */ true);
+                /* isTabGroup= */ true,
+                /* isMultiTab= */ false);
         return true;
     }
 

@@ -238,7 +238,7 @@ public class DragAndDropLauncherActivityUnitTest {
             MultiTabMetadata multiTabMetadata = IntentHandler.getMultiTabMetadata(intent);
             assertEquals(
                     "The EXTRA_URL_SOURCE intent extra value should match.",
-                    UrlIntentSource.TAB_IN_STRIP,
+                    UrlIntentSource.MULTI_TAB_IN_STRIP,
                     intent.getIntExtra(
                             IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN));
             assertEquals(

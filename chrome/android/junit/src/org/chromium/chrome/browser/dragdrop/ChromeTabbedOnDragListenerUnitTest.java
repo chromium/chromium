@@ -193,7 +193,8 @@ public class ChromeTabbedOnDragListenerUnitTest {
     private void doTestOnDragActionDropInTabSwitcher(boolean isGroupDrag, boolean isMultiTabDrag) {
         String resultHistogram =
                 String.format(
-                        "Android.DragDrop.%s.FromStrip.Result", isGroupDrag ? "TabGroup" : "Tab");
+                        "Android.DragDrop.%s.FromStrip.Result",
+                        getTabSelectionType(isGroupDrag, isMultiTabDrag));
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(resultHistogram, DragDropResult.IGNORED_TAB_SWITCHER)
@@ -247,7 +248,8 @@ public class ChromeTabbedOnDragListenerUnitTest {
     private void doTestOnDragActionDropInSameInstance(boolean isGroupDrag, boolean isMultiTabDrag) {
         String resultHistogram =
                 String.format(
-                        "Android.DragDrop.%s.FromStrip.Result", isGroupDrag ? "TabGroup" : "Tab");
+                        "Android.DragDrop.%s.FromStrip.Result",
+                        getTabSelectionType(isGroupDrag, isMultiTabDrag));
         AppHeaderUtils.setAppInDesktopWindowForTesting(true);
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
@@ -399,7 +401,9 @@ public class ChromeTabbedOnDragListenerUnitTest {
     private void verifyActionDropSuccess(
             boolean isInDesktopWindow, boolean isGroupDrag, boolean isMultiTabDrag) {
         String histogram =
-                String.format("Android.DragDrop.%s.Type", isGroupDrag ? "TabGroup" : "Tab");
+                String.format(
+                        "Android.DragDrop.%s.Type",
+                        getTabSelectionType(isGroupDrag, isMultiTabDrag));
         AppHeaderUtils.setAppInDesktopWindowForTesting(isInDesktopWindow);
 
         HistogramWatcher.Builder builder =
@@ -517,6 +521,16 @@ public class ChromeTabbedOnDragListenerUnitTest {
         } else {
             when(mDragDropGlobalState.getData())
                     .thenReturn(new ChromeTabDropDataAndroid.Builder().withTab(mTab).build());
+        }
+    }
+
+    private String getTabSelectionType(boolean isGroupDrag, boolean isMultiTabDrag) {
+        if (isGroupDrag) {
+            return "TabGroup";
+        } else if (isMultiTabDrag) {
+            return "MultiTab";
+        } else {
+            return "Tab";
         }
     }
 }

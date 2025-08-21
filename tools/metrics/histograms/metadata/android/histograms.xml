@@ -302,6 +302,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="TabObjectType">
+  <variant name=".MultiTab" summary="multi-tab"/>
   <variant name=".Tab" summary="tab"/>
   <variant name=".TabGroup" summary="tab group"/>
 </variants>
