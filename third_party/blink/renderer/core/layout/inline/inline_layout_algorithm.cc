@@ -297,22 +297,36 @@ ShapeResult* ShapeForFit(const InlineItemResult& item,
                       item.item->EndOffset(), range, options);
 }
 
-// Updates text scaling factor of InlineItemResults in `line_info`.
-// Returns true if LogicalLineBuilder needs to scale line-height.
-//
-// `NOINLINE` prevents the size growth in the fuchsia-binary-size bot.
-NOINLINE bool FitLine(const InlineNode node, LineInfo& line_info) {
+// LineFitter class is responsible for computing a line scaling factor,
+// and scaling a line.
+class LineFitter {
+  STACK_ALLOCATED();
+
+ public:
+  LineFitter(const InlineNode node, LineInfo* line_info)
+      : node_(node), line_info_(*line_info) {}
+
+  // Updates text scaling factor of InlineItemResults in `line_info`.
+  // Returns true if LogicalLineBuilder needs to scale line-height.
+  bool FitLine();
+
+ private:
+  const InlineNode node_;
+  LineInfo& line_info_;
+};
+
+bool LineFitter::FitLine() {
   const double device_pixel_ratio =
-      node.GetDocument().GetFrame()->DevicePixelRatio();
+      node_.GetDocument().GetFrame()->DevicePixelRatio();
   LayoutUnit epsilon = LayoutUnit(2.0 * device_pixel_ratio);
-  LayoutUnit original_width = line_info.Width();
-  LayoutUnit container_width = line_info.AvailableWidth();
+  LayoutUnit original_width = line_info_.Width();
+  LayoutUnit container_width = line_info_.AvailableWidth();
   LayoutUnit diff = container_width - original_width;
   if (diff.Abs() < epsilon) {
     return false;
   }
-  const FitText& text_grow = node.Style().TextGrow();
-  const FitText& text_shrink = node.Style().TextShrink();
+  const FitText& text_grow = node_.Style().TextGrow();
+  const FitText& text_shrink = node_.Style().TextShrink();
   bool apply_text_grow = text_grow.Target() == FitTextTarget::kPerLine;
   bool apply_text_shrink = text_shrink.Target() == FitTextTarget::kPerLine;
   if ((diff > LayoutUnit() && !apply_text_grow) ||
@@ -325,12 +339,12 @@ NOINLINE bool FitLine(const InlineNode node, LineInfo& line_info) {
   // Measure the static parts and the flexible parts in the items.
   LayoutUnit static_total_size;
   LayoutUnit flexible_total_size;
-  const auto& items_data = node.ItemsData(line_info.UseFirstLineStyle());
+  const auto& items_data = node_.ItemsData(line_info_.UseFirstLineStyle());
   HarfBuzzShaper shaper(items_data.text_content);
   ShapeResultSpacing<String> spacing(items_data.text_content);
   // TODO(crbug.com/4173061029): Apply TextAutoSpace as well as letter-spacing
   // and word-spacing.
-  for (auto& item : *line_info.MutableResults()) {
+  for (auto& item : *line_info_.MutableResults()) {
     if (item.item->Type() == InlineItem::kText) {
       if (fit_text.Method() == FitTextMethod::kFontSize &&
           spacing.SetSpacing(item.item->Style()->GetFontDescription())) {
@@ -355,7 +369,7 @@ NOINLINE bool FitLine(const InlineNode node, LineInfo& line_info) {
       (container_width - static_total_size) / flexible_total_size;
   auto limit = fit_text.SizeLimit();
   if (!is_grow) {
-    if (const auto* settings = node.GetDocument().GetSettings()) {
+    if (const auto* settings = node_.GetDocument().GetSettings()) {
       if (int min_size = settings->GetMinimumFontSize(); min_size > 0) {
         float physical_min = min_size * device_pixel_ratio;
         limit = limit ? std::max(*limit, physical_min) : physical_min;
@@ -366,16 +380,16 @@ NOINLINE bool FitLine(const InlineNode node, LineInfo& line_info) {
   switch (fit_text.Method()) {
     case FitTextMethod::kScale:
       return ScaleLine(is_grow, scale_factor,
-                       /* is_scaled_inline_only */ false, limit, line_info);
+                       /* is_scaled_inline_only */ false, limit, line_info_);
 
     case FitTextMethod::kScaleInline:
       return ScaleLine(is_grow, scale_factor,
-                       /* is_scaled_inline_only */ true, limit, line_info);
+                       /* is_scaled_inline_only */ true, limit, line_info_);
 
     case FitTextMethod::kFontSize: {
       flexible_total_size = LayoutUnit();
       bool restricted = false;
-      for (auto& item : *line_info.MutableResults()) {
+      for (auto& item : *line_info_.MutableResults()) {
         if (item.item->Type() != InlineItem::kText) {
           continue;
         }
@@ -421,18 +435,18 @@ NOINLINE bool FitLine(const InlineNode node, LineInfo& line_info) {
       // scaling for an item was restricted by specifying a minimum or maximum
       // value.
       if (!restricted &&
-          (container_width - line_info.ComputeWidth()).Abs() >= epsilon) {
+          (container_width - line_info_.ComputeWidth()).Abs() >= epsilon) {
         scale_factor =
             (container_width - static_total_size) / flexible_total_size;
         ScaleLine(is_grow, scale_factor, /* is_scaled_inline_only */ false,
-                  limit, line_info);
+                  limit, line_info_);
       }
       return true;
     }
 
     case FitTextMethod::kLetterSpacing:
       AddConsoleMessage(
-          node, ConsoleMessage::Level::kInfo,
+          node_, ConsoleMessage::Level::kInfo,
           StrCat({"`text-", is_grow ? StringView("grow") : StringView("shrink"),
                   ": ... letter-spacing` is not implemented yet."}));
       break;
@@ -1557,7 +1571,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     }
 
     bool should_scale_line_height =
-        apply_fit_text_ && FitLine(Node(), line_info);
+        apply_fit_text_ && LineFitter(Node(), &line_info).FitLine();
 
     PrepareBoxStates(line_info, should_scale_line_height, break_token);
 
