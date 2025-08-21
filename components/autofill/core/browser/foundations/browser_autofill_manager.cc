@@ -1252,6 +1252,12 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
         std::make_unique<ComposeSuggestionGenerator>(
             client().GetComposeDelegate(), trigger_source));
   }
+  if (auto* delegate = client().GetIdentityCredentialDelegate()) {
+    if (auto suggestion_generator =
+            delegate->GetIdentityCredentialSuggestionGenerator()) {
+      suggestion_generators_.push_back(std::move(suggestion_generator));
+    }
+  }
 
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);

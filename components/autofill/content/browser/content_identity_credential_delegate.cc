@@ -90,4 +90,9 @@ void ContentIdentityCredentialDelegate::NotifySuggestionAccepted(
       payload.config_url, payload.account_id, show_modal, std::move(callback));
 }
 
+std::unique_ptr<SuggestionGenerator>
+ContentIdentityCredentialDelegate::GetIdentityCredentialSuggestionGenerator() {
+  return std::make_unique<IdentityCredentialSuggestionGenerator>(source_);
+}
+
 }  // namespace autofill

@@ -40,6 +40,9 @@ class ContentIdentityCredentialDelegate : public IdentityCredentialDelegate {
       bool show_modal,
       OnFederatedTokenReceivedCallback callback) const override;
 
+  std::unique_ptr<SuggestionGenerator>
+  GetIdentityCredentialSuggestionGenerator() override;
+
  private:
   // Provides a `AutofillSource`. Derived from `WebContents` in
   // practice and mocked in tests.

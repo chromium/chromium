@@ -14,6 +14,7 @@ namespace autofill {
 
 struct Suggestion;
 class AutofillClient;
+class SuggestionGenerator;
 
 // The interface for communication from //components/autofill to
 // //content/browser/webid.
@@ -76,6 +77,10 @@ class IdentityCredentialDelegate {
       const Suggestion& suggestion,
       bool show_modal,
       OnFederatedTokenReceivedCallback callback) const = 0;
+
+  // Returns the `SuggestionGenerator` for identity credentials.
+  virtual std::unique_ptr<SuggestionGenerator>
+  GetIdentityCredentialSuggestionGenerator() = 0;
 };
 
 }  // namespace autofill
