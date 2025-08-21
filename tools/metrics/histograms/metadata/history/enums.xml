@@ -38,6 +38,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/visitedlink/browser/partitioned_visitedlink_writer.cc:AddFingerprint) -->
 
+<enum name="BooleanDatabaseKilled">
+  <int value="0" label="Not Killed">The database was not razed.</int>
+  <int value="1" label="Killed">The database was razed.</int>
+</enum>
+
 <enum name="BooleanQueried">
   <int value="0" label="Not Queried"/>
   <int value="1" label="Queried"/>

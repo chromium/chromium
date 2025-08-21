@@ -48,9 +48,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".UserInitiated" summary="User initiated priority"/>
 </variants>
 
-<histogram name="History.AttemptedToFixProfileError" units="units"
-    expires_after="2024-02-11">
-  <owner>sky@chromium.org</owner>
+<histogram name="History.AttemptedToFixProfileError"
+    enum="BooleanDatabaseKilled" expires_after="2026-08-21">
+  <owner>etienneb@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -62,6 +62,9 @@ chromium-metrics-reviews@google.com.
     with no history database and nothing will be done to try to fix the error.
     See History.InitializationFailureStep for which particular step of history
     initialization failed.
+
+    Warning: this histogram was expired from 2024-02-11 to 2025-08-21; data may
+    be missing.
   </summary>
 </histogram>
 
