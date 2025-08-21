@@ -515,6 +515,21 @@
             ]
         }
     ],
+    "AllowlistScopesForMdmErrors": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowlistScopesForMdmErrors"
+                    ]
+                }
+            ]
+        }
+    ],
     "AlwaysUseAudioManagerOutputFramesPerBuffer": [
         {
             "platforms": [
