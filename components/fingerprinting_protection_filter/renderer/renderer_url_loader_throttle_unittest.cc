@@ -94,13 +94,9 @@ class RendererURLLoaderThrottleTest : public ::testing::Test {
     renderer_agent_.ActivateForNextCommittedLoad(activation_state.Clone());
   }
 
-  std::optional<ActivationLevel> GetActivationLevel() {
-    return throttle_->GetCurrentActivation();
-  }
-
   void RunUntilActivationReceived(ActivationLevel activation_level) {
     EXPECT_TRUE(base::test::RunUntil([this, activation_level]() {
-      auto current_activation = GetActivationLevel();
+      auto current_activation = throttle_->GetCurrentActivation();
       return current_activation.has_value() &&
              current_activation.value() == activation_level;
     }));
@@ -201,6 +197,34 @@ TEST_F(RendererURLLoaderThrottleTest,
   EXPECT_FALSE(defer);
 }
 
+// Regression test for https://crbug.com/436470071.
+TEST_F(RendererURLLoaderThrottleTest,
+       DoesNotDeferHttpsScriptRedirectWhenActivationComputed) {
+  GURL url("https://example.com/");
+  bool defer = false;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
+  throttle_->WillStartRequest(&request, &defer);
+  EXPECT_TRUE(defer);
+
+  EXPECT_CALL(*throttle_delegate_, Resume());
+  SetActivationLevel(subresource_filter::mojom::ActivationLevel::kEnabled);
+  RunUntilActivationReceived(
+      subresource_filter::mojom::ActivationLevel::kEnabled);
+
+  defer = false;
+  auto response_head = network::mojom::URLResponseHead::New();
+  GURL redirect_url("https://blocked.com/tracker.js");
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = redirect_url;
+  EXPECT_CALL(*throttle_delegate_,
+              CancelWithError(net::ERR_BLOCKED_BY_FINGERPRINTING_PROTECTION,
+                              "FingerprintingProtection"));
+  throttle_->WillRedirectRequest(&redirect_info, *response_head, &defer,
+                                 nullptr, nullptr, nullptr);
+  EXPECT_FALSE(defer);
+}
+
 TEST_F(RendererURLLoaderThrottleTest, ResumesSafeUrlLoad) {
   base::HistogramTester histogram_tester;
   GURL url("https://example.com/script.js");
@@ -237,6 +261,29 @@ TEST_F(RendererURLLoaderThrottleTest, BlocksMatchingUrlLoad) {
 
   histogram_tester.ExpectTotalCount(
       "FingerprintingProtection.SubresourceLoad.TotalDeferTime.Disallowed", 1);
+}
+
+TEST_F(RendererURLLoaderThrottleTest,
+       BlocksMatchingUrlLoadThatStartsAfterActivationReceived) {
+  base::HistogramTester histogram_tester;
+  GURL url("https://blocked.com/tracker.js");
+
+  SetActivationLevel(ActivationLevel::kEnabled);
+  RunUntilActivationReceived(ActivationLevel::kEnabled);
+
+  bool defer = false;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
+  EXPECT_CALL(*throttle_delegate_,
+              CancelWithError(net::ERR_BLOCKED_BY_FINGERPRINTING_PROTECTION,
+                              "FingerprintingProtection"));
+  throttle_->WillStartRequest(&request, &defer);
+  EXPECT_FALSE(defer);
+
+  // Expect no histogram despite the blocked resource since the request was
+  // never deferred.
+  histogram_tester.ExpectTotalCount(
+      "FingerprintingProtection.SubresourceLoad.TotalDeferTime.Disallowed", 0);
 }
 
 TEST_F(RendererURLLoaderThrottleTest,

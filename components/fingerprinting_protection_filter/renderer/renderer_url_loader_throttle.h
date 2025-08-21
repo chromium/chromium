@@ -138,7 +138,7 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   // The URL for the subresource that this throttle may or may not defer.
   GURL current_url_;
-  network::mojom::RequestDestination request_destination_;
+  std::optional<network::mojom::RequestDestination> request_destination_;
   std::optional<std::string> devtools_request_id_;
   bool deferred_ = false;
   std::optional<subresource_filter::mojom::ActivationState> activation_state_;

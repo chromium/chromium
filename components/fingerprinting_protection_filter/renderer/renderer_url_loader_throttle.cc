@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -183,7 +184,9 @@ void RendererURLLoaderThrottle::ProcessRequestStep(const GURL& latest_url,
                                                    bool* defer) {
   current_url_ = latest_url;
 
-  if (WillIgnoreRequest(current_url_, request_destination_)) {
+  if (WillIgnoreRequest(current_url_,
+                        request_destination_.value_or(
+                            network::mojom::RequestDestination::kEmpty))) {
     // Short-circuit on URLs we do not want to filter or if there is no
     // filtering ruleset to use.
     return;
@@ -227,6 +230,12 @@ void RendererURLLoaderThrottle::OnActivationComputed(
     RendererAgent::OnSubresourceEvaluatedCallback on_subresource_callback,
     const GURL& current_document_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!request_destination_.has_value()) {
+    // This means `OnActivationComputed` was called before `WillStartRequest`.
+    // We want to know if this scenario actually occurs in production.
+    base::debug::DumpWithoutCrashing();
+  }
+
   activation_state_ = activation_state;
   on_subresource_evaluated_callback_ = on_subresource_callback;
   current_document_url_ = current_document_url;
@@ -240,8 +249,12 @@ void RendererURLLoaderThrottle::OnActivationComputed(
           std::move(filtering_ruleset_),
           kFingerprintingProtectionRulesetConfig.uma_tag);
     }
+  }
+
+  if (filter_ && current_url_ != GURL() && request_destination_.has_value()) {
     load_policy_ = filter_->GetLoadPolicy(
-        current_url_, subresource_filter::ToElementType(request_destination_));
+        current_url_,
+        subresource_filter::ToElementType(request_destination_.value()));
   } else {
     load_policy_ = LoadPolicy::ALLOW;
   }
