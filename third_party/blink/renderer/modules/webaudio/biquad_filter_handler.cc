@@ -115,6 +115,58 @@ bool HasConstantValues(
   return true;
 }
 
+// Convert from Hertz to normalized frequency 0 -> 1.
+double NormalizeFrequency(float frequency, double nyquist, float detune) {
+  const double normalized_frequency = frequency / nyquist;
+  // Detune in Cents multiplies the frequency by 2^(detune / 1200).
+  return detune ? normalized_frequency * exp2(detune / 1200)
+                : normalized_frequency;
+}
+
+// Configure the biquad with the new filter parameters for the appropriate type
+// of filter.
+void SetBiquadParams(Biquad* biquad,
+                     V8BiquadFilterType::Enum type,
+                     int index,
+                     double frequency,
+                     double q,
+                     double gain) {
+  switch (type) {
+    case V8BiquadFilterType::Enum::kLowpass:
+      biquad->SetLowpassParams(index, frequency, q);
+      return;
+
+    case V8BiquadFilterType::Enum::kHighpass:
+      biquad->SetHighpassParams(index, frequency, q);
+      return;
+
+    case V8BiquadFilterType::Enum::kBandpass:
+      biquad->SetBandpassParams(index, frequency, q);
+      return;
+
+    case V8BiquadFilterType::Enum::kLowshelf:
+      biquad->SetLowShelfParams(index, frequency, gain);
+      return;
+
+    case V8BiquadFilterType::Enum::kHighshelf:
+      biquad->SetHighShelfParams(index, frequency, gain);
+      return;
+
+    case V8BiquadFilterType::Enum::kPeaking:
+      biquad->SetPeakingParams(index, frequency, q, gain);
+      return;
+
+    case V8BiquadFilterType::Enum::kNotch:
+      biquad->SetNotchParams(index, frequency, q);
+      return;
+
+    case V8BiquadFilterType::Enum::kAllpass:
+      biquad->SetAllpassParams(index, frequency, q);
+      return;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 class BiquadDSPKernel;
@@ -201,6 +253,7 @@ class BiquadProcessor final {
   bool is_initialized_ = false;
   unsigned number_of_channels_;
   const double sample_rate_;
+  const double nyquist_;
   const unsigned render_quantum_frames_;
 
   Vector<std::unique_ptr<BiquadDSPKernel>> kernels_ GUARDED_BY(process_lock_);
@@ -224,13 +277,6 @@ class BiquadDSPKernel final {
   // AudioDSPKernel
   void Process(const float* source, float* dest, uint32_t frames_to_process);
   void Reset() { biquad_.Reset(); }
-
-  // Get the magnitude and phase response of the given BiquadDSPKernel at the
-  // given set of frequencies (in Hz). The phase response is in radians.  This
-  // must be called from the main thread.
-  void GetFrequencyResponse(base::span<const float> frequency_hz,
-                            base::span<float> mag_response,
-                            base::span<float> phase_response) const;
 
   double TailTime() const;
   // Update the biquad coefficients with the given parameters
@@ -273,49 +319,10 @@ void BiquadDSPKernel::UpdateCoefficients(
                                      1);
 
   for (int k = 0; k < spanification_suspected_redundant_frames; ++k) {
-    double normalized_frequency = cutoff_frequency[k] / nyquist_;
-
-    // Offset frequency by detune.
-    if (detune[k]) {
-      // Detune multiplies the frequency by 2^(detune[k] / 1200).
-      normalized_frequency *= exp2(detune[k] / 1200);
-    }
-
-    // Configure the biquad with the new filter parameters for the appropriate
-    // type of filter.
-    switch (kernel_processor_->Type()) {
-      case V8BiquadFilterType::Enum::kLowpass:
-        biquad_.SetLowpassParams(k, normalized_frequency, q[k]);
-        break;
-
-      case V8BiquadFilterType::Enum::kHighpass:
-        biquad_.SetHighpassParams(k, normalized_frequency, q[k]);
-        break;
-
-      case V8BiquadFilterType::Enum::kBandpass:
-        biquad_.SetBandpassParams(k, normalized_frequency, q[k]);
-        break;
-
-      case V8BiquadFilterType::Enum::kLowshelf:
-        biquad_.SetLowShelfParams(k, normalized_frequency, gain[k]);
-        break;
-
-      case V8BiquadFilterType::Enum::kHighshelf:
-        biquad_.SetHighShelfParams(k, normalized_frequency, gain[k]);
-        break;
-
-      case V8BiquadFilterType::Enum::kPeaking:
-        biquad_.SetPeakingParams(k, normalized_frequency, q[k], gain[k]);
-        break;
-
-      case V8BiquadFilterType::Enum::kNotch:
-        biquad_.SetNotchParams(k, normalized_frequency, q[k]);
-        break;
-
-      case V8BiquadFilterType::Enum::kAllpass:
-        biquad_.SetAllpassParams(k, normalized_frequency, q[k]);
-        break;
-    }
+    const double normalized_frequency =
+        NormalizeFrequency(cutoff_frequency[k], nyquist_, detune[k]);
+    SetBiquadParams(&biquad_, kernel_processor_->Type(), k,
+                    normalized_frequency, q[k], gain[k]);
   }
 
   const int coef_index = spanification_suspected_redundant_frames - 1;
@@ -402,29 +409,6 @@ void BiquadDSPKernel::Process(const float* source,
   biquad_.Process(source, destination, frames_to_process);
 }
 
-void BiquadDSPKernel::GetFrequencyResponse(
-    base::span<const float> frequency_hz,
-    base::span<float> mag_response,
-    base::span<float> phase_response) const {
-  // Only allow on the main thread because we don't want the audio thread to be
-  // updating `kernel` while we're computing the response.
-  DCHECK(IsMainThread());
-
-  DCHECK(!frequency_hz.empty());
-  DCHECK(!mag_response.empty());
-  DCHECK(!phase_response.empty());
-
-  Vector<float> frequency(frequency_hz.size());
-
-  // Convert from frequency in Hz to normalized frequency (0 -> 1),
-  // with 1 equal to the Nyquist frequency.
-  for (size_t k = 0; k < frequency_hz.size(); ++k) {
-    frequency[k] = frequency_hz[k] / nyquist_;
-  }
-
-  biquad_.GetFrequencyResponse(frequency, mag_response, phase_response);
-}
-
 double BiquadDSPKernel::TailTime() const {
   return tail_time_;
 }
@@ -442,6 +426,7 @@ BiquadProcessor::BiquadProcessor(float sample_rate,
       parameter_detune_(&detune),
       number_of_channels_(number_of_channels),
       sample_rate_(sample_rate),
+      nyquist_(0.5 * sample_rate),
       render_quantum_frames_(render_quantum_frames) {}
 
 BiquadProcessor::~BiquadProcessor() {
@@ -634,10 +619,8 @@ void BiquadProcessor::GetFrequencyResponse(base::span<const float> frequency_hz,
   // Compute the frequency response on a separate temporary kernel
   // to avoid interfering with the processing running in the audio
   // thread on the main kernels.
-
-  std::unique_ptr<BiquadDSPKernel> response_kernel =
-      std::make_unique<BiquadDSPKernel>(this, sample_rate_,
-                                        render_quantum_frames_);
+  std::unique_ptr<Biquad> response_kernel =
+      std::make_unique<Biquad>(render_quantum_frames_);
 
   float cutoff_frequency;
   float q;
@@ -650,7 +633,7 @@ void BiquadProcessor::GetFrequencyResponse(base::span<const float> frequency_hz,
     // `Process()` to prevent process() from updating the filter coefficients
     // while we're trying to access them.  Since this is on the main thread, we
     // can wait.  The audio thread will update the coefficients the next time
-    // around, it it were blocked.
+    // around, if it was blocked.
     base::AutoLock process_locker(process_lock_);
 
     cutoff_frequency = parameter_cutoff_frequency_->Value();
@@ -659,10 +642,24 @@ void BiquadProcessor::GetFrequencyResponse(base::span<const float> frequency_hz,
     detune = parameter_detune_->Value();
   }
 
-  response_kernel->UpdateCoefficients(
-      1, base::span_from_ref(cutoff_frequency), base::span_from_ref(q),
-      base::span_from_ref(gain), base::span_from_ref(detune));
-  response_kernel->GetFrequencyResponse(frequency_hz, mag_response,
+  const double normalized_frequency =
+      NormalizeFrequency(cutoff_frequency, nyquist_, detune);
+  SetBiquadParams(response_kernel.get(), Type(), 0, normalized_frequency, q,
+                  gain);
+
+  DCHECK(!frequency_hz.empty());
+  DCHECK(!mag_response.empty());
+  DCHECK(!phase_response.empty());
+
+  Vector<float> frequency(frequency_hz.size());
+
+  // Convert from frequency in Hz to normalized frequency (0 -> 1),
+  // with 1 equal to the Nyquist frequency.
+  for (size_t k = 0; k < frequency_hz.size(); ++k) {
+    frequency[k] = frequency_hz[k] / nyquist_;
+  }
+
+  response_kernel->GetFrequencyResponse(frequency, mag_response,
                                         phase_response);
 }
 

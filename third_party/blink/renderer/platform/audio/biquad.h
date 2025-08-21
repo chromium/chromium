@@ -47,8 +47,6 @@ namespace blink {
 //    lowpass, highpass, shelving, parameteric, notch, allpass, ...
 
 class PLATFORM_EXPORT Biquad final {
-  DISALLOW_NEW();
-
  public:
   explicit Biquad(unsigned render_quantum_frames);
   ~Biquad();
