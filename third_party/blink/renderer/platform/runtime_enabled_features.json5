@@ -3487,6 +3487,12 @@
       status: "stable",
     },
     {
+      // Fix for https://crbug.com/40716515.
+      // Killswitch M141.
+      name: "PaintOffsetTranslationForBackdropFilterWithInlineElement",
+      status: "stable",
+    },
+    {
       name: "PaintTimingMixin",
       status: "experimental",
     },

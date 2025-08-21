@@ -1973,6 +1973,10 @@ std::optional<gfx::SizeF> PaintLayer::FilterViewport() const {
 
 gfx::RectF PaintLayer::BackdropFilterReferenceBox() const {
   if (const auto* layout_inline = DynamicTo<LayoutInline>(GetLayoutObject())) {
+    if (RuntimeEnabledFeatures::
+            PaintOffsetTranslationForBackdropFilterWithInlineElementEnabled()) {
+      return gfx::RectF(layout_inline->PhysicalLinesBoundingBox());
+    }
     return gfx::RectF(
         gfx::SizeF(layout_inline->PhysicalLinesBoundingBox().size));
   }
