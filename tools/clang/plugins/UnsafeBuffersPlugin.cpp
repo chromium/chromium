@@ -399,15 +399,18 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
       return false;
     }
 
-    // Parse out the paths into `check_file_prefixes_`.
+    // Parse the contents of the path suppression file.
     //
     // The file format is as follows:
     // * `#` introduces a comment until the end of the line.
     // * Empty lines are ignored.
+    // * Active lines consist of a one-character command followed by data.
     // * A line beginning with a `.` lists diagnostics to enable. These
     //   are comma-separated and currently allow: `buffers`, `libc`.
+    // * A line beginning with '$' or '@' is silently ignored (reserved
+    //   for rolling in future features without breakage).
     // * Every other line is a path prefix from the source tree root using
-    //   unix-style delimiters.
+    //   unix-style delimiters:
     //   * Each line either removes a path from checks or adds a path to checks.
     //   * If the line starts with `+` paths matching the line will be added.
     //   * If the line starts with `-` paths matching the line will removed.
@@ -417,9 +420,9 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
     //     `//other/a/b/c.h`.
     //   * Paths naming files match the single file and look like `+a/b/c.h`.
     //   * Trailing slashes for directories are recommended, but not enforced.
-    // * The longest (most specific) match takes precedence.
-    // * Files that do not match any of the prefixes file will be checked.
-    // * Duplicate entries are not allowed and produce compilation errors.
+    //   * The longest (most specific) match takes precedence.
+    //   * Files that do not match any of the prefixes file will be checked.
+    //   * Duplicate prefixes are not allowed and produce compilation errors.
     //
     // Example:
     // ```
@@ -432,6 +435,7 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
     // # Matches a specific file at //my/file.cc, overriding the `-my/` above
     // # for this one file.
     // +my/file.cc
+    // ```
     //
     llvm::StringRef string = check_file_prefixes_.buffer->getBuffer();
     while (!string.empty()) {
@@ -451,6 +455,14 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
         if (active.contains("libc")) {
           check_file_prefixes_.check_libc_calls = true;
         }
+        continue;
+      }
+      if (symbol == '$') {
+        // Reserved for future expansion, path to root.
+        continue;
+      }
+      if (symbol == '@') {
+        // Reserved for future expansion, file inclusion.
         continue;
       }
       if (symbol != '+' && symbol != '-') {
