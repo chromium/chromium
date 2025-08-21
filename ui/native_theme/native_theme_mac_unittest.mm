@@ -28,7 +28,6 @@ TEST(NativeThemeMacTest, GetPlatformHighContrastColorScheme) {
   NativeTheme* native_theme = NativeTheme::GetInstanceForNativeUi();
   ASSERT_TRUE(native_theme);
 
-  native_theme->set_forced_colors(false);
   native_theme->SetPreferredContrast(PrefContrast::kNoPreference);
   native_theme->set_preferred_color_scheme(PrefScheme::kDark);
   EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
@@ -36,16 +35,11 @@ TEST(NativeThemeMacTest, GetPlatformHighContrastColorScheme) {
   native_theme->set_preferred_color_scheme(PrefScheme::kLight);
   EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
 
-  native_theme->set_forced_colors(true);
   native_theme->SetPreferredContrast(PrefContrast::kMore);
   native_theme->set_preferred_color_scheme(PrefScheme::kDark);
   EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
 
   native_theme->set_preferred_color_scheme(PrefScheme::kLight);
-  EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
-
-  native_theme->set_forced_colors(false);
-  native_theme->SetPreferredContrast(PrefContrast::kNoPreference);
   EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
 }
 

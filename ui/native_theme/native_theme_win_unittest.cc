@@ -87,36 +87,6 @@ TEST(NativeThemeWinTest, CalculatePreferredContrast) {
   EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kNoPreference);
 }
 
-TEST(NativeThemeWinTest, GetDefaultSystemColorScheme) {
-  using ColorScheme = NativeTheme::ColorScheme;
-
-  TestNativeThemeWin theme;
-  theme.set_forced_colors(false);
-  theme.set_use_dark_colors(true);
-  EXPECT_EQ(theme.GetDefaultSystemColorScheme(), ColorScheme::kDark);
-
-  theme.set_use_dark_colors(false);
-  EXPECT_EQ(theme.GetDefaultSystemColorScheme(), ColorScheme::kLight);
-
-  theme.set_forced_colors(true);
-  theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorBLACK);
-  theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorWHITE);
-  EXPECT_EQ(theme.GetDefaultSystemColorScheme(),
-            ColorScheme::kPlatformHighContrast);
-
-  theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorWHITE);
-  theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorBLACK);
-  EXPECT_EQ(theme.GetDefaultSystemColorScheme(),
-            ColorScheme::kPlatformHighContrast);
-
-  theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorBLUE);
-  EXPECT_EQ(theme.GetDefaultSystemColorScheme(),
-            ColorScheme::kPlatformHighContrast);
-
-  theme.set_forced_colors(false);
-  EXPECT_EQ(theme.GetDefaultSystemColorScheme(), ColorScheme::kLight);
-}
-
 TEST(NativeThemeWinTest, GetPlatformHighContrastColorScheme) {
   using HCColorScheme = NativeTheme::PlatformHighContrastColorScheme;
 

@@ -530,8 +530,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Returns the system's caption style.
   virtual std::optional<CaptionStyle> GetSystemCaptionStyle() const;
 
-  virtual ColorScheme GetDefaultSystemColorScheme() const;
-
   // Updates contrast-related theme states such as `forced_colors_`,
   // `page_colors_`, `preferred_contrast_` and `prefers_reduced_transparency_`
   // based on the `observed_theme`. Returns true if there's an update to any of

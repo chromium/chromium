@@ -37,21 +37,16 @@ class TestNativeTheme : public NativeTheme {
   bool UserHasContrastPreference() const override;
   bool ShouldUseDarkColors() const override;
   PreferredColorScheme GetPreferredColorScheme() const override;
-  ColorScheme GetDefaultSystemColorScheme() const override;
 
   void SetDarkMode(bool dark_mode) { dark_mode_ = dark_mode; }
   void SetUserHasContrastPreference(bool contrast_preference) {
     contrast_preference_ = contrast_preference;
-  }
-  void SetIsPlatformHighContrast(bool is_platform_high_contrast) {
-    is_platform_high_contrast_ = is_platform_high_contrast;
   }
   void AddColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
 
  private:
   bool dark_mode_ = false;
   bool contrast_preference_ = false;
-  bool is_platform_high_contrast_ = false;
 
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;

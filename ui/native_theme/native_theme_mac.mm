@@ -140,7 +140,8 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                            const std::optional<SkColor>& accent_color) const {
   ColorScheme color_scheme_updated = color_scheme;
   if (color_scheme_updated == ColorScheme::kDefault) {
-    color_scheme_updated = GetDefaultSystemColorScheme();
+    color_scheme_updated =
+        ShouldUseDarkColors() ? ColorScheme::kDark : ColorScheme::kLight;
   }
 
   if (rect.IsEmpty()) {

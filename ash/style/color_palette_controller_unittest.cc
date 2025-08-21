@@ -34,6 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace ash {
 
@@ -331,8 +332,7 @@ TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged) {
 
   EXPECT_EQ(1, observer.call_count());
   ASSERT_TRUE(observer.last_theme());
-  EXPECT_EQ(ui::NativeTheme::ColorScheme::kLight,
-            observer.last_theme()->GetDefaultSystemColorScheme());
+  EXPECT_FALSE(observer.last_theme()->ShouldUseDarkColors());
   EXPECT_EQ(kCelebiColor, observer.last_theme()->user_color().value());
   EXPECT_THAT(observer.last_theme()->scheme_variant(),
               testing::Optional(ui::ColorProviderKey::SchemeVariant::kVibrant));

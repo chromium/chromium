@@ -755,11 +755,6 @@ NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
                                : NativeTheme::PreferredContrast::kCustom;
 }
 
-NativeTheme::ColorScheme NativeThemeWin::GetDefaultSystemColorScheme() const {
-  return InForcedColorsMode() ? ColorScheme::kPlatformHighContrast
-                              : NativeTheme::GetDefaultSystemColorScheme();
-}
-
 void NativeThemeWin::PaintIndirect(cc::PaintCanvas* destination_canvas,
                                    Part part,
                                    State state,

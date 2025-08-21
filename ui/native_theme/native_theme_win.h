@@ -86,7 +86,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin
   PreferredColorScheme CalculatePreferredColorScheme() const override;
 
   PreferredContrast CalculatePreferredContrast() const override;
-  ColorScheme GetDefaultSystemColorScheme() const override;
 
  protected:
   friend class NativeTheme;

@@ -76,22 +76,13 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
     return kForcedColorsMap.at(page_colors);
   };
 
+  const bool dark_mode =
+      InForcedColorsMode()
+          ? (GetPreferredColorScheme() == PreferredColorScheme::kDark)
+          : ShouldUseDarkColors();
   ui::ColorProviderKey key;
-  switch (GetDefaultSystemColorScheme()) {
-    case ColorScheme::kDark:
-      key.color_mode = ColorProviderKey::ColorMode::kDark;
-      break;
-    case ColorScheme::kLight:
-      key.color_mode = ColorProviderKey::ColorMode::kLight;
-      break;
-    case ColorScheme::kPlatformHighContrast:
-      key.color_mode = GetPreferredColorScheme() == PreferredColorScheme::kDark
-                           ? ColorProviderKey::ColorMode::kDark
-                           : ColorProviderKey::ColorMode::kLight;
-      break;
-    default:
-      NOTREACHED();
-  }
+  key.color_mode = dark_mode ? ColorProviderKey::ColorMode::kDark
+                             : ColorProviderKey::ColorMode::kLight;
   key.contrast_mode = UserHasContrastPreference()
                           ? ColorProviderKey::ContrastMode::kHigh
                           : ColorProviderKey::ContrastMode::kNormal;
@@ -224,7 +215,7 @@ bool NativeTheme::InForcedColorsMode() const {
 
 NativeTheme::PlatformHighContrastColorScheme
 NativeTheme::GetPlatformHighContrastColorScheme() const {
-  if (GetDefaultSystemColorScheme() != ColorScheme::kPlatformHighContrast) {
+  if (!InForcedColorsMode()) {
     return PlatformHighContrastColorScheme::kNone;
   }
   return (GetPreferredColorScheme() == PreferredColorScheme::kDark)
@@ -371,10 +362,6 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
            !theme_to_update_->InForcedColorsMode());
     theme_to_update_->NotifyOnNativeThemeUpdated();
   }
-}
-
-NativeTheme::ColorScheme NativeTheme::GetDefaultSystemColorScheme() const {
-  return ShouldUseDarkColors() ? ColorScheme::kDark : ColorScheme::kLight;
 }
 
 bool NativeTheme::UpdateContrastRelatedStates(
