@@ -38,21 +38,19 @@ BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
 }
 
 void BookmarkBarPreloadPipelineManager::StartPrerender(const GURL& url) {
-  if (pipeline_) {
-    // TODO(https://crbug.com/413259638) Adds back the CHECK which checks `url
-    // == pipeline_->url()` when the investigation is done. Prerender is
-    // expected to be reset when mouseExit happens or every primary page
-    // changed, so if a pipeline is present, the url is expected to be the same.
-    // But the CHECK is causing https://crbug.com/425612820 unexpectedly, the
-    // CHECK is removed at the moment.
-    return;
+  EnsurePipelineForUrl(url);
+  pipeline_->StartPrerender(
+      *web_contents(),
+      chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar);
+}
+
+void BookmarkBarPreloadPipelineManager::EnsurePipelineForUrl(const GURL& url) {
+  if (pipeline_ && pipeline_->url() != url) {
+    pipeline_.reset();
   }
 
-  pipeline_ = std::make_unique<BookmarkBarPreloadPipeline>(url);
-  if (!pipeline_->StartPrerender(
-          *web_contents(),
-          chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar)) {
-    pipeline_.reset();
+  if (!pipeline_) {
+    pipeline_ = std::make_unique<BookmarkBarPreloadPipeline>(url);
   }
 }
 

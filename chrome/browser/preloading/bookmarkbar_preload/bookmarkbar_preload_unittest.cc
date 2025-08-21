@@ -82,7 +82,7 @@ TEST_F(BookmarkBarPreloadPipelineManagerTest, DisallowSearchUrlBookmarkBar) {
   base::HistogramTester histogram_tester;
   GURL prerendering_url = GetSearchSuggestionUrl("prer", "prerender");
   bookmarkbar_preload_manager()->StartPrerender(prerendering_url);
-  EXPECT_FALSE(bookmarkbar_preload_manager()->IsPreloadingStarted());
+  EXPECT_FALSE(bookmarkbar_preload_manager()->IsPrerenderValidForTesting());
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.IsPrerenderingSRPUrl.Embedder_BookmarkBar", true, 1);

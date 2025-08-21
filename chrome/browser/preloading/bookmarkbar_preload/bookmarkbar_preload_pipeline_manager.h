@@ -49,6 +49,9 @@ class BookmarkBarPreloadPipelineManager
   void StartPrerender(const GURL& url);
 
   bool IsPreloadingStarted() { return pipeline_ != nullptr; }
+  bool IsPrerenderValidForTesting() {
+    return pipeline_ && pipeline_->IsPrerenderValid();
+  }
 
   void ResetPrerender();
 
@@ -57,6 +60,11 @@ class BookmarkBarPreloadPipelineManager
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   explicit BookmarkBarPreloadPipelineManager(content::WebContents* contents);
+
+  // Resets the pipeline to allow another preloading attempt if a given url is
+  // different from the started one. Pipeline creation will follow the check if
+  // a pipeline hasn't existed.
+  void EnsurePipelineForUrl(const GURL& url);
 
   std::unique_ptr<BookmarkBarPreloadPipeline> pipeline_;
   base::WeakPtrFactory<BookmarkBarPreloadPipelineManager> weak_factory_{this};

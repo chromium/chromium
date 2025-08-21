@@ -48,16 +48,17 @@ BookmarkBarPreloadPipeline::BookmarkBarPreloadPipeline(GURL url)
 
 BookmarkBarPreloadPipeline::~BookmarkBarPreloadPipeline() = default;
 
-bool BookmarkBarPreloadPipeline::StartPrerender(
+void BookmarkBarPreloadPipeline::StartPrerender(
     content::WebContents& web_contents,
     content::PreloadingPredictor predictor) {
   if (base::FeatureList::IsEnabled(
           features::kBookmarkTriggerForPrerender2KillSwitch)) {
-    return false;
+    return;
   }
 
-  if (prerender_handle_ && prerender_handle_->IsValid()) {
-    return true;
+  // Don't trigger prerender if already triggered.
+  if (prerender_handle_) {
+    return;
   }
   // Helpers to create content::PreloadingAttempt.
   auto* preloading_data =
@@ -79,14 +80,14 @@ bool BookmarkBarPreloadPipeline::StartPrerender(
   if (is_search_url) {
     preloading_attempt->SetEligibility(ToPreloadingEligibility(
         ChromePreloadingEligibility::KDisallowSearchUrl));
-    return false;
+    return;
   }
 
   // BookmarkBar only allows https protocol.
   if (!url_.SchemeIs("https")) {
     preloading_attempt->SetEligibility(
         content::PreloadingEligibility::kHttpsOnly);
-    return false;
+    return;
   }
 
   base::RepeatingCallback<void(content::NavigationHandle&)>
@@ -108,5 +109,4 @@ bool BookmarkBarPreloadPipeline::StartPrerender(
       /*url_match_predicate=*/{},
       std::move(prerender_navigation_handle_callback),
       /*allow_reuse=*/false);
-  return prerender_handle_ != nullptr;
 }

@@ -27,10 +27,11 @@ class BookmarkBarPreloadPipeline {
   BookmarkBarPreloadPipeline& operator=(const BookmarkBarPreloadPipeline&) =
       delete;
 
-  // Returns true if prerender starts successfully or a started prerender is
-  // present, false otherwise.
-  bool StartPrerender(content::WebContents& web_contents,
+  void StartPrerender(content::WebContents& web_contents,
                       content::PreloadingPredictor predictor);
+  bool IsPrerenderValid() {
+    return prerender_handle_ && prerender_handle_->IsValid();
+  }
 
   const GURL& url() const { return url_; }
 
