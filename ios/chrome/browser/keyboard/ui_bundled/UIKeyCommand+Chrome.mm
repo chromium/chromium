@@ -68,10 +68,13 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_reopenLastClosedTab {
+  UIImage* image =
+      DefaultSymbolWithConfiguration(kArrowUTurnForwardSymbol, nil);
   return [self cr_commandWithInput:@"t"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_reopenLastClosedTab)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_find {
@@ -191,19 +194,23 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 + (UIKeyCommand*)cr_back {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
   // by default. It handles flipping the direction of brackets.
+  UIImage* image = DefaultSymbolWithConfiguration(kArrowLeftSymbol, nil);
   return [self cr_commandWithInput:@"["
                      modifierFlags:Command
                             action:@selector(keyCommand_back)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_HISTORY_BACK"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_HISTORY_BACK"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_forward {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
   // by default. It handles flipping the direction of brackets.
+  UIImage* image = DefaultSymbolWithConfiguration(kArrowRightSymbol, nil);
   return [self cr_commandWithInput:@"]"
                      modifierFlags:Command
                             action:@selector(keyCommand_forward)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_HISTORY_FORWARD"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_HISTORY_FORWARD"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_back_2 {
@@ -223,10 +230,16 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_showHistory {
+  UIImage* image = nil;
+  if (@available(iOS 18, *)) {
+    image = DefaultSymbolWithConfiguration(
+        kClockArrowTriangleheadCounterclockwiseRotate90Symbol, nil);
+  }
   return [self cr_commandWithInput:@"y"
                      modifierFlags:Command
                             action:@selector(keyCommand_showHistory)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_HISTORY"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_HISTORY"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_voiceSearch {

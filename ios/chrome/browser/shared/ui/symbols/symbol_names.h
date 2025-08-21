@@ -117,6 +117,10 @@ extern NSString* const kIncognitoRectangle;
 extern NSString* const kIncognitoCircleFillSymbol;
 extern NSString* const kPlusCircleFillSymbol;
 
+// Symbols available on iOS 18.0+.
+extern NSString* const kClockArrowTriangleheadCounterclockwiseRotate90Symbol
+    API_AVAILABLE(ios(18.0));
+
 // Custom symbols added for compatibility with iOS 15.0. These symbols are
 // available as system symbols on iOS 15.1+.
 extern NSString* const kCustomMovePlatterToBottomPhoneSymbol;
@@ -237,6 +241,8 @@ extern NSString* const kEqualSymbol;
 extern NSString* const kBookClosedSymbol;
 extern NSString* const kSunFillSymbol;
 extern NSString* const kCalendarSymbol;
+extern NSString* const kArrowLeftSymbol;
+extern NSString* const kArrowRightSymbol;
 extern NSString* const kTabsSymbol;
 extern NSString* const kHighlighterSymbol;
 extern NSString* const kSealFillSymbol;

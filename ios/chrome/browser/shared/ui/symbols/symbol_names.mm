@@ -245,6 +245,10 @@ NSString* const kEqualSymbol = @"equal";
 NSString* const kBookClosedSymbol = @"book.closed";
 NSString* const kSunFillSymbol = @"sun.max.fill";
 NSString* const kCalendarSymbol = @"calendar";
+NSString* const kArrowLeftSymbol = @"arrow.left";
+NSString* const kArrowRightSymbol = @"arrow.right";
+NSString* const kClockArrowTriangleheadCounterclockwiseRotate90Symbol =
+    @"clock.arrow.trianglehead.counterclockwise.rotate.90";
 NSString* const kTabsSymbol = @"square.on.square";
 NSString* const kHighlighterSymbol = @"highlighter";
 NSString* const kSealFillSymbol = @"seal.fill";
