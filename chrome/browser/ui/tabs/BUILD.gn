@@ -356,7 +356,10 @@ if (!is_android) {
         "glic_actor_task_icon_manager_factory.h",
       ]
 
-      public_deps += [ "//chrome/browser/glic" ]
+      public_deps += [
+        "//chrome/browser/glic",
+        "//chrome/browser/glic:mojo_bindings",
+      ]
     }
   }
 

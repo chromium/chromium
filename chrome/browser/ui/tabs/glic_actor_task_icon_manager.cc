@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace tabs {
@@ -38,9 +39,34 @@ GlicActorTaskIconManager::GlicActorTaskIconManager(
       window_controller_(window_controller),
       host_(host) {
   CHECK(actor_service);
+  RegisterSubscriptions();
 }
 
 GlicActorTaskIconManager::~GlicActorTaskIconManager() = default;
+
+void GlicActorTaskIconManager::RegisterSubscriptions() {
+  callback_subscriptions_.push_back(
+      window_controller_->RegisterFloatyStateChange(base::BindRepeating(
+          &GlicActorTaskIconManager::OnFloatyUpdate, base::Unretained(this))));
+  callback_subscriptions_.push_back(
+      actor::ActorKeyedService::Get(profile_)
+          ->GetActorUiStateManager()
+          ->RegisterActorTaskStateChange(base::BindRepeating(
+              &GlicActorTaskIconManager::OnActorTaskStateUpdate,
+              base::Unretained(this))));
+}
+
+void GlicActorTaskIconManager::OnFloatyUpdate(
+    glic::GlicWindowController::State floaty_state,
+    glic::mojom::CurrentView current_view) {
+  UpdateTaskIcon(floaty_state, current_view);
+}
+
+void GlicActorTaskIconManager::OnActorTaskStateUpdate() {
+  // Reset suppression every time a new actor task state change occurs.
+  suppress_task_icon_text_ = false;
+  UpdateTaskIcon(window_controller_->state(), host_->GetPrimaryCurrentView());
+}
 
 void GlicActorTaskIconManager::Shutdown() {}
 

@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -444,12 +444,10 @@ class InteractiveGlicTestT : public T {
 
   // Send a task state update to show the actor task icon in the tab strip.
   void StartTaskAndShowActorTaskIcon() {
-    auto* task_icon_controller =
-        tabs::GlicActorTaskIconController::From(browser());
-    task_icon_controller->OnStateUpdate(
-        actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kShown,
-        glic::GlicWindowController::State::kClosed,
-        mojom::CurrentView::kConversation);
+    auto actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
+    actor::TaskId task_id = actor_service->CreateTask();
+    actor::ui::StartTask start_task_event(task_id);
+    actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
   }
 
  protected:
