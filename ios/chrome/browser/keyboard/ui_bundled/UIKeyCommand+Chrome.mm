@@ -180,10 +180,12 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_reload {
+  UIImage* image = CustomSymbolWithConfiguration(kArrowClockWiseSymbol, nil);
   return [self cr_commandWithInput:@"r"
                      modifierFlags:Command
                             action:@selector(keyCommand_reload)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_RELOAD"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_RELOAD"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_back {
@@ -256,10 +258,12 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_stop {
+  UIImage* image = DefaultSymbolWithConfiguration(kXMarkSymbol, nil);
   return [self cr_commandWithInput:@"."
                      modifierFlags:Command
                             action:@selector(keyCommand_stop)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_STOP"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_STOP"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_showHelp {
@@ -374,10 +378,12 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_goToTabGrid {
+  UIImage* image = DefaultSymbolWithConfiguration(kTabsSymbol, nil);
   return [self cr_commandWithInput:@"\\"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_goToTabGrid)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_GO_TO_TAB_GRID"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_GO_TO_TAB_GRID"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_clearBrowsingData {
