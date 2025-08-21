@@ -11,6 +11,7 @@ import android.graphics.PointF;
 import android.view.View;
 
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
@@ -95,6 +96,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             StripLayoutGroupTitle[] stripGroupTitles,
             StripLayoutView interactingView,
             PointF startPoint) {
+        RecordUserAction.record("MobileToolbarStartMultiTabReorder");
         mPrimaryInteractingStripTab = (StripLayoutTab) interactingView;
         Tab primaryTab = mModel.getTabById(mPrimaryInteractingStripTab.getTabId());
         if (primaryTab == null) return;
@@ -401,6 +403,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             Tab adjTab,
             StripLayoutGroupTitle adjTitle,
             boolean towardEnd) {
+        RecordUserAction.record("MobileToolbarReorderTab.TabsAddedToGroup");
         mTabGroupModelFilter.mergeListOfTabsToGroup(
                 getSortedSelectedTabs(stripTabs),
                 adjTab,

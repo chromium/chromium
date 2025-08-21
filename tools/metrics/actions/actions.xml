@@ -28475,6 +28475,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarReorderTab.TabsAddedToGroup">
+  <owner>clank-app-team@google.com</owner>
+  <owner>hitarthkothari@google.com</owner>
+  <description>
+    User long-pressed on a tab part of a multi-tab selection, dragged and
+    dropped it within a tab group in the tablet tab strip. Android Only.
+  </description>
+</action>
+
+<action name="MobileToolbarReorderTab.TabsRemovedFromGroup">
+  <owner>clank-app-team@google.com</owner>
+  <owner>hitarthkothari@google.com</owner>
+  <description>
+    User long-pressed on a tab part of a multi-tab selection with in a group,
+    dragged and dropped it outside of the group in the tablet tab strip. Android
+    Only.
+  </description>
+</action>
+
 <action name="MobileToolbarSearchButtonTapped">
   <obsolete>Deprecate as of 3/2020</obsolete>
   <owner>stkhapugin@chromium.org</owner>
@@ -28580,6 +28599,14 @@ should be able to be added at any place in this file.
 <action name="MobileToolbarStackViewNewTab">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="MobileToolbarStartMultiTabReorder">
+  <owner>clank-app-team@google.com</owner>
+  <owner>hitarthkothari@google.org</owner>
+  <description>
+    User started to drag a multi-tab re-order in tablet tab strip. Android only.
+  </description>
 </action>
 
 <action name="MobileToolbarStartReorderGroup">
@@ -28739,7 +28766,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarTabMenu">
   <owner>jhimawan@google.com</owner>
-  <owner>hitarthkothario@google.com</owner>
+  <owner>hitarthkothari@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <description>
     Recorded when the user interacts with the tab menu on the tab strip on

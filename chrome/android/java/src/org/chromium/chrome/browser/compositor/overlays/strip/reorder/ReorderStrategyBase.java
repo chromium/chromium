@@ -129,8 +129,12 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         // Exit reorder mode if the dialog will show. Tab drag and drop is cancelled elsewhere.
         Runnable beforeSyncDialogRunnable =
                 () -> mReorderDelegate.stopReorderMode(stripViews, groupTitles);
+        String userAction =
+                interactingTabs.size() > 1
+                        ? "MobileToolbarReorderTab.TabsRemovedFromGroup"
+                        : "MobileToolbarReorderTab.TabRemovedFromGroup";
         Runnable onSuccess =
-                () -> RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
+                () -> RecordUserAction.record(userAction);
 
         List<Integer> tabIds = new ArrayList<>();
         for (StripLayoutTab stripTab : interactingTabs) {
