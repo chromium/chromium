@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
 class Browser;
@@ -193,6 +194,8 @@ class GlicWindowController : public Host::Delegate {
 
   // Returns the widget that backs the glic window.
   virtual GlicWidget* GetGlicWidget() const = 0;
+
+  virtual gfx::NativeWindow GetHostNativeWindow() = 0;
 
   // Return the Browser to which the panel is attached, or null if detached.
   virtual Browser* attached_browser() = 0;

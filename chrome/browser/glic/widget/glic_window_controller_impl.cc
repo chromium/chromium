@@ -914,6 +914,15 @@ GlicWidget* GlicWindowControllerImpl::GetGlicWidget() const {
   return glic_widget_.get();
 }
 
+gfx::NativeWindow GlicWindowControllerImpl::GetHostNativeWindow() {
+  if (!glic_widget_) {
+    // TODO(b:440090981): Implement for side panel.
+    NOTIMPLEMENTED();
+    return gfx::NativeWindow();
+  }
+  return glic_widget_->GetNativeWindow();
+}
+
 void GlicWindowControllerImpl::AttachedBrowserDidClose(
     BrowserWindowInterface* browser) {
   Close();

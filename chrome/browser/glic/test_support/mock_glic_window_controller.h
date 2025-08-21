@@ -67,6 +67,7 @@ class MockGlicWindowController
   MOCK_METHOD(GlicView*, GetGlicView, (), (const, override));
   MOCK_METHOD(base::WeakPtr<views::View>, GetGlicViewAsView, (), (override));
   MOCK_METHOD(GlicWidget*, GetGlicWidget, (), (const, override));
+  MOCK_METHOD(gfx::NativeWindow, GetHostNativeWindow, (), (override));
   MOCK_METHOD(Browser*, attached_browser, (), (override));
   MOCK_METHOD(State, state, (), (const, override));
   MOCK_METHOD(GlicWindowAnimator*, window_animator, (), (override));

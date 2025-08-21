@@ -516,8 +516,7 @@ base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
 void GlicKeyedService::CaptureScreenshot(
     mojom::WebClientHandler::CaptureScreenshotCallback callback) {
   screenshot_capturer_->CaptureScreenshot(
-      window_controller_->GetGlicWidget()->GetNativeWindow(),
-      std::move(callback));
+      window_controller_->GetHostNativeWindow(), std::move(callback));
 }
 
 bool GlicKeyedService::IsContextAccessIndicatorShown(

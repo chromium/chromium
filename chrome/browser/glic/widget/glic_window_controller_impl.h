@@ -116,6 +116,7 @@ class GlicWindowControllerImpl
   GlicView* GetGlicView() const override;
   base::WeakPtr<views::View> GetGlicViewAsView() override;
   GlicWidget* GetGlicWidget() const override;
+  gfx::NativeWindow GetHostNativeWindow() override;
 
   Browser* attached_browser() override;
   State state() const override;
