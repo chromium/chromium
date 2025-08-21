@@ -25,6 +25,10 @@
 #include "base/posix/global_descriptors.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include <shlobj.h>
+#endif
+
 namespace base::shared_memory {
 namespace {
 
@@ -91,6 +95,12 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(SharedMemorySwitchTest, PassViaSwitch) {
   const bool read_only = std::get<0>(GetParam());
   const bool elevated = std::get<1>(GetParam());
+
+#if BUILDFLAG(IS_WIN)
+  if (elevated && !::IsUserAnAdmin()) {
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   SCOPED_TRACE(
       base::StringPrintf("read_only=%d; elevated=%d", read_only, elevated));
