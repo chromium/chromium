@@ -3354,11 +3354,6 @@ void TestRunner::SetMainWindowAndTestConfiguration(
     }
   }
 
-  // This may be called for a local root in the same process as another local
-  // root, in which case we just keep the original config, which should match.
-  if (test_is_running_)
-    return;
-
   test_config_ = std::move(*config);
   SetTestIsRunning(true);
 

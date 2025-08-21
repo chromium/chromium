@@ -1886,10 +1886,17 @@ void WebTestControlHost::SetMainWindowHidden(bool hidden) {
 void WebTestControlHost::SetFrameWindowHidden(
     const blink::LocalFrameToken& frame_token,
     bool hidden) {
+  WebContents* web_contents = GetWebContentsFromCurrentContext(frame_token);
+  // It's possible that the `frame_token` sent is stale and the RenderFrameHost
+  // is already deleted at this point, e.g. when the message is fired during
+  // unloading. In this case, there's nothing we can do.
+  if (!web_contents) {
+    return;
+  }
   if (hidden) {
-    GetWebContentsFromCurrentContext(frame_token)->WasHidden();
+    web_contents->WasHidden();
   } else {
-    GetWebContentsFromCurrentContext(frame_token)->WasShown();
+    web_contents->WasShown();
   }
 }
 
@@ -1898,7 +1905,9 @@ WebContents* WebTestControlHost::GetWebContentsFromCurrentContext(
   const int render_process_id = receiver_bindings_.current_context();
   auto* rfh =
       RenderFrameHostImpl::FromFrameToken(render_process_id, frame_token);
-  CHECK(rfh);
+  if (!rfh) {
+    return nullptr;
+  }
   return WebContents::FromRenderFrameHost(rfh);
 }
 
