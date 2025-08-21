@@ -110,6 +110,8 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
       payments_autofill_client()
           ->GetPaymentsDataManager()
           .OnAcceptedLocalCreditCardSave(card_save_candidate);
+
+      payments_autofill_client()->HideCreditCardSaveAndFillDialog();
       // TODO(crbug.com/435506033): Add local save confirmation as a separate
       // effort.
       break;
