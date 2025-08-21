@@ -196,6 +196,11 @@ class CaptureController::WheelEventListener : public NativeEventListener {
     double relative_y =
         static_cast<double>(wheel_event->offsetY()) / element_rect->height();
 
+    if (relative_x < 0.0 || relative_x >= 1.0 || relative_y < 0.0 ||
+        relative_y >= 1.0) {
+      return;
+    }
+
     controller_->SendWheel(relative_x, relative_y, -wheel_event->deltaX(),
                            -wheel_event->deltaY());
   }
