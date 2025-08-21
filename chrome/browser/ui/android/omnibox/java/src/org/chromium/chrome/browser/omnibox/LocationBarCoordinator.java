@@ -303,6 +303,7 @@ public class LocationBarCoordinator
                 new NavigationAttachmentsCoordinator(context, mLocationBarLayout);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
+        mLocationBarMediator.addUrlFocusChangeListener(mNavigationAttachmentsCoordinator);
 
         mLocationBarMediator.addUrlFocusChangeListener(mAutocompleteCoordinator);
         mLocationBarMediator.addUrlFocusChangeListener(mUrlCoordinator);

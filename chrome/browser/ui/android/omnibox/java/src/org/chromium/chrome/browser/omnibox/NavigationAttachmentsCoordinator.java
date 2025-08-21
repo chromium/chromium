@@ -15,7 +15,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the Navigation Attachments component. */
 @NullMarked
-public class NavigationAttachmentsCoordinator {
+public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener {
     private final @Nullable NavigationAttachmentsMediator mMediator;
 
     public NavigationAttachmentsCoordinator(Context context, ViewGroup parent) {
@@ -24,17 +24,28 @@ public class NavigationAttachmentsCoordinator {
             mMediator = null;
             return;
         }
+
+        var viewHolder = new NavigationAttachmentsViewHolder(parent);
         PropertyModel model =
                 new PropertyModel.Builder(NavigationAttachmentsProperties.ALL_KEYS)
                         .with(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, false)
                         .build();
-        PropertyModelChangeProcessor.create(model, parent, NavigationAttachmentsViewBinder::bind);
+        PropertyModelChangeProcessor.create(
+                model, viewHolder, NavigationAttachmentsViewBinder::bind);
         mMediator = new NavigationAttachmentsMediator(model);
     }
 
     public void destroy() {
         if (mMediator != null) {
             mMediator.destroy();
+        }
+    }
+
+    /** Called when the URL focus changes. */
+    @Override
+    public void onUrlFocusChange(boolean hasFocus) {
+        if (mMediator != null) {
+            mMediator.onUrlFocusChange(hasFocus);
         }
     }
 }

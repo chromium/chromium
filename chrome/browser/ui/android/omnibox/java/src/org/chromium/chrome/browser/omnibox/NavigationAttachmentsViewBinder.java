@@ -16,13 +16,13 @@ class NavigationAttachmentsViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
-    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+    public static void bind(
+            PropertyModel model, NavigationAttachmentsViewHolder view, PropertyKey propertyKey) {
         if (propertyKey == NavigationAttachmentsProperties.TOOLBAR_VISIBLE) {
-            view.findViewById(R.id.location_bar_navigation_toolbar)
-                    .setVisibility(
-                            model.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE)
-                                    ? View.VISIBLE
-                                    : View.GONE);
+            view.navigationToolbar.setVisibility(
+                    model.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         }
     }
 }

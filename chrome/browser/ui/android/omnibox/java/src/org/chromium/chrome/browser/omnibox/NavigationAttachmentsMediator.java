@@ -14,10 +14,12 @@ class NavigationAttachmentsMediator {
 
     NavigationAttachmentsMediator(PropertyModel model) {
         mModel = model;
-        // TODO: remove line below when more wiring is available.
-        // Keeping this line because otherwise member variable would be unused.
-        mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, false);
     }
 
     void destroy() {}
+
+    /** Called when the URL focus changes. */
+    void onUrlFocusChange(boolean hasFocus) {
+        mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, hasFocus);
+    }
 }
