@@ -61,6 +61,10 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.resources.ResourceFactory;
+import org.chromium.ui.resources.ResourceFactoryJni;
+import org.chromium.ui.resources.ResourceManager;
+import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -79,7 +83,11 @@ public class BookmarkBarCoordinatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJniMock;
+    @Mock private ResourceFactory.Natives mResourceFactoryJniMock;
 
+    @Mock private Runnable mLayoutManagerRequestUpdate;
+    @Mock private ResourceManager mResourceManager;
+    @Mock private DynamicResourceLoader mDynamicResourceLoader;
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private FaviconHelperJni mFaviconHelperJni;
     @Mock private Callback<Void> mHeightChangeCallback;
@@ -104,8 +112,10 @@ public class BookmarkBarCoordinatorTest {
         mDesktopFolderId = mModel.getDesktopFolderId();
         mProfileSupplier = new ObservableSupplierImpl<>(mProfile);
         BookmarkBarSceneLayerJni.setInstanceForTesting(mBookmarkBarSceneLayerJniMock);
+        ResourceFactoryJni.setInstanceForTesting(mResourceFactoryJniMock);
 
         when(mFaviconHelperJni.init()).thenReturn(1L);
+        when(mResourceManager.getBitmapDynamicResourceLoader()).thenReturn(mDynamicResourceLoader);
 
         BookmarkModel.setInstanceForTesting(mModel);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJni);
@@ -146,6 +156,8 @@ public class BookmarkBarCoordinatorTest {
         mCoordinator =
                 new BookmarkBarCoordinator(
                         activity,
+                        mLayoutManagerRequestUpdate,
+                        mResourceManager,
                         mBrowserControlsManager,
                         mHeightChangeCallback,
                         mProfileSupplier,

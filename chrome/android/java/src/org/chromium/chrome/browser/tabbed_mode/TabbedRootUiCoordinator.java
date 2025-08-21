@@ -1820,6 +1820,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarCoordinator =
                     new BookmarkBarCoordinator(
                             mActivity,
+                            mLayoutManager::requestUpdate,
+                            mCompositorViewHolderSupplier.get().getResourceManager(),
                             mBrowserControlsManager,
                             /* heightChangeCallback= */ result -> updateTopControlsHeight(),
                             mProfileSupplier,
@@ -1832,6 +1834,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarCoordinator);
             }
             mBookmarkBarHeightSupplier = mBookmarkBarCoordinator::getTopControlHeight;
+            mLayoutManager.addSceneOverlay(mBookmarkBarCoordinator.getSceneLayer());
+            mLayoutManager.requestUpdate();
         } else {
             mBookmarkBarCoordinator.setVisibility(true);
             // When toggling the visibility of the existing view, the LayoutChangeListener will not

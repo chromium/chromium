@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -42,6 +44,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /** Coordinator for the bookmark bar which provides users with bookmark access from top chrome. */
@@ -58,11 +61,13 @@ public class BookmarkBarCoordinator
     private final BookmarkBar mView;
     private final TopControlsStacker mTopControlsStacker;
     private final Callback<@Nullable Void> mHeightChangeCallback;
+    private final Runnable mRequestUpdate;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ViewResourceFrameLayout mViewResourceFrameLayout;
     private final ViewResourceAdapter mViewResourceAdapter;
-    private boolean mIsResourceRegistered;
+    private final ResourceManager mResourceManager;
     private final BookmarkBarSceneLayer mBookmarkBarSceneLayer;
+    private boolean mIsResourceRegistered;
 
     // Tracks whether or not the bookmark bar should be shown at all. We keep this state in addition
     // to setting visibility directly on |mView| because we need to differentiate the Android
@@ -73,6 +78,8 @@ public class BookmarkBarCoordinator
      * Constructs the bookmark bar coordinator.
      *
      * @param activity The activity which is hosting the bookmark bar.
+     * @param requestUpdate Runnable to request an update for the layout manager and cc layers.
+     * @param resourceManager The resource manager for providing resources to C++ layers.
      * @param browserControlsStateProvider The state provider for browser controls.
      * @param heightChangeCallback A callback to notify owner of bookmark bar height changes.
      * @param profileSupplier The supplier for the currently active profile.
@@ -84,6 +91,8 @@ public class BookmarkBarCoordinator
      */
     public BookmarkBarCoordinator(
             Activity activity,
+            Runnable requestUpdate,
+            ResourceManager resourceManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             Callback<@Nullable Void> heightChangeCallback,
             ObservableSupplier<Profile> profileSupplier,
@@ -92,6 +101,9 @@ public class BookmarkBarCoordinator
             BookmarkOpener bookmarkOpener,
             ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
             TopControlsStacker topControlsStacker) {
+        mRequestUpdate = requestUpdate;
+        mResourceManager = resourceManager;
+
         mView = (BookmarkBar) viewStub.inflate();
         mViewResourceFrameLayout = mView.findViewById(R.id.bookmark_bar_view_resource_frame_layout);
         mViewResourceAdapter = mViewResourceFrameLayout.getResourceAdapter();
@@ -151,6 +163,8 @@ public class BookmarkBarCoordinator
         // NOTE: Scrolling isn't supported and items rarely change so item view caching is disabled.
         itemsContainer.getRecycledViewPool().setMaxRecycledViews(BookmarkBarUtils.ViewType.ITEM, 0);
         itemsContainer.setItemViewCacheSize(0);
+        itemsContainer.setItemAnimator(
+                new BookmarkButtonItemAnimator(this::handleBookmarkBarChange));
 
         Supplier<Pair<Integer, Integer>> controlsHeightSupplier =
                 () ->
@@ -173,7 +187,8 @@ public class BookmarkBarCoordinator
                         bookmarkOpener,
                         bookmarkManagerOpenerSupplier,
                         itemsContainer,
-                        mView);
+                        mView,
+                        this::handleBookmarkBarChange);
         PropertyModelChangeProcessor.create(model, mView, BookmarkBarViewBinder::bind);
 
         mTopControlsStacker = topControlsStacker;
@@ -189,33 +204,58 @@ public class BookmarkBarCoordinator
         mBrowserControlsStateProvider.removeObserver(this);
         if (mIsResourceRegistered) unregisterResource();
         mBookmarkBarSceneLayer.setVisibility(false);
+        handleBookmarkBarChange();
     }
 
     private void registerResource() {
         if (mIsResourceRegistered) return;
-
-        // TODO(crbug.com/430058443): Register with ResourceManager.
-
+        mResourceManager
+                .getBitmapDynamicResourceLoader()
+                .registerResource(mViewResourceFrameLayout.getId(), mViewResourceAdapter);
         mIsResourceRegistered = true;
     }
 
     private void unregisterResource() {
         if (!mIsResourceRegistered) return;
         mViewResourceAdapter.dropCachedBitmap();
-
-        // TODO(crbug.com/430058443): Unregister with ResourceManager.
-
+        mResourceManager
+                .getBitmapDynamicResourceLoader()
+                .unregisterResource(mViewResourceFrameLayout.getId());
         mIsResourceRegistered = false;
     }
 
+    /**
+     * Handles changes to the bookmarks bar that require a new snapshot for the scene layer and an
+     * invalidation of the layout. This method should be called after the visible view to the user
+     * has changed, such as after bookmarks are added/removed or reordered.
+     */
+    public void handleBookmarkBarChange() {
+        mViewResourceAdapter.triggerBitmapCapture();
+        mViewResourceAdapter.invalidate(null);
+        mRequestUpdate.run();
+    }
+
+    /**
+     * @return Provides the scene layer that backs the snapshotting logic for the Bookmark Bar.
+     */
     public BookmarkBarSceneLayer getSceneLayer() {
         return mBookmarkBarSceneLayer;
     }
 
+    /**
+     * @return Whether the Bookmark Bar is current visible to the user.
+     */
     public boolean isVisible() {
         return mView != null && mView.getVisibility() == VISIBLE;
     }
 
+    /**
+     * Sets whether the Bookmark Bar should be visible to the user. This will
+     * unregister/(re-)register the ViewResourceFrameLayout with the ResourceManager, but will not
+     * destroy any underlying objects.
+     *
+     * @param isVisible Whether or not the Bookmark Bar is visible to the user.
+     */
     public void setVisibility(boolean isVisible) {
         mShouldBookmarkBarBeShown = isVisible;
         mMediator.setVisibility(isVisible);
@@ -224,6 +264,7 @@ public class BookmarkBarCoordinator
             unregisterResource();
         } else {
             registerResource();
+            handleBookmarkBarChange();
         }
     }
 
@@ -305,6 +346,11 @@ public class BookmarkBarCoordinator
         if (newHeight != oldHeight) {
             mHeightChangeCallback.onResult(null);
         }
+        final int oldWidth = oldRight - oldLeft;
+        final int newWidth = right - left;
+        if (oldWidth != newWidth) {
+            handleBookmarkBarChange();
+        }
     }
 
     // BrowserControlsStateProvider.Observer implementation:
@@ -349,5 +395,28 @@ public class BookmarkBarCoordinator
         return (BookmarkBarButton)
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.bookmark_bar_button, parent, false);
+    }
+
+    // Custom animator for BookmarkBar RecyclerView:
+
+    /**
+     * Custom ItemAnimator for the Bookmark Bar. We take snapshots on changes in the bookmark bar to
+     * use in C++-side layers. However, if we do a snapshot when an item is added or moved, the
+     * short animation of the RecyclerView can result in a snapshot of the bookmark bar in a
+     * transient state. Instead we add a custom animator to the RecyclerView to trigger a snapshot
+     * at the end of any animation, which includes adding, deleting, or re-ordering any bookmarks.
+     */
+    private static class BookmarkButtonItemAnimator extends DefaultItemAnimator {
+        private final Runnable mPostAnimationRunnable;
+
+        public BookmarkButtonItemAnimator(Runnable mPostAnimationRunnable) {
+            this.mPostAnimationRunnable = mPostAnimationRunnable;
+        }
+
+        @Override
+        public void onAnimationFinished(@NonNull RecyclerView.ViewHolder viewHolder) {
+            super.onAnimationFinished(viewHolder);
+            mPostAnimationRunnable.run();
+        }
     }
 }

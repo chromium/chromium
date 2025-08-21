@@ -8,6 +8,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.ViewGroup.LayoutParams;
@@ -42,6 +43,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
+import org.chromium.ui.resources.ResourceFactory;
+import org.chromium.ui.resources.ResourceFactoryJni;
+import org.chromium.ui.resources.ResourceManager;
+import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
@@ -73,7 +78,10 @@ public class BookmarkBarRenderTest {
                     .build();
 
     @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJniMock;
+    @Mock private ResourceFactory.Natives mResourceFactoryJniMock;
 
+    @Mock private ResourceManager mResourceManager;
+    @Mock private DynamicResourceLoader mDynamicResourceLoader;
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private Tab mCurrentTab;
     @Mock private BookmarkOpener mBookmarkOpener;
@@ -93,6 +101,8 @@ public class BookmarkBarRenderTest {
         final Activity activity = mActivityTestRule.launchActivity(null);
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         BookmarkBarSceneLayerJni.setInstanceForTesting(mBookmarkBarSceneLayerJniMock);
+        ResourceFactoryJni.setInstanceForTesting(mResourceFactoryJniMock);
+        when(mResourceManager.getBitmapDynamicResourceLoader()).thenReturn(mDynamicResourceLoader);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final var contentView = new CoordinatorLayoutForPointer(activity, null);
@@ -105,6 +115,8 @@ public class BookmarkBarRenderTest {
                     mCoordinator =
                             new BookmarkBarCoordinator(
                                     activity,
+                                    /* requestUpdate= */ () -> {},
+                                    mResourceManager,
                                     mBrowserControlsManager,
                                     /* heightChangeCallback= */ result -> {},
                                     /* profileSupplier= */ new ObservableSupplierImpl<>(),
