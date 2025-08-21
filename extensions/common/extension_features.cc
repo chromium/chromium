@@ -235,7 +235,7 @@ BASE_FEATURE(kRuntimeOnMessagePromiseReturnSupport,
 
 BASE_FEATURE(kOptimizeServiceWorkerStartRequests,
              "OptimizeServiceWorkerStartRequests",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAvoidCloneArgsOnExtensionFunctionDispatch,
              "AvoidCloneArgsOnExtensionFunctionDispatch",
