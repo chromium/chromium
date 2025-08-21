@@ -3241,7 +3241,6 @@ crbug.com/431038531 [ Mac14 ] external/wpt/websockets/stream/tentative/backpress
 crbug.com/431039951 [ Mac14 ] external/wpt/webxr/navigator_xr_sameObject.https.html [ Timeout ]
 crbug.com/431039951 [ Mac14 ] external/wpt/webxr/xrViewerPose_secondaryViews.https.html [ Timeout ]
 crbug.com/431036878 [ Mac14 ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?10-10 [ Crash ]
-crbug.com/431040249 [ Mac14 ] virtual/permission-element/external/wpt/html/semantics/permission-element/bounded-css-properties-reftest.tentative.html [ Failure ]
 crbug.com/431036874 [ Mac15-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure ]
 crbug.com/431036874 [ Mac15 ] virtual/threaded/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure ]
 crbug.com/431036874 [ Mac14-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure ]
