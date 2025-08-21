@@ -98,6 +98,18 @@ void AutomationDelegate::registerTool(ScriptState* script_state,
     return;
   }
 
+  if (!params->name() || params->name().empty()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Tool name is required");
+    return;
+  }
+
+  if (!params->description() || params->description().empty()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Description is required");
+    return;
+  }
+
   String input_schema;
   if (params->hasInputSchema()) {
     input_schema =
