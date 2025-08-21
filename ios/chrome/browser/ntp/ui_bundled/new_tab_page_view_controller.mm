@@ -60,7 +60,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
 
 // The spacing for the quick actions buttons.
 const CGFloat kQuickActionSpacingTop = 3.0;
-const CGFloat kQuickActionSpacingBotttom = 19.0;
+const CGFloat kQuickActionSpacingBottom = 19.0;
 
 // Vertical spacing between modules.
 CGFloat SpaceBetweenModules() {
@@ -703,7 +703,12 @@ CGFloat SpaceBetweenModules() {
     }
 
     if (viewController == _quickActionsViewController) {
-      heightAboveFeed += kQuickActionSpacingBotttom;
+      // First, subtract off the "standard" space that was added in the
+      // previous iteration of the loop because this module uses custom
+      // top and bottom spacing.
+      heightAboveFeed -= SpaceBetweenModules();
+      // Then add in the custom spacing used for this module.
+      heightAboveFeed += kQuickActionSpacingTop + kQuickActionSpacingBottom;
     }
   }
   return heightAboveFeed;
@@ -1592,7 +1597,7 @@ CGFloat SpaceBetweenModules() {
       UIView* viewAbove = self.viewControllersAboveFeed[index - 1].view;
 
       CGFloat spacingToUse =
-          isQuickActions ? kQuickActionSpacingBotttom : SpaceBetweenModules();
+          isQuickActions ? kQuickActionSpacingBottom : SpaceBetweenModules();
       [NSLayoutConstraint activateConstraints:@[
         [view.topAnchor constraintEqualToAnchor:viewAbove.bottomAnchor
                                        constant:spacingToUse],
