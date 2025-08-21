@@ -735,6 +735,669 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsColumnFlexDirection) {
   VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
+// TODO(crbug.com/436140061): The following are for the optimized version of
+// GapDecorations. Once the optimized version is implemented, we can remove all
+// the other unused tests from the old version.
+TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedOneLine) {
+  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+        margin: 0px;
+    }
+    #flexbox {
+      border: 2px dotted rgb(96 139 168);
+      display: flex;
+      column-gap: 20px;
+      row-gap: 10px;
+      row-rule-style: solid;
+      width: 170px;
+      flex-wrap: wrap;
+    }
+    .items {
+      background-color: rgb(96 139 168 / 0.2);
+      flex-shrink: 1;
+      height: 50px;
+    }
+
+    #item1 {
+      width: 50px;
+    }
+
+    #item2 {
+      width: 100px;
+    }
+    </style>
+    <div id="flexbox">
+      <div class="items" id="item1">One</div>
+      <div class="items" id="item2">Two</div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(200)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(62), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kBoth)};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 0);
+  EXPECT_EQ(column_gaps.size(), 1);
+
+  // No Main Gaps so we don't expect an inline start or end.
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit());
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit());
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(52));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedBasic) {
+  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+        margin: 0px;
+    }
+    #flexbox {
+      border: 2px dotted rgb(96 139 168);
+      display: flex;
+      column-gap: 10px;
+      row-gap: 10px;
+      row-rule-style: solid;
+      width: 170px;
+      flex-wrap: wrap;
+    }
+    .items {
+      background-color: rgb(96 139 168 / 0.2);
+      flex-shrink: 1;
+      width: 50px;
+      height: 50px;
+    }
+    </style>
+    <div id="flexbox">
+      <div class="items">One</div>
+      <div class="items">Two</div>
+      <div class="items">Three</div>
+      <div class="items">Four</div>
+      <div class="items">Five</div>
+      <div class="items">Six</div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(200)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */
+                                       nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(57))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(57), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(117), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(57), LayoutUnit(57)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(117), LayoutUnit(57)),
+               CrossGap::EdgeIntersectionState::kEnd)};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 1);
+  EXPECT_EQ(column_gaps.size(), 4);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(172));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(112));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedNonAlignedColumn) {
+  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+body {
+    margin: 0px;
+}
+
+#flexbox {
+  border: 2px dotted rgb(96 139 168);
+  display: flex;
+  column-gap: 10px;
+  row-gap: 10px;
+  row-rule-style: solid;
+  width: 170px;
+  flex-wrap: wrap;
+}
+
+.items {
+  background-color: rgb(96 139 168 / 0.2);
+  flex-shrink: 1;
+  width: 50px;
+  height: 50px;
+}
+
+#spanner {
+  width: 100px;
+}
+</style>
+
+<div id="flexbox">
+  <div class="items">One</div>
+  <div class="items">Two</div>
+  <div class="items">Three</div>
+  <div class="items" id="spanner">Four</div>
+  <div class="items">Five</div>
+  <div class="items">Six</div>
+  <div class="items">Seven</div>
+  <div class="items">Eight</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(200)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(57)),
+                                             MainGap(LayoutUnit(117))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(57), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(117), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(107), LayoutUnit(57))),
+      CrossGap(LogicalOffset(LayoutUnit(57), LayoutUnit(117)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(117), LayoutUnit(117)),
+               CrossGap::EdgeIntersectionState::kEnd)};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 2u);
+  EXPECT_EQ(column_gaps.size(), 5u);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(172));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(172));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedNonAlignedColumn2) {
+  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+body {
+    margin: 0px;
+}
+
+#flexbox {
+  border: 2px dotted rgb(96 139 168);
+  display: flex;
+  column-gap: 10px;
+  row-gap: 10px;
+  row-rule-style: solid;
+  width: 170px;
+  flex-wrap: wrap;
+}
+
+.items {
+  background-color: rgb(96 139 168 / 0.2);
+  flex-shrink: 1;
+  width: 50px;
+  height: 50px;
+}
+
+#item4 {
+  width: 100px;
+}
+
+#item6 {
+  width: 160px;
+}
+</style>
+
+<div id="flexbox">
+  <div class="items">One</div>
+  <div class="items">Two</div>
+  <div class="items">Three</div>
+  <div class="items" id="item4">Four</div>
+  <div class="items">Five</div>
+  <div id="item6" class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(200)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(57)),
+                                             MainGap(LayoutUnit(117))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(57), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(117), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(107), LayoutUnit(57)))};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 2u);
+  EXPECT_EQ(column_gaps.size(), 3u);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(172));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(172));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest,
+       GapIntersectionsOptimizedVerticalFlexAlignedCenter) {
+  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+body {
+    margin: 0px;
+}
+
+#flexbox > * {
+  border: 2px solid rgb(96 139 168);
+  border-radius: 5px;
+  background-color: rgb(96 139 168 / 0.2);
+}
+#flexbox {
+  border: 2px dotted rgb(96 139 168);
+  border-width: 4px 2px 2px 2px;
+  display: flex;
+  column-gap: 10px;
+  row-gap: 30px;
+  row-rule-style: solid;
+  height: 300px;
+  width: 300px;
+  flex-wrap: wrap;
+  align-content: center;
+  writing-mode: vertical-lr;
+}
+
+.items {
+  width: 70px;
+  height: 70px;
+}
+</style>
+
+<div id="flexbox">
+  <div class="items">One</div>
+  <div class="items">Two</div>
+  <div class="items">Three</div>
+  <div class="items">Four</div>
+  <div class="items">Five</div>
+  <div class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kVerticalLr, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(152))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(83), LayoutUnit(63)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(167), LayoutUnit(63)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(83), LayoutUnit(152)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(167), LayoutUnit(152)),
+               CrossGap::EdgeIntersectionState::kEnd)};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 1u);
+  EXPECT_EQ(column_gaps.size(), 4u);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(4));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(304));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(63));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(241));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest,
+       GapIntersectionsOptimizedVerticalFlexAlignedStart) {
+  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+body {
+    margin: 0px;
+}
+
+#flexbox > * {
+  border: 2px solid rgb(96 139 168);
+  border-radius: 5px;
+  background-color: rgb(96 139 168 / 0.2);
+}
+#flexbox {
+  border: 2px dotted rgb(96 139 168);
+  border-width: 4px 2px 2px 2px;
+  display: flex;
+  column-gap: 10px;
+  row-gap: 30px;
+  row-rule-style: solid;
+  height: 300px;
+  width: 300px;
+  flex-wrap: wrap;
+  align-content: start;
+  writing-mode: vertical-lr;
+}
+
+.items {
+  width: 70px;
+  height: 70px;
+}
+</style>
+
+<div id="flexbox">
+  <div class="items">One</div>
+  <div class="items">Two</div>
+  <div class="items">Three</div>
+  <div class="items">Four</div>
+  <div class="items">Five</div>
+  <div class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kVerticalLr, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(91))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(83), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(167), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(83), LayoutUnit(91)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(167), LayoutUnit(91)),
+               CrossGap::EdgeIntersectionState::kEnd)};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 1u);
+  EXPECT_EQ(column_gaps.size(), 4u);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(4));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(304));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(180));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest,
+       GapIntersectionsOptimizedVerticalFlexAlignedStretch) {
+  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+body {
+    margin: 0px;
+}
+
+#flexbox > * {
+  border: 2px solid rgb(96 139 168);
+  border-radius: 5px;
+  background-color: rgb(96 139 168 / 0.2);
+}
+#flexbox {
+  border: 2px dotted rgb(96 139 168);
+  border-width: 4px 2px 2px 2px;
+  display: flex;
+  column-gap: 10px;
+  row-gap: 30px;
+  row-rule-style: solid;
+  height: 300px;
+  width: 300px;
+  flex-wrap: wrap;
+  align-content: stretch;
+  writing-mode: vertical-lr;
+}
+
+.items {
+  width: 70px;
+  height: 70px;
+}
+</style>
+
+<div id="flexbox">
+  <div class="items">One</div>
+  <div class="items">Two</div>
+  <div class="items">Three</div>
+  <div class="items">Four</div>
+  <div class="items">Five</div>
+  <div class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kVerticalLr, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(152))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(83), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(167), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(83), LayoutUnit(152)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(167), LayoutUnit(152)),
+               CrossGap::EdgeIntersectionState::kEnd)};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 1u);
+  EXPECT_EQ(column_gaps.size(), 4u);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(4));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(304));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(302));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedColumnFlexDirection) {
+  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+        margin: 0px;
+    }
+
+    #flexbox {
+        border: 2px solid rgb(96 139 168);
+        display: flex;
+        column-gap: 20px;
+        row-gap: 10px;
+        width: 120px;
+        height: 170px;
+        flex-wrap: wrap;
+        flex-direction: column;
+        column-rule-style: solid;
+        column-rule-color: red;
+        column-rule-width: 10px;
+    }
+
+    .items {
+        background-color: rgb(96 139 168 / 0.2);
+        flex-shrink: 1;
+        width: 50px;
+        height: 50px;
+    }
+
+</style>
+
+<div id="flexbox">
+    <div class="items">One</div>
+    <div class="items">Two</div>
+    <div class="items">Three</div>
+    <div class="items">Four</div>
+    <div class="items">Five</div>
+    <div class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_main_gaps = {MainGap(LayoutUnit(2))};
+  const Vector<CrossGap> expected_cross_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(2), LayoutUnit(57)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(2), LayoutUnit(117)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(62), LayoutUnit(57)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(62), LayoutUnit(117)),
+               CrossGap::EdgeIntersectionState::kEnd)};
+
+  const Vector<MainGap>& main_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& cross_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(main_gaps.size(), 1u);
+  EXPECT_EQ(cross_gaps.size(), 4u);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(122));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(172));
+
+  VerifyMainGaps(expected_main_gaps, main_gaps);
+  VerifyCrossGaps(expected_cross_gaps, cross_gaps);
+}
+
 TEST_F(FlexLayoutAlgorithmTest, DevtoolsBasic) {
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display:flex; width: 100px;" id=flexbox>

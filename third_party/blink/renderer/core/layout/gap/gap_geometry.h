@@ -114,6 +114,42 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   }
   LogicalOffset GetContentEndOffset() const { return content_end_offset_; }
 
+  void SetContentInlineStart(LayoutUnit offset) {
+    content_inline_start_ = offset;
+    content_start_offset_.inline_offset = offset;
+  }
+  // TODO(javiercon): Change to return content_inline_start_ in following CL.
+  LayoutUnit GetContentInlineStart() const {
+    return content_start_offset_.inline_offset;
+  }
+
+  void SetContentInlineEnd(LayoutUnit offset) {
+    content_inline_end_ = offset;
+    content_end_offset_.inline_offset = offset;
+  }
+  // TODO(javiercon): Change to return content_inline_end_ in following CL.
+  LayoutUnit GetContentInlineEnd() const {
+    return content_end_offset_.inline_offset;
+  }
+
+  void SetContentBlockStart(LayoutUnit offset) {
+    content_block_start_ = offset;
+    content_start_offset_.block_offset = offset;
+  }
+  // TODO(javiercon): Change to return content_block_start_ in following CL.
+  LayoutUnit GetContentBlockStart() const {
+    return content_start_offset_.block_offset;
+  }
+
+  void SetContentBlockEnd(LayoutUnit offset) {
+    content_block_end_ = offset;
+    content_end_offset_.block_offset = offset;
+  }
+  // TODO(javiercon): Change to return content_block_end_ in following CL.
+  LayoutUnit GetContentBlockEnd() const {
+    return content_end_offset_.block_offset;
+  }
+
   void SetMainGaps(Vector<MainGap>&& main_gaps) {
     main_gaps_ = std::move(main_gaps);
   }
@@ -154,11 +190,22 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // information.
 
   // These are the offsets of the content where the gaps begin and end.
+  // TODO(javiercon): Remove and use the LayoutUnits below instead. It doesn't
+  // make much sense to think about these as points, rather as "ranges" since we
+  // care about how "long" the content is in each direction, not where it
+  // starts.
+  // For now we are keeping here to not have to change the already landed Grid
+  // code that uses this. Follow up CL will unify these.
   LogicalOffset content_start_offset_ = LogicalOffset();
   LogicalOffset content_end_offset_ = LogicalOffset();
 
   MainGaps main_gaps_;
   CrossGaps cross_gaps_;
+
+  LayoutUnit content_inline_start_;
+  LayoutUnit content_inline_end_;
+  LayoutUnit content_block_start_;
+  LayoutUnit content_block_end_;
 };
 
 }  // namespace blink

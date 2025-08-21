@@ -48,6 +48,14 @@ class BaseLayoutAlgorithmTest
   static void VerifyGapIntersections(
       const Vector<GapIntersectionList>& expected_intersections,
       const Vector<GapIntersectionList>& intersections);
+
+  // The following are for the optimized version of GapDecorations. Once the
+  // optimized version is implemented, we can remove all the other unused
+  // methods from the old version (crbug.com/436140061).
+  static void VerifyMainGaps(const Vector<MainGap>& expected_gaps,
+                             const Vector<MainGap>& gaps);
+  static void VerifyCrossGaps(const Vector<CrossGap>& expected_gaps,
+                              const Vector<CrossGap>& gaps);
 };
 
 class FragmentChildIterator {

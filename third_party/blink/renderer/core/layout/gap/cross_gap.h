@@ -15,9 +15,47 @@ namespace blink {
 // and "after" the `MainGap` associated with this `CrossGap`. Where `start` and
 // `end` describe the index range within the `cross_gaps_` vector of the
 // `GapGeometry` where a given `CrossGap` is stored.
-struct CrossGapRange {
-  wtf_size_t start_index;
-  wtf_size_t end_index;
+class CrossGapRange {
+ public:
+  wtf_size_t Start() const {
+    CHECK(start_index_.has_value());
+    return *start_index_;
+  }
+
+  wtf_size_t End() const {
+    CHECK(end_index_.has_value());
+    return *end_index_;
+  }
+
+  // Increments the range. `cross_gap_index` is the index of the cross gap being
+  // processed.
+  void Increment(wtf_size_t cross_gap_index) {
+    if (!start_index_.has_value()) {
+      start_index_ = cross_gap_index;
+
+      // Both start at the same index, but subsequent calls will increment the
+      // end index.
+      end_index_ = cross_gap_index;
+    } else {
+      CHECK(end_index_.has_value());
+      CHECK_GT(cross_gap_index, *end_index_);
+      CHECK_GT(cross_gap_index, *start_index_);
+      end_index_ = cross_gap_index;
+    }
+  }
+
+  String ToString() const {
+    String str;
+    str = "(" +
+          (start_index_.has_value() ? String::Number(*start_index_) : "null") +
+          " --> " +
+          (end_index_.has_value() ? String::Number(*end_index_) : "null") + ")";
+    return str;
+  }
+
+ private:
+  std::optional<wtf_size_t> start_index_;
+  std::optional<wtf_size_t> end_index_;
 };
 
 // Represents any gap that intersects a `MainGap`. For example, in a row-based
@@ -28,16 +66,6 @@ struct CrossGapRange {
 // more information.
 class CORE_EXPORT CrossGap {
  public:
-  CrossGap(LogicalOffset offset) : gap_logical_start_offset_(offset) {}
-
-  LogicalOffset GetGapStartOffset() const { return gap_logical_start_offset_; }
-
-  blink::String ToString(bool verbose = false) const {
-    return blink::String("(") +
-           gap_logical_start_offset_.inline_offset.ToString() + ", " +
-           gap_logical_start_offset_.block_offset.ToString() + ")";
-  }
-
   // Represents whether/how the gap borders the edge of the container. This
   // state is used by the paint code in order to paint correctly with the outset
   // property, as this property can result in different behavior at the edges.
@@ -50,9 +78,37 @@ class CORE_EXPORT CrossGap {
     kBoth = 3,
   };
 
+  CrossGap(LogicalOffset offset) : gap_logical_start_offset_(offset) {}
+  CrossGap(LogicalOffset offset, EdgeIntersectionState state)
+      : gap_logical_start_offset_(offset), edge_state_(state) {}
+
+  LogicalOffset GetGapStartOffset() const { return gap_logical_start_offset_; }
+
+  String ToString(bool verbose = false) const {
+    if (verbose) {
+      String edge_state;
+      if (StartsAtEdge()) {
+        edge_state = "kStart";
+      } else if (EndsAtEdge()) {
+        edge_state = "kEnd";
+      } else {
+        edge_state = "kNone";
+      }
+      return String("CrossStartOffset(") +
+             gap_logical_start_offset_.inline_offset.ToString() + ", " +
+             gap_logical_start_offset_.block_offset.ToString() + "); " +
+             "EdgeState: " + edge_state + ";";
+    }
+
+    return String("CrossStartOffset(") +
+           gap_logical_start_offset_.inline_offset.ToString() + ", " +
+           gap_logical_start_offset_.block_offset.ToString() + ")";
+  }
+
   void SetEdgeIntersectionState(EdgeIntersectionState state) {
     edge_state_ = state;
   }
+  EdgeIntersectionState GetEdgeIntersectionState() const { return edge_state_; }
 
   bool StartsAtEdge() const {
     return edge_state_ == kStart || edge_state_ == kBoth;

@@ -276,7 +276,9 @@ class GapAccumulator {
       : gap_between_items_(gap_between_items),
         gap_between_lines_(gap_between_lines),
         container_builder_(container_builder),
-        is_column_(is_column) {
+        is_column_(is_column),
+        num_lines_(num_lines),
+        main_gaps_(num_lines - 1) {
     CHECK(container_builder_);
 
     main_axis_gaps_.ReserveInitialCapacity(num_lines);
@@ -285,9 +287,11 @@ class GapAccumulator {
 
   const GapGeometry* BuildGapGeometry() {
     const bool has_valid_main_axis_gaps =
-        !main_axis_gaps_.empty() && gap_between_lines_ > LayoutUnit();
+        (!main_axis_gaps_.empty() || !main_gaps_.empty()) &&
+        gap_between_lines_ > LayoutUnit();
     const bool has_valid_cross_axis_gaps =
-        !cross_axis_gaps_.empty() && gap_between_items_ > LayoutUnit();
+        (!cross_axis_gaps_.empty() || !cross_gaps_.empty()) &&
+        gap_between_items_ > LayoutUnit();
     if (!has_valid_main_axis_gaps && !has_valid_cross_axis_gaps) {
       // `GapGeometry` requires at least one axis to be valid.
       return nullptr;
@@ -321,6 +325,27 @@ class GapAccumulator {
       }
     }
 
+    // TODO(crbug.com/436140061): The following are for the optimized
+    // version of GapDecorations. Once the optimized version is implemented,
+    // we can remove all the parts of this function used for the old version.
+    // TODO(crbug.com/440123087): Risky since they could in theory be used after
+    // moved. Clean up to not move members. Change members to unique_ptrs
+    gap_geometry->SetCrossGaps(std::move(cross_gaps_));
+    gap_geometry->SetMainGaps(std::move(main_gaps_));
+
+    gap_geometry->SetContentInlineStart(
+        is_column_ ? content_cross_start_.value_or(LayoutUnit())
+                   : content_main_start_.value_or(LayoutUnit()));
+    gap_geometry->SetContentInlineEnd(
+        is_column_ ? content_cross_end_.value_or(LayoutUnit())
+                   : content_main_end_.value_or(LayoutUnit()));
+    gap_geometry->SetContentBlockStart(
+        is_column_ ? content_main_start_.value_or(LayoutUnit())
+                   : content_cross_start_.value_or(LayoutUnit()));
+    gap_geometry->SetContentBlockEnd(
+        is_column_ ? content_main_end_.value_or(LayoutUnit())
+                   : content_cross_end_.value_or(LayoutUnit()));
+
     return gap_geometry;
   }
 
@@ -349,7 +374,7 @@ class GapAccumulator {
   //    intersection point being computed for the current item.
   void BuildGapIntersectionPointsForCurrentItem(
       const FlexLineVector& flex_lines,
-      size_t flex_line_index,
+      wtf_size_t flex_line_index,
       wtf_size_t item_index_in_line,
       LogicalOffset item_offset) {
     const FlexLine& flex_line = flex_lines[flex_line_index];
@@ -530,7 +555,7 @@ class GapAccumulator {
 
   void PopulateGapIntersectionsForMiddleItem(
       const FlexLineVector& flex_lines,
-      size_t flex_line_index,
+      wtf_size_t flex_line_index,
       LayoutUnit main_intersection_offset,
       Vector<GapIntersection>& item_cross_intersections_list) {
     const FlexLine& flex_line = flex_lines[flex_line_index];
@@ -674,6 +699,208 @@ class GapAccumulator {
     }
   }
 
+  // TODO(crbug.com/436140061): The following are for the optimized version of
+  // GapDecorations. Once the optimized version is implemented, we can remove
+  // all the other unused methods from the old version.
+
+  // We populate the gap data structures within the flex container in an
+  // item by item basis. The main and cross gaps that correspond to each item
+  // are defined as follows:
+  // 1. For the first item in a line, the `MainGap` corresponding to it will
+  // be:
+  //  - The main axis (or row) offset (X1) of the main axis gap after the
+  //  item's line, with the beginning of the flex line.
+  // +---------------------------------------------------------------+
+  // | +---------+        Gap        +---------+                     |
+  // | |  Item   |                   |         |                     |
+  // | +---------+                   +---------+                     |
+  // |                                                               |
+  // X1         Row Gap                                              |
+  // |                                                               |
+  // | +---------+        Gap        +---------+                     |
+  // | |         |                   |         |                     |
+  // | +---------+                   +---------+                     |
+  // +---------------------------------------------------------------+
+  // 2. For an item in the first line (and not the first item), the
+  // `CrossGap` corresponding to it will be:
+  //  - The cross offset of the intersection point formed by the cross gap
+  //  before the item, with the edge of the flex line (X1).
+  // +-----------------------X1--------------------------------------+
+  // | +---------+        Gap        +---------+                     |
+  // | |         |                   |  Item   |           ...       |
+  // | +---------+                   +---------+                     |
+  // |                                                               |
+  // |         Row Gap                                               |
+  // |                                                               |
+  // | +---------+        Gap        +---------+                     |
+  // | |         |                   |         |                     |
+  // | +---------+                   +---------+                     |
+  // +---------------------------------------------------------------+
+  // 4. For any items (`Item` in this example) that lie in all other positions,
+  // the `CrossGap` corresponding to it will be:
+  //  - The cross offset of the intersection point formed by the cross gap
+  //  before the item with the main gap before the item's line (X1).
+  // +----------------------------------------------------------------------+
+  // |        +---------+        Gap        +---------+                     |
+  // |   ...  |         |                   |         |          ...        |
+  // |        +---------+                   +---------+                     |
+  // |                                                                      |
+  // |                Row Gap     X1                                        |
+  // |                                                                      |
+  // |        +---------+        Gap        +---------+                     |
+  // |   ...  |         |                   |  Item   |          ...        |
+  // |        +---------+                   +---------+                     |
+  // |            .                             .                           |
+  // |            .   Row Gap                   .                           |
+  // |            .                             .                           |
+  // |            .                             .                           |
+  // +----------------------------------------------------------------------+
+  // For more information on GapDecorations implementation see
+  // `third_party/blink/renderer/core/layout/gap/README.md`.
+  void BuildGapsForCurrentItem(const FlexLineVector& flex_lines,
+                               wtf_size_t flex_line_index,
+                               wtf_size_t item_index_in_line,
+                               LogicalOffset item_offset) {
+    CHECK_LT(flex_line_index, flex_lines.size());
+    const FlexLine& flex_line = flex_lines[flex_line_index];
+
+    // "last" and "first" here refers to the block direction.
+    const bool is_last_line = flex_line_index == flex_lines.size() - 1;
+    const bool is_first_line = flex_line_index == 0;
+
+    // "first" and "last" here refers to the inline direction.
+    const bool is_first_item = item_index_in_line == 0;
+    const bool is_last_item =
+        item_index_in_line == flex_line.item_indices.size() - 1;
+
+    if (is_first_line && !content_cross_start_.has_value()) {
+      content_cross_start_ = flex_line.cross_axis_offset;
+    }
+
+    if (is_last_line && !content_cross_end_.has_value()) {
+      content_cross_end_ = flex_line.LineCrossEnd();
+    }
+
+    // The first item in any line doesn't have any `CrossGap` associated with
+    // it.
+    if (is_first_item) {
+      // We set the `MainGap` start offset when we process the first item in a
+      // line, and nothing else. The last line does not have any `MainGap`s
+      // (number of main gaps = `num_lines_` - 1)
+      if (num_lines_ > 1 && !is_last_line) {
+        PopulateMainGapForFirstItem(flex_line, flex_line_index);
+        // We only set the content start for the `GapGeometry` if it hasn't been
+        // set yet.
+        if (!content_main_start_.has_value()) {
+          content_main_start_ =
+              is_column_
+                  ? container_builder_->BorderScrollbarPadding().block_start
+                  : container_builder_->BorderScrollbarPadding().inline_start;
+        }
+        return;
+      }
+      return;
+    }
+
+    // We only set the content end for the `GapGeometry` if it hasn't been set
+    // yet, and if there are multiple lines.
+    if (is_last_item && num_lines_ > 1 && !content_main_end_.has_value()) {
+      LayoutUnit border_scrollbar_padding =
+          is_column_ ? container_builder_->BorderScrollbarPadding().block_end
+                     : container_builder_->BorderScrollbarPadding().inline_end;
+      content_main_end_ =
+          is_column_
+              ? container_builder_->InitialBorderBoxSize().block_size -
+                    border_scrollbar_padding
+              : container_builder_->InlineSize() - border_scrollbar_padding;
+    }
+
+    const LayoutUnit main_offset =
+        is_column_ ? item_offset.block_offset : item_offset.inline_offset;
+    const LayoutUnit main_intersection_offset =
+        main_offset - (gap_between_items_ / 2);
+
+    PopulateCrossGapForCurrentItem(flex_line, flex_line_index,
+                                   flex_lines.size(), main_intersection_offset);
+  }
+
+  void PopulateMainGapForFirstItem(const FlexLine& flex_line,
+                                   wtf_size_t flex_line_index) {
+    CHECK_LT(flex_line_index, main_gaps_.size());
+    LayoutUnit main_intersection_offset =
+        is_column_ ? container_builder_->BorderScrollbarPadding().block_start
+                   : container_builder_->BorderScrollbarPadding().inline_start;
+    LayoutUnit cross_intersection_offset =
+        flex_line.LineCrossEnd() + (gap_between_lines_ / 2);
+
+    main_gaps_[flex_line_index].SetGapStartOffset(
+        is_column_ ? main_intersection_offset : cross_intersection_offset);
+  }
+
+  void HandleCrossGapRangesForCurrentItem(wtf_size_t flex_line_index,
+                                          wtf_size_t cross_gap_index) {
+    if (flex_line_index < main_gaps_.size()) {
+      main_gaps_[flex_line_index].RangeOfCrossGapsBefore().Increment(
+          cross_gap_index);
+    }
+
+    if (flex_line_index > 0) {
+      CHECK_LE(flex_line_index - 1, main_gaps_.size());
+      // We increment the `RangeOfCrossGapsAfter` for the previous line, since
+      // the CrossGaps that start at this line fall "after" the previous line.
+      main_gaps_[flex_line_index - 1].RangeOfCrossGapsAfter().Increment(
+          cross_gap_index);
+    }
+  }
+
+  void PopulateCrossGapForCurrentItem(const FlexLine& flex_line,
+                                      wtf_size_t flex_line_index,
+                                      wtf_size_t num_lines,
+                                      LayoutUnit main_intersection_offset) {
+    // If we are in the first or last flex line, our the `CrossGap` associated
+    // with this item will start at the point given by
+    // `main_intersection_offset`, and the either cross axis of the line or the
+    // cross axis offset of the line minus half of the gap size.
+    //
+    // If we are in the middle flex line, the `CrossGap` associated with this
+    // item will start at the point given by `main_intersection_offset`, and the
+    // midpoint between the start of the line and the end of the last line.
+    const bool is_first_line = flex_line_index == 0;
+    const bool is_last_line = (flex_line_index + 1) == num_lines;
+
+    LayoutUnit cross_intersection_offset = flex_line.cross_axis_offset;
+    CrossGap::EdgeIntersectionState edge_state =
+        CrossGap::EdgeIntersectionState::kNone;
+
+    if (num_lines == 1) {
+      // If there is only one line, the cross gap will start and end at the
+      // content edge.
+      edge_state = CrossGap::EdgeIntersectionState::kBoth;
+    } else if (is_first_line) {
+      // First line, so the cross gap starts at the content edge.
+      edge_state = CrossGap::EdgeIntersectionState::kStart;
+    } else if (is_last_line) {
+      // If there is more than one flex line, and the current line is the last
+      // line, the cross offset will be the cross axis offset of the line
+      // minus half of the gap size.
+      cross_intersection_offset -= gap_between_lines_ / 2;
+      edge_state = CrossGap::EdgeIntersectionState::kEnd;
+    } else {
+      // Middle line, so the cross gap will start at midpoint between the start
+      // of this line and the end of the previous line.
+      cross_intersection_offset =
+          flex_line.cross_axis_offset - (gap_between_lines_ / 2);
+    }
+
+    LogicalOffset logical_offset(
+        is_column_ ? cross_intersection_offset : main_intersection_offset,
+        is_column_ ? main_intersection_offset : cross_intersection_offset);
+    CrossGap cross_gap(logical_offset, edge_state);
+
+    cross_gaps_.push_back(cross_gap);
+    HandleCrossGapRangesForCurrentItem(flex_line_index, cross_gaps_.size() - 1);
+  }
+
  private:
   LayoutUnit gap_between_items_;
   LayoutUnit gap_between_lines_;
@@ -689,6 +916,20 @@ class GapAccumulator {
   Vector<GapIntersection> main_intersections_after_current_line_;
   // The main axis gap intersection points for the main gap before the item.
   Vector<GapIntersection> main_intersections_before_current_line_;
+
+  // TODO(crbug.com/436140061): The following are for the optimized version of
+  // GapDecorations. Once the optimized version is implemented, we can remove
+  // all the other unused methods from the old version.
+
+  wtf_size_t num_lines_;
+
+  Vector<MainGap> main_gaps_;
+  Vector<CrossGap> cross_gaps_;
+
+  std::optional<LayoutUnit> content_cross_start_;
+  std::optional<LayoutUnit> content_cross_end_;
+  std::optional<LayoutUnit> content_main_start_;
+  std::optional<LayoutUnit> content_main_end_;
 };
 
 }  // anonymous namespace
@@ -2190,7 +2431,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   LayoutResult::EStatus status = LayoutResult::kSuccess;
 
   std::optional<GapAccumulator> gap_accumulator = std::nullopt;
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+  if ((RuntimeEnabledFeatures::CSSGapDecorationEnabled() ||
+       RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) &&
       Style().HasGapRule()) {
     gap_accumulator = GapAccumulator(gap_between_items_, gap_between_lines_,
                                      flex_lines->size(), flex_items_.size(),
@@ -2406,6 +2648,12 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       if (gap_accumulator) {
         gap_accumulator->BuildGapIntersectionPointsForCurrentItem(
             *flex_lines, flex_line_idx, item_index_in_line, offset);
+
+        // TODO(crbug.com/436140061): The following are for the optimized
+        // version of GapDecorations. Once the optimized version is implemented,
+        // we can remove all the other unused methods from the old version.
+        gap_accumulator->BuildGapsForCurrentItem(*flex_lines, flex_line_idx,
+                                                 item_index_in_line, offset);
       }
 
       item_index_in_line++;

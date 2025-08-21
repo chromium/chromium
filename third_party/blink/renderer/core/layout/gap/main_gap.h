@@ -18,8 +18,10 @@ namespace blink {
 // third_party/blink/renderer/core/layout/gap/README.md for more information.
 class CORE_EXPORT MainGap {
  public:
+  MainGap() = default;
   MainGap(LayoutUnit offset) : gap_start_offset_(offset) {}
 
+  void SetGapStartOffset(LayoutUnit offset) { gap_start_offset_ = offset; }
   LayoutUnit GetGapStartOffset() const { return gap_start_offset_; }
 
   CrossGapRange& RangeOfCrossGapsBefore() {
@@ -33,14 +35,8 @@ class CORE_EXPORT MainGap {
         blink::String("MainOffset(") + gap_start_offset_.ToString() + "); ";
 
     if (verbose) {
-      str = str + "Before: " +
-            blink::String::Number(range_of_cross_gaps_before_.start_index) +
-            " -> " +
-            blink::String::Number(range_of_cross_gaps_before_.end_index) + "; ";
-      str = str + "After: " +
-            blink::String::Number(range_of_cross_gaps_after_.start_index) +
-            " -> " +
-            blink::String::Number(range_of_cross_gaps_after_.end_index) + "; ";
+      str = str + "Before: " + range_of_cross_gaps_before_.ToString() + ";";
+      str = str + "After: " + range_of_cross_gaps_after_.ToString() + ";";
     }
 
     return str;
