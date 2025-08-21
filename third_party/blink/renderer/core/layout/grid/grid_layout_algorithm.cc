@@ -2226,10 +2226,10 @@ class GapAccumulator {
     }
 
     if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
-      gap_geometry->SetContentStartOffset(
-          LogicalOffset(content_inline_start_, content_block_start_));
-      gap_geometry->SetContentEndOffset(
-          LogicalOffset(content_inline_end_, content_block_end_));
+      gap_geometry->SetContentInlineOffsets(content_inline_start_,
+                                            content_inline_end_);
+      gap_geometry->SetContentBlockOffsets(content_block_start_,
+                                           content_block_end_);
     }
     return gap_geometry;
   }

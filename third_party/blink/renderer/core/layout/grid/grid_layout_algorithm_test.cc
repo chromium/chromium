@@ -484,10 +484,10 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometryMC) {
 
   // Content edges should span the content box of the grid:
   // Inline: 0 -> 318 (80+14+120+14+90), Block: 0 -> 506 (90+12+130+12+110+12+140).
-  EXPECT_EQ(gap_geometry->GetContentStartOffset(),
-            LogicalOffset(LayoutUnit(), LayoutUnit()));
-  EXPECT_EQ(gap_geometry->GetContentEndOffset(),
-            LogicalOffset(LayoutUnit(318), LayoutUnit(506)));
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit());
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit());
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(318));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(506));
 }
 
 TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRanges) {

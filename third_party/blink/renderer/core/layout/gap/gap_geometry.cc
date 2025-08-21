@@ -125,4 +125,16 @@ String GapGeometry::ToString(bool verbose) const {
   return str;
 }
 
+void GapGeometry::SetContentInlineOffsets(LayoutUnit start_offset,
+                                          LayoutUnit end_offset) {
+  content_inline_start_ = start_offset;
+  content_inline_end_ = end_offset;
+}
+
+void GapGeometry::SetContentBlockOffsets(LayoutUnit start_offset,
+                                         LayoutUnit end_offset) {
+  content_block_start_ = start_offset;
+  content_block_end_ = end_offset;
+}
+
 }  // namespace blink

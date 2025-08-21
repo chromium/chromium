@@ -333,18 +333,23 @@ class GapAccumulator {
     gap_geometry->SetCrossGaps(std::move(cross_gaps_));
     gap_geometry->SetMainGaps(std::move(main_gaps_));
 
-    gap_geometry->SetContentInlineStart(
+    LayoutUnit content_inline_start =
         is_column_ ? content_cross_start_.value_or(LayoutUnit())
-                   : content_main_start_.value_or(LayoutUnit()));
-    gap_geometry->SetContentInlineEnd(
+                   : content_main_start_.value_or(LayoutUnit());
+    LayoutUnit content_inline_end =
         is_column_ ? content_cross_end_.value_or(LayoutUnit())
-                   : content_main_end_.value_or(LayoutUnit()));
-    gap_geometry->SetContentBlockStart(
+                   : content_main_end_.value_or(LayoutUnit());
+    LayoutUnit content_block_start =
         is_column_ ? content_main_start_.value_or(LayoutUnit())
-                   : content_cross_start_.value_or(LayoutUnit()));
-    gap_geometry->SetContentBlockEnd(
+                   : content_cross_start_.value_or(LayoutUnit());
+    LayoutUnit content_block_end =
         is_column_ ? content_main_end_.value_or(LayoutUnit())
-                   : content_cross_end_.value_or(LayoutUnit()));
+                   : content_cross_end_.value_or(LayoutUnit());
+
+    gap_geometry->SetContentInlineOffsets(content_inline_start,
+                                          content_inline_end);
+    gap_geometry->SetContentBlockOffsets(content_block_start,
+                                         content_block_end);
 
     return gap_geometry;
   }
