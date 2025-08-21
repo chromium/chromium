@@ -259,6 +259,30 @@ class FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class
+    FingerprintingProtectionFilterTrackingProtectionSettingAndNonIncognitoFilteringBrowserTest
+    : public FingerprintingProtectionFilterBrowserTest {
+ public:
+  FingerprintingProtectionFilterTrackingProtectionSettingAndNonIncognitoFilteringBrowserTest();
+
+  FingerprintingProtectionFilterTrackingProtectionSettingAndNonIncognitoFilteringBrowserTest(
+      const FingerprintingProtectionFilterTrackingProtectionSettingAndNonIncognitoFilteringBrowserTest&) =
+      delete;
+  FingerprintingProtectionFilterTrackingProtectionSettingAndNonIncognitoFilteringBrowserTest&
+  operator=(
+      const FingerprintingProtectionFilterTrackingProtectionSettingAndNonIncognitoFilteringBrowserTest&) =
+      delete;
+
+  ~FingerprintingProtectionFilterTrackingProtectionSettingAndNonIncognitoFilteringBrowserTest()
+      override;
+
+ protected:
+  void SetUpOnMainThread() override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 }  // namespace fingerprinting_protection_filter
 
 #endif  // CHROME_BROWSER_FINGERPRINTING_PROTECTION_FINGERPRINTING_PROTECTION_FILTER_BROWSER_TEST_HARNESS_H_

@@ -532,10 +532,13 @@ class FPFPageActivationThrottleWithTrackingProtectionSettingTest
             mock_nav_handle_.get(),
             content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
     scoped_feature_list_.InitWithFeatures(
-        // FingerprintingProtectionUx flag isn't used together with
-        // `EnableFingerprintingProtectionFilter(InIncognito)`.
-        {privacy_sandbox::kFingerprintingProtectionUx},
-        /*disabled_features=*/{});
+        // The FingerprintingProtectionUx flag is used together with
+        // `EnableFingerprintingProtectionFilterInIncognito` to enable the FPF
+        // in incognito.
+        {privacy_sandbox::kFingerprintingProtectionUx,
+         features::kEnableFingerprintingProtectionFilterInIncognito},
+        /*disabled_features=*/{
+            features::kEnableFingerprintingProtectionFilter});
   }
 
   void TearDown() override {
@@ -550,6 +553,41 @@ class FPFPageActivationThrottleWithTrackingProtectionSettingTest
   std::unique_ptr<content::MockNavigationThrottleRegistry> mock_nav_registry_;
 };
 
+TEST_F(FPFPageActivationThrottleWithTrackingProtectionSettingTest,
+       TrackingProtectionSettingsIgnoredOutsideOfIncognitoMode) {
+  scoped_feature_list_.Reset();
+  // Enable non-incognito as well as incognito features.
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {privacy_sandbox::kFingerprintingProtectionUx,
+       features::kEnableFingerprintingProtectionFilterInIncognito,
+       features::kEnableFingerprintingProtectionFilter},
+      /*disabled_features=*/{});
+
+  // Set FP to disabled in prefs.
+  test_support_.prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
+                                    false);
+
+  // Create TrackingProtectionSettings for regular browsing.
+  auto tracking_protection_settings =
+      std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
+          test_support_.prefs(), test_support_.content_settings(),
+          /*management_service=*/nullptr, /*is_incognito=*/false);
+
+  // Create ActivationThrottle with the TrackingProtectionSettings for regular
+  // browsing.
+  auto test_throttle = FingerprintingProtectionPageActivationThrottle(
+      *mock_nav_registry_, test_support_.content_settings(),
+      tracking_protection_settings.get(), test_support_.prefs(),
+      /*is_incognito=*/false);
+
+  // Activation should default to enabled irrespective of
+  // TrackingProtectionSettings.
+  GetActivationResult activation = test_throttle.GetActivation();
+  EXPECT_EQ(activation.level, ActivationLevel::kEnabled);
+  EXPECT_EQ(activation.decision, ActivationDecision::ACTIVATED);
+}
+
 const FPFGetActivationWithTrackingProtectionSettingTestCase
     kGetActivationWithTrackingProtectionSettingTestCases[] = {
         {.test_name = "TPSettingEnabled_Incognito_Enabled",
@@ -561,7 +599,7 @@ const FPFGetActivationWithTrackingProtectionSettingTestCase
          .is_incognito = false,
          .tps_fp_setting_enabled = true,
          .expected_level = ActivationLevel::kDisabled,
-         .expected_decision = ActivationDecision::ACTIVATION_DISABLED},
+         .expected_decision = ActivationDecision::UNKNOWN},
         {.test_name = "TPSettingDisabled_Incognito_Disabled",
          .is_incognito = true,
          .tps_fp_setting_enabled = false,
@@ -571,7 +609,7 @@ const FPFGetActivationWithTrackingProtectionSettingTestCase
          .is_incognito = false,
          .tps_fp_setting_enabled = false,
          .expected_level = ActivationLevel::kDisabled,
-         .expected_decision = ActivationDecision::ACTIVATION_DISABLED}};
+         .expected_decision = ActivationDecision::UNKNOWN}};
 
 INSTANTIATE_TEST_SUITE_P(
     FPFPageActivationThrottleWithTrackingProtectionSettingTestSuiteInstantiation,
