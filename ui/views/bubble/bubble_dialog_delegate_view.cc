@@ -27,6 +27,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/class_property.h"
 #include "ui/base/default_style.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -49,6 +50,7 @@
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble_histograms_variant.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
@@ -435,7 +437,7 @@ BubbleDialogDelegate::CloseOnDeactivatePin::~CloseOnDeactivatePin() {
   }
 }
 
-BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
+BubbleDialogDelegate::BubbleDialogDelegate(BubbleAnchor anchor,
                                            BubbleBorder::Arrow arrow,
                                            BubbleBorder::Shadow shadow,
                                            bool autosize)
@@ -445,7 +447,7 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
       close_on_deactivate_pins_(std::make_unique<CloseOnDeactivatePin::Pins>()),
       bubble_created_time_(base::TimeTicks::Now()) {
   bubble_uma_logger().set_delegate(this);
-  SetAnchorView(anchor_view);
+  SetAnchor(anchor);
   SetArrow(arrow);
   SetShowCloseButton(false);
 
@@ -540,11 +542,11 @@ Widget* BubbleDialogDelegateView::CreateBubble(
   return CreateBubble(base::WrapUnique(delegate_view), ownership);
 }
 
-BubbleDialogDelegateView::BubbleDialogDelegateView(View* anchor_view,
+BubbleDialogDelegateView::BubbleDialogDelegateView(BubbleAnchor anchor,
                                                    BubbleBorder::Arrow arrow,
                                                    BubbleBorder::Shadow shadow,
                                                    bool autosize)
-    : BubbleDialogDelegate(anchor_view, arrow, shadow, autosize) {
+    : BubbleDialogDelegate(anchor, arrow, shadow, autosize) {
   bubble_uma_logger().set_bubble_view(this);
 }
 
@@ -1086,6 +1088,31 @@ void BubbleDialogDelegate::SetAnchorRect(const gfx::Rect& rect) {
   anchor_rect_ = rect;
   if (GetWidget()) {
     OnAnchorBoundsChanged();
+  }
+}
+
+void BubbleDialogDelegate::SetAnchor(BubbleAnchor anchor) {
+  if (std::holds_alternative<View*>(anchor)) {
+    SetAnchorView(std::get<View*>(anchor));
+  } else if (std::holds_alternative<ui::TrackedElement*>(anchor)) {
+    auto* tracked_element = std::get<ui::TrackedElement*>(anchor);
+    CHECK(tracked_element);
+    if (auto* element_views = tracked_element->AsA<TrackedElementViews>()) {
+      SetAnchorView(element_views->view());
+    } else {
+      SetAnchorView(nullptr);
+      SetAnchorRect(tracked_element->GetScreenBounds());
+
+      Widget* widget =
+          Widget::GetWidgetForNativeView(tracked_element->GetNativeView());
+      CHECK(widget) << "BubbleAnchor only supports TrackedElement backed by a "
+                    << "Widget.";
+      SetAnchorWidget(widget);
+    }
+  } else {
+    CHECK(std::holds_alternative<std::nullptr_t>(anchor));
+    SetAnchorView(nullptr);
+    SetAnchorRect(gfx::Rect());
   }
 }
 

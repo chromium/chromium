@@ -172,6 +172,10 @@ namespace toasts {
 class ToastView;
 }
 
+namespace ui {
+class TrackedElement;
+}  // namespace ui
+
 namespace ui::ime {
 class AnnouncementView;
 class CandidateWindowView;
@@ -221,10 +225,27 @@ FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, ActivateSurface);
 FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, Confirm);
 }  // namespace test
 
+// A bubble can be anchored to a view, a tracked element, or nothing.
+// BubbleAnchor is a variant type that can hold any of these.
+//
+// A tracked element is useful when the element could be either a View or a HTML
+// element in a WebUI. The element can be retrieved using its ElementIdentifier,
+// example:
+//
+//   #include "ui/base/interaction/element_tracker.h"
+//   ui::TrackedElement* element = ui::ElementTracker::GetElementTracker()
+//       ->GetElementInAnyContext(kElementId);
+//   auto bubble_delegate = std::make_unique<BubbleDialogDelegate>(
+//       element, BubbleBorder::Arrow::TOP_LEFT);
+//   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+//   ...
+//
+using BubbleAnchor = std::variant<View*, ui::TrackedElement*, std::nullptr_t>;
+
 class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
  public:
   BubbleDialogDelegate(
-      View* anchor_view,
+      BubbleAnchor anchor,
       BubbleBorder::Arrow arrow,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
       bool autosize = false);
@@ -283,6 +304,18 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void SetAnchorRect(const gfx::Rect& rect);
 
   //////////////////////////////////////////////////////////////////////////////
+  // The generic anchor:
+  //
+  // Use this when you want to anchor the bubble to a DOM element in WebUI,
+  // represented by a TrackedElementWebUI.
+  //
+  // The BubbleAnchor is a generic type that can be constructed from a
+  // views::View* or a ui::TrackedElement*. This is designed to be transparently
+  // constructed from a views::View*, so that code that previously uses an
+  // anchor view can easily migrate to accept a WebUI anchor.
+  void SetAnchor(BubbleAnchor anchor);
+
+  //////////////////////////////////////////////////////////////////////////////
   // The anchor widget:
   //
   // The bubble will close when the anchor widget closes. Also, when the anchor
@@ -291,7 +324,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // bubble is active, and will optionally resize itself to fit within the
   // anchor widget if the anchor widget's size changes.
   //
-  // The anchor widget can be explicitly set, or is implied by the anchor view.
+  // The anchor widget can be explicitly set, or is implied by the anchor view
+  // or by the generic anchor.
   void SetAnchorWidget(views::Widget* anchor_widget);
   Widget* anchor_widget() { return anchor_widget_; }
   const Widget* anchor_widget() const { return anchor_widget_; }
@@ -892,7 +926,7 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   // argument. Unless on Mac when the bubble needs to use Views base shadow,
   // override it with suitable bubble border type.
   explicit BubbleDialogDelegateView(
-      View* anchor_view = nullptr,
+      BubbleAnchor anchor = nullptr,
       BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
       bool autosize = false);
