@@ -15,6 +15,7 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_observer_helper_base.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -27,12 +28,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
-
-// TODO(crbug.com/421608904): integrate setting helper with auto-pip on Android
-// once permission UX is finalized.
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -425,10 +420,6 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
   // Since nobody has a pip window, we shouldn't think we do.
   CHECK(!is_in_picture_in_picture_);
 
-// TODO(crbug.com/421606013): skip permission check for Android for now. Once
-// the permission model for Android is finalized, we'll enable the permission
-// checking logic here.
-#if !BUILDFLAG(IS_ANDROID)
   // The user may block autopip via a content setting. Also, if we're in an
   // incognito window, then we should treat "ask" as "block". This should be the
   // final check before triggering autopip since it will record metrics about
@@ -454,7 +445,6 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
     }
     return false;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   return true;
 }
@@ -485,15 +475,10 @@ bool AutoPictureInPictureTabHelper::WasRecentlyAudible() const {
 }
 
 bool AutoPictureInPictureTabHelper::MeetsMediaEngagementConditions() const {
-  // TODO(crbug.com/421606013): Android as autoPiP hasn't been registered for
-  // Android platform. We'll register it and implement a no-permission model for
-  // Android as a follow-up.
-#if !BUILDFLAG(IS_ANDROID)
   // Skip checking media engagement when content setting is set to allow.
   if (GetCurrentContentSetting() == CONTENT_SETTING_ALLOW) {
     return true;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   std::optional<content::RenderFrameHost*> rfh = GetPrimaryMainRoutedFrame();
   if (!rfh) {
@@ -571,14 +556,12 @@ void AutoPictureInPictureTabHelper::ScheduleUrlSafetyCheck() {
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void AutoPictureInPictureTabHelper::EnsureAutoPipSettingHelper() {
   if (!auto_pip_setting_helper_) {
     auto_pip_setting_helper_ = AutoPipSettingHelper::CreateForWebContents(
         web_contents(), host_content_settings_map_, auto_blocker_);
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::optional<content::RenderFrameHost*>
 AutoPictureInPictureTabHelper::GetPrimaryMainRoutedFrame() const {

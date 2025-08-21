@@ -38,6 +38,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -303,6 +305,42 @@ public class AutoPictureInPictureTabHelperTest {
         // Should not enter auto-PiP on an insecure context.
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, false, "Should not enter auto-PiP on an insecure context.");
+    }
+
+    @Test
+    @MediumTest
+    public void testDoesNotAutopipWhenPermissionIsBlocked() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        assertTrue(
+                "Page should have registered for auto-pip.",
+                AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
+                        webContents));
+
+        // Block auto-pip via content setting.
+        AutoPictureInPictureTabHelperTestUtils.setPermission(
+                mPage.getTab().getProfile(),
+                ContentSettingsType.AUTO_PICTURE_IN_PICTURE,
+                mActivityTestRule.getTestServer().getURL(AUTO_PIP_VIDEO_PAGE),
+                ContentSettingValues.BLOCK);
+
+        // Create a new tab in the background to switch to later.
+        Tab originalTab = mPage.getTab();
+        Tab newTab = createNewTabInBackground(originalTab);
+
+        fulfillVideoPlaybackConditions(webContents);
+
+        // Switch away from the tab.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelUtils.selectTabById(
+                            mActivity.getTabModelSelector(),
+                            newTab.getId(),
+                            TabSelectionType.FROM_USER);
+                });
+
+        // Should not enter auto-PiP when the permission is blocked.
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, false, "Should not enter auto-PiP when permission is blocked.");
     }
 
     /**

@@ -52,6 +52,7 @@
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
@@ -185,7 +186,6 @@
 #include "content/public/common/content_features.h"
 #else
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
-#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
@@ -343,6 +343,17 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   autofill::AutofillClientProvider& autofill_client_provider =
       autofill::AutofillClientProviderFactory::GetForProfile(profile);
   autofill_client_provider.CreateClientForWebContents(web_contents);
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kMediaSessionEnterPictureInPicture)) {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid)) {
+      AutoPictureInPictureTabHelper::CreateForWebContents(web_contents);
+    }
+#else
+    AutoPictureInPictureTabHelper::CreateForWebContents(web_contents);
+#endif
+  }
 #if BUILDFLAG(IS_ANDROID)
   // The sensitive content client has to be instantiated after the autofill
   // client, because the sensitive content client starts a flow which uses
@@ -621,10 +632,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (web_app::AreWebAppsUserInstallable(profile)) {
     webapps::MLInstallabilityPromoter::CreateForWebContents(web_contents);
     webapps::AppBannerManagerDesktop::CreateForWebContents(web_contents);
-  }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kMediaSessionEnterPictureInPicture)) {
-    AutoPictureInPictureTabHelper::CreateForWebContents(web_contents);
   }
   BookmarkTabHelper::CreateForWebContents(web_contents);
   BrowserSyncedTabDelegate::CreateForWebContents(web_contents);

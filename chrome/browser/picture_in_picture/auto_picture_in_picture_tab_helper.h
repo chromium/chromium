@@ -10,6 +10,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -19,12 +20,6 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/views/bubble/bubble_border.h"
-
-// TODO(crbug.com/421608904): integrate setting helper with auto-pip on Android
-// once permission UX is finalized.
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace permissions {
 class PermissionDecisionAutoBlockerBase;
@@ -373,10 +368,8 @@ class AutoPictureInPictureTabHelper
   mojo::Receiver<media_session::mojom::MediaSessionObserver>
       media_session_observer_receiver_{this};
 
-#if !BUILDFLAG(IS_ANDROID)
   // If non-null, this is the setting helper for the permission setting UI.
   std::unique_ptr<AutoPipSettingHelper> auto_pip_setting_helper_;
-#endif  //! BUILDFLAG(IS_ANDROID)
 
   // Implementation of the Safe Browsing client, used to check and report URL
   // safety.

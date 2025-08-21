@@ -10,6 +10,11 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.site_settings.PermissionInfo;
+import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.WebContents;
 
 /** Utility class for testing AutoPictureInPictureTabHelper C++ logic via JNI. */
@@ -103,6 +108,32 @@ public class AutoPictureInPictureTabHelperTestUtils {
                 () ->
                         AutoPictureInPictureTabHelperTestUtilsJni.get()
                                 .setHasAudioFocusForTesting(webContents, hasFocus));
+    }
+
+    /**
+     * Sets the content setting for a given URL and waits for it to be applied.
+     *
+     * @param profile The profile to set the content setting for.
+     * @param contentSettingsType The content setting type to set.
+     * @param url The URL to set the content setting for.
+     * @param value The content setting value to set.
+     */
+    public static void setPermission(
+            Profile profile,
+            @ContentSettingsType.EnumType int contentSettingsType,
+            String url,
+            @ContentSettingValues int value) {
+        PermissionInfo info =
+                new PermissionInfo(
+                        contentSettingsType,
+                        url,
+                        /* embedder= */ null,
+                        /* isEmbargoed= */ false,
+                        SessionModel.DURABLE);
+        ThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, value));
+
+        // Wait for the setting to be updated.
+        CriteriaHelper.pollUiThread(() -> info.getContentSetting(profile) == value);
     }
 
     @NativeMethods

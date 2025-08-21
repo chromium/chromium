@@ -27,7 +27,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
 // TODO(crbug.com/421608904): include auto_picture_in_picture_tab_helper for
-// Android.
+// Android when supporting document PiP.
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
