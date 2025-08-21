@@ -1033,8 +1033,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         List<TabModel> models = tabModelSelector.getModels();
         int totalCount = 0;
         for (TabModel model : models) {
-            for (int i = 0; i < model.getCount(); i++) {
-                Tab tab = model.getTabAtChecked(i);
+            for (Tab tab : model) {
                 if (!TabPersistentStore.shouldSkipTab(tab)) {
                     totalCount++;
                 }

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,6 +34,8 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+
+import java.util.Collections;
 
 /** Tests for {@link TabArchiveSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -87,6 +90,7 @@ public class TabArchiverUnitTest {
         doReturn(mArchivedTabModel).when(mArchivedTabGroupModelFilter).getTabModel();
         mArchivedTab = new MockTab(0, mProfile);
         doReturn(mArchivedTab).when(mArchivedTabCreator).createFrozenTab(any(), anyInt(), anyInt());
+        doAnswer(inv -> Collections.emptyList().iterator()).when(mArchivedTabModel).iterator();
 
         // Setup the regular tab models
         mTabModelSelector =

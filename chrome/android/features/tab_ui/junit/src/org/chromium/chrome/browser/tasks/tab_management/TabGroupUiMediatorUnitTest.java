@@ -107,6 +107,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /** Tests for {@link TabGroupUiMediator}. */
@@ -208,6 +209,7 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(newTab).when(incognitoTabModel).getTabAt(POSITION1);
         doReturn(true).when(incognitoTabModel).isIncognito();
         doReturn(1).when(incognitoTabModel).getCount();
+        when(incognitoTabModel.iterator()).thenAnswer(inv -> List.of(newTab).iterator());
     }
 
     private void verifyNeverReset() {
@@ -234,6 +236,7 @@ public class TabGroupUiMediatorUnitTest {
             doReturn(0).when(mTabModel).getCount();
             doReturn(0).when(mTabGroupModelFilter).getIndividualTabAndGroupCount();
             doReturn(null).when(mTabModelSelector).getCurrentTab();
+            when(mTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
         } else {
             doReturn(mTabModel.indexOf(currentTab)).when(mTabModel).index();
             doReturn(currentTab).when(mTabModelSelector).getCurrentTab();
@@ -323,6 +326,7 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(false).when(mTabModel).isIncognito();
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
         doReturn(3).when(mTabModel).getCount();
+        when(mTabModel.iterator()).thenAnswer(inv -> List.of(mTab1, mTab2, mTab3).iterator());
         doReturn(0).when(mTabModel).index();
         doReturn(mTab1).when(mTabModel).getTabAt(0);
         doReturn(mTab2).when(mTabModel).getTabAt(1);

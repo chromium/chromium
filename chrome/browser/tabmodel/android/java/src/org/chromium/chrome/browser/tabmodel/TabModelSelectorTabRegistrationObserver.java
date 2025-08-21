@@ -96,8 +96,8 @@ public final class TabModelSelectorTabRegistrationObserver {
                         for (int i = 0; i < tabModels.size(); i++) {
                             TabModel tabModel = tabModels.get(i);
                             TabList comprehensiveTabList = tabModel.getComprehensiveModel();
-                            for (int j = 0; j < comprehensiveTabList.getCount(); j++) {
-                                onTabRegistered(comprehensiveTabList.getTabAtChecked(j));
+                            for (Tab tab : comprehensiveTabList) {
+                                onTabRegistered(tab);
                             }
                         }
                     }

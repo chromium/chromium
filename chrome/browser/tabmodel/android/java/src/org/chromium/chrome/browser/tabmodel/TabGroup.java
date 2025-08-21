@@ -145,8 +145,8 @@ class TabGroup {
     }
 
     private void sortByTabListOrder(TabList tabList) {
-        for (int i = 0; i < tabList.getCount(); i++) {
-            moveToEndInGroup(tabList.getTabAtChecked(i).getId());
+        for (Tab tab : tabList) {
+            moveToEndInGroup(tab.getId());
         }
     }
 }

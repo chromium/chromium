@@ -150,10 +150,8 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
     /** Clear the opener attribute on all tabs in the model. */
     void forgetAllOpeners() {
         TabModel currentModel = mTabModelSelector.getCurrentModel();
-        int count = currentModel.getCount();
-        for (int i = 0; i < count; i++) {
-            TabAttributes.from(currentModel.getTabAtChecked(i))
-                    .set(TabAttributeKeys.GROUPED_WITH_PARENT, false);
+        for (Tab tab : currentModel) {
+            TabAttributes.from(tab).set(TabAttributeKeys.GROUPED_WITH_PARENT, false);
         }
     }
 

@@ -47,6 +47,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import java.util.List;
 
 @RunWith(org.chromium.base.test.BaseRobolectricTestRunner.class)
 public class ChromeTabbedOnDragListenerUnitTest {
@@ -54,6 +55,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
     @Rule public MockitoRule mMockitoProcessorRule = MockitoJUnit.rule();
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
     @Mock private Tab mCurrentTab;
     @Mock private NewTabPage mOriginalNtp;
@@ -93,7 +95,8 @@ public class ChromeTabbedOnDragListenerUnitTest {
         when(mCurrentTab.isIncognito()).thenReturn(false);
         when(mCurrentTab.getId()).thenReturn(1);
         when(mTab.isIncognitoBranded()).thenReturn(false);
-        when(mTabModelSelector.getModel(false)).thenReturn(Mockito.mock(TabModel.class));
+        when(mTabModel.iterator()).thenAnswer(invocation -> List.of(mTab, mCurrentTab).iterator());
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(SOURCE_INSTANCE_ID);
         when(mDragDropGlobalState.isDragSourceInstance(SOURCE_INSTANCE_ID)).thenReturn(true);
         DragDropGlobalState.setInstanceForTesting(mDragDropGlobalState);

@@ -137,6 +137,7 @@ public class BrowserControlsManagerUnitTest {
         doNothing().when(mContentView).removeOnSystemUiVisibilityChangeListener(any());
         doNothing().when(mContentView).addOnHierarchyChangeListener(any());
         doNothing().when(mContentView).addOnSystemUiVisibilityChangeListener(any());
+        when(mTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
         when(mTabModelSelector.getModels()).thenReturn(Collections.singletonList(mTabModel));
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabModel);
 

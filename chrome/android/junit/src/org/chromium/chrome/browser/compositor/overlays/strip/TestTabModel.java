@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tabmodel.TabRemover;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -58,6 +59,11 @@ public class TestTabModel extends EmptyTabModel {
     @Override
     public int getCount() {
         return mMockTabs.size();
+    }
+
+    @Override
+    public Iterator<Tab> iterator() {
+        return mMockTabs.iterator();
     }
 
     @Override

@@ -234,10 +234,11 @@ public class TabSwitcherGroupSuggestionService {
 
     private static Map<@TabId Integer, Integer> getTabIdToIndicesMap(TabModel tabModel) {
         Map<@TabId Integer, Integer> tabIdsToIndices = new HashMap<>();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAt(i);
+        int index = 0;
+        for (Tab tab : tabModel) {
             assert tab != null;
-            tabIdsToIndices.put(tab.getId(), i);
+            tabIdsToIndices.put(tab.getId(), index);
+            index++;
         }
         return tabIdsToIndices;
     }

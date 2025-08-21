@@ -2086,20 +2086,21 @@ public class TabPersistentStore {
         TabModelMetadata modelInfo = new TabModelMetadata(tabModel.index());
 
         int activeIndex = tabModel.index();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAtChecked(i);
+        int index = -1;
+        for (Tab tab : tabModel) {
+            index++;
             // This tab has likely just been deleted, and it's possible we're being notified before
             // hand because undo is not allowed. This shouldn't be persisted.
             if (tab.isClosing()) {
                 // Select the previous tab if there is one. 0 should be fine even if there are no
                 // tabs left.
-                if (i == activeIndex) {
+                if (index == activeIndex) {
                     modelInfo.index = Math.max(0, modelInfo.ids.size() - 1);
                 }
                 continue;
             }
 
-            if (i == activeIndex) {
+            if (index == activeIndex) {
                 // If any non-active NTPs have been skipped, the serialized tab model index
                 // needs to be adjusted.
                 modelInfo.index = modelInfo.ids.size();

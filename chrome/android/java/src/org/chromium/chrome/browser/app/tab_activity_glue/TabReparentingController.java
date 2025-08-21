@@ -117,8 +117,8 @@ public class TabReparentingController {
 
     protected static void populateComprehensiveTabsFromModel(TabModel model, List<Tab> outputTabs) {
         TabList tabList = model.getComprehensiveModel();
-        for (int i = 0; i < tabList.getCount(); i++) {
-            outputTabs.add(tabList.getTabAt(i));
+        for (Tab tab : tabList) {
+            outputTabs.add(tab);
         }
     }
 }

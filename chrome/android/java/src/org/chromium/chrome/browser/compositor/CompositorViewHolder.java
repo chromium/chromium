@@ -893,8 +893,7 @@ public class CompositorViewHolder extends FrameLayout
         if (mTabModelSelector == null) return;
 
         for (TabModel tabModel : mTabModelSelector.getModels()) {
-            for (int i = 0; i < tabModel.getCount(); ++i) {
-                Tab tab = tabModel.getTabAt(i);
+            for (Tab tab : tabModel) {
                 if (tab == null) continue;
                 updateWebContentsSize(tab);
             }

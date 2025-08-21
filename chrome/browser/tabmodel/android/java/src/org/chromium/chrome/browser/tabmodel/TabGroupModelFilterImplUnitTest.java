@@ -261,12 +261,14 @@ public class TabGroupModelFilterImplUnitTest {
         doFunction(mTabs::indexOf).when(mTabModel).indexOf(any(Tab.class));
 
         doAnswer(invocation -> mTabs.size()).when(mTabModel).getCount();
+        doAnswer(invocation -> mTabs.iterator()).when(mTabModel).iterator();
 
         doReturn(0).when(mTabModel).index();
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
 
         doReturn(mComprehensiveModel).when(mTabModel).getComprehensiveModel();
         doAnswer(invocation -> mTabs.size()).when(mComprehensiveModel).getCount();
+        doAnswer(invocation -> mTabs.iterator()).when(mComprehensiveModel).iterator();
         doFunction(mTabs::get).when(mComprehensiveModel).getTabAt(anyInt());
 
         mTabModelInOrder = inOrder(mTabModel);
@@ -2172,6 +2174,7 @@ public class TabGroupModelFilterImplUnitTest {
     public void undoGroupedTab_AssertTest() {
         // Simulate mTab6 is not in TabModel.
         doReturn(5).when(mTabModel).getCount();
+        doAnswer(invocation -> mTabs.subList(0, 5).iterator()).when(mTabModel).iterator();
 
         // Undo the grouped action.
         mTabGroupModelFilter.undoGroupedTab(mTab6, POSITION1, TAB1_ROOT_ID, TAB1_TAB_GROUP_ID);

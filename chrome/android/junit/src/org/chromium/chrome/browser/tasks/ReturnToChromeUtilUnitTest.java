@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -75,6 +76,9 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.Collections;
+import java.util.List;
 
 /** Unit tests for {@link ReturnToChromeUtil} class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -189,6 +193,7 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithExistingNtp() {
+        doAnswer(inv -> List.of(mTab1, mNtpTab).iterator()).when(mCurrentTabModel).iterator();
         doReturn(2).when(mCurrentTabModel).getCount();
         doReturn(JUnitTestGURLs.URL_1).when(mTab1).getUrl();
         doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
@@ -263,6 +268,7 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithoutAnyExistingNtp() {
+        doAnswer(inv -> List.of(mTab1).iterator()).when(mCurrentTabModel).iterator();
         doReturn(1).when(mCurrentTabModel).getCount();
         doReturn(JUnitTestGURLs.URL_1).when(mTab1).getUrl();
         doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
@@ -321,6 +327,9 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(true).when(activeNtpTab).isNativePage();
         doReturn(activeNtp).when(activeNtpTab).getNativePage();
         doReturn(activeNtpTab).when(mCurrentTabModel).getTabAt(2);
+        doAnswer(inv -> List.of(mTab1, mNtpTab, activeNtpTab).iterator())
+                .when(mCurrentTabModel)
+                .iterator();
 
         // Set the active NTP tab as the last Tab, and has a tracking Tab.
         doReturn(2).when(mCurrentTabModel).index();
@@ -368,6 +377,7 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     public void testNoAnyTabCase() {
+        doAnswer(inv -> Collections.emptyList().iterator()).when(mCurrentTabModel).iterator();
         doReturn(0).when(mCurrentTabModel).getCount();
 
         // Verifies that if there isn't any existing Tab, we don't create a home surface NTP.

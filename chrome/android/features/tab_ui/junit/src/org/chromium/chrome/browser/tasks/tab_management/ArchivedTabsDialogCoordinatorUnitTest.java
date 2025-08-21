@@ -201,6 +201,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                     }
                 });
 
+        when(mArchivedTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
         when(mArchivedTabModelOrchestrator.getTabModelSelector())
                 .thenReturn(mArchivedTabModelSelector);
         when(mArchivedTabModelSelector.getModel(false)).thenReturn(mArchivedTabModel);

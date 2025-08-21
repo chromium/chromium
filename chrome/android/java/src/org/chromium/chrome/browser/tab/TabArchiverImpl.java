@@ -173,7 +173,7 @@ public class TabArchiverImpl implements TabArchiver {
         Map<Token, Boolean> tabGroupIdToArchiveEligibilityMap = new HashMap<>();
 
         int maxSimultaneousArchives = mTabArchiveSettings.getMaxSimultaneousArchives();
-        for (int i = 0; i < model.getCount(); i++) {
+        for (Tab tab : model) {
             // TODO(crbug.com/369845089): Investigate a more graceful fix to
             // batch these so all relevant tabs still get archived in the same
             // session.
@@ -183,7 +183,6 @@ public class TabArchiverImpl implements TabArchiver {
                 break;
             }
 
-            Tab tab = model.getTabAtChecked(i);
             // The active tab is never archived, including if the active tab is actually a group.
             if (activeTab.getId() == tab.getId()
                     || (activeTab.getTabGroupId() != null
@@ -213,8 +212,7 @@ public class TabArchiverImpl implements TabArchiver {
         TabModel model = regularTabGroupModelFilter.getTabModel();
         List<Tab> tabsToClose = new ArrayList<>();
 
-        for (int i = 0; i < model.getCount(); i++) {
-            Tab tab = model.getTabAtChecked(i);
+        for (Tab tab : model) {
             Tab archivedTab = mArchivedTabGroupModelFilter.getTabModel().getTabById(tab.getId());
             if (archivedTab != null) {
                 tabsToClose.add(tab);
@@ -623,8 +621,7 @@ public class TabArchiverImpl implements TabArchiver {
         if (!mTabArchiveSettings.isArchiveDuplicateTabsEnabled()) {
             return urlToTimestampMap;
         }
-        for (int i = 0; i < model.getCount(); i++) {
-            Tab tab = model.getTabAtChecked(i);
+        for (Tab tab : model) {
             GURL url = tab.getUrl();
             long tabLastActiveTimestamp = tab.getTimestampMillis();
 
@@ -668,9 +665,7 @@ public class TabArchiverImpl implements TabArchiver {
     @VisibleForTesting
     void ensureArchivedTabsHaveCorrectFields() {
         TabModel model = mArchivedTabGroupModelFilter.getTabModel();
-        int count = model.getCount();
-        for (int i = 0; i < count; i++) {
-            Tab archivedTab = model.getTabAtChecked(i);
+        for (Tab archivedTab : model) {
             // Archived tabs shouldn't have a root id or parent id. It's possible that there's
             // stale data around for clients that have archived tabs prior to crrev.com/c/5750590
             // landing. Fix those fields so that they're corrected in the tab state file.
@@ -722,8 +717,7 @@ public class TabArchiverImpl implements TabArchiver {
         }
 
         long lastActiveTabTimestamp = 0L;
-        for (int i = 0; i < model.getCount(); i++) {
-            Tab tab = model.getTabAtChecked(i);
+        for (Tab tab : model) {
             if (TabModelUtils.getCurrentTabId(model) == tab.getId()) {
                 continue;
             }

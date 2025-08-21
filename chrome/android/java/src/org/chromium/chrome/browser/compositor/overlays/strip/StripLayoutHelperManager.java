@@ -1293,8 +1293,7 @@ public class StripLayoutHelperManager
         List<TabModel> models = mTabModelSelector.getModels();
         for (int i = 0; i < models.size(); i++) {
             TabModel model = models.get(i);
-            for (int j = 0; j < model.getCount(); j++) {
-                Tab tab = model.getTabAt(j);
+            for (Tab tab : model) {
                 if (tab != null) {
                     titleCache.getUpdatedTitle(
                             tab, tab.getContext().getString(R.string.tab_loading_default_title));

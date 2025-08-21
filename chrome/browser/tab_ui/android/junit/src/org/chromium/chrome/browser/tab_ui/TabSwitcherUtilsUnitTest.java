@@ -38,6 +38,8 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 
+import java.util.List;
+
 /** Unit tests for {@link TabSwitcherUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -59,6 +61,7 @@ public class TabSwitcherUtilsUnitTest {
     public void setUp() {
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.iterator()).thenAnswer(inv -> List.of(mTab).iterator());
         when(mTabModel.getTabAt(0)).thenReturn(mTab);
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mTab);
         when(mTab.getId()).thenReturn(TAB_ID_1);
