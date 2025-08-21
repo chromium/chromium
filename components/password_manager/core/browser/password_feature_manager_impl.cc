@@ -10,7 +10,6 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
-#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
@@ -69,11 +68,5 @@ features_util::PasswordAccountStorageUsageLevel
 PasswordFeatureManagerImpl::ComputePasswordAccountStorageUsageLevel() const {
   return features_util::ComputePasswordAccountStorageUsageLevel(sync_service_);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-bool PasswordFeatureManagerImpl::ShouldUpdateGmsCore() {
-  return IsGmsCoreUpdateRequired();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

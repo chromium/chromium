@@ -39,10 +39,6 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
   features_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;
 
-#if BUILDFLAG(IS_ANDROID)
-  bool ShouldUpdateGmsCore() override;
-#endif  // BUILDFLAG(IS_ANDROID)
-
  private:
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<PrefService> local_state_;
