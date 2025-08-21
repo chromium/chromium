@@ -229,7 +229,9 @@ class BASE_EXPORT SysInfo {
   static std::string CPUModelName();
 
   // Return the smallest amount of memory (in bytes) which the VM system will
-  // allocate.
+  // allocate. On some platforms, such as Windows, this may not match the page
+  // size (e.g. x86/x86-64 Windows use a 4KB page size but a 64KB allocation
+  // granularity).
   static size_t VMAllocationGranularity();
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -17,7 +17,6 @@
 #include <sys/param.h>
 #include <sys/resource.h>
 #include <sys/utsname.h>
-#include <unistd.h>
 
 #include <algorithm>
 #include <iostream>
@@ -25,6 +24,7 @@
 
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "base/memory/page_size.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -295,7 +295,7 @@ std::string SysInfo::OperatingSystemArchitecture() {
 
 // static
 size_t SysInfo::VMAllocationGranularity() {
-  return checked_cast<size_t>(getpagesize());
+  return GetPageSize();
 }
 
 #if !BUILDFLAG(IS_APPLE)
