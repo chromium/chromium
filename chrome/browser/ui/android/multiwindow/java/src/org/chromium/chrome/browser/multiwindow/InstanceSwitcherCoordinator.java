@@ -437,6 +437,11 @@ public class InstanceSwitcherCoordinator {
                 builder.with(
                         InstanceSwitcherItemProperties.CLOSE_BUTTON_CLICK_LISTENER,
                         (view) -> closeWindow(item));
+                builder.with(
+                        InstanceSwitcherItemProperties.CLOSE_BUTTON_CONTENT_DESCRIPTION,
+                        mContext.getString(
+                                R.string.instance_switcher_item_close_content_description,
+                                item.title));
             }
             String lastAccessedString =
                     isCurrentWindow

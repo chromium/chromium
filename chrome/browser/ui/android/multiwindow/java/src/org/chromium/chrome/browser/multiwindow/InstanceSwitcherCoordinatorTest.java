@@ -19,6 +19,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -1023,6 +1024,18 @@ public class InstanceSwitcherCoordinatorTest {
         onView(allOf(withId(R.id.more), isDescendantOfA(withId(R.id.inactive_instance_list))))
                 .inRoot(isDialog())
                 .check(matches(not(isDisplayed())));
+
+        // Verify content description of the close button on the single inactive instance.
+        onView(withId(R.id.inactive_instance_list))
+                .inRoot(isDialog())
+                .check(
+                        matches(
+                                atPosition(
+                                        0,
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.close_button),
+                                                        withContentDescription("Close title2"))))));
     }
 
     @Test

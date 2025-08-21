@@ -5569,6 +5569,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           =1 {<ph name="INCOGNITO_TAB_COUNT">%1$s<ex>2</ex></ph> incognito and <ph name="TAB_COUNT_ONE">%2$s<ex>1</ex></ph> other tab will be closed}
           other {<ph name="INCOGNITO_TAB_COUNT">%1$s<ex>4</ex></ph> incognito and <ph name="TAB_COUNT_MANY">%2$s<ex>4</ex></ph> other tabs will be closed}}
       </message>
+      <message name="IDS_INSTANCE_SWITCHER_ITEM_CLOSE_CONTENT_DESCRIPTION" desc="Accessibility label of the close icon on the instance list item.">
+        Close <ph name="INSTANCE_TITLE">%1$s<ex>Window</ex></ph>
+      </message>
 
       <!-- Multi-instance message strings -->
       <message name="IDS_MULTI_INSTANCE_RESTORATION_MESSAGE_TITLE" desc="Title of the message shown when the number of persisted instances exceeds the max instance count after an instance limit downgrade.">

@@ -77,6 +77,12 @@ class InstanceSwitcherItemViewBinder {
             moreButton.setVisibility(View.GONE);
             closeButton.setOnClickListener(
                     model.get(InstanceSwitcherItemProperties.CLOSE_BUTTON_CLICK_LISTENER));
+
+        } else if (InstanceSwitcherItemProperties.CLOSE_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
+            ImageView closeButton = view.findViewById(R.id.close_button);
+            closeButton.setContentDescription(
+                    model.get(InstanceSwitcherItemProperties.CLOSE_BUTTON_CONTENT_DESCRIPTION));
+
         } else if (InstanceSwitcherItemProperties.MORE_MENU == propertyKey) {
             ListMenuDelegate delegate = model.get(InstanceSwitcherItemProperties.MORE_MENU);
             ((ListMenuButton) view.findViewById(R.id.more)).setDelegate(delegate);
