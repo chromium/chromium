@@ -89,7 +89,7 @@ public class LauncherShortcutActivity extends Activity {
             if (success) {
                 preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, true);
             }
-        } else if (!incognitoEnabled && incognitoShortcutAdded) {
+        } else if (incognitoShortcutAdded) {
             LauncherShortcutActivity.removeIncognitoLauncherShortcut(context);
             preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
         }

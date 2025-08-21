@@ -227,8 +227,6 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
                             model.get(AdditionalInfoProperties.DESCRIPTION_ID),
                             model.get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)));
             descriptionLine1.setMovementMethod(LinkMovementMethod.getInstance());
-        } else if (propertyKey == SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK) {
-            // Skip because the callback is already handled above.
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

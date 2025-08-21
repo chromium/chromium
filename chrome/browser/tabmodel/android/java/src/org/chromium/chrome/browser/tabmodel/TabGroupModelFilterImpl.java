@@ -319,7 +319,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         int lastTabIndexInGroup = getLastTabIndexInGroup(destinationTab);
 
         if (!skipUpdateTabModel && needToUpdateTabModel(tabsToMerge, lastTabIndexInGroup)) {
-            mergeListOfTabsToGroup(tabsToMerge, destinationTab, !skipUpdateTabModel);
+            mergeListOfTabsToGroup(tabsToMerge, destinationTab, /* notify= */ true);
         } else {
             int destinationRootId = destinationTab.getRootId();
             List<Tab> tabsIncludingDestination = new ArrayList<>();

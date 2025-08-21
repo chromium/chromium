@@ -775,7 +775,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                     return;
                 }
 
-                if (didLaunchIntent && hasDownloadManagerService()) {
+                if (hasDownloadManagerService()) {
                     DownloadManagerService.getDownloadManagerService()
                             .updateLastAccessTime(downloadGuid, otrProfileId);
                     DownloadManager manager =

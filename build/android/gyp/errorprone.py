@@ -31,7 +31,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'InlineMeInliner',
     'InlineMeSuggester',
     # High priority to enable:
-    'AlreadyChecked',
     'DirectInvocationOnMock',
     'MockNotUsedInProduction',
     'PatternMatchingInstanceof',

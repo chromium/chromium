@@ -459,7 +459,7 @@ public class IntentUtils {
     public static int getPendingIntentMutabilityFlag(boolean mutable) {
         if (!mutable) {
             return PendingIntent.FLAG_IMMUTABLE;
-        } else if (mutable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return PendingIntent.FLAG_MUTABLE;
         }
         return 0;

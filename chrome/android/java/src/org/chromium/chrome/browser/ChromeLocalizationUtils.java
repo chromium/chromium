@@ -192,7 +192,7 @@ public class ChromeLocalizationUtils {
         if (isTopAndroidLanguageAvailable) {
             return UiAvailableTypes.TOP_AVAILABLE;
         }
-        if (isDefaultLanguageAvailable && !isTopAndroidLanguageAvailable) {
+        if (isDefaultLanguageAvailable) {
             return UiAvailableTypes.ONLY_DEFAULT_AVAILABLE;
         }
         return UiAvailableTypes.NONE_AVAILABLE;
