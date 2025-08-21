@@ -1,0 +1,60 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("strike_databases") {
+  sources = [
+    "history_clearable_strike_database.h",
+    "simple_autofill_strike_database.h",
+    "strike_database.cc",
+    "strike_database.h",
+    "strike_database_base.cc",
+    "strike_database_base.h",
+    "strike_database_integrator_base.cc",
+    "strike_database_integrator_base.h",
+    "strike_database_integrator_test_strike_database.cc",
+    "strike_database_integrator_test_strike_database.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/leveldb_proto",
+  ]
+
+  deps = [
+    "//components/autofill/core/browser/proto",
+    "//components/autofill/core/common:features",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test_inmemory_strike_database.cc",
+    "test_inmemory_strike_database.h",
+  ]
+
+  public_deps = [ ":strike_databases" ]
+
+  deps = [ "//components/autofill/core/browser/proto" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "history_clearable_strike_database_unittest.cc",
+    "simple_autofill_strike_database_unittest.cc",
+    "strike_database_integrator_test_strike_database_unittest.cc",
+    "strike_database_unittest.cc",
+  ]
+
+  deps = [
+    ":strike_databases",
+    "//base/test:test_support",
+    "//components/autofill/core/browser/proto",
+    "//components/autofill/core/common:features",
+    "//testing/gtest",
+  ]
+}
