@@ -654,6 +654,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   if (!image) {
     // Clear the corrupted data.
     _backgroundCustomizationService->ClearCurrentUserUploadedBackground();
+    _backgroundCustomizationService->StoreCurrentTheme();
     [self.consumer setBackgroundImage:nil];
     return;
   }
