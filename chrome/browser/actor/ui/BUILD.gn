@@ -252,3 +252,23 @@ source_set("browser_tests") {
     "//ui/views:view_pixel_diff_test_support",
   ]
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "handoff_button_controller_interactive_uitest.cc" ]
+
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//ui/base",
+  ]
+}

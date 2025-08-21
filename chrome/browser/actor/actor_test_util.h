@@ -176,6 +176,7 @@ void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future);
 void ExpectOkResult(ActResultFuture& future);
 void ExpectErrorResult(ActResultFuture& future,
                        mojom::ActionResultCode expected_code);
+void ExpectOkResult(PerformActionsFuture& future);
 
 // Sets up GLIC_ACTION_PAGE_BLOCK to block the given host.
 void SetUpBlocklist(base::CommandLine* command_line,

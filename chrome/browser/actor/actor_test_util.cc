@@ -459,6 +459,11 @@ void ExpectOkResult(ActResultFuture& future) {
   ExpectOkResult(result);
 }
 
+void ExpectOkResult(PerformActionsFuture& future) {
+  const auto& result = future.Get<0>();
+  EXPECT_TRUE(IsOk(result)) << "Expected OK result, got " << result;
+}
+
 void ExpectErrorResult(ActResultFuture& future,
                        mojom::ActionResultCode expected_code) {
   const auto& result = *(future.Get<0>());

@@ -19,6 +19,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace {
@@ -73,6 +74,9 @@ void HandoffButtonWidget::OnMouseEvent(::ui::MouseEvent* event) {
   }
   views::Widget::OnMouseEvent(event);
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HandoffButtonController,
+                                      kHandoffButtonElementId);
 
 HandoffButtonController::HandoffButtonController(
     tabs::TabInterface& tab_interface)
@@ -136,6 +140,8 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
   button_view_ = button_view.get();
   button_view_->SetEnabledTextColors(::ui::kColorLabelForeground);
   button_view_->SetImageModel(views::Button::STATE_NORMAL, icon);
+  button_view_->SetProperty(views::kElementIdentifierKey,
+                            kHandoffButtonElementId);
 
   auto widget_delegate = std::make_unique<views::WidgetDelegate>();
   widget_delegate->SetContentsView(std::move(button_view));
