@@ -21,6 +21,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -636,8 +637,10 @@ public class EditorDialogView extends AlwaysDismissedDialog
         titleView.setText(confirmationTitle);
         TextView messageView = body.findViewById(R.id.confirmation_dialog_message);
         messageView.setText(confirmationText);
+        messageView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        // TODO(crbug.com/430218067): Migrate to modal dialog to make links clickable.
+        // TODO(crbug.com/440257087): Migrate to modal dialog to keep it consistent with keyboard
+        // accessory removal dialog.
         mConfirmationDialog =
                 new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setView(body)

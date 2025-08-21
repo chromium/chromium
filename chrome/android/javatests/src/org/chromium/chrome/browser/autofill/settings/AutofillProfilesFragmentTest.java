@@ -514,7 +514,7 @@ public class AutofillProfilesFragmentTest {
         AlertDialog confirmationDialog = editorDialog.getConfirmationDialogForTest();
         assertNotNull(confirmationDialog);
         TextView messageView = confirmationDialog.findViewById(R.id.confirmation_dialog_message);
-        assertEquals(expectedConfirmationMessage, messageView.getText());
+        assertEquals(expectedConfirmationMessage.toString(), messageView.getText().toString());
 
         // Get back to the profile list.
         rule.clickInConfirmationDialogAndWait(
@@ -571,7 +571,7 @@ public class AutofillProfilesFragmentTest {
         String expectedMessage =
                 context.getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", email);
-        assertEquals(expectedMessage, messageView.getText());
+        assertEquals(expectedMessage.toString(), messageView.getText().toString());
 
         rule.clickInConfirmationDialogAndWait(
                 DialogInterface.BUTTON_POSITIVE, /* waitForPreferenceUpdate= */ true);
