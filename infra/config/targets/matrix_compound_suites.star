@@ -197,22 +197,21 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "chromeos_chrome_all_tast_tests_tfc": targets.legacy_matrix_config(
             mixins = [
-                # jacuzzi is slow. So that we run fewer tests per shard.
-                "skylab-20-tests-per-shard",
+                "skylab-40-tests-per-shard",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
-        "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
+        "chromeos_chrome_criticalstaging_tast_tests_tfc": targets.legacy_matrix_config(
             mixins = [
-                "skylab-20-tests-per-shard",
+                "skylab-40-tests-per-shard",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
-        "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
+        "chromeos_chrome_disabled_tast_tests_tfc": targets.legacy_matrix_config(
             mixins = [
                 "skylab-20-tests-per-shard",
             ],
