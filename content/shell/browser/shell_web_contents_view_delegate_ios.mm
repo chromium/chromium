@@ -14,6 +14,7 @@
 #include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/shell/browser/shell_web_contents_view_delegate_creator.h"
