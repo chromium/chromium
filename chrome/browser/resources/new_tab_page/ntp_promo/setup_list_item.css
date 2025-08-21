@@ -11,12 +11,14 @@
 
 :host {
   /* Variable declarations. */
+  --setup-list-foreground: var(--color-sys-on-surface);
+  --setup-list-icon-foreground: var(--color-sys-on-tonal-container);
+  --setup-list-action-icon-foreground: var(--color-sys-on-surface-subtle);
   --setup-list-completed-foreground: var(--color-sys-state-disabled);
   --setup-list-completed-icon-background: var(--color-sys-neutral-container);
   --setup-list-completed-icon-foreground: var(--color-sys-on-surface-subtle);
   --setup-list-element-spacing: 24px;
   --setup-list-icon-background: var(--color-sys-tonal-container);
-  --setup-list-icon-foreground: var(--color-sys-on-tonal-container);
   --setup-list-icon-size: 40px;
   --setup-list-icon-image-size: 20px;
   --setup-list-text-max-width: 345px;
@@ -25,14 +27,15 @@
 }
 
 #backing {
-  display: flex;
-  padding: var(--setup-list-padding);
-  flex-grow: 1;
-  cursor: pointer;
   align-items: center;
+  color: var(--setup-list-foreground);
+  cursor: pointer;
+  display: flex;
+  flex-grow: 1;
+  padding: var(--setup-list-padding);
 }
 
-.pending #backing:hover {
+#backing.pending:hover {
   background-color: var(--color-new-tab-page-control-background-hovered);
 }
 
@@ -60,6 +63,7 @@
 }
 
 #bodyText {
+  color: var(--setup-list-foreground);
   display: inline-block;
   flex: 1;
   margin-block: 0;
@@ -79,7 +83,7 @@
 
   background-color: transparent;
   box-sizing: border-box;
-  color: var(--setup-list-icon-foreground);
+  color: var(--setup-list-action-icon-foreground);
   display: inline-block;
   height: var(--setup-list-icon-size);
   margin: 0;
