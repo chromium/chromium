@@ -1038,7 +1038,7 @@ try_.builder(
     ),
     contact_team_email = "chrome-browser-infra-team@google.com",
     experiments = {
-        "chromium_test.resultdb_module": 100,
+        "chromium_tests.resultdb_module": 100,
     },
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )

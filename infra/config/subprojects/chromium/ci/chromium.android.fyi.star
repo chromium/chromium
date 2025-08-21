@@ -1394,6 +1394,6 @@ ci.builder(
     contact_team_email = "chrome-browser-infra-team@google.com",
     execution_timeout = 4 * time.hour,
     experiments = {
-        "chromium_test.resultdb_module": 100,
+        "chromium_tests.resultdb_module": 100,
     },
 )

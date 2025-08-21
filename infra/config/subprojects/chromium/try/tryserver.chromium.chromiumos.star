@@ -209,7 +209,7 @@ try_.builder(
     ],
     contact_team_email = "chrome-browser-infra-team@google.com",
     experiments = {
-        "chromium_test.resultdb_module": 100,
+        "chromium_tests.resultdb_module": 100,
     },
     main_list_view = "try",
 )
