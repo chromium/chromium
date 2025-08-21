@@ -7,8 +7,10 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -35,24 +37,24 @@ const CGFloat kSymbolPointSize = 18.0;
 NSString* const kFakeboxMatchingBackgroundColor =
     @"fake_omnibox_bottom_gradient_color";
 
+// Returns the color needed for the background of the button.
+UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
+  if (GetNTPMIAEntrypointVariation() ==
+      NTPMIAEntrypointVariation::kOmniboxContainedSingleButton) {
+    return colorPalette ? colorPalette.secondaryCellColor
+                        : [UIColor colorNamed:kBackgroundColor];
+  }
+
+  // All other treatments use the same color as the fakebox.
+  return colorPalette ? colorPalette.omniboxColor
+                      : [UIColor colorNamed:kFakeboxMatchingBackgroundColor];
+}
+
 }  // namespace
 
 @implementation NewTabPageQuickActionsViewController {
   // The stack view containing the quick actions buttons.
   UIStackView* _buttonStackView;
-}
-
-- (instancetype)init {
-  self = [super init];
-
-  if (self) {
-    if (IsNTPBackgroundCustomizationEnabled()) {
-      [self registerForTraitChanges:@[ NewTabPageTrait.class ]
-                         withAction:@selector(applyBackgroundColors)];
-    }
-  }
-
-  return self;
 }
 
 - (void)viewDidLoad {
@@ -92,10 +94,6 @@ NSString* const kFakeboxMatchingBackgroundColor =
   [_incognitoButton addTarget:self
                        action:@selector(openIncognitoSearch)
              forControlEvents:UIControlEventTouchUpInside];
-
-  if (IsNTPBackgroundCustomizationEnabled()) {
-    [self applyBackgroundColors];
-  }
 }
 
 - (CGSize)preferredContentSize {
@@ -130,14 +128,37 @@ NSString* const kFakeboxMatchingBackgroundColor =
 
 // Creates a new quick action button with the given `icon`.
 - (UIButton*)createButtonWithSymbolName:(NSString*)symbolName {
-  UIButton* button = [[UIButton alloc] init];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.backgroundColor = [self buttonBackgroundColor];
-  button.layer.cornerRadius = kButtonCornerRadius;
-  button.tintColor = [UIColor colorNamed:kGrey700Color];
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  configuration.background.backgroundColor = ButtonBackgroundColor(nil);
+  configuration.background.cornerRadius = kButtonCornerRadius;
+  configuration.baseForegroundColor = [UIColor colorNamed:kGrey700Color];
   UIImage* icon = CustomSymbolWithPointSize(symbolName, kSymbolPointSize);
-  [button setImage:MakeSymbolMonochrome(icon) forState:UIControlStateNormal];
+  configuration.image = MakeSymbolMonochrome(icon);
 
+  UIButton* button = [[UIButton alloc] init];
+
+  if (GetNTPMIAEntrypointVariation() ==
+      NTPMIAEntrypointVariation::kOmniboxContainedSingleButton) {
+    button.configurationUpdateHandler =
+        CreateThemedButtonConfigurationUpdateHandler(
+            [UIColor colorNamed:kGrey700Color],
+            ^(NewTabPageColorPalette* palette) {
+              return ButtonBackgroundColor(palette);
+            });
+  } else {
+    // Other variations change the blur background to match the omnibox.
+    button.configurationUpdateHandler =
+        CreateThemedButtonConfigurationUpdateHandler(
+            [UIColor colorNamed:kGrey700Color],
+            ^(NewTabPageColorPalette* palette) {
+              return ButtonBackgroundColor(palette);
+            },
+            UIBlurEffectStyleSystemThickMaterial);
+  }
+
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.configuration = configuration;
   return button;
 }
 
@@ -160,45 +181,6 @@ NSString* const kFakeboxMatchingBackgroundColor =
 
 - (void)openIncognitoSearch {
   [self.NTPShortcutsHandler openIncognitoSearch];
-}
-
-// Returns the color needed for the background of the button.
-- (UIColor*)buttonBackgroundColor {
-  NewTabPageColorPalette* colorPalette =
-      IsNTPBackgroundCustomizationEnabled()
-          ? [self.traitCollection objectForNewTabPageTrait]
-          : nil;
-
-  if (GetNTPMIAEntrypointVariation() ==
-      NTPMIAEntrypointVariation::kOmniboxContainedSingleButton) {
-    return colorPalette ? colorPalette.secondaryCellColor
-                        : [UIColor colorNamed:kBackgroundColor];
-  }
-
-  // All other treatments use the same color as the fakebox.
-  return colorPalette ? colorPalette.omniboxColor
-                      : [UIColor colorNamed:kFakeboxMatchingBackgroundColor];
-}
-
-// Sets the background using the current color palette, or defaults if none is
-// set.
-- (void)applyBackgroundColors {
-  NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForNewTabPageTrait];
-
-  _incognitoButton.backgroundColor = [self buttonBackgroundColor];
-  _voiceSearchButton.backgroundColor = [self buttonBackgroundColor];
-  _lensButton.backgroundColor = [self buttonBackgroundColor];
-
-  if (colorPalette) {
-    _incognitoButton.tintColor = colorPalette.tintColor;
-    _voiceSearchButton.tintColor = colorPalette.tintColor;
-    _lensButton.tintColor = colorPalette.tintColor;
-  } else {
-    _incognitoButton.tintColor = [UIColor colorNamed:kGrey700Color];
-    _voiceSearchButton.tintColor = [UIColor colorNamed:kGrey700Color];
-    _lensButton.tintColor = [UIColor colorNamed:kGrey700Color];
-  }
 }
 
 @end

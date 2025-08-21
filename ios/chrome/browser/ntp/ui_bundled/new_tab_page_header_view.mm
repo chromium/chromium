@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
@@ -782,8 +783,36 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   }
 
   if (IsNTPBackgroundCustomizationEnabled()) {
-    customizationMenuButton.configuration =
-        [self customizationButtonConfiguration];
+    UIButtonConfiguration* configuration =
+        [UIButtonConfiguration plainButtonConfiguration];
+
+    UIImage* icon = DefaultSymbolTemplateWithPointSize(
+        kPencilSymbol,
+        IsSignInButtonNoAvatarEnabled()
+            ? ntp_home::kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar
+            : ntp_home::kCustomizationMenuIconSize);
+    configuration.image = icon;
+    configuration.background.cornerRadius =
+        ntp_home::kCustomizationMenuButtonCornerRadius;
+    customizationMenuButton.configuration = configuration;
+
+    UIColor* unthemedTintColor = [UIColor
+        colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
+                                                    : kTextSecondaryColor)];
+    customizationMenuButton.configurationUpdateHandler =
+        CreateThemedButtonConfigurationUpdateHandler(
+            unthemedTintColor, ^UIColor*(NewTabPageColorPalette* palette) {
+              if (palette) {
+                return palette.secondaryColor;
+              }
+
+              return IsSignInButtonNoAvatarEnabled()
+                         ? [[UIColor colorNamed:kSolidWhiteColor]
+                               colorWithAlphaComponent:0.75]
+                         : [[UIColor colorNamed:
+                                         @"fake_omnibox_solid_background_color"]
+                               colorWithAlphaComponent:0.8];
+            });
   }
 
   customizationMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -958,8 +987,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   BOOL hasBlurredBackground =
       [self.traitCollection boolForNewTabPageImageBackgroundTrait];
   if (hasBlurredBackground) {
-    _customizationMenuButton.configuration =
-        [self customizationButtonConfiguration];
     _fakeLocationBarGradientView.hidden = YES;
     _fakeLocationBarBlurEffectView.hidden = NO;
     return;
@@ -974,14 +1001,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   [self setFakeboxColorsWithProgress:_lastAnimationPercent];
 
   if (colorPalette) {
-    _customizationMenuButton.configuration =
-        [self customizationButtonConfiguration];
     _miaAnimationView.hidden = YES;
     return;
   }
 
-  _customizationMenuButton.configuration =
-      [self customizationButtonConfiguration];
   _miaAnimationView.hidden = NO;
   _miaAnimationView.alpha =
       MIAAnimationOpacityForScrollProgress(_lastAnimationPercent);
@@ -1278,55 +1301,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
       [self updateAnimationOnMIAButton];
     }
   }
-}
-
-// Creates the curret button configuration for the customization button.
-- (UIButtonConfiguration*)customizationButtonConfiguration {
-  UIImage* icon = DefaultSymbolTemplateWithPointSize(
-      kPencilSymbol,
-      IsSignInButtonNoAvatarEnabled()
-          ? ntp_home::kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar
-          : ntp_home::kCustomizationMenuIconSize);
-
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.image = icon;
-  buttonConfiguration.background.cornerRadius =
-      ntp_home::kCustomizationMenuButtonCornerRadius;
-
-  if (IsNTPBackgroundCustomizationEnabled()) {
-    if ([self.traitCollection boolForNewTabPageImageBackgroundTrait]) {
-      UIVisualEffect* blurEffect =
-          [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
-      UIVisualEffectView* blurBackgroundView =
-          [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-      buttonConfiguration.background.customView = blurBackgroundView;
-
-      buttonConfiguration.baseForegroundColor =
-          [UIColor colorNamed:kTextPrimaryColor];
-      return buttonConfiguration;
-    }
-
-    NewTabPageColorPalette* colorPalette =
-        [self.traitCollection objectForNewTabPageTrait];
-    if (colorPalette) {
-      buttonConfiguration.background.backgroundColor =
-          colorPalette.secondaryColor;
-      buttonConfiguration.baseForegroundColor = colorPalette.tintColor;
-      return buttonConfiguration;
-    }
-  }
-
-  UIColor* backgroundColor =
-      IsSignInButtonNoAvatarEnabled()
-          ? [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:0.75]
-          : [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-                colorWithAlphaComponent:0.8];
-  buttonConfiguration.background.backgroundColor = backgroundColor;
-  buttonConfiguration.baseForegroundColor = [UIColor
-      colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
-                                                  : kTextSecondaryColor)];
-  return buttonConfiguration;
 }
 
 #pragma mark - MIA
