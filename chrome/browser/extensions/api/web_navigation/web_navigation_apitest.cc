@@ -52,11 +52,13 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -370,6 +372,54 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, ServerRedirect) {
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, FormSubmission) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/formSubmission")) << message_;
+}
+
+// Test that WebNavigation API does not emit the same event twice when providing
+// filters in addListener. Regression test for https://crbug.com/439995191.
+IN_PROC_BROWSER_TEST_F(WebNavigationApiTest,
+                       MultipleListenersWithFilterDontDuplicateEvents) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+      "name": "WebNavigation Duplicate Event Regression Test",
+      "manifest_version": 3,
+      "version": "1.0",
+      "background": { "service_worker": "background.js" },
+      "permissions": ["webNavigation"]
+  })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+      let counts = { listener1: 0, listener2: 0 };
+
+      chrome.webNavigation.onCompleted.addListener((details) => {
+        if (details.frameId === 0) { counts.listener1++; }
+      }, { url: [{ schemes: ["http", "https"] }] });
+
+      chrome.webNavigation.onCompleted.addListener((details) => {
+        if (details.frameId === 0) { counts.listener2++; }
+      });
+  )");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to trigger the onCompleted events.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+
+  // Execute a script to retrieve the invocation counts.
+  const char kGetCountsScript[] = "chrome.test.sendScriptResult(counts);";
+  base::Value result = BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(), kGetCountsScript,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+
+  ASSERT_TRUE(result.is_dict());
+  const base::Value::Dict& counts = result.GetDict();
+
+  // Each listener is invoked only once.
+  EXPECT_EQ(1, counts.FindInt("listener1"));
+  EXPECT_EQ(1, counts.FindInt("listener2"));
 }
 
 class WebNavigationApiPrerenderTestWithServiceWorker
