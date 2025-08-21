@@ -10,13 +10,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.SparseArray;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 
@@ -25,12 +25,13 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
  * it. {@link SessionHandler} is an interface owned by the currently focused activity that has a
  * linkage to a third party client app through a session.
  */
+@NullMarked
 public class SessionDataHolder {
     private final SparseArray<SessionData> mTaskIdToSessionData = new SparseArray<>();
 
-    @Nullable private SessionHandler mActiveSessionHandler;
+    private @Nullable SessionHandler mActiveSessionHandler;
 
-    @Nullable private Callback<SessionHolder<?>> mSessionDisconnectCallback;
+    private @Nullable Callback<SessionHolder<?>> mSessionDisconnectCallback;
 
     private static SessionDataHolder sInstance = new SessionDataHolder();
 
@@ -66,7 +67,7 @@ public class SessionDataHolder {
      *
      * @param sessionHandler {@link SessionHandler} to set.
      */
-    public void setActiveHandler(@NonNull SessionHandler sessionHandler) {
+    public void setActiveHandler(SessionHandler sessionHandler) {
         mActiveSessionHandler = sessionHandler;
         SessionHolder<?> session = sessionHandler.getSession();
         if (session == null) return;
@@ -92,8 +93,7 @@ public class SessionDataHolder {
      * Returns the class of Activity with a matching session running in the same task as the given
      * intent is being launched from, or null if no such Activity present.
      */
-    @Nullable
-    public Class<? extends Activity> getActiveHandlerClassInCurrentTask(
+    public @Nullable Class<? extends Activity> getActiveHandlerClassInCurrentTask(
             Intent intent, Context context) {
         if (!(context instanceof Activity)) return null;
         int taskId = ((Activity) context).getTaskId();
