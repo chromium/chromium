@@ -798,19 +798,18 @@ class WebIdlSchemaTest(unittest.TestCase):
             'types': [],
         }, defaults_schema)
 
-  # Tests that Enums on an API come before Dictionary defined types on the
-  # processed API, regardless of ordering in the schema file. Since types are
-  # defined as an array on the processed object, order is technically important.
+  # Tests that Enum and Dictionary types defined in a schema file retain their
+  # ordering in the resulting processed API object.
   def testEnumAndTypeOrdering(self):
     idl = web_idl_schema.Load('test/web_idl/enum_and_type_ordering.idl')
     self.assertEqual(1, len(idl))
     schema = idl[0]
-    # Enums are ordered before Dictionary defined types.
+    # Types are interleaved in the schema.
     types = schema['types']
-    self.assertEqual('EnumTypeOne', types[0]['id'])
-    self.assertEqual('EnumTypeTwo', types[1]['id'])
-    self.assertEqual('ExampleDictOne', types[2]['id'])
-    self.assertEqual('ExampleDictTwo', types[3]['id'])
+    self.assertEqual('ExampleDictOne', types[0]['id'])
+    self.assertEqual('EnumTypeOne', types[1]['id'])
+    self.assertEqual('ExampleDictTwo', types[2]['id'])
+    self.assertEqual('EnumTypeTwo', types[3]['id'])
 
 
 if __name__ == '__main__':
