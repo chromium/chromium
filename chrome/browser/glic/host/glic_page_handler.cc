@@ -1631,7 +1631,7 @@ void GlicPageHandler::ClosePanel(ClosePanelCallback callback) {
 
 void GlicPageHandler::OpenProfilePickerAndClosePanel() {
   glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
-  GetGlicService()->window_controller().Close();
+  GetGlicService()->ClosePanel();
 }
 
 void GlicPageHandler::SignInAndClosePanel() {
@@ -1640,7 +1640,7 @@ void GlicPageHandler::SignInAndClosePanel() {
       // Unretained is safe because the keyed service owns the
       // auth controller and the window controller.
       base::Unretained(&GetGlicService()->window_controller()), nullptr));
-  GetGlicService()->window_controller().Close();
+  GetGlicService()->ClosePanel();
 }
 
 void GlicPageHandler::ResizeWidget(const gfx::Size& size,
