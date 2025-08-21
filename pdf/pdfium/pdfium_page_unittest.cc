@@ -1214,6 +1214,7 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnail) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("variable_page_sizes.pdf"));
+  ASSERT_TRUE(engine);
   ASSERT_EQ(7, engine->GetNumberOfPages());
 
 #if defined(ARCH_CPU_ARM64)
@@ -1228,11 +1229,12 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnail) {
   }
 }
 
-// For crbug.com/1248455
+// For crbug.com/40197256
 TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailForAnnotation) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("signature_widget.pdf"));
+  ASSERT_TRUE(engine);
   TestGenerateThumbnail(*engine, /*page_index=*/0, /*device_pixel_ratio=*/1,
                         /*expected_thumbnail_size=*/{140, 140},
                         "signature_widget");
@@ -1245,6 +1247,7 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailWithTransparency) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("bug_40216952.pdf"));
+  ASSERT_TRUE(engine);
   TestGenerateThumbnail(*engine, /*page_index=*/0, /*device_pixel_ratio=*/1,
                         /*expected_thumbnail_size=*/{140, 140}, "bug_40216952");
 }
@@ -1258,6 +1261,23 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailWithOverlapCropBox) {
       *engine, /*page_index=*/0, /*device_pixel_ratio=*/1,
       /*expected_thumbnail_size=*/{162, 108}, "hello_world_cropped",
       /*use_platform_suffix=*/true);
+}
+
+// For crbug.com/438884266
+TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailWithNoOverlapCropBox) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("cropped_no_overlap.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Since the output is expected to be blank, do not bother checking in a
+  // reference image.
+  sk_sp<SkImage> image = GenerateThumbnailImage(
+      *engine, /*page_index=*/0, /*device_pixel_ratio=*/1,
+      /*expected_thumbnail_size=*/{140, 140});
+  ASSERT_TRUE(image);
+  // TODO(crbug.com/438884266): Thumbnails should render blank.
+  EXPECT_FALSE(IsImageBlank(*image));
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
