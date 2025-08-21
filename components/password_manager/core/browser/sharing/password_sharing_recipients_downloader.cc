@@ -27,8 +27,6 @@ namespace password_manager {
 
 namespace {
 
-constexpr char kPasswordSharingRecipientsOAuthConsumerName[] =
-    "PasswordSharingRecipients";
 constexpr char kPasswordSharingRecipientsEndpoint[] =
     "password_sharing_recipients";
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(10);
@@ -250,8 +248,8 @@ void PasswordSharingRecipientsDownloader::StartFetchingAccessToken() {
   CHECK(!ongoing_access_token_fetch_);
   ongoing_access_token_fetch_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          kPasswordSharingRecipientsOAuthConsumerName, identity_manager_,
-          signin::ScopeSet{GaiaConstants::kChromeSyncOAuth2Scope},
+          signin::OAuthConsumerId::kPasswordSharingRecipientsDownloader,
+          identity_manager_,
           base::BindOnce(
               &PasswordSharingRecipientsDownloader::AccessTokenFetched,
               base::Unretained(this)),

@@ -43,7 +43,12 @@ enum class OAuthConsumerId {
   kPushNotification = 28,
   kKAnonymityService = 29,
   kFeedbackUploader = 30,
-  kMaxValue = kFeedbackUploader,
+  kPasswordSharingRecipientsDownloader = 31,
+  kWebHistoryService = 32,
+  kComposeboxQueryController = 33,
+  kDocumentSuggestionsService = 34,
+  kEnterpriseSearchAggregator = 35,
+  kMaxValue = kEnterpriseSearchAggregator,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

@@ -156,11 +156,8 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
 
   std::move(creation_callback).Run(request.get());
 
-  // Create and fetch an OAuth2 token.
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kCloudSearchQueryOAuth2Scope);
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "document_suggestions_service", identity_manager_, scopes,
+      signin::OAuthConsumerId::kDocumentSuggestionsService, identity_manager_,
       base::BindOnce(&DocumentSuggestionsService::AccessTokenAvailable,
                      base::Unretained(this), std::move(request),
                      std::move(request_body), traffic_annotation,

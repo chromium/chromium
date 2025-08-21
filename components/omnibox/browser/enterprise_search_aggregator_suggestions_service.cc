@@ -137,18 +137,8 @@ void EnterpriseSearchAggregatorSuggestionsService::
         }
       })");
 
-  // Create and fetch an OAuth2 token.
-  signin::ScopeSet scopes;
-
-  if (omnibox_feature_configs::SearchAggregatorProvider::Get()
-          .use_discovery_engine_oauth_scope) {
-    scopes.insert(GaiaConstants::kDiscoveryEngineCompleteQueryOAuth2Scope);
-  } else {
-    scopes.insert(GaiaConstants::kCloudSearchQueryOAuth2Scope);
-  }
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "enterprise_search_aggregator_suggestions_service", identity_manager_,
-      scopes,
+      signin::OAuthConsumerId::kEnterpriseSearchAggregator, identity_manager_,
       base::BindOnce(
           &EnterpriseSearchAggregatorSuggestionsService::AccessTokenAvailable,
           base::Unretained(this), std::move(requests), std::move(query),

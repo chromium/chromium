@@ -42,8 +42,6 @@ namespace history {
 
 namespace {
 
-const char kHistoryOAuthScope[] = "https://www.googleapis.com/auth/chromesync";
-
 const char kHistoryQueryHistoryUrl[] =
     "https://history.google.com/history/api/lookup?client=chrome";
 
@@ -160,9 +158,6 @@ class RequestImpl : public WebHistoryService::Request {
 
   // Tells the request to do its thang.
   void Start() override {
-    signin::ScopeSet oauth_scopes;
-    oauth_scopes.insert(kHistoryOAuthScope);
-
     // TODO(crbug.com/40066882): Simplify this once
     // kReplaceSyncPromosWithSignInPromos has rolled out on all platforms.
     signin::ConsentLevel consent_level = signin::ConsentLevel::kSync;
@@ -173,7 +168,7 @@ class RequestImpl : public WebHistoryService::Request {
 
     access_token_fetcher_ =
         std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-            "web_history", identity_manager_, oauth_scopes,
+            signin::OAuthConsumerId::kWebHistoryService, identity_manager_,
             base::BindOnce(&RequestImpl::OnAccessTokenFetchComplete,
                            base::Unretained(this)),
             signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
@@ -193,11 +188,9 @@ class RequestImpl : public WebHistoryService::Request {
     // If the response code indicates that the token might not be valid,
     // invalidate the token and try again.
     if (response_code_ == net::HTTP_UNAUTHORIZED && ++auth_retry_count_ <= 1) {
-      signin::ScopeSet oauth_scopes;
-      oauth_scopes.insert(kHistoryOAuthScope);
       identity_manager_->RemoveAccessTokenFromCache(
           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-          oauth_scopes, access_token_);
+          signin::OAuthConsumerId::kWebHistoryService, access_token_);
 
       access_token_.clear();
       Start();

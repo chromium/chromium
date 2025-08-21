@@ -47,6 +47,14 @@ constexpr char kAdvancedProtectionStatusManagerName[] =
 constexpr char kPushNotificationName[] = "push_notification";
 constexpr char kKAnonymityServiceName[] = "k_anonymity_service";
 constexpr char kFeedbackUploaderName[] = "feedback_uploader";
+constexpr char kPasswordSharingRecipientsDownloaderName[] =
+    "password_sharing_recipients_downloader";
+constexpr char kWebHistoryServiceName[] = "web_history";
+constexpr char kComposeboxQueryControllerName[] = "ComposeboxQueryController";
+constexpr char kDocumentSuggestionsServiceName[] =
+    "document_suggestions_service";
+constexpr char kEnterpriseSearchAggregatorName[] =
+    "enterprise_search_aggregator";
 
 }  // namespace
 
@@ -207,6 +215,26 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kFeedbackUploaderName,
           /*scopes=*/{GaiaConstants::kSupportContentOAuth2Scope});
+    case OAuthConsumerId::kPasswordSharingRecipientsDownloader:
+      return OAuthConsumer(
+          /*name=*/kPasswordSharingRecipientsDownloaderName,
+          /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
+    case OAuthConsumerId::kWebHistoryService:
+      return OAuthConsumer(
+          /*name=*/kWebHistoryServiceName,
+          /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
+    case OAuthConsumerId::kComposeboxQueryController:
+      return OAuthConsumer(
+          /*name=*/kComposeboxQueryControllerName,
+          /*scopes=*/{GaiaConstants::kLensOAuth2Scope});
+    case OAuthConsumerId::kDocumentSuggestionsService:
+      return OAuthConsumer(
+          /*name=*/kDocumentSuggestionsServiceName,
+          /*scopes=*/{GaiaConstants::kCloudSearchQueryOAuth2Scope});
+    case OAuthConsumerId::kEnterpriseSearchAggregator:
+      return OAuthConsumer(
+          /*name=*/kEnterpriseSearchAggregatorName,
+          /*scopes=*/{GaiaConstants::kDiscoveryEngineCompleteQueryOAuth2Scope});
   }
   NOTREACHED();
 }

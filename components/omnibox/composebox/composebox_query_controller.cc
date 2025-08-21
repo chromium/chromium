@@ -55,7 +55,6 @@ using endpoint_fetcher::HttpMethod;
 
 constexpr char kContentTypeKey[] = "Content-Type";
 constexpr char kContentType[] = "application/x-protobuf";
-constexpr char kOAuthConsumerName[] = "ComposeboxQueryController";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 
 // TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
@@ -360,7 +359,7 @@ ComposeboxQueryController::CreateOAuthHeadersAndContinue(
     signin::ScopeSet oauth_scopes;
     oauth_scopes.insert(GaiaConstants::kLensOAuth2Scope);
     return std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-        kOAuthConsumerName, identity_manager_, oauth_scopes,
+        signin::OAuthConsumerId::kComposeboxQueryController, identity_manager_,
         std::move(token_callback),
         signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
         signin::ConsentLevel::kSignin);
