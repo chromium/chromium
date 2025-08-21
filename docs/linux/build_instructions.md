@@ -128,7 +128,7 @@ development and testing purposes.
 
 ## Setting up the build
 
-Chromium uses [Siso](https://pkg.go.dev/go.chromium.org/infra/build/siso#section-readme)
+Chromium uses [Siso](https://pkg.go.dev/go.chromium.org/build/siso#section-readme)
 as its main build tool along with
 a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
 to generate `.ninja` files. You can create any number of *build directories*
@@ -168,7 +168,7 @@ compatible with [REAPI](https://github.com/bazelbuild/remote-apis). This allows
 you to benefit from remote caching and executing many build actions in parallel
 on a shared cluster of workers.
 Chromium's build uses a client developed by Google called
-[Siso](https://pkg.go.dev/go.chromium.org/infra/build/siso#section-readme)
+[Siso](https://pkg.go.dev/go.chromium.org/build/siso#section-readme)
 to remotely execute build actions.
 
 To get started, you need access to an REAPI-compatible backend.
