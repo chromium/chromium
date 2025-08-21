@@ -212,6 +212,7 @@ void MultiContentsDropTargetView::UpdateVisibility(bool should_be_open) {
   } else {
     animation_.Reset(should_be_open ? 1 : 0);
     SetVisible(should_be_open);
+    InvalidateLayout();
   }
 }
 
