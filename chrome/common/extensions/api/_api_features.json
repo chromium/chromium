@@ -24,7 +24,6 @@
   },
   "accessibilityServicePrivate": {
     "dependencies": ["permission:accessibilityServicePrivate"],
-    "channel": "stable",
     "contexts": ["privileged_extension"],
     "platforms": ["chromeos"]
   },
@@ -63,13 +62,11 @@
   }],
   "experimentalActor": {
     "contexts": ["privileged_extension"],
-    "dependencies": ["permission:experimentalActor"],
-    "channel": "stable"
+    "dependencies": ["permission:experimentalActor"]
   },
   "experimentalAiData": {
     "contexts": ["privileged_extension"],
-    "dependencies": ["permission:experimentalAiData"],
-    "channel": "stable"
+    "dependencies": ["permission:experimentalAiData"]
   },
   "app": {
     "blocklist": [
@@ -397,7 +394,6 @@
   },
   "downloadsInternal": {
     "internal": true,
-    "channel": "stable",
     "contexts": ["privileged_extension"],
     "dependencies": ["permission:downloads"]
   },
@@ -1089,7 +1085,6 @@
   }],
   "webviewTag": {
     "internal": true,
-    "channel": "stable",
     "dependencies": ["permission:webview"],
     "contexts": ["privileged_extension"]
   },
