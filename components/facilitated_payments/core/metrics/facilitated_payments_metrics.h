@@ -189,6 +189,12 @@ void LogPixFopSelectedAndLatency(base::TimeDelta duration);
 // Log when user selects an eWallet FOP to pay with.
 void LogEwalletFopSelected(AvailableEwalletsConfiguration type);
 
+// Log when user selects a FOP to pay with from the non-card FOP selector.
+void LogNonCardPaymentMethodsFopSelected(
+    PaymentLinkFopSelectorTypes non_card_fop_selector_fop_type,
+    PaymentLinkFopSelectorAction payment_link_fop_selector_action,
+    std::optional<PaymentLinkValidator::Scheme> scheme);
+
 // Log the result and latency for validating a payment code using
 // `data_decoder::DataDecoder`.
 void LogPaymentCodeValidationResultAndLatency(

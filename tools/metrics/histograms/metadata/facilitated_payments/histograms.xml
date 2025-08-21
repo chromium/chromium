@@ -34,10 +34,10 @@ reviewer.
 </variants>
 
 <variants name="PaymentLinkFopSelectorTypes">
-  <variant name="A2AOnly" summary="Only A2A payment methods are available."/>
+  <variant name="A2AOnly" summary="Only A2A payment methods available."/>
   <variant name="EwalletAndA2A"
-      summary="Both eWallets and A2A payment methods are available."/>
-  <variant name="EwalletOnly" summary="Only eWallets are available."/>
+      summary="Both eWallets and A2A payment methods available."/>
+  <variant name="EwalletOnly" summary="Only eWallets available."/>
 </variants>
 
 <variants name="PaymentLinkScheme">
@@ -697,6 +697,51 @@ reviewer.
     page, and the user clicks on the UI screens to proceed with payment.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{PaymentLinkFopSelectorTypes}.FopSelector.UserAction"
+    enum="FacilitatedPayments.PaymentLinkFopSelectorAction"
+    expires_after="2026-06-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>tushartushar@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for payment link push payment on Chrome, this
+    histogram logs user actions when a FOP selector has
+    {PaymentLinkFopSelectorTypes}. [Frequency] Logged once per payment link
+    payflow. It is recorded when a fop is selected for payment, &quot;Turn off
+    payment prompt&quot; link clicked, or &quot;Manage payment methods&quot;
+    option selected. [Trigger] User interacts with the non card payment methods
+    FOP selector.
+  </summary>
+  <token key="PaymentLinkFopSelectorTypes"
+      variants="PaymentLinkFopSelectorTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{PaymentLinkFopSelectorTypes}.FopSelector.UserAction.{Scheme}"
+    enum="FacilitatedPayments.PaymentLinkFopSelectorAction"
+    expires_after="2026-06-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>tushartushar@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for payment link push payment on Chrome, this
+    histogram logs user actions when a FOP selector has
+    {PaymentLinkFopSelectorTypes}. The payment is supported by {Scheme}.
+    [Frequency] Logged once per payment link payflow. It is recorded when a fop
+    is selected for payment, &quot;Turn off payment prompt&quot; link clicked,
+    or &quot;Manage payment methods&quot; option selected. [Trigger] User
+    interacts with the non card payment methods FOP selector.
+  </summary>
+  <token key="PaymentLinkFopSelectorTypes"
+      variants="PaymentLinkFopSelectorTypes"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
 <histogram

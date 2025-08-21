@@ -75,6 +75,17 @@ reviewer.
   <int value="2" label="Abandoned"/>
 </enum>
 
+<!-- LINT.IfChange(FacilitatedPayments.PaymentLinkFopSelectorAction) -->
+
+<enum name="FacilitatedPayments.PaymentLinkFopSelectorAction">
+  <int value="0" label="eWallet selected."/>
+  <int value="1" label="Payment app selected."/>
+  <int value="2" label="Turn off payment prompt link clicked."/>
+  <int value="3" label="Manage payment methods option selected."/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h:PaymentLinkFopSelectorAction) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.Pix.AccountLinking.FlowExitedReason) -->
 
 <enum name="FacilitatedPayments.Pix.AccountLinking.FlowExitedReason">
