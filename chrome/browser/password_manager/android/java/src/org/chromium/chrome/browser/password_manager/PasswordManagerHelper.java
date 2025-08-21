@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.pwm_disabled.PasswordManagerUnavailableDialog
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -53,11 +52,6 @@ import java.util.Optional;
 /** A helper class for showing PasswordSettings. TODO(crbug.com/40853413): Split up this class */
 @NullMarked
 public class PasswordManagerHelper {
-    // Key for the argument with which PasswordsSettings will be launched. The value for
-    // this argument should be part of the ManagePasswordsReferrer enum, which contains
-    // all points of entry to the passwords settings.
-    public static final String MANAGE_PASSWORDS_REFERRER = "manage-passwords-referrer";
-
     // Indicates the operation that was requested from the {@link PasswordCheckupClientHelper}.
     @IntDef({
         PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
@@ -87,37 +81,6 @@ public class PasswordManagerHelper {
     // Loading dialog is dismissed with this delay after sending an intent to prevent
     // the old activity from showing up before the new one is shown.
     private static final long LOADING_DIALOG_DISMISS_DELAY_MS = 300L;
-
-    /**
-     * The identifier of the loading dialog outcome.
-     *
-     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
-     * should never be reused. Please, keep in sync with tools/metrics/histograms/enums.xml.
-     */
-    @VisibleForTesting
-    @IntDef({
-        LoadingDialogOutcome.NOT_SHOWN_LOADED,
-        LoadingDialogOutcome.SHOWN_LOADED,
-        LoadingDialogOutcome.SHOWN_CANCELLED,
-        LoadingDialogOutcome.SHOWN_TIMED_OUT,
-        LoadingDialogOutcome.NUM_ENTRIES
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface LoadingDialogOutcome {
-        /** The loading dialog was requested but loading finished before it got shown. */
-        int NOT_SHOWN_LOADED = 0;
-
-        /** The loading dialog was shown, loading process finished. */
-        int SHOWN_LOADED = 1;
-
-        /** The loading dialog was shown and cancelled by user before loading finished. */
-        int SHOWN_CANCELLED = 2;
-
-        /** The loading dialog was shown and timed out before loading finished. */
-        int SHOWN_TIMED_OUT = 3;
-
-        int NUM_ENTRIES = 4;
-    }
 
     private static @Nullable ProfileKeyedMap<PasswordManagerHelper> sProfileMap;
 
@@ -248,20 +211,6 @@ public class PasswordManagerHelper {
         } else {
             PasswordExportLauncher.showMainSettingsAndStartExport(context);
         }
-    }
-
-    /**
-     * Checks the ability to use an AccountSettings intent to launch the password manager. This
-     * provides a fallback for users who attempt to manage passkeys when UPM is not available.
-     * Passkeys cannot be managed from the Chrome password settings page.
-     *
-     * <p>Since there is not necessarily a signed in Chrome user, the intent might show an account
-     * chooser before showing the password manager.
-     *
-     * @return True if the AccountSettings intent is available for use, false otherwise.
-     */
-    public static boolean canUseAccountSettings() {
-        return PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
     }
 
     /**
@@ -468,21 +417,6 @@ public class PasswordManagerHelper {
      */
     public static boolean hasChosenToSyncPasswords(@Nullable SyncService syncService) {
         return PasswordManagerHelperJni.get().hasChosenToSyncPasswords(syncService);
-    }
-
-    /**
-     * Checks whether the user is actively syncing passwords without a custom passphrase. The caller
-     * should make sure that the sync engine is initialized before calling this method.
-     *
-     * @param syncService the service to query about the sync status.
-     * @return true if actively syncing passwords and no custom passphrase was set.
-     */
-    public static boolean isSyncingPasswordsWithNoCustomPassphrase(SyncService syncService) {
-        assert syncService.isEngineInitialized();
-        if (syncService == null || !syncService.hasSyncConsent()) return false;
-        if (!syncService.getActiveDataTypes().contains(DataType.PASSWORDS)) return false;
-        if (syncService.isUsingExplicitPassphrase()) return false;
-        return true;
     }
 
     @VisibleForTesting
