@@ -131,7 +131,7 @@ IOSChromeMainParts::IOSChromeMainParts(
 IOSChromeMainParts::~IOSChromeMainParts() {
 #if DCHECK_IS_ON()
   display::ScreenBase* screen =
-      static_cast<display::ScreenBase*>(display::Screen::GetScreen());
+      static_cast<display::ScreenBase*>(display::Screen::Get());
   DCHECK(!screen->HasDisplayObservers());
 #endif
 }

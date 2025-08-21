@@ -110,7 +110,7 @@ void WebIntTest::TearDown() {
   // Make sure that all display observers are removed at the end of each
   // test.
   display::ScreenBase* screen =
-      static_cast<display::ScreenBase*>(display::Screen::GetScreen());
+      static_cast<display::ScreenBase*>(display::Screen::Get());
   DCHECK(!screen->HasDisplayObservers());
 #endif
 }

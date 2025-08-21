@@ -54,7 +54,7 @@ WebViewWebMainParts::~WebViewWebMainParts() {
 #if DCHECK_IS_ON()
   // Make sure that all display observers are removed at the end.
   display::ScreenBase* screen =
-      static_cast<display::ScreenBase*>(display::Screen::GetScreen());
+      static_cast<display::ScreenBase*>(display::Screen::Get());
   DCHECK(!screen->HasDisplayObservers());
 #endif
 }

@@ -749,7 +749,7 @@ content::WebContents* ContentWebState::AddNewContents(
 int ContentWebState::GetTopControlsHeight() {
   return ([web_view_ maxViewportInsets].top -
           [web_view_ minViewportInsets].top) *
-         display::Screen::GetScreen()
+         display::Screen::Get()
              ->GetDisplayNearestWindow(web_contents_->GetTopLevelNativeWindow())
              .device_scale_factor();
 }
@@ -761,7 +761,7 @@ int ContentWebState::GetTopControlsMinHeight() {
 int ContentWebState::GetBottomControlsHeight() {
   return ([web_view_ maxViewportInsets].bottom -
           [web_view_ minViewportInsets].bottom) *
-         display::Screen::GetScreen()
+         display::Screen::Get()
              ->GetDisplayNearestWindow(web_contents_->GetTopLevelNativeWindow())
              .device_scale_factor();
 }
