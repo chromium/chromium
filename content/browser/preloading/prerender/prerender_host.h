@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
@@ -427,6 +428,8 @@ class CONTENT_EXPORT PrerenderHost {
 
   void NotifyReused();
 
+  base::WeakPtr<PrerenderHost> GetWeakPtr();
+
  private:
   // The helper class to make the frame tree movable among different
   // PrerenderHosts. When moving the prerender host to the new owner, we need to
@@ -579,6 +582,8 @@ class CONTENT_EXPORT PrerenderHost {
   bool were_headers_received_ = false;
 
   const bool host_reused_ = false;
+
+  base::WeakPtrFactory<PrerenderHost> weak_factory_{this};
 };
 
 }  // namespace content

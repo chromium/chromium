@@ -42,8 +42,7 @@ class PrerenderNavigationThrottle : public NavigationThrottle {
   // Cancels prerendering hosting this navigation with `final_status`.
   void CancelPrerendering(PrerenderFinalStatus final_status);
 
-  // Raw ptr should be safe as `prerender_host_` indirectly owns `this`.
-  const raw_ptr<PrerenderHost> prerender_host_ = nullptr;
+  const base::WeakPtr<PrerenderHost> prerender_host_ = nullptr;
 
   bool is_same_site_cross_origin_prerender_ = false;
   bool same_site_cross_origin_prerender_did_redirect_ = false;

@@ -1733,4 +1733,8 @@ void PrerenderHost::NotifyReused() {
   }
 }
 
+base::WeakPtr<PrerenderHost> PrerenderHost::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace content
