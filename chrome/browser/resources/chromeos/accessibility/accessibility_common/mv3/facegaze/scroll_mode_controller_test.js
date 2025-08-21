@@ -81,8 +81,10 @@ AX_TEST_F('FaceGazeScrollModeControllerTest', 'ScreenBounds', function() {
   assertEquals(bounds.height, controller.screenBounds_.height);
 });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'CallsApiOnValidPoint', function() {
+    'FaceGazeScrollModeControllerTest', 'DISABLED_CallsApiOnValidPoint', function() {
       const controller = this.getScrollModeController();
       this.toggleScrollMode();
 
