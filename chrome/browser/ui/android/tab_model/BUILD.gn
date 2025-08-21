@@ -60,6 +60,10 @@ source_set("impl") {
     "//content/public/common",
     "//ui/base:types",
   ]
+
+  if (is_desktop_android) {
+    deps += [ "//chrome/browser/ui/browser_window/internal" ]
+  }
 }
 
 java_cpp_enum("enums_java") {

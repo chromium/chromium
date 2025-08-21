@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
+
 import com.google.common.collect.ImmutableList;
 
 import org.chromium.base.MathUtils;
@@ -272,6 +274,16 @@ public class TabModelImpl extends TabModelJniBridge {
     @Override
     public TabCreator getTabCreator() {
         return getTabCreator(isIncognitoBranded());
+    }
+
+    @Override
+    public void moveTabToWindow(Tab tab, Activity activity, int newIndex) {
+        mModelDelegate.moveTabToWindow(tab, activity, newIndex);
+    }
+
+    @Override
+    public void moveTabGroupToWindow(Token tabGroupId, Activity activity, int newIndex) {
+        mModelDelegate.moveTabGroupToWindow(tabGroupId, activity, newIndex, isIncognito());
     }
 
     /**

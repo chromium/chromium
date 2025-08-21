@@ -17,6 +17,7 @@
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "base/token.h"
+#include "build/android_buildflags.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,7 +25,9 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer_jni_bridge.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/resource_request_body_android.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -57,6 +60,17 @@ std::vector<TabAndroid*> GetAllTabsFromHandles(
   }
   return tabs;
 }
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+AndroidBrowserWindow* GetAndroidBrowserWindow(SessionID session_id) {
+  for (BrowserWindowInterface* window : GetAllBrowserWindowInterfaces()) {
+    if (window->GetSessionID() == session_id) {
+      return static_cast<AndroidBrowserWindow*>(window);
+    }
+  }
+  return nullptr;
+}
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
 
 }  // namespace
 
@@ -441,6 +455,50 @@ void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   Java_TabModelJniBridge_moveGroupToIndex(env, jobj, group_id.token(), index);
+}
+
+void TabModelJniBridge::MoveTabToWindow(tabs::TabHandle tab,
+                                        SessionID destination_window_id,
+                                        int destination_index) {
+  TabAndroid* tab_android = TabAndroid::FromTabHandle(tab);
+  if (!tab_android) {
+    return;
+  }
+
+  ScopedJavaLocalRef<jobject> jactivity =
+      GetActivityForWindow(destination_window_id);
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  Java_TabModelJniBridge_moveTabToWindowInternal(env, jobj, tab_android,
+                                                 jactivity, destination_index);
+}
+
+void TabModelJniBridge::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+                                             SessionID destination_window_id,
+                                             int destination_index) {
+  ScopedJavaLocalRef<jobject> jactivity =
+      GetActivityForWindow(destination_window_id);
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  Java_TabModelJniBridge_moveTabGroupToWindowInternal(
+      env, jobj, group_id.token(), jactivity, destination_index);
+}
+
+ScopedJavaLocalRef<jobject> TabModelJniBridge::GetActivityForWindow(
+    SessionID window_id) {
+  ScopedJavaLocalRef<jobject> jactivity;
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  AndroidBrowserWindow* window = GetAndroidBrowserWindow(window_id);
+  if (!window) {
+    return jactivity;
+  }
+  // TODO(crbug.com/429037015): Enable this check once GetProfile() returns a
+  // non-null Profile.
+  // CHECK_EQ(window->GetProfile()->IsOffTheRecord(),
+  //          GetProfile()->IsOffTheRecord());
+  jactivity = window->GetActivity();
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+  return jactivity;
 }
 
 // static

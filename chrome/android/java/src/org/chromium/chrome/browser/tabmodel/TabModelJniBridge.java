@@ -529,6 +529,26 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         unpinTab(tabId);
     }
 
+    @CalledByNative
+    private void moveTabToWindowInternal(
+            @JniType("TabAndroid*") Tab tab, @Nullable Activity activity, int newIndex) {
+        if (activity == null) return;
+        moveTabToWindow(tab, activity, newIndex);
+    }
+
+    protected abstract void moveTabToWindow(
+            @JniType("TabAndroid*") Tab tab, Activity activity, int newIndex);
+
+    @CalledByNative
+    private void moveTabGroupToWindowInternal(
+            @JniType("base::Token") Token tabGroupId, @Nullable Activity activity, int newIndex) {
+        if (activity == null) return;
+        moveTabGroupToWindow(tabGroupId, activity, newIndex);
+    }
+
+    protected abstract void moveTabGroupToWindow(
+            @JniType("base::Token") Token tabGroupId, Activity activity, int newIndex);
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {

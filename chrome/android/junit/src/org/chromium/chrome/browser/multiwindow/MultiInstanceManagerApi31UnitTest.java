@@ -427,7 +427,8 @@ public class MultiInstanceManagerApi31UnitTest {
                             ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier) {
+                            NextTabPolicySupplier nextTabPolicySupplier,
+                            MultiInstanceManager multiInstanceManager) {
                         return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
                     }
 
@@ -567,6 +568,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 mProfileProviderSupplier,
                                 null,
                                 null,
+                                null,
                                 mMismatchedIndicesHandler,
                                 index);
         int instanceId = pair.first;
@@ -595,6 +597,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 mActivityTask57,
                                 mModalDialogManager,
                                 mProfileProviderSupplier,
+                                null,
                                 null,
                                 null,
                                 mMismatchedIndicesHandler,
@@ -1114,6 +1117,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 activity,
                                 mModalDialogManager,
                                 mProfileProviderSupplier,
+                                null,
                                 null,
                                 null,
                                 mMismatchedIndicesHandler,

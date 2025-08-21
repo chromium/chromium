@@ -3214,6 +3214,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         getProfileProviderSupplier(),
                         this,
                         mNextTabPolicySupplier,
+                        mMultiInstanceManager,
                         mMismatchedIndicesHandler,
                         mWindowId);
         if (!tabModelWasCreated) {

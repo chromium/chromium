@@ -46,6 +46,7 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
                         profileProviderSupplier,
                         tabCreatorManager,
                         nextTabPolicySupplier,
+                        /* multiInstanceManager= */ null,
                         asyncTabParamsManager,
                         false,
                         activityType,

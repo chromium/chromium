@@ -6,19 +6,24 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.SadTab;
@@ -28,10 +33,13 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
 import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModelOrderController;
+import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
@@ -55,9 +63,10 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final Context mContext;
     private final @Nullable ModalDialogManager mModalDialogManager;
-
     private final boolean mIsUndoSupported;
     private final NextTabPolicySupplier mNextTabPolicySupplier;
+    private final @Nullable MultiInstanceManager mMultiInstanceManager;
+
     private TabContentManager mTabContentManager;
     private RecentlyClosedBridge mRecentlyClosedBridge;
     private @Nullable Tab mVisibleTab;
@@ -82,6 +91,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
+            @Nullable MultiInstanceManager multiInstanceManager,
             AsyncTabParamsManager asyncTabParamsManager,
             boolean supportUndo,
             @ActivityType int activityType,
@@ -93,6 +103,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         mIsUndoSupported = supportUndo;
         mOrderController = new TabModelOrderControllerImpl(this);
         mNextTabPolicySupplier = nextTabPolicySupplier;
+        mMultiInstanceManager = multiInstanceManager;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mActivityType = activityType;
     }
@@ -331,6 +342,48 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                                 }
                             });
         }
+    }
+
+    @Override
+    public void moveTabToWindow(Tab tab, Activity activity, int newIndex) {
+        if (getModel(tab.isIncognito()).getTabById(tab.getId()) != tab) return;
+
+        assert mMultiInstanceManager != null;
+        mMultiInstanceManager.moveTabsToWindow(activity, Collections.singletonList(tab), newIndex);
+    }
+
+    @Override
+    public void moveTabGroupToWindow(
+            Token tabGroupId, Activity activity, int newIndex, boolean isIncognito) {
+        TabGroupModelFilter tabGroupModelFilter =
+                getTabGroupModelFilterProvider().getTabGroupModelFilter(isIncognito);
+        assumeNonNull(tabGroupModelFilter);
+        if (!tabGroupModelFilter.tabGroupExists(tabGroupId)) return;
+
+        TabModel tabModel = tabGroupModelFilter.getTabModel();
+        Tab currentTab = tabModel.getCurrentTabSupplier().get();
+        assert currentTab != null;
+        Activity currentActivity = ContextUtils.activityFromContext(currentTab.getContext());
+        if (currentActivity == null) return;
+
+        String collaborationId = null;
+        if (!isIncognito) {
+            TabGroupSyncService tabGroupSyncService =
+                    TabGroupSyncServiceFactory.getForProfile(assumeNonNull(tabModel.getProfile()));
+            collaborationId =
+                    TabShareUtils.getCollaborationIdOrNull(tabGroupId, tabGroupSyncService);
+        }
+        TabGroupMetadata tabGroupMetadata =
+                TabGroupMetadataExtractor.extractTabGroupMetadata(
+                        tabGroupModelFilter,
+                        tabGroupModelFilter.getTabsInGroup(tabGroupId),
+                        TabWindowManagerSingleton.getInstance().getIdForWindow(currentActivity),
+                        currentTab.getId(),
+                        TabShareUtils.isCollaborationIdValid(collaborationId));
+        if (tabGroupMetadata == null) return;
+
+        assert mMultiInstanceManager != null;
+        mMultiInstanceManager.moveTabGroupToWindow(activity, tabGroupMetadata, newIndex);
     }
 
     /**

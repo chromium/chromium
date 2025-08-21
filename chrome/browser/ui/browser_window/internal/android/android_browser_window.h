@@ -40,6 +40,10 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
 
+  // Returns a ChromeTabbedActivity Java object for this window, may be null if
+  // the task does not have an activity.
+  base::android::ScopedJavaLocalRef<jobject> GetActivity();
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_android_browser_window_;
   ui::UnownedUserDataHost unowned_user_data_host_;

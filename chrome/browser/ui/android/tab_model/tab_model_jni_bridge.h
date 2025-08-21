@@ -21,6 +21,7 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
+class SessionID;
 class TabAndroid;
 class TabModelObserverJniBridge;
 
@@ -116,6 +117,12 @@ class TabModelJniBridge : public TabModel {
       const std::set<tabs::TabHandle>& tabs) override;
   void Ungroup(const std::set<tabs::TabHandle>& tabs) override;
   void MoveGroupTo(tab_groups::TabGroupId group_id, int index) override;
+  void MoveTabToWindow(tabs::TabHandle tab,
+                       SessionID destination_window_id,
+                       int destination_index) override;
+  void MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+                            SessionID destination_window_id,
+                            int destination_index) override;
 
   // Returns a corresponding Java Class object.
   static jclass GetClazz(JNIEnv* env);
@@ -123,6 +130,9 @@ class TabModelJniBridge : public TabModel {
   static TabModel* GetArchivedTabModelPtr();
 
  protected:
+  jni_zero::ScopedJavaLocalRef<jobject> GetActivityForWindow(
+      SessionID window_id);
+
   JavaObjectWeakGlobalRef java_object_;
 
   // The observer bridge. This exists as long as there are registered observers.

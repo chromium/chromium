@@ -114,6 +114,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
+            MultiInstanceManager multiInstanceManager,
             MismatchedIndicesHandler mismatchedIndicesHandler,
             int selectorIndex) {
         mProfileProviderSupplier = profileProviderSupplier;
@@ -131,6 +132,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                                 profileProviderSupplier,
                                 tabCreatorManager,
                                 nextTabPolicySupplier,
+                                multiInstanceManager,
                                 mismatchedIndicesHandler,
                                 selectorIndex);
         if (selectorAssignment == null) {

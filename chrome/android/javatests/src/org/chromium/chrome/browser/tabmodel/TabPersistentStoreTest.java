@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -327,7 +328,8 @@ public class TabPersistentStoreTest {
                         ModalDialogManager modalDialogManager,
                         OneshotSupplier<ProfileProvider> profileProviderSupplier,
                         TabCreatorManager tabCreatorManager,
-                        NextTabPolicySupplier nextTabPolicySupplier) {
+                        NextTabPolicySupplier nextTabPolicySupplier,
+                        MultiInstanceManager multiInstanceManager) {
                     try {
                         return new TestTabModelSelector(context);
                     } catch (Exception e) {
@@ -1485,6 +1487,7 @@ public class TabPersistentStoreTest {
                                                     profileProvider,
                                                     mChromeActivity,
                                                     null,
+                                                    /* multiInstanceManager= */ null,
                                                     mismatchedIndicesHandler,
                                                     0)
                                             .second;

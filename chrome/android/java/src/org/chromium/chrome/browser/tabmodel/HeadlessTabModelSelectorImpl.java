@@ -50,6 +50,7 @@ public class HeadlessTabModelSelectorImpl extends TabModelSelectorImpl {
                 wrapProfile(profile),
                 tabCreatorManager,
                 () -> NextTabPolicy.LOCATIONAL,
+                /* multiInstanceManager= */ null,
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager(),
                 /* supportUndo= */ false,
                 ActivityType.TABBED,

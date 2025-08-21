@@ -8,6 +8,7 @@ import static org.chromium.base.ThreadUtils.assertOnUiThread;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartOfSharedGroup;
 
+import android.app.Activity;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -600,6 +601,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public TabCreator getTabCreator() {
         assertOnUiThread();
         return getTabCreator(isIncognito());
+    }
+
+    @Override
+    public void moveTabToWindow(Tab tab, Activity activity, int newIndex) {
+        mModelDelegate.moveTabToWindow(tab, activity, newIndex);
+    }
+
+    @Override
+    public void moveTabGroupToWindow(Token tabGroupId, Activity activity, int newIndex) {
+        mModelDelegate.moveTabGroupToWindow(tabGroupId, activity, newIndex, isIncognito());
     }
 
     @Override

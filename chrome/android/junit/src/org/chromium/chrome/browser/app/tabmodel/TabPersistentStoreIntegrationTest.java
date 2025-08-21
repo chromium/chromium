@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridgeJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -104,6 +105,7 @@ public class TabPersistentStoreIntegrationTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private ChromeTabCreator mChromeTabCreator;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private MismatchedIndicesHandler mMismatchedIndicesHandler;
     @Mock private TabContentManager mTabContentManager;
     @Mock private Profile mProfile;
@@ -148,6 +150,7 @@ public class TabPersistentStoreIntegrationTest {
                 profileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
+                mMultiInstanceManager,
                 mMismatchedIndicesHandler,
                 0);
         mTabModelSelector = orchestrator.getTabModelSelector();

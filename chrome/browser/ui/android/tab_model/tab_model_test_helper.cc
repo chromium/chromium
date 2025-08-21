@@ -199,6 +199,18 @@ void TestTabModel::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {
   NOTIMPLEMENTED();
 }
 
+void TestTabModel::MoveTabToWindow(tabs::TabHandle tab,
+                                   SessionID destination_window_id,
+                                   int destination_index) {
+  NOTIMPLEMENTED();
+}
+
+void TestTabModel::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+                                        SessionID destination_window_id,
+                                        int destination_index) {
+  NOTIMPLEMENTED();
+}
+
 void TestTabModel::AssociateWithBrowserWindow(BrowserWindowInterface* browser) {
   scoped_unowned_user_data_ =
       std::make_unique<ui::ScopedUnownedUserData<TabModel>>(
@@ -424,6 +436,18 @@ void OwningTestTabModel::Ungroup(const std::set<tabs::TabHandle>& tabs) {
 
 void OwningTestTabModel::MoveGroupTo(tab_groups::TabGroupId group_id,
                                      int index) {
+  NOTIMPLEMENTED();
+}
+
+void OwningTestTabModel::MoveTabToWindow(tabs::TabHandle tab,
+                                         SessionID destination_window_id,
+                                         int destination_index) {
+  NOTIMPLEMENTED();
+}
+
+void OwningTestTabModel::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+                                              SessionID destination_window_id,
+                                              int destination_index) {
   NOTIMPLEMENTED();
 }
 

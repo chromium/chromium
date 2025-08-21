@@ -79,3 +79,8 @@ content::WebContents* AndroidBrowserWindow::OpenURL(
         navigation_handle_callback) {
   NOTREACHED();
 }
+
+base::android::ScopedJavaLocalRef<jobject> AndroidBrowserWindow::GetActivity() {
+  return Java_AndroidBrowserWindow_getActivity(AttachCurrentThread(),
+                                               java_android_browser_window_);
+}

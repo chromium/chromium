@@ -4,21 +4,27 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import android.app.Activity;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.ActivityWindowAndroid;
 
 /** Java class for communicating with the native {@code AndroidBrowserWindow}. */
 @NullMarked
 final class AndroidBrowserWindow {
 
+    private final ChromeAndroidTask mChromeAndroidTask;
     private final AndroidBaseWindow mAndroidBaseWindow;
 
     /** Address of the native {@code AndroidBrowserWindow}. */
     private long mNativeAndroidBrowserWindow;
 
     AndroidBrowserWindow(ChromeAndroidTask chromeAndroidTask) {
+        mChromeAndroidTask = chromeAndroidTask;
         mAndroidBaseWindow = new AndroidBaseWindow(chromeAndroidTask);
     }
 
@@ -65,6 +71,13 @@ final class AndroidBrowserWindow {
     @CalledByNative
     private void clearNativePtr() {
         mNativeAndroidBrowserWindow = 0;
+    }
+
+    @CalledByNative
+    @Nullable Activity getActivity() {
+        ActivityWindowAndroid activityWindowAndroid = mChromeAndroidTask.getActivityWindowAndroid();
+        if (activityWindowAndroid == null) return null;
+        return activityWindowAndroid.getActivity().get();
     }
 
     @NativeMethods

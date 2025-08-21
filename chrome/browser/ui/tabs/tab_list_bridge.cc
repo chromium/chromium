@@ -124,6 +124,14 @@ void TabListBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {}
 
 void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {}
 
+void TabListBridge::MoveTabToWindow(tabs::TabHandle tab,
+                                    SessionID destination_window_id,
+                                    int destination_index) {}
+
+void TabListBridge::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+                                         SessionID destination_window_id,
+                                         int destination_index) {}
+
 void TabListBridge::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
