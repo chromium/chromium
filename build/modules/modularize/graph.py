@@ -201,6 +201,24 @@ class Target:
     return hash(self.name)
 
   @property
+  def kwargs(self) -> dict[str, set[str]]:
+    """The kwargs associated with a build target.
+
+    eg. if you have kwargs = {"defines": ["FOO"]}, then it outputs:
+
+    target_type(target.name) {
+      defines = ["FOO"]
+    }
+    """
+    kwargs = collections.defaultdict(set)
+    for header in self.headers:
+      for single in header.group:
+        for dep in {single} | single.required_textual_deps:
+          for k, v in dep.kwargs.items():
+            kwargs[k].update(v)
+    return kwargs
+
+  @property
   def header_deps(self) -> set[Header]:
     direct_deps = set()
     for hdr in self.headers:

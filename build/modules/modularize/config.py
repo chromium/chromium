@@ -63,6 +63,9 @@ def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
     # sysroot/wchar.h by preventing it from defining functions.
     graph['__mbstate_t.h'].kwargs['defines'].append(
         '_LIBCPP_WCHAR_H_HAS_CONST_OVERLOADS')
+  elif compiler.is_apple:
+    # This is shadowed by the builtin iso646, so we don't need to build it.
+    graph['iso646.h'].next.textual = True
 
   rdeps = calculate_rdeps(all_headers(graph))
 

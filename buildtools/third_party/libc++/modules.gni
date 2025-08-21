@@ -2,22 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/apple_sdk.gni")
 import("//build/config/c++/modules.gni")
 import("//build/config/clang/clang.gni")
-
-use_xcode_symlinks = false
-
-if (is_ios) {
-  import("//build/config/ios/ios_sdk.gni")
-  sdk_path = ios_sdk_path
-  use_xcode_symlinks = ios_use_xcode_symlinks
-}
-
-if (is_mac) {
-  import("//build/config/mac/mac_sdk.gni")
-  sdk_path = mac_sdk_path
-  use_xcode_symlinks = mac_use_xcode_symlinks
-}
 
 configs_to_add = [
   "//buildtools/third_party/libc++:config",
@@ -163,5 +150,49 @@ template("modulemap_config") {
   config(target_name) {
     path = rebase_path(invoker.source, root_build_dir)
     cflags_cc = [ "-fmodule-map-file=${path}" ]
+  }
+}
+
+template("apple_sysroot_modulemap") {
+  modulemap_config(target_name) {
+    source = "${sysroot_include_dir}/${invoker.sysroot_path}"
+  }
+}
+
+template("apple_sysroot_module") {
+  clang_module(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "modulemap",
+                             "modulemap_path",
+                           ])
+    modulemap = "${sysroot_include_dir}/${invoker.modulemap_path}"
+    public_configs = [ invoker.modulemap ]
+  }
+}
+
+template("framework_modulemap") {
+  modulemap_config(target_name) {
+    source =
+        "${frameworks_dir}/${invoker.name}.framework/Modules/module.modulemap"
+  }
+}
+
+template("framework_module") {
+  clang_module(target_name) {
+    forward_variables_from(invoker, "*", [ "framework" ])
+
+    # :foo_modulemap -> ${frameworks_dir}/foo.framework/Modules/module.modulemap
+    modulemap = string_replace(
+            string_replace(invoker.modulemap, ":", "${frameworks_dir}/"),
+            "_modulemap",
+            ".framework/Modules/module.modulemap")
+    public_configs = [ invoker.modulemap ]
+
+    cflags = [
+      # Some frameworks don't have proper umbrellas.
+      "-Wno-incomplete-umbrella",
+    ]
   }
 }
