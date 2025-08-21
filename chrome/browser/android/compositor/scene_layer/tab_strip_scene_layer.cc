@@ -35,6 +35,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       tab_ui_parent_layer_(cc::slim::Layer::Create()),
       foreground_layer_(cc::slim::Layer::Create()),
       foreground_tabs_(cc::slim::Layer::Create()),
+      pinned_tabs_layer_(cc::slim::Layer::Create()),
       foreground_group_titles_(cc::slim::Layer::Create()),
       new_tab_button_(cc::slim::UIResourceLayer::Create()),
       new_tab_button_background_(cc::slim::UIResourceLayer::Create()),
@@ -71,13 +72,13 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   foreground_tabs_->SetIsDrawable(true);
   foreground_group_titles_->SetIsDrawable(true);
   tab_strip_layer_->SetIsDrawable(true);
+  pinned_tabs_layer_->SetIsDrawable(true);
 
   background_layer_->AddChild(tab_strip_layer_);
   background_layer_->AddChild(scrim_layer_);
 
   tab_strip_layer_->AddChild(group_ui_parent_layer_);
   tab_strip_layer_->AddChild(tab_ui_parent_layer_);
-  tab_strip_layer_->AddChild(foreground_layer_);
   foreground_layer_->AddChild(foreground_group_titles_);
   foreground_layer_->AddChild(foreground_tabs_);
 
@@ -85,6 +86,12 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->AddChild(right_fade_);
   tab_strip_layer_->AddChild(left_padding_layer_);
   tab_strip_layer_->AddChild(right_padding_layer_);
+
+  // Z-order matters: padding_layer_ acts as the background for pinned tabs, so
+  // add pinned_tabs_layer_ (and later foreground_layer_) after padding_layer_.
+  tab_strip_layer_->AddChild(pinned_tabs_layer_);
+  tab_strip_layer_->AddChild(foreground_layer_);
+
   tab_strip_layer_->AddChild(model_selector_button_background_);
   tab_strip_layer_->AddChild(new_tab_button_background_);
   tab_strip_layer_->AddChild(model_selector_button_);
@@ -471,14 +478,17 @@ void TabStripSceneLayer::PutStripTabLayer(
     jint keyboard_focus_ring_color,
     jint keyboard_focus_ring_offset,
     jint stroke_width,
-    jfloat folio_foot_length) {
+    jfloat folio_foot_length,
+    jboolean is_pinned) {
   DCHECK(layer_title_cache_);
   scoped_refptr<TabHandleLayer> layer = GetNextTabLayer(layer_title_cache_);
 
-  if (foreground != layer->foreground()) {
-    if (foreground) {
+  if (foreground != layer->foreground() || is_pinned != layer->is_pinned()) {
+    if (foreground != layer->foreground() && foreground) {
       foreground_tabs_->AddChild(layer->layer());
-    } else {
+    } else if (is_pinned != layer->is_pinned() && is_pinned) {
+      pinned_tabs_layer_->AddChild(layer->layer());
+    } else if (!is_pinned && !foreground) {
       tab_ui_parent_layer_->AddChild(layer->layer());
     }
   }
@@ -515,15 +525,15 @@ void TabStripSceneLayer::PutStripTabLayer(
       id, close_button_resource, close_button_hover_resource,
       is_close_keyboard_focused, close_button_keyboard_focus_ring_resource,
       divider_resource, tab_handle_resource, tab_handle_outline_resource,
-      foreground, shouldShowTabOutline, close_pressed, should_hide_favicon,
-      should_show_media_indicator, media_indicator_drawable,
-      media_indicator_width, toolbar_width, x, y, width, height,
-      content_offset_y, divider_offset_x, bottom_margin, top_margin,
-      close_button_padding, close_button_alpha, is_start_divider_visible,
-      is_end_divider_visible, is_loading, spinner_rotation, opacity,
-      is_keyboard_focused, keyboard_focus_ring_drawable,
-      keyboard_focus_ring_offset, stroke_width, folio_foot_length,
-      width_to_hide_tab_title);
+      foreground, is_pinned, shouldShowTabOutline, close_pressed,
+      should_hide_favicon, should_show_media_indicator,
+      media_indicator_drawable, media_indicator_width, toolbar_width, x, y,
+      width, height, content_offset_y, divider_offset_x, bottom_margin,
+      top_margin, close_button_padding, close_button_alpha,
+      is_start_divider_visible, is_end_divider_visible, is_loading,
+      spinner_rotation, opacity, is_keyboard_focused,
+      keyboard_focus_ring_drawable, keyboard_focus_ring_offset, stroke_width,
+      folio_foot_length, width_to_hide_tab_title);
 }
 
 void TabStripSceneLayer::PutGroupIndicatorLayer(

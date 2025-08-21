@@ -866,8 +866,8 @@ public class StripLayoutHelperManager
                 hoveredTabId,
                 getStripTransitionScrimColor(),
                 mStripTransitionScrimOpacity,
-                mLeftPadding,
-                mRightPadding,
+                getActiveStripLayoutHelper().getLeftPaddingToDraw(),
+                getActiveStripLayoutHelper().getRightPaddingToDraw(),
                 mTopPadding);
         return mTabStripTreeProvider;
     }

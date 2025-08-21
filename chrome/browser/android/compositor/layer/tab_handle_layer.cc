@@ -33,6 +33,7 @@ void TabHandleLayer::SetProperties(
     ui::NinePatchResource* tab_handle_resource,
     ui::NinePatchResource* tab_handle_outline_resource,
     bool foreground,
+    bool is_pinned,
     bool shouldShowTabOutline,
     bool close_pressed,
     bool should_hide_favicon,
@@ -61,9 +62,11 @@ void TabHandleLayer::SetProperties(
     int stroke_width,
     float folio_foot_length,
     float width_to_hide_tab_title) {
-  if (foreground != foreground_ || opacity != opacity_) {
+  if (foreground != foreground_ || opacity != opacity_ ||
+      is_pinned != is_pinned_) {
     foreground_ = foreground;
     opacity_ = opacity;
+    is_pinned_ = is_pinned;
   }
 
   y += top_margin;
@@ -338,6 +341,10 @@ void TabHandleLayer::SetProperties(
 
 bool TabHandleLayer::foreground() {
   return foreground_;
+}
+
+bool TabHandleLayer::is_pinned() {
+  return is_pinned_;
 }
 
 scoped_refptr<cc::slim::Layer> TabHandleLayer::layer() {

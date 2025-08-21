@@ -40,6 +40,7 @@ class TabHandleLayer : public Layer {
                      ui::NinePatchResource* tab_handle_resource,
                      ui::NinePatchResource* tab_handle_outline_resource,
                      bool foreground,
+                     bool is_pinned,
                      bool shouldShowTabOutline,
                      bool close_pressed,
                      bool should_hide_favicon,
@@ -69,6 +70,7 @@ class TabHandleLayer : public Layer {
                      float folio_foot_length,
                      float width_to_hide_tab_title);
   bool foreground();
+  bool is_pinned();
   scoped_refptr<cc::slim::Layer> layer() override;
 
  protected:
@@ -93,7 +95,8 @@ class TabHandleLayer : public Layer {
   scoped_refptr<cc::slim::NinePatchLayer> keyboard_focus_ring_;
 
   float opacity_;
-  bool foreground_;
+  bool foreground_ = false;
+  bool is_pinned_ = false;
 };
 
 }  // namespace android

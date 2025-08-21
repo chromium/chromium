@@ -307,7 +307,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.getKeyboardFocusRingColor(),
                             st.getKeyboardFocusRingOffset(),
                             st.getLineWidth(),
-                            Math.round(FOLIO_FOOT_LENGTH_DP * mDpToPx));
+                            Math.round(FOLIO_FOOT_LENGTH_DP * mDpToPx),
+                            st.getIsPinned());
         }
     }
 
@@ -477,7 +478,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 @ColorInt int keyboardFocusRingColor,
                 int keyboardFocusRingOffset,
                 int strokeWidth,
-                float folioFootLength);
+                float folioFootLength,
+                boolean isPinned);
 
         void putGroupIndicatorLayer(
                 long nativeTabStripSceneLayer,

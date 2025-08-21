@@ -879,23 +879,19 @@ public class StripLayoutHelper
         return mTouchableRect;
     }
 
-    /**
-     * @return The visually ordered list of visible {@link StripLayoutTab}s.
-     */
+    /** Returns The visually ordered list of visible {@link StripLayoutTab}s. */
     public StripLayoutTab[] getStripLayoutTabsToRender() {
         return mStripTabsToRender;
     }
 
-    /**
-     * @return The visually ordered list of visible {@link StripLayoutGroupTitle}s.
-     */
+    /** Returns The visually ordered list of visible {@link StripLayoutGroupTitle}s. */
     public StripLayoutGroupTitle[] getStripLayoutGroupTitlesToRender() {
         return mStripGroupTitlesToRender;
     }
 
     /**
-     * @return A {@link TintedCompositorButton} that represents the positioning of the new tab
-     *         button.
+     * Returns A {@link TintedCompositorButton} that represents the positioning of the new tab
+     * button.
      */
     public TintedCompositorButton getNewTabButton() {
         return mNewTabButton;
@@ -909,16 +905,12 @@ public class StripLayoutHelper
         return getCachedTabWidth(isPinned) - TAB_OVERLAP_WIDTH_DP;
     }
 
-    /**
-     * @return The total effective width of pinned tabs.
-     */
-    private float getTotalPinnedTabsWidth() {
-        return getEffectiveTabWidth(/* isPinned= */ true) * mPinnedTabCount;
+    /** Returns The total effective width of pinned tabs. */
+    protected float getTotalPinnedTabsWidth() {
+        return getEffectiveTabWidth(/* isPinned= */ true) * getNumLivePinnedTabs();
     }
 
-    /**
-     * @return The visual offset to be applied to the new tab button.
-     */
+    /** Returns The visual offset to be applied to the new tab button. */
     protected float getNewTabButtonVisualOffset() {
         boolean isRtl = LocalizationUtils.isLayoutRtl();
         float newTabButtonTouchTargetOffset;
@@ -933,7 +925,6 @@ public class StripLayoutHelper
     /**
      * Check whether the tab strip is full by checking whether tab width has decreased to fit more
      * tabs.
-     *
      * @return Whether the tab strip is full.
      */
     private boolean isTabStripFull() {
@@ -943,7 +934,6 @@ public class StripLayoutHelper
     /**
      * Determine How far to shift new tab button icon visually towards the tab in order to achieve
      * the desired spacing between new tab button and tabs when tab strip is not full.
-     *
      * @return Visual offset of new tab button icon.
      */
     protected float getNtbVisualOffsetHorizontal() {
@@ -953,16 +943,12 @@ public class StripLayoutHelper
                 0);
     }
 
-    /**
-     * @return The opacity to use for the fade on the left side of the tab strip.
-     */
+    /** Returns The opacity to use for the fade on the left side of the tab strip. */
     public float getLeftFadeOpacity() {
         return getFadeOpacity(true);
     }
 
-    /**
-     * @return The opacity to use for the fade on the right side of the tab strip.
-     */
+    /** Returns The opacity to use for the fade on the right side of the tab strip. */
     public float getRightFadeOpacity() {
         return getFadeOpacity(false);
     }
@@ -987,8 +973,8 @@ public class StripLayoutHelper
     }
 
     /**
-     * @return The strip's current scroll offset. It's a 1-D vector on the X axis under the dynamic
-     *     coordinate system used by {@link ScrollDelegate}.
+     * Returns The strip's current scroll offset. It's a 1-D vector on the X axis under the dynamic
+     * coordinate system used by {@link ScrollDelegate}.
      */
     float getScrollOffset() {
         return mScrollDelegate.getScrollOffset();
@@ -1000,6 +986,16 @@ public class StripLayoutHelper
 
     float getVisibleRightBound() {
         return mWidth - mRightPadding;
+    }
+
+    /** Returns Tab strip's visible left padding accounting for pinned tab background. */
+    protected float getLeftPaddingToDraw() {
+        return mLeftPadding + (LocalizationUtils.isLayoutRtl() ? 0.f : getTotalPinnedTabsWidth());
+    }
+
+    /** Returns Tab strip's visible right padding accounting for pinned tab background. */
+    protected float getRightPaddingToDraw() {
+        return mRightPadding + (LocalizationUtils.isLayoutRtl() ? getTotalPinnedTabsWidth() : 0.f);
     }
 
     /**
@@ -1893,23 +1889,17 @@ public class StripLayoutHelper
         }
     }
 
-    /**
-     * @return The expected tab count after tabs finish restoring.
-     */
+    /** Returns The expected tab count after tabs finish restoring. */
     protected int getTabCountOnStartupForTesting() {
         return mTabCountOnStartup;
     }
 
-    /**
-     * @return The expected active tab index after tabs finish restoring.
-     */
+    /** Returns The expected active tab index after tabs finish restoring. */
     protected int getActiveTabIndexOnStartupForTesting() {
         return mActiveTabIndexOnStartup;
     }
 
-    /**
-     * @return Whether a non-restored tab was created during startup (e.g. through intent).
-     */
+    /** Returns Whether a non-restored tab was created during startup (e.g. through intent). */
     protected boolean getCreatedTabOnStartupForTesting() {
         return mCreatedTabOnStartup;
     }
@@ -2292,7 +2282,6 @@ public class StripLayoutHelper
 
     /**
      * Opens the context menu for the keyboard-focused view, if applicable.
-     *
      * @return Whether the context menu was successfully opened.
      */
     public boolean openKeyboardFocusedContextMenu() {
@@ -3368,9 +3357,7 @@ public class StripLayoutHelper
         mMostRecentTabScroll = null;
     }
 
-    /**
-     * @return Whether or not the tabs are moving.
-     */
+    /** Returns Whether or not the tabs are moving. */
     public boolean isAnimatingForTesting() {
         return (mRunningAnimator != null && mRunningAnimator.isRunning())
                 || !mScrollDelegate.isFinished();
@@ -3776,8 +3763,8 @@ public class StripLayoutHelper
     }
 
     /**
-     * @return The index of the nearby expanded tab to the selected tab. Prioritizes tabs before the
-     *     selected tab. If none are found, return an invalid index.
+     * Returns The index of the nearby expanded tab to the selected tab. Prioritizes tabs before the
+     * selected tab. If none are found, return an invalid index.
      */
     private int getNearbyExpandedTabIndexPreferBefore() {
         int index = getSelectedStripTabIndex();
@@ -3789,10 +3776,10 @@ public class StripLayoutHelper
     }
 
     /**
-     * @return The index of an expanded tab that is "near" the selected tab. Unlike other tab
-     *     closures, this prioritizes tabs after the selected tab, to make repeated mouse closures
-     *     easier, since the next tab to hover the cursor will likely be selected. If none are
-     *     found, return an invalid index.
+     * Returns The index of an expanded tab that is "near" the selected tab. Unlike other tab
+     * closures, this prioritizes tabs after the selected tab, to make repeated mouse closures
+     * easier, since the next tab to hover the cursor will likely be selected. If none are found,
+     * return an invalid index.
      */
     private int getNearbyExpandedTabIndexPreferAfter() {
         int index = getSelectedStripTabIndex();
@@ -4274,23 +4261,36 @@ public class StripLayoutHelper
         return StripLayoutUtils.findIndexForTab(mStripTabs, id);
     }
 
-    private int getNumLiveTabs() {
+    private boolean isLiveTab(StripLayoutTab tab) {
+        return !tab.isClosed()
+                && !tab.isDraggedOffStrip()
+                && !tab.isCollapsed()
+                && !(tab.isDying() && ChromeFeatureList.sTabletTabStripAnimation.isEnabled());
+    }
+
+    /** Returns The total number of unpinned tabs that are live. */
+    private int getNumLiveUnpinnedTabs() {
         int numLiveTabs = 0;
 
-        for (int i = 0; i < mStripTabs.length; i++) {
+        for (int i = mStripTabs.length - 1; i >= 0; i--) {
             final StripLayoutTab tab = mStripTabs[i];
-            if (tab.isDying() && ChromeFeatureList.sTabletTabStripAnimation.isEnabled()) continue;
-            if (!tab.isClosed() && !tab.isDraggedOffStrip() && !tab.isCollapsed()) numLiveTabs++;
+            if (tab.getIsPinned()) break;
+            if (isLiveTab(tab)) numLiveTabs++;
         }
 
         return numLiveTabs;
     }
 
-    /**
-     * @return The total number of unpinned tabs.
-     */
-    private int getNumOfUnpinnedTabs() {
-        return getNumLiveTabs() - mPinnedTabCount;
+    /** Returns The total number of pinned tabs that are live. */
+    private int getNumLivePinnedTabs() {
+        int numPinnedTabs = 0;
+
+        for (StripLayoutTab tab : mStripTabs) {
+            if (!tab.getIsPinned()) break;
+            if (isLiveTab(tab)) numPinnedTabs++;
+        }
+
+        return numPinnedTabs;
     }
 
     /**
@@ -4349,7 +4349,7 @@ public class StripLayoutHelper
 
     private void computeCachedTabWidth() {
         // 1. Compute the number of unpinned tabs and the available width for them.
-        int numTabs = Math.max(getNumOfUnpinnedTabs(), 1);
+        int numTabs = Math.max(getNumLiveUnpinnedTabs(), 1);
         float stripWidth = getAvailableTabWidthForResizing();
 
         // 2. Compute additional width we gain from overlapping the tabs.
@@ -4703,7 +4703,7 @@ public class StripLayoutHelper
         // Use cachedTabWidth, because the tab width and drawX animation might not have completed
         // yet.
         float viewsWidth =
-                (getNumOfUnpinnedTabs() * getEffectiveTabWidth(/* isPinned= */ false))
+                (getNumLiveUnpinnedTabs() * getEffectiveTabWidth(/* isPinned= */ false))
                         + getTotalPinnedTabsWidth()
                         + TAB_OVERLAP_WIDTH_DP;
         for (int i = 0; i < mStripViews.length; ++i) {
@@ -5174,9 +5174,7 @@ public class StripLayoutHelper
                 || viewX >= getVisibleRightBound() - mRightFadeWidth;
     }
 
-    /**
-     * @return true if the close button menu is showing
-     */
+    /** Returns true if the close button menu is showing */
     public boolean isCloseButtonMenuShowingForTesting() {
         return mCloseButtonMenu.isShowing();
     }
@@ -5188,9 +5186,7 @@ public class StripLayoutHelper
         mCloseButtonMenu.performItemClick(menuItemId);
     }
 
-    /**
-     * @return The width of the tab strip.
-     */
+    /** Returns The width of the tab strip. */
     float getWidthForTesting() {
         return mWidth;
     }
@@ -5203,31 +5199,25 @@ public class StripLayoutHelper
         return isPinned ? PINNED_TAB_WIDTH_DP : assumeNonNull(mCachedTabWidthSupplier.get());
     }
 
-    /**
-     * @return The width of a tab.
-     */
+    /** Returns The width of a tab. */
     float getUnpinnedTabWidthForTesting() {
         return getCachedTabWidth(/* isPinned= */ false);
     }
 
     /**
-     * @return The strip's scroll offset limit (a 1-D vector along the X axis, under the dynamic
-     *     coordinate system used by {@link ScrollDelegate}).
+     * Returns The strip's scroll offset limit (a 1-D vector along the X axis, under the dynamic
+     * coordinate system used by {@link ScrollDelegate}).
      */
     float getScrollOffsetLimitForTesting() {
         return mScrollDelegate.getScrollOffsetLimitForTesting(); // IN-TEST
     }
 
-    /**
-     * @return The scroller.
-     */
+    /** Returns The scroller. */
     StackScroller getScrollerForTesting() {
         return mScrollDelegate.getScrollerForTesting(); // IN-TEST
     }
 
-    /**
-     * @return An array containing the StripLayoutTabs.
-     */
+    /** Returns An array containing the StripLayoutTabs. */
     StripLayoutTab[] getStripLayoutTabsForTesting() {
         return mStripTabs;
     }
@@ -5237,23 +5227,17 @@ public class StripLayoutHelper
         this.mStripTabs = stripTabs;
     }
 
-    /**
-     * @return An array containing the StripLayoutViews.
-     */
+    /** Returns An array containing the StripLayoutViews. */
     StripLayoutView[] getStripLayoutViewsForTesting() {
         return mStripViews;
     }
 
-    /**
-     * @return The currently interacting tab.
-     */
+    /** Returns The currently interacting tab. */
     StripLayoutTab getInteractingTabForTesting() {
         return mReorderDelegate.getInteractingTabForTesting(); // IN-TEST
     }
 
-    /**
-     * @return The view that we'll delay enter reorder mode for.
-     */
+    /** Returns The view that we'll delay enter reorder mode for. */
     @Nullable StripLayoutView getDelayedReorderViewForTesting() {
         return mDelayedReorderView;
     }
