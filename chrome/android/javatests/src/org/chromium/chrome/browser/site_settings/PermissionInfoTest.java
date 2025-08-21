@@ -35,12 +35,10 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
-import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
-import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.util.concurrent.Callable;
@@ -318,45 +316,7 @@ public class PermissionInfoTest {
     @SmallTest
     @Feature({"Preferences"})
     @EnableFeatures("ApproximateGeolocationPermission")
-    public void testGeolocationPermissionMockValues() throws Throwable {
-        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_SAMPLE_DATA.setForTesting(true);
-        Profile regularProfile = getRegularProfile();
-        var info =
-                new PermissionInfo(
-                        ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
-                        "https://permission.site",
-                        "https://permission.site",
-                        false,
-                        SessionModel.DURABLE);
-
-        var allowApproximate =
-                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.BLOCK);
-        var allowPrecise =
-                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.ALLOW);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertEquals(allowApproximate, info.getGeolocationSetting(regularProfile));
-                    info.setGeolocationSetting(regularProfile, allowPrecise);
-                    assertEquals(allowPrecise, info.getGeolocationSetting(regularProfile));
-
-                    var permissions =
-                            new WebsitePreferenceBridge()
-                                    .getPermissionInfo(
-                                            regularProfile,
-                                            ContentSettingsType.GEOLOCATION_WITH_OPTIONS);
-                    assertEquals(1, permissions.size());
-                    assertEquals(
-                            allowPrecise, permissions.get(0).getGeolocationSetting(regularProfile));
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures("ApproximateGeolocationPermission")
     public void testGeolocationPermissionDefault() throws Throwable {
-        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_SAMPLE_DATA.setForTesting(false);
         Profile regularProfile = getRegularProfile();
         var info =
                 new PermissionInfo(

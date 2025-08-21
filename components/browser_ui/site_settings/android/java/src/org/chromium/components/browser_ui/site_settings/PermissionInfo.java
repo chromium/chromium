@@ -114,16 +114,6 @@ public class PermissionInfo implements Serializable {
                                 mOrigin,
                                 getEmbedderSafe());
 
-        // Return fake approximate permission for permission.site until we can set create real
-        // approximate permissions.
-        if (PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_SAMPLE_DATA.getValue()) {
-            if (mOrigin.equals("https://permission.site")
-                    && setting.mPrecise == ContentSettingValues.ASK
-                    && setting.mApproximate == ContentSettingValues.ASK) {
-                return new GeolocationSetting(
-                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK);
-            }
-        }
         return setting;
     }
 

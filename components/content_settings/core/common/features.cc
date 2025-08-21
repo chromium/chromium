@@ -64,11 +64,6 @@ BASE_FEATURE(kApproximateGeolocationPermission,
              "ApproximateGeolocationPermission",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kApproximateGeolocationPermissionSampleData(
-    &features::kApproximateGeolocationPermission,
-    "sample_data",
-    false);
-
 const base::FeatureParam<int> kApproximateGeolocationPermissionPromptArm(
     &features::kApproximateGeolocationPermission,
     "prompt_arm",
