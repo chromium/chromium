@@ -17,6 +17,7 @@
 #include <string>
 
 #include "base/containers/extend.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -186,8 +187,9 @@ void H264Validate(base::span<const uint8_t> frame) {
     H264Parser::Result result;
 
     result = h264_parser.AdvanceToNextNALU(&nalu);
-    if (result == H264Parser::kEOStream)
+    if (result == H264Parser::kEOStream) {
       break;
+    }
     ASSERT_THAT(result, H264Parser::kOk);
 
     switch (nalu.nal_unit_type) {
@@ -483,10 +485,9 @@ TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
 
   const int num_frames = src_file_size.value() / frame_size;
   base::File src(src_file, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  std::unique_ptr<uint8_t[]> frame_data =
-      std::make_unique<uint8_t[]>(frame_size);
+  auto frame_data = base::HeapArray<uint8_t>::Uninit(frame_size);
   ASSERT_THAT(
-      src.Read(0, reinterpret_cast<char*>(frame_data.get()), frame_size),
+      src.Read(0, reinterpret_cast<char*>(frame_data.data()), frame_size),
       frame_size);
 
   // A monotonically-growing value.
@@ -496,7 +497,7 @@ TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
   for (int frame = 0; frame < num_frames && frame < 3; frame++) {
     input_timestamp +=
         base::Microseconds(base::Time::kMicrosecondsPerSecond / frame_rate);
-    EncodeMediaFrame(media_codec.get(), frame_data.get(), width, height,
+    EncodeMediaFrame(media_codec.get(), frame_data.data(), width, height,
                      input_timestamp);
   }
 
@@ -506,7 +507,7 @@ TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
   for (int frame = 0; frame < num_frames && frame < 3; frame++) {
     input_timestamp +=
         base::Microseconds(base::Time::kMicrosecondsPerSecond / frame_rate);
-    EncodeMediaFrame(media_codec.get(), frame_data.get(), width, height,
+    EncodeMediaFrame(media_codec.get(), frame_data.data(), width, height,
                      input_timestamp);
   }
 }
