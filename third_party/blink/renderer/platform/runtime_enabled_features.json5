@@ -2498,7 +2498,7 @@
     // https://www.w3.org/TR/screen-capture/#dom-displaymediastreamoptions-windowaudio
     {
       name: "GetDisplayMediaWindowAudioCapture",
-      status: "experimental",
+      status: "stable",
       browser_process_read_write_access: true,
     },
     {
