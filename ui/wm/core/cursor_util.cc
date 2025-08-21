@@ -377,13 +377,13 @@ constexpr auto kNormalCursorResourceData = std::to_array<
       {10, 13},
       {10, 13}}},
     {{CursorType::kNorthEastSouthWestNoResize,
-      IDR_AURA_CURSOR_NORTH_EAST_SOUTH_WEST_NO_RESIZE,
-      {12, 11},
-      {25, 23}}},
+      IDR_AURA_CURSOR_TOP_RIGHT_CORNER_BLOCK_LOTTIE,
+      {14, 14},
+      {14, 14}}},
     {{CursorType::kNorthWestSouthEastNoResize,
-      IDR_AURA_CURSOR_NORTH_WEST_SOUTH_EAST_NO_RESIZE,
-      {11, 11},
-      {24, 23}}},
+      IDR_AURA_CURSOR_TOP_LEFT_CORNER_BLOCK_LOTTIE,
+      {10, 14},
+      {10, 14}}},
 });
 
 static_assert(std::size(kNormalCursorResourceData) ==
@@ -514,13 +514,13 @@ constexpr auto kLargeCursorResourceData = std::to_array<
       {10, 13},
       {10, 13}}},
     {{CursorType::kNorthEastSouthWestNoResize,
-      IDR_AURA_CURSOR_BIG_NORTH_EAST_SOUTH_WEST_NO_RESIZE,
-      {32, 30},
-      {64, 60}}},
+      IDR_AURA_CURSOR_TOP_RIGHT_CORNER_BLOCK_LOTTIE,
+      {14, 14},
+      {14, 14}}},
     {{CursorType::kNorthWestSouthEastNoResize,
-      IDR_AURA_CURSOR_BIG_NORTH_WEST_SOUTH_EAST_NO_RESIZE,
-      {32, 31},
-      {64, 62}}},
+      IDR_AURA_CURSOR_TOP_LEFT_CORNER_BLOCK_LOTTIE,
+      {10, 14},
+      {10, 14}}},
 });
 
 static_assert(std::size(kLargeCursorResourceData) ==
