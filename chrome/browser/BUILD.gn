@@ -2688,7 +2688,10 @@ static_library("browser") {
   }
 
   if (is_win || is_mac || is_linux) {
-    deps += [ "//chrome/browser/ui/views/session_restore_infobar" ]
+    deps += [
+      "//chrome/browser/ui/views/session_restore_infobar",
+      "//components/themes:policy",
+    ]
   }
 
   # Platforms that have a network diagnostics dialog. All others fall through

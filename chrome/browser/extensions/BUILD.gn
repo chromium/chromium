@@ -1043,6 +1043,7 @@ source_set("extensions") {
       "//components/sync_preferences",
       "//components/sync_sessions",
       "//components/tab_groups",
+      "//components/themes:prefs",
       "//components/translate/content/browser",
       "//components/translate/core/browser",
       "//components/translate/core/common",

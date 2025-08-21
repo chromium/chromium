@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/themes/theme_color_policy_handler.h"
+#include "components/themes/theme_color_policy_handler.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/themes/pref_names.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -70,5 +70,6 @@ void ThemeColorPolicyHandler::ApplyPolicySettings(
     return;
   }
 
-  prefs->SetInteger(prefs::kPolicyThemeColor, HexToSkColor(value->GetString()));
+  prefs->SetInteger(themes::prefs::kPolicyThemeColor,
+                    HexToSkColor(value->GetString()));
 }

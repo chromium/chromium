@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/themes/theme_color_policy_handler.h"
+#include "components/themes/theme_color_policy_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/themes/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -42,7 +42,7 @@ class ThemeColorPolicyHandlerTest : public testing::Test {
 
     ApplyPolicies();
     base::Value* value;
-    EXPECT_TRUE(prefs_.GetValue(prefs::kPolicyThemeColor, &value));
+    EXPECT_TRUE(prefs_.GetValue(themes::prefs::kPolicyThemeColor, &value));
     ASSERT_TRUE(value);
     EXPECT_EQ(value->GetInt(), static_cast<int>(expected_color));
   }

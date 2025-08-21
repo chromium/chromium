@@ -56,6 +56,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/themes/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -1040,7 +1041,7 @@ TEST_F(RealThemeSyncableServiceTest, UpdateThemeSpecifics_CurrentTheme_Policy) {
   fake_change_processor()->changes().clear();
   // Set up theme service to use policy theme.
   profile_->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyThemeColor, std::make_unique<base::Value>(100));
+      themes::prefs::kPolicyThemeColor, std::make_unique<base::Value>(100));
 
   ASSERT_TRUE(theme_service()->UsingPolicyTheme());
   // Applying policy theme doesn't trigger sync changes.
