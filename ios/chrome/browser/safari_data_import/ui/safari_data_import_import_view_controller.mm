@@ -61,6 +61,7 @@
       self.primaryActionString = l10n_util::GetNSString(
           IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_SELECT_YOUR_FILE);
       self.primaryButtonSpinnerEnabled = NO;
+      [self.itemTableView reset];
       break;
     case SafariDataImportStage::kFileLoading:
       self.primaryButtonSpinnerEnabled = YES;

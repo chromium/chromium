@@ -179,7 +179,6 @@ UIView* GetCheckmark() {
 - (instancetype)init {
   self = [super initWithFrame:CGRectZero style:ChromeTableViewStyle()];
   if (self) {
-    _itemDictionary = [NSMutableDictionary dictionary];
     self.accessibilityIdentifier =
         GetSafariDataItemTableViewAccessibilityIdentifier();
     self.translatesAutoresizingMaskIntoConstraints = NO;
@@ -194,8 +193,15 @@ UIView* GetCheckmark() {
     self.tableFooterView =
         [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
     RegisterTableViewCell<TableViewDetailIconCell>(self);
+    [self reset];
   }
   return self;
+}
+
+- (void)reset {
+  _pendingImportCount = 0;
+  _importedCount = 0;
+  _itemDictionary = [NSMutableDictionary dictionary];
 }
 
 - (void)notifyImportStart {
@@ -373,7 +379,6 @@ UIView* GetCheckmark() {
     }
   }
   /// No item to import.
-  _itemDictionary = [NSMutableDictionary dictionary];
   [self.importStageTransitionHandler resetToInitialImportStage:NO];
 }
 
