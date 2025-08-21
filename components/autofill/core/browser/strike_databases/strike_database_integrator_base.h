@@ -11,6 +11,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -39,14 +40,14 @@ class StrikeDatabaseIntegratorBase {
     kRequiredDelayNotPassed = 2,
   };
 
-  static constexpr char kSharedId[] = "shared_id";
+  static constexpr std::string_view kSharedId = "shared_id";
 
   explicit StrikeDatabaseIntegratorBase(StrikeDatabaseBase* strike_database);
   virtual ~StrikeDatabaseIntegratorBase();
 
   // Returns the StrikeDatabase's decision on whether a particular feature
   // should be blocked (not offered) for the given `id`.
-  StrikeDatabaseDecision GetStrikeDatabaseDecision(const std::string& id) const;
+  StrikeDatabaseDecision GetStrikeDatabaseDecision(std::string_view id) const;
 
   // Returns the StrikeDatabase's decision on whether a particular feature
   // should be blocked (not offered).
@@ -55,7 +56,7 @@ class StrikeDatabaseIntegratorBase {
   // Returns whether a particular feature should be blocked (not offered) for
   // the given `id`. Same as calling `GetStrikeDatabaseDecision`, where a result
   // of `kDoNotBlock` returns false.
-  bool ShouldBlockFeature(const std::string& id) const;
+  bool ShouldBlockFeature(std::string_view id) const;
 
   // Returns whether a particular feature should be blocked (not offered). Same
   // as calling `GetStrikeDatabaseDecision`, where a result of `kDoNotBlock`
@@ -63,26 +64,26 @@ class StrikeDatabaseIntegratorBase {
   bool ShouldBlockFeature() const;
 
   // Increments in-memory cache and updates underlying ProtoDatabase.
-  int AddStrike(const std::string& id = kSharedId);
+  int AddStrike(std::string_view id = kSharedId);
 
-  // Increases in-memory cache by |strikes_increase| and updates underlying
+  // Increases in-memory cache by `strikes_increase` and updates underlying
   // ProtoDatabase.
-  int AddStrikes(int strikes_increase, const std::string& id = kSharedId);
+  int AddStrikes(int strikes_increase, std::string_view id = kSharedId);
 
   // Removes an in-memory cache strike, updates last_update_timestamp, and
   // updates underlying ProtoDatabase.
-  int RemoveStrike(const std::string& id = kSharedId);
+  int RemoveStrike(std::string_view id = kSharedId);
 
-  // Removes |strikes_decrease| in-memory cache strikes, updates
-  // |last_update_timestamp|, and updates underlying ProtoDatabase.
-  int RemoveStrikes(int strikes_decrease, const std::string& id = kSharedId);
+  // Removes `strikes_decrease` in-memory cache strikes, updates
+  // `last_update_timestamp`, and updates underlying ProtoDatabase.
+  int RemoveStrikes(int strikes_decrease, std::string_view id = kSharedId);
 
   // Returns strike count from in-memory cache.
-  int GetStrikes(const std::string& id = kSharedId) const;
+  int GetStrikes(std::string_view id = kSharedId) const;
 
   // Removes all database entries from in-memory cache and underlying
   // ProtoDatabase.
-  void ClearStrikes(const std::string& id = kSharedId);
+  void ClearStrikes(std::string_view id = kSharedId);
 
   // Removes all database entries from in-memory cache and underlying
   // ProtoDatabase for the whole project.
@@ -101,7 +102,7 @@ class StrikeDatabaseIntegratorBase {
   bool NumberOfEntriesExceedsLimits() const;
 
   // Removes one strike for each key where it has been longer than
-  // GetExpiryTimeMicros() since |last_update_timestamp|.
+  // GetExpiryTimeMicros() since `last_update_timestamp`.
   void RemoveExpiredStrikes();
 
   // Removes all database entries for which `id_map(ID)` is in `ids_to_delete`.
@@ -127,7 +128,7 @@ class StrikeDatabaseIntegratorBase {
   }
 
   // Returns the id the key was built from with `GetKey(id)`.
-  std::string GetIdFromKey(const std::string& key) const;
+  std::string_view GetIdFromKey(std::string_view key) const;
 
   // Returns the age of a strike entry.
   static base::TimeDelta GetEntryAge(const StrikeData& strike_data);
@@ -158,16 +159,16 @@ class StrikeDatabaseIntegratorBase {
   const raw_ptr<StrikeDatabaseBase> strike_database_;
 
   // For projects in which strikes don't have unique identifiers, the
-  // id suffix is set to |kSharedId|. This makes sure that projects requiring
-  // unique IDs always specify |id| instead of relying on the default shared
+  // id suffix is set to `kSharedId`. This makes sure that projects requiring
+  // unique IDs always specify `id` instead of relying on the default shared
   // value, while projects where unique IDs are unnecessary always fall back to
   // the default shared value.
-  void CheckIdUniqueness(const std::string& id) const {
+  void CheckIdUniqueness(std::string_view id) const {
     DCHECK(UniqueIdsRequired() == (id != kSharedId));
   }
 
   // Generates key based on project-specific string identifier.
-  std::string GetKey(const std::string& id) const;
+  std::string GetKey(std::string_view id) const;
 
   // Returns the maximum number of entries that should be stored for this
   // project prefix. std::nullopt means that there is no limit.

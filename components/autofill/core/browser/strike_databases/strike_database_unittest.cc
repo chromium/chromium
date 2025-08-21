@@ -164,7 +164,7 @@ TEST_F(StrikeDatabaseTest, GetStrikesForMissingKeyTest) {
 }
 
 TEST_F(StrikeDatabaseTest, GetStrikeForNonZeroStrikesTest) {
-  // Set up database with 3 pre-existing strikes at |key|.
+  // Set up database with 3 pre-existing strikes at `key`.
   const std::string key = "12345";
   std::vector<std::pair<std::string, StrikeData>> entries;
   StrikeData data;
@@ -184,7 +184,7 @@ TEST_F(StrikeDatabaseTest, ClearStrikesForMissingKeyTest) {
 }
 
 TEST_F(StrikeDatabaseTest, ClearStrikesForNonZeroStrikesTest) {
-  // Set up database with 3 pre-existing strikes at |key|.
+  // Set up database with 3 pre-existing strikes at `key`.
   const std::string key = "12345";
   std::vector<std::pair<std::string, StrikeData>> entries;
   StrikeData data;
@@ -224,8 +224,8 @@ TEST_F(StrikeDatabaseTest, ClearStrikesForMultipleNonZeroStrikesTest) {
 }
 
 TEST_F(StrikeDatabaseTest, ClearStrikesForMultipleNonZeroStrikesEntriesTest) {
-  // Set up database with 3 pre-existing strikes at |key1|, and 5 pre-existing
-  // strikes at |key2|.
+  // Set up database with 3 pre-existing strikes at `key1`, and 5 pre-existing
+  // strikes at `key2`.
   const std::string key1 = "12345";
   const std::string key2 = "13579";
   std::vector<std::pair<std::string, StrikeData>> entries;
@@ -249,8 +249,8 @@ TEST_F(StrikeDatabaseTest, ClearStrikesForMultipleNonZeroStrikesEntriesTest) {
 }
 
 TEST_F(StrikeDatabaseTest, ClearAllProtoStrikesTest) {
-  // Set up database with 3 pre-existing strikes at |key1|, and 5 pre-existing
-  // strikes at |key2|.
+  // Set up database with 3 pre-existing strikes at `key1`, and 5 pre-existing
+  // strikes at `key2`.
   const std::string key1 = "12345";
   const std::string key2 = "13579";
   std::vector<std::pair<std::string, StrikeData>> entries;

@@ -52,7 +52,7 @@ class HistoryClearableStrikeDatabaseTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    // The destruction of |strike_database_service_|'s components is posted
+    // The destruction of `strike_database_service_`'s components is posted
     // to a task runner, requires running the loop to complete.
     strike_database_.reset();
     strike_database_service_.reset();

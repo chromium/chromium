@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -31,7 +32,7 @@ StrikeDatabaseIntegratorBase::~StrikeDatabaseIntegratorBase() = default;
 
 StrikeDatabaseIntegratorBase::StrikeDatabaseDecision
 StrikeDatabaseIntegratorBase::GetStrikeDatabaseDecision(
-    const std::string& id) const {
+    std::string_view id) const {
   CheckIdUniqueness(id);
 
   if (base::FeatureList::IsEnabled(features::kDisableAutofillStrikeSystem)) {
@@ -64,7 +65,7 @@ StrikeDatabaseIntegratorBase::GetStrikeDatabaseDecision() const {
 }
 
 bool StrikeDatabaseIntegratorBase::ShouldBlockFeature(
-    const std::string& id) const {
+    std::string_view id) const {
   return GetStrikeDatabaseDecision(id) != StrikeDatabaseDecision::kDoNotBlock;
 }
 
@@ -72,13 +73,13 @@ bool StrikeDatabaseIntegratorBase::ShouldBlockFeature() const {
   return GetStrikeDatabaseDecision() != StrikeDatabaseDecision::kDoNotBlock;
 }
 
-int StrikeDatabaseIntegratorBase::AddStrike(const std::string& id) {
+int StrikeDatabaseIntegratorBase::AddStrike(std::string_view id) {
   CheckIdUniqueness(id);
   return AddStrikes(1, id);
 }
 
 int StrikeDatabaseIntegratorBase::AddStrikes(int strikes_increase,
-                                             const std::string& id) {
+                                             std::string_view id) {
   CheckIdUniqueness(id);
   int num_strikes = strike_database_->AddStrikes(strikes_increase, GetKey(id));
   // If a new strike entry was created, run the routine to limit the number of
@@ -93,23 +94,23 @@ int StrikeDatabaseIntegratorBase::AddStrikes(int strikes_increase,
   return num_strikes;
 }
 
-int StrikeDatabaseIntegratorBase::RemoveStrike(const std::string& id) {
+int StrikeDatabaseIntegratorBase::RemoveStrike(std::string_view id) {
   CheckIdUniqueness(id);
   return strike_database_->RemoveStrikes(1, GetKey(id));
 }
 
 int StrikeDatabaseIntegratorBase::RemoveStrikes(int strike_decrease,
-                                                const std::string& id) {
+                                                std::string_view id) {
   CheckIdUniqueness(id);
   return strike_database_->RemoveStrikes(strike_decrease, GetKey(id));
 }
 
-int StrikeDatabaseIntegratorBase::GetStrikes(const std::string& id) const {
+int StrikeDatabaseIntegratorBase::GetStrikes(std::string_view id) const {
   CheckIdUniqueness(id);
   return strike_database_->GetStrikes(GetKey(id));
 }
 
-void StrikeDatabaseIntegratorBase::ClearStrikes(const std::string& id) {
+void StrikeDatabaseIntegratorBase::ClearStrikes(std::string_view id) {
   CheckIdUniqueness(id);
   strike_database_->ClearStrikes(GetKey(id));
 }
@@ -144,7 +145,7 @@ void StrikeDatabaseIntegratorBase::LimitNumberOfStoredEntries() {
     if (strike_database_->GetPrefixFromKey(key) != GetProjectPrefix()) {
       continue;
     }
-    entries.push_back({key, data.last_update_timestamp()});
+    entries.emplace_back(key, data.last_update_timestamp());
   }
 
   if (entries.size() <= maximum_size) {
@@ -225,7 +226,7 @@ void StrikeDatabaseIntegratorBase::ClearStrikesByIdMatchingAndTime(
   keys_to_delete.reserve(GetStrikeCache().size());
 
   for (auto const& [key, strike_data] : GetStrikeCache()) {
-    std::string strike_id = GetIdFromKey(key);
+    const std::string_view strike_id = GetIdFromKey(key);
     if (strike_id.empty()) {
       continue;
     }
@@ -236,7 +237,7 @@ void StrikeDatabaseIntegratorBase::ClearStrikesByIdMatchingAndTime(
     // Check if the time stamp of the record is within deletion range and if the
     // domain is deleted.
     if (last_update >= delete_begin && last_update <= delete_end &&
-        ids_to_delete.count(id_map(strike_id)) != 0) {
+        ids_to_delete.contains(id_map(std::string(strike_id)))) {
       keys_to_delete.push_back(key);
     }
   }
@@ -249,11 +250,12 @@ void StrikeDatabaseIntegratorBase::ClearStrikesForKeys(
   strike_database_->ClearStrikesForKeys(keys);
 }
 
-std::string StrikeDatabaseIntegratorBase::GetIdFromKey(
-    const std::string& key) const {
-  std::string prefix = GetProjectPrefix() + StrikeDatabaseBase::kKeyDeliminator;
+std::string_view StrikeDatabaseIntegratorBase::GetIdFromKey(
+    std::string_view key) const {
+  std::string prefix =
+      base::StrCat({GetProjectPrefix(), StrikeDatabaseBase::kKeyDeliminator});
   if (!key.starts_with(prefix)) {
-    return std::string();
+    return {};
   }
   return key.substr(prefix.length(), std::string::npos);
 }
@@ -265,7 +267,7 @@ base::TimeDelta StrikeDatabaseIntegratorBase::GetEntryAge(
              base::Microseconds(strike_data.last_update_timestamp()));
 }
 
-std::string StrikeDatabaseIntegratorBase::GetKey(const std::string& id) const {
+std::string StrikeDatabaseIntegratorBase::GetKey(std::string_view id) const {
   return base::StrCat(
       {GetProjectPrefix(), StrikeDatabaseBase::kKeyDeliminator, id});
 }

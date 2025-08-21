@@ -73,6 +73,9 @@ class StrikeDatabase : public StrikeDatabaseBase {
   // Constructor for testing that does not initialize a ProtoDatabase.
   StrikeDatabase();
 
+  // StrikeDatabaseBase:
+  std::map<std::string, StrikeData>& GetStrikeCache() override;
+
   // The persistent ProtoDatabase for storing strike information.
   std::unique_ptr<leveldb_proto::ProtoDatabase<StrikeData>> db_;
 
@@ -85,9 +88,6 @@ class StrikeDatabase : public StrikeDatabaseBase {
 
   // Number of attempts at initializing the ProtoDatabase.
   int num_init_attempts_ = 0;
-
-  // StrikeDatabaseBase:
-  std::map<std::string, StrikeData>& GetStrikeCache() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeBrowsingDataRemoverDelegateTest,
@@ -108,9 +108,9 @@ class StrikeDatabase : public StrikeDatabaseBase {
       bool success,
       std::unique_ptr<std::map<std::string, StrikeData>> entries);
 
-  // Passes the number of strikes for |key| to |outer_callback|. In the case
+  // Passes the number of strikes for `key` to `outer_callback`. In the case
   // that the database fails to retrieve the strike update or if no entry is
-  // found for |key|, 0 is passed.
+  // found for `key`, 0 is passed.
   virtual void GetProtoStrikes(const std::string& key,
                                const StrikesCallback& outer_callback);
 
@@ -118,29 +118,29 @@ class StrikeDatabase : public StrikeDatabaseBase {
   // the next time the cache is recreated from the underlying ProtoDatabase.
   virtual void ClearAllProtoStrikes(const ClearStrikesCallback& outer_callback);
 
-  // Removes database entry for |key|, which ensures there will be no saved
+  // Removes database entry for `key`, which ensures there will be no saved
   // strikes the next time the cache is recreated from the underlying
   // ProtoDatabase.
   virtual void ClearAllProtoStrikesForKey(
       const std::string& key,
       const ClearStrikesCallback& outer_callback);
 
-  // Same as |ClearAllProtoStrikesForKey()| but for a vector of |keys|.
+  // Same as `ClearAllProtoStrikesForKey()` but for a vector of `keys`.
   virtual void ClearAllProtoStrikesForKeys(
       const std::vector<std::string>& keys,
       const ClearStrikesCallback& outer_callback);
 
-  // Passes success status and StrikeData entry for |key| to |inner_callback|.
+  // Passes success status and StrikeData entry for `key` to `inner_callback`.
   void GetProtoStrikeData(const std::string& key,
                           const GetValueCallback& inner_callback);
 
-  // Sets the entry for |key| to |strike_data|. Success status is passed to the
+  // Sets the entry for `key` to `strike_data`. Success status is passed to the
   // callback.
   void SetProtoStrikeData(const std::string& key,
                           const StrikeData& strike_data,
                           const SetValueCallback& inner_callback);
 
-  // Passes number of strikes to |outer_callback|.
+  // Passes number of strikes to `outer_callback`.
   static void OnGetProtoStrikes(StrikesCallback outer_callback,
                                 bool success,
                                 std::unique_ptr<StrikeData> strike_data);
@@ -148,7 +148,7 @@ class StrikeDatabase : public StrikeDatabaseBase {
   // Exposed for testing purposes.
   void LoadKeys(const LoadKeysCallback& callback);
 
-  // Sets the entry for |key| in |strike_map_cache_| to |data|.
+  // Sets the entry for `key` in `strike_map_cache_` to `data`.
   void UpdateCache(const std::string& key, const StrikeData& data);
 
   base::WeakPtrFactory<StrikeDatabase> weak_ptr_factory_{this};

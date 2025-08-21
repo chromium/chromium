@@ -10,8 +10,4 @@ StrikeDatabaseBase::StrikeDatabaseBase() = default;
 
 StrikeDatabaseBase::~StrikeDatabaseBase() = default;
 
-std::string StrikeDatabaseBase::KeyDeliminator() {
-  return kKeyDeliminator;
-}
-
 }  // namespace autofill

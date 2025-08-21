@@ -23,7 +23,7 @@ int TestInMemoryStrikeDatabase::AddStrikes(int strikes_increase,
                                            const std::string& key) {
   DCHECK_GT(strikes_increase, 0);
   int num_strikes =
-      strike_map_cache_.count(key)  // Cache has entry for |key|.
+      strike_map_cache_.contains(key)
           ? strike_map_cache_[key].num_strikes() + strikes_increase
           : strikes_increase;
   SetStrikeData(key, num_strikes);
