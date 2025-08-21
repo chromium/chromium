@@ -366,7 +366,7 @@ LocationBar* WebUIBrowserWindow::GetLocationBar() const {
   return location_bar_.get();
 }
 
-void WebUIBrowserWindow::SetFocusToLocationBar(bool select_all) {
+void WebUIBrowserWindow::SetFocusToLocationBar(bool is_user_initiated) {
   NOTIMPLEMENTED();
 }
 
