@@ -45,6 +45,12 @@ void SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
 
   window.CountUse(WebFeature::kSpeculationRulesHeader);
 
+  // Only process speculation rules for main frame documents, since speculation
+  // rules only work for top-level navigations.
+  if (!window.GetFrame() || !window.GetFrame()->IsMainFrame()) {
+    return;
+  }
+
   SpeculationRulesHeader self;
   self.ParseSpeculationRulesHeader(header_value, window.BaseURL());
   self.ReportErrors(window);
