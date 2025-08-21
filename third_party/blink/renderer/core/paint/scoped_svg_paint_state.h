@@ -62,10 +62,13 @@ class ScopedSVGPaintState {
   // Flags representing the components that should be painted for an SVG layout
   // object.
   enum class PaintComponent {
-    // Set if the SVG object has visible content (shapes or an image for leaf
-    // objects, children for containers, etc.) to paint. When this flag is not
-    // set, the object has no visible content to paint but may still have a
-    // reference filter.
+    // Set if the SVG object has visible content (non-visibility hidden shapes
+    // or an image for leaf objects, children for containers, etc.) to paint.
+    // When this flag is not set, the object has no visible content to paint
+    // but may still have a reference filter. Note that this is different from
+    // the spec concept of "disabled rendering" which should be handled before
+    // PaintComponent usage in the paint pipeline and can also disable filter
+    // painting.
     kContent,
 
     // Set if the SVG object may have a reference filter to paint. Note that
@@ -96,8 +99,10 @@ class ScopedSVGPaintState {
   // Returns the PaintBehavior for the given object and paint info. Pass
   // `has_content` as true if the object has visible content (e.g. leaf object
   // with a visible shape or image, container with children). Filters applied to
-  // the object do not count as content and are handled separately. See
-  // `PaintComponent` enum for details.
+  // the object do not count as content and are handled separately. Note that
+  // the spec concept of "disabled rendering" is not the same as has_content ==
+  // false and should be handled earlier in the painting pipeline. See
+  // `PaintComponent` enum for more details.
   static PaintBehavior ComputePaintBehavior(const LayoutObject& object,
                                             const PaintInfo& paint_info,
                                             bool has_content);

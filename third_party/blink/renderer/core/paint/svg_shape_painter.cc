@@ -41,14 +41,16 @@ static std::optional<AffineTransform> SetupNonScalingStrokeContext(
 }
 
 void SVGShapePainter::Paint(const PaintInfo& paint_info) {
-  if (paint_info.phase != PaintPhase::kForeground) {
+  // SVG specs (2 and 1.1) specify that shapes with widths or radius of zero, or
+  // empty paths, should disable rendering.
+  if (paint_info.phase != PaintPhase::kForeground ||
+      layout_svg_shape_.IsShapeEmpty()) {
     return;
   }
 
   auto paint_behavior = ScopedSVGPaintState::ComputePaintBehavior(
       layout_svg_shape_, paint_info,
-      layout_svg_shape_.StyleRef().Visibility() == EVisibility::kVisible &&
-          !layout_svg_shape_.IsShapeEmpty());
+      layout_svg_shape_.StyleRef().Visibility() == EVisibility::kVisible);
 
   if (paint_behavior.empty()) {
     return;

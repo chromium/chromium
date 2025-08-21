@@ -39,14 +39,14 @@ ImagePaintTimingInfo ComputeImagePaintTimingInfo(
 }  // namespace
 
 void SVGImagePainter::Paint(const PaintInfo& paint_info) {
-  if (paint_info.phase != PaintPhase::kForeground) {
+  if (paint_info.phase != PaintPhase::kForeground ||
+      !layout_svg_image_.ImageResource()->HasImage()) {
     return;
   }
 
   auto paint_behavior = ScopedSVGPaintState::ComputePaintBehavior(
       layout_svg_image_, paint_info,
-      layout_svg_image_.StyleRef().Visibility() == EVisibility::kVisible &&
-          layout_svg_image_.ImageResource()->HasImage());
+      layout_svg_image_.StyleRef().Visibility() == EVisibility::kVisible);
 
   if (paint_behavior.empty()) {
     return;
