@@ -143,7 +143,6 @@ class BiquadProcessor final {
   bool IsInitialized() const { return is_initialized_; }
 
   double TailTime() const;
-  bool RequiresTailProcessing() const;
 
   void SetNumberOfChannels(unsigned);
   unsigned NumberOfChannels() const { return number_of_channels_; }
@@ -162,10 +161,12 @@ class BiquadProcessor final {
   bool HasSampleAccurateValues() const { return has_sample_accurate_values_; }
   bool IsAudioRate() const { return is_audio_rate_; }
 
-  AudioParamHandler& Parameter1() { return *parameter1_; }
-  AudioParamHandler& Parameter2() { return *parameter2_; }
-  AudioParamHandler& Parameter3() { return *parameter3_; }
-  AudioParamHandler& Parameter4() { return *parameter4_; }
+  AudioParamHandler& ParameterCutoffFrequency() {
+    return *parameter_cutoff_frequency_;
+  }
+  AudioParamHandler& ParameterQ() { return *parameter_q_; }
+  AudioParamHandler& ParameterGain() { return *parameter_gain_; }
+  AudioParamHandler& ParameterDetune() { return *parameter_detune_; }
 
   V8BiquadFilterType::Enum Type() const { return type_; }
   void SetType(V8BiquadFilterType::Enum type);
@@ -173,10 +174,10 @@ class BiquadProcessor final {
  private:
   V8BiquadFilterType::Enum type_ = V8BiquadFilterType::Enum::kLowpass;
 
-  scoped_refptr<AudioParamHandler> parameter1_;
-  scoped_refptr<AudioParamHandler> parameter2_;
-  scoped_refptr<AudioParamHandler> parameter3_;
-  scoped_refptr<AudioParamHandler> parameter4_;
+  scoped_refptr<AudioParamHandler> parameter_cutoff_frequency_;
+  scoped_refptr<AudioParamHandler> parameter_q_;
+  scoped_refptr<AudioParamHandler> parameter_gain_;
+  scoped_refptr<AudioParamHandler> parameter_detune_;
 
   // so DSP kernels know when to re-compute coefficients
   bool are_filter_coefficients_dirty_ = true;
@@ -191,10 +192,11 @@ class BiquadProcessor final {
 
   // Cache previous parameter values to allow us to skip recomputing filter
   // coefficients when parameters are not changing
-  float previous_parameter1_ = std::numeric_limits<float>::quiet_NaN();
-  float previous_parameter2_ = std::numeric_limits<float>::quiet_NaN();
-  float previous_parameter3_ = std::numeric_limits<float>::quiet_NaN();
-  float previous_parameter4_ = std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter_cutoff_frequency_ =
+      std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter_q_ = std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter_gain_ = std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter_detune_ = std::numeric_limits<float>::quiet_NaN();
 
   bool is_initialized_ = false;
   unsigned number_of_channels_;
@@ -221,11 +223,7 @@ class BiquadDSPKernel final {
 
   // AudioDSPKernel
   void Process(const float* source, float* dest, uint32_t frames_to_process);
-  void ProcessOnlyAudioParams(uint32_t frames_to_process) {}
   void Reset() { biquad_.Reset(); }
-
-  BiquadProcessor* Processor() { return kernel_processor_; }
-  const BiquadProcessor* Processor() const { return kernel_processor_; }
 
   // Get the magnitude and phase response of the given BiquadDSPKernel at the
   // given set of frequencies (in Hz). The phase response is in radians.  This
@@ -234,28 +232,15 @@ class BiquadDSPKernel final {
                             base::span<float> mag_response,
                             base::span<float> phase_response) const;
 
-  bool RequiresTailProcessing() const;
   double TailTime() const;
   // Update the biquad coefficients with the given parameters
-  void UpdateCoefficients(
-      int spanification_suspected_redundant_number_of_frames,
-      base::span<const float> frequency,
-      base::span<const float> q,
-      base::span<const float> gain,
-      base::span<const float> detune);
+  void UpdateCoefficients(int spanification_suspected_redundant_frames,
+                          base::span<const float> frequency,
+                          base::span<const float> q,
+                          base::span<const float> gain,
+                          base::span<const float> detune);
 
  private:
-  BiquadProcessor* GetBiquadProcessor() {
-    return static_cast<BiquadProcessor*>(Processor());
-  }
-
-  void UpdateCoefficientsIfNecessary(int)
-      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
-
-  // Compute the tail time using the BiquadFilter coefficients at
-  // index `coef_index`.
-  void UpdateTailTime(int coef_index);
-
   Biquad biquad_;
 
   // Synchronize process() with getting and setting the filter coefficients.
@@ -272,75 +257,22 @@ class BiquadDSPKernel final {
   const unsigned render_quantum_frames_;
 };
 
-void BiquadDSPKernel::UpdateCoefficientsIfNecessary(int frames_to_process) {
-  if (GetBiquadProcessor()->AreFilterCoefficientsDirty()) {
-    // TODO(crbug.com/40637820): Eventually, the render quantum size will no
-    // longer be hardcoded as 128. At that point, we'll need to switch from
-    // stack allocation to heap allocation.
-    CHECK_EQ(render_quantum_frames_, kRenderQuantumFramesExpected);
-    float cutoff_frequency[kRenderQuantumFramesExpected];
-    float q[kRenderQuantumFramesExpected];
-    float gain[kRenderQuantumFramesExpected];
-    float detune[kRenderQuantumFramesExpected];  // in Cents
-
-    SECURITY_CHECK(static_cast<unsigned>(frames_to_process) <=
-                   render_quantum_frames_);
-
-    if (GetBiquadProcessor()->HasSampleAccurateValues() &&
-        GetBiquadProcessor()->IsAudioRate()) {
-      GetBiquadProcessor()->Parameter1().CalculateSampleAccurateValues(
-          base::span(cutoff_frequency)
-              .first(static_cast<size_t>(frames_to_process)));
-      GetBiquadProcessor()->Parameter2().CalculateSampleAccurateValues(
-          base::span(q).first(static_cast<size_t>(frames_to_process)));
-      GetBiquadProcessor()->Parameter3().CalculateSampleAccurateValues(
-          base::span(gain).first(static_cast<size_t>(frames_to_process)));
-      GetBiquadProcessor()->Parameter4().CalculateSampleAccurateValues(
-          base::span(detune).first(static_cast<size_t>(frames_to_process)));
-
-      // If all the values are actually constant for this render (or the
-      // automation rate is "k-rate" for all of the AudioParams), we don't need
-      // to compute filter coefficients for each frame since they would be the
-      // same as the first.
-      bool is_constant =
-          HasConstantValues(cutoff_frequency, frames_to_process) &&
-          HasConstantValues(q, frames_to_process) &&
-          HasConstantValues(gain, frames_to_process) &&
-          HasConstantValues(detune, frames_to_process);
-      size_t needed_frames = is_constant ? 1 : frames_to_process;
-      UpdateCoefficients(needed_frames,
-                         base::span(cutoff_frequency).first(needed_frames),
-                         base::span(q).first(needed_frames),
-                         base::span(gain).first(needed_frames),
-                         base::span(detune).first(needed_frames));
-    } else {
-      cutoff_frequency[0] = GetBiquadProcessor()->Parameter1().FinalValue();
-      q[0] = GetBiquadProcessor()->Parameter2().FinalValue();
-      gain[0] = GetBiquadProcessor()->Parameter3().FinalValue();
-      detune[0] = GetBiquadProcessor()->Parameter4().FinalValue();
-      UpdateCoefficients(1, base::span(cutoff_frequency).first(1u),
-                         base::span(q).first(1u), base::span(gain).first(1u),
-                         base::span(detune).first(1u));
-    }
-  }
-}
-
 void BiquadDSPKernel::UpdateCoefficients(
-    int spanification_suspected_redundant_number_of_frames,
+    int spanification_suspected_redundant_frames,
     base::span<const float> cutoff_frequency,
     base::span<const float> q,
     base::span<const float> gain,
     base::span<const float> detune) {
   // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
   // redundant in M143.
-  CHECK(spanification_suspected_redundant_number_of_frames ==
+  CHECK(spanification_suspected_redundant_frames ==
             static_cast<int>(cutoff_frequency.size()),
         base::NotFatalUntil::M143);
   // Convert from Hertz to normalized frequency 0 -> 1.
-  biquad_.SetHasSampleAccurateValues(
-      spanification_suspected_redundant_number_of_frames > 1);
+  biquad_.SetHasSampleAccurateValues(spanification_suspected_redundant_frames >
+                                     1);
 
-  for (int k = 0; k < spanification_suspected_redundant_number_of_frames; ++k) {
+  for (int k = 0; k < spanification_suspected_redundant_frames; ++k) {
     double normalized_frequency = cutoff_frequency[k] / nyquist_;
 
     // Offset frequency by detune.
@@ -351,7 +283,7 @@ void BiquadDSPKernel::UpdateCoefficients(
 
     // Configure the biquad with the new filter parameters for the appropriate
     // type of filter.
-    switch (GetBiquadProcessor()->Type()) {
+    switch (kernel_processor_->Type()) {
       case V8BiquadFilterType::Enum::kLowpass:
         biquad_.SetLowpassParams(k, normalized_frequency, q[k]);
         break;
@@ -386,11 +318,8 @@ void BiquadDSPKernel::UpdateCoefficients(
     }
   }
 
-  UpdateTailTime(spanification_suspected_redundant_number_of_frames - 1);
-}
-
-void BiquadDSPKernel::UpdateTailTime(int coef_index) {
-  double tail =
+  const int coef_index = spanification_suspected_redundant_frames - 1;
+  const double tail =
       biquad_.TailFrame(coef_index, kMaxTailTime * sample_rate_) / sample_rate_;
 
   tail_time_ = ClampTo(tail, 0.0, kMaxTailTime);
@@ -401,7 +330,7 @@ void BiquadDSPKernel::Process(const float* source,
                               uint32_t frames_to_process) {
   DCHECK(source);
   DCHECK(destination);
-  DCHECK(GetBiquadProcessor());
+  DCHECK(kernel_processor_);
 
   // Recompute filter coefficients if any of the parameters have changed.
   // FIXME: as an optimization, implement a way that a Biquad object can simply
@@ -414,7 +343,59 @@ void BiquadDSPKernel::Process(const float* source,
   {
     base::AutoTryLock try_locker(process_lock_);
     if (try_locker.is_acquired()) {
-      UpdateCoefficientsIfNecessary(frames_to_process);
+      if (kernel_processor_->AreFilterCoefficientsDirty()) {
+        // TODO(crbug.com/40637820): Eventually, the render quantum size will no
+        // longer be hardcoded as 128. At that point, we'll need to switch from
+        // stack allocation to heap allocation.
+        CHECK_EQ(render_quantum_frames_, kRenderQuantumFramesExpected);
+        float cutoff_frequency[kRenderQuantumFramesExpected];
+        float q[kRenderQuantumFramesExpected];
+        float gain[kRenderQuantumFramesExpected];
+        float detune[kRenderQuantumFramesExpected];  // in Cents
+
+        SECURITY_CHECK(static_cast<unsigned>(frames_to_process) <=
+                       render_quantum_frames_);
+
+        if (kernel_processor_->HasSampleAccurateValues() &&
+            kernel_processor_->IsAudioRate()) {
+          kernel_processor_->ParameterCutoffFrequency()
+              .CalculateSampleAccurateValues(
+                  base::span(cutoff_frequency)
+                      .first(static_cast<size_t>(frames_to_process)));
+          kernel_processor_->ParameterQ().CalculateSampleAccurateValues(
+              base::span(q).first(static_cast<size_t>(frames_to_process)));
+          kernel_processor_->ParameterGain().CalculateSampleAccurateValues(
+              base::span(gain).first(static_cast<size_t>(frames_to_process)));
+          kernel_processor_->ParameterDetune().CalculateSampleAccurateValues(
+              base::span(detune).first(static_cast<size_t>(frames_to_process)));
+
+          // If all the values are actually constant for this render (or the
+          // automation rate is "k-rate" for all of the AudioParams), we don't
+          // need to compute filter coefficients for each frame since they would
+          // be the same as the first.
+          bool is_constant =
+              HasConstantValues(cutoff_frequency, frames_to_process) &&
+              HasConstantValues(q, frames_to_process) &&
+              HasConstantValues(gain, frames_to_process) &&
+              HasConstantValues(detune, frames_to_process);
+          size_t needed_frames = is_constant ? 1 : frames_to_process;
+          UpdateCoefficients(needed_frames,
+                             base::span(cutoff_frequency).first(needed_frames),
+                             base::span(q).first(needed_frames),
+                             base::span(gain).first(needed_frames),
+                             base::span(detune).first(needed_frames));
+        } else {
+          cutoff_frequency[0] =
+              kernel_processor_->ParameterCutoffFrequency().FinalValue();
+          q[0] = kernel_processor_->ParameterQ().FinalValue();
+          gain[0] = kernel_processor_->ParameterGain().FinalValue();
+          detune[0] = kernel_processor_->ParameterDetune().FinalValue();
+          UpdateCoefficients(1, base::span(cutoff_frequency).first(1u),
+                             base::span(q).first(1u),
+                             base::span(gain).first(1u),
+                             base::span(detune).first(1u));
+        }
+      }
     }
   }
 
@@ -444,15 +425,6 @@ void BiquadDSPKernel::GetFrequencyResponse(
   biquad_.GetFrequencyResponse(frequency, mag_response, phase_response);
 }
 
-bool BiquadDSPKernel::RequiresTailProcessing() const {
-  // Always return true even if the tail time and latency might both
-  // be zero. This is for simplicity and because TailTime() is 0
-  // basically only when the filter response H(z) = 0 or H(z) = 1. And
-  // it's ok to return true. It just means the node lives a little
-  // longer than strictly necessary.
-  return true;
-}
-
 double BiquadDSPKernel::TailTime() const {
   return tail_time_;
 }
@@ -464,10 +436,10 @@ BiquadProcessor::BiquadProcessor(float sample_rate,
                                  AudioParamHandler& q,
                                  AudioParamHandler& gain,
                                  AudioParamHandler& detune)
-    : parameter1_(&frequency),
-      parameter2_(&q),
-      parameter3_(&gain),
-      parameter4_(&detune),
+    : parameter_cutoff_frequency_(&frequency),
+      parameter_q_(&q),
+      parameter_gain_(&gain),
+      parameter_detune_(&detune),
       number_of_channels_(number_of_channels),
       sample_rate_(sample_rate),
       render_quantum_frames_(render_quantum_frames) {}
@@ -490,42 +462,47 @@ void BiquadProcessor::CheckForDirtyCoefficients() {
   are_filter_coefficients_dirty_ = false;
   has_sample_accurate_values_ = false;
 
-  if (parameter1_->HasSampleAccurateValues() ||
-      parameter2_->HasSampleAccurateValues() ||
-      parameter3_->HasSampleAccurateValues() ||
-      parameter4_->HasSampleAccurateValues()) {
+  if (parameter_cutoff_frequency_->HasSampleAccurateValues() ||
+      parameter_q_->HasSampleAccurateValues() ||
+      parameter_gain_->HasSampleAccurateValues() ||
+      parameter_detune_->HasSampleAccurateValues()) {
     // Coefficients are dirty if any of them has automations or if there are
     // connections to the AudioParam.
     are_filter_coefficients_dirty_ = true;
     has_sample_accurate_values_ = true;
     // If any parameter is a-rate, then the filter must do a-rate processing for
     // everything.
-    is_audio_rate_ = parameter1_->IsAudioRate() || parameter2_->IsAudioRate() ||
-                     parameter3_->IsAudioRate() || parameter4_->IsAudioRate();
+    is_audio_rate_ = parameter_cutoff_frequency_->IsAudioRate() ||
+                     parameter_q_->IsAudioRate() ||
+                     parameter_gain_->IsAudioRate() ||
+                     parameter_detune_->IsAudioRate();
   } else {
     if (has_just_reset_) {
       // Snap to exact values first time after reset
-      previous_parameter1_ = std::numeric_limits<float>::quiet_NaN();
-      previous_parameter2_ = std::numeric_limits<float>::quiet_NaN();
-      previous_parameter3_ = std::numeric_limits<float>::quiet_NaN();
-      previous_parameter4_ = std::numeric_limits<float>::quiet_NaN();
+      previous_parameter_cutoff_frequency_ =
+          std::numeric_limits<float>::quiet_NaN();
+      previous_parameter_q_ = std::numeric_limits<float>::quiet_NaN();
+      previous_parameter_gain_ = std::numeric_limits<float>::quiet_NaN();
+      previous_parameter_detune_ = std::numeric_limits<float>::quiet_NaN();
       are_filter_coefficients_dirty_ = true;
       has_just_reset_ = false;
     } else {
       // If filter parameters have changed then mark coefficients as dirty.
-      const float parameter1_final = parameter1_->FinalValue();
-      const float parameter2_final = parameter2_->FinalValue();
-      const float parameter3_final = parameter3_->FinalValue();
-      const float parameter4_final = parameter4_->FinalValue();
-      if ((previous_parameter1_ != parameter1_final) ||
-          (previous_parameter2_ != parameter2_final) ||
-          (previous_parameter3_ != parameter3_final) ||
-          (previous_parameter4_ != parameter4_final)) {
+      const float parameter_cutoff_frequency_final =
+          parameter_cutoff_frequency_->FinalValue();
+      const float parameter_q_final = parameter_q_->FinalValue();
+      const float parameter_gain_final = parameter_gain_->FinalValue();
+      const float parameter_detune_final = parameter_detune_->FinalValue();
+      if ((previous_parameter_cutoff_frequency_ !=
+           parameter_cutoff_frequency_final) ||
+          (previous_parameter_q_ != parameter_q_final) ||
+          (previous_parameter_gain_ != parameter_gain_final) ||
+          (previous_parameter_detune_ != parameter_detune_final)) {
         are_filter_coefficients_dirty_ = true;
-        previous_parameter1_ = parameter1_final;
-        previous_parameter2_ = parameter2_final;
-        previous_parameter3_ = parameter3_final;
-        previous_parameter4_ = parameter4_final;
+        previous_parameter_cutoff_frequency_ = parameter_cutoff_frequency_final;
+        previous_parameter_q_ = parameter_q_final;
+        previous_parameter_gain_ = parameter_gain_final;
+        previous_parameter_detune_ = parameter_detune_final;
       }
     }
   }
@@ -597,13 +574,13 @@ void BiquadProcessor::ProcessOnlyAudioParams(uint32_t frames_to_process) {
 
   float values[kRenderQuantumFramesExpected];
 
-  parameter1_->CalculateSampleAccurateValues(
+  parameter_cutoff_frequency_->CalculateSampleAccurateValues(
       base::span(values).first(frames_to_process));
-  parameter2_->CalculateSampleAccurateValues(
+  parameter_q_->CalculateSampleAccurateValues(
       base::span(values).first(frames_to_process));
-  parameter3_->CalculateSampleAccurateValues(
+  parameter_gain_->CalculateSampleAccurateValues(
       base::span(values).first(frames_to_process));
-  parameter4_->CalculateSampleAccurateValues(
+  parameter_detune_->CalculateSampleAccurateValues(
       base::span(values).first(frames_to_process));
 }
 
@@ -628,11 +605,6 @@ void BiquadProcessor::SetNumberOfChannels(unsigned number_of_channels) {
 
   DCHECK(!IsInitialized());
   number_of_channels_ = number_of_channels;
-}
-
-bool BiquadProcessor::RequiresTailProcessing() const {
-  // Always return true even if the tail time and latency might both be zero.
-  return true;
 }
 
 double BiquadProcessor::TailTime() const {
@@ -681,10 +653,10 @@ void BiquadProcessor::GetFrequencyResponse(base::span<const float> frequency_hz,
     // around, it it were blocked.
     base::AutoLock process_locker(process_lock_);
 
-    cutoff_frequency = Parameter1().Value();
-    q = Parameter2().Value();
-    gain = Parameter3().Value();
-    detune = Parameter4().Value();
+    cutoff_frequency = parameter_cutoff_frequency_->Value();
+    q = parameter_q_->Value();
+    gain = parameter_gain_->Value();
+    detune = parameter_detune_->Value();
   }
 
   response_kernel->UpdateCoefficients(
@@ -857,7 +829,12 @@ void BiquadFilterHandler::SetType(V8BiquadFilterType::Enum type) {
 }
 
 bool BiquadFilterHandler::RequiresTailProcessing() const {
-  return processor_->RequiresTailProcessing();
+  // Always return true even if the tail time and latency might both
+  // be zero. This is for simplicity and because TailTime() is 0
+  // basically only when the filter response H(z) = 0 or H(z) = 1. And
+  // it's ok to return true. It just means the node lives a little
+  // longer than strictly necessary.
+  return true;
 }
 
 double BiquadFilterHandler::TailTime() const {
