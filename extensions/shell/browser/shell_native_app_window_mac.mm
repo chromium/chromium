@@ -111,7 +111,7 @@ void ShellNativeAppWindowMac::SetBounds(const gfx::Rect& bounds) {
 
 gfx::Size ShellNativeAppWindowMac::GetContentMinimumSize() const {
   // Content fills the display and cannot be resized.
-  return display::Screen::GetScreen()->GetPrimaryDisplay().bounds().size();
+  return display::Screen::Get()->GetPrimaryDisplay().bounds().size();
 }
 
 gfx::Size ShellNativeAppWindowMac::GetContentMaximumSize() const {

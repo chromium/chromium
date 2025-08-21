@@ -124,7 +124,7 @@ void DisplayInfoProvider::GetAllDisplaysInfo(
     bool /* single_unified*/,
     base::OnceCallback<void(DisplayUnitInfoList result)> callback) {
   const display::Screen* screen =
-      provided_screen_ ? provided_screen_.get() : display::Screen::GetScreen();
+      provided_screen_ ? provided_screen_.get() : display::Screen::Get();
   int64_t primary_id = screen->GetPrimaryDisplay().id();
   std::vector<display::Display> displays = screen->GetAllDisplays();
   base::ThreadPool::PostTaskAndReplyWithResult(
