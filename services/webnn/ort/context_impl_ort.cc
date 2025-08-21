@@ -158,7 +158,6 @@ ContextProperties ContextImplOrt::GetContextProperties(
        /*log_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*neg_input=*/{DataTypeConstraint::kFloat16To32Int8To64, kMaxRank},
        /*reciprocal_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*round_even_input*/ {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*sign_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*sin_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*sqrt_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},

@@ -212,7 +212,6 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits log;
   MLSingleInputSupportLimits neg;
   MLSingleInputSupportLimits reciprocal;
-  MLSingleInputSupportLimits roundEven;
   MLSingleInputSupportLimits sign;
   MLSingleInputSupportLimits sin;
   MLSingleInputSupportLimits sqrt;

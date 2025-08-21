@@ -316,7 +316,6 @@ struct ElementWiseUnary {
     kLog,
     kNeg,
     kSign,
-    kRoundEven,
     kSin,
     kTan,
     kLogicalNot,

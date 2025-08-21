@@ -119,8 +119,6 @@ String MLOperator::OperatorKindToString(
           return "log";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kNeg:
           return "neg";
-        case webnn::mojom::blink::ElementWiseUnary::Kind::kRoundEven:
-          return "roundEven";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kSign:
           return "sign";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kSin:

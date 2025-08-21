@@ -186,9 +186,8 @@ enum class MLGraphOperatorUma {
   kWhere = 90,
   kReverse = 91,
   kNotEqual = 92,
-  kRoundEven = 93,
   kMinValue = kGraphBuilt,
-  kMaxValue = kRoundEven,
+  kMaxValue = kNotEqual,
 };
 
 using MLGraphOperatorUmaSet = base::EnumSet<MLGraphOperatorUma,
@@ -280,8 +279,6 @@ MLGraphOperatorUma GetUmaValueForOperation(
           return MLGraphOperatorUma::kNeg;
         case blink_mojom::ElementWiseUnary::Kind::kReciprocal:
           return MLGraphOperatorUma::kReciprocal;
-        case blink_mojom::ElementWiseUnary::Kind::kRoundEven:
-          return MLGraphOperatorUma::kRoundEven;
         case blink_mojom::ElementWiseUnary::Kind::kSign:
           return MLGraphOperatorUma::kSign;
         case blink_mojom::ElementWiseUnary::Kind::kSin:
@@ -2036,33 +2033,31 @@ BUILD_ELEMENTWISE_BINARY_OP(logicalAnd, logical_and, kLogicalAnd)
 BUILD_ELEMENTWISE_BINARY_OP(logicalOr, logical_or, kLogicalOr)
 BUILD_ELEMENTWISE_BINARY_OP(logicalXor, logical_xor, kLogicalXor)
 
-#define BUILD_ELEMENTWISE_UNARY_OP(op_camel, op_snake, op_kind)                \
-  MLOperand* MLGraphBuilder::op_camel(MLOperand* input,                        \
-                                      MLOperatorOptions* options,              \
-                                      ExceptionState& exception_state) {       \
-    THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);           \
-    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);             \
-    return BuildElementWiseUnaryOperator(                                      \
-        this, exception_state, blink_mojom::ElementWiseUnary::Kind::op_kind,   \
-        ml_context_->GetProperties().data_type_limits.op_snake##_input, input, \
-        options);                                                              \
+#define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind)                               \
+  MLOperand* MLGraphBuilder::op(MLOperand* input, MLOperatorOptions* options, \
+                                ExceptionState& exception_state) {            \
+    THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);          \
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);            \
+    return BuildElementWiseUnaryOperator(                                     \
+        this, exception_state, blink_mojom::ElementWiseUnary::Kind::op_kind,  \
+        ml_context_->GetProperties().data_type_limits.op##_input, input,      \
+        options);                                                             \
   }
 
-BUILD_ELEMENTWISE_UNARY_OP(abs, abs, kAbs)
-BUILD_ELEMENTWISE_UNARY_OP(ceil, ceil, kCeil)
-BUILD_ELEMENTWISE_UNARY_OP(cos, cos, kCos)
-BUILD_ELEMENTWISE_UNARY_OP(exp, exp, kExp)
-BUILD_ELEMENTWISE_UNARY_OP(floor, floor, kFloor)
-BUILD_ELEMENTWISE_UNARY_OP(log, log, kLog)
-BUILD_ELEMENTWISE_UNARY_OP(neg, neg, kNeg)
-BUILD_ELEMENTWISE_UNARY_OP(roundEven, round_even, kRoundEven)
-BUILD_ELEMENTWISE_UNARY_OP(sign, sign, kSign)
-BUILD_ELEMENTWISE_UNARY_OP(sin, sin, kSin)
-BUILD_ELEMENTWISE_UNARY_OP(tan, tan, kTan)
-BUILD_ELEMENTWISE_UNARY_OP(erf, erf, kErf)
-BUILD_ELEMENTWISE_UNARY_OP(identity, identity, kIdentity)
-BUILD_ELEMENTWISE_UNARY_OP(reciprocal, reciprocal, kReciprocal)
-BUILD_ELEMENTWISE_UNARY_OP(sqrt, sqrt, kSqrt)
+BUILD_ELEMENTWISE_UNARY_OP(abs, kAbs)
+BUILD_ELEMENTWISE_UNARY_OP(ceil, kCeil)
+BUILD_ELEMENTWISE_UNARY_OP(cos, kCos)
+BUILD_ELEMENTWISE_UNARY_OP(exp, kExp)
+BUILD_ELEMENTWISE_UNARY_OP(floor, kFloor)
+BUILD_ELEMENTWISE_UNARY_OP(log, kLog)
+BUILD_ELEMENTWISE_UNARY_OP(neg, kNeg)
+BUILD_ELEMENTWISE_UNARY_OP(sign, kSign)
+BUILD_ELEMENTWISE_UNARY_OP(sin, kSin)
+BUILD_ELEMENTWISE_UNARY_OP(tan, kTan)
+BUILD_ELEMENTWISE_UNARY_OP(erf, kErf)
+BUILD_ELEMENTWISE_UNARY_OP(identity, kIdentity)
+BUILD_ELEMENTWISE_UNARY_OP(reciprocal, kReciprocal)
+BUILD_ELEMENTWISE_UNARY_OP(sqrt, kSqrt)
 
 MLOperand* MLGraphBuilder::logicalNot(MLOperand* input,
                                       MLOperatorOptions* options,

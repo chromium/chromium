@@ -118,7 +118,6 @@ struct DataTypeLimits {
   SupportedTensors log_input;
   SupportedTensors neg_input;
   SupportedTensors reciprocal_input;
-  SupportedTensors round_even_input;
   SupportedTensors sign_input;
   SupportedTensors sin_input;
   SupportedTensors sqrt_input;

@@ -55,7 +55,6 @@ constexpr base::cstring_view kOpTypeFloor = "Floor";
 constexpr base::cstring_view kOpTypeLog = "Log";
 constexpr base::cstring_view kOpTypeLogicalNot = "Not";
 constexpr base::cstring_view kOpTypeNeg = "Neg";
-constexpr base::cstring_view kOpTypeRoundEven = "Round";
 constexpr base::cstring_view kOpTypeSign = "Sign";
 constexpr base::cstring_view kOpTypeSin = "Sin";
 constexpr base::cstring_view kOpTypeTan = "Tan";
@@ -1455,10 +1454,6 @@ void GraphBuilderOrt::AddElementWiseUnaryOperation(
     case mojom::ElementWiseUnary::Kind::kNeg: {
       CHECK(data_type_limits.neg_input.Supports(input_descriptor));
       return AddUnaryOperation(element_wise_unary, kOpTypeNeg);
-    }
-    case mojom::ElementWiseUnary::Kind::kRoundEven: {
-      CHECK(data_type_limits.round_even_input.Supports(input_descriptor));
-      return AddUnaryOperation(element_wise_unary, kOpTypeRoundEven);
     }
     case mojom::ElementWiseUnary::Kind::kSign: {
       CHECK(data_type_limits.sign_input.Supports(input_descriptor));

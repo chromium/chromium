@@ -337,8 +337,6 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32Int8To64);
   backend_context_properties.data_type_limits.reciprocal_input.data_types
       .RetainAll(DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.round_even_input.data_types
-      .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.sign_input.data_types.RetainAll(
       DataTypeConstraint::kFloat16To32Int8To64);
   backend_context_properties.data_type_limits.sin_input.data_types.RetainAll(

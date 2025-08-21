@@ -241,10 +241,6 @@ ContextProperties ContextImplDml::GetProperties(
        /*reciprocal_input=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
 
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_round_operator_desc#tensor-support
-       /*round_even_input*/
-       {DataTypeConstraint::kFloat16To32, kMaxRank},
-
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_sign_operator_desc#tensor-support
        /*sign_input=*/
        {DataTypeConstraint::kFloat16To32Int8To32, kMaxRank},
