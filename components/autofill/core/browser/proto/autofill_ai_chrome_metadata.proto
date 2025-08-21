@@ -1,0 +1,52 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package autofill;
+
+option optimize_for = LITE_RUNTIME;
+
+// Represents the internal metadata contained in a single `EntityInstance`
+// object for a given `(attribute_type, field_type)` pair.
+//
+// E.g. Assume we have the following structure for a `kVehicleOwner` attribute:
+// - NAME_FULL: (value: John G. Doe), (status: kParsed)
+// - NAME_FIRST: (value: John), (status: kObserved)
+// - NAME_MIDDLE: (value: G.), (status: kObserved)
+// - NAME_LAST: (value: Doe), (status: kObserved)
+//
+// Then this attribute will contribute the following four
+// ChromeValuablesMetadataEntries:
+//
+// - ("kVehicleOwner", int(NAME_FULL), "John G. Doe", int(kParsed))
+// - ("kVehicleOwner", int(NAME_FIRST), "John", int(kObserved))
+// - ("kVehicleOwner", int(NAME_MIDDLE), "G.", int(kObserved))
+// - ("kVehicleOwner", int(NAME_LAST), "Doe", int(kObserved))
+message ChromeValuablesMetadataEntry {
+  // The integer representation of the `AttributeTypeName` of the
+  // `AttributeInstance` being partially described in the entry.
+  optional string attribute_type = 1;
+
+  // The integer representation of the `FieldType` that represents the partial
+  // information described by the entry.
+  optional int32 field_type = 2;
+
+  // The value of the `AttributeInstance` being partially described in the
+  // entry for the current `attribute_type` and `field_type`.
+  optional string value = 3;
+
+  // The integer representation of the `VerificationStatus` of the
+  // `AttributeInstance` being partially described in the entry for the current
+  // `attribute_type` and `field_type`.
+  optional int32 verification_status = 4;
+};
+
+// Represents the collection of structured information needed in order to
+// accurately build an `EntityInstance`.
+message ChromeValuablesMetadata {
+  // A list of `ChromeValuablesMetadataEntry`'s that will represent all
+  // structured attributes of the `EntityInstance` being described.
+  repeated ChromeValuablesMetadataEntry metadata_entries = 1;
+};
