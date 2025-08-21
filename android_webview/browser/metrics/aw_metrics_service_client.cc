@@ -152,31 +152,35 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
   file_metrics_provider->RegisterSource(browser_metrics_params,
                                         metrics_reporting_enabled);
 
+  // WebView never configured Crashpad to actually create these metrics files,
+  // so it's not useful to try to upload them.
+  // TODO(crbug.com/440359722): decide if we want these metrics and either
+  // configure Crashpad appropriately or clean up this code.
+
   // Register the Crashpad metrics files:
   // 1. Data from the previous run if crashpad_handler didn't exit cleanly.
-  base::FilePath crashpad_metrics_file =
-      base::GlobalHistogramAllocator::ConstructFilePath(
-          user_data_dir, kCrashpadHistogramAllocatorName);
-  file_metrics_provider->RegisterSource(
-      FileMetricsProvider::Params(
-          crashpad_metrics_file,
-          FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_FILE,
-          FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE_OR_PREVIOUS_RUN,
-          kCrashpadHistogramAllocatorName),
-      metrics_reporting_enabled);
+  // base::FilePath crashpad_metrics_file =
+  //     base::GlobalHistogramAllocator::ConstructFilePath(
+  //         user_data_dir, kCrashpadHistogramAllocatorName);
+  // file_metrics_provider->RegisterSource(
+  //     FileMetricsProvider::Params(
+  //         crashpad_metrics_file,
+  //         FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_FILE,
+  //         FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE_OR_PREVIOUS_RUN,
+  //         kCrashpadHistogramAllocatorName),
+  //     metrics_reporting_enabled);
 
   // 2. Data from the current run. Note: "Active" files don't set "prefs_key"
   // because they update the file itself.
-  base::FilePath crashpad_active_path =
-      base::GlobalHistogramAllocator::ConstructFilePathForActiveFile(
-          user_data_dir, kCrashpadHistogramAllocatorName);
-  file_metrics_provider->RegisterSource(
-      FileMetricsProvider::Params(
-          crashpad_active_path,
-          FileMetricsProvider::SOURCE_HISTOGRAMS_ACTIVE_FILE,
-          FileMetricsProvider::ASSOCIATE_CURRENT_RUN),
-      metrics_reporting_enabled);
-
+  // base::FilePath crashpad_active_path =
+  //     base::GlobalHistogramAllocator::ConstructFilePathForActiveFile(
+  //         user_data_dir, kCrashpadHistogramAllocatorName);
+  // file_metrics_provider->RegisterSource(
+  //     FileMetricsProvider::Params(
+  //         crashpad_active_path,
+  //         FileMetricsProvider::SOURCE_HISTOGRAMS_ACTIVE_FILE,
+  //         FileMetricsProvider::ASSOCIATE_CURRENT_RUN),
+  //     metrics_reporting_enabled);
   return file_metrics_provider;
 }
 

@@ -66,6 +66,14 @@ class AwCrashReporterClient : public crash_reporter::CrashReporterClient {
     return base::PathService::Get(android_webview::DIR_CRASH_DUMPS, crash_dir);
   }
 
+  bool GetCrashMetricsLocation(base::FilePath* metrics_dir) override {
+    // WebView doesn't currently create/upload metrics from Crashpad. Returning
+    // false is already the default behavior, but we override it here to be
+    // explicit.
+    // TODO(crbug.com/440359722): decide if we want these metrics or not.
+    return false;
+  }
+
   void GetSanitizationInformation(const char* const** crash_key_allowlist,
                                   void** target_module,
                                   bool* sanitize_stacks) override {
