@@ -772,7 +772,7 @@ def main():
 
   args = parser.parse_args()
 
-  global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR
+  global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR, STAMP_FILE, FORCE_HEAD_REVISION_FILE
 
   # TODO(crbug.com/432036065): Remove in next Clang roll.
   if args.llvm_force_head_revision:
