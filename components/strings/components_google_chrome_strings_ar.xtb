@@ -25,14 +25,14 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           وتأكد من ضبط الإعداد على "بلا خادم وكيل" أو "مباشر."</translation>
-<translation id="6341737370356890233">‏انتقل إلى
+<translation id="6341737370356890233">‏الانتقال إلى
         قائمة Chrome &gt;
         <ph name="SETTINGS_TITLE" />
         &gt;
         <ph name="ADVANCED_TITLE" />
-        وألغ تحديد <ph name="NO_PREFETCH_DESCRIPTION" />
-        إذا لم يعمل ذلك على حل المشكلة، نوصي بتحديد هذا الخيار
-        مرة من أجل أداء أفضل.</translation>
+        وإلغاء اختيار "<ph name="NO_PREFETCH_DESCRIPTION" />."
+        في حال لم يتم حلّ المشكلة، نوصي بتحديد هذا الخيار
+        مرة أخرى لتحسين الأداء.</translation>
 <translation id="6855094794438142393">‏انتقل إلى
           قائمة Chrome &gt;
           <ph name="SETTINGS_TITLE" />

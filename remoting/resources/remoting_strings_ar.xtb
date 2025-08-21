@@ -97,7 +97,7 @@
 <translation id="5170982930780719864">رقم تعريف المضيف غير صالح.</translation>
 <translation id="5204575267916639804">الأسئلة الشائعة</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
-<translation id="5234764350956374838">تجاهل</translation>
+<translation id="5234764350956374838">إغلاق</translation>
 <translation id="5308380583665731573">اتصال</translation>
 <translation id="533625276787323658">لا يوجد أي جهاز كمبيوتر للاتصال به</translation>
 <translation id="5397086374758643919">‏أداة إزالة مضيف سطح المكتب البعيد من Chrome</translation>
@@ -160,7 +160,7 @@
 <translation id="7970576581263377361">‏تعذّرت المصادقة.يُرجى تسجيل الدخول إلى Chromium مرة أخرى.</translation>
 <translation id="7981525049612125370">انتهت صلاحية الجلسة البعيدة.</translation>
 <translation id="8038111231936746805">(تلقائي)</translation>
-<translation id="8041089156583427627">إرسال ملاحظات</translation>
+<translation id="8041089156583427627">إرسال تعليقات</translation>
 <translation id="8060029310790625334">مركز المساعدة</translation>
 <translation id="806699900641041263">جارٍ الاتصال بـ <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">‏لاستخدام سطح المكتب البعيد من Chrome، يجب إضافة حساب في Google إلى جهازك.</translation>

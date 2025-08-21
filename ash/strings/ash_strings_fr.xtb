@@ -636,7 +636,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3121411970001795539">Le pavé tactile intégré est désactivé, car une souris est connectée. Utilisez la souris ou le clavier pour confirmer la modification.
 
 Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="3122464029669770682">UC</translation>
+<translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Type de travaux et devoirs</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3130793786899299931">Modifier la longueur</translation>

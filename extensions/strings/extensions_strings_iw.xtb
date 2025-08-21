@@ -17,7 +17,7 @@
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (מזהה תוסף "<ph name="EXTENSION_ID" />") חסום על-ידי מנהל המערכת. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">לא ניתן להתקין את החבילה: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089">מוצר לא ידוע <ph name="PRODUCT_ID" /> מהספק <ph name="VENDOR_ID" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="3144135466825225871">‏הניסיון להחליף קובץ crx נכשל. יש לבדוק אם הקובץ נמצא בשימוש.</translation>
+<translation id="3144135466825225871">‏הניסיון להחליף קובץ crx נכשל. צריך לבדוק אם הקובץ נמצא בשימוש.</translation>
 <translation id="3163201441334626963">מוצר לא ידוע <ph name="PRODUCT_ID" /> מהספק <ph name="VENDOR_ID" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> מהספק <ph name="VENDOR_ID" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
