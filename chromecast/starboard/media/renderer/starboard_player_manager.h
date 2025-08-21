@@ -23,6 +23,11 @@
 #include "media/base/renderer_client.h"
 
 namespace chromecast {
+
+namespace metrics {
+class CastMetricsHelper;
+}  // namespace metrics
+
 namespace media {
 
 // Manages interactions with an SbPlayer. In particular, this class has several
@@ -53,6 +58,7 @@ class StarboardPlayerManager {
       ::media::DemuxerStream* audio_stream,
       ::media::DemuxerStream* video_stream,
       ::media::RendererClient* client,
+      chromecast::metrics::CastMetricsHelper* cast_metrics_helper,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       bool enable_buffering);
 
@@ -94,6 +100,7 @@ class StarboardPlayerManager {
       std::optional<StarboardAudioSampleInfo> audio_sample_info,
       std::optional<StarboardVideoSampleInfo> video_sample_info,
       ::media::RendererClient* client,
+      chromecast::metrics::CastMetricsHelper* cast_metrics_helper,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner);
 
   // Pushes `buffer` to starboard.

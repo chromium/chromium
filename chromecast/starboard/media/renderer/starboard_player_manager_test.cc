@@ -11,6 +11,8 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromecast/base/metrics/cast_metrics_helper.h"
+#include "chromecast/base/metrics/mock_cast_metrics_helper.h"
 #include "chromecast/starboard/media/cdm/mock_starboard_drm_wrapper_client.h"
 #include "chromecast/starboard/media/cdm/starboard_drm_wrapper.h"
 #include "chromecast/starboard/media/media/mock_starboard_api_wrapper.h"
@@ -31,6 +33,8 @@ namespace media {
 namespace {
 
 using ::base::test::RunOnceCallback;
+using ::chromecast::metrics::CastMetricsHelper;
+using ::chromecast::metrics::MockCastMetricsHelper;
 using ::media::DemuxerStream;
 using ::media::MockDemuxerStream;
 using ::media::MockRendererClient;
@@ -144,12 +148,14 @@ class StarboardPlayerManagerTest : public ::testing::Test {
   ~StarboardPlayerManagerTest() override = default;
 
   // This should be destructed last.
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NiceMock<MockStarboardApiWrapper> starboard_;
   NiceMock<MockStarboardApiWrapper> starboard_for_drm_;
-  MockDemuxerStream audio_stream_;
-  MockDemuxerStream video_stream_;
-  MockRendererClient renderer_client_;
+  NiceMock<MockDemuxerStream> audio_stream_;
+  NiceMock<MockDemuxerStream> video_stream_;
+  NiceMock<MockRendererClient> renderer_client_;
+  NiceMock<MockCastMetricsHelper> metrics_helper_;
 
   // Since SbPlayer is used as an opaque void* by cast, we can use any type
   // here. All that matters is the address.
@@ -182,7 +188,7 @@ TEST_F(StarboardPlayerManagerTest,
   EXPECT_THAT(
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true),
       NotNull());
 }
@@ -211,7 +217,7 @@ TEST_F(StarboardPlayerManagerTest, PlaybackStartCausesSeekInStarboard) {
   std::unique_ptr<StarboardPlayerManager> player_manager =
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true);
   ASSERT_THAT(player_manager, NotNull());
 
@@ -262,7 +268,7 @@ TEST_F(StarboardPlayerManagerTest, FlushCausesSeekToCurrentTimeInStarboard) {
   std::unique_ptr<StarboardPlayerManager> player_manager =
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true);
   ASSERT_THAT(player_manager, NotNull());
 
@@ -297,7 +303,7 @@ TEST_F(StarboardPlayerManagerTest, ForwardsPlaybackRateChangesToStarboard) {
   std::unique_ptr<StarboardPlayerManager> player_manager =
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true);
   ASSERT_THAT(player_manager, NotNull());
 
@@ -329,7 +335,7 @@ TEST_F(StarboardPlayerManagerTest, ForwardsStreamVolumeChangesToStarboard) {
   std::unique_ptr<StarboardPlayerManager> player_manager =
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true);
   ASSERT_THAT(player_manager, NotNull());
 
@@ -368,7 +374,7 @@ TEST_F(StarboardPlayerManagerTest, GetsCurrentMediaTimeFromStarboard) {
   std::unique_ptr<StarboardPlayerManager> player_manager =
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true);
   ASSERT_THAT(player_manager, NotNull());
 
@@ -395,7 +401,7 @@ TEST_F(StarboardPlayerManagerTest, GetSbPlayerReturnsTheSbPlayer) {
   std::unique_ptr<StarboardPlayerManager> player_manager =
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true);
   ASSERT_THAT(player_manager, NotNull());
   EXPECT_EQ(player_manager->GetSbPlayer(), &sb_player_);
@@ -428,7 +434,7 @@ TEST_F(StarboardPlayerManagerTest,
   EXPECT_THAT(
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/false),
       NotNull());
 }
@@ -518,7 +524,7 @@ TEST_F(StarboardPlayerManagerTest,
   std::unique_ptr<StarboardPlayerManager> player_manager =
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true);
   ASSERT_THAT(player_manager, NotNull());
 
@@ -599,7 +605,8 @@ TEST_F(StarboardPlayerManagerTest,
   std::unique_ptr<StarboardPlayerManager> player_manager =
       StarboardPlayerManager::Create(
           &starboard_, /*audio_stream=*/nullptr, &video_stream_,
-          &renderer_client_, base::SequencedTaskRunner::GetCurrentDefault(),
+          &renderer_client_, &metrics_helper_,
+          base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true);
   ASSERT_THAT(player_manager, NotNull());
 
@@ -673,7 +680,8 @@ TEST_F(StarboardPlayerManagerTest,
   std::unique_ptr<StarboardPlayerManager> player_manager =
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, /*video_stream=*/nullptr,
-          &renderer_client_, base::SequencedTaskRunner::GetCurrentDefault(),
+          &renderer_client_, &metrics_helper_,
+          base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true);
   ASSERT_THAT(player_manager, NotNull());
 
@@ -695,29 +703,40 @@ TEST_F(StarboardPlayerManagerTest,
 
 TEST_F(StarboardPlayerManagerTest,
        CreatePlayerReturnsNullIfBothDemuxerStreamsAreNull) {
-  EXPECT_THAT(
-      StarboardPlayerManager::Create(
-          &starboard_, /*audio_stream=*/nullptr, /*video_stream=*/nullptr,
-          &renderer_client_, base::SequencedTaskRunner::GetCurrentDefault(),
-          /*enable_buffering=*/true),
-      IsNull());
+  EXPECT_THAT(StarboardPlayerManager::Create(
+                  &starboard_, /*audio_stream=*/nullptr,
+                  /*video_stream=*/nullptr, &renderer_client_, &metrics_helper_,
+                  base::SequencedTaskRunner::GetCurrentDefault(),
+                  /*enable_buffering=*/true),
+              IsNull());
 }
 
 TEST_F(StarboardPlayerManagerTest, CreatePlayerReturnsNullIfStarboardIsNull) {
-  EXPECT_THAT(
-      StarboardPlayerManager::Create(
-          /*starboard=*/nullptr, &audio_stream_, &video_stream_,
-          &renderer_client_, base::SequencedTaskRunner::GetCurrentDefault(),
-          /*enable_buffering=*/true),
-      IsNull());
+  EXPECT_THAT(StarboardPlayerManager::Create(
+                  /*starboard=*/nullptr, &audio_stream_, &video_stream_,
+                  &renderer_client_, &metrics_helper_,
+                  base::SequencedTaskRunner::GetCurrentDefault(),
+                  /*enable_buffering=*/true),
+              IsNull());
 }
 
 TEST_F(StarboardPlayerManagerTest,
        CreatePlayerReturnsNullIfRendererClientIsNull) {
+  EXPECT_THAT(StarboardPlayerManager::Create(
+                  &starboard_, &audio_stream_, &video_stream_,
+                  /*client=*/nullptr, &metrics_helper_,
+                  base::SequencedTaskRunner::GetCurrentDefault(),
+                  /*enable_buffering=*/true),
+              IsNull());
+}
+
+TEST_F(StarboardPlayerManagerTest,
+       CreatePlayerReturnsNullIfCastMetricsHelperIsNull) {
   EXPECT_THAT(
       StarboardPlayerManager::Create(
-          &starboard_, &audio_stream_, &video_stream_,
-          /*client=*/nullptr, base::SequencedTaskRunner::GetCurrentDefault(),
+          &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
+          /*cast_metrics_helper=*/nullptr,
+          base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true),
       IsNull());
 }
@@ -725,6 +744,7 @@ TEST_F(StarboardPlayerManagerTest,
 TEST_F(StarboardPlayerManagerTest, CreatePlayerReturnsNullIfTaskRunnerIsNull) {
   EXPECT_THAT(StarboardPlayerManager::Create(&starboard_, &audio_stream_,
                                              &video_stream_, &renderer_client_,
+                                             &metrics_helper_,
                                              /*media_task_runner=*/nullptr,
                                              /*enable_buffering=*/true),
               IsNull());
@@ -753,7 +773,7 @@ TEST_F(StarboardPlayerManagerTest,
   EXPECT_THAT(
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true),
       NotNull());
 }
@@ -781,7 +801,7 @@ TEST_F(StarboardPlayerManagerTest,
   EXPECT_THAT(
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true),
       NotNull());
 }
@@ -809,7 +829,7 @@ TEST_F(StarboardPlayerManagerTest,
   EXPECT_THAT(
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true),
       NotNull());
 }
@@ -846,7 +866,7 @@ TEST_F(StarboardPlayerManagerTest,
   EXPECT_THAT(
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true),
       NotNull());
 }
@@ -881,7 +901,7 @@ TEST_F(
   EXPECT_THAT(
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          &metrics_helper_, base::SequencedTaskRunner::GetCurrentDefault(),
           /*enable_buffering=*/true),
       NotNull());
 }

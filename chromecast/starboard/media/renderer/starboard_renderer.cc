@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
+#include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_resource.h"
 #include "media/base/pipeline_status.h"
@@ -53,7 +54,8 @@ void StarboardRenderer::Initialize(::media::MediaResource* media_resource,
       media_resource->GetFirstStream(::media::DemuxerStream::Type::VIDEO);
 
   player_manager_ = StarboardPlayerManager::Create(
-      starboard_.get(), audio_stream, video_stream, client, media_task_runner_,
+      starboard_.get(), audio_stream, video_stream, client,
+      chromecast::metrics::CastMetricsHelper::GetInstance(), media_task_runner_,
       enable_buffering_);
 
   if (!player_manager_) {

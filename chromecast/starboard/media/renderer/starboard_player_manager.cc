@@ -20,10 +20,11 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
     ::media::DemuxerStream* audio_stream,
     ::media::DemuxerStream* video_stream,
     ::media::RendererClient* client,
+    chromecast::metrics::CastMetricsHelper* cast_metrics_helper,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     bool enable_buffering) {
   if ((!audio_stream && !video_stream) || !starboard || !client ||
-      !media_task_runner) {
+      !cast_metrics_helper || !media_task_runner) {
     return nullptr;
   }
 
@@ -119,7 +120,7 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
   auto starboard_player_manager = base::WrapUnique(new StarboardPlayerManager(
       std::move(drm_resource), starboard, audio_stream, video_stream,
       std::move(audio_sample_info), std::move(video_sample_info), client,
-      std::move(media_task_runner)));
+      cast_metrics_helper, std::move(media_task_runner)));
 
   starboard->EnsureInitialized();
   void* sb_player = starboard->CreatePlayer(
@@ -141,6 +142,7 @@ StarboardPlayerManager::StarboardPlayerManager(
     std::optional<StarboardAudioSampleInfo> audio_sample_info,
     std::optional<StarboardVideoSampleInfo> video_sample_info,
     ::media::RendererClient* client,
+    chromecast::metrics::CastMetricsHelper* cast_metrics_helper,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner)
     :  // base::Unretained(this) is safe here because demuxer_stream_reader_
        // will be destroyed before `this`.
@@ -159,7 +161,8 @@ StarboardPlayerManager::StarboardPlayerManager(
                               base::Unretained(this)),
           base::BindRepeating(&StarboardPlayerManager::PushEos,
                               base::Unretained(this)),
-          client_) {
+          client_,
+          cast_metrics_helper) {
   CHECK(starboard_);
   CHECK(client_);
   CHECK(task_runner_);
