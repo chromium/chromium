@@ -27,7 +27,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
+import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -53,7 +53,7 @@ public class TileViewBinderTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
+        mActivity = Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
 
         mTileView = new TileView(mActivity, null);
         LayoutInflater.from(mActivity).inflate(R.layout.tile_view_modern, mTileView, true);

@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwm_disabled.PwmDeprecationDialogsMetricsRecorder.DownloadCsvFlowStep;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
-import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
+import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
 import org.chromium.ui.widget.ToastManager;
 
 import java.io.BufferedReader;
@@ -101,7 +101,7 @@ public class PasswordCsvDownloadFlowControllerTest {
     @Before
     public void setUp() {
         mActivity =
-                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class)
+                Robolectric.buildActivity(BrowserUiTestFragmentActivity.class)
                         .create()
                         .start()
                         .resume()

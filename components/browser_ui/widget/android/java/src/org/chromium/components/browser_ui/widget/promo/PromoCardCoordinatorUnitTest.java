@@ -20,7 +20,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
+import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator.LayoutStyle;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -34,7 +34,7 @@ public class PromoCardCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
+        mActivity = Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
         mModel = new PropertyModel.Builder(PromoCardProperties.ALL_KEYS).build();
     }
 

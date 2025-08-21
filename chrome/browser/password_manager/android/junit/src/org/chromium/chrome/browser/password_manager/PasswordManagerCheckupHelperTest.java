@@ -61,7 +61,7 @@ import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControlle
 import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControllerFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
-import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
+import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
@@ -1050,7 +1050,7 @@ public class PasswordManagerCheckupHelperTest {
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
-                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
+                Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
         setUpUpdatableGmsCore(testActivity);
 
         PasswordCsvDownloadFlowController mockController =
@@ -1082,7 +1082,7 @@ public class PasswordManagerCheckupHelperTest {
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
-                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
+                Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
 
         PasswordCsvDownloadFlowController mockController =
                 mock(PasswordCsvDownloadFlowController.class);
@@ -1113,7 +1113,7 @@ public class PasswordManagerCheckupHelperTest {
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
 
         FragmentActivity testActivity =
-                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
+                Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
 
         mPasswordManagerHelper.showPasswordCheckup(
                 testActivity,
@@ -1138,7 +1138,7 @@ public class PasswordManagerCheckupHelperTest {
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
 
         FragmentActivity testActivity =
-                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
+                Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
         setUpUpdatableGmsCore(testActivity);
         mPasswordManagerHelper.showPasswordCheckup(
                 testActivity,

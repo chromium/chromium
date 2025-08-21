@@ -7,7 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("test_support_java") {
   testonly = true
 
-  sources = [ "src/org/chromium/components/browser_ui/test/BrowserUiDummyFragmentActivity.java" ]
+  sources = [ "src/org/chromium/components/browser_ui/test/BrowserUiTestFragmentActivity.java" ]
   deps = [
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/theme/android:java_resources",

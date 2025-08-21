@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentActivity;
  * A {@link FragmentActivity} for junit tests that gets the necessary themes and theme overlays
  * applied to prevent issues caused by missing styles.
  */
-public class BrowserUiDummyFragmentActivity extends FragmentActivity {
+public class BrowserUiTestFragmentActivity extends FragmentActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
