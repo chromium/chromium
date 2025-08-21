@@ -494,17 +494,19 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
         state_change_callback = base::BindRepeating(
             [](AppWebImplPtr obj,
                const UpdateService::UpdateState& state_update) {
-              obj->task_runner_->PostTask(
-                  FROM_HERE, base::BindOnce(&AppWebImpl::UpdateStateCallback,
-                                            obj, state_update));
+              AppServerWin::PostOnTaskRunner(
+                  obj->task_runner_,
+                  base::BindOnce(&AppWebImpl::UpdateStateCallback, obj,
+                                 state_update));
             },
             obj);
     base::OnceCallback<void(UpdateService::Result)> complete_callback =
         base::BindOnce(
             [](AppWebImplPtr obj, UpdateService::Result result) {
-              obj->task_runner_->PostTask(
-                  FROM_HERE, base::BindOnce(&AppWebImpl::UpdateResultCallback,
-                                            obj, result));
+              AppServerWin::PostOnTaskRunner(
+                  obj->task_runner_,
+                  base::BindOnce(&AppWebImpl::UpdateResultCallback, obj,
+                                 result));
             },
             obj);
 
@@ -1252,29 +1254,28 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
     return hr;
   }
 
-  base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::WithBaseSyncPrimitives()})
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(
-                     [](base::Process process) -> ErrorParams {
-                       int exit_code = -1;
-                       if (process.WaitForExitWithTimeout(kWaitForAppInstaller,
-                                                          &exit_code)) {
-                         VLOG(2) << "AppCommand completed: " << exit_code;
-                         return {
-                             .error_code = exit_code,
-                             .extra_code1 = 0,
-                         };
-                       }
-                       VLOG(2) << "AppCommand timed out.";
-                       return {
-                           .error_code = HRESULT_FROM_WIN32(ERROR_TIMEOUT),
-                           .extra_code1 = kErrorAppCommandTimedOut,
-                       };
-                     },
-                     process_.Duplicate())
-                     .Then(base::BindOnce(ping_sender_, scope_, app_id_,
-                                          command_id_)));
+  AppServerWin::PostOnTaskRunner(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::WithBaseSyncPrimitives()}),
+      base::BindOnce(
+          [](base::Process process) -> ErrorParams {
+            int exit_code = -1;
+            if (process.WaitForExitWithTimeout(kWaitForAppInstaller,
+                                               &exit_code)) {
+              VLOG(2) << "AppCommand completed: " << exit_code;
+              return {
+                  .error_code = exit_code,
+                  .extra_code1 = 0,
+              };
+            }
+            VLOG(2) << "AppCommand timed out.";
+            return {
+                .error_code = HRESULT_FROM_WIN32(ERROR_TIMEOUT),
+                .extra_code1 = kErrorAppCommandTimedOut,
+            };
+          },
+          process_.Duplicate())
+          .Then(base::BindOnce(ping_sender_, scope_, app_id_, command_id_)));
   return hr;
 }
 

@@ -32,8 +32,18 @@ class AppServerWin : public AppServer {
   using AppServer::config;
   using AppServer::prefs;
 
-  // Posts the `task` to the sequence bound to this instance.
+  // Posts the `task` to the sequence bound to this instance. Increments the COM
+  // module count before posting the task, and decrements the module count after
+  // the task is complete, to ensure that `task` completes before the
+  // `AppServer` instance is stopped.
   static void PostRpcTask(base::OnceClosure task);
+
+  // Posts `task` to the provided `task_runner`. Increments the COM module count
+  // before posting the task, and decrements the module count after the task is
+  // complete, to ensure that `task` completes before the `AppServer` instance
+  // is stopped.
+  static void PostOnTaskRunner(scoped_refptr<base::TaskRunner> task_runner,
+                               base::OnceClosure task);
 
   scoped_refptr<UpdateService> update_service() { return update_service_; }
 
@@ -68,12 +78,6 @@ class AppServerWin : public AppServer {
   HRESULT RegisterClassObjects();
   HRESULT RegisterInternalClassObjects();
   void UnregisterClassObjects();
-
-  // Waits until the last COM object is released.
-  void WaitForExitSignal();
-
-  // Called when the last object is released.
-  void SignalExit();
 
   // Creates an out-of-process WRL Module.
   void CreateWRLModule();
