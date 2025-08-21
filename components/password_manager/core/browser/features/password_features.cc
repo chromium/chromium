@@ -77,12 +77,6 @@ BASE_FEATURE(kClearUndecryptablePasswordsOnSync,
 #endif
 );
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kFetchGaiaHashOnSignIn,
-             "FetchGaiaHashOnSignIn",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kFillOnAccountSelect,
              "fill-on-account-select",
              base::FEATURE_DISABLED_BY_DEFAULT);
