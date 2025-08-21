@@ -144,10 +144,10 @@ public class NewTabGroupDialogFacility<
         declareElementFactory(
                 tabGroupIdElement,
                 delayedElements -> {
-                    TabGroupModelFilter filter = mHostStation.tabGroupModelFilterElement.get();
+                    TabGroupModelFilter filter = mHostStation.tabGroupModelFilterElement.value();
                     List<Tab> tabsInGroup =
                             runOnUiThreadBlocking(
-                                    () -> filter.getTabsInGroup(tabGroupIdElement.get()));
+                                    () -> filter.getTabsInGroup(tabGroupIdElement.value()));
                     mTabIdsToGroup = TabModelUtils.getTabIds(tabsInGroup);
                     mTitle = TabGroupUtil.getNumberOfTabsString(mTabIdsToGroup.size());
                     titleInputElement = delayedElements.declareView(createTitleViewSpec());

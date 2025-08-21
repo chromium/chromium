@@ -159,7 +159,9 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
                 .withTrigger(
                         () ->
                                 KeyUtils.typeTextIntoView(
-                                        InstrumentationRegistry.getInstrumentation(), get(), text));
+                                        InstrumentationRegistry.getInstrumentation(),
+                                        value(),
+                                        text));
     }
 
     /** Start a Transition by performing an Espresso ViewAction on this View. */

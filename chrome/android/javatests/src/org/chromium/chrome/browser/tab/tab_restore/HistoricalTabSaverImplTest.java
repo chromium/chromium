@@ -84,7 +84,7 @@ public class HistoricalTabSaverImplTest {
         mTabModelSelector = mInitialPage.getTabModelSelector();
         mTabModel = mInitialPage.getTabModel();
         TabRestoreServiceUtils.clearEntries(mTabModelSelector);
-        mTab = mInitialPage.loadedTabElement.get();
+        mTab = mInitialPage.loadedTabElement.value();
         mHistoricalTabSaver = new HistoricalTabSaverImpl(mTabModel);
     }
 

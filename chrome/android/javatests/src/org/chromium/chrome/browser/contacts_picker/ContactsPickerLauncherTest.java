@@ -50,7 +50,7 @@ public class ContactsPickerLauncherTest {
     @LargeTest
     public void testHandleNavigation() throws Exception {
         WebPageStation firstPage = mActivityTestRule.startOnBlankPage();
-        WebContents webContents = firstPage.webContentsElement.get();
+        WebContents webContents = firstPage.webContentsElement.value();
 
         // Switch to a new tab before the picker is launched.
         firstPage.openFakeLinkToWebPage(mActivityTestRule.getTestServer().getURL(FILE_PATH));

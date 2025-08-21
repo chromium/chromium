@@ -104,7 +104,7 @@ public class PasswordSavingIntegrationTest {
                             new PasswordStoreBridge(mActivityTestRule.getProfile(false));
                 });
 
-        mWebContents = mStartingPage.webContentsElement.get();
+        mWebContents = mStartingPage.webContentsElement.value();
         ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(mWebContents);
         mInputMethodManagerWrapper = TestInputMethodManagerWrapper.create(imeAdapter);
         imeAdapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);

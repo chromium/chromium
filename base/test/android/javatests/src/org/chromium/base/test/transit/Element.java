@@ -17,7 +17,8 @@ import java.util.Set;
  * @param <ProductT> the type of object supplied when this Element is present.
  */
 @NullMarked
-public abstract class Element<ProductT extends @Nullable Object> implements Supplier<ProductT> {
+public abstract class Element<ProductT extends @Nullable Object>
+        implements Supplier<@Nullable ProductT> {
     private final String mId;
     protected ConditionalState mOwner;
     protected @Nullable ConditionWithResult<ProductT> mEnterCondition;
@@ -73,26 +74,31 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
         mExitCondition.bindToState(mOwner);
     }
 
-    // Supplier implementation
+    /**
+     * @return the product of the element (View, Activity, etc.) or null if the enter Condition is
+     *     not fulfilled.
+     * @throws AssertionError if the element is in a ConditionalState that's neither ACTIVE nor
+     *     TRANSITIONING_FROM.
+     */
+    @Override
+    public @Nullable ProductT get() {
+        return getEnterConditionChecked().get();
+    }
+
     /**
      * @return the product of the element (View, Activity, etc.)
      * @throws AssertionError if the element is in a ConditionalState that's neither ACTIVE nor
      *     TRANSITIONING_FROM, or if the element has no value.
      */
-    @Override
-    public ProductT get() {
-        return getEnterConditionChecked().get();
-    }
-
-    // Supplier implementation
-    @Override
-    public boolean hasValue() {
-        return getEnterConditionChecked().hasValue();
+    public ProductT value() {
+        ProductT ret = get();
+        assert ret != null;
+        return ret;
     }
 
     /**
-     * Same as get() but callable after the ConditionalState is transitioned from. Use with caution,
-     * as most of the time this means the product is not usable anymore.
+     * Same as value() but callable after the ConditionalState is transitioned from. Use with
+     * caution, as most of the time this means the product is not usable anymore.
      *
      * @return the product of the element (View, Activity, etc.) from a non-NEW ConditionalState
      */

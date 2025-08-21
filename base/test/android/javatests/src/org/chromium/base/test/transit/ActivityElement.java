@@ -177,7 +177,7 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
             for (Station<?> activeStation : TrafficControl.getActiveStations()) {
                 ActivityElement<?> knownActivityElement = activeStation.getActivityElement();
                 if (knownActivityElement != null) {
-                    mExistingTaskIds.put(knownActivityElement.get().getTaskId(), activeStation);
+                    mExistingTaskIds.put(knownActivityElement.value().getTaskId(), activeStation);
                 }
             }
         }

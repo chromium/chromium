@@ -42,9 +42,4 @@ public class WebContentsPresentCondition extends ConditionWithResult<WebContents
         }
         return loadedTab.getWebContents();
     }
-
-    @Override
-    public boolean hasValue() {
-        return get() != null;
-    }
 }

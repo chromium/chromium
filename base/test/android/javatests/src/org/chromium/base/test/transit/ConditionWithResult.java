@@ -14,7 +14,8 @@ import org.chromium.build.annotations.Nullable;
  * @param <ResultT> The type of the result supplied when the condition is fulfilled.
  */
 @NullMarked
-public abstract class ConditionWithResult<ResultT> extends Condition implements Supplier<ResultT> {
+public abstract class ConditionWithResult<ResultT> extends Condition
+        implements Supplier<@Nullable ResultT> {
 
     private @Nullable ResultT mResult;
 
@@ -22,34 +23,22 @@ public abstract class ConditionWithResult<ResultT> extends Condition implements 
         super(isRunOnUiThread);
     }
 
-    // Supplier implementation
     /**
-     * @return the result of the Condition (View, Activity, etc.)
+     * @return the result of the Condition (View, Activity, etc.), or null if the Condition is not
+     *     fulfilled.
      * @throws AssertionError if any of:
      *     <pre>
-     *     1) the Condition was neither bound to a ConditionalState nor to a Transition;
-     *     2) the Condition is bound to a ConditionalState that's NEW or FINISHED;
-     *     3) the result is null.
+     *     1) the Condition was neither bound to a ConditionalState nor to a Transition
+     *     2) the Condition is bound to a ConditionalState that's NEW or FINISHED
      *     </pre>
      */
     @Override
-    public ResultT get() {
+    public @Nullable ResultT get() {
         assertIsBound();
         if (mOwnerState != null) {
             mOwnerState.assertSuppliersMightBeValid();
         }
-        ResultT result = mResult;
-        assert result != null : String.format("Condition \"%s\" has null result", getDescription());
-        return result;
-    }
-
-    @Override
-    public boolean hasValue() {
-        assertIsBound();
-        if (mOwnerState != null) {
-            mOwnerState.assertSuppliersMightBeValid();
-        }
-        return mResult != null;
+        return mResult;
     }
 
     /**

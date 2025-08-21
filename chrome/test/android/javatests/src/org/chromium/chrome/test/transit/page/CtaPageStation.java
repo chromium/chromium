@@ -201,13 +201,13 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     public <T extends CtaPageStation> T swipeToolbar(
             CtaPageStation.Builder<T> destinationBuilder, boolean directionRight) {
         ToolbarSwipeCoordinates coords =
-                new ToolbarSwipeCoordinates(toolbarElement.get(), directionRight);
+                new ToolbarSwipeCoordinates(toolbarElement.value(), directionRight);
 
         T destination = destinationBuilder.initFrom(this).initSelectingExistingTab().build();
         return runTo(
                         () ->
                                 TouchCommon.performDrag(
-                                        toolbarElement.get(),
+                                        toolbarElement.value(),
                                         coords.mFromX,
                                         coords.mToX,
                                         coords.mY,
@@ -229,7 +229,7 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     private SwipingToTabFacility swipeToolbarPartial(boolean directionRight) {
         ToolbarSwipeCoordinates coords =
-                new ToolbarSwipeCoordinates(toolbarElement.get(), directionRight);
+                new ToolbarSwipeCoordinates(toolbarElement.value(), directionRight);
         long downTime = SystemClock.uptimeMillis();
         Activity activity = getActivity();
 

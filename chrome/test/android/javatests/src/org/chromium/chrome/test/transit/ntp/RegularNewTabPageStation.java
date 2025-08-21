@@ -45,7 +45,7 @@ public class RegularNewTabPageStation extends CtaPageStation {
         declareElementFactory(
                 mActivityElement,
                 delayedElements -> {
-                    if (mActivityElement.get().isTablet()) {
+                    if (mActivityElement.value().isTablet()) {
                         urlBarElement = delayedElements.declareView(URL_BAR);
                     } else {
                         delayedElements.declareNoView(URL_BAR);

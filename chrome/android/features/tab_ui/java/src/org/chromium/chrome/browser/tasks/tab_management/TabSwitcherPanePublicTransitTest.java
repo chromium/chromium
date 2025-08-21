@@ -72,7 +72,7 @@ public class TabSwitcherPanePublicTransitTest {
 
         LinearLayoutManager layoutManager =
                 (LinearLayoutManager)
-                        regularTabSwitcher.recyclerViewElement.get().getLayoutManager();
+                        regularTabSwitcher.recyclerViewElement.value().getLayoutManager();
         assertEquals(9, layoutManager.findLastVisibleItemPosition());
 
         // Go back to a tab to cleanup tab state

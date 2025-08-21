@@ -162,7 +162,7 @@ public class MostVisitedTilesLayoutTest {
                 makeAndSetUpFakeSuggestions(FAKE_MOST_VISITED_URLS.length);
 
         MvtsFacility mvts = mActivityTestRule.startOnNtp().focusOnMvts(siteSuggestions);
-        mRenderTestRule.render(mvts.tilesLayoutElement.get(), "ntp_tile_layout" + suffix);
+        mRenderTestRule.render(mvts.tilesLayoutElement.value(), "ntp_tile_layout" + suffix);
     }
 
     @Test

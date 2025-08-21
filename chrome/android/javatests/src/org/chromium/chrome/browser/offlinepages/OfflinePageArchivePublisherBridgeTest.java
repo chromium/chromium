@@ -161,7 +161,7 @@ public class OfflinePageArchivePublisherBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mOfflinePageBridge.savePage(
-                            webPage.webContentsElement.get(),
+                            webPage.webContentsElement.value(),
                             clientId,
                             new SavePageCallback() {
                                 @Override

@@ -111,7 +111,7 @@ public class InterceptNavigationDelegateTest {
     public void setUp() throws Exception {
         mInitialPage = mActivityTestRule.startOnBlankPage();
         mActivity = mInitialPage.getActivity();
-        final Tab tab = mInitialPage.loadedTabElement.get();
+        final Tab tab = mInitialPage.loadedTabElement.value();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InterceptNavigationDelegateClientImpl client =

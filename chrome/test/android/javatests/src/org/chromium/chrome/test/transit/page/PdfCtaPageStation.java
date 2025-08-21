@@ -59,7 +59,8 @@ public class PdfCtaPageStation extends CtaPageStation {
                 pdfCoordinatorElement,
                 delayedElements -> {
                     pdfFragmentViewElement =
-                            delayedElements.declareView(is(pdfCoordinatorElement.get().getView()));
+                            delayedElements.declareView(
+                                    is(pdfCoordinatorElement.value().getView()));
                 });
     }
 }

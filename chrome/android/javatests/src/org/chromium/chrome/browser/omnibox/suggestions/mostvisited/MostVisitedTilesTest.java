@@ -119,7 +119,7 @@ public class MostVisitedTilesTest {
         mOmnibox = new OmniboxTestUtils(mActivity);
         mLocationBarLayout = mActivity.findViewById(R.id.location_bar);
         mAutocomplete = mLocationBarLayout.getAutocompleteCoordinator();
-        mTab = mPage.loadedTabElement.get();
+        mTab = mPage.loadedTabElement.value();
         mStartUrl = mActivityTestRule.getTestServer().getURL(START_PAGE_LOCATION);
 
         verify(mController).addOnSuggestionsReceivedListener(mListener.capture());

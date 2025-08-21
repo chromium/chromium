@@ -96,14 +96,14 @@ public class WebPageStation extends CtaPageStation {
         return runTo(
                 () -> {
                     assertInPhase(Phase.ACTIVE);
-                    View contentView = activityTabElement.get().getView();
+                    View contentView = activityTabElement.value().getView();
                     float width = contentView.getWidth();
                     float height = contentView.getHeight();
                     // Start the scroll with some height to avoid touching the nav bar region.
                     float fromY = height - height / 10;
                     float toY = 0;
                     TouchCommon.performDragNoFling(
-                            mActivityElement.get(),
+                            mActivityElement.value(),
                             width / 2,
                             width / 2,
                             fromY,
@@ -118,17 +118,17 @@ public class WebPageStation extends CtaPageStation {
         return runTo(
                 () -> {
                     assertInPhase(Phase.ACTIVE);
-                    View contentView = activityTabElement.get().getView();
+                    View contentView = activityTabElement.value().getView();
                     float width = contentView.getWidth();
                     float height = contentView.getHeight();
 
                     int[] location = new int[2];
-                    toolbarElement.get().getLocationOnScreen(location);
+                    toolbarElement.value().getLocationOnScreen(location);
                     // Start the scroll with 5 additional height to avoid touching the toolbar.
-                    float fromY = location[1] + toolbarElement.get().getBottom() + 5;
+                    float fromY = location[1] + toolbarElement.value().getBottom() + 5;
                     float toY = height;
                     TouchCommon.performDragNoFling(
-                            mActivityElement.get(),
+                            mActivityElement.value(),
                             width / 2,
                             width / 2,
                             fromY,
@@ -150,7 +150,7 @@ public class WebPageStation extends CtaPageStation {
                 () -> {
                     try {
                         JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                                webContentsElement.get(), jsCode);
+                                webContentsElement.value(), jsCode);
                     } catch (TimeoutException e) {
                         throw new RuntimeException(e);
                     }

@@ -81,7 +81,7 @@ public class ArchivedTabCreatorTest {
     @MediumTest
     public void testCreateFrozenTab() throws Exception {
         WebPageStation testPage = mInitialPage.openFakeLinkToWebPage(mTestServer.getURL(TEST_PATH));
-        Tab tab = testPage.loadedTabElement.get();
+        Tab tab = testPage.loadedTabElement.value();
         Tab frozenTab =
                 runOnUiThreadBlocking(
                         () -> {

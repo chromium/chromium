@@ -88,7 +88,7 @@ public class TabGroupPaneStation extends HubBaseStation {
 
     private boolean shouldHubSearchBoxBeVisible() {
         return HubUtils.isScreenWidthTablet(
-                mActivityElement.get().getResources().getConfiguration().screenWidthDp);
+                mActivityElement.value().getResources().getConfiguration().screenWidthDp);
     }
 
     // TODO(crbug.com/413652567): Implement actions.

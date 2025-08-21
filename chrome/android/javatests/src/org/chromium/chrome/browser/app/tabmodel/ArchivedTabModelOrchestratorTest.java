@@ -525,7 +525,7 @@ public class ArchivedTabModelOrchestratorTest {
                 tabSwitcherSearchStation.findSuggestion(
                         /* index= */ null, /* title= */ "About", /* text= */ null);
         mPage = suggestion.openPage();
-        assertEquals(declutterUrl, mPage.loadedTabElement.get().getUrl().getSpec());
+        assertEquals(declutterUrl, mPage.loadedTabElement.value().getUrl().getSpec());
         CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
     }
 

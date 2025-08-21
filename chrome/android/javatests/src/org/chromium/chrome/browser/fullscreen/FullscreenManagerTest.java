@@ -592,7 +592,7 @@ public class FullscreenManagerTest {
         WebPageStation page = mActivityTestRule.startOnUrl(SCROLL_OFFSET_TEST_PAGE);
 
         ChromeTabbedActivity activity = page.getActivity();
-        WebContents webContents = page.webContentsElement.get();
+        WebContents webContents = page.webContentsElement.value();
 
         // Browser startup generates resize events as part of compositor initialization. Depending
         // on the relative timing of that initialization and the initial navigation, the test page
@@ -641,7 +641,7 @@ public class FullscreenManagerTest {
         WebPageStation page = mActivityTestRule.startOnUrl(SCROLL_OFFSET_TEST_PAGE);
 
         ChromeTabbedActivity activity = page.getActivity();
-        WebContents webContents = page.webContentsElement.get();
+        WebContents webContents = page.webContentsElement.value();
 
         // Browser startup generates resize events as part of compositor initialization. Depending
         // on the relative timing of that initialization and the initial navigation, the test page

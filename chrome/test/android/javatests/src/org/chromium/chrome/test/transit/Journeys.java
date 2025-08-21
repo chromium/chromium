@@ -220,7 +220,7 @@ public class Journeys {
         for (int i = 0; i < urls.size(); i++) {
             String url = urls.get(i);
             CtaPageStation previousPage = currentPage;
-            Tab previousTab = previousPage.loadedTabElement.get();
+            Tab previousTab = previousPage.loadedTabElement.value();
             if (i == 0 && startingPage.isIncognito() && !isIncognito) {
                 currentPage =
                         currentPage
@@ -256,7 +256,7 @@ public class Journeys {
                         i,
                         previousTab.getId());
 
-                Tab tabToComeBackTo = currentPage.loadedTabElement.get();
+                Tab tabToComeBackTo = currentPage.loadedTabElement.value();
                 CtaPageStation previousPageAgain =
                         currentPage.selectTabFast(previousTab, CtaPageStation::newGenericBuilder);
                 currentPage = previousPageAgain.selectTabFast(tabToComeBackTo, pageStationFactory);
@@ -277,7 +277,7 @@ public class Journeys {
      */
     public static TabSwitcherGroupCardFacility mergeAllTabsToNewGroup(
             TabSwitcherStation tabSwitcher) {
-        TabModel tabModel = tabSwitcher.tabModelElement.get();
+        TabModel tabModel = tabSwitcher.tabModelElement.value();
         List<Tab> tabs =
                 runOnUiThreadBlocking(() -> TabModelUtils.convertTabListToListOfTabs(tabModel));
         return mergeTabsToNewGroup(tabSwitcher, tabs);
@@ -294,7 +294,7 @@ public class Journeys {
     public static TabSwitcherGroupCardFacility mergeTabsToNewGroup(
             TabSwitcherStation tabSwitcher, List<Tab> tabs) {
         assert !tabs.isEmpty();
-        TabModel currentModel = tabSwitcher.tabModelElement.get();
+        TabModel currentModel = tabSwitcher.tabModelElement.value();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
 
         TabBinList tabBinList =

@@ -129,7 +129,7 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
 
     /** Select "Close tabs" to close all selected tabs. */
     public void closeTabs() {
-        TabModel tabModel = mHostStation.tabModelElement.get();
+        TabModel tabModel = mHostStation.tabModelElement.value();
         Condition tabCountDecreased =
                 new TabCountChangedCondition(tabModel, -mListEditor.getNumTabsSelected());
         mCloseMenuItem

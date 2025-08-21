@@ -92,11 +92,11 @@ public class PopupMultiwindowPTTest {
         final int receivedWidthDp =
                 Integer.parseInt(
                         JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                                popup.webContentsElement.get(), "window.innerWidth"));
+                                popup.webContentsElement.value(), "window.innerWidth"));
         final int receivedHeightDp =
                 Integer.parseInt(
                         JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                                popup.webContentsElement.get(), "window.innerHeight"));
+                                popup.webContentsElement.value(), "window.innerHeight"));
 
         assertTrue(
                 "Inner width of the popup window is invalid, expected: "

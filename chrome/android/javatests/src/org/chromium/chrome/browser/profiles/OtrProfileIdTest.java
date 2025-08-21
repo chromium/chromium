@@ -54,7 +54,7 @@ public class OtrProfileIdTest {
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
 
-                    assertSame(profile, mPage.loadedTabElement.get().getProfile());
+                    assertSame(profile, mPage.loadedTabElement.value().getProfile());
 
                     // OtrProfileId should be null for regular profile.
                     assert profile.getOtrProfileId() == null;

@@ -276,7 +276,7 @@ public class BasePageStation<HostActivity extends ChromeActivity>
 
     /** Convenience method for |loadedTabElement.get()|. */
     public Tab getTab() {
-        return loadedTabElement.get();
+        return loadedTabElement.value();
     }
 
     /** Loads a |url| in the same tab and waits to transition to the Station built by |builder|. */
@@ -293,11 +293,13 @@ public class BasePageStation<HostActivity extends ChromeActivity>
                             @PageTransition
                             int transitionType =
                                     PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
-                            loadedTabElement.get().loadUrl(new LoadUrlParams(url, transitionType));
+                            loadedTabElement
+                                    .value()
+                                    .loadUrl(new LoadUrlParams(url, transitionType));
                         })
                 .withTimeout(10000)
                 .withPossiblyAlreadyFulfilled()
-                .waitForAnd(new PageLoadCallbackCondition(loadedTabElement.get()));
+                .waitForAnd(new PageLoadCallbackCondition(loadedTabElement.value()));
     }
 
     /** Condition to check the page url contains a certain substring. */
@@ -432,11 +434,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
                 return null;
             }
             return mTabsSelected.get(mTabsSelected.size() - 1);
-        }
-
-        @Override
-        public boolean hasValue() {
-            return !mTabsSelected.isEmpty();
         }
     }
 

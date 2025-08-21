@@ -102,7 +102,7 @@ public class TabSwitcherListEditorPTTest {
     @MediumTest
     public void testCreateTabGroupOf1() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        int firstTabId = firstPage.loadedTabElement.get().getId();
+        int firstTabId = firstPage.loadedTabElement.value().getId();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
                 tabSwitcher.openAppMenu().clickSelectTabs();
@@ -123,9 +123,9 @@ public class TabSwitcherListEditorPTTest {
     @MediumTest
     public void testClose2Tabs() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        int firstTabId = firstPage.loadedTabElement.get().getId();
+        int firstTabId = firstPage.loadedTabElement.value().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.loadedTabElement.get().getId();
+        int secondTabId = secondPage.loadedTabElement.value().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
                 tabSwitcher.openAppMenu().clickSelectTabs();
@@ -148,9 +148,9 @@ public class TabSwitcherListEditorPTTest {
     @MediumTest
     public void testCreateTabGroupOf2() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        int firstTabId = firstPage.loadedTabElement.get().getId();
+        int firstTabId = firstPage.loadedTabElement.value().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.loadedTabElement.get().getId();
+        int secondTabId = secondPage.loadedTabElement.value().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
                 tabSwitcher.openAppMenu().clickSelectTabs();
@@ -194,7 +194,7 @@ public class TabSwitcherListEditorPTTest {
         WebPageStation pageStation =
                 Journeys.prepareTabs(firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
         RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
-        TabModel tabModel = tabSwitcher.tabModelElement.get();
+        TabModel tabModel = tabSwitcher.tabModelElement.value();
         List<Tab> tabs =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -257,11 +257,11 @@ public class TabSwitcherListEditorPTTest {
         TabModel tabModel = firstPage.getTabModel();
 
         // Open 3 tabs
-        int firstTabId = firstPage.loadedTabElement.get().getId();
+        int firstTabId = firstPage.loadedTabElement.value().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.loadedTabElement.get().getId();
+        int secondTabId = secondPage.loadedTabElement.value().getId();
         RegularNewTabPageStation thirdPage = secondPage.openNewTabFast();
-        int thirdTabId = thirdPage.loadedTabElement.get().getId();
+        int thirdTabId = thirdPage.loadedTabElement.value().getId();
         RegularTabSwitcherStation tabSwitcher = thirdPage.openRegularTabSwitcher();
 
         // Group first and second tabs

@@ -72,13 +72,13 @@ public class TabGroupSyncLocalToRemoteTest {
     @DisabledTest(message = "crbug.com/353952795")
     public void testCreateTabGroup() {
         WebPageStation firstPage = mCtaTestRule.alreadyStartedOnBlankPage();
-        Tab firstTab = firstPage.loadedTabElement.get();
+        Tab firstTab = firstPage.loadedTabElement.value();
         int firstTabId = firstTab.getId();
         String firstTabTitle = ChromeTabUtils.getTitleOnUiThread(firstTab);
         String firstTabUrl = ChromeTabUtils.getUrlStringOnUiThread(firstTab);
 
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        Tab secondTab = secondPage.loadedTabElement.get();
+        Tab secondTab = secondPage.loadedTabElement.value();
         int secondTabId = secondTab.getId();
         String secondTabTitle = ChromeTabUtils.getTitleOnUiThread(secondTab);
         String secondTabUrl = ChromeTabUtils.getUrlStringOnUiThread(secondTab);

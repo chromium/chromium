@@ -73,7 +73,7 @@ public class TabGroupListRenderTest {
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
         TabGroupPaneStation tabGroupPane = tabSwitcher.selectTabGroupsPane();
 
-        RecyclerView recyclerView = tabGroupPane.recyclerViewElement.get();
+        RecyclerView recyclerView = tabGroupPane.recyclerViewElement.value();
         mRenderTestRule.render(recyclerView, "1_group");
 
         createGroupProgrammatic("Group 2", /* wait= */ true);

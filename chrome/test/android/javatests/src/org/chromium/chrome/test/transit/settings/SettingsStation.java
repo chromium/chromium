@@ -25,8 +25,8 @@ public class SettingsStation<FragmentT extends ChromeBaseSettingsFragment>
 
     public PreferenceFacility scrollToPref(String prefKey) {
         assertInPhase(Phase.ACTIVE);
-        String title = fragmentElement.get().findPreference(prefKey).getTitle().toString();
-        return runOnUiThreadTo(() -> fragmentElement.get().scrollToPreference(prefKey))
+        String title = fragmentElement.value().findPreference(prefKey).getTitle().toString();
+        return runOnUiThreadTo(() -> fragmentElement.value().scrollToPreference(prefKey))
                 .withPossiblyAlreadyFulfilled()
                 .enterFacility(new PreferenceFacility(title));
     }

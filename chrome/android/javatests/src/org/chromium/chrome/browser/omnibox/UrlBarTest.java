@@ -85,7 +85,7 @@ public class UrlBarTest {
         mActivityTestRule.getActivityTestRule().waitForDeferredStartup();
 
         mOmnibox = new OmniboxTestUtils(mStartingPage.getActivity());
-        mUrlBar = mStartingPage.urlBarElement.get();
+        mUrlBar = mStartingPage.urlBarElement.value();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Start with an empty Omnibox and disable all automatic features.

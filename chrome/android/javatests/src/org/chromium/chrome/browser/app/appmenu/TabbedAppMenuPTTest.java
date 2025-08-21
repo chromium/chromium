@@ -91,7 +91,7 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     public void testOpenSettings() {
         WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
-        Tab tab = pageStation.loadedTabElement.get();
+        Tab tab = pageStation.loadedTabElement.value();
         SettingsStation settings = pageStation.openRegularTabAppMenu().openSettings();
 
         assertFinalDestination(settings);
@@ -110,14 +110,14 @@ public class TabbedAppMenuPTTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPinTabToggle() {
         WebPageStation page = mCtaTestRule.startOnBlankPage();
-        Tab tab = page.loadedTabElement.get();
+        Tab tab = page.loadedTabElement.value();
         assertFalse(tab.getIsPinned());
 
         // Open the app menu and pin the tab.
         RegularWebPageAppMenuFacility menu = page.openRegularTabAppMenu();
 
         menu.pinTab();
-        tab = page.loadedTabElement.get();
+        tab = page.loadedTabElement.value();
         assertTrue(tab.getIsPinned());
         assertFinalDestination(page);
 
@@ -125,7 +125,7 @@ public class TabbedAppMenuPTTest {
         RegularWebPageAppMenuFacility pinnedMenu = page.openRegularTabAppMenu();
 
         pinnedMenu.unpinTab();
-        tab = page.loadedTabElement.get();
+        tab = page.loadedTabElement.value();
         assertFalse(tab.getIsPinned());
     }
 
@@ -141,7 +141,7 @@ public class TabbedAppMenuPTTest {
         RegularNewTabPageStation newTabPage = blankPage.openRegularTabAppMenu().openNewTab();
         RegularNewTabPageAppMenuFacility menu = newTabPage.openAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.get(), "regular_ntp_app_menu_v3");
+        mRenderTestRule.render(menu.menuListElement.value(), "regular_ntp_app_menu_v3");
         menu.verifyPresentItems();
         assertFinalDestination(newTabPage, menu);
 
@@ -161,7 +161,7 @@ public class TabbedAppMenuPTTest {
                 mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
         IncognitoNewTabPageAppMenuFacility menu = incognitoNewTabPage.openAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.get(), "incognito_ntp_app_menu");
+        mRenderTestRule.render(menu.menuListElement.value(), "incognito_ntp_app_menu");
         menu.verifyPresentItems();
         assertFinalDestination(incognitoNewTabPage, menu);
 
@@ -180,7 +180,7 @@ public class TabbedAppMenuPTTest {
         WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
         RegularWebPageAppMenuFacility menu = blankPage.openRegularTabAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.get(), "regular_webpage_app_menu_v3");
+        mRenderTestRule.render(menu.menuListElement.value(), "regular_webpage_app_menu_v3");
         menu.verifyPresentItems();
         assertFinalDestination(blankPage, menu);
 
@@ -205,7 +205,7 @@ public class TabbedAppMenuPTTest {
                         NavigatePageStations.newNavigateOnePageBuilder());
         IncognitoWebPageAppMenuFacility menu = pageOne.openIncognitoTabAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.get(), "incognito_webpage_app_menu");
+        mRenderTestRule.render(menu.menuListElement.value(), "incognito_webpage_app_menu");
         menu.verifyPresentItems();
         assertFinalDestination(pageOne, menu);
 

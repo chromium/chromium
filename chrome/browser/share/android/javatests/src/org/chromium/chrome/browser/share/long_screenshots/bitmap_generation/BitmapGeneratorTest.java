@@ -54,7 +54,7 @@ public class BitmapGeneratorTest {
         EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
         final String url = testServer.getURL("/chrome/test/data/android/about.html");
         mInitialPage = mActivityTestRule.startOnUrl(url);
-        mTab = mInitialPage.loadedTabElement.get();
+        mTab = mInitialPage.loadedTabElement.value();
     }
 
     @After

@@ -93,9 +93,9 @@ public class AutoPiPTabModelObserverHelperTest {
     public void setUp() {
         mOnActivationChangedCallbackHelper = new TabActivationCallbackHelper();
         mInitialPage = mActivityTestRule.startOnBlankPage();
-        mInitialTab = mInitialPage.loadedTabElement.get();
+        mInitialTab = mInitialPage.loadedTabElement.value();
         mInitialActivity = mInitialPage.getActivity();
-        mObservedWebContents = mInitialPage.webContentsElement.get();
+        mObservedWebContents = mInitialPage.webContentsElement.value();
 
         // Initialize the C++ test utilities for the WebContents under observation,
         // passing it the callback to be invoked from C++.

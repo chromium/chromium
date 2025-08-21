@@ -66,7 +66,7 @@ public class EdgeToEdgeBottomChinFacility<CtaStationT extends Station<ChromeTabb
      */
     public ConditionStatus isPageOptInEdgeToEdge() {
         if (edgeToEdgeControllerElement.hasValue()
-                && edgeToEdgeControllerElement.get().isPageOptedIntoEdgeToEdge()
+                && edgeToEdgeControllerElement.value().isPageOptedIntoEdgeToEdge()
                         == mExpectPageOptIn) {
             return Condition.fulfilled();
         }

@@ -56,7 +56,7 @@ public class TabImplTest {
     private TabImpl createFrozenTab() {
         String url = mActivityTestRule.getTestServer().getURL(TEST_PATH);
         WebPageStation testPage = mInitialPage.openFakeLinkToWebPage(url);
-        Tab tab = testPage.loadedTabElement.get();
+        Tab tab = testPage.loadedTabElement.value();
 
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {

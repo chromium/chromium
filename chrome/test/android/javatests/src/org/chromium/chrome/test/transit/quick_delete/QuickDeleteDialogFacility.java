@@ -93,7 +93,7 @@ public class QuickDeleteDialogFacility extends ModalDialogFacility {
                 TimePeriodUtils.getTimePeriodSpinnerOptions(mHostStation.getActivity());
         final int positionToSet = getSpinnerPositionForTimePeriod(timePeriod, options);
 
-        return runOnUiThreadTo(() -> spinnerElement.get().setSelection(positionToSet))
+        return runOnUiThreadTo(() -> spinnerElement.value().setSelection(positionToSet))
                 .exitFacilityAnd()
                 .enterFacility(new QuickDeleteDialogFacility(timePeriod));
     }
@@ -146,7 +146,7 @@ public class QuickDeleteDialogFacility extends ModalDialogFacility {
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            Spinner spinner = spinnerElement.get();
+            Spinner spinner = spinnerElement.value();
             var item = (TimePeriodUtils.TimePeriodSpinnerOption) spinner.getSelectedItem();
             int timePeriod = item.getTimePeriod();
             return whether(

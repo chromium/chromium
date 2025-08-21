@@ -73,7 +73,7 @@ public class SelectPopupOtherContentViewTest {
         WebPageStation page = mActivityTestRule.startOnUrl(SELECT_URL);
 
         // Once clicked, the popup should show up.
-        DOMUtils.clickNode(page.webContentsElement.get(), "select");
+        DOMUtils.clickNode(page.webContentsElement.value(), "select");
         CriteriaHelper.pollInstrumentationThread(
                 this::isSelectPopupVisibleOnUiThread, "The select popup did not show up on click.");
 

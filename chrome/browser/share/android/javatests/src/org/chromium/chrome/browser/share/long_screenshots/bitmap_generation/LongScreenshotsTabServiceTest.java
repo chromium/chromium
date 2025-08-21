@@ -76,7 +76,7 @@ public class LongScreenshotsTabServiceTest {
                         mActivityTestRule
                                 .getTestServer()
                                 .getURL("/chrome/test/data/android/about.html"));
-        mTab = mInitialPage.loadedTabElement.get();
+        mTab = mInitialPage.loadedTabElement.value();
         mProcessor = new TestCaptureProcessor();
 
         ThreadUtils.runOnUiThreadBlocking(

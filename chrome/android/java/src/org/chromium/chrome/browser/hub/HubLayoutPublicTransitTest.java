@@ -101,7 +101,7 @@ public class HubLayoutPublicTransitTest {
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
     public void testTabGroupPane_newTabGroup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        int firstTabId = firstPage.loadedTabElement.get().getId();
+        int firstTabId = firstPage.loadedTabElement.value().getId();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
                 tabSwitcher.openAppMenu().clickSelectTabs();

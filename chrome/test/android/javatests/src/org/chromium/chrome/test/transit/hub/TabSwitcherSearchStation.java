@@ -86,19 +86,19 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
     }
 
     public void typeInOmnibox(String query) {
-        noopTo().waitFor(new UrlBarHasFocusCondition(urlBarElement.get()));
+        noopTo().waitFor(new UrlBarHasFocusCondition(urlBarElement.value()));
         urlBarElement
                 .typeTextTo(query)
                 .withPossiblyAlreadyFulfilled()
-                .waitFor(new SuggestionsShownCondition(locationBarElement.get()));
+                .waitFor(new SuggestionsShownCondition(locationBarElement.value()));
     }
 
     public void checkSuggestionsShown() {
-        noopTo().waitFor(new SuggestionsShownCondition(locationBarElement.get()));
+        noopTo().waitFor(new SuggestionsShownCondition(locationBarElement.value()));
     }
 
     public void checkSuggestionsNotShown() {
-        noopTo().waitFor(new SuggestionsNotShownCondition(locationBarElement.get()));
+        noopTo().waitFor(new SuggestionsNotShownCondition(locationBarElement.value()));
     }
 
     /** Expect a suggestion with the given |index|, |title| and |text| combination. */
@@ -179,7 +179,7 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
         }
 
         public WebPageStation openPagePressingEnter() {
-            UrlBar urlBar = urlBarElement.get();
+            UrlBar urlBar = urlBarElement.value();
             noopTo().waitFor(new UrlBarHasFocusCondition(urlBar, /* active= */ true));
             return urlBarElement
                     .performViewActionTo(ViewActions.pressKey(KeyEvent.KEYCODE_ENTER))

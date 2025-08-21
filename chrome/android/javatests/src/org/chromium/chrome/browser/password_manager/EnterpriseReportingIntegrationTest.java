@@ -140,7 +140,7 @@ public class EnterpriseReportingIntegrationTest {
                 buildReportUploadWatcher(EnterpriseReportingEventType.LOGIN_EVENT);
 
         WebPageStation page = mActivityTestRule.startOnTestServerUrl(PASSWORD_FORM_URL);
-        WebContents webContents = page.webContentsElement.get();
+        WebContents webContents = page.webContentsElement.value();
         DOMUtils.enterInputIntoTextField(webContents, USERNAME_FIELD_ID, USERNAME_TEXT);
         DOMUtils.enterInputIntoTextField(webContents, PASSWORD_NODE_ID, PASSWORD_TEXT);
         DOMUtils.clickNodeWithJavaScript(webContents, SUBMIT_BUTTON_ID);

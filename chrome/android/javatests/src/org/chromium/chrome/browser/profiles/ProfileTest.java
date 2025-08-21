@@ -38,7 +38,7 @@ public class ProfileTest {
     @Before
     public void setUp() {
         mStartingPage = mActivityTestRule.startOnBlankPage();
-        mRegularProfile = mStartingPage.loadedTabElement.get().getProfile();
+        mRegularProfile = mStartingPage.loadedTabElement.value().getProfile();
     }
 
     /** Test if two calls for incognito profile return the same object. */
@@ -50,7 +50,7 @@ public class ProfileTest {
         WebPageStation incognitoPage =
                 mStartingPage.openRegularTabAppMenu().openNewIncognitoTab().loadAboutBlank();
 
-        Profile incognitoProfile1 = incognitoPage.loadedTabElement.get().getProfile();
+        Profile incognitoProfile1 = incognitoPage.loadedTabElement.value().getProfile();
         Assert.assertSame(
                 incognitoProfile1,
                 mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true));

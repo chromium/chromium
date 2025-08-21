@@ -91,7 +91,7 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
             originStation.assertInPhase(Phase.ACTIVE);
             ActivityElement<?> originActivityElement = originStation.getActivityElement();
             if (originActivityElement != null) {
-                mActivityElement.requireToBeInSameTask(originActivityElement.get());
+                mActivityElement.requireToBeInSameTask(originActivityElement.value());
             } else {
                 mActivityElement.requireNoParticularTask();
             }
@@ -119,6 +119,6 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     public HostActivity getActivity() {
         assert mActivityElement != null
                 : "Requesting an ActivityElement for a station with no host activity.";
-        return mActivityElement.get();
+        return mActivityElement.value();
     }
 }

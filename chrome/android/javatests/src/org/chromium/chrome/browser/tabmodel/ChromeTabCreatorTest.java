@@ -83,7 +83,7 @@ public class ChromeTabCreatorTest {
     @MediumTest
     @Feature({"Browser"})
     public void testCreateNewTabInBackgroundLowEnd() {
-        final Tab fgTab = mPage.loadedTabElement.get();
+        final Tab fgTab = mPage.loadedTabElement.value();
         final Tab bgTab =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -120,7 +120,7 @@ public class ChromeTabCreatorTest {
     @MediumTest
     @Feature({"Browser"})
     public void testCreateNewTabInBackground() {
-        final Tab fgTab = mPage.loadedTabElement.get();
+        final Tab fgTab = mPage.loadedTabElement.value();
         Tab bgTab =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -330,7 +330,7 @@ public class ChromeTabCreatorTest {
         final String url2 = mTestServer.getURL(TEST_PATH_2);
         mPage = mPage.loadWebPageProgrammatically(url);
         mPage = mPage.loadWebPageProgrammatically(url2);
-        final Tab parentTab = mPage.loadedTabElement.get();
+        final Tab parentTab = mPage.loadedTabElement.value();
         final Tab fgTab =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->

@@ -96,7 +96,7 @@ public class TouchToFillMainFlowIntegrationTest {
                                     mStartingPage.getActivity().getWindowAndroid());
                 });
 
-        mWebContents = mStartingPage.webContentsElement.get();
+        mWebContents = mStartingPage.webContentsElement.value();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
