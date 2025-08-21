@@ -432,10 +432,9 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserverOfDestruction) {
   // called.
   EXPECT_CALL(mock_observer,
               ReaderModeTabHelperDestroyed(reader_mode_tab_helper()))
-      .WillOnce(
-          testing::Invoke([&mock_observer](ReaderModeTabHelper* tab_helper) {
-            tab_helper->RemoveObserver(&mock_observer);
-          }));
+      .WillOnce([&mock_observer](ReaderModeTabHelper* tab_helper) {
+        tab_helper->RemoveObserver(&mock_observer);
+      });
   ReaderModeTabHelper::RemoveFromWebState(web_state_.get());
 }
 

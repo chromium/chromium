@@ -64,7 +64,6 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 
 using HandleMDMCallback = FakeSystemIdentityManager::HandleMDMCallback;

@@ -97,12 +97,11 @@ TEST_P(IOSRealtimeReportingClientTest, TestDeprecatedUmaEventUploadSucceeds) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
-      .WillOnce(testing::Invoke(
-          [&](bool include_device_info, base::Value::Dict&& report,
-              policy::CloudPolicyClient::ResultCallback callback) {
-            upload_callback_ = std::move(callback);
-            run_loop.Quit();
-          }));
+      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        upload_callback_ = std::move(callback);
+        run_loop.Quit();
+      });
   reporting_client_->ReportRealtimeEvent(kKeyLoginEvent, std::move(settings),
                                          std::move(event));
   run_loop.Run();
@@ -136,13 +135,13 @@ TEST_P(IOSRealtimeReportingClientTest, TestUmaEventUploadSucceeds) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](bool include_device_info,
               ::chrome::cros::reporting::proto::UploadEventsRequest&& request,
               policy::CloudPolicyClient::ResultCallback callback) {
             upload_callback_ = std::move(callback);
             run_loop.Quit();
-          }));
+          });
   reporting_client_->ReportEvent(std::move(login_event), std::move(settings));
   run_loop.Run();
 
@@ -165,12 +164,11 @@ TEST_P(IOSRealtimeReportingClientTest, TestDeprecatedUmaEventUploadFails) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
-      .WillOnce(testing::Invoke(
-          [&](bool include_device_info, base::Value::Dict&& report,
-              policy::CloudPolicyClient::ResultCallback callback) {
-            upload_callback_ = std::move(callback);
-            run_loop.Quit();
-          }));
+      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        upload_callback_ = std::move(callback);
+        run_loop.Quit();
+      });
   reporting_client_->ReportRealtimeEvent(kKeyLoginEvent, std::move(settings),
                                          std::move(event));
   run_loop.Run();
@@ -203,13 +201,13 @@ TEST_P(IOSRealtimeReportingClientTest, TestUmaEventUploadFails) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](bool include_device_info,
               ::chrome::cros::reporting::proto::UploadEventsRequest&& request,
               policy::CloudPolicyClient::ResultCallback callback) {
             upload_callback_ = std::move(callback);
             run_loop.Quit();
-          }));
+          });
   reporting_client_->ReportEvent(std::move(login_event), std::move(settings));
   run_loop.Run();
 

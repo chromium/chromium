@@ -32,7 +32,6 @@
 namespace ios_web_view {
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 
 class WebViewPasswordManagerClientTest : public PlatformTest {

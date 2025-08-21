@@ -29,7 +29,6 @@
 namespace {
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 class MockGoogleLogoService : public GoogleLogoService {
@@ -133,13 +132,13 @@ TEST_F(SearchEngineLogoMediatorTest, TestFetchNotRestartedWhenFailed) {
   base::RunLoop run_loop1;
   EXPECT_CALL(*logo_service_, GetLogo(_, false))
       .WillOnce(
-          Invoke([&run_loop1](search_provider_logos::LogoCallbacks callbacks,
-                              bool for_doodle) {
+          [&run_loop1](search_provider_logos::LogoCallbacks callbacks,
+                       bool for_doodle) {
             std::move(callbacks.on_fresh_decoded_logo_available)
                 .Run(search_provider_logos::LogoCallbackReason::FAILED,
                      std::nullopt);
             run_loop1.Quit();
-          }));
+          });
   [mediator_ searchEngineChanged];
   run_loop1.Run();
   // Verify that the logo fetch is not restarted.
@@ -156,20 +155,20 @@ TEST_F(SearchEngineLogoMediatorTest, TestFetchRestartedWhenCanceled) {
   base::RunLoop run_loop1;
   EXPECT_CALL(*logo_service_, GetLogo(_, false))
       .WillOnce(
-          Invoke([&run_loop1](search_provider_logos::LogoCallbacks callbacks,
-                              bool for_doodle) {
+          [&run_loop1](search_provider_logos::LogoCallbacks callbacks,
+                       bool for_doodle) {
             std::move(callbacks.on_fresh_decoded_logo_available)
                 .Run(search_provider_logos::LogoCallbackReason::CANCELED,
                      std::nullopt);
             run_loop1.Quit();
-          }));
+          });
   [mediator_ searchEngineChanged];
   run_loop1.Run();
   // Verify that the logo fetch is restarted.
   base::RunLoop run_loop2;
-  EXPECT_CALL(*logo_service_, GetLogo(_, false)).WillOnce(Invoke([&run_loop2] {
+  EXPECT_CALL(*logo_service_, GetLogo(_, false)).WillOnce([&run_loop2] {
     run_loop2.Quit();
-  }));
+  });
   run_loop2.Run();
 }
 
