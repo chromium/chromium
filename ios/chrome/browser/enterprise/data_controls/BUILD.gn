@@ -11,6 +11,7 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
+
   public_deps = [ "//base" ]
 }
 
@@ -20,11 +21,20 @@ source_set("data_controls") {
     "clipboard_utils.mm",
     "data_controls_tab_helper.h",
     "data_controls_tab_helper.mm",
+    "ios_rules_service.h",
+    "ios_rules_service.mm",
+    "ios_rules_service_factory.h",
+    "ios_rules_service_factory.mm",
   ]
+
+  public_deps = [ "//components/enterprise/data_controls/core/browser" ]
+
   deps = [
     "//base",
     "//components/enterprise/data_controls/core/browser",
+    "//components/prefs",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public",
     "//ui/base/clipboard",
   ]
