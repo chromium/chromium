@@ -51,22 +51,25 @@ public class BaseRobolectricTestRule implements TestRule {
 
     @Override
     public Statement apply(Statement base, Description description) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                setUp(
-                        description
-                                .getTestClass()
-                                .getMethod(stripBrackets(description.getMethodName())));
-                boolean testFailed = true;
-                try {
-                    base.evaluate();
-                    testFailed = false;
-                } finally {
-                    tearDown(testFailed);
-                }
-            }
-        };
+        Statement wrappedStatement =
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        setUp(
+                                description
+                                        .getTestClass()
+                                        .getMethod(stripBrackets(description.getMethodName())));
+                        boolean testFailed = true;
+                        try {
+                            base.evaluate();
+                            testFailed = false;
+                        } finally {
+                            tearDown(testFailed);
+                        }
+                    }
+                };
+        return new BaseTimeLimitedStatement(
+                BaseRobolectricTestRunner.PER_TEST_TIMEOUT_MS, wrappedStatement);
     }
 
     static void setUp(Method method) {
