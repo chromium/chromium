@@ -9,13 +9,16 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/base64url.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -38,6 +41,7 @@ using DigitalIdentityInterstitialAbortCallback =
 namespace content {
 namespace {
 using base::Value;
+namespace sdjwt = ::content::sdjwt;
 
 constexpr char kPreviewProtocol[] = "preview";
 constexpr char kOpenid4vpProtocolPrefix[] = "openid4vp";
@@ -226,15 +230,36 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
 bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(
     const Value& request) {
   CHECK(request.is_dict());
-  const Value::Dict& request_dict = request.GetDict();
-  if (request_dict.contains("presentation_definition")) {
-    return CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithPresentationDefition(
-        request_dict);
+  const Value::Dict* request_dict = &request.GetDict();
+
+  // The request may be a JWT. In that case, we need to parse the JWT to get to
+  // the actual request payload.
+  std::optional<Value> payload;
+  if (const std::string* jwt_str = request_dict->FindString("request")) {
+    std::optional<base::Value::List> parsed_jwt = sdjwt::Jwt::Parse(*jwt_str);
+    if (!parsed_jwt) {
+      return false;
+    }
+    std::optional<sdjwt::Jwt> jwt = sdjwt::Jwt::From(*parsed_jwt);
+    if (!jwt) {
+      return false;
+    }
+
+    payload = base::JSONReader::Read(jwt->payload.value());
+    if (!payload || !payload->is_dict()) {
+      return false;
+    }
+    request_dict = &payload->GetDict();
   }
 
-  if (request_dict.contains("dcql_query")) {
+  if (request_dict->contains("presentation_definition")) {
+    return CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithPresentationDefition(
+        *request_dict);
+  }
+
+  if (request_dict->contains("dcql_query")) {
     return CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
-        request_dict);
+        *request_dict);
   }
   return false;
 }
