@@ -6,16 +6,17 @@
 
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider+protected.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 @implementation FirstRunPostActionProvider
 
-- (instancetype)init {
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
   NSMutableArray<NSNumber*>* screens = [NSMutableArray array];
   if (IsBestOfAppGuidedTourEnabled()) {
     [screens addObject:@(kGuidedTour)];
   }
-  if (ShouldShowSafariImportWorkflow()) {
+  if (ShouldShowSafariImportWorkflow(profile)) {
     [screens addObject:@(kSafariImport)];
   }
   [screens addObject:@(kStepsCompleted)];

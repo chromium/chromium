@@ -645,7 +645,7 @@
   }
 
   // Safari Import remind me later handler.
-  if (ShouldShowSafariImportWorkflow()) {
+  if (ShouldShowSafariImportWorkflow(self.profile)) {
     _displayHandlerPromos[promos_manager::Promo::SafariImportRemindMeLater] =
         [[SafariDataImportReminderPromoDisplayHandler alloc]
             initWithApplicationCommandsHandler:_applicationCommandHandler

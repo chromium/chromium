@@ -2490,7 +2490,8 @@ using UserFeedbackDataCallback =
     // Currently displaying.
     return;
   }
-  CHECK(ShouldShowSafariImportWorkflow());
+  CHECK(ShouldShowSafariImportWorkflow(
+      self.currentInterface.browser->GetProfile()));
   BOOL presentOverSettings = self.settingsNavigationController &&
                              entryPoint == SafariDataImportEntryPoint::kSetting;
   UIViewController* baseViewController = presentOverSettings
