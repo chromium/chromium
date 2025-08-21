@@ -48,15 +48,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
   ~CertificateImporterImpl() override;
 
   // CertificateImporter overrides
-  void ImportAllCertificatesUserInitiated(
-      const std::vector<
-          chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate>&
-          server_or_authority_certificates,
-      const std::vector<
-          chromeos::onc::OncParsedCertificates::ClientCertificate>&
-          client_certificates,
-      DoneCallback done_callback) override;
-
   void ImportClientCertificates(
       const std::vector<
           chromeos::onc::OncParsedCertificates::ClientCertificate>&

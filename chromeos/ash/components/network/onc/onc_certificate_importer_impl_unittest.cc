@@ -65,14 +65,11 @@ class ONCCertificateImporterImplTest : public testing::Test {
   }
 
   // Runs the import on the certificates specified in |filename|.
-  // |import_type| specifies if only client certificates should be imported, or
-  // if all certificates should be imported.
   // |expected_parse_success| should be true if at least one certificate in
   // |filename| is expected to have parse errors.
   // |expected_import_success| is the expected result of importing the
   // certificates which did not have parsing errors.
   void AddCertificatesFromFile(const std::string& filename,
-                               ImportType import_type,
                                bool expected_parse_success,
                                bool expected_import_success) {
     base::Value::Dict onc =
@@ -86,23 +83,10 @@ class ONCCertificateImporterImplTest : public testing::Test {
         std::make_unique<chromeos::onc::OncParsedCertificates>(
             onc_certificates_);
     EXPECT_EQ(expected_parse_success, !onc_parsed_certificates->has_error());
-    switch (import_type) {
-      case ImportType::kClientCertificatesOnly:
-        importer.ImportClientCertificates(
-            onc_parsed_certificates->client_certificates(),
-            base::BindOnce(&ONCCertificateImporterImplTest::OnImportCompleted,
-                           base::Unretained(this), expected_import_success));
-        break;
-      case ImportType::kAllCertificates:
-        importer.ImportAllCertificatesUserInitiated(
-            onc_parsed_certificates->server_or_authority_certificates(),
-            onc_parsed_certificates->client_certificates(),
-            base::BindOnce(&ONCCertificateImporterImplTest::OnImportCompleted,
-                           base::Unretained(this), expected_import_success));
-        break;
-      default:
-        NOTREACHED();
-    }
+    importer.ImportClientCertificates(
+        onc_parsed_certificates->client_certificates(),
+        base::BindOnce(&ONCCertificateImporterImplTest::OnImportCompleted,
+                       base::Unretained(this), expected_import_success));
 
     task_runner_->RunUntilIdle();
 
@@ -111,15 +95,13 @@ class ONCCertificateImporterImplTest : public testing::Test {
   }
 
   void AddCertificateFromFile(const std::string& filename,
-                              ImportType import_type,
                               net::CertType expected_type,
                               std::string* guid) {
     std::string guid_temporary;
     if (!guid)
       guid = &guid_temporary;
 
-    AddCertificatesFromFile(filename, import_type,
-                            true /* expected_parse_success */,
+    AddCertificatesFromFile(filename, true /* expected_parse_success */,
                             true /* expected_import_success */);
 
     if (expected_type == net::SERVER_CERT || expected_type == net::CA_CERT) {
@@ -184,39 +166,22 @@ class ONCCertificateImporterImplTest : public testing::Test {
   }
 };
 
-TEST_F(ONCCertificateImporterImplTest, MultipleCertificates) {
-  AddCertificatesFromFile("managed_toplevel2.onc", ImportType::kAllCertificates,
-                          true /* expected_parse_success */,
-                          true /* expected_import_success */);
-  EXPECT_EQ(onc_certificates_.size(), public_list_.size());
-  EXPECT_TRUE(private_list_.empty());
-  EXPECT_EQ(2ul, public_list_.size());
-}
 
 TEST_F(ONCCertificateImporterImplTest, OnlyClientCertificatesImpored) {
-  AddCertificatesFromFile(
-      "managed_toplevel2.onc", ImportType::kClientCertificatesOnly,
-      true /* expected_parse_success */, true /* expected_import_success */);
-  AddCertificatesFromFile(
-      "certificate-client.onc", ImportType::kClientCertificatesOnly,
-      true /* expected_parse_success */, true /* expected_import_success */);
+  AddCertificatesFromFile("managed_toplevel2.onc",
+                          true /* expected_parse_success */,
+                          true /* expected_import_success */);
+  AddCertificatesFromFile("certificate-client.onc",
+                          true /* expected_parse_success */,
+                          true /* expected_import_success */);
   EXPECT_EQ(0ul, public_list_.size());
   EXPECT_EQ(1ul, private_list_.size());
 }
 
-TEST_F(ONCCertificateImporterImplTest, MultipleCertificatesWithFailures) {
-  AddCertificatesFromFile(
-      "toplevel_partially_invalid.onc", ImportType::kAllCertificates,
-      false /* expected_parse_success */, true /* expected_import_success */);
-  EXPECT_EQ(3ul, onc_certificates_.size());
-  EXPECT_EQ(1ul, private_list_.size());
-  EXPECT_TRUE(public_list_.empty());
-}
 
 TEST_F(ONCCertificateImporterImplTest, AddClientCertificate) {
   std::string guid;
-  AddCertificateFromFile("certificate-client.onc", ImportType::kAllCertificates,
-                         net::USER_CERT, &guid);
+  AddCertificateFromFile("certificate-client.onc", net::USER_CERT, &guid);
   EXPECT_EQ(1ul, private_list_.size());
   EXPECT_TRUE(public_list_.empty());
 
@@ -252,107 +217,28 @@ TEST_F(ONCCertificateImporterImplTest, AddClientCertificate) {
   }
 }
 
-TEST_F(ONCCertificateImporterImplTest, AddServerCertificateWithWebTrust) {
-  AddCertificateFromFile("certificate-server.onc", ImportType::kAllCertificates,
-                         net::SERVER_CERT, NULL);
-
-  SECKEYPrivateKeyList* privkey_list =
-      PK11_ListPrivKeysInSlot(private_nssdb_.slot(), NULL, NULL);
-  EXPECT_FALSE(privkey_list);
-
-  SECKEYPublicKeyList* pubkey_list =
-      PK11_ListPublicKeysInSlot(private_nssdb_.slot(), NULL);
-  EXPECT_FALSE(pubkey_list);
-
-  ASSERT_EQ(1u, public_list_.size());
-  EXPECT_TRUE(private_list_.empty());
-}
-
-TEST_F(ONCCertificateImporterImplTest, AddWebAuthorityCertificateWithWebTrust) {
-  AddCertificateFromFile("certificate-web-authority.onc",
-                         ImportType::kAllCertificates, net::CA_CERT, NULL);
-
-  SECKEYPrivateKeyList* privkey_list =
-      PK11_ListPrivKeysInSlot(private_nssdb_.slot(), NULL, NULL);
-  EXPECT_FALSE(privkey_list);
-
-  SECKEYPublicKeyList* pubkey_list =
-      PK11_ListPublicKeysInSlot(private_nssdb_.slot(), NULL);
-  EXPECT_FALSE(pubkey_list);
-
-  ASSERT_EQ(1u, public_list_.size());
-  EXPECT_TRUE(private_list_.empty());
-}
-
-TEST_F(ONCCertificateImporterImplTest, AddAuthorityCertificateWithoutWebTrust) {
-  AddCertificateFromFile("certificate-authority.onc",
-                         ImportType::kAllCertificates, net::CA_CERT, NULL);
-  SECKEYPrivateKeyList* privkey_list =
-      PK11_ListPrivKeysInSlot(private_nssdb_.slot(), NULL, NULL);
-  EXPECT_FALSE(privkey_list);
-
-  SECKEYPublicKeyList* pubkey_list =
-      PK11_ListPublicKeysInSlot(private_nssdb_.slot(), NULL);
-  EXPECT_FALSE(pubkey_list);
-}
-
-struct CertParam {
-  CertParam(net::CertType certificate_type,
-            const char* original_filename,
-            const char* update_filename)
-      : cert_type(certificate_type),
-        original_file(original_filename),
-        update_file(update_filename) {}
-
-  net::CertType cert_type;
-  const char* original_file;
-  const char* update_file;
-};
-
-class ONCCertificateImporterImplTestWithParam :
-      public ONCCertificateImporterImplTest,
-      public testing::WithParamInterface<CertParam> {
-};
-
-TEST_P(ONCCertificateImporterImplTestWithParam, UpdateCertificate) {
+TEST_F(ONCCertificateImporterImplTest, UpdateCertificate) {
   // First we import a certificate.
   {
     SCOPED_TRACE("Import original certificate");
-    AddCertificateFromFile(GetParam().original_file,
-                           ImportType::kAllCertificates, GetParam().cert_type,
-                           NULL);
+    AddCertificateFromFile("certificate-client.onc", net::USER_CERT, NULL);
   }
 
   // Now we import the same certificate with a different GUID. In case of a
   // client cert, the cert should be retrievable via the new GUID.
   {
     SCOPED_TRACE("Import updated certificate");
-    AddCertificateFromFile(GetParam().update_file, ImportType::kAllCertificates,
-                           GetParam().cert_type, NULL);
-  }
-}
-
-TEST_P(ONCCertificateImporterImplTestWithParam, ReimportCertificate) {
-  // Verify that reimporting a client certificate works.
-  for (int i = 0; i < 2; ++i) {
-    SCOPED_TRACE("Import certificate, iteration " + base::NumberToString(i));
-    AddCertificateFromFile(GetParam().original_file,
-                           ImportType::kAllCertificates, GetParam().cert_type,
+    AddCertificateFromFile("certificate-client-update.onc", net::USER_CERT,
                            NULL);
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ONCCertificateImporterImplTestWithParam,
-    ONCCertificateImporterImplTestWithParam,
-    ::testing::Values(CertParam(net::USER_CERT,
-                                "certificate-client.onc",
-                                "certificate-client-update.onc"),
-                      CertParam(net::SERVER_CERT,
-                                "certificate-server.onc",
-                                "certificate-server-update.onc"),
-                      CertParam(net::CA_CERT,
-                                "certificate-web-authority.onc",
-                                "certificate-web-authority-update.onc")));
+TEST_F(ONCCertificateImporterImplTest, ReimportCertificate) {
+  // Verify that reimporting a client certificate works.
+  for (int i = 0; i < 2; ++i) {
+    SCOPED_TRACE("Import certificate, iteration " + base::NumberToString(i));
+    AddCertificateFromFile("certificate-client.onc", net::USER_CERT, NULL);
+  }
+}
 
 }  // namespace ash::onc

@@ -36,23 +36,6 @@ CertificateImporterImpl::CertificateImporterImpl(
 
 CertificateImporterImpl::~CertificateImporterImpl() = default;
 
-void CertificateImporterImpl::ImportAllCertificatesUserInitiated(
-    const std::vector<
-        chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate>&
-        server_or_authority_certificates,
-    const std::vector<chromeos::onc::OncParsedCertificates::ClientCertificate>&
-        client_certificates,
-    DoneCallback done_callback) {
-  VLOG(2) << "Importing " << server_or_authority_certificates.size()
-          << " server/authority certificates and " << client_certificates.size()
-          << " client certificates";
-  RunTaskOnIOTaskRunnerAndCallDoneCallback(
-      base::BindOnce(&StoreAllCertificatesUserInitiated,
-                     server_or_authority_certificates, client_certificates,
-                     target_nssdb_),
-      std::move(done_callback));
-}
-
 void CertificateImporterImpl::ImportClientCertificates(
     const std::vector<chromeos::onc::OncParsedCertificates::ClientCertificate>&
         client_certificates,
