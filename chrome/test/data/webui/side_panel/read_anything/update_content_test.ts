@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, COUNT_WORDS_SEEN_DELAY_MS, SpeechBrowserProxyImpl, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, MIN_MS_TO_READ, SpeechBrowserProxyImpl, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
@@ -135,7 +135,7 @@ suite('UpdateContent', () => {
     };
 
     app.updateContent();
-    mockTimer.tick(COUNT_WORDS_SEEN_DELAY_MS);
+    mockTimer.tick(MIN_MS_TO_READ);
     mockTimer.uninstall();
 
     assertTrue(sentWordsSeen);

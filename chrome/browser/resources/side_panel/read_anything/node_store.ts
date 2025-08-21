@@ -37,14 +37,20 @@ class TwoWayMap<K, V> extends Map<K, V> {
   }
 }
 
-// The delay after which to estimate the number of words being read by the user.
-// TODO(crbug.com/c/372890165): Consider making this delay a function of the
-// the current size of the window and font size. Larger windows and smaller
-// fonts will contain more words, where smaller windows and larger fonts will
-// contain less words.
-export const COUNT_WORDS_SEEN_DELAY_MS = 10 * 1000;
+// Use a high estimate of words per minute (average is 200-300) to account for
+// skimming, and because we want to err on the side of logging more words read
+// rather than on the side of less words read.
+export const ESTIMATED_WORDS_PER_MS = 500 / (60 * 1000);
+// If the number of words showing is small enough, then the calculated delay
+// after which we count words seen will be microscopic. Use this minimum delay
+// to ensure we don't log words as seen if they're only onscreen for a very
+// short amount of time (e.g. if the user is selecting text to distill, then
+// content may only contain a couple words and may be updated in rapid
+// succession).
+export const MIN_MS_TO_READ = 3 * 1000;
 
-// Stores the nodes used in reading mode for access across the reading mode app.
+// Stores the nodes used in reading mode for access across the reading mode
+// app.
 export class NodeStore {
   // Maps a DOM node to the AXNodeID that was used to create it. DOM nodes and
   // AXNodeIDs are unique, so this is a two way map where either DOM node or
@@ -62,7 +68,8 @@ export class NodeStore {
   // current nodes in domNodeToAxNodeIdMap_. Used to estimate the number of
   // words read by the user via reading mode.
   private textNodesSeen_: Set<Text> = new Set();
-  private countWordsTimer?: number;
+  private countWordsTimer_?: number;
+  private wordsSeenLastSavedTime_: number = Date.now();
 
   clear() {
     this.hiddenImageNodesIds_.clear();
@@ -73,25 +80,51 @@ export class NodeStore {
   clearDomNodes() {
     this.domNodeToAxNodeIdMap_.clear();
     this.textNodesSeen_.clear();
-    clearTimeout(this.countWordsTimer);
-    this.countWordsTimer = undefined;
+    this.wordsSeenLastSavedTime_ = Date.now();
+    clearTimeout(this.countWordsTimer_);
+    this.countWordsTimer_ = undefined;
   }
 
   clearHiddenImageNodes() {
     this.hiddenImageNodesIds_.clear();
   }
 
-  // After a delay, uses a heuristic to estimate the number of words being read
-  // by the user in reading mode. The delay is to ignore blocks of text that are
-  // only viewed briefly, likely meaning the user didn't actually read it.
+  // Uses a heuristic to estimate the number of words being read by the user in
+  // reading mode. The heuristic does the following:
+  // 1. Estimates the number of new words visible on the screen.
+  // 2. Estimates the time required for a person to read that number of words.
+  // 3. Starts a timer for that duration. If the timer completes without
+  //    interruption, the words are counted as "seen."
+  // 4. Dynamically extends the timer if new activity occurs (like scrolling).
+  //    It adjusts the total wait time to account for the new total number of
+  //    words, ensuring the final count is saved only after the total estimated
+  //    reading time has passed.
   estimateWordsSeenWithDelay() {
-    clearTimeout(this.countWordsTimer);
-    this.countWordsTimer = setTimeout(() => {
-      this.estimateWordsSeen_();
-    }, COUNT_WORDS_SEEN_DELAY_MS);
+    clearTimeout(this.countWordsTimer_);
+    const textShownSinceLastSave = this.estimateTextShownSinceLastSave_();
+    const newWordsShown = this.estimateWordCount_(textShownSinceLastSave);
+    // Estimate the amount of time it might take a user to read the new number
+    // of words seen, erring on the lower side to ensure we capture it. There is
+    // no harm if the user takes longer to read, as the next count of words seen
+    // would be counted again after they scroll to see more content or switch
+    // pages.
+    const timeToReadMs = Math.floor(newWordsShown / ESTIMATED_WORDS_PER_MS);
+    // Some time may have already elapsed since the words read were last saved.
+    // If the count of words continues to increase before saving them (e.g. the
+    // user scrolls a little bit as they read a paragraph), then account for the
+    // time already spent reading the text, and save the words read after the
+    // total amount of time elapsed since last saved is the estimate for the
+    // time needed for the total number of words read since last saved.
+    const msSinceLastSave = Date.now() - this.wordsSeenLastSavedTime_;
+    const delayMs = Math.max(timeToReadMs - msSinceLastSave, MIN_MS_TO_READ);
+    // Only mark the new text as "seen" after the user has had approximately
+    // enough time to read it.
+    this.countWordsTimer_ = setTimeout(() => {
+      this.saveWordsSeen_(textShownSinceLastSave);
+    }, delayMs);
   }
 
-  // Estimates the number of words that have been read by the user.
+  // Estimates the text content that could be read by the user.
   // This heuristic assumes:
   //   - Text nodes that are fully visible are being read.
   //   - If only a small portion of a text node is offscreen, that text is
@@ -101,32 +134,47 @@ export class NodeStore {
   //     likely scroll so more of it is in view and it will be counted then.
   // If updating the heuristic for estimating words seen, please update the
   // assumptions listed above.
-  private estimateWordsSeen_() {
+  //
+  // Returns the new estimated text content that has not yet been saved as read.
+  private estimateTextShownSinceLastSave_(): Set<Text> {
     const textNodes: Text[] = Array.from(this.domNodeToAxNodeIdMap_.keys())
                                   .filter(node => node instanceof Text);
-
+    const newTextSeen: Set<Text> = new Set();
     // Add the text nodes that are currently visible. textNodesSeen_ is a Set so
     // that if the user scrolls and a previously seen text node is still in
     // view, it's not counted twice. Nodes that were previously marked as "seen"
     // will remain in the set, and the total count will be re-calculated from
     // the total set of seen nodes, including both the old and new ones.
     for (const textNode of textNodes) {
+      if (this.textNodesSeen_.has(textNode)) {
+        continue;
+      }
       const bounds = textNode.parentElement?.getBoundingClientRect();
       // Only add text nodes that are significantly within the visible window.
       // If a text node is only slightly visible, then it's less likely the user
       // is actually reading that text.
       if (bounds && isRectMostlyVisible(bounds)) {
-        this.textNodesSeen_.add(textNode);
+        newTextSeen.add(textNode);
       }
     }
-    const wordsSeen =
-        Array.from(this.textNodesSeen_).reduce((totalCount, currentNode) => {
-          const text = currentNode.textContent?.trim();
-          if (!text || !text.length) {
-            return totalCount;
-          }
-          return totalCount + getWordCount(text);
-        }, 0);
+    return newTextSeen;
+  }
+
+  // Estimates the number of words contained in the given text nodes.
+  private estimateWordCount_(texts: Set<Text>): number {
+    return Array.from(texts).reduce((totalCount, currentNode) => {
+      const text = currentNode.textContent?.trim();
+      return text ? totalCount + getWordCount(text) : totalCount;
+    }, 0);
+  }
+
+  // Calculates and stores the accumulative total words seen by the user on this
+  // page. This transitions the given set of Text nodes from being considered
+  // "shown" to being considered "seen".
+  private saveWordsSeen_(textShownSinceLastSave: Set<Text>): void {
+    this.wordsSeenLastSavedTime_ = Date.now();
+    textShownSinceLastSave.forEach(node => this.textNodesSeen_.add(node));
+    const wordsSeen = this.estimateWordCount_(this.textNodesSeen_);
     chrome.readingMode.updateWordsSeen(wordsSeen);
   }
 
