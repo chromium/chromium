@@ -103,7 +103,9 @@ gfx::Rect WebContentsViewChildFrame::GetContainerBounds() const {
 }
 
 void WebContentsViewChildFrame::SetInitialFocus() {
-  NOTREACHED();
+  // This should only be reachable in Webium, not other uses.
+  CHECK(base::FeatureList::IsEnabled(features::kAttachUnownedInnerWebContents));
+  NOTIMPLEMENTED();
 }
 
 gfx::Rect WebContentsViewChildFrame::GetViewBounds() const {
