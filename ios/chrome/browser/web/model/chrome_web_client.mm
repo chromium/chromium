@@ -57,7 +57,6 @@
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
-#import "ios/chrome/browser/reader_mode/model/reader_mode_scroll_anchor_java_script_feature.h"
 #import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/safe_browsing/model/password_protection_java_script_feature.h"
@@ -450,7 +449,6 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
 
   if (IsReaderModeAvailable()) {
     features.push_back(ReaderModeJavaScriptFeature::GetInstance());
-    features.push_back(ReaderModeScrollAnchorJavaScriptFeature::GetInstance());
   }
 
   if (base::FeatureList::IsEnabled(

@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_metrics_helper.h"
-#import "ios/chrome/browser/reader_mode/model/reader_mode_scroll_anchor_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -311,11 +310,6 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
   if (snapshot_tab_helper) {
     snapshot_tab_helper->UpdateSnapshotWithCallback(nil);
   }
-
-  // If a scroll anchor was found in the original page, scroll to it.
-  if (!scroll_anchor_script_.empty() && distiller_viewer_) {
-    distiller_viewer_->SendJavaScript(scroll_anchor_script_);
-  }
 }
 
 void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
@@ -415,10 +409,6 @@ void ReaderModeTabHelper::TriggerReaderModeHeuristic(const GURL& url) {
   }
 }
 
-void ReaderModeTabHelper::SetScrollAnchorScript(std::string script) {
-  scroll_anchor_script_ = std::move(script);
-}
-
 void ReaderModeTabHelper::PageDistillationCompleted(
     ReaderModeAccessPoint access_point,
     const GURL& page_url,
@@ -480,17 +470,6 @@ void ReaderModeTabHelper::CreateReaderModeContent(
         ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get());
     content_tab_helper->SetDelegate(this);
     content_tab_helper->AttachSupportedTabHelpers(web_state_.get());
-  }
-
-  web::WebFramesManager* web_frames_manager =
-      ReaderModeScrollAnchorJavaScriptFeature::GetInstance()
-          ->GetWebFramesManager(web_state_);
-  if (web_frames_manager) {
-    web::WebFrame* main_frame = web_frames_manager->GetMainWebFrame();
-    if (main_frame) {
-      ReaderModeScrollAnchorJavaScriptFeature::GetInstance()->FindScrollAnchor(
-          main_frame);
-    }
   }
 
   std::unique_ptr<ReaderModeDistillerPage> distiller_page =

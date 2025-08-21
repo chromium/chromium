@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
-#import "ios/chrome/browser/reader_mode/model/reader_mode_scroll_anchor_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -42,7 +41,6 @@ void ReaderModeTest::SetUp() {
   web::test::OverrideJavaScriptFeatures(
       profile_.get(),
       {ReaderModeJavaScriptFeature::GetInstance(),
-       ReaderModeScrollAnchorJavaScriptFeature::GetInstance(),
        language::LanguageDetectionJavaScriptFeature::GetInstance()});
 }
 
@@ -122,7 +120,6 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
   web_frame->set_call_java_script_function_callback(base::BindRepeating(^{
     // Overrides the result from DOM distiller heuristic with a custom entry.
     tab_helper->HandleReaderModeHeuristicResult(url, result);
-    web_frame->set_call_java_script_function_callback(base::DoNothing());
   }));
 }
 
