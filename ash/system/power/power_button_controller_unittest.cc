@@ -155,7 +155,6 @@ class PowerButtonControllerTest : public PowerButtonTestBase {
 };
 
 TEST_F(PowerButtonControllerTest, LockScreenIfRequired) {
-  Initialize(LoginStatus::USER);
   EnableTabletMode(true);
   SetShouldLockScreenAutomatically(true);
   ASSERT_FALSE(GetLockedState());
@@ -386,7 +385,6 @@ TEST_F(PowerButtonControllerTest, HoldPowerButtonWhileMenuShownInLaptopMode) {
 // Tests press lock button and power button in sequence.
 TEST_F(PowerButtonControllerTest, PressAfterAnotherReleased) {
   // Tap power button after press lock button should still turn screen off.
-  Initialize(LoginStatus::USER);
   EnableTabletMode(true);
   PressLockButton();
   ReleaseLockButton();
@@ -408,7 +406,6 @@ TEST_F(PowerButtonControllerTest, PressAfterAnotherReleased) {
 TEST_F(PowerButtonControllerTest, PressBeforeAnotherReleased) {
   // Press lock button when power button is still being pressed will be ignored
   // and continue to turn screen off.
-  Initialize(LoginStatus::USER);
   EnableTabletMode(true);
   EXPECT_FALSE(power_manager_client()->backlights_forced_off());
   PressPowerButton();
@@ -825,7 +822,7 @@ TEST_F(PowerButtonControllerTest, MenuItemsToLoginAndLockedStatus) {
   // Should have sign out and feedback items if in guest mode (or, generally,
   // if screen locking is disabled).
   ClearLogin();
-  Initialize(LoginStatus::GUEST);
+  SimulateGuestLogin();
   OpenPowerButtonMenu();
   EXPECT_FALSE(GetLockedState());
   EXPECT_TRUE(power_button_test_api_->MenuHasSignOutItem());
@@ -1416,8 +1413,6 @@ class PowerButtonControllerLegacyTest : public PowerButtonControllerTest {
 // Tests that a power button press before the menu is fully shown will not
 // create a new menu.
 TEST_F(PowerButtonControllerLegacyTest, LegacyPowerButtonIgnoreExtraPress) {
-  Initialize(LoginStatus::USER);
-
   // Enable animations so that we can make sure that they occur.
   ui::ScopedAnimationDurationScaleMode regular_animations(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);

@@ -478,6 +478,24 @@ AccountId AshTestHelper::SimulateUserLogin(
     std::unique_ptr<PrefService> pref_service) {
   AccountId account_id = session_controller_client_->AddUserSession(
       login_info, opt_account_id, std::move(pref_service));
+
+  // Taken some concept from User::CanLock(). Kiosk/Guest accounts are
+  // disallowed to lock screen here. Other accounts are allowed by default.
+  // We may need to consider the pref following the production behavior.
+  switch (login_info.user_type) {
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+    case user_manager::UserType::kPublicAccount:
+      break;
+    case user_manager::UserType::kKioskChromeApp:
+    case user_manager::UserType::kKioskWebApp:
+    case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kKioskArcvmApp:
+      session_controller_client_->SetCanLockScreen(false);
+      break;
+  }
+
   session_controller_client_->SwitchActiveUser(account_id);
 
   if (login_info.activate_session) {

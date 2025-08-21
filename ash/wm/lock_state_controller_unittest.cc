@@ -384,8 +384,6 @@ class LockStateControllerLegacyTest : public LockStateControllerTest {
 // time the button is pressed and shut down when it's pressed from the locked
 // state.
 TEST_F(LockStateControllerLegacyTest, ShowMenuAndShutDown) {
-  Initialize(LoginStatus::USER);
-
   ExpectUnlockedState("1");
 
   // We should request that the screen be locked immediately after seeing the
@@ -419,8 +417,6 @@ TEST_F(LockStateControllerLegacyTest, ShowMenuAndShutDown) {
 // Test that we ignore power button presses when the screen is turned off on an
 // unofficial system.
 TEST_F(LockStateControllerLegacyTest, IgnorePowerButtonIfScreenIsOff) {
-  Initialize(LoginStatus::USER);
-
   // When the screen brightness is at 0%, we shouldn't do anything in response
   // to power button presses.
   SendBrightnessChange(0, kUserCause);
@@ -436,7 +432,6 @@ TEST_F(LockStateControllerLegacyTest, IgnorePowerButtonIfScreenIsOff) {
 }
 
 TEST_F(LockStateControllerLegacyTest, HonorPowerButtonInDockedMode) {
-  Initialize(LoginStatus::USER);
   // Create two outputs, the first internal and the second external.
   display::DisplayConfigurator::DisplayStateList outputs;
 
@@ -479,7 +474,7 @@ TEST_F(LockStateControllerLegacyTest, HonorPowerButtonInDockedMode) {
 // Test the basic operation of the lock button (not logged in).
 TEST_F(LockStateControllerTest, LockButtonBasicNotLoggedIn) {
   // The lock button shouldn't do anything if we aren't logged in.
-  Initialize(LoginStatus::NOT_LOGGED_IN);
+  ClearLogin();
 
   PressLockButton();
   EXPECT_FALSE(lock_state_test_api_->is_animating_lock());
@@ -490,7 +485,8 @@ TEST_F(LockStateControllerTest, LockButtonBasicNotLoggedIn) {
 // Test the basic operation of the lock button (guest).
 TEST_F(LockStateControllerTest, LockButtonBasicGuest) {
   // The lock button shouldn't do anything when we're logged in as a guest.
-  Initialize(LoginStatus::GUEST);
+  ClearLogin();
+  SimulateGuestLogin();
 
   PressLockButton();
   EXPECT_FALSE(lock_state_test_api_->is_animating_lock());
@@ -533,8 +529,6 @@ class LockStateControllerAnimationTest
 TEST_P(LockStateControllerAnimationTest, LockButtonBasic) {
   // If we're logged in as a regular user, we should start the lock timer and
   // the pre-lock animation.
-  Initialize(LoginStatus::USER);
-
   PressLockButton();
   ExpectPreLockAnimationStarted("1");
   AdvancePartially(SessionStateAnimator::ANIMATION_SPEED_UNDOABLE, 0.5f);
@@ -631,7 +625,6 @@ TEST_P(LockStateControllerAnimationTest,
 // slow-close path (e.g. via the wrench menu), test that we still show the
 // fast-close animation.
 TEST_F(LockStateControllerTest, LockWithoutButton) {
-  Initialize(LoginStatus::USER);
   lock_state_controller_->OnStartingLock();
 
   ExpectPreLockAnimationStarted();
@@ -646,7 +639,6 @@ TEST_F(LockStateControllerTest, LockWithoutButton) {
 // When we hear that the process is exiting but we haven't had a chance to
 // display an animation, we should just blank the screen.
 TEST_F(LockStateControllerTest, ShutdownWithoutButton) {
-  Initialize(LoginStatus::USER);
   lock_state_controller_->OnChromeTerminating();
 
   EXPECT_TRUE(test_animator_->AreContainersAnimated(
@@ -661,7 +653,7 @@ TEST_F(LockStateControllerTest, ShutdownWithoutButton) {
 // Test that we display the fast-close animation and shut down when we get an
 // outside request to shut down (e.g. from the login or lock screen).
 TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLoginScreen) {
-  Initialize(LoginStatus::NOT_LOGGED_IN);
+  ClearLogin();
   EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 
   lock_state_controller_->RequestShutdown(
@@ -682,8 +674,6 @@ TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLoginScreen) {
 }
 
 TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLockScreen) {
-  Initialize(LoginStatus::USER);
-
   LockScreen();
 
   AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
@@ -710,7 +700,7 @@ TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLockScreen) {
 // Test that histogram of time delta was recorded if a previous shutdown was
 // initiated from login/lock screen.
 TEST_F(LockStateControllerTest, RequestShutdownFromLoginScreenThenRestart) {
-  Initialize(LoginStatus::NOT_LOGGED_IN);
+  ClearLogin();
   EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 
   lock_state_controller_->RequestShutdown(
@@ -733,8 +723,6 @@ TEST_F(LockStateControllerTest, RequestShutdownFromLoginScreenThenRestart) {
 }
 
 TEST_F(LockStateControllerTest, RequestShutdownFromLockScreenThenRestart) {
-  Initialize(LoginStatus::USER);
-
   LockScreen();
 
   EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
@@ -761,8 +749,6 @@ TEST_F(LockStateControllerTest, RequestShutdownFromLockScreenThenRestart) {
 // Test that histogram of time delta was not recorded if a previous shutdown
 // was not initiated from login/lock screen.
 TEST_F(LockStateControllerLegacyTest, ShowMenuAndShutDownThenRestart) {
-  Initialize(LoginStatus::USER);
-
   ExpectUnlockedState("1");
 
   // We should request that the screen be locked immediately after seeing the
@@ -798,7 +784,6 @@ TEST_F(LockStateControllerLegacyTest, ShowMenuAndShutDownThenRestart) {
 }
 // Test that hidden wallpaper appears and reverts correctly on lock/cancel.
 TEST_P(LockStateControllerAnimationTest, TestHiddenWallpaperLockCancel) {
-  Initialize(LoginStatus::USER);
   HideWallpaper();
 
   ExpectUnlockedState("1");
@@ -828,7 +813,6 @@ TEST_P(LockStateControllerAnimationTest, TestHiddenWallpaperLockCancel) {
 
 // Test that hidden wallpaper appears and revers correctly on lock/unlock.
 TEST_P(LockStateControllerAnimationTest, TestHiddenWallpaperLockUnlock) {
-  Initialize(LoginStatus::USER);
   HideWallpaper();
 
   ExpectUnlockedState("1");
@@ -881,7 +865,6 @@ TEST_P(LockStateControllerAnimationTest, TestHiddenWallpaperLockUnlock) {
 // Tests the default behavior of disabling the touchscreen when the screen is
 // turned off due to user inactivity.
 TEST_F(LockStateControllerTest, DisableTouchscreenForScreenOff) {
-  Initialize(LoginStatus::USER);
   // Run the event loop so PowerButtonDisplayController will get the initial
   // backlights-forced-off state from chromeos::PowerManagerClient.
   base::RunLoop().RunUntilIdle();
@@ -904,7 +887,6 @@ TEST_F(LockStateControllerTest, TouchscreenUnableWhileScreenOff) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kTouchscreenUsableWhileScreenOff);
   ResetPowerButtonController();
-  Initialize(LoginStatus::USER);
   // Run the event loop so PowerButtonDisplayController will get the initial
   // backlights-forced-off state from chromeos::PowerManagerClient.
   base::RunLoop().RunUntilIdle();
@@ -918,7 +900,6 @@ TEST_F(LockStateControllerTest, TouchscreenUnableWhileScreenOff) {
 // Tests that continue pressing the power button for a while after power menu is
 // shown should trigger the cancellable pre-shutdown animation.
 TEST_F(LockStateControllerTest, ShutDownAfterShowPowerMenu) {
-  Initialize(LoginStatus::USER);
   PressPowerButton();
   EXPECT_TRUE(power_button_test_api_->IsMenuOpened());
   ASSERT_TRUE(power_button_test_api_->TriggerPreShutdownTimeout());
@@ -955,8 +936,6 @@ TEST_F(LockStateControllerTest, ShutDownAfterShowPowerMenu) {
 }
 
 TEST_P(LockStateControllerAnimationTest, CancelShouldResetWallpaperBlur) {
-  Initialize(LoginStatus::USER);
-
   ExpectUnlockedState("1");
 
   auto* wallpaper_view = Shell::Get()
@@ -1034,7 +1013,6 @@ class TestLayerCopyAnimator final : public LayerCopyAnimator {
 };
 
 TEST_F(LockStateControllerMockTimeTest, LockWithoutAnimation) {
-  Initialize(LoginStatus::USER);
   EXPECT_FALSE(Shell::Get()->session_controller()->IsScreenLocked());
   auto* shelf_container = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                                               kShellWindowId_ShelfContainer);
@@ -1071,15 +1049,11 @@ class LockStateControllerInformedRestoreTest : public LockStateControllerTest {
 
   // LockStateControllerTest:
   void SetUp() override {
-    // `Initialize` below will perform login for a user.
-    AshTestBase::set_start_session(false);
-
     LockStateControllerTest::SetUp();
 
     CHECK(temp_dir_.CreateUniqueTempDir());
     file_path_ = temp_dir_.GetPath().AppendASCII("test_informed_restore.png");
     SetInformedRestoreImagePathForTest(file_path_);
-    Initialize(LoginStatus::USER);
 
     // Although `kAskEveryTime` is the default value, this is needed because
     // `IsAskEveryTime` checks the pref is explicitly set using `HasPrefPath`.
