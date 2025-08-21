@@ -680,7 +680,7 @@ class LayerTreeHostFreesContextResourcesOnInvisible
                 SetAggressivelyFreeResources(true));
     EXPECT_CALL(*mock_worker_context_support_,
                 SetAggressivelyFreeResources(true))
-        .WillOnce(testing::Invoke([this](bool is_visible) { EndTest(); }));
+        .WillOnce([this](bool is_visible) { EndTest(); });
     PostSetVisibleToMainThread(false);
   }
 };
@@ -704,10 +704,10 @@ class LayerTreeHostFreesWorkerContextResourcesOnZeroMemoryLimit
                 SetAggressivelyFreeResources(true));
     EXPECT_CALL(*mock_worker_context_support_,
                 SetAggressivelyFreeResources(true))
-        .WillOnce(testing::Invoke([this](bool is_visible) {
+        .WillOnce([this](bool is_visible) {
           // End test after verifying both.
           EndTest();
-        }));
+        });
     ManagedMemoryPolicy zero_policy(
         0, gpu::MemoryAllocation::CUTOFF_ALLOW_NOTHING, 0);
     host_impl->SetMemoryPolicy(zero_policy);
