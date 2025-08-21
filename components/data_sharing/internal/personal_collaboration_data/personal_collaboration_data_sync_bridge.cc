@@ -334,6 +334,17 @@ PersonalCollaborationDataSyncBridge::GetSpecificsForStorageKey(
              : std::nullopt;
 }
 
+std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>
+PersonalCollaborationDataSyncBridge::GetTrimmedRemoteSpecifics(
+    const std::string& storage_key) const {
+  sync_pb::EntitySpecifics specifics =
+      change_processor()->GetPossiblyTrimmedRemoteSpecifics(storage_key);
+  if (specifics.has_shared_tab_group_account_data()) {
+    return specifics.shared_tab_group_account_data();
+  }
+  return std::nullopt;
+}
+
 const std::unordered_map<std::string,
                          sync_pb::SharedTabGroupAccountDataSpecifics>&
 PersonalCollaborationDataSyncBridge::GetAllSpecifics() const {

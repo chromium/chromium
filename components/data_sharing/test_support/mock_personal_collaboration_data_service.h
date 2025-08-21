@@ -29,7 +29,8 @@ class MockPersonalCollaborationDataService
               CreateOrUpdateSpecifics,
               (SpecificsType,
                const std::string&,
-               const sync_pb::SharedTabGroupAccountDataSpecifics&));
+               base::OnceCallback<void(
+                   sync_pb::SharedTabGroupAccountDataSpecifics* specifics)>));
   MOCK_METHOD(void, DeleteSpecifics, (SpecificsType, const std::string&));
   MOCK_METHOD(bool, IsInitialized, (), (const));
 };

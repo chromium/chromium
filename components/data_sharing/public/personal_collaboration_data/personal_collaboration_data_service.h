@@ -76,11 +76,26 @@ class PersonalCollaborationDataService : public KeyedService,
   GetAllSpecifics() const = 0;
 
   // Called to create or update the specifics associated with the given storage
-  // key.
+  // key. This function is intentionally re-entrant. Callers are expected to
+  // pass in a lambda that handles updating the specifics.
+  //
+  // This is necessary because the service need to provide a trimmed specifics
+  // object (with unknown fields kept) for the caller to populate.
+  //
+  // Example:
+  // service->CreateOrUpdateSpecifics(
+  //     SpecificsType::kSharedTabGroupSpecifics,
+  //     "my_storage_key",
+  //     base::BindOnce(
+  //         [&](sync_pb::SharedTabGroupAccountDataSpecifics* specifics) {
+  //           specifics->mutable_shared_tab_group_details()->set_title("New
+  //           Title");
+  //         }));
   virtual void CreateOrUpdateSpecifics(
       SpecificsType specifics_type,
       const std::string& storage_key,
-      const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) = 0;
+      base::OnceCallback<void(
+          sync_pb::SharedTabGroupAccountDataSpecifics* specifics)> mutator) = 0;
 
   // Deletes a specifics associated with the given storage key.
   virtual void DeleteSpecifics(SpecificsType specifics_type,

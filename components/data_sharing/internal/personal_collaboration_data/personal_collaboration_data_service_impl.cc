@@ -110,20 +110,30 @@ PersonalCollaborationDataServiceImpl::GetAllSpecifics() const {
 void PersonalCollaborationDataServiceImpl::CreateOrUpdateSpecifics(
     SpecificsType specifics_type,
     const std::string& storage_key,
-    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
+    base::OnceCallback<
+        void(sync_pb::SharedTabGroupAccountDataSpecifics* specifics)> mutator) {
+  const std::string storage_key_with_type =
+      CreateStorageKeyWithType(specifics_type, storage_key);
+  std::optional<sync_pb::SharedTabGroupAccountDataSpecifics> specifics =
+      bridge_->GetTrimmedRemoteSpecifics(storage_key_with_type);
+  if (!specifics.has_value()) {
+    specifics = sync_pb::SharedTabGroupAccountDataSpecifics();
+  }
+
+  // The callers should fill in the specifics data in the callback function.
+  std::move(mutator).Run(&specifics.value());
   switch (specifics_type) {
     case SpecificsType::kSharedTabSpecifics:
-      CHECK(specifics.has_shared_tab_details());
+      CHECK(specifics->has_shared_tab_details());
       break;
     case SpecificsType::kSharedTabGroupSpecifics:
-      CHECK(specifics.has_shared_tab_group_details());
+      CHECK(specifics->has_shared_tab_group_details());
       break;
     default:
       NOTREACHED();
   }
 
-  bridge_->CreateOrUpdateSpecifics(
-      CreateStorageKeyWithType(specifics_type, storage_key), specifics);
+  bridge_->CreateOrUpdateSpecifics(storage_key_with_type, specifics.value());
 }
 
 void PersonalCollaborationDataServiceImpl::DeleteSpecifics(
