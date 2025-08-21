@@ -72,7 +72,8 @@ def lastDatum(platform):
     latest = int(
         urllib.request.urlopen(
             'https://storage.googleapis.com/storage/v1/b/'
-            'chromium-browser-snapshots/o/%s%%2FLAST_CHANGE?alt=media' % platform).read())
+            'chromium-browser-snapshots/o/%s%%2FLAST_CHANGE?alt=media' %
+            platform).read()) - 5000
     return max(MIN_VERSION,
                find(platform, latest - latest % 1000, latest))
 
