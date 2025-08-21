@@ -38,18 +38,6 @@ public abstract class PasswordManagerBackendSupportHelper {
         return false;
     }
 
-    /**
-     * Returns whether the GMS Core version is not supported and needs to be updated. This method is
-     * now deprecated, use {@link PasswordManagerUtilBridge.areMinUpmRequirementsMet()} instead.
-     * TODO(b/329100547): Remove this method after the override in the internal repo is removed.
-     *
-     * @return True if update is needed, false otherwise.
-     */
-    @Deprecated
-    public boolean isUpdateNeeded() {
-        return false;
-    }
-
     public static void setInstanceForTesting(
             PasswordManagerBackendSupportHelper backendSupportHelper) {
         var oldValue = sInstance;

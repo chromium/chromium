@@ -31,19 +31,8 @@ public class FakePasswordManagerBackendSupportHelperTest {
     }
 
     @Test
-    public void testUpdateNotNeeded() {
-        assertFalse(mFakeHelper.isUpdateNeeded());
-    }
-
-    @Test
     public void testSetBackendPresentToTrue() {
         mFakeHelper.setBackendPresent(true);
         assertTrue(mFakeHelper.isBackendPresent());
-    }
-
-    @Test
-    public void testSetUpdateNeededToTrue() {
-        mFakeHelper.setUpdateNeeded(true);
-        assertTrue(mFakeHelper.isUpdateNeeded());
     }
 }
