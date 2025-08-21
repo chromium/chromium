@@ -28,7 +28,7 @@ ExtensionSettingsTestBase::ExtensionSettingsTestBase()
 ExtensionSettingsTestBase::~ExtensionSettingsTestBase() = default;
 
 void ExtensionSettingsTestBase::InstallGoodExtension() {
-  EXPECT_TRUE(InstallExtension(test_data_dir_.AppendASCII("good.crx")));
+  EXPECT_TRUE(InstallExtension(test_data_dir_.AppendASCII("good_mv3")));
 }
 
 void ExtensionSettingsTestBase::InstallErrorsExtension() {
