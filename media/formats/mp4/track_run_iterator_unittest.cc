@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/track_run_iterator.h"
 
 #include <stddef.h>
@@ -634,7 +629,8 @@ class TrackRunIteratorTest : public testing::Test {
     sinf->info.track_encryption.default_crypt_byte_block = 1;
     sinf->info.track_encryption.default_skip_byte_block = 9;
     sinf->info.track_encryption.default_constant_iv_size = 16;
-    memcpy(sinf->info.track_encryption.default_constant_iv, kIv3.data(), 16);
+    base::as_writable_byte_span(sinf->info.track_encryption.default_constant_iv)
+        .copy_from(base::as_byte_span(kIv3));
     sinf->info.track_encryption.default_kid.assign(
         kKeyId.data(),
         base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
@@ -647,20 +643,23 @@ class TrackRunIteratorTest : public testing::Test {
     track_cenc_group.entries[0].crypt_byte_block = 1;
     track_cenc_group.entries[0].skip_byte_block = 9;
     track_cenc_group.entries[0].constant_iv_size = 16;
-    memcpy(track_cenc_group.entries[0].constant_iv, kIv4.data(), 16);
+    base::as_writable_byte_span(track_cenc_group.entries[0].constant_iv)
+        .copy_from(base::as_byte_span(kIv4));
 
     frag->sample_group_description.entries[1].iv_size = 0;
     frag->sample_group_description.entries[1].crypt_byte_block = 1;
     frag->sample_group_description.entries[1].skip_byte_block = 9;
     frag->sample_group_description.entries[1].constant_iv_size = 16;
-    memcpy(frag->sample_group_description.entries[1].constant_iv, kIv5.data(),
-           16);
+    base::as_writable_byte_span(
+        frag->sample_group_description.entries[1].constant_iv)
+        .copy_from(base::as_byte_span(kIv5));
     frag->sample_group_description.entries[2].iv_size = 0;
     frag->sample_group_description.entries[2].crypt_byte_block = 1;
     frag->sample_group_description.entries[2].skip_byte_block = 9;
     frag->sample_group_description.entries[2].constant_iv_size = 16;
-    memcpy(frag->sample_group_description.entries[2].constant_iv, kIv5.data(),
-           16);
+    base::as_writable_byte_span(
+        frag->sample_group_description.entries[2].constant_iv)
+        .copy_from(base::as_byte_span(kIv5));
   }
 
   void AddSampleEncryptionCbcs(TrackFragment* frag) {
@@ -1126,7 +1125,7 @@ TEST_F(TrackRunIteratorTest, SharedAuxInfoTest) {
   EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
   std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
   ASSERT_EQ(std::size(kIv1), config->iv().size());
-  EXPECT_TRUE(!memcmp(kIv1, config->iv().data(), config->iv().size()));
+  EXPECT_EQ(base::span(kIv1), base::span(config->iv()));
   iter_->AdvanceSample();
   EXPECT_EQ(iter_->GetMaxClearOffset(), 50);
   iter_->AdvanceRun();
@@ -1135,7 +1134,7 @@ TEST_F(TrackRunIteratorTest, SharedAuxInfoTest) {
   EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 200);
   ASSERT_EQ(std::size(kIv1), config->iv().size());
-  EXPECT_TRUE(!memcmp(kIv1, config->iv().data(), config->iv().size()));
+  EXPECT_EQ(base::span(kIv1), base::span(config->iv()));
   iter_->AdvanceSample();
   EXPECT_EQ(iter_->GetMaxClearOffset(), 201);
 }
