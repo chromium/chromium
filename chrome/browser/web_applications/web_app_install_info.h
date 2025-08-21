@@ -17,7 +17,6 @@
 #include "base/containers/flat_set.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -27,6 +26,7 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom-shared.h"
@@ -269,6 +269,19 @@ struct WebAppInstallInfo {
   // Creates a deep copy of this struct.
   WebAppInstallInfo Clone() const;
 
+  // Returns the version of the Isolated Web App.
+  // PRECONDITION: Must only be called if an IWA version is actually set.
+  const IwaVersion& isolated_web_app_version() const {
+    CHECK(isolated_web_app_version_.has_value())
+        << "Attempted to access Isolated Web App version when not set.";
+    return *isolated_web_app_version_;
+  }
+
+  // Sets the version for an Isolated Web App.
+  void set_isolated_web_app_version(IwaVersion version) {
+    isolated_web_app_version_ = std::move(version);
+  }
+
   // ID specified in the manifest.
   // Guaranteed to be valid & non-empty & same-origin with `start_url()` & have
   // no "#ref" part in the URL.
@@ -454,9 +467,6 @@ struct WebAppInstallInfo {
   // policy_ids but rather just a supplement for tricky cases.
   std::vector<std::string> additional_policy_ids;
 
-  // Used to specify the version of an Isolated Web App that is being installed.
-  base::Version isolated_web_app_version;
-
   // Bookkeeping details about attempts to fix broken icons from sync installed
   // web apps.
   std::optional<proto::GeneratedIconFix> generated_icon_fix;
@@ -482,6 +492,9 @@ struct WebAppInstallInfo {
 
   // See `manifest_id()`.
   webapps::ManifestId manifest_id_;
+
+  // Used to specify the version of an Isolated Web App that is being installed.
+  std::optional<IwaVersion> isolated_web_app_version_;
 
   // See `start_url()`.
   GURL start_url_;

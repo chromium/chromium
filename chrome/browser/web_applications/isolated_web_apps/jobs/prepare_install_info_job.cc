@@ -115,7 +115,7 @@ void PrepareInstallInfoJob::ParseInstallInfoFromManifest(
 
 void PrepareInstallInfoJob::FinishJob(WebAppInstallInfo info) {
   CHECK(!expected_version_ ||
-        *expected_version_ == info.isolated_web_app_version);
+        *expected_version_ == info.isolated_web_app_version().version());
   url_loader_.reset();
   std::move(callback_).Run(std::move(info));
 }

@@ -644,7 +644,15 @@ void IsolatedWebAppInstallCommandHelper::OnGettingInstallInfoFromManifest(
     base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
         callback,
     std::unique_ptr<WebAppInstallInfo> install_info) {
-  install_info->isolated_web_app_version = std::move(parsed_version);
+  // TODO: (crbug.com/437038363) Adjust to IwaVersion.
+  const auto iwa_version = IwaVersion::Create(parsed_version.GetString());
+  if (!iwa_version.has_value()) {
+    std::move(callback).Run(base::unexpected(base::StrCat(
+        {"Failed to parse IWA version string: ", parsed_version.GetString()})));
+    return;
+  }
+
+  install_info->set_isolated_web_app_version(*iwa_version);
 
   if (install_info->title.empty()) {
     std::move(callback).Run(base::unexpected(base::StrCat(

@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/types/expected.h"
-#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 
 class Profile;
@@ -41,7 +41,7 @@ class SignedWebBundleMetadata {
       const IsolatedWebAppUrlInfo& url_info,
       const IwaSourceBundleWithMode& source,
       const std::u16string& app_name,
-      const base::Version& version,
+      const IwaVersion& version,
       const IconBitmaps& icons);
 
   ~SignedWebBundleMetadata();
@@ -54,7 +54,7 @@ class SignedWebBundleMetadata {
 
   const std::u16string& app_name() const { return app_name_; }
 
-  const base::Version& version() const { return version_; }
+  const IwaVersion& version() const { return version_; }
 
   const IconBitmaps& icons() const { return icons_; }
 
@@ -64,12 +64,12 @@ class SignedWebBundleMetadata {
   SignedWebBundleMetadata(const IsolatedWebAppUrlInfo& url_info,
                           const IwaSourceBundleWithMode& source,
                           const std::u16string& app_name,
-                          const base::Version& version,
+                          const IwaVersion& version,
                           const IconBitmaps& icons);
 
   IsolatedWebAppUrlInfo url_info_;
   std::u16string app_name_;
-  base::Version version_;
+  IwaVersion version_;
   IconBitmaps icons_;
 };
 

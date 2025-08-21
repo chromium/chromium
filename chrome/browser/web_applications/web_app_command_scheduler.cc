@@ -372,7 +372,7 @@ void WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
 void WebAppCommandScheduler::CheckIsolatedWebAppBundleInstallability(
     const SignedWebBundleMetadata& bundle_metadata,
     base::OnceCallback<void(IsolatedInstallabilityCheckResult,
-                            std::optional<base::Version>)> callback,
+                            std::optional<IwaVersion>)> callback,
     const base::Location& call_location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<CheckIsolatedWebAppBundleInstallabilityCommand>(

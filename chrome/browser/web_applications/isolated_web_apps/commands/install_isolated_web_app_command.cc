@@ -276,8 +276,8 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
         ReportFailure(iwa_error, web_app_error, failure.message);
       });
 
-  GetMutableDebugValue().Set("actual_version",
-                             install_info.isolated_web_app_version.GetString());
+  GetMutableDebugValue().Set(
+      "actual_version", install_info.isolated_web_app_version().GetString());
   GetMutableDebugValue().Set("app_title", install_info.title);
 
   WebAppInstallFinalizer::FinalizeOptions options(install_surface_);
@@ -289,7 +289,7 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
       install_info, options,
       base::BindOnce(&InstallIsolatedWebAppCommand::OnFinalizeInstall,
                      weak_factory_.GetWeakPtr(),
-                     install_info.isolated_web_app_version));
+                     install_info.isolated_web_app_version().version()));
 }
 
 void InstallIsolatedWebAppCommand::OnFinalizeInstall(

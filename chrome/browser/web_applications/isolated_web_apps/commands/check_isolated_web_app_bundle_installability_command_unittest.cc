@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -71,7 +70,7 @@ class CheckIsolatedWebAppBundleInstallabilityCommandTest : public WebAppTest {
   void ScheduleCommand(
       const SignedWebBundleMetadata& bundle_metadata,
       base::OnceCallback<void(IsolatedInstallabilityCheckResult,
-                              std::optional<base::Version>)> callback) {
+                              std::optional<IwaVersion>)> callback) {
     fake_provider().scheduler().CheckIsolatedWebAppBundleInstallability(
         bundle_metadata, std::move(callback));
   }
@@ -91,11 +90,11 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
                        GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
-                         std::optional<base::Version>>
+                         std::optional<IwaVersion>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
   IsolatedInstallabilityCheckResult result = command_future.Get<0>();
-  std::optional<base::Version> installed_version = command_future.Get<1>();
+  std::optional<IwaVersion> installed_version = command_future.Get<1>();
 
   EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kInstallable);
   EXPECT_FALSE(installed_version.has_value());
@@ -111,14 +110,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
                        GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
-                         std::optional<base::Version>>
+                         std::optional<IwaVersion>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
   IsolatedInstallabilityCheckResult result = command_future.Get<0>();
-  std::optional<base::Version> installed_version = command_future.Get<1>();
+  std::optional<IwaVersion> installed_version = command_future.Get<1>();
 
   EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kUpdatable);
-  EXPECT_EQ(installed_version, base::Version("7.7.6"));
+  EXPECT_EQ(installed_version, *IwaVersion::Create("7.7.6"));
 }
 
 TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
@@ -129,14 +128,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
                        GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
-                         std::optional<base::Version>>
+                         std::optional<IwaVersion>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
   IsolatedInstallabilityCheckResult result = command_future.Get<0>();
-  std::optional<base::Version> installed_version = command_future.Get<1>();
+  std::optional<IwaVersion> installed_version = command_future.Get<1>();
 
   EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kOutdated);
-  EXPECT_EQ(installed_version, base::Version("7.7.7"));
+  EXPECT_EQ(installed_version, *IwaVersion::Create("7.7.7"));
 }
 
 TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
@@ -149,14 +148,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
                        GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
-                         std::optional<base::Version>>
+                         std::optional<IwaVersion>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
   IsolatedInstallabilityCheckResult result = command_future.Get<0>();
-  std::optional<base::Version> installed_version = command_future.Get<1>();
+  std::optional<IwaVersion> installed_version = command_future.Get<1>();
 
   EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kOutdated);
-  EXPECT_EQ(installed_version, base::Version("7.7.8"));
+  EXPECT_EQ(installed_version, *IwaVersion::Create("7.7.8"));
 }
 
 class CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest
@@ -176,14 +175,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
                        GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
-                         std::optional<base::Version>>
+                         std::optional<IwaVersion>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
   IsolatedInstallabilityCheckResult result = command_future.Get<0>();
-  std::optional<base::Version> installed_version = command_future.Get<1>();
+  std::optional<IwaVersion> installed_version = command_future.Get<1>();
 
   EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kUpdatable);
-  EXPECT_EQ(installed_version, base::Version("7.7.6"));
+  EXPECT_EQ(installed_version, *IwaVersion::Create("7.7.6"));
 }
 
 TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
@@ -194,14 +193,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
                        GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
-                         std::optional<base::Version>>
+                         std::optional<IwaVersion>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
   IsolatedInstallabilityCheckResult result = command_future.Get<0>();
-  std::optional<base::Version> installed_version = command_future.Get<1>();
+  std::optional<IwaVersion> installed_version = command_future.Get<1>();
 
   EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kUpdatable);
-  EXPECT_EQ(installed_version, base::Version("7.7.7"));
+  EXPECT_EQ(installed_version, *IwaVersion::Create("7.7.7"));
 }
 
 TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
@@ -214,14 +213,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
                        GetBundleMetadata(*app));
 
   base::test::TestFuture<IsolatedInstallabilityCheckResult,
-                         std::optional<base::Version>>
+                         std::optional<IwaVersion>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
   IsolatedInstallabilityCheckResult result = command_future.Get<0>();
-  std::optional<base::Version> installed_version = command_future.Get<1>();
+  std::optional<IwaVersion> installed_version = command_future.Get<1>();
 
   EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kOutdated);
-  EXPECT_EQ(installed_version, base::Version("7.7.8"));
+  EXPECT_EQ(installed_version, *IwaVersion::Create("7.7.8"));
 }
 
 }  // namespace

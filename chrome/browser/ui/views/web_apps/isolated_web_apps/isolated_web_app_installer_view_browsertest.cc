@@ -92,7 +92,7 @@ SignedWebBundleMetadata CreateTestMetadata() {
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
           web_package::SignedWebBundleId::CreateRandomForProxyMode()),
       IwaSourceBundleProdMode(base::FilePath()), u"Test Isolated Web App",
-      base::Version("0.0.1"), icons);
+      *IwaVersion::Create("0.0.1"), icons);
 }
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test

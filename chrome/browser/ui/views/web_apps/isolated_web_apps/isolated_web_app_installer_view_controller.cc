@@ -119,7 +119,8 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
   void operator()(const InstallabilityChecker::BundleUpdatable& updatable) {
     model_->SetDialog(
         IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
-            updatable.metadata.app_name(), updatable.installed_version});
+            updatable.metadata.app_name(),
+            updatable.installed_version.version()});
   }
 
   void operator()(const InstallabilityChecker::BundleOutdated& outdated) {
@@ -127,7 +128,8 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
     // more specific error messages for newer vs same version already installed.
     model_->SetDialog(
         IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
-            outdated.metadata.app_name(), outdated.installed_version});
+            outdated.metadata.app_name(),
+            outdated.installed_version.version()});
   }
 
   void operator()(const InstallabilityChecker::ProfileShutdown&) {
@@ -445,7 +447,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
           IsolatedWebAppInstallSource::FromGraphicalInstaller(
               model_->source().WithFileOp(IwaSourceBundleProdFileOp::kCopy,
                                           IwaSourceBundleDevFileOp::kCopy)),
-          metadata.version(),
+          metadata.version().version(),
           /*optional_keep_alive=*/nullptr,
           /*optional_profile_keep_alive=*/nullptr,
           callback_delayer_->StartDelayingCallback(base::BindOnce(

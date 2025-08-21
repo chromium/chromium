@@ -142,7 +142,7 @@ void SignedWebBundleMetadata::Create(
                 -> SignedWebBundleMetadata {
               return SignedWebBundleMetadata(
                   url_info, source, install_info.title,
-                  install_info.isolated_web_app_version,
+                  install_info.isolated_web_app_version(),
                   install_info.icon_bitmaps);
             }));
       },
@@ -156,7 +156,7 @@ SignedWebBundleMetadata SignedWebBundleMetadata::CreateForTesting(
     const IsolatedWebAppUrlInfo& url_info,
     const IwaSourceBundleWithMode& source,
     const std::u16string& app_name,
-    const base::Version& version,
+    const IwaVersion& version,
     const IconBitmaps& icons) {
   return SignedWebBundleMetadata(url_info, source, app_name, version, icons);
 }
@@ -165,7 +165,7 @@ SignedWebBundleMetadata::SignedWebBundleMetadata(
     const IsolatedWebAppUrlInfo& url_info,
     const IwaSourceBundleWithMode& source,
     const std::u16string& app_name,
-    const base::Version& version,
+    const IwaVersion& version,
     const IconBitmaps& icons)
     : url_info_(url_info),
       app_name_(app_name),

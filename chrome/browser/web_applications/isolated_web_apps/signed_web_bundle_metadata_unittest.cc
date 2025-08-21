@@ -43,7 +43,7 @@ using testing::Property;
 constexpr std::string_view kIconPath = "/icon.png";
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
-                                                const base::Version version) {
+                                                const IwaVersion version) {
   auto manifest = blink::mojom::Manifest::New();
   manifest->id = application_url.DeprecatedGetOriginAsURL();
   manifest->scope = application_url.Resolve("/");
@@ -103,7 +103,7 @@ class SignedWebBundleMetadataTest : public WebAppTest {
         url_info.origin().GetURL().Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
     page_state.manifest_before_default_processing = CreateDefaultManifest(
-        url_info.origin().GetURL(), base::Version("3.4.5"));
+        url_info.origin().GetURL(), *IwaVersion::Create("3.4.5"));
   }
 
  private:
@@ -131,7 +131,7 @@ TEST_F(SignedWebBundleMetadataTest, Succeeds) {
       ValueIs(AllOf(
           Property(&SignedWebBundleMetadata::app_name, Eq(u"test app name")),
           Property(&SignedWebBundleMetadata::version,
-                   Eq(base::Version("3.4.5"))),
+                   Eq(*IwaVersion::Create("3.4.5"))),
           Property(&SignedWebBundleMetadata::app_id, Eq(url_info.app_id())))));
 }
 

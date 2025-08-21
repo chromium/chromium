@@ -395,15 +395,15 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   if (options.iwa_options) {
     UpdateIsolationDataAndResetPendingUpdateInfo(
         web_app.get(), options.iwa_options->location,
-        web_app_info.isolated_web_app_version,
+        web_app_info.isolated_web_app_version().version(),
         options.iwa_options->integrity_block_data);
 
-      HostContentSettingsMap* const host_content_settings_map =
-          HostContentSettingsMapFactory::GetForProfile(profile_);
+    HostContentSettingsMap* const host_content_settings_map =
+        HostContentSettingsMapFactory::GetForProfile(profile_);
 
-      host_content_settings_map->SetContentSettingDefaultScope(
-          web_app_info.scope, web_app_info.scope, ContentSettingsType::POPUPS,
-          CONTENT_SETTING_ALLOW);
+    host_content_settings_map->SetContentSettingDefaultScope(
+        web_app_info.scope, web_app_info.scope, ContentSettingsType::POPUPS,
+        CONTENT_SETTING_ALLOW);
   }
 
   web_app->SetParentAppId(web_app_info.parent_app_id);
@@ -477,7 +477,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     CHECK(pending_update_info.has_value())
         << "Isolated Web Apps can only be updated if "
            "`IsolationData::PendingUpdateInfo` is set.";
-    CHECK_EQ(web_app_info.isolated_web_app_version,
+    CHECK_EQ(web_app_info.isolated_web_app_version().version(),
              pending_update_info->version);
     UpdateIsolationDataAndResetPendingUpdateInfo(
         web_app.get(), pending_update_info->location,

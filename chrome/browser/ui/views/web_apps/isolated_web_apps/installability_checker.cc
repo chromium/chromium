@@ -81,18 +81,16 @@ void InstallabilityChecker::OnLoadedMetadata(
 void InstallabilityChecker::OnInstallabilityChecked(
     SignedWebBundleMetadata metadata,
     IsolatedInstallabilityCheckResult installability_check_result,
-    std::optional<base::Version> installed_version) {
+    std::optional<IwaVersion> installed_version) {
   switch (installability_check_result) {
     case IsolatedInstallabilityCheckResult::kInstallable:
       std::move(callback_).Run(BundleInstallable{metadata});
       return;
     case IsolatedInstallabilityCheckResult::kUpdatable:
-      CHECK(installed_version.has_value());
       std::move(callback_).Run(
           BundleUpdatable{metadata, installed_version.value()});
       return;
     case IsolatedInstallabilityCheckResult::kOutdated:
-      CHECK(installed_version.has_value());
       std::move(callback_).Run(
           BundleOutdated{metadata, installed_version.value()});
       return;

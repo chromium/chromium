@@ -331,7 +331,7 @@ class WebAppCommandScheduler {
   virtual void CheckIsolatedWebAppBundleInstallability(
       const SignedWebBundleMetadata& bundle_metadata,
       base::OnceCallback<void(IsolatedInstallabilityCheckResult,
-                              std::optional<base::Version>)> callback,
+                              std::optional<IwaVersion>)> callback,
       const base::Location& call_location = FROM_HERE);
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -299,24 +299,26 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::SetPendingUpdateInfo(
       WebAppInstallInfo install_info, std::move(result),
       [&](const auto& failure) { ReportFailure(failure.message); });
 
-  GetMutableDebugValue().Set("actual_version",
-                             install_info.isolated_web_app_version.GetString());
+  GetMutableDebugValue().Set(
+      "actual_version", install_info.isolated_web_app_version().GetString());
   GetMutableDebugValue().Set("app_title", install_info.title);
 
   VersionChangeValidationResult validation_result =
       ValidateVersionChangeFeasibility(
-          install_info.isolated_web_app_version, *installed_version_,
-          allow_downgrades_, same_version_update_allowed_by_key_rotation_);
+          install_info.isolated_web_app_version().version(),
+          *installed_version_, allow_downgrades_,
+          same_version_update_allowed_by_key_rotation_);
 
   if (validation_result != VersionChangeValidationResult::kAllowed) {
-    ReportVersionValidationFailure(validation_result,
-                                   install_info.isolated_web_app_version);
+    ReportVersionValidationFailure(
+        validation_result, install_info.isolated_web_app_version().version());
     return;
   }
 
-  ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate(base::BindOnce(
-      &IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized,
-      weak_factory_.GetWeakPtr(), install_info.isolated_web_app_version));
+  ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate(
+      base::BindOnce(&IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized,
+                     weak_factory_.GetWeakPtr(),
+                     install_info.isolated_web_app_version().version()));
 
   WebApp* app_to_update = update->UpdateApp(url_info_.app_id());
   CHECK(app_to_update);
@@ -325,7 +327,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::SetPendingUpdateInfo(
       IsolationData::Builder(*app_to_update->isolation_data())
           .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
               *destination_storage_location_,
-              install_info.isolated_web_app_version,
+              install_info.isolated_web_app_version().version(),
               std::move(integrity_block_data_)))
           .Build());
 }

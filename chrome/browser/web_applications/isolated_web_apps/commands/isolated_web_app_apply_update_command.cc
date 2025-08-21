@@ -229,8 +229,8 @@ void IsolatedWebAppApplyUpdateCommand::FinalizeUpdate(
       WebAppInstallInfo install_info, std::move(result),
       [&](const auto& failure) { ReportFailure(failure.message); });
 
-  GetMutableDebugValue().Set("actual_version",
-                             install_info.isolated_web_app_version.GetString());
+  GetMutableDebugValue().Set(
+      "actual_version", install_info.isolated_web_app_version().GetString());
   GetMutableDebugValue().Set("app_title", install_info.title);
 
   lock_->install_finalizer().FinalizeUpdate(

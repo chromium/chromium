@@ -82,7 +82,7 @@ MATCHER_P3(WithMetadata, app_id, app_name, version, "") {
       AllOf(Property("app_id", &SignedWebBundleMetadata::app_id, app_id),
             Property("app_name", &SignedWebBundleMetadata::app_name, app_name),
             Property("version", &SignedWebBundleMetadata::version,
-                     base::Version(version))),
+                     *IwaVersion::Create(version))),
       arg, result_listener);
 }
 
@@ -104,11 +104,11 @@ SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
       web_package::SignedWebBundleId::CreateRandomForProxyMode());
   return SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(base::FilePath()), app_name,
-      base::Version(version), IconBitmaps());
+      *IwaVersion::Create(version), IconBitmaps());
 }
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& iwa_url,
-                                                const base::Version version) {
+                                                const IwaVersion version) {
   auto manifest = blink::mojom::Manifest::New();
   manifest->id = iwa_url;
   manifest->scope = iwa_url.Resolve("/");
@@ -258,7 +258,7 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
     page_state.manifest_url = iwa_url.Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
     page_state.manifest_before_default_processing =
-        CreateDefaultManifest(iwa_url, base::Version(version));
+        CreateDefaultManifest(iwa_url, *IwaVersion::Create(version));
   }
 
  private:
@@ -453,7 +453,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
-      base::Version("1.0"), IconBitmaps());
+      *IwaVersion::Create("1.0"), IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
@@ -487,7 +487,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
-      base::Version("1.0"), IconBitmaps());
+      *IwaVersion::Create("1.0"), IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
@@ -528,7 +528,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
-      base::Version("2.0"), IconBitmaps());
+      *IwaVersion::Create("2.0"), IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
