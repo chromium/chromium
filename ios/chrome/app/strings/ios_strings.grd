@@ -5527,7 +5527,7 @@ Handoff must also be enabled in the General section of Settings, and your device
         Close
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_DESCRIPTION" desc="Descriptive text showing under the title on the view that lists all invalid passwords. [iOS only]">
-        The following passwords were not imported to Google Password Manager, because they doesn’t match with the requirements.
+        The following passwords were not imported to Google Password Manager, because they don't match with the requirements.
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_TITLE" desc="Title of the view that lists all invalid passwords. [iOS only]">
         Invalid Data
