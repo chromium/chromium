@@ -3331,6 +3331,8 @@ static_library("browser") {
       "supervised_user/child_accounts/child_account_service_android.h",
       "tab/tab_state_storage_backend.cc",
       "tab/tab_state_storage_backend.h",
+      "tab/tab_state_storage_database.cc",
+      "tab/tab_state_storage_database.h",
       "tab/tab_state_storage_service.cc",
       "tab/tab_state_storage_service.h",
       "tab/tab_state_storage_service_factory.cc",
