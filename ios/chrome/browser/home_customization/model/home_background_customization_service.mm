@@ -9,6 +9,7 @@
 #import <set>
 
 #import "base/base64.h"
+#import "base/containers/adapters.h"
 #import "base/logging.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
@@ -265,7 +266,7 @@ void HomeBackgroundCustomizationService::StoreCurrentTheme() {
 void HomeBackgroundCustomizationService::StoreRecentlyUsedBackgroundsList() {
   base::Value::List recently_used_backgrounds_list;
   for (const RecentlyUsedBackgroundInternal& background :
-       recently_used_backgrounds_) {
+       base::Reversed(recently_used_backgrounds_)) {
     if (std::holds_alternative<sync_pb::ThemeSpecificsIos>(background)) {
       sync_pb::ThemeSpecificsIos theme =
           std::get<sync_pb::ThemeSpecificsIos>(background);
