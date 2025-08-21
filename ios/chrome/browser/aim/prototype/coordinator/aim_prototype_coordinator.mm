@@ -30,6 +30,8 @@
 @implementation AIMPrototypeCoordinator {
   AIMPrototypeViewController* _viewController;
   AIMPrototypeMediator* _mediator;
+  /// The prewarmed picker as it takes time to appear.
+  PHPickerViewController* _picker;
 }
 
 - (void)start {
@@ -69,6 +71,7 @@
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
   _viewController = nil;
+  _picker = nil;
   [_mediator disconnect];
   _mediator = nil;
 }
@@ -98,14 +101,11 @@
 
 - (void)aimPrototypeViewControllerDidTapGalleryButton:
     (AIMPrototypeViewController*)viewController {
-  PHPickerConfiguration* config = [[PHPickerConfiguration alloc]
-      initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
-  config.selectionLimit = 1;
-  config.filter = [PHPickerFilter imagesFilter];
-  PHPickerViewController* picker =
-      [[PHPickerViewController alloc] initWithConfiguration:config];
-  picker.delegate = self;
-  [_viewController presentViewController:picker animated:YES completion:nil];
+  if (!_picker) {
+    [self aimPrototypeViewControllerMayShowGalleryPicker:viewController];
+  }
+  [_viewController presentViewController:_picker animated:YES completion:nil];
+  _picker = nil;
 }
 
 - (void)aimPrototypeViewControllerDidTapCameraButton:
@@ -119,6 +119,19 @@
   picker.delegate = self;
   picker.sourceType = UIImagePickerControllerSourceTypeCamera;
   [_viewController presentViewController:picker animated:YES completion:nil];
+}
+
+- (void)aimPrototypeViewControllerMayShowGalleryPicker:
+    (AIMPrototypeViewController*)viewController {
+  if (_picker) {
+    return;
+  }
+  PHPickerConfiguration* config = [[PHPickerConfiguration alloc]
+      initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
+  config.selectionLimit = 1;
+  config.filter = [PHPickerFilter imagesFilter];
+  _picker = [[PHPickerViewController alloc] initWithConfiguration:config];
+  _picker.delegate = self;
 }
 
 #pragma mark - PHPickerViewControllerDelegate

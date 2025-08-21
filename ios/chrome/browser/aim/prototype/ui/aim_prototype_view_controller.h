@@ -20,6 +20,8 @@
     (AIMPrototypeViewController*)viewController;
 - (void)aimPrototypeViewControllerDidTapCameraButton:
     (AIMPrototypeViewController*)viewController;
+- (void)aimPrototypeViewControllerMayShowGalleryPicker:
+    (AIMPrototypeViewController*)viewController;
 @end
 
 // View controller for the AIM prototype.

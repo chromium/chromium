@@ -257,6 +257,9 @@ const CGFloat kGenericButtonHeight = 32.0f;
   UIButton* plusButton =
       [self createButtonWithImage:DefaultSymbolWithPointSize(
                                       kPlusSymbol, kSymbolActionPointSize)];
+  [plusButton addTarget:self
+                 action:@selector(plusButtonTouchDown)
+       forControlEvents:UIControlEventTouchDown];
   plusButton.showsMenuAsPrimaryAction = YES;
 
   __weak __typeof__(self) weakSelf = self;
@@ -451,6 +454,10 @@ const CGFloat kGenericButtonHeight = 32.0f;
 - (void)aimButtonTapped {
   _aiModeEnabled = !_aiModeEnabled;
   [self updateAIMButtonAppearance];
+}
+
+- (void)plusButtonTouchDown {
+  [self.delegate aimPrototypeViewControllerMayShowGalleryPicker:self];
 }
 
 - (void)micButtonTapped {
