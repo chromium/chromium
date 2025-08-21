@@ -102,6 +102,7 @@ public class LocationBarCoordinator
     private UrlBarCoordinator mUrlCoordinator;
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private StatusCoordinator mStatusCoordinator;
+    private NavigationAttachmentsCoordinator mNavigationAttachmentsCoordinator;
     private final WindowAndroid mWindowAndroid;
     private LocationBarMediator mLocationBarMediator;
     private View mUrlBar;
@@ -298,6 +299,8 @@ public class LocationBarCoordinator
                         pageInfoAction,
                         merchantTrustSignalsCoordinatorSupplier,
                         browserControlsVisibilityDelegate);
+        mNavigationAttachmentsCoordinator =
+                new NavigationAttachmentsCoordinator(context, mLocationBarLayout);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
 
@@ -413,6 +416,11 @@ public class LocationBarCoordinator
 
         mStatusCoordinator.destroy();
         mStatusCoordinator = null;
+
+        if (mNavigationAttachmentsCoordinator != null) {
+            mNavigationAttachmentsCoordinator.destroy();
+            mNavigationAttachmentsCoordinator = null;
+        }
 
         mLocationBarLayout.destroy();
         mLocationBarLayout = null;
