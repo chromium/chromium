@@ -76,6 +76,14 @@ std::optional<optimization_guide::TargetNodeInfo> FindNodeWithID(
     const std::string_view document_identifier,
     const int dom_node_id);
 
+
+// Returns the URL to use for frame metadata given the Document's
+// `committed_url` and `committed_origin`. The `committed_url` may not be a
+// valid origin (for example about:blank or data: URLs) but the origin will be
+// the web origin of the Document's content.
+GURL GetURLForFrameMetadata(const GURL& committed_url,
+                            const url::Origin& committed_origin);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_PROTO_UTIL_H_

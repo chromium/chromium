@@ -650,7 +650,7 @@ class ApiTests extends ApiTestFixtureBase {
     const frameMetadata = result.annotatedPageData.metadata.frameMetadata[0];
     assertTrue(!!frameMetadata);
     const url: URL = new URL(frameMetadata.url);
-    assertEquals(url.pathname, '/');
+    assertEquals(url.pathname, '/glic/test.html');
     assertEquals(frameMetadata.metaTags.length, 1);
     const metaTag = frameMetadata.metaTags[0];
     assertTrue(!!metaTag);
