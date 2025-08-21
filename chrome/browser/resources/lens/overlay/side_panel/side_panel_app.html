@@ -230,8 +230,10 @@
     width: 100%;
   }
 
-  /* Show the composebox when enabled. */
-  :host([enable-aim-searchbox]) #composeboxContainer {
+  /* Show the composebox when enabled and not on the error page.
+   * Disabling when the error page is visible is a temporary fix since the
+   * remote UI is not loaded in to receive our messages. crbug.com/439862805 */
+  :host([enable-aim-searchbox]:not([is-error-page-visible])) #composeboxContainer {
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -330,7 +332,7 @@
   </cr-searchbox-ghost-loader>
 </div>
 
-<side-panel-error-page id="errorPage"></side-panel-error-page>
+<side-panel-error-page id="errorPage" class="results-pane"></side-panel-error-page>
 
 <div id="uploadProgressBarContainer">
   <div
