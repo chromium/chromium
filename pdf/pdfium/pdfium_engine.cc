@@ -4801,12 +4801,11 @@ gfx::Transform PDFiumEngine::GetCanonicalToPdfTransform(int page_index) {
   return GetCanonicalToPdfTransformForPage(page);
 }
 
-std::map<int, std::vector<gfx::Rect>> PDFiumEngine::GetSelectionRectMap() {
-  std::map<int, std::vector<gfx::Rect>> results;
+std::map<int, std::vector<PdfRect>> PDFiumEngine::GetSelectionRectMap() {
+  std::map<int, std::vector<PdfRect>> results;
   for (auto& selection : selection_) {
     auto& page_results = results[selection.page_index()];
-    std::vector<gfx::Rect> screen_rects = selection.GetScreenRects(
-        GetVisibleRect().origin(), current_zoom_, GetCurrentOrientation());
+    std::vector<PdfRect> screen_rects = selection.GetRects();
     page_results.insert(page_results.end(), screen_rects.begin(),
                         screen_rects.end());
   }

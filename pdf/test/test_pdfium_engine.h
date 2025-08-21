@@ -141,7 +141,7 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(gfx::Transform, GetCanonicalToPdfTransform, (int), (override));
 
-  MOCK_METHOD((std::map<int, std::vector<gfx::Rect>>),
+  MOCK_METHOD((std::map<int, std::vector<PdfRect>>),
               GetSelectionRectMap,
               (),
               (override));

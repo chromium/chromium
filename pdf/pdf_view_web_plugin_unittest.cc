@@ -3060,7 +3060,7 @@ TEST_P(PdfViewWebPluginInkTest, GetPageSizeInPoints) {
 }
 
 TEST_P(PdfViewWebPluginInkTest, GetSelectionRectMap) {
-  static constexpr gfx::Rect kRect(10, 20, 30, 40);
+  static constexpr PdfRect kRect(10, 20, 40, 60);
   PdfInkModuleClient::SelectionRectMap selection_map{{0, {kRect}}};
   ON_CALL(*engine_ptr_, GetSelectionRectMap)
       .WillByDefault(Return(selection_map));
@@ -3271,14 +3271,16 @@ class PdfViewWebPluginInkTextHighlightTest : public PdfViewWebPluginInkTest {
   // to `kEndTextPosition` with a mouse.
   void SetUpMouseDownMoveTextTestExpectations() {
     // The start position and end position are in screen coordinates, while the
-    // values passed to and returned from PDFiumEngine are in device
-    // coordinates.
+    // values passed to and returned from PDFiumEngine are in PDF coordinates.
+    // However, in this test fixture, the transforms from canonical coordinates
+    // to screen and PDF coordinates are all identity transforms, so the test
+    // cases can use the same values regardless of the coordinates system.
     EXPECT_CALL(*engine_ptr_,
                 OnTextOrLinkAreaClick(gfx::PointF(5.0f, 60.0f), 1));
     EXPECT_CALL(*engine_ptr_,
                 ExtendSelectionByPoint(gfx::PointF(25.0f, 65.0f)));
     PdfInkModuleClient::SelectionRectMap mock_selection_rect_map{
-        {0, {gfx::Rect(5, 60, 20, 5)}}};
+        {0, {PdfRect(5, 60, 25, 65)}}};
     ON_CALL(*engine_ptr_, GetSelectionRectMap())
         .WillByDefault(Return(mock_selection_rect_map));
     ON_CALL(*engine_ptr_, IsSelectableTextOrLinkArea(_))

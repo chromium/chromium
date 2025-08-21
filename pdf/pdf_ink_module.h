@@ -259,6 +259,7 @@ class PdfInkModule {
   // `second_point`, then `second_point` is not used.
   // `brush_size` should cover the stroke on the smaller dimension of the
   // highlight rect.
+  // All values are based on canonical coordinates.
   struct TextSelectionHighlightStrokeData {
     gfx::PointF first_point;
     gfx::PointF second_point;
@@ -316,12 +317,12 @@ class PdfInkModule {
                            ink::StrokeInput::ToolType tool_type);
 
   // Returns a highlighter stroke that matches the position and size of
-  // `selection_rect`. `selection_rect` must be in screen coordinates.
+  // `selection_rect`. `selection_rect` is in canonical coordinates.
   ink::Stroke GetHighlightStrokeFromSelectionRect(
-      const gfx::Rect& selection_rect);
+      const gfx::RectF& selection_rect);
 
   // Returns the data needed to create a text highlight stroke that covers
-  // `selection_rect`. `selection_rect` is in screen coordinates.
+  // `selection_rect`. `selection_rect` is in canonical coordinates.
   TextSelectionHighlightStrokeData GetTextSelectionHighlightStrokeData(
       const gfx::RectF& selection_rect);
 

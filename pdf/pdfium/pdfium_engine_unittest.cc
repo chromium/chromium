@@ -2251,11 +2251,14 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkTest, testing::Bool());
 class PDFiumEngineInkTextSelectionTest : public PDFiumEngineInkTest {
  public:
 #if BUILDFLAG(IS_WIN)
-  static constexpr gfx::Rect kGoodbyeWorldExpectedRectPage0{32, 114, 156, 30};
+  static constexpr PdfRect kGoodbyeWorldExpectedRectPage0{20.0f, 94.816f,
+                                                          136.496f, 116.64f};
 #elif BUILDFLAG(IS_MAC)
-  static constexpr gfx::Rect kGoodbyeWorldExpectedRectPage0{32, 115, 156, 29};
+  static constexpr PdfRect kGoodbyeWorldExpectedRectPage0{20.0f, 94.816f,
+                                                          136.496f, 116.096f};
 #else
-  static constexpr gfx::Rect kGoodbyeWorldExpectedRectPage0{32, 116, 156, 26};
+  static constexpr PdfRect kGoodbyeWorldExpectedRectPage0{20.0f, 96.416f,
+                                                          136.496f, 115.12f};
 #endif  // BUILDFLAG(IS_WIN)
   static constexpr gfx::PointF kStartTextPositionPage0{50.0f, 110.0f};
   static constexpr gfx::PointF kNonTextPositionPage0{5.0f, 5.0f};
@@ -2296,11 +2299,11 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPoint) {
 
   EXPECT_EQ("Goodb", engine->GetSelectedText());
 #if BUILDFLAG(IS_WIN)
-  constexpr gfx::Rect kExpectedRect{32, 114, 64, 30};
+  constexpr PdfRect kExpectedRect{20.0f, 94.816f, 68.032f, 116.64f};
 #elif BUILDFLAG(IS_MAC)
-  constexpr gfx::Rect kExpectedRect{32, 115, 64, 29};
+  constexpr PdfRect kExpectedRect{20.0f, 94.816f, 68.032f, 116.096f};
 #else
-  constexpr gfx::Rect kExpectedRect{32, 116, 64, 26};
+  constexpr PdfRect kExpectedRect{20.0f, 96.416f, 68.032f, 115.12f};
 #endif  // BUILDFLAG(IS_WIN)
   EXPECT_THAT(engine->GetSelectionRectMap(),
               ElementsAre(Pair(0, ElementsAre(kExpectedRect))));
@@ -2331,11 +2334,11 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPointMultiPage) {
   EXPECT_EQ(kExpectedText, engine->GetSelectedText());
 
 #if BUILDFLAG(IS_WIN)
-  constexpr gfx::Rect kExpectedRectPage1{32, 466, 40, 22};
+  constexpr PdfRect kExpectedRectPage1{20.0f, 46.328f, 49.664f, 62.48f};
 #elif BUILDFLAG(IS_MAC)
-  constexpr gfx::Rect kExpectedRectPage1{32, 466, 40, 22};
+  constexpr PdfRect kExpectedRectPage1{20.0f, 46.328f, 49.664f, 62.084f};
 #else
-  constexpr gfx::Rect kExpectedRectPage1{32, 468, 40, 19};
+  constexpr PdfRect kExpectedRectPage1{20.0f, 47.012f, 49.664f, 60.536f};
 #endif  // BUILDFLAG(IS_WIN)
   EXPECT_THAT(engine->GetSelectionRectMap(),
               ElementsAre(Pair(0, ElementsAre(kGoodbyeWorldExpectedRectPage0)),
@@ -2358,11 +2361,11 @@ TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithDoubleClick) {
 
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 #if BUILDFLAG(IS_WIN)
-  constexpr gfx::Rect kExpectedRect{32, 114, 87, 30};
+  constexpr PdfRect kExpectedRect{20.0f, 94.816f, 84.928f, 116.64f};
 #elif BUILDFLAG(IS_MAC)
-  constexpr gfx::Rect kExpectedRect{32, 115, 87, 29};
+  constexpr PdfRect kExpectedRect{20.0f, 94.816f, 84.928f, 116.096f};
 #else
-  constexpr gfx::Rect kExpectedRect{32, 116, 87, 26};
+  constexpr PdfRect kExpectedRect{20.0f, 96.416f, 84.928f, 115.12f};
 #endif  // BUILDFLAG(IS_WIN)
   EXPECT_THAT(engine->GetSelectionRectMap(),
               ElementsAre(Pair(0, ElementsAre(kExpectedRect))));

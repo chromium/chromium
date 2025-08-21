@@ -341,8 +341,6 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
   }
 
   PdfInkModuleClient::SelectionRectMap GetSelectionRectMap() override {
-    // Screen coordinates in PDFiumEngine is equivalent to device coordinates in
-    // PdfInkModuleClient.
     return plugin_->engine_->GetSelectionRectMap();
   }
 

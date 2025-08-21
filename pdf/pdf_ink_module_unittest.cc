@@ -3398,6 +3398,8 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
  protected:
   // Helper method for running a simple text highlighting test using text
   // selected by mouse with a single selection rect on page zero.
+  // `selection_rect` is in screen coordinates, so it is easier to see the
+  // relationship between `selection_rect` and `expected_inputs`.
   void RunSingleSelectionWithMouseTest(
       const gfx::Rect& selection_rect,
       base::span<const PdfInkInputData> expected_inputs,
@@ -3412,13 +3414,34 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
   }
 
   // Sets the selection rects that will be given by the client.
+  // `selection_map` uses screen coordinates.
   void SetSelectionRectMap(
-      const PdfInkModuleClient::SelectionRectMap& selection_map) {
+      const std::map<int, std::vector<gfx::Rect>>& selection_map) {
+    // Do screen to PDF coordinate conversion. Set GetCanonicalToPdfTransform()
+    // to return an identity transform to simplify testing. Now a screen to
+    // canonical conversion is sufficient.
+    EXPECT_CALL(client(), GetCanonicalToPdfTransform(_))
+        .WillRepeatedly(Return(gfx::Transform()));
+
+    PdfInkModuleClient::SelectionRectMap pdf_selection_map;
+    for (const auto& [page_index, selection_rects] : selection_map) {
+      const gfx::Transform transform = GetEventToCanonicalTransform(
+          client().GetOrientation(), client().GetPageContentsRect(page_index),
+          client().GetZoom());
+      std::vector<PdfRect>& pdf_rects = pdf_selection_map[page_index];
+      pdf_rects.reserve(selection_rects.size());
+      for (const gfx::Rect& selection_rect : selection_rects) {
+        gfx::RectF mapped_rect = transform.MapRect(gfx::RectF(selection_rect));
+        pdf_rects.push_back(PdfRect(mapped_rect));
+      }
+    }
+
     EXPECT_CALL(client(), GetSelectionRectMap())
-        .WillRepeatedly(Return(selection_map));
+        .WillRepeatedly(Return(pdf_selection_map));
   }
 
   // Wrapper for SetSelectionRectMap() that puts all the rects on page 0.
+  // `selection_rects` uses screen coordinates.
   void SetSelectionRectsOnFirstPage(
       base::span<const gfx::Rect> selection_rects) {
     // Call `SetSelectionRectMap({})` if there are no selections at all.
