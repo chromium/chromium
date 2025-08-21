@@ -237,10 +237,10 @@ void ComputeContentNodeMetrics(
 }
 
 void RecordPageContentExtractionMetrics(
-    blink::mojom::AIPageContentMode mode,
-    bool on_critical_path,
     base::TimeDelta total_latency,
     ukm::SourceId source_id,
+    blink::mojom::AIPageContentMode mode,
+    bool on_critical_path,
     optimization_guide::proto::AnnotatedPageContent proto) {
   ContentNodeMetrics metrics;
   auto total_size = proto.ByteSizeLong();
@@ -275,12 +275,22 @@ void RecordPageContentExtractionMetrics(
   }
   // 10KB bucket up to 5MB.
   // TODO(crbug.com/392115749): Use provided metrics when available.
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "OptimizationGuide.AnnotatedPageContent.TotalSize2", total_size / 1024,
-      10, 5000, 50);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "OptimizationGuide.AnnotatedPageContent.TotalNodeCount",
-      metrics.node_count, 1, kMaxNodeLimit, 50);
+  if (mode == blink::mojom::AIPageContentMode::kDefault) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
+        "OptimizationGuide.AnnotatedPageContent.TotalSize2.Default",
+        total_size / 1024, 10, 5000, 50);
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
+        "OptimizationGuide.AnnotatedPageContent.TotalNodeCount.Default",
+        metrics.node_count, 1, kMaxNodeLimit, 50);
+  } else if (mode == blink::mojom::AIPageContentMode::kActionableElements) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
+        "OptimizationGuide.AnnotatedPageContent.TotalSize2.ActionableElements",
+        total_size / 1024, 10, 5000, 50);
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
+        "OptimizationGuide.AnnotatedPageContent.TotalNodeCount."
+        "ActionableElements",
+        metrics.node_count, 1, kMaxNodeLimit, 50);
+  }
   UMA_HISTOGRAM_CUSTOM_COUNTS(
       "OptimizationGuide.AnnotatedPageContent.TotalWordCount",
       metrics.word_count, 1, kMaxWordLimit, 50);
@@ -319,7 +329,7 @@ void OnGotAIPageContentForAllFrames(
   optimization_guide::AIPageContentResult page_content;
   optimization_guide::FrameTokenSet frame_token_set;
   auto mode = main_frame_options->mode;
-  auto on_critical_path = main_frame_options->on_critical_path;
+  bool on_critical_path = main_frame_options->on_critical_path;
 
   if (auto result = optimization_guide::ConvertAIPageContentToProto(
           std::move(main_frame_options), main_frame_token, *page_content_map,
@@ -344,10 +354,11 @@ void OnGotAIPageContentForAllFrames(
         render_frame_host->GetWeakDocumentPtr();
   }
 
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(RecordPageContentExtractionMetrics, mode, on_critical_path,
-                     elapsed_timer.Elapsed(), source_id, page_content.proto));
+  base::ThreadPool::PostTask(FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+                             base::BindOnce(
+                                 RecordPageContentExtractionMetrics,
+                                 elapsed_timer.Elapsed(), source_id, mode, on_critical_path,
+                                 page_content.proto));
   std::move(done_callback).Run(std::move(page_content));
 }
 
@@ -444,7 +455,7 @@ void GetAIPageContent(content::WebContents* web_contents,
 
   std::move(concurrent)
       .Done(base::BindOnce(
-          &OnGotAIPageContentForAllFrames, std::move(options),
+          &OnGotAIPageContentForAllFrames, options.Clone(),
           base::ElapsedTimer(),
           web_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
           web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),

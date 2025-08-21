@@ -23,19 +23,15 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="AIPageContentMode">
-  <variant name="ActionableElements" summary="actionable elements mode"/>
-  <variant name="Default" summary="default mode"/>
+  <variant name="ActionableElements"
+      summary="Only actionable elements are extracted."/>
+  <variant name="Default" summary="The default page content extraction."/>
 </variants>
 
 <variants name="AnnotationType">
   <variant name="ContentVisibility" summary="Content Visibility"/>
   <variant name="Deprecated PageEntities" summary="Deprecated - Page Entities"/>
   <variant name="Unknown" summary="Unknown"/>
-</variants>
-
-<variants name="CriticalPath">
-  <variant name="CriticalPath" summary="on the critical path"/>
-  <variant name="NotCriticalPath" summary="not on the critical path"/>
 </variants>
 
 <variants name="FrameType">
@@ -591,20 +587,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="OptimizationGuide.AIPageContent.TotalLatency.{AIPageContentMode}.{CriticalPath}"
-    units="ms" expires_after="2025-12-15">
-  <owner>khushalsagar@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
-  <owner>gklassen@chromium.org</owner>
-  <summary>
-    The total end-to-end latency for extracting AIPageContent in
-    {AIPageContentMode} when the request is {CriticalPath}.
-  </summary>
-  <token key="AIPageContentMode" variants="AIPageContentMode"/>
-  <token key="CriticalPath" variants="CriticalPath"/>
-</histogram>
-
 <histogram name="OptimizationGuide.AnnotatedPageContent.ComputeMetricsLatency"
     units="microseconds" expires_after="2025-12-15">
   <owner>khushalsagar@chromium.org</owner>
@@ -617,25 +599,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.AnnotatedPageContent.TotalNodeCount"
+<histogram
+    name="OptimizationGuide.AnnotatedPageContent.TotalNodeCount.{AIPageContentMode}"
     units="nodes" expires_after="2025-12-15">
   <owner>khushalsagar@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
+  <owner>gklassen@chromium.org</owner>
   <summary>
     Records the number of nodes of AnnotatedPageContent proto extracted from 1
-    WebContents instance. Recorded once per extraction. Max of 100,000 nodes.
+    WebContents instance for a given {AIPageContentMode}. Recorded once per
+    extraction. Max of 100,000 nodes.
   </summary>
+  <token key="AIPageContentMode" variants="AIPageContentMode"/>
 </histogram>
 
-<histogram name="OptimizationGuide.AnnotatedPageContent.TotalSize2" units="KB"
-    expires_after="2025-12-15">
+<histogram
+    name="OptimizationGuide.AnnotatedPageContent.TotalSize2.{AIPageContentMode}"
+    units="KB" expires_after="2025-12-15">
   <owner>khushalsagar@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
+  <owner>gklassen@chromium.org</owner>
   <summary>
     Records the size of AnnotatedPageContent proto extracted from 1 WebContents
-    instance. Recorded once per extraction. Reversioned the bucket size to 10KB
-    up to 5MB in Jan 2025.
+    instance for a given {AIPageContentMode}. Recorded once per extraction.
+    Reversioned the bucket size to 10KB up to 5MB in Jan 2025.
   </summary>
+  <token key="AIPageContentMode" variants="AIPageContentMode"/>
 </histogram>
 
 <histogram name="OptimizationGuide.AnnotatedPageContent.TotalWordCount"

@@ -1373,11 +1373,11 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "OptimizationGuide.AIPageContent.TotalLatency", 1);
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.AnnotatedPageContent.TotalSize2", 1);
+      "OptimizationGuide.AnnotatedPageContent.TotalSize2.Default", 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.AnnotatedPageContent.TotalWordCount", 1);
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.AnnotatedPageContent.TotalNodeCount", 1);
+      "OptimizationGuide.AnnotatedPageContent.TotalNodeCount.Default", 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.AnnotatedPageContent.ComputeMetricsLatency", 1);
 
@@ -1546,11 +1546,11 @@ IN_PROC_BROWSER_TEST_P(
   // that brought us to the current document, so we should *not* trigger a page
   // content extraction from this navigation.
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.AnnotatedPageContent.TotalSize2", 0);
+      "OptimizationGuide.AnnotatedPageContent.TotalSize2.Default", 0);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.AnnotatedPageContent.TotalWordCount", 0);
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.AnnotatedPageContent.TotalNodeCount", 0);
+      "OptimizationGuide.AnnotatedPageContent.TotalNodeCount.Default", 0);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.AnnotatedPageContent.ComputeMetricsLatency", 0);
 
