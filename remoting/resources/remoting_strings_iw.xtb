@@ -43,7 +43,7 @@
 <translation id="2929683002824598593">שיתוף המכשיר</translation>
 <translation id="2939145106548231838">יש לאמת מול המארח</translation>
 <translation id="3027681561976217984">מצב מסך מגע</translation>
-<translation id="3106379468611574572">המחשב המרוחק אינו מגיב לבקשות החיבור. יש לוודא שהוא מחובר לאינטרנט ולנסות שוב.</translation>
+<translation id="3106379468611574572">המחשב המרוחק לא מגיב לבקשות החיבור. צריך לוודא שהוא מחובר לאינטרנט ולנסות שוב.</translation>
 <translation id="3150823315463303127">המארח לא הצליח לקרוא את המדיניות.</translation>
 <translation id="3171922709365450819">המכשיר הזה לא נתמך על-ידי הלקוח הזה כי נדרש עבורו אימות של צד שלישי.</translation>
 <translation id="3197730452537982411">Remote Desktop</translation>
@@ -89,7 +89,7 @@
 <translation id="4812684235631257312">מארח</translation>
 <translation id="4867841927763172006">‏שליחת PrtScn</translation>
 <translation id="4974476491460646149">ההתחברות אל <ph name="HOSTNAME" /> סגורה</translation>
-<translation id="4985296110227979402">תחילה עליך להגדיר את המחשב שלך לגישה מרחוק</translation>
+<translation id="4985296110227979402">צריך להתחיל בהגדרת המחשב לגישה מרחוק</translation>
 <translation id="4987330545941822761">‏ל-Chrome Remote Desktop אין אפשרות לקבוע באיזה דפדפן לפתוח כתובות URL במחשב. עליך לבחור דפדפן מהרשימה שלמטה.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (לא מקוון)</translation>
 <translation id="507204348399810022">בטוח שברצונך להשבית את החיבורים המרוחקים אל <ph name="HOSTNAME" />?</translation>
@@ -166,11 +166,11 @@
 <translation id="8073845705237259513">‏כדי להשתמש ב-Chrome Remote Desktop, עליך להוסיף חשבון Google למכשיר שלך.</translation>
 <translation id="809687642899217504">המחשבים שלי</translation>
 <translation id="8116630183974937060">אירעה שגיאת רשת. יש לבדוק שהמכשיר מחובר לרשת ולנסות שוב.</translation>
-<translation id="8295077433896346116">‏כדי להשתמש ב-<ph name="PRODUCT_NAME" />, יש להעניק הרשאת 'נגישות' כדי שניתן יהיה לשלוט במחשב ה-Mac הזה באמצעות קלט מהמחשב המרוחק.
+<translation id="8295077433896346116">‏כדי להשתמש ב-<ph name="PRODUCT_NAME" />, צריך להעניק הרשאת "נגישות" כדי שניתן יהיה לשלוט במחשב ה-Mac הזה באמצעות קלט מהמחשב המרוחק.
 
-כדי להעניק את ההרשאה הזו, יש ללחוץ על '<ph name="BUTTON_NAME" />' למטה. אחרי הלחיצה, תיפתח חלונית לבחירת העדפות. בקטע 'נגישות', יש לסמן את התיבה שלצד '<ph name="SERVICE_SCRIPT_NAME" />'.
+כדי להעניק את ההרשאה הזו, צריך ללחוץ על "<ph name="BUTTON_NAME" />" למטה. אחרי שלוחצים, נפתחת חלונית לבחירת העדפות. בקטע "נגישות", צריך לסמן את התיבה שלצד "<ph name="SERVICE_SCRIPT_NAME" />".
 
-אם האפשרות '<ph name="SERVICE_SCRIPT_NAME" />' כבר מסומנת, יש לבטל את הסימון ואז לסמן מחדש.</translation>
+אם האפשרות "<ph name="SERVICE_SCRIPT_NAME" />" כבר מסומנת, צריך לבטל את הסימון ואז לסמן מחדש.</translation>
 <translation id="8305209735512572429">תהליך התקשרות מרחוק לאימות באינטרנט</translation>
 <translation id="8383794970363966105">‏כדי להשתמש ב-Chromoting, עליך להוסיף חשבון Google למכשיר שלך.</translation>
 <translation id="8386846956409881180">‏בהגדרת המארח נעשה שימוש בפרטי כניסת OAuth לא חוקיים.</translation>

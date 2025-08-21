@@ -140,7 +140,7 @@
 <translation id="4445228361214254027">‏أوقفت مؤسستك إمكانية استخدام وحفظ بيانات Chromium في حسابك على Google. سيتم حفظ كلمات المرور والإشارات المرجعية الجديدة وغيرها على هذا الجهاز فقط.</translation>
 <translation id="4498832288620833153">‏يُضيف هذا الاختصار عناوين URL التي تم إدخالها إلى "قائمة القراءة" في Chromium.</translation>
 <translation id="4508268628669724828">‏يمكنك الرجوع إلى هذه الصفحة للحصول على المزيد من النصائح المفيدة للاستفادة إلى أقصى حدّ من Chromium.</translation>
-<translation id="452436063477828504">‏يُرجى التأكُّد من أنّه يمكنك استخدام بيانات Chromium في حسابك على Google في أي وقت.</translation>
+<translation id="452436063477828504">‏يُرجى التأكُّد من أنّه يمكنك استخدام بيانات Chromium في حسابك على Google في أي وقت</translation>
 <translation id="4527452566931097835">‏هل تريد ضبط Chromium كمتصفِّح تلقائي؟</translation>
 <translation id="4555020257205549924">‏عند تفعيل هذه الميزة، سيقترح Chromium ترجمة الصفحات المكتوبة بلغات أخرى باستخدام "ترجمة Google". <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="4572441104543926904">‏عند استخدام عبارة مرور، لا يتم تشفير طُرق الدفع والعناوين.
@@ -333,7 +333,7 @@
 <translation id="9089354809943900324">‏إصدار Chromium قديم</translation>
 <translation id="9152995302810511799">‏نصيحة للحصول على أعلى مستويات الأمان في Chromium</translation>
 <translation id="9177628952266852500">‏‫<ph name="EMAIL" />. متصفِّح Chromium مُدار.</translation>
-<translation id="921174536258924340">‏تعذّر على متصفِّح Chromium التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا أو <ph name="BEGIN_LINK" />التحقُّق من كلمات المرور في حسابك على Google<ph name="END_LINK" />.</translation>
+<translation id="921174536258924340">‏تعذّر على Chromium التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا أو <ph name="BEGIN_LINK" />التأكد من كلمات المرور في حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="924957577793602335">‏إضافة لمستك الخاصة إلى Chromium</translation>
 <translation id="981812233959540767">‏تشغيل لعبة الديناصور في Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>

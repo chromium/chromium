@@ -97,7 +97,7 @@
 <translation id="1742316578210444689">תעתיק עברית</translation>
 <translation id="1747761757048858544">הולנדית (הולנד)</translation>
 <translation id="174937106936716857">מספר הקבצים הכולל</translation>
-<translation id="1755345808328621801">‏הקובץ הזה מיועד למחשב PC עם מערכת ההפעלה Windows. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה ChromeOS. יש לחפש אפליקציה חלופית מתאימה בחנות האינטרנט של Chrome.</translation>
+<translation id="1755345808328621801">‏הקובץ הזה מיועד למחשב PC עם מערכת ההפעלה Windows. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה ChromeOS. כדאי לחפש אפליקציה חלופית מתאימה בחנות האינטרנט של Chrome.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1761091787730831947">שיתוף עם <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">אישור האימות נדחה מקומית</translation>
@@ -213,7 +213,7 @@
 <translation id="2653059201992392941">נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="2663066752008346276">‏בורמזית/מיאנמר עם מקלדת Myansan</translation>
 <translation id="2664412712123763093">מיקום הקובץ</translation>
-<translation id="2718540689505416944">‏התקנת אפליקציה עם Linux</translation>
+<translation id="2718540689505416944">‏התקנה של אפליקציה עם Linux</translation>
 <translation id="2719020180254996569">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, פרטים</translation>
 <translation id="2724954091494693138">‏טורקית עם מקלדת F</translation>
 <translation id="2732288874651063549">ניהול השיתוף עם <ph name="VM_NAME" /></translation>
@@ -246,18 +246,18 @@
 <translation id="2977940621473452797">‏הקובץ הזה מיועד למחשב שיכול להפעיל תוכנות Macintosh. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה ChromeOS. יש לחפש אפליקציה חלופית בחנות האינטרנט של Chrome.</translation>
 <translation id="2984337792991268709">היום <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">צרפתית (קנדה)</translation>
-<translation id="3003189754374775221">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="NETWORK_PROVIDER_NAME" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
+<translation id="3003189754374775221">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="NETWORK_PROVIDER_NAME" />, רמת הקליטה: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
 <translation id="3003633581067744647">מעבר לתצוגה של תמונות ממוזערות</translation>
 <translation id="3016566519832145558">זהירות: הקבצים האלה זמניים, ויכול להיות שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.</translation>
 <translation id="3029114385395636667">‏יש להפעיל את Google Docs Offline כדי ש-Docs,‏ Sheets ו-Slides יהיו זמינים במצב אופליין.</translation>
 <translation id="303198083543495566">גיאוגרפיה</translation>
-<translation id="3044404008258011032">כדי לשחזר את הפריטים האלה, גוררים אותם לתיקייה חדשה מחוץ לאשפה. התיקייה המקורית '<ph name="PARENT_FOLDER_NAME" />' של הפריטים האלה נמחקה.</translation>
+<translation id="3044404008258011032">כדי לשחזר את הפריטים האלה, צריך לגרור אותם לתיקייה חדשה מחוץ לאשפה. התיקייה המקורית "<ph name="PARENT_FOLDER_NAME" />" של הפריטים האלה נמחקה.</translation>
 <translation id="3047197340186497470">‏סינית Dayi</translation>
 <translation id="3067790092342515856">‏קובצי Windows</translation>
 <translation id="3083975830683400843">‏מכשירי Chromebit</translation>
 <translation id="3085752524577180175">‏מארח SOCKS</translation>
 <translation id="3104793765551262433">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות <ph name="SIGNAL_STRENGTH" />%, נחסמה על ידי האדמין, פרטים</translation>
-<translation id="3113592018909187986">נותר לך עוד ניסיון אחד. לא תהיה אפשרות להשתמש ברשת הזו עד שיוגדר קוד אימות חדש.</translation>
+<translation id="3113592018909187986">נישאר לךעוד ניסיון אחד. לא תהיה אפשרות להשתמש ברשת הזו עד שיוגדר קוד אימות חדש.</translation>
 <translation id="3124404833828281817">אדם חולם בהקיץ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">קוד האימות לא חוקי. נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
@@ -283,7 +283,7 @@
 <translation id="3280719573299097127">כרגע יש חיבור לרשת עם חיוב לפי שימוש בנתונים. סנכרון הקבצים הושהה.</translation>
 <translation id="3280987981688031357">תקליט</translation>
 <translation id="3290356915286466215">לא מאובטחת</translation>
-<translation id="3291218047831493686">‏יש להתחבר לרשת הזו כדי לשנות את הגדרת הנעילה של ה-SIM</translation>
+<translation id="3291218047831493686">‏כדי לשנות את הגדרת הנעילה של ה-SIM, צריך להתחבר לרשת הזו</translation>
 <translation id="3293023191599135697">‏אין תמיכה ברשתות WEP</translation>
 <translation id="3295006446256079333">נפח האחסון הזה</translation>
 <translation id="3295357220137379386">המכשיר תפוס</translation>
@@ -318,7 +318,7 @@
 <translation id="3553048479571901246">‏כדי שניתן יהיה לפתוח קבצים באמצעות <ph name="APP_NAME" />, צריך להעתיק אותם לתיקיית קובצי Windows.</translation>
 <translation id="3556731189587832921">‏מקלדת Workman בינלאומית באנגלית (ארה"ב) ל-PC</translation>
 <translation id="3557414470514932909">הקובץ <ph name="FILE_NAME" /> מועבר לאשפה</translation>
-<translation id="3567221313191587603">בוחרים בקובץ ומפעילים את ההגדרה <ph name="OFFLINE_CHECKBOX_NAME" /> כדי לקבל גישה אופליין לקבצים שלך.</translation>
+<translation id="3567221313191587603">בחרו בקובץ והפעילו את ההגדרה <ph name="OFFLINE_CHECKBOX_NAME" /> כדי לקבל גישה אופליין לקבצים שלכם.</translation>
 <translation id="357479282490346887">ליטאית</translation>
 <translation id="3587482841069643663">הכול</translation>
 <translation id="3592251141500063301">לא ניתן היה להגדיר את הקובץ <ph name="FILE_NAME" /> כזמין אופליין</translation>
@@ -547,11 +547,11 @@
 <translation id="5254207638927440400">לא ניתן להעביר את הקובץ כי הוא בשימוש.</translation>
 <translation id="5257456363153333584">שפירית</translation>
 <translation id="5262311848634918433">‏<ph name="MARKUP_1" />גישה לקבצים מכל מקום, גם ללא חיבור לאינטרנט.<ph name="MARKUP_2" />
-    קבצים ב-Google Drive מעודכנים וזמינים בכל מכשיר.<ph name="MARKUP_3" />
-    <ph name="MARKUP_4" /> שמירת הקבצים שלך במקום בטוח.<ph name="MARKUP_5" />
-    גם אם יקרה משהו למכשיר שלך, הקבצים שלך שמורים בבטחה 
+    הקבצים ב-Google Drive מעודכנים וזמינים בכל מכשיר.<ph name="MARKUP_3" />
+    <ph name="MARKUP_4" /> שמירת הקבצים שלכם במקום בטוח.<ph name="MARKUP_5" />
+    גם אם יקרה משהו למכשיר שלכם, הקבצים שלכם שמורים בבטחה 
 ב-Google Drive‏.<ph name="MARKUP_6" />
-    <ph name="MARKUP_7" />שתף, יצירה ועבודה במשותף<ph name="MARKUP_8" />
+    <ph name="MARKUP_7" />לשתף, ליצור ולעבוד במשותף<ph name="MARKUP_8" />
     על קבצים עם אנשים נוספים - הכול במקום אחד.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">‏קבצים ששוחזרו מ-Google Drive</translation>
 <translation id="5278111733643988471">כדי לשחזר את הפריט הזה, גוררים אותו לתיקייה חדשה מחוץ לאשפה. התיקייה המקורית '<ph name="PARENT_FOLDER_NAME" />' של הפריט הזה נמחקה.</translation>
@@ -576,7 +576,7 @@
 <translation id="5438282218546237410">אין תוצאות עבור <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">אין מספיק נפח אחסון פנוי.</translation>
 <translation id="5449551289610225147">סיסמה לא חוקית</translation>
-<translation id="5459064203055649751">כבר קיים קובץ בשם '<ph name="FILENAME" />'. רוצה להחליף אותו בקובץ שבחרת להעביר?</translation>
+<translation id="5459064203055649751">כבר קיים קובץ בשם "<ph name="FILENAME" />". רוצה להחליף אותו בקובץ שבחרת להעביר?</translation>
 <translation id="5463231940765244860">הזנת הקוד</translation>
 <translation id="5469868506864199649">איטלקית</translation>
 <translation id="5473333559083690127">יש להזין שוב את קוד האימות החדש</translation>
@@ -603,7 +603,7 @@
 <translation id="5649768706273821470">האזנה</translation>
 <translation id="5650895901941743674">‏בדיקת ההגדרות האישיות של ה-APN</translation>
 <translation id="5669691691057771421">הזנת קוד האימות החדש</translation>
-<translation id="5678784840044122290">‏אפליקציית Linux תהיה זמינה דרך המסוף שלך, ובחלק מהמקרים הסמל שלה יופיע במרכז האפליקציות.</translation>
+<translation id="5678784840044122290">‏אפשר יהיה לגשת לאפליקציית Linux דרך המסוף שלך, ובחלק מהמקרים הסמל שלה יופיע במרכז האפליקציות.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />לא ניתן להתנתק מהארכיון או מהדיסק הווירטואלי<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    צריך לסגור את כל הקבצים בארכיון או בדיסק הווירטואלי ולנסות שוב.</translation>
@@ -678,11 +678,11 @@
 <translation id="6224240818060029162">דנית</translation>
 <translation id="6224253798271602650">פירמוט של <ph name="DRIVE_NAME" /></translation>
 <translation id="6241349547798190358">הולנדית (בלגיה)</translation>
-<translation id="6267547857941397424">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, סוללת הטלפון: ‎<ph name="BATTERY_STATUS" />%‎, התחברות</translation>
+<translation id="6267547857941397424">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />, רמת הקליטה: ‎<ph name="SIGNAL_STRENGTH" />%‎, סוללת הטלפון: ‎<ph name="BATTERY_STATUS" />%‎, התחברות</translation>
 <translation id="6269630227984243955">מלאית</translation>
 <translation id="6271903698064569429">לא ניתן להעלות קבצים כי אין מספיק מקום באחסון השיתופי '<ph name="SHARED_DRIVE_NAME" />'.</translation>
 <translation id="6279140785485544797">יכול להיות שתוקף חבילת הגלישה שלך פג. אפשר לפנות לספק לקבלת תמיכה.</translation>
-<translation id="6287852322318138013">בחירת אפליקציה לפתיחת הקובץ</translation>
+<translation id="6287852322318138013">בחירה של אפליקציה לפתיחת הקובץ</translation>
 <translation id="6295542640242147836">‏נעילת כרטיס ה-SIM</translation>
 <translation id="6296410173147755564">‏ה-PUK לא תקין</translation>
 <translation id="6308243004861726558">הקובץ הזה סודי וכפוף למדיניות האדמין. הפעולות הבאות חלות לגבי העברת הקובץ וגישה אליו.</translation>
@@ -845,7 +845,7 @@
 <translation id="7547780573915868306">ליטאית</translation>
 <translation id="7547811415869834682">הולנדית</translation>
 <translation id="7551643184018910560">הצמדה למדף</translation>
-<translation id="7553492409867692754">‏הענקת הרשאת גישה לאפליקציות של Linux לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
+<translation id="7553492409867692754">‏אישור לאפליקציות של Linux לגשת לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">אין חיבור לאינטרנט כרגע. סנכרון הקבצים ימשיך כשיהיה חיבור לאינטרנט.</translation>
 <translation id="7589661784326793847">יש להמתין מספר רגעים</translation>
 <translation id="7600126690270271294">סרבית</translation>
@@ -924,7 +924,7 @@
 <translation id="8087576439476816834">הורדה, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">בשיתוף איתי</translation>
 <translation id="8116072619078571545">מים עם קרח</translation>
-<translation id="8120392982188717723">מתן אישור לסנכרון ברשתות עם חיוב לפי שימוש בנתונים</translation>
+<translation id="8120392982188717723">הפעלת סנכרון ברשתות עם חיוב לפי שימוש בנתונים</translation>
 <translation id="8124093710070495550">בעיה בסנכרון</translation>
 <translation id="8128733386027980860">‏מקלדת Dvorak באנגלית (ארה"ב)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" שותף איתך. אין באפשרותך למחוק אותו מאחר שאינך הבעלים שלו.</translation>
@@ -939,7 +939,7 @@
 <translation id="8175799081768705361">‏<ph name="NUMBER_OF_FILES_SYNCING" /> קבצים ב-Drive מסתנכרנים עכשיו</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">דגם מכשיר</translation>
-<translation id="8223479393428528563">כדי לשמור קבצים אלה לשימוש אופליין, יש לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקבצים ולבחור את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8223479393428528563">כדי לשמור את הקבצים האלה לשימוש אופליין, יש לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקבצים ולבחור את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">הצגת האחסון</translation>
 <translation id="8249296373107784235">ביטול</translation>
 <translation id="8250690786522693009">לטינית</translation>
@@ -1009,7 +1009,7 @@
 <translation id="8601932370724196034">‏קובץ תמונה Crostini</translation>
 <translation id="8609695766746872526">איסלנדית</translation>
 <translation id="8630384863424041081">‏עליך להזין את קוד האימות של כרטיס ה-SIM או את קוד האימות שמוגדר כברירת מחדל שניתן לך על ידי הספק. אפשר לפנות לספק לקבלת תמיכה.</translation>
-<translation id="863903787380594467">קוד האימות שגוי. נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
+<translation id="863903787380594467">קוד האימות שגוי. נישאר לךעוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – יציאה</translation>
 <translation id="8656407365183407932">היה צורך להסיר את הקבצים במצב אופליין</translation>
 <translation id="8656768832129462377">לא לבדוק</translation>
@@ -1068,7 +1068,7 @@
 <translation id="9131598836763251128">יש לבחור קובץ אחד או יותר</translation>
 <translation id="9133055936679483811">הכיווץ נכשל. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9144340019284012223">קטלאנית</translation>
-<translation id="914873105831852105">קוד האימות לא חוקי. נותר לך עוד ניסיון אחד.</translation>
+<translation id="914873105831852105">קוד האימות שגוי. נשאר לך עוד ניסיון אחד.</translation>
 <translation id="9153934054460603056">שמירת זהות וסיסמה</translation>
 <translation id="9171921933192916600">תולעת ספרים</translation>
 <translation id="9172592259078059678">תעתיק גוג'ראטית</translation>
@@ -1089,6 +1089,6 @@
 <translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> פריטים מועברים לאשפה</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="988685240266037636">כבר קיים קובץ בשם "<ph name="FILE_NAME" />". רוצה להחליף אותו?</translation>
-<translation id="992401651319295351">נותרו לך עוד <ph name="RETRIES" /> ניסיונות. לא תהיה אפשרות להשתמש ברשת הזו עד שיוגדר קוד אימות חדש.</translation>
+<translation id="992401651319295351">נותרו לכם עוד <ph name="RETRIES" /> ניסיונות. לא תוכלו להשתמש ברשת הזו עד שתגדירו קוד אימות חדש.</translation>
 <translation id="996903396648773764">‎<ph name="NUMBER_OF_MB" /> MB</translation>
 </translationbundle>

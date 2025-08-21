@@ -6047,7 +6047,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5230516054153933099">Pencere</translation>
 <translation id="5232714764496316200">Google Lens ile ev ödevlerinizde yardım alın</translation>
 <translation id="5233019165164992427">NaCl hata ayıklama bağlantı noktası</translation>
-<translation id="5233231016133573565">İşlem Kimliği</translation>
+<translation id="5233231016133573565">İşlem kimliği</translation>
 <translation id="5233638681132016545">Yeni sekme</translation>
 <translation id="5233736638227740678">&amp;Yapıştır</translation>
 <translation id="5234523649284990414">ChromeOS'teki ekran okuyucu olan ChromeVox, özellikle görme engelli ve az gören kişiler tarafından konuşma sentezleyici ya da Braille ekranla birlikte ekranda gösterilen metni okumak için kullanılır. ChromeVox'u açmak için boşluk çubuğuna basın. ChromeVox etkinleştirildiğinde hızlı bir tura çıkarsınız.</translation>
@@ -7305,7 +7305,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Geçiş anahtarı oluştur</translation>
 <translation id="6156323911414505561">Yer işaretleri çubuğunu göster</translation>
-<translation id="6156863943908443225">Komut Dosyası Önbelleği</translation>
+<translation id="6156863943908443225">Komut dosyası önbelleği</translation>
 <translation id="6156944117133588106">Tablet modunda gezinme düğmelerini göster</translation>
 <translation id="615930144153753547">Siteler resim gösterebilir</translation>
 <translation id="6160290816917599257">Geçersiz kod. Girişiniz, <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adresi<ph name="LPA_2" />$<ph name="LPA_3" />isteğe bağlı eşleşme kimliği<ph name="LPA_4" /> biçiminde olmalıdır</translation>
@@ -7546,7 +7546,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6325191661371220117">Otomatik başlatmayı devre dışı bırak</translation>
 <translation id="632524945411480350">Alt taraftaki pencereler yeniden boyutlandırıldı</translation>
 <translation id="6326175484149238433">Chrome'dan kaldır</translation>
-<translation id="6326855256003666642">Canlı Tutma Sayısı</translation>
+<translation id="6326855256003666642">Keepalive Sayısı</translation>
 <translation id="6327065839080961103"><ph name="FEATURE_NAME" /> veri kullanımı</translation>
 <translation id="6327785803543103246">Web proxy otomatik keşfi</translation>
 <translation id="6329916384047371874"><ph name="DOMAIN" /> sitesinde <ph name="PASSWORD_DOMAIN" /> şifrenizi kullanacaksınız. Şifrenizi yalnızca <ph name="DOMAIN" /> sitesine güveniyorsanız kullanın.</translation>

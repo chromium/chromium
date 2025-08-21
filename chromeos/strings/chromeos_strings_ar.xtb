@@ -339,7 +339,7 @@
 <translation id="2294577623958216786">تم ضبط الجدول الزمني الحالي على <ph name="SUNRISE" /> إلى <ph name="SUNSET" />. لتعديل الجدول الزمني لغروب الشمس وشروقها تلقائيًا، يجب تفعيل إذن الوصول إلى الموقع الجغرافي للنظام.</translation>
 <translation id="2305172810646967500">أسود</translation>
 <translation id="2307344026739914387">استخدام مفتاحَي التشفير الحاليين</translation>
-<translation id="2308243864813041101">‏عليك فصل كابل USB الخاص بجهاز "<ph name="DEVICE_NAME" />" عن مصدر الطاقة لمواصلة عملية التحديث</translation>
+<translation id="2308243864813041101">‏يجب فصل كابل USB الخاص بجهاز "<ph name="DEVICE_NAME" />" عن مصدر الطاقة لمواصلة عملية التحديث</translation>
 <translation id="2320295602967756579">تفعيل المظهر الفاتح</translation>
 <translation id="2323506179655536734">تم تخطّي الاختبار.</translation>
 <translation id="2324354238778375592">النافذة العائمة</translation>
@@ -348,7 +348,7 @@
 <translation id="2347064478402194325">كرسي</translation>
 <translation id="2358070305000735383">مربع حوار تعديل "<ph name="DESCRIPTION" />" مفتوح حاليًا.</translation>
 <translation id="2359808026110333948">متابعة</translation>
-<translation id="2364498172489649528">تم الاجتياز.</translation>
+<translation id="2364498172489649528">تم الاجتياز</translation>
 <translation id="2367335866686097760">مفتاح تحديد المفاتيح</translation>
 <translation id="2380886658946992094">قانوني</translation>
 <translation id="2391082728065870591">إرسال تقرير بالتعليقات</translation>
@@ -510,7 +510,7 @@
 <translation id="3242622575335502454">فن رقمي</translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
 <translation id="3248791727258378769">لن يتم إنشاء أي نص</translation>
-<translation id="324961752321393509">لا يسمح المشرف بإغلاق هذا التطبيق.</translation>
+<translation id="324961752321393509">لا يسمح المشرف بإغلاق هذا التطبيق</translation>
 <translation id="3263941347294171263">عليك فصل "<ph name="DEVICE_NAME" />" عن مصدر الطاقة ثم إعادة توصيله به لمواصلة عملية التحديث</translation>
 <translation id="3268178239013324452">تعذَّرت الطباعة - باب الطابعة مفتوح</translation>
 <translation id="3275729367986477355">الأفاتار</translation>
@@ -964,7 +964,7 @@
 <translation id="5227902338748591677">الجدول الزمني للمظهر الداكن</translation>
 <translation id="5229104491259541281">تحويل "<ph name="QUERY" />"</translation>
 <translation id="5229344016299762883">الخروج من وضع ملء الشاشة</translation>
-<translation id="5234764350956374838">تجاهل</translation>
+<translation id="5234764350956374838">إغلاق</translation>
 <translation id="5236119614998611749">تعذَّر إنشاء الملخّص</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{لقد ضبط مشرفك "<ph name="APP_NAME" />" لبدء تشغيله تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}=2{لقد ضبط مشرفك "<ph name="APP_NAME" />" وتطبيقًا آخر لبدء تشغيلهما تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}zero{لقد ضبط مشرفك "<ph name="APP_NAME" />" و# تطبيق آخر لبدء تشغيلها تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}few{لقد ضبط مشرفك "<ph name="APP_NAME" />" و# تطبيقات أخرى لبدء تشغيلها تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}many{لقد ضبط مشرفك "<ph name="APP_NAME" />" و# تطبيقًا آخر لبدء تشغيلها تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}other{لقد ضبط مشرفك "<ph name="APP_NAME" />" و# تطبيق آخر لبدء تشغيلها تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}}</translation>
 <translation id="5248419081947706722">أزرق</translation>
@@ -1598,7 +1598,7 @@
 <translation id="8028993641010258682">الحجم</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">تفعيل وضع الألوان التلقائية</translation>
-<translation id="8041089156583427627">إرسال ملاحظات</translation>
+<translation id="8041089156583427627">إرسال تعليقات</translation>
 <translation id="8045012663542226664">كتم صوت الميكروفون</translation>
 <translation id="8054112564438735763">بيج</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> بلون <ph name="CHARACTERS_COLOR" /> على خلفية بلون <ph name="CHARACTERS_BACKGROUND" /></translation>
@@ -1715,7 +1715,7 @@
 <translation id="8538236298648811558">‏الخلفية مستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="8550364285433943656">خصِّص لكل إجراء في اللعبة مفتاحًا معيّنًا لتلعب باستخدام لوحة المفاتيح</translation>
 <translation id="8557447961879934694">WPA2</translation>
-<translation id="8558521694042102707">قد ترتكب تكنولوجيا الذكاء الاصطناعي التوليدي أخطاء، بما فيها تلك المتعلّقة بالأشخاص، لذا يُنصَح بالتحقّق من ردودها.</translation>
+<translation id="8558521694042102707">قد يعرض الذكاء الاصطناعي التوليدي معلومات خاطئة، بما فيها تلك المتعلقة بالأشخاص، لذا ننصحك بالتحقّق من ردوده.</translation>
 <translation id="8575298406870537639">قد يتطلّب مشغّل شبكة الجوّال تفعيل هذا الخيار للاتصال بالشبكة التابعة له. يُرجى التواصل مع مشغّل شبكة الجوّال للاطّلاع على التفاصيل.</translation>
 <translation id="8576249514688522074">غير مهيأة</translation>
 <translation id="8584654835905316966">يجب إعادة تشغيل الجهاز لإكمال عملية تثبيت البرامج الثابتة لـ <ph name="DEVICE_NAME" /> على الإصدار <ph name="VERSION" />. وقد يبدو أنّه يُعاد تشغيل جهاز الكمبيوتر عدة مرات، فهذا سلوك متوقَّع.</translation>

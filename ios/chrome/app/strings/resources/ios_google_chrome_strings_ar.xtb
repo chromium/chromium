@@ -36,7 +36,7 @@
 <translation id="1634522710245925681">‏يمكنك استخدام Chrome كمتصفِّح تلقائي للحصول بسهولة على معلومات مفصّلة عن الأسعار</translation>
 <translation id="1646463005043273333">‏يؤدي هذا الاختصار إلى فتح إعدادات Chrome حتى يتمّ ضبطه كمتصفِّح تلقائي.</translation>
 <translation id="1670609221633730681">‏نصيحة بشأن Chrome: اختَر مكان شريط العناوين</translation>
-<translation id="1683863426423719967">‏لتلقّي تذكيرات علامات التبويب من Chrome، عليك تفعيل الإشعارات في إعدادات iOS.</translation>
+<translation id="1683863426423719967">‏لتلقّي تذكيرات علامات التبويب من Chrome، يجب تفعيل الإشعارات في إعدادات iOS.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1784567647421309104">‏حفظ كلمات المرور في Chrome</translation>
 <translation id="1790080846677398234">‏يُضيف هذا الاختصار عناوين URL التي تم إدخالها إلى الإشارات المرجعية في Chrome.</translation>
@@ -139,7 +139,7 @@
 <translation id="4738647308035481133">‏صفحة Google Chrome</translation>
 <translation id="4742795653798179840">‏تم حذف بيانات Chrome</translation>
 <translation id="4749294594657945639">‏للوصول بسهولة إلى كلمات المرور المحفوظة واستخدامها في تطبيقاتك الأخرى، ما عليك سوى استخدام ميزة "الملء التلقائي" في Chrome.</translation>
-<translation id="4761869838909035636">‏تفعيل ميزة "التحقّق من الأمان" في Chrome</translation>
+<translation id="4761869838909035636">‏إجراء تأكيد السلامة في Chrome</translation>
 <translation id="4798859546468762093">‏للحصول على خيارات مخصَّصة والاستفادة من ميزات أخرى، يمكنك تضمين متصفّح Chrome في "<ph name="FEATURE_NAME_1" />" و<ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">‏للمساعدة في تحسين التطبيق، يرسِل متصفِّح Chrome بيانات الاستخدام والأعطال إلى Google. <ph name="BEGIN_LINK" />إدارة<ph name="END_LINK" /></translation>
 <translation id="4830799082179398588">‏هل تريد أن يكون Chrome المتصفِّح التلقائي؟</translation>
@@ -188,7 +188,7 @@
 <translation id="5833027901704861726">‏لم يتم حفظ بعض بيانات Chrome في <ph name="EMAIL" /> إلى الآن.
 يُرجى الانتظار بضع دقائق قبل تبديل الحسابات. إذا بدّلت الحساب الآن، فسيتم حذف هذه البيانات.</translation>
 <translation id="5998675059699164418">‏تطلُب المؤسسة منك تسجيل الدخول للتمكّن من استخدام Chrome.</translation>
-<translation id="6021312115739110405">‏اطّلِع على خلاصة مخصَّصة لك من Google تشمل محتوى عن الأخبار والرياضة والطقس وغير ذلك.</translation>
+<translation id="6021312115739110405">‏إليك خلاصة مخصَّصة لك من Google تشمل محتوى عن الأخبار والرياضة والطقس وغيرها.</translation>
 <translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم</translation>
 <translation id="6132075343662013154">‏سيعرض Chrome خيار حفظ كلمة المرور</translation>
 <translation id="6132149203299792222">‏يمكنك تسجيل الدخول باستخدام حسابك على Google لمزامنة كلمات المرور والإشارات المرجعية وغير ذلك.</translation>
@@ -247,7 +247,7 @@
 <translation id="723787869754590019">‏املأ معلوماتك تلقائيًا مع Chrome</translation>
 <translation id="7261678641327190792">‏يتعذّر على متصفِّح Chrome التحقُّق من كلمات المرور.</translation>
 <translation id="7272930098487145294">‏لحفظ الصور، يُرجى النقر على "الإعدادات" للسماح لمتصفّح Chrome بأن يضيف إلى صورك.</translation>
-<translation id="7275945473750112644">‏سيتم محو بيانات Chrome المخزَّنة على هذا الجهاز لأنّ حسابك تتم إدارته من خلال <ph name="HOSTED_DOMAIN" /></translation>
+<translation id="7275945473750112644">‏تتم إدارة حسابك من خلال <ph name="HOSTED_DOMAIN" /> وبالتالي، سيتم حذف بيانات Chrome المخزَّنة على هذا الجهاز</translation>
 <translation id="7284245284340063465">‏إذا نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">‏متصفِّح Chrome لنظام التشغيل iOS</translation>
 <translation id="7299681342915173313">‏يمكنك الآن استخدام Chrome في أي وقت تنقر فيه على الروابط في الرسائل الإلكترونية والمستندات والتطبيقات الأخرى.</translation>

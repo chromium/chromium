@@ -51,7 +51,7 @@
 <translation id="122928249241119550">الانتقال إلى الجملة السابقة</translation>
 <translation id="1230503547248836149">بدء الاختيار</translation>
 <translation id="1236794971743289975">تعليق ختامي</translation>
-<translation id="1237797094773582699">يمكنك أيضًا التمرير بأربعة أصابع من اليسار إلى اليمين للانتقال إلى القسم السابق. جرِّب ذلك الآن.</translation>
+<translation id="1237797094773582699">يمكنك أيضًا التمرير بأربعة أصابع من اليسار إلى اليمين للانتقال إلى القسم السابق. لا تفوتك تجربته الآن.</translation>
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">أزرق عنبري</translation>
 <translation id="1246424317317450637">غامق</translation>
@@ -453,7 +453,7 @@
 <translation id="3783725005098956899">عرض السجلّ</translation>
 <translation id="3801735343383419236">إكمال تلقائي على هيئة قائمة</translation>
 <translation id="3805994235248464699">.input {$$COUNT :number} .match $$COUNT 1{{percent}} *{{{$$COUNT} percent signs}}</translation>
-<translation id="3806327402890551732">انتقِل إلى العنصر التالي أو السابق.</translation>
+<translation id="3806327402890551732">الانتقال إلى العنصر التالي أو السابق</translation>
 <translation id="3810838688059735925">الفيديوهات</translation>
 <translation id="3813387282697781382">مرجاني فاتح</translation>
 <translation id="3816633764618089385">الوسائط التالية</translation>
@@ -748,7 +748,7 @@
 <translation id="5712244464475377681">popbtn</translation>
 <translation id="5712889723513495267">انتقِل إلى القسم التالي أو السابق.</translation>
 <translation id="5725079927589231571">أزرق معدني فاتح</translation>
-<translation id="5732189279857692565">‏هذا هو العنوان الثاني. واصل الانتقال؛ إما بالضغط على "Search+H" أو "Search+Shift+H"</translation>
+<translation id="5732189279857692565">‏هذا هو العنوان الثاني. يمكنك الاستمرار في الانتقال؛ إما بالضغط على "Search+H" أو "Search+Shift+H"</translation>
 <translation id="5748623122140342504">عنوان المستوى الخامس السابق</translation>
 <translation id="5760594853119905566">ملحق</translation>
 <translation id="5761219715606611783">‏أحسنت. لقد تعلمت أساسيات استخدام ChromeVox. يمكنك الاطّلاع على البرنامج التعليمي مجددًا أو الخروج منه عن طريق استخدام أحد الأزرار الواردة أدناه.</translation>
@@ -984,7 +984,7 @@
 <translation id="7400575256015741911">تم اكتشاف خطأ إملائي</translation>
 <translation id="7408482676469142474">tbl</translation>
 <translation id="7419264136822406994">‏يمكنك استخدام مفتاح Shift + مفتاح التبويب (Tab) للانتقال إلى العنصر التفاعلي السابق. للمواصلة، اضغط على مفتاح Shift + مفتاح التبويب (Tab).</translation>
-<translation id="7425395583360211003">رجوع</translation>
+<translation id="7425395583360211003">العودة</translation>
 <translation id="7429415133937917139">‏يحاكي إخراج جهاز عرض بلغة برايل قابل لإعادة التحميل في لوحة ChromeVox بأعلى الشاشة.</translation>
 <translation id="7434509671034404296">المطوِّر</translation>
 <translation id="743783356331413498">مثال</translation>
@@ -1093,7 +1093,7 @@
 <translation id="8153361283127969411">.input {$$COUNT :number} .match $$COUNT 1{{right bracket}} *{{{$$COUNT} right brackets}}</translation>
 <translation id="8158033275290782295">اختيار الكل</translation>
 <translation id="816818801578874684">‏هذا هو العنوان الأول. اضغط على مفتاح البحث + حرف H للانتقال إلى العنوان التالي.</translation>
-<translation id="8173092779156526980">مرِّر سريعًا بأربعة أصابع إلى يمين الشاشة.</translation>
+<translation id="8173092779156526980">التمرير السريع بأربعة أصابع إلى يمين الشاشة</translation>
 <translation id="817529114347680055">تفعيل الشاشة</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">الصف</translation>
@@ -1163,7 +1163,7 @@
 <translation id="8693391540059827073">الفصل المفضَّل لديّ</translation>
 <translation id="8696284982970258155">شمّامي</translation>
 <translation id="8741370088760768424">معلومة: اضغط على مفتاح البحث + مفتاح المسافة لتنشيط العنصر الحالي.</translation>
-<translation id="8743786158317878347">دخول إلى المحتوى المنظم، مثل الجداول</translation>
+<translation id="8743786158317878347">الوصول إلى المحتوى المنظم، مثل الجداول</translation>
 <translation id="8746846427395705317">الانتقال إلى الكلمة السابقة</translation>
 <translation id="8747966237988593539">قائمة مرتبة</translation>
 <translation id="8749988712346667988">فضي</translation>
@@ -1209,7 +1209,7 @@
 <translation id="9077305471618729969">أخضر بحري فاتح</translation>
 <translation id="9080299285199342830">الانتقال السريع إلى النهاية</translation>
 <translation id="9089864840575085222">دورة صدى الكتابة</translation>
-<translation id="9099429023611373837">قص</translation>
+<translation id="9099429023611373837">الاقتصاص والدمج</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="9128414153595658330">dlg</translation>

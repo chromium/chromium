@@ -2029,7 +2029,7 @@
 <translation id="2393313392064891208">เนื้อหาข้อกำหนดของ Google Chrome OS Flex</translation>
 <translation id="2395616325548404795">ลงทะเบียน <ph name="DEVICE_TYPE" /> ของคุณสำหรับการจัดการองค์กรเรียบร้อยแล้ว แต่ไม่สามารถส่งเนื้อหาและข้อมูลตำแหน่งของอุปกรณ์ โปรดป้อนข้อมูลนี้ด้วยตนเองจากคอนโซลผู้ดูแลระบบสำหรับอุปกรณ์นี้</translation>
 <translation id="2396783860772170191">ป้อน PIN 4 หลัก (0000-9999)</translation>
-<translation id="2398546389094871088">การทำ Powerwash อุปกรณ์จะไม่นำโปรไฟล์ eSIM ของคุณออก ไปที่<ph name="LINK_BEGIN" />การตั้งค่าอุปกรณ์เคลื่อนที่<ph name="LINK_END" />เพื่อนำโปรไฟล์เหล่านี้ออกด้วยตัวเอง</translation>
+<translation id="2398546389094871088">การทำ Powerwash อุปกรณ์จะไม่นำโปรไฟล์ eSIM ของคุณออก ไปที่<ph name="LINK_BEGIN" />การตั้งค่ามือถือ<ph name="LINK_END" />เพื่อนำโปรไฟล์เหล่านี้ออกด้วยตัวเอง</translation>
 <translation id="2399699884460174994">เปิดการแจ้งเตือนแล้ว</translation>
 <translation id="2399939490305346086">ข้อมูลการลงชื่อเข้าใช้ในคีย์ความปลอดภัย</translation>
 <translation id="240006516586367791">การควบคุมสื่อ</translation>
@@ -2582,7 +2582,7 @@
 <translation id="2762441749940182211">บล็อกกล้องถ่ายรูป</translation>
 <translation id="2764786626780673772">รายละเอียด VPN</translation>
 <translation id="2764920001292228569">ป้อนชื่อโปรไฟล์</translation>
-<translation id="2765100602267695013">โปรดติดต่อผู้ให้บริการอุปกรณ์เคลื่อนที่</translation>
+<translation id="2765100602267695013">โปรดติดต่อผู้ให้บริการมือถือ</translation>
 <translation id="2765217105034171413">ขนาดเล็ก</translation>
 <translation id="2765820627968019645">สว่าง</translation>
 <translation id="276582196519778359">ป้อน PIN สำหรับการควบคุมโดยผู้ปกครอง</translation>
@@ -2787,7 +2787,7 @@
 <translation id="2908122561561557160">เปิดไฟล์ Word, Excel และ PowerPoint</translation>
 <translation id="2908162660801918428">เพิ่มแกลเลอรีสื่อตามไดเรกทอรี</translation>
 <translation id="2908358077082926882">กด "<ph name="CURRENTKEY" />" อีกครั้งเพื่อนำการกำหนดออกและ<ph name="RESPONSE" /></translation>
-<translation id="2909487040556589351">ดาวน์โหลด Chrome บนอุปกรณ์เคลื่อนที่</translation>
+<translation id="2909487040556589351">ดาวน์โหลด Chrome บนมือถือ</translation>
 <translation id="2909506265808101667">เชื่อมต่อกับบริการของ Google ไม่สำเร็จ ตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองอีกครั้ง รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="2910318910161511225">เชื่อมต่อกับเครือข่ายแล้วลองอีกครั้ง</translation>
 <translation id="2910678330803525229">ตอนนี้คุณเริ่มเรียกดูข้อมูลต่างๆ ได้แล้ว</translation>
@@ -3566,7 +3566,7 @@
 <translation id="3488199663160411179">ชื่อ</translation>
 <translation id="3490695139702884919">กำลังดาวน์โหลด... <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">กู้คืนข้อมูลในเครื่องได้หากคุณลืม PIN หรือรหัสผ่าน</translation>
-<translation id="3491616972057195633">คีย์ตีกลับ</translation>
+<translation id="3491616972057195633">Bounce Key</translation>
 <translation id="3491669675709357988">บัญชีของบุตรหลานยังไม่ได้ตั้งค่าสำหรับการควบคุมโดยผู้ปกครองของ Family Link คุณจะเพิ่มการควบคุมโดยผู้ปกครองได้เมื่อตั้งค่าเรียบร้อยแล้ว ดูข้อมูลเกี่ยวกับการควบคุมโดยผู้ปกครองได้ในแอปสำรวจ</translation>
 <translation id="3491678231052507920">โดยปกติแล้วเว็บไซต์จะใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณเพื่ออนุญาตให้คุณเข้าสู่เซสชัน VR</translation>
 <translation id="3493043608231401654">นำ <ph name="TAB_TITLE" /> ออกจากกลุ่มแท็บ</translation>
@@ -3832,7 +3832,7 @@
 <translation id="3673622964532248901">คุณไม่ได้รับอนุญาตให้แคสต์ไปยังอุปกรณ์นี้</translation>
 <translation id="367645871420407123">เว้นว่างไว้หากคุณต้องการตั้งรหัสผ่านระดับรูทเป็นภาพทดสอบเริ่มต้น</translation>
 <translation id="3676777756440746804">เว็บไซต์ถูกบล็อกไม่ให้ขออนุญาตคุณในการใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณ</translation>
-<translation id="3677911431265050325">ขอเว็บไซต์ในอุปกรณ์เคลื่อนที่</translation>
+<translation id="3677911431265050325">ขอเว็บไซต์เวอร์ชันมือถือ</translation>
 <translation id="3678156199662914018">ส่วนขยาย: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">หน้าเว็บที่คุณดูในหน้าต่างนี้จะไม่ปรากฏในประวัติการใช้เบราว์เซอร์และจะไม่ทิ้งร่องรอยอื่นๆ เช่น คุกกี้ ไว้ในคอมพิวเตอร์หลังจากที่คุณออกจากระบบ รวมถึงจะไม่มีการเก็บรักษาไฟล์ที่คุณดาวน์โหลดและบุ๊กมาร์กที่คุณสร้างไว้</translation>
 <translation id="3679126865530709868">ทัชแพดในตัว</translation>
@@ -7620,7 +7620,7 @@
 <translation id="6387674443318562538">แยกในแนวตั้ง</translation>
 <translation id="6388152137132427505">โปรดแชร์อย่างรอบคอบเสมอ ลิงก์จะหมดอายุใน 48 ชั่วโมง</translation>
 <translation id="6388429472088318283">ค้นหาภาษา</translation>
-<translation id="6388577073199278153">เข้าถึงบัญชีในอุปกรณ์เคลื่อนที่ไม่ได้ใช่ไหม</translation>
+<translation id="6388577073199278153">เข้าถึงบัญชีบนมือถือไม่ได้ใช่ไหม</translation>
 <translation id="6390020764191254941">ย้ายแท็บไปที่หน้าต่างใหม่</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{ไม่มี}=1{สำหรับ <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> และอีก 1 โดเมน}other{สำหรับ <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> และอีก {COUNT} โดเมน}}</translation>
 <translation id="6391131092053186625">IMEI ของอุปกรณ์คือ <ph name="IMEI_NUMBER" /> คุณใช้หมายเลขนี้เพื่อช่วยเปิดใช้งานบริการได้</translation>

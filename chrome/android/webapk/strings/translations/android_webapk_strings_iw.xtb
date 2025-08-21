@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
-<translation id="1625959690469240009">כדי לפתוח את הגדרות האתר יש לעדכן או להתקין מחדש את דפדפן <ph name="BROWSER_NAME" /></translation>
+<translation id="1625959690469240009">כדי לפתוח את הגדרות האתר צריך לעדכן או להתקין מחדש את הדפדפן <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690">האפליקציה <ph name="APP_NAME" /> מחייבת את האפליקציה הבאה:</translation>
 <translation id="2697679025356221813">האפליקציה <ph name="APP_NAME" /> מחייבת שימוש בדפדפן אינטרנט</translation>
 <translation id="3858759029325727987">יש לבחור דפדפן שתומך באפליקציה הזו:</translation>

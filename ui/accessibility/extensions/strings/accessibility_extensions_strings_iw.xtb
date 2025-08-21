@@ -10,7 +10,7 @@
 <translation id="1703735871906654364">דפדוף עם סמן</translation>
 <translation id="1791496371305830581">הפעלת כל התמונות המכילות אנימציה.</translation>
 <translation id="1974060860693918893">מתקדם</translation>
-<translation id="1996252509865389616">האם להפעיל?</translation>
+<translation id="1996252509865389616">להפעיל?</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2179565792157161713">פתיחת תיאור ארוך בכרטיסייה חדשה</translation>
 <translation id="2223143012868735942">מסנן צבע הניתן להתאמה המופעל באתרים כדי לשפר את ההבחנה בין צבעים.</translation>
@@ -19,7 +19,7 @@
 <translation id="2648340354586434750">‏יש ללחוץ לחיצה ארוכה על ‎&lt;span class='key'&gt;‎Option&lt;/span&gt;‎ כדי לעבור לפי מילים.</translation>
 <translation id="2795227192542594043">תוסף זה מספק סמן הניתן להזזה בדף האינטרנט, כך שניתן לבחור טקסט באמצעות המקלדת.</translation>
 <translation id="2808027189040546825">שלב 1: בוחרים את השורה המכילה את הכוכבים העמומים ביותר:</translation>
-<translation id="2965611304828530558">‏&lt;p&gt;כשמגיעים לקישור או לפקד, מתבצע מיקוד אוטומטי בהם. יש ללחוץ על ‎&lt;span class='key'&gt;Enter&lt;/span&gt;‎ כדי ללחוץ על קישור או על כפתור. ‎&lt;/p&gt; &lt;p&gt;‎כאשר פקד ממוקד (כגון תיבת טקסט או תיבת רשימה) לוכד מקשי חצים, יש ללחוץ על ‎&lt;span class='key'&gt;Esc&lt;/span&gt;‎ ולאחר מכן על מקש החץ שמאלה או ימינה, כדי להמשיך דפדוף עם סמן. ‎&lt;/p&gt; &lt;p&gt;‎לחלופין, אפשר ללחוץ על ‎&lt;span class='key'&gt;Tab&lt;/span&gt;‎ כדי לעבור לפקד הבא הניתן למיקוד. ‎&lt;/p&gt;‎</translation>
+<translation id="2965611304828530558">‏&lt;p&gt;כשמגיעים לקישור או לרכיב אינטרקטיבי, מתבצע בהם מיקוד אוטומטי. כדי ללחוץ על קישור או כפתור ‎&lt;/p&gt; &lt;p&gt;‎ יש ללחוץ על ‎&lt;span class="key"&gt;Enter&lt;/span&gt;‎ כשהמסך ממוקד ברכיב אינטראקטיבי (למשל תיבת טקסט או תיבת רשימה) שקולט לחיצות על מקשי חיצים, יש ללחוץ על ‎&lt;span class="key"&gt;Esc&lt;/span&gt;‎ ואז על מקש החץ שמאלה או ימינה, כדי להמשיך לדפדף עם סמן. ‎&lt;/p&gt; &lt;p&gt;‎ כדי לעבור לרכיב האינטראקטיבי הבא שאפשר למקד בו את המסך, יש ללחוץ על ‎&lt;span class="key"&gt;Tab&lt;/span&gt;‎ ‏&lt;/p&gt;</translation>
 <translation id="3252573918265662711">הגדרות</translation>
 <translation id="3410969471888629217">לא לזכור את ההתאמות האישיות של האתר</translation>
 <translation id="3435896845095436175">הפעלה</translation>
@@ -52,7 +52,7 @@
 <translation id="6170146920149900756">Color Enhancer</translation>
 <translation id="633394792577263429">‏יש ללחוץ לחיצה ארוכה על ‎&lt;span class='key'&gt;Control&lt;/span&gt;‎ כדי לעבור לפי מילים.</translation>
 <translation id="6550675742724504774">אפשרויות</translation>
-<translation id="6699630355767768222">שלב 3: שינוי של ציר הצבע מברירת המחדל בתיקון.</translation>
+<translation id="6699630355767768222">שלב 3: איפוס ציר הצבע לברירת המחדל כדי לתקן.</translation>
 <translation id="6838518108677880446">הגדרה:</translation>
 <translation id="690628312087070417">כאשר הסמן קופץ למרחק רב:</translation>
 <translation id="6965382102122355670">אישור</translation>

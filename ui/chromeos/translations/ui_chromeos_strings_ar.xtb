@@ -138,7 +138,7 @@
 <translation id="2084809735218147718">شخص يقول "شكرًا لك" بلغة الإشارة</translation>
 <translation id="2088690981887365033">‏شبكة VPN</translation>
 <translation id="209653272837065803">لا تتوفّر مساحة تخزين كافية لمواصلة مزامنة الملفات.</translation>
-<translation id="2114191879048183086">سيتم حذف <ph name="NUMBER_OF_ITEMS" /> ملف أو دليل، ولن تتمكّن من استعادتها.</translation>
+<translation id="2114191879048183086">سيتم حذف <ph name="NUMBER_OF_ITEMS" /> ملف أو دليل، وستتعذر استعادتها.</translation>
 <translation id="2122305276694332719">يسمح الاتصال تلقائيًا بشبكة مخفية للمستخدمين الآخرين رؤية جهازك وبعض إعدادات الشبكة، ولا ننصح بذلك.</translation>
 <translation id="2125607626296734455">الخميرية</translation>
 <translation id="2139545522194199494">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، الاتصال</translation>
@@ -499,7 +499,7 @@
 <translation id="4935975195727477204">زهرة غازانيا</translation>
 <translation id="4943368462779413526">كرة القدم</translation>
 <translation id="4961158930123534723">‏تمّت مشاركة ملف واحد مع نظام Parallels Desktop.</translation>
-<translation id="4965874878399872778">جارٍ التحقّق من الملفات للتأكّد من توافقه مع سياسات أمان مؤسستك…</translation>
+<translation id="4965874878399872778">جارٍ التحقّق من الملفات للتأكّد من توافقها مع سياسات أمان مؤسستك…</translation>
 <translation id="496656650103537022">تمت استعادة <ph name="FILE_NAME" />.</translation>
 <translation id="4969785127455456148">الألبوم</translation>
 <translation id="4972330214479971536">تعذَّر إكمال إعداد مزامنة الملفات</translation>
@@ -542,7 +542,7 @@
 <translation id="5194713942430106590">انقر لترتيب محتوى العمود ترتيبًا تصاعديًا.</translation>
 <translation id="5211614973734216083">الفاروية</translation>
 <translation id="5218183485292899140">الفرنسية السويسرية</translation>
-<translation id="5234764350956374838">تجاهل</translation>
+<translation id="5234764350956374838">إغلاق</translation>
 <translation id="5253070652067921974">مُنشئ الملف:</translation>
 <translation id="5254207638927440400">يتعذّر نقل الملف. الملف قيد الاستخدام.</translation>
 <translation id="5257456363153333584">يعسوب</translation>
@@ -1088,6 +1088,6 @@
 <translation id="976666271385981812">جارٍ نقل <ph name="NUMBER_OF_ITEMS" /> عنصر إلى "المهملات"…</translation>
 <translation id="981121421437150478">بلا اتصال</translation>
 <translation id="988685240266037636">يتوفَّر ملف باسم "<ph name="FILE_NAME" />" مسبقًا. هل تريد استبداله؟</translation>
-<translation id="992401651319295351">يتبقى لديك <ph name="RETRIES" /> محاولة. لن تتمكّن من استخدام هذه الشبكة إلى أن يتم إعداد رقم تعريف شخصي جديد.</translation>
+<translation id="992401651319295351">يتبقى لديك <ph name="RETRIES" /> محاولة. لن يُسمح لك باستخدام هذه الشبكة إلى أن يتم إعداد رقم تعريف شخصي جديد.</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> ميغابايت</translation>
 </translationbundle>

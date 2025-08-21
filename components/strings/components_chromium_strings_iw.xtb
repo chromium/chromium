@@ -8,7 +8,7 @@
 <translation id="358997566136285270">‏לוגו של Chromium</translation>
 <translation id="4050599136622776556">‏Chromium מנסה לערוך את אמצעי התשלום.</translation>
 <translation id="4365115785552740256">‏Chromium קיים הודות לפרויקט הקוד הפתוח של <ph name="BEGIN_LINK_CHROMIUM" /> Chromium‏<ph name="END_LINK_CHROMIUM" /> ו<ph name="BEGIN_LINK_OSS" />תוכנות קוד פתוח<ph name="END_LINK_OSS" /> אחרות.</translation>
-<translation id="4559775032954821361">‏יש לעבור אל
+<translation id="4559775032954821361">‏לוחצים על
           תפריט Chromium‏ &gt;
           <ph name="SETTINGS_TITLE" />
           ‏&gt;
@@ -17,14 +17,14 @@
           <ph name="PROXIES_TITLE" />
           ‏&gt;
           הגדרות LAN
-          ולבטל את הבחירה באפשרות "שימוש בשרת proxy עבור רשת LAN‏".</translation>
+          ומבטלים את הבחירה באפשרות "שימוש בשרת proxy עבור רשת LAN‏".</translation>
 <translation id="4622039161600275920">‏הדף הזה נחסם על ידי Chromium</translation>
 <translation id="48558539577516920">‏שינוי הגדרות חומת האש או האנטי-וירוס כדי לאפשר ל-Chromium
           לגשת לרשת.</translation>
-<translation id="4949828774841497663">‏עוברים אל "אפליקציות" &gt; "הגדרות המערכת" &gt; "רשת", ובוחרים את
-          הרשת הפעילה, לוחצים על הכפתור "פרטים…" ומבטלים את הבחירה בכל שרתי ה-proxy
+<translation id="4949828774841497663">‏נכנסים ל-"אפליקציות" &gt; "הגדרות המערכת" &gt; "רשת", ובוחרים את
+          הרשת הפעילה. לוחצים על הכפתור "פרטים…" ומבטלים את הבחירה בכל שרתי ה-proxy
           שנבחרו.</translation>
-<translation id="580822234363523061">‏יש לעבור אל
+<translation id="580822234363523061">‏צריך לעבור אל
           תפריט Chromium‏ &gt;
           <ph name="SETTINGS_TITLE" />
           ‏&gt;
