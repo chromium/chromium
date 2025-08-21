@@ -532,21 +532,24 @@ PasswordSuggestionGenerator::GetProactiveRecoverySuggestions(
   suggestion.additional_label = std::u16string(
       payload.backup_password->size(), constants::kPasswordReplacementChar);
   suggestion.additional_label_alignment_right = true;
+
+  std::u16string footer_text = l10n_util::GetStringUTF16(
+      UsesPasswordManagerGoogleBranding()
+          ? IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_BRANDED
+          : IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_NON_BRANDED);
   // This prevents the label from including the masked password string.
   suggestion.voice_over = l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_SUGGESTION);
+  // TODO(crbug.com/439981762): Once it's possible to read out disabled
+  // suggestions, remove this.
+  *suggestion.voice_over += u"\n" + footer_text;
   suggestions.emplace_back(std::move(suggestion));
 
   Suggestion separator(SuggestionType::kSeparator);
   separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestions.emplace_back(std::move(separator));
 
-  Suggestion footer(
-      l10n_util::GetStringUTF16(
-          UsesPasswordManagerGoogleBranding()
-              ? IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_BRANDED
-              : IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_NON_BRANDED),
-      SuggestionType::kFreeformFooter);
+  Suggestion footer(footer_text, SuggestionType::kFreeformFooter);
   footer.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   footer.acceptability =
       autofill::Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;

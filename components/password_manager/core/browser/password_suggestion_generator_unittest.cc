@@ -67,6 +67,13 @@ using testing::Property;
 using testing::Return;
 using testing::ReturnRef;
 
+std::u16string GetFreeformFooterText() {
+  return l10n_util::GetStringUTF16(
+      UsesPasswordManagerGoogleBranding()
+          ? IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_BRANDED
+          : IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_NON_BRANDED);
+}
+
 Matcher<Suggestion> EqualsDomainPasswordSuggestion(
     SuggestionType id,
     const std::u16string& main_text,
@@ -193,14 +200,19 @@ Matcher<Suggestion> EqualsBackupPasswordSuggestion(
 Matcher<Suggestion> EqualsProactiveRecoverySuggestion(
     const std::u16string& backup_password,
     const Suggestion::Payload& payload) {
-  return AllOf(EqualsSuggestion(
-                   SuggestionType::kBackupPasswordEntry,
-                   l10n_util::GetStringUTF16(
-                       IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_SUGGESTION),
-                   Suggestion::Icon::kRecoveryPassword, payload),
-               Field("additional_label", &Suggestion::additional_label,
-                     std::u16string(backup_password.length(),
-                                    constants::kPasswordReplacementChar)));
+  return AllOf(
+      EqualsSuggestion(
+          SuggestionType::kBackupPasswordEntry,
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_SUGGESTION),
+          Suggestion::Icon::kRecoveryPassword, payload),
+      Field("additional_label", &Suggestion::additional_label,
+            std::u16string(backup_password.length(),
+                           constants::kPasswordReplacementChar)),
+      Field("voice_over", &Suggestion::voice_over,
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_SUGGESTION) +
+                u"\n" + GetFreeformFooterText()));
 }
 
 MATCHER_P(SuggestionHasFaviconDetails, favicon_details, "") {
@@ -1622,16 +1634,11 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
   EXPECT_THAT(
       suggestions,
-      ElementsAre(
-          EqualsProactiveRecoverySuggestion(
-              credential.backup_password_value.value(), payload),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(
-              SuggestionType::kFreeformFooter,
-              l10n_util::GetStringUTF16(
-                  UsesPasswordManagerGoogleBranding()
-                      ? IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_BRANDED
-                      : IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_NON_BRANDED))));
+      ElementsAre(EqualsProactiveRecoverySuggestion(
+                      credential.backup_password_value.value(), payload),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kFreeformFooter,
+                                   GetFreeformFooterText())));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
