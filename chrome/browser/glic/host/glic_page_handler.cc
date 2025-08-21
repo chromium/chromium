@@ -147,8 +147,10 @@ class ActiveStateCalculator : public GlicWindowController::StateObserver {
   explicit ActiveStateCalculator(GlicWindowController* window_controller)
       : window_controller_(window_controller) {
     window_controller_->AddStateObserver(this);
-    PanelStateChanged(window_controller_->GetPanelState(),
-                      window_controller_->attached_browser());
+    PanelStateChanged(
+        window_controller_->GetPanelState(),
+        {.attached_browser = window_controller_->attached_browser(),
+         .glic_widget = nullptr});
   }
   ~ActiveStateCalculator() override {
     window_controller_->RemoveStateObserver(this);
@@ -161,10 +163,11 @@ class ActiveStateCalculator : public GlicWindowController::StateObserver {
   }
 
   // GlicWindowController::StateObserver implementation.
-  void PanelStateChanged(const glic::mojom::PanelState& panel_state,
-                         Browser* attached_browser) override {
+  void PanelStateChanged(
+      const glic::mojom::PanelState& panel_state,
+      const GlicWindowController::PanelStateContext& context) override {
     panel_state_kind_ = panel_state.kind;
-    SetAttachedBrowser(attached_browser);
+    SetAttachedBrowser(context.attached_browser);
     PostRecalcAndNotify();
   }
 
@@ -1227,8 +1230,9 @@ class GlicWebClientHandler
   }
 
   // GlicWindowController::StateObserver implementation.
-  void PanelStateChanged(const glic::mojom::PanelState& panel_state,
-                         Browser* attached_browser) override {
+  void PanelStateChanged(
+      const glic::mojom::PanelState& panel_state,
+      const GlicWindowController::PanelStateContext& context) override {
     web_client_->NotifyPanelStateChange(panel_state.Clone());
   }
 

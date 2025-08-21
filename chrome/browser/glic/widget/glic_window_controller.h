@@ -55,11 +55,16 @@ enum class AttachChangeReason;
 // standalone. See |IsAttached|
 class GlicWindowController : public Host::Delegate {
  public:
-  // Observes the state of the glic window.
+  struct PanelStateContext {
+    raw_ptr<Browser> attached_browser = nullptr;
+    raw_ptr<views::Widget> glic_widget = nullptr;
+  };
+
+  // Observes the state of the glic panel.
   class StateObserver : public base::CheckedObserver {
    public:
     virtual void PanelStateChanged(const mojom::PanelState& panel_state,
-                                   Browser* attached_browser) = 0;
+                                   const PanelStateContext& context) = 0;
   };
 
   GlicWindowController(const GlicWindowController&) = delete;

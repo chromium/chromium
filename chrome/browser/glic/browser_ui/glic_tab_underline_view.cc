@@ -251,8 +251,9 @@ class GlicTabUnderlineView::UnderlineViewUpdater
 
   // The glic panel state must be separately observed because underlines of
   // pinned tabs uniquely respond to showing/hiding of the glic panel.
-  void PanelStateChanged(const glic::mojom::PanelState& panel_state,
-                         Browser*) override {
+  void PanelStateChanged(
+      const glic::mojom::PanelState& panel_state,
+      const GlicWindowController::PanelStateContext& context) override {
     UpdateUnderlineView(
         panel_state.kind == mojom::PanelState::Kind::kHidden
             ? UpdateUnderlineReason::kPanelStateChanged_PanelHidden

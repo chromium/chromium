@@ -84,7 +84,9 @@ class GlicFocusedBrowserManager : public BrowserListObserver,
   void OnWidgetDestroyed(views::Widget* widget) override;
 
   // GlicWindowController::StateObserver:
-  void PanelStateChanged(const mojom::PanelState&, Browser*) override;
+  void PanelStateChanged(
+      const mojom::PanelState&,
+      const GlicWindowController::PanelStateContext& context) override;
 
  private:
   // Tracks the state of the focused browser and candidate focused browser.

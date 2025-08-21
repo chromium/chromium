@@ -30,8 +30,9 @@ class GlicButtonController : public GlicWindowController::StateObserver {
   ~GlicButtonController() override;
 
   // GlicWindowController::StateObserver:
-  void PanelStateChanged(const mojom::PanelState& panel_state,
-                         Browser*) override;
+  void PanelStateChanged(
+      const mojom::PanelState& panel_state,
+      const GlicWindowController::PanelStateContext& context) override;
 
  private:
   void OnPrefsChanged();

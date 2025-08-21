@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "pdf/buildflags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/browser/pdf_document_helper.h"
@@ -493,7 +494,7 @@ void GlicAnnotationManager::AnnotationTask::PrimaryPageChanged(
 // as well.
 void GlicAnnotationManager::AnnotationTask::PanelStateChanged(
     const mojom::PanelState& panel_state,
-    Browser* attached_browser) {
+    const GlicWindowController::PanelStateContext& context) {
   if (panel_state.kind != mojom::PanelState_Kind::kHidden) {
     return;
   }

@@ -139,8 +139,9 @@ void GlicFocusedBrowserManager::OnWidgetDestroyed(views::Widget* widget) {
   widget_observation_.Reset();
 }
 
-void GlicFocusedBrowserManager::PanelStateChanged(const mojom::PanelState&,
-                                                  Browser*) {
+void GlicFocusedBrowserManager::PanelStateChanged(
+    const mojom::PanelState&,
+    const GlicWindowController::PanelStateContext& context) {
   MaybeUpdateFocusedBrowser();
 }
 

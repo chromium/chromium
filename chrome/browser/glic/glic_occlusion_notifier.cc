@@ -7,6 +7,7 @@
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "ui/views/widget/widget.h"
 
 namespace glic {
 
@@ -22,22 +23,21 @@ GlicOcclusionNotifier::~GlicOcclusionNotifier() {
 
 void GlicOcclusionNotifier::PanelStateChanged(
     const mojom::PanelState& panel_state,
-    Browser*) {
+    const GlicWindowController::PanelStateContext& context) {
   PictureInPictureOcclusionTracker* tracker =
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
   if (!window_controller_->IsDetached() || !tracker) {
     return;
   }
 
-  views::Widget* glic_widget = window_controller_->GetGlicWidget();
-  if (!glic_widget) {
+  if (!context.glic_widget) {
     return;
   }
 
   if (panel_state.kind == mojom::PanelState_Kind::kDetached) {
-    tracker->OnPictureInPictureWidgetOpened(glic_widget);
+    tracker->OnPictureInPictureWidgetOpened(context.glic_widget);
   } else {
-    tracker->RemovePictureInPictureWidget(glic_widget);
+    tracker->RemovePictureInPictureWidget(context.glic_widget);
   }
 }
 

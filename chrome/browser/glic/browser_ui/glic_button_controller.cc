@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/prefs/pref_service.h"
+#include "ui/views/widget/widget.h"
 
 namespace glic {
 
@@ -28,7 +29,7 @@ GlicButtonController::GlicButtonController(
 
   // Initialize default values
   PanelStateChanged(glic_keyed_service_->window_controller().GetPanelState(),
-                    nullptr);
+                    {});
 
   // Observe for changes in preferences and panel state events
   pref_registrar_.Init(profile_->GetPrefs());
@@ -49,7 +50,7 @@ GlicButtonController::~GlicButtonController() {
 
 void GlicButtonController::PanelStateChanged(
     const mojom::PanelState& panel_state,
-    Browser*) {
+    const GlicWindowController::PanelStateContext& context) {
   if (GlicWindowController::AlwaysDetached()) {
     UpdateShowState(true);
   } else {

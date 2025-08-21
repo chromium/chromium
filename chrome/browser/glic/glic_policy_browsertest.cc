@@ -61,8 +61,9 @@ class PanelStateObserver : public GlicWindowController::StateObserver {
   PanelStateObserver(mojom::PanelState::Kind kind, base::OnceClosure callback)
       : kind_(kind), callback_(std::move(callback)) {}
 
-  void PanelStateChanged(const mojom::PanelState& panel_state,
-                         Browser* attached_browser) override {
+  void PanelStateChanged(
+      const mojom::PanelState& panel_state,
+      const GlicWindowController::PanelStateContext& context) override {
     if (panel_state.kind == kind_) {
       std::move(callback_).Run();
     }

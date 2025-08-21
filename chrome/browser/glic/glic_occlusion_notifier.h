@@ -19,8 +19,9 @@ class GlicOcclusionNotifier : public GlicWindowController::StateObserver {
   ~GlicOcclusionNotifier() override;
 
   // GlicWindowController::StateObserver:
-  void PanelStateChanged(const mojom::PanelState& panel_state,
-                         Browser*) override;
+  void PanelStateChanged(
+      const mojom::PanelState& panel_state,
+      const GlicWindowController::PanelStateContext& context) override;
 
  private:
   raw_ref<GlicWindowController> window_controller_;

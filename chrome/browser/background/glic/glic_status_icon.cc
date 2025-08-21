@@ -39,6 +39,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -229,8 +230,9 @@ void GlicStatusIcon::OnLastActiveGlicProfileChanged(Profile* profile) {
   UpdateVisibilityOfShowAndCloseInContextMenu();
 }
 
-void GlicStatusIcon::PanelStateChanged(const mojom::PanelState& panel_state,
-                                       Browser* attached_browser) {
+void GlicStatusIcon::PanelStateChanged(
+    const mojom::PanelState& panel_state,
+    const GlicWindowController::PanelStateContext& context) {
   UpdateVisibilityOfShowAndCloseInContextMenu();
   status_icon_->SetToolTip(
       l10n_util::GetStringUTF16(GetTooltipMessageId(controller_->IsShowing())));
