@@ -230,7 +230,6 @@ if (!is_android) {
       "//chrome/browser/ui/translate",
       "//chrome/browser/ui/translate:test_support",
       "//chrome/test:test_support",
-      "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/javascript_dialogs",
     ]

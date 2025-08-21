@@ -105,10 +105,12 @@
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 // Includes for ChromeVox accessibility tests.
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "extensions/browser/browsertest_util.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/test/ui_controls.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -3199,9 +3201,20 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestShadowDom,
 // ChromeVox is only available on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
-class AutofillInteractiveTestChromeVox : public AutofillInteractiveTestBase {
+class AutofillInteractiveTestChromeVox
+    : public AutofillInteractiveTestBase,
+      public ::testing::WithParamInterface<ash::ManifestVersion> {
  public:
-  AutofillInteractiveTestChromeVox() = default;
+  AutofillInteractiveTestChromeVox() {
+    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
+    if (GetParam() == ash::ManifestVersion::kTwo) {
+      disabled_features.push_back(
+          ::features::kAccessibilityManifestV3ChromeVox);
+    } else if (GetParam() == ash::ManifestVersion::kThree) {
+      enabled_features.push_back(::features::kAccessibilityManifestV3ChromeVox);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
   ~AutofillInteractiveTestChromeVox() override = default;
 
   void SetUpOnMainThread() override {
@@ -3224,8 +3237,15 @@ class AutofillInteractiveTestChromeVox : public AutofillInteractiveTestBase {
   }
   ash::test::SpeechMonitor* sm() { return chromevox_test_utils()->sm(); }
 
+ private:
   std::unique_ptr<ash::ChromeVoxTestUtils> chromevox_test_utils_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(ManifestVersion,
+                         AutofillInteractiveTestChromeVox,
+                         ::testing::Values(ash::ManifestVersion::kTwo,
+                                           ash::ManifestVersion::kThree));
 
 // Ensure that autofill suggestions are properly read out via ChromeVox.
 // This is a regressions test for crbug.com/1208913.
@@ -3237,7 +3257,7 @@ class AutofillInteractiveTestChromeVox : public AutofillInteractiveTestBase {
 #define MAYBE_TestNotificationOfAutofillDropdown \
   TestNotificationOfAutofillDropdown
 #endif
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestChromeVox,
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestChromeVox,
                        MAYBE_TestNotificationOfAutofillDropdown) {
   CreateTestProfile();
   SetTestUrlResponse(kTestShippingFormString);
