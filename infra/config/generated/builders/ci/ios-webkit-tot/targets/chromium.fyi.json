@@ -19,6 +19,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
+        "module_scheme": "gtest",
         "name": "absl_hardening_tests iPad Air (5th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -70,6 +71,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
+        "module_scheme": "gtest",
         "name": "absl_hardening_tests iPad Air (6th generation) 18.2",
         "resultdb": {
           "enable": true,
@@ -121,6 +123,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
+        "module_scheme": "gtest",
         "name": "absl_hardening_tests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -172,6 +175,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
+        "module_scheme": "gtest",
         "name": "absl_hardening_tests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
@@ -223,6 +227,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//base:base_unittests/",
+        "module_scheme": "gtest",
         "name": "base_unittests iPad Air (5th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -274,6 +279,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//base:base_unittests/",
+        "module_scheme": "gtest",
         "name": "base_unittests iPad Air (6th generation) 18.2",
         "resultdb": {
           "enable": true,
@@ -325,6 +331,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//base:base_unittests/",
+        "module_scheme": "gtest",
         "name": "base_unittests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -376,6 +383,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//base:base_unittests/",
+        "module_scheme": "gtest",
         "name": "base_unittests iPhone 15 18.2",
         "resultdb": {
           "enable": true,

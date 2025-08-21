@@ -7,6 +7,7 @@ load("@chromium-luci//targets.star", "targets")
 targets.binaries.console_test_launcher(
     name = "absl_hardening_tests",
     label = "//third_party/abseil-cpp:absl_hardening_tests",
+    module_scheme = "gtest",
 )
 
 targets.binaries.console_test_launcher(
@@ -19,6 +20,7 @@ targets.binaries.windowed_test_launcher(
     label = "//chrome/test:android_browsertests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "gtest",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -208,6 +210,7 @@ targets.binaries.script(
 targets.binaries.console_test_launcher(
     name = "base_unittests",
     label = "//base:base_unittests",
+    module_scheme = "gtest",
 )
 
 targets.binaries.console_test_launcher(
@@ -436,6 +439,7 @@ targets.binaries.generated_script(
     args = [
         "--logs-dir=${ISOLATED_OUTDIR}",
     ],
+    module_scheme = "tast",
 )
 
 targets.binaries.console_test_launcher(
@@ -449,6 +453,7 @@ targets.binaries.generated_script(
     args = [
         "--logs-dir=${ISOLATED_OUTDIR}",
     ],
+    module_scheme = "tast",
 )
 
 targets.binaries.generated_script(
@@ -457,6 +462,7 @@ targets.binaries.generated_script(
     args = [
         "--logs-dir=${ISOLATED_OUTDIR}",
     ],
+    module_scheme = "tast",
 )
 
 targets.binaries.console_test_launcher(
@@ -471,6 +477,7 @@ targets.binaries.generated_script(
     label = "//chrome/test/android:chrome_java_test_pagecontroller_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.generated_script(
@@ -478,6 +485,7 @@ targets.binaries.generated_script(
     label = "//chrome/android:chrome_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -510,6 +518,7 @@ targets.binaries.console_test_launcher(
     label = "//chrome/android:chrome_public_test_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "gtest",
 )
 
 targets.binaries.console_test_launcher(
@@ -934,6 +943,7 @@ targets.binaries.generated_script(
             "--upload-skia-json",
         ],
     ),
+    module_scheme = "tast",
 )
 
 targets.binaries.console_test_launcher(
@@ -1530,6 +1540,7 @@ targets.binaries.console_test_launcher(
     label = "//mojo/public/java/system:mojo_test_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "gtest",
 )
 
 targets.binaries.console_test_launcher(

@@ -18,6 +18,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
+        "module_scheme": "gtest",
         "name": "absl_hardening_tests",
         "resultdb": {
           "enable": true,
@@ -65,6 +66,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//chrome/test:android_browsertests/",
+        "module_scheme": "gtest",
         "name": "android_browsertests",
         "resultdb": {
           "enable": true,
@@ -246,6 +248,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//base:base_unittests/",
+        "module_scheme": "gtest",
         "name": "base_unittests",
         "resultdb": {
           "enable": true,
@@ -762,6 +765,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//chrome/android:chrome_public_test_apk/",
+        "module_scheme": "gtest",
         "name": "chrome_public_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -2074,6 +2078,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//mojo/public/java/system:mojo_test_apk/",
+        "module_scheme": "gtest",
         "name": "mojo_test_apk",
         "resultdb": {
           "enable": true,

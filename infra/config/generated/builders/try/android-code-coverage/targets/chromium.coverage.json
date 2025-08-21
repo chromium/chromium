@@ -53,6 +53,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//chrome/android:chrome_public_test_apk/",
+        "module_scheme": "gtest",
         "name": "chrome_public_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -245,6 +246,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//mojo/public/java/system:mojo_test_apk/",
+        "module_scheme": "gtest",
         "name": "mojo_test_apk",
         "resultdb": {
           "enable": true,
@@ -485,6 +487,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/android:chrome_java_test_pagecontroller_junit_tests/",
+        "module_scheme": "junit",
         "name": "chrome_java_test_pagecontroller_junit_tests",
         "resultdb": {
           "enable": true,
@@ -508,6 +511,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/android:chrome_junit_tests/",
+        "module_scheme": "junit",
         "name": "chrome_junit_tests",
         "resultdb": {
           "enable": true,

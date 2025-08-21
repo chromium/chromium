@@ -27,6 +27,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//base:base_unittests/",
+        "module_scheme": "gtest",
         "name": "base_unittests Apple TV 4K (3rd generation) 18.5",
         "resultdb": {
           "enable": true,

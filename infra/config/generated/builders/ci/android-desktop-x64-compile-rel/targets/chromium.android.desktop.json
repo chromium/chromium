@@ -26,6 +26,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//chrome/test:android_browsertests/",
+        "module_scheme": "gtest",
         "name": "android_browsertests",
         "resultdb": {
           "enable": true,
@@ -320,6 +321,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/android:chrome_junit_tests/",
+        "module_scheme": "junit",
         "name": "chrome_junit_tests",
         "resultdb": {
           "enable": true,

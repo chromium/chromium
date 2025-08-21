@@ -75,6 +75,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/android:chrome_java_test_pagecontroller_junit_tests/",
+        "module_scheme": "junit",
         "name": "chrome_java_test_pagecontroller_junit_tests",
         "resultdb": {
           "enable": true,
@@ -97,6 +98,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/android:chrome_junit_tests/",
+        "module_scheme": "junit",
         "name": "chrome_junit_tests",
         "resultdb": {
           "enable": true,
