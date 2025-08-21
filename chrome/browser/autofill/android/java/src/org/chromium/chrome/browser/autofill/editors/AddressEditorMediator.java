@@ -564,7 +564,7 @@ class AddressEditorMediator {
     }
 
     private String getDeleteConfirmationPrimaryButtonText() {
-        if (mProfileToEdit.isHomeOrWorkProfile()) {
+        if (isNonEditableProfile()) {
             return mContext.getString(R.string.autofill_remove_suggestion_button);
         }
         return mContext.getString(R.string.autofill_delete_suggestion_button);

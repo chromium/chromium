@@ -1305,7 +1305,7 @@ public class AddressEditorTest {
                 SpanApplier.applySpans(deleteText, new SpanApplier.SpanInfo("<link>", "</link>"))
                         .toString();
         final String deleteButtonText =
-                mActivity.getString(R.string.autofill_delete_suggestion_button);
+                mActivity.getString(R.string.autofill_remove_suggestion_button);
         checkModelHasExpectedValues(editorModel, deleteTitle, deleteTextReplaced, deleteButtonText);
     }
 
