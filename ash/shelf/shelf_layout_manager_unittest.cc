@@ -4564,9 +4564,37 @@ TEST_P(QuickActionShowBubbleTest, ScrollFromShelfToShowAppListOverShelfApps) {
   }
 }
 
-// TODO(https://crbug.com/1286875): This behavior is broken in production. An
-// auto-hidden shelf will close after a short swipe up that fails to show the
-// app list.
+// TODO(https://crbug.com/261650284): This behavior is broken in production.
+//
+// THE BUG: An auto-hidden shelf that is currently visible will incorrectly hide
+// after a short, upward swipe that is not sufficient to show the app list. The
+// expected, non-buggy behavior is for the shelf to remain visible.
+//
+// ROOT CAUSE: There is a logical conflict within `ash::ShelfLayoutManager` that
+// makes the expected behavior unachievable without significant refactoring.
+// The sequence of events is as follows:
+// 1.  The drag gesture concludes, and `ShelfLayoutManager::CompleteDrag()` is
+//     called.
+// 2.  Inside `CompleteDrag()`,
+// `ShelfLayoutManager::ShouldChangeVisibilityAfterDrag()`
+//     is invoked. It correctly identifies the short upward swipe as being in
+//     the wrong direction to trigger a visibility change and returns `false`.
+// 3.  Because `ShouldChangeVisibilityAfterDrag()` returns `false`, the logic
+//     proceeds to call `ShelfLayoutManager::CancelDrag()`.
+// 4.  `CancelDrag()` calls `ShelfLayoutManager::UpdateVisibilityState()`, which
+//     in turn calls `ShelfLayoutManager::CalculateAutoHideState()` to determine
+//     the shelf's state.
+// 5.  `CalculateAutoHideState()` checks the current cursor position. Since the
+//     swipe has moved the cursor off the shelf, it immediately concludes that
+//     the shelf should be hidden, returning `SHELF_AUTO_HIDE_HIDDEN`.
+//
+// This creates a race condition where the generic, cursor-position-based
+// auto-hide logic in `CalculateAutoHideState()` overrides the specific,
+// gesture-based logic in `ShouldChangeVisibilityAfterDrag()`. Attempts to
+// temporarily use `LockAutoHideState()` after the gesture have proven
+// ineffective. A proper fix would likely require the auto-hide logic to be
+// aware of the preceding gesture's context. The test remains disabled to flag
+// this issue for future work.
 TEST_P(QuickActionShowBubbleTest,
        DISABLED_ShortSwipeUpOnAutoHideShelfKeepsShelfOpen) {
   Shelf* shelf = GetPrimaryShelf();
@@ -4612,7 +4640,7 @@ TEST_P(QuickActionShowBubbleTest,
       4);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
-  // This line fails, see https://crbug.com/1286875.
+  // This line fails, see https://crbug.com/261650284.
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 }
 
