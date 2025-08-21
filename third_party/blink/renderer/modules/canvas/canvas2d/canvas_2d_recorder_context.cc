@@ -811,7 +811,7 @@ void Canvas2DRecorderContext::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
     return;
   }
   AffineTransform prev_transform;
-  for (Member<CanvasRenderingContext2DState> curr_state : state_stack_) {
+  for (const Member<CanvasRenderingContext2DState>& curr_state : state_stack_) {
     if (curr_state->IsLayerSaveType()) {
       // Layers are stored in a separate recording that never gets flushed, so
       // we are done restoring the main recording.

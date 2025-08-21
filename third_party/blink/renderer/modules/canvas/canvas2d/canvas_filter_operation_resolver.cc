@@ -442,7 +442,7 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperationsFromList(
     ExecutionContext& execution_context,
     ExceptionState& exception_state) {
   FilterOperations operations;
-  for (auto filter : filters) {
+  for (const auto& filter : filters) {
     Dictionary filter_dict = Dictionary(filter);
     std::optional<String> name =
         filter_dict.Get<IDLString>("name", exception_state);
