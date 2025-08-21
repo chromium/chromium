@@ -957,11 +957,6 @@ BASE_FEATURE(AutoPictureInPictureAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(ContextMenuPictureInPictureAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the use of a Surface (ANativeWindow) as the input for the
-// NdkVideoEncodeAccelerator on Android.
-BASE_FEATURE(EnableSurfaceInputForAndroidVEA,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables block model (LinearBlock) on supported devices.
 BASE_FEATURE(MediaCodecBlockModel, base::FEATURE_DISABLED_BY_DEFAULT);
 

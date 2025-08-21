@@ -5,18 +5,15 @@
 #ifndef MEDIA_GPU_ANDROID_NDK_VIDEO_ENCODE_ACCELERATOR_H_
 #define MEDIA_GPU_ANDROID_NDK_VIDEO_ENCODE_ACCELERATOR_H_
 
-#include <android/native_window.h>
-#include <media/NdkMediaCodec.h>
 #include <stdint.h>
 
-#include <array>
+#include <media/NdkMediaCodec.h>
 #include <memory>
 #include <vector>
 
 #include "base/android/requires_api.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -24,10 +21,8 @@
 #include "media/base/media_log.h"
 #include "media/base/video_encoder.h"
 #include "media/gpu/android/ndk_media_codec_wrapper.h"
-#include "media/gpu/android/video_frame_gl_surface_renderer.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
-#include "ui/gl/android/scoped_a_native_window.h"
 
 namespace media {
 
@@ -74,19 +69,10 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   // frames are cropped to the nearest 16x16 alignment.
   bool SetInputBufferLayout(const gfx::Size& configured_size);
 
-  // Reads a frame from `pending_frames_` (if it has any) does some checks and
-  // and prep work and calls either `FeedInputBuffer()` or `FeedGLSurface()`
+  // Read a frame from |pending_frames_| put it into an input buffer
+  // available in |media_codec_input_buffers_| and ask |media_codec_| to encode
+  // it.
   void FeedInput();
-
-  // Renders the `frame` onto the encoder's input surface using the
-  // `gl_renderer_` and passes the `timestamp` to the encoder.
-  void FeedGLSurface(scoped_refptr<VideoFrame> frame,
-                     base::TimeDelta timestamp);
-  // Copies the `frame` into an available MediaCodec input buffer and
-  // queues it for the encoder with the given `timestamp`.
-  void FeedInputBuffer(scoped_refptr<VideoFrame> frame,
-                       base::TimeDelta timestamp);
-  media_status_t SendEndOfStream();
 
   // Read encoded data from |media_codec_output_buffers_| copy it to a buffer
   // available in |available_bitstream_buffers_| and tell |client_ptr_factory_|
@@ -177,12 +163,6 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
 
   // True if any frames have been sent to the encoder.
   bool have_encoded_frames_ = false;
-
-  // Fields related to sending frame to the encoder via the Surface instead of
-  // input buffers.
-  const bool use_surface_as_input_;
-  std::unique_ptr<VideoFrameGLSurfaceRenderer> gl_renderer_;
-  gl::ScopedANativeWindow input_surface_;
 
   media::VideoEncoderInfo encoder_info_;
 };
