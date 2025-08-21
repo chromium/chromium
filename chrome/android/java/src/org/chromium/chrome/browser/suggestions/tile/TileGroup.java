@@ -269,8 +269,6 @@ public class TileGroup implements MostVisitedSites.Observer {
     private final Observer mObserver;
     private final TileRenderer mTileRenderer;
     private final CustomTileModificationDelegate mCustomTileModificationDelegate;
-    // Used for TileInteractionDelegateImpl.
-    private final int mPrerenderDelay;
 
     /**
      * Tracks the tasks currently in flight.
@@ -309,7 +307,6 @@ public class TileGroup implements MostVisitedSites.Observer {
                             mTileGroupDelegate,
                             mTileDragDelegate,
                             mCustomTileModificationDelegate,
-                            mPrerenderDelay,
                             tile,
                             view);
                 }
@@ -359,8 +356,6 @@ public class TileGroup implements MostVisitedSites.Observer {
         mOfflineModelObserver = new OfflineModelObserver(offlinePageBridge);
         mUiDelegate.addDestructionObserver(mOfflineModelObserver);
         mCustomTileModificationDelegate = new CustomTileModificationDelegateImpl();
-
-        mPrerenderDelay = 0;
     }
 
     @Override

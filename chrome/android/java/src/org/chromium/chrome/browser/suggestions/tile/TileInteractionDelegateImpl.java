@@ -42,7 +42,6 @@ class TileInteractionDelegateImpl
     private final TileGroup.Delegate mTileGroupDelegate;
     private final TileDragDelegate mTileDragDelegate;
     private final TileGroup.CustomTileModificationDelegate mCustomTileModificationDelegate;
-    private final int mPrerenderDelay;
     private final Tile mTile;
     private final AndroidPrerenderManager mAndroidPrerenderManager;
 
@@ -57,14 +56,12 @@ class TileInteractionDelegateImpl
             TileGroup.Delegate tileGroupDelegate,
             TileDragDelegate tileDragDelegate,
             TileGroup.CustomTileModificationDelegate customTileModificationDelegate,
-            int prerenderDelay,
             Tile tile,
             View view) {
         mContextMenuManager = contextMenuManager;
         mTileGroupDelegate = tileGroupDelegate;
         mTileDragDelegate = tileDragDelegate;
         mCustomTileModificationDelegate = customTileModificationDelegate;
-        mPrerenderDelay = prerenderDelay;
         mTile = tile;
 
         view.setOnClickListener(this);
@@ -105,7 +102,7 @@ class TileInteractionDelegateImpl
                             }
                             mScheduldedPrerenderingUrl = null;
                         });
-        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, mPrerenderRunnable, mPrerenderDelay);
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, mPrerenderRunnable, 0);
     }
 
     // This function cancels scheduled prerendering or calls stopPrerendering to stop stale
