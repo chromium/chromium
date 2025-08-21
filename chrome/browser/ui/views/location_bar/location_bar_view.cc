@@ -1318,6 +1318,15 @@ void LocationBarView::RefreshPageActionIconViews() {
   page_action_icon_controller_->UpdateAll();
 }
 
+void LocationBarView::RefreshAiModePageActionIconView() {
+  PageActionIconView* aim_icon_view =
+      page_action_icon_controller_->GetIconView(PageActionIconType::kAiMode);
+  if (aim_icon_view) {
+    aim_icon_view->Update();
+  }
+}
+
+
 void LocationBarView::RefreshPageActionContainerViewAndIconsVisibility(
     bool should_hide_page_actions) {
   page_actions::PageActionController* page_action_controller =
@@ -1548,6 +1557,10 @@ void LocationBarView::OnChanged() {
   InvalidateLayout();
   SchedulePaint();
   UpdateChipVisibility();
+  // The AI mode page action icon view visibility depends on whether or not
+  // user text has been entered into the omnibox, so refresh the icon on
+  // changes.
+  RefreshAiModePageActionIconView();
 }
 
 void LocationBarView::OnPopupVisibilityChanged() {
@@ -1581,6 +1594,10 @@ void LocationBarView::OnOmniboxFocused() {
   // the omnibox is intentional, snapping is better than transitioning here.
   hover_animation_.Reset();
   RefreshBackground();
+
+  // The AI mode page action icon view should only be visible when the omnibox
+  // is focused, so if there is a change in focus, refresh the icon.
+  RefreshAiModePageActionIconView();
 }
 
 void LocationBarView::OnOmniboxBlurred() {
@@ -1588,6 +1605,10 @@ void LocationBarView::OnOmniboxBlurred() {
     views::FocusRing::Get(this)->SchedulePaint();
   }
   RefreshBackground();
+
+  // The AI mode page action icon view should only be visible when the omnibox
+  // is focused, so if there is a change in focus, refresh the icon.
+  RefreshAiModePageActionIconView();
 }
 
 void LocationBarView::OnOmniboxHovered(bool is_hovering) {

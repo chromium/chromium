@@ -120,12 +120,10 @@ bool AiModePageActionIconView::ShouldShow() {
   }
 
   // If the feature is enabled to hide the AIM entrypoint on user input, don't
-  // show the AIM entrypoint if the user is currently typing and the user text
-  // is non-empty.
+  // show the AIM entrypoint if the user typed text is non-empty.
   if (base::FeatureList::IsEnabled(omnibox::kHideAimEntrypointOnUserInput)) {
     OmniboxView* omnibox_view = GetOmniboxView();
-    if (omnibox_view && omnibox_view->model()->user_input_in_progress() &&
-        !omnibox_view->GetText().empty()) {
+    if (omnibox_view && !omnibox_view->model()->user_text().empty()) {
       return false;
     }
   }
