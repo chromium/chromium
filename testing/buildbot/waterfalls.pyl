@@ -1093,7 +1093,7 @@
           'mac_toolchain',
           'out_dir_arg',
           'xctest',
-          'xcode_16_main',
+          'xcode_26_main',
         ],
         'test_suites': {
            'isolated_scripts': 'optimization_guide_ios_device_gtests',
@@ -1107,7 +1107,7 @@
           'mac_toolchain',
           'out_dir_arg',
           'xctest',
-          'xcode_16_main',
+          'xcode_26_main',
         ],
         'test_suites': {
            'isolated_scripts': 'optimization_guide_ios_sim_gtests',

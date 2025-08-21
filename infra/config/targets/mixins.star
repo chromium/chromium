@@ -2657,6 +2657,7 @@ targets.mixin(
 
 targets.mixin(
     name = "xcode_16_main",
+    generate_pyl_entry = False,
     args = [
         "--xcode-build-version",
         "16c5032a",
@@ -2707,7 +2708,6 @@ targets.mixin(
 
 targets.mixin(
     name = "xcode_26_main",
-    generate_pyl_entry = False,
     args = [
         "--xcode-build-version",
         "17a5305f",
