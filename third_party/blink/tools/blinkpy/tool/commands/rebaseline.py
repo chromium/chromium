@@ -576,8 +576,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         """
         self._rebaseline_failures.clear()
         self._results_dir = options.results_directory
-        if not self._dry_run and self._tool.git(
-        ).has_working_directory_changes(pathspec=self._web_tests_dir()):
+        git = self._tool.git()
+        if not self._dry_run and git and git.has_working_directory_changes(
+                pathspec=self._web_tests_dir()):
             _log.error(
                 'There are uncommitted changes in the web tests directory; aborting.'
             )
@@ -607,11 +608,11 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                     groups, options.verbose)
                 exit_code = exit_code or self._tool.main(optimize_command)
 
-        if not self._dry_run:
+        if not self._dry_run and git:
             unstaged_baselines = self.unstaged_baselines()
             _log.info('Staging %s with git.',
                       pluralize('baseline', len(unstaged_baselines)))
-            self._tool.git().add_list(unstaged_baselines)
+            git.add_list(unstaged_baselines)
         return exit_code
 
     def _warn_about_rebaseline_failures(self):
@@ -685,10 +686,13 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         baseline_re = re.compile(r'.*[\\/]' + WEB_TESTS_LAST_COMPONENT +
                                  r'[\\/].*-expected\.(' +
                                  '|'.join(get_args(BaselineSuffix)) + ')$')
-        unstaged_changes = self._tool.git().unstaged_changes()
-        return sorted(self._tool.git().absolute_path(path)
-                      for path in unstaged_changes
-                      if re.match(baseline_re, path))
+        git = self._tool.git()
+        if not git:
+            return []
+        unstaged_changes = git.unstaged_changes()
+        return sorted(
+            git.absolute_path(path) for path in unstaged_changes
+            if re.match(baseline_re, path))
 
     def _web_tests_dir(self):
         return self._host_port.web_tests_dir()

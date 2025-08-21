@@ -32,6 +32,7 @@ import sys
 import tempfile
 import urllib
 
+from blinkpy.common.checkout.git import Git
 from blinkpy.common.pretty_diff import prettify_diff
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.tool.commands.command import Command
@@ -61,18 +62,22 @@ class PrettyDiff(Command):
 
     def execute(self, options, args, tool):
         self._tool = tool
-        pretty_diff_file = self._show_pretty_diff(options)
+        git = self._tool.git()
+        if not git:
+            _log.error('Required `git` environment not detected.')
+            return 1
+        pretty_diff_file = self._show_pretty_diff(git, options)
         if pretty_diff_file:
             diff_correct = tool.user.confirm('Was that diff correct?')
             pretty_diff_file.close()
             if not diff_correct:
                 sys.exit(1)
 
-    def _show_pretty_diff(self, options):
+    def _show_pretty_diff(self, git: Git, options):
         if not self._tool.user.can_open_url():
             return None
         try:
-            patch = self._diff(options)
+            patch = self._diff(git, options)
             pretty_diff_file = PrettyDiff._pretty_diff_file(patch)
             self._open_pretty_diff(pretty_diff_file.name)
             # We return the pretty_diff_file here because we need to keep the
@@ -85,10 +90,10 @@ class PrettyDiff(Command):
         except OSError:
             _log.warning('PrettyPatch unavailable.')
 
-    def _diff(self, options):
-        changed_files = self._tool.git().changed_files(options.git_commit)
-        return self._tool.git().create_patch(
-            options.git_commit, changed_files=changed_files)
+    def _diff(self, git: Git, options):
+        changed_files = git.changed_files(options.git_commit)
+        return git.create_patch(options.git_commit,
+                                changed_files=changed_files)
 
     @staticmethod
     def _pretty_diff_file(diff):

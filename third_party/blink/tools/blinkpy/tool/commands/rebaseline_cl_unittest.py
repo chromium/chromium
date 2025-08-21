@@ -288,6 +288,28 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO: Staging 0 baselines with git.\n',
         ])
 
+    def test_execute_without_git(self):
+        with mock.patch.object(self.tool, 'git', return_value=None):
+            exit_code = self.command.execute(self.command_options(), [],
+                                             self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: All builds finished.\n',
+            'INFO: Fetching test results for 4 suites.\n',
+            'INFO: Rebaselining 5 tests.\n',
+            "INFO: Copied baselines for 'one/flaky-fail.html' (wav) (1/5)\n",
+            "INFO: Copied baselines for 'one/missing.html' (png) (2/5)\n",
+            "INFO: Copied baselines for 'one/slow-fail.html' (txt) (3/5)\n",
+            "INFO: Copied baselines for 'one/text-fail.html' (txt) (4/5)\n",
+            "INFO: Copied baselines for 'two/image-fail.html' (png) (5/5)\n",
+            "INFO: Downloaded baselines for 'one/flaky-fail.html' (1/5)\n",
+            "INFO: Downloaded baselines for 'one/missing.html' (2/5)\n",
+            "INFO: Downloaded baselines for 'one/slow-fail.html' (3/5)\n",
+            "INFO: Downloaded baselines for 'one/text-fail.html' (4/5)\n",
+            "INFO: Downloaded baselines for 'two/image-fail.html' (5/5)\n",
+        ])
+
     def test_execute_basic_dry_run(self):
         """Dry running does not execute any commands or write any files."""
         self.set_logging_level(logging.DEBUG)

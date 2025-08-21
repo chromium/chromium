@@ -327,8 +327,11 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                are changed in this CL. If False, all new baselines for failing
                tests will be downloaded, even for tests that were not modified.
         """
-        if only_changed_tests:
-            files_in_cl = self._tool.git().changed_files(diff_filter='AM')
+        git = self._tool.git()
+        if only_changed_tests and not git:
+            _log.warning('`--only-changed-tests` is not supported in Cider-G.')
+        elif only_changed_tests:
+            files_in_cl = git.changed_files(diff_filter='AM')
             # In the changed files list from Git, paths always use "/" as
             # the path separator, and they're always relative to repo root.
             test_base = self._test_base_path()

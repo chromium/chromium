@@ -531,8 +531,8 @@ class WPTAdapter:
             # `run_wpt_tests` does not run in the upstream checkout's git
             # context, so wptrunner cannot infer the latest revision. Manually
             # add the revision here.
-            run_info['revision'] = self.host.git(
-                path=tests_root).current_revision()
+            if git := self.host.git(tests_root):
+                run_info['revision'] = git.current_revision()
 
         # The filename must be `mozinfo.json` for wptrunner to read it from the
         # `--run-info` directory.
@@ -614,7 +614,9 @@ class WPTAdapter:
         rev_list_output = self.host.executive.run_command(
             [wpt_executable, 'rev-list', '--epoch', '3h'])
         commit = rev_list_output.splitlines()[0]
-        self.host.git(path=local_wpt.path).run(['checkout', commit])
+        git = self.host.git(local_wpt.path)
+        assert git, 'cloned repo should have a `git` environment'
+        git.run(['checkout', commit])
         # Update wpt manifest immediately after checkout.
         self.port.wpt_manifest('external/wpt')
         logger.info('Running against upstream wpt@%s', commit)
