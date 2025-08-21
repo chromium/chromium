@@ -2,15 +2,15 @@
 <!-- Glic specific strings (included from generated_resources.grd). -->
 <grit-part>
   <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING" desc="Extra tool tip text, when the tab's context is being shared with Gemini">
-    You're sharing this page with Gemini
+    You're sharing this tab with Gemini
   </message>
   <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_SHARING" desc="Extra tool tip text, when the tab's context is being shared with Gemini">
-    You're sharing this page with Gemini
+    You're sharing this tab with Gemini
   </message>
   <message name="IDS_TAB_AX_LABEL_GLIC_ACCESSING" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the tab is sharing data with Gemini. Example: 'Wikipedia - Tab context shared with Gemini'">
     <ph name="WINDOW_TITLE">
       $1<ex>Wikipedia</ex>
-    </ph> - You're sharing this page with Gemini
+    </ph> - You're sharing this tab with Gemini
   </message>
   <message name="IDS_TAB_AX_LABEL_GLIC_SHARING" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the tab is sharing data with Gemini. Example: 'Wikipedia - Tab context shared with Gemini'">
     <ph name="WINDOW_TITLE">
