@@ -7,7 +7,7 @@
 
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 
-namespace ml {
+namespace on_device_model {
 
 // TFLite Op Resolver for the Bert Safety model.
 class BertSafetyOpResolver : public optimization_guide::TFLiteOpResolver {
@@ -15,6 +15,6 @@ class BertSafetyOpResolver : public optimization_guide::TFLiteOpResolver {
   BertSafetyOpResolver();
 };
 
-}  // namespace ml
+}  // namespace on_device_model
 
 #endif  // SERVICES_ON_DEVICE_MODEL_SAFETY_BERT_SAFETY_OP_RESOLVER_H_

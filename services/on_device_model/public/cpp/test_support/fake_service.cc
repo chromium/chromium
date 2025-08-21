@@ -381,9 +381,11 @@ void FakeOnDeviceModel::LoadAdaptation(
 
 FakeTsModel::FakeTsModel(
     on_device_model::mojom::TextSafetyModelParamsPtr params) {
-  if (params->ts_assets) {
-    CHECK_EQ(ReadFile(params->ts_assets->data), FakeTsData());
-    CHECK_EQ(ReadFile(params->ts_assets->sp_model), FakeTsSpModel());
+  if (params->safety_assets) {
+    CHECK_EQ(ReadFile(params->safety_assets->get_ts_assets()->data),
+             FakeTsData());
+    CHECK_EQ(ReadFile(params->safety_assets->get_ts_assets()->sp_model),
+             FakeTsSpModel());
     has_safety_model_ = true;
   }
   if (params->language_assets) {

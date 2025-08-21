@@ -6,7 +6,7 @@
 #include "third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_bert_normalizer_tflite.h"
 #include "third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_tflite.h"
 
-namespace ml {
+namespace on_device_model {
 
 BertSafetyOpResolver::BertSafetyOpResolver() {
   tflite::ops::custom::text::AddFastBertNormalize(this);
@@ -14,4 +14,4 @@ BertSafetyOpResolver::BertSafetyOpResolver() {
   tflite::ops::custom::text::AddFastWordpieceDetokenize(this);
 }
 
-}  // namespace ml
+}  // namespace on_device_model

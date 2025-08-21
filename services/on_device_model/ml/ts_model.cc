@@ -14,37 +14,20 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "components/language_detection/core/language_detection_provider.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
+#include "services/on_device_model/safety/safety_util.h"
 
 namespace ml {
 
-namespace {
-
 namespace mojom = ::on_device_model::mojom;
-
-language_detection::Prediction PredictLanguage(
-    language_detection::LanguageDetectionModel& tflite_model,
-    std::string_view text) {
-  if (base::FeatureList::IsEnabled(
-          optimization_guide::features::kTextSafetyScanLanguageDetection)) {
-    return language_detection::TopPrediction(
-        tflite_model.PredictWithScan(base::UTF8ToUTF16(text)));
-  } else {
-    return tflite_model.PredictTopLanguageWithSamples(base::UTF8ToUTF16(text));
-  }
-}
-
-}  // namespace
 
 class TsModel final : public mojom::TextSafetyModel,
                       public mojom::TextSafetySession {
@@ -100,8 +83,8 @@ std::unique_ptr<TsModel> TsModel::Create(
       !ts_model->InitLanguageDetection(std::move(params->language_assets))) {
     return {};
   }
-  if (params->ts_assets &&
-      !ts_model->InitTextSafetyModel(std::move(params->ts_assets))) {
+  if (params->safety_assets && !ts_model->InitTextSafetyModel(std::move(
+                                   params->safety_assets->get_ts_assets()))) {
     return {};
   }
   return ts_model;
@@ -182,8 +165,8 @@ mojom::LanguageDetectionResultPtr TsModel::DetectLanguage(
   if (!language_detector_) {
     return nullptr;
   }
-  language_detection::Prediction prediction =
-      PredictLanguage(language_detector_->tflite_model(), text);
+  language_detection::Prediction prediction = on_device_model::PredictLanguage(
+      language_detector_->tflite_model(), text);
   return mojom::LanguageDetectionResult::New(prediction.language,
                                              prediction.score);
 }

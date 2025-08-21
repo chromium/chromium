@@ -66,6 +66,7 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
       "//components/optimization_guide/core:features",
       "//components/translate/core/language_detection",
       "//services/on_device_model:backend_interfaces",
+      "//services/on_device_model/safety:safety_util",
       "//third_party/abseil-cpp:absl",
       "//third_party/angle:includes",
       "//third_party/dawn/src/dawn:proc",
