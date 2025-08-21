@@ -5,7 +5,7 @@
 import 'chrome://new-tab-page/lazy_load.js';
 import './ntp_promo_test_common.js';
 
-import type {NtpSinglePromoElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {IndividualPromosElement} from 'chrome://new-tab-page/lazy_load.js';
 import {getTrustedHTML} from 'chrome://new-tab-page/new_tab_page.js';
 import type {Promo} from 'chrome://new-tab-page/ntp_promo.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -14,9 +14,9 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestNtpPromoProxy} from './ntp_promo_test_common.js';
 
-suite('NtpSinglePromoTest', () => {
+suite('IndividualPromosTest', () => {
   let testProxy: TestNtpPromoProxy;
-  let individualPromos: NtpSinglePromoElement;
+  let individualPromos: IndividualPromosElement;
 
   const promos: Promo[] = [];
   const NUM_TEST_PROMOS = 3;
@@ -67,7 +67,7 @@ suite('NtpSinglePromoTest', () => {
       <p id='bodyText'>This is some body text</p>
     </div>`;
 
-    individualPromos = document.createElement('ntp-single-promo');
+    individualPromos = document.createElement('individual-promos');
     individualPromos.id = 'individualPromos';
     document.querySelector<HTMLElement>('#container')!.insertBefore(
         individualPromos, document.querySelector<HTMLElement>('#bodyText'));

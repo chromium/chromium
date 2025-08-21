@@ -75,8 +75,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxFileThumbnail) {
 
 using NewTabPageNtpPromoTest = NewTabPageBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(NewTabPageNtpPromoTest, NtpSinglePromoTest) {
-  RunTest("new_tab_page/ntp_promo/ntp_single_promo_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(NewTabPageNtpPromoTest, IndividualPromosTest) {
+  RunTest("new_tab_page/ntp_promo/individual_promos_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageNtpPromoTest, NtpSetupListTest) {

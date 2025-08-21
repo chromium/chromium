@@ -15,18 +15,18 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {NtpPromoClientCallbackRouter, NtpPromoHandlerInterface, Promo} from '../ntp_promo.mojom-webui.js';
 
+import {getCss} from './individual_promos.css.js';
+import {getHtml} from './individual_promos.html.js';
 import {NtpPromoProxyImpl} from './ntp_promo_proxy.js';
-import {getCss} from './ntp_single_promo.css.js';
-import {getHtml} from './ntp_single_promo.html.js';
 
-export interface NtpSinglePromoElement {
+export interface IndividualPromosElement {
   $: {promos: HTMLElement};
 }
 
 const DEFAULT_MAX_PROMOS = 1;
-export class NtpSinglePromoElement extends CrLitElement {
+export class IndividualPromosElement extends CrLitElement {
   static get is() {
-    return 'ntp-single-promo';
+    return 'individual-promos';
   }
 
   static override get styles() {
@@ -98,10 +98,10 @@ export class NtpSinglePromoElement extends CrLitElement {
   }
 }
 
-customElements.define(NtpSinglePromoElement.is, NtpSinglePromoElement);
+customElements.define(IndividualPromosElement.is, IndividualPromosElement);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-single-promo': NtpSinglePromoElement;
+    'individual-promos': IndividualPromosElement;
   }
 }

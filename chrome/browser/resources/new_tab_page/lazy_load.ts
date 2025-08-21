@@ -11,7 +11,7 @@
  */
 
 import './ntp_promo/ntp_promo_proxy.js';
-import './ntp_promo/ntp_single_promo.js';
+import './ntp_promo/individual_promos.js';
 import './middle_slot_promo.js';
 import './voice_search_overlay.js';
 import './modules/module_descriptors.js';
@@ -59,8 +59,8 @@ export {MostRelevantTabResumptionProxyImpl} from './modules/v2/most_relevant_tab
 export {IconContainerElement} from './modules/v2/tab_groups/icon_container.js';
 export {ModuleElement as TabGroupsModuleElement, tabGroupsDescriptor} from './modules/v2/tab_groups/module.js';
 export {TabGroupsProxyImpl} from './modules/v2/tab_groups/tab_groups_proxy.js';
+export {IndividualPromosElement} from './ntp_promo/individual_promos.js';
 export {NtpPromoProxy, NtpPromoProxyImpl} from './ntp_promo/ntp_promo_proxy.js';
-export {NtpSinglePromoElement} from './ntp_promo/ntp_single_promo.js';
 export {MAX_SETUP_LIST_ENTRIES, SetupListElement} from './ntp_promo/setup_list.js';
 export {SetupListItemElement} from './ntp_promo/setup_list_item.js';
 export {SetupListModuleWrapperElement} from './ntp_promo/setup_list_module_wrapper.js';

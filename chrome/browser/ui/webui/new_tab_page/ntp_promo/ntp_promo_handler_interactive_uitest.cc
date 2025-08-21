@@ -42,7 +42,7 @@ using Eligibility = user_education::NtpPromoSpecification::Eligibility;
 
 inline constexpr char kTestPromoName[] = "test_promo";
 const InteractiveBrowserTestApi::DeepQuery kPathToSimplePromo = {
-    "ntp-app", "ntp-single-promo"};
+    "ntp-app", "individual-promos"};
 const InteractiveBrowserTestApi::DeepQuery kPathToSetupList = {
     "ntp-app", "setup-list-module-wrapper", "setup-list", "setup-list-item"};
 constexpr char kActionIconId[] = "#actionIcon";
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoEligible) {
 }
 
 IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoCompleted) {
-  // Single promo does not [yet] show completed promos.
+  // Individual promo mode does not show completed promos.
   if (GetParam() == NtpBrowserPromoType::kSimple) {
     GTEST_SKIP();
   }
