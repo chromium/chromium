@@ -1998,6 +1998,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that add to reading list action works successfully from the long press
 // context menu on search results.
 - (void)testSearchOpenTabsContextMenuAddToReadingList {
+  // TODO(crbug.com/440041762): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   // Clear the Reading List.
   GREYAssertNil([ReadingListAppInterface clearEntries],
                 @"Unable to clear Reading List entries");

@@ -847,6 +847,11 @@ void FillAndSubmitXframeCreditCardForm() {
 }
 
 - (void)testSaveCardBottomSheetShowsLoadingAndConfirmationAfterAcceptPushed {
+  // TODO(crbug.com/439735103): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [self fillAndSubmitFormWithID:kFillFullFormId
                paymentsResponse:kResponseGetUploadDetailsSuccess
                       errorCode:net::HTTP_OK
