@@ -33,8 +33,10 @@ FaceGazeTest = class extends FaceGazeTestBase {
   }
 };
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'FacialGesturesInFacialGesturesToMediapipeGestures', () => {
+    'FaceGazeTest', 'DISABLED_FacialGesturesInFacialGesturesToMediapipeGestures', () => {
       // Tests that all new FacialGestures are mapped to
       // MediapipeFacialGestures. FacialGestures are those set by the user,
       // while MediapipeFacialGestures are the raw gestures recognized by
@@ -50,9 +52,11 @@ AX_TEST_F(
       }
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
     'FaceGazeTest',
-    'GestureDetectorUpdatesStateAfterToggleGestureInfoForSettingsEvent',
+    'DISABLED_GestureDetectorUpdatesStateAfterToggleGestureInfoForSettingsEvent',
     async function() {
       // There is a race of when gesture handler starts and when
       // mockAccessibilityPrivate is set. Restart gesture handler to ensure
@@ -72,9 +76,11 @@ AX_TEST_F(
       assertTrue(GestureDetector.shouldSendGestureDetectionInfo_);
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
     'FaceGazeTest',
-    'GestureDetectorSendsGestureInfoAfterToggleGestureInfoForSettingsEvent',
+    'DISABLED_GestureDetectorSendsGestureInfoAfterToggleGestureInfoForSettingsEvent',
     async function() {
       // There is a race of when gesture handler starts and when
       // mockAccessibilityPrivate is set. Restart gesture handler to ensure
@@ -117,9 +123,11 @@ AX_TEST_F(
       assertEquals(gestureInfo[1].confidence, 90);
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
     'FaceGazeTest',
-    'GestureDetectorDoesNotSendGestureInfoIfNoToggleGestureInfoForSettingsEvent',
+    'DISABLED_GestureDetectorDoesNotSendGestureInfoIfNoToggleGestureInfoForSettingsEvent',
     async function() {
       const gestureToMacroName =
           new Map()
@@ -145,7 +153,9 @@ AX_TEST_F(
           0, this.mockAccessibilityPrivate.getSendGestureInfoToSettingsCount());
     });
 
-AX_TEST_F('FaceGazeTest', 'IntervalReusesForeheadLocation', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_IntervalReusesForeheadLocation', async function() {
   const config =
       new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(1);
   await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
@@ -159,7 +169,9 @@ AX_TEST_F('FaceGazeTest', 'IntervalReusesForeheadLocation', async function() {
   }
 });
 
-AX_TEST_F('FaceGazeTest', 'CursorPositionUpdatedOnInterval', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_CursorPositionUpdatedOnInterval', async function() {
   const config =
       new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(1);
   await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
@@ -179,7 +191,9 @@ AX_TEST_F('FaceGazeTest', 'CursorPositionUpdatedOnInterval', async function() {
   assertNotEquals(400, cursorPosition.y);
 });
 
-AX_TEST_F('FaceGazeTest', 'UpdateMouseLocation', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_UpdateMouseLocation', async function() {
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
                      .withBufferSize(1)
@@ -221,8 +235,10 @@ AX_TEST_F('FaceGazeTest', 'UpdateMouseLocation', async function() {
   this.assertLatestCursorPosition({x: 580, y: 420});
 });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'UpdatesMousePositionOnlyWhenCursorControlEnabled',
+    'FaceGazeTest', 'DISABLED_UpdatesMousePositionOnlyWhenCursorControlEnabled',
     async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
@@ -275,8 +291,10 @@ AX_TEST_F(
 // absolute forehead position, but instead relative).
 // This test should use the same cursor positions as the previous version,
 // but different forehead locations (with the same offsets).
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationFromDifferentForeheadLocation',
+    'FaceGazeTest', 'DISABLED_UpdateMouseLocationFromDifferentForeheadLocation',
     async function() {
       const config =
           new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(1);
@@ -299,8 +317,10 @@ AX_TEST_F(
 
 // Tests that left/top offsets in ScreenBounds are respected. This should have
 // the same results as the first test offset by exactly left/top.
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithScreenNotAtZero', async function() {
+    'FaceGazeTest', 'DISABLED_UpdateMouseLocationWithScreenNotAtZero', async function() {
       this.mockAccessibilityPrivate.setDisplayBounds(
           [{left: 100, top: 50, width: 1200, height: 800}]);
 
@@ -325,7 +345,9 @@ AX_TEST_F(
       this.assertLatestCursorPosition({x: 700, y: 450});
     });
 
-AX_TEST_F('FaceGazeTest', 'UpdateMouseLocationWithBuffer', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_UpdateMouseLocationWithBuffer', async function() {
   const config =
       new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(6);
   await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
@@ -360,8 +382,10 @@ AX_TEST_F('FaceGazeTest', 'UpdateMouseLocationWithBuffer', async function() {
   assertTrue(newCursorPosition.y > 400);
 });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithSpeed1Move1', async function() {
+    'FaceGazeTest', 'DISABLED_UpdateMouseLocationWithSpeed1Move1', async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
                          .withBufferSize(1)
@@ -382,8 +406,10 @@ AX_TEST_F(
       }
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithSpeed1Move5', async function() {
+    'FaceGazeTest', 'DISABLED_UpdateMouseLocationWithSpeed1Move5', async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
                          .withBufferSize(1)
@@ -402,8 +428,10 @@ AX_TEST_F(
       }
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithSpeed1Move20', async function() {
+    'FaceGazeTest', 'DISABLED_UpdateMouseLocationWithSpeed1Move20', async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
                          .withBufferSize(1)
@@ -422,8 +450,10 @@ AX_TEST_F(
       }
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithAccelerationMove1',
+    'FaceGazeTest', 'DISABLED_UpdateMouseLocationWithAccelerationMove1',
     async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
@@ -453,7 +483,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithAccelerationMove5',
+    'FaceGazeTest', 'DISABLED_UpdateMouseLocationWithAccelerationMove5',
     async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
@@ -479,8 +509,10 @@ AX_TEST_F(
       }
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithAccelerationMove10',
+    'FaceGazeTest', 'DISABLED_UpdateMouseLocationWithAccelerationMove10',
     async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
@@ -512,8 +544,10 @@ AX_TEST_F(
       }
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithAccelerationMove20',
+    'FaceGazeTest', 'DISABLED_UpdateMouseLocationWithAccelerationMove20',
     async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
@@ -541,8 +575,10 @@ AX_TEST_F(
       }
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'DetectGesturesAndPerformShortActions', async function() {
+    'FaceGazeTest', 'DISABLED_DetectGesturesAndPerformShortActions', async function() {
       const gestureToMacroName =
           new Map()
               .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
@@ -580,9 +616,10 @@ AX_TEST_F(
       this.assertNumMouseEvents(2);
     });
 
-
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'DetectGesturesAndPerformLongActions', async function() {
+    'FaceGazeTest', 'DISABLED_DetectGesturesAndPerformLongActions', async function() {
       const gestureToMacroName =
           new Map()
               .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT)
@@ -634,8 +671,10 @@ AX_TEST_F(
       assertEquals(400, releaseEvent.y);
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'SendMouseMoveFromCursorControlDuringLongClick',
+    'FaceGazeTest', 'DISABLED_SendMouseMoveFromCursorControlDuringLongClick',
     async function() {
       const gestureToMacroName = new Map().set(
           FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
@@ -715,8 +754,10 @@ AX_TEST_F(
       assertEquals(560, releaseEvent.y);
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'SendMouseMoveFromUserDuringLongClick', async function() {
+    'FaceGazeTest', 'DISABLED_SendMouseMoveFromUserDuringLongClick', async function() {
       const gestureToMacroName = new Map().set(
           FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
       const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -775,8 +816,10 @@ AX_TEST_F(
       assertEquals(560, releaseEvent.y);
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'TurnOffActionsWhileInMiddleOfLongClick', async function() {
+    'FaceGazeTest', 'DISABLED_TurnOffActionsWhileInMiddleOfLongClick', async function() {
       const gestureToMacroName = new Map().set(
           FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
       const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -799,8 +842,10 @@ AX_TEST_F(
       assertFalse(this.getMouseController().isLongClickActive());
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'RemoveLongClickActionWhileInMiddleOfLongClick',
+    'FaceGazeTest', 'DISABLED_RemoveLongClickActionWhileInMiddleOfLongClick',
     async function() {
       const gestureToMacroName = new Map().set(
           FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
@@ -827,7 +872,9 @@ AX_TEST_F(
 // The BrowDown gesture is special because it is the combination of two
 // separate facial gestures. This test ensures that the associated action is
 // performed if either of the gestures is detected.
-AX_TEST_F('FaceGazeTest', 'BrowDownGesture', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_BrowDownGesture', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.BROWS_DOWN, MacroName.RESET_CURSOR);
   const gestureToConfidence = new Map().set(FacialGesture.BROWS_DOWN, 0.6);
@@ -874,8 +921,10 @@ AX_TEST_F('FaceGazeTest', 'BrowDownGesture', async function() {
   this.assertLatestCursorPosition({x: 600, y: 400});
 });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'DoesNotPerformActionsWhenActionsDisabled',
+    'FaceGazeTest', 'DISABLED_DoesNotPerformActionsWhenActionsDisabled',
     async function() {
       const gestureToMacroName =
           new Map()
@@ -926,8 +975,10 @@ AX_TEST_F(
           {pressEvent, releaseEvent, isLeft: true, x: 600, y: 400});
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'ActionsUseMouseLocationWhenCursorControlDisabled',
+    'FaceGazeTest', 'DISABLED_ActionsUseMouseLocationWhenCursorControlDisabled',
     async function() {
       const gestureToMacroName = new Map().set(
           FacialGesture.MOUTH_PUCKER, MacroName.MOUSE_CLICK_RIGHT);
@@ -956,7 +1007,9 @@ AX_TEST_F(
           {pressEvent, releaseEvent, isLeft: false, x: 350, y: 250});
     });
 
-AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_DoesNotRepeatGesturesTooSoon', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT)
@@ -1046,7 +1099,9 @@ AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
   this.assertNumMouseEvents(4);
 });
 
-AX_TEST_F('FaceGazeTest', 'DoesNotClickDuringLongClick', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_DoesNotClickDuringLongClick', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.MOUTH_PUCKER, MacroName.MOUSE_LONG_CLICK_LEFT)
@@ -1139,7 +1194,9 @@ AX_TEST_F('FaceGazeTest', 'DoesNotClickDuringLongClick', async function() {
   assertEquals(400, releaseEvent.y);
 });
 
-AX_TEST_F('FaceGazeTest', 'KeyEvents', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_KeyEvents', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.EYE_SQUINT_LEFT, MacroName.KEY_PRESS_SPACE)
@@ -1377,7 +1434,9 @@ AX_TEST_F(
       this.assertNumMouseEvents(2);
     });
 
-AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_ToggleFaceGazeGesturesLong', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_LONG_CLICK_LEFT)
@@ -1481,7 +1540,9 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
   this.assertKeyUp(this.getKeyEvents()[3]);
 });
 
-AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeMouseMovement', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_ToggleFaceGazeMouseMovement', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -1542,7 +1603,9 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeMouseMovement', async function() {
   this.assertLatestCursorPosition({x: 120, y: 720});
 });
 
-AX_TEST_F('FaceGazeTest', 'KeyCombinations', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_KeyCombinations', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.CUSTOM_KEY_COMBINATION);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.7);
@@ -1591,7 +1654,9 @@ AX_TEST_F('FaceGazeTest', 'KeyCombinations', async function() {
   assertObjectEquals(keyEvents[1].modifiers, {ctrl: true});
 });
 
-AX_TEST_F('FaceGazeTest', 'KeyCombinationsRepeat', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_KeyCombinationsRepeat', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.CUSTOM_KEY_COMBINATION);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.7);
@@ -1660,7 +1725,9 @@ AX_TEST_F('FaceGazeTest', 'KeyCombinationsRepeat', async function() {
   assertNullOrUndefined(keyEvents[2].repeat);
 });
 
-AX_TEST_F('FaceGazeTest', 'VelocityThreshold', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_VelocityThreshold', async function() {
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
                      .withBufferSize(1)
@@ -1688,7 +1755,9 @@ AX_TEST_F('FaceGazeTest', 'VelocityThreshold', async function() {
   this.assertLatestCursorPosition({x: 590, y: 406});
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextSimple', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_BubbleTextSimple', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -1711,7 +1780,9 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextSimple', async function() {
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextMultiple', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_BubbleTextMultiple', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
@@ -1742,7 +1813,9 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextMultiple', async function() {
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextKeyCombination', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_BubbleTextKeyCombination', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.CUSTOM_KEY_COMBINATION);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.7);
@@ -1791,8 +1864,10 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextKeyCombination', async function() {
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'BubbleTextKeyCombinationAdditionalGesture',
+    'FaceGazeTest', 'DISABLED_BubbleTextKeyCombinationAdditionalGesture',
     async function() {
       const gestureToMacroName =
           new Map()
@@ -1858,8 +1933,10 @@ AX_TEST_F(
       assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'BubbleTextKeyCombinationAdditionalState',
+    'FaceGazeTest', 'DISABLED_BubbleTextKeyCombinationAdditionalState',
     async function() {
       const gestureToMacroName =
           new Map()
@@ -1928,7 +2005,9 @@ AX_TEST_F(
           this.getBubbleText());
     });
 
-AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeRecognizedTime', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_ToggleFaceGazeRecognizedTime', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -1970,7 +2049,9 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeRecognizedTime', async function() {
   assertFalse(this.getGestureHandler().paused_);
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextStateMessages', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_BubbleTextStateMessages', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -1998,7 +2079,9 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateMessages', async function() {
   assertTrue(this.getBubbleIsWarning());
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextLongClickStateMessage', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_BubbleTextLongClickStateMessage', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -2039,7 +2122,9 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLongClickStateMessage', async function() {
   assertFalse(this.getBubbleIsWarning());
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextDictationStateMessage', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_BubbleTextDictationStateMessage', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_DICTATION);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -2090,7 +2175,9 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextDictationStateMessage', async function() {
   assertFalse(this.getBubbleIsWarning());
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_BubbleTextStateAndActionMessages', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
@@ -2145,7 +2232,9 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
   assertFalse(this.getBubbleIsWarning());
 });
 
-AX_TEST_F('FaceGazeTest', 'TurnOffActionsWhileInScrollMode', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_TurnOffActionsWhileInScrollMode', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_SCROLL_MODE);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -2175,8 +2264,10 @@ AX_TEST_F('FaceGazeTest', 'TurnOffActionsWhileInScrollMode', async function() {
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'RemoveScrollModeActionWhileInScrollMode',
+    'FaceGazeTest', 'DISABLED_RemoveScrollModeActionWhileInScrollMode',
     async function() {
       const gestureToMacroName =
           new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_SCROLL_MODE);
@@ -2207,7 +2298,9 @@ AX_TEST_F(
       assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
     });
 
-AX_TEST_F('FaceGazeTest', 'GesturesDisabledInScrollMode', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_GesturesDisabledInScrollMode', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_SCROLL_MODE)
@@ -2267,7 +2360,9 @@ AX_TEST_F('FaceGazeTest', 'GesturesDisabledInScrollMode', async function() {
 
 // Ensures that localization works for all gestures and macros that get
 // displayed in the bubble UI.
-AX_TEST_F('FaceGazeTest', 'BubbleTextLocalization', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_BubbleTextLocalization', async function() {
   const gestures = [
     FacialGesture.BROW_INNER_UP,
     FacialGesture.BROWS_DOWN,
@@ -2341,7 +2436,9 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLocalization', async function() {
   }
 });
 
-AX_TEST_F('FaceGazeTest', 'GesturesDisabledDuringDictation', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_GesturesDisabledDuringDictation', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_LEFT)
@@ -2381,7 +2478,9 @@ AX_TEST_F('FaceGazeTest', 'GesturesDisabledDuringDictation', async function() {
   assertEquals(result.macros.length, 2);
 });
 
-AX_TEST_F('FaceGazeTest', 'BlinkDoesNotTriggerEyeSquint', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_BlinkDoesNotTriggerEyeSquint', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT)
@@ -2469,8 +2568,10 @@ AX_TEST_F('FaceGazeTest', 'BlinkDoesNotTriggerEyeSquint', async function() {
   assertEquals(result.macros.length, 1);
 });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'InvalidTimeDurationGestureNotDetected', async function() {
+    'FaceGazeTest', 'DISABLED_InvalidTimeDurationGestureNotDetected', async function() {
       const gestureToMacroName =
           new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
       const gestureToConfidence = new Map().set(FacialGesture.EYES_BLINK, 0.6);
@@ -2506,7 +2607,9 @@ AX_TEST_F(
       this.assertNumMouseEvents(0);
     });
 
-AX_TEST_F('FaceGazeTest', 'ValidTimeDurationGestureDetected', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_ValidTimeDurationGestureDetected', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
   const gestureToConfidence = new Map().set(FacialGesture.EYES_BLINK, 0.6);
@@ -2554,8 +2657,10 @@ AX_TEST_F('FaceGazeTest', 'ValidTimeDurationGestureDetected', async function() {
   this.assertNumMouseEvents(2);
 });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'ValidTimeDurationGestureDetectedAfterInvalid',
+    'FaceGazeTest', 'DISABLED_ValidTimeDurationGestureDetectedAfterInvalid',
     async function() {
       const gestureToMacroName =
           new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
@@ -2616,8 +2721,10 @@ AX_TEST_F(
       this.assertNumMouseEvents(2);
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'ValidTimeDurationGestureTriggersActionMultiple',
+    'FaceGazeTest', 'DISABLED_ValidTimeDurationGestureTriggersActionMultiple',
     async function() {
       const gestureToMacroName =
           new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
@@ -2689,7 +2796,9 @@ AX_TEST_F(
       this.assertNumMouseEvents(4);
     });
 
-AX_TEST_F('FaceGazeTest', 'PrecisionClickMouseEvents', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_PrecisionClickMouseEvents', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -2725,7 +2834,9 @@ AX_TEST_F('FaceGazeTest', 'PrecisionClickMouseEvents', async function() {
       mouseEvents[1].mouseButton);
 });
 
-AX_TEST_F('FaceGazeTest', 'PrecisionClickBubbleText', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_PrecisionClickBubbleText', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -2764,7 +2875,9 @@ AX_TEST_F('FaceGazeTest', 'PrecisionClickBubbleText', async function() {
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
-AX_TEST_F('FaceGazeTest', 'PrecisionClickMouseMovement', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_PrecisionClickMouseMovement', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -2798,8 +2911,10 @@ AX_TEST_F('FaceGazeTest', 'PrecisionClickMouseMovement', async function() {
   this.assertLatestCursorPosition({x: 240, y: 640});
 });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'TurnOffActionsDuringPrecisionClick', async function() {
+    'FaceGazeTest', 'DISABLED_TurnOffActionsDuringPrecisionClick', async function() {
       const gestureToMacroName =
           new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
       const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -2827,8 +2942,10 @@ AX_TEST_F(
       assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
     });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'TurnOffCursorControlDuringPrecisionClick',
+    'FaceGazeTest', 'DISABLED_TurnOffCursorControlDuringPrecisionClick',
     async function() {
       const gestureToMacroName =
           new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
@@ -2857,7 +2974,9 @@ AX_TEST_F(
       assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
     });
 
-AX_TEST_F('FaceGazeTest', 'PrecisionClickAndScrollMode', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_PrecisionClickAndScrollMode', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
@@ -2903,8 +3022,10 @@ AX_TEST_F('FaceGazeTest', 'PrecisionClickAndScrollMode', async function() {
       this.getBubbleText());
 });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeTest', 'OtherGesturesDontStartPrecisionClick', async function() {
+    'FaceGazeTest', 'DISABLED_OtherGesturesDontStartPrecisionClick', async function() {
       const gestureToMacroName =
           new Map()
               .set(FacialGesture.JAW_OPEN, MacroName.RESET_CURSOR)
@@ -2929,7 +3050,9 @@ AX_TEST_F(
       assertFalse(this.getMouseController().isPrecisionActive());
     });
 
-AX_TEST_F('FaceGazeTest', 'PrecisionRightClickBubbleText', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_PrecisionRightClickBubbleText', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_RIGHT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -2968,7 +3091,9 @@ AX_TEST_F('FaceGazeTest', 'PrecisionRightClickBubbleText', async function() {
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
-AX_TEST_F('FaceGazeTest', 'PrecisionRightClickMouseEvents', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_PrecisionRightClickMouseEvents', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_RIGHT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -3004,7 +3129,9 @@ AX_TEST_F('FaceGazeTest', 'PrecisionRightClickMouseEvents', async function() {
       mouseEvents[1].mouseButton);
 });
 
-AX_TEST_F('FaceGazeTest', 'InvalidResult', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_InvalidResult', async function() {
   const config = new Config();
   await this.configureFaceGaze(config);
 
@@ -3027,7 +3154,9 @@ AX_TEST_F('FaceGazeTest', 'InvalidResult', async function() {
 // Verifies that FaceGaze can handle scenarios where the camera is muted, which
 // happens when the screen has been locked for a short amount of time, and then
 // unmuted, which happens when the user signs back in.
-AX_TEST_F('FaceGazeTest', 'CameraMutedAndUnmuted', async function() {
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
+AX_TEST_F('FaceGazeTest', 'DISABLED_CameraMutedAndUnmuted', async function() {
   // The test only works for MV3 service worker.
   assertTrue(isRunningInServiceWorker());
 
@@ -3047,8 +3176,10 @@ AX_TEST_F('FaceGazeTest', 'CameraMutedAndUnmuted', async function() {
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
+// TODO(crbug.com/40276609): Reenable this test once the
+// OptimizeServiceWorkerStartRequests feature is re-enabled.
 // Verifies that FaceGaze can handle cases where no camera is available.
-AX_TEST_F('FaceGazeTest', 'NoCamera', async function() {
+AX_TEST_F('FaceGazeTest', 'DISABLED_NoCamera', async function() {
   // The test only works for MV3 service worker.
   assertTrue(isRunningInServiceWorker());
 
