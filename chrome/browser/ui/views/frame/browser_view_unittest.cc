@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
-#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -461,52 +460,6 @@ TEST_F(BrowserViewTest, MAYBE_BookmarkBarInvisibleOnShutdown) {
   EXPECT_FALSE(bookmark_bar->GetVisible());
 
   BookmarkBarView::DisableAnimationsForTesting(false);
-}
-
-TEST_F(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
-  EXPECT_EQ(SubBrowserName(u"Untitled - ", u""),
-            browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
-                version_info::Channel::STABLE, browser()->profile()));
-  EXPECT_EQ(SubBrowserName(u"Untitled - ", u" Beta"),
-            browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
-                version_info::Channel::BETA, browser()->profile()));
-  EXPECT_EQ(SubBrowserName(u"Untitled - ", u" Dev"),
-            browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
-                version_info::Channel::DEV, browser()->profile()));
-  EXPECT_EQ(SubBrowserName(u"Untitled - ", u" Canary"),
-            browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
-                version_info::Channel::CANARY, browser()->profile()));
-
-  AddTab(browser(), GURL("about:blank"));
-  EXPECT_EQ(SubBrowserName(u"about:blank - ", u""),
-            browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
-                version_info::Channel::STABLE, browser()->profile()));
-
-  Tab* tab = browser_view()->tabstrip()->tab_at(0);
-  TabRendererData start_media;
-  start_media.alert_state = {tabs::TabAlert::AUDIO_PLAYING};
-  tab->SetData(std::move(start_media));
-  EXPECT_EQ(SubBrowserName(u"about:blank - Audio playing - ", u""),
-            browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
-                version_info::Channel::STABLE, browser()->profile()));
-
-  TabRendererData network_error;
-  network_error.network_state = TabNetworkState::kError;
-  tab->SetData(std::move(network_error));
-  EXPECT_EQ(SubBrowserName(u"about:blank - Network error - ", u" Beta"),
-            browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
-                version_info::Channel::BETA, browser()->profile()));
-
-  TestingProfile* profile = profile_manager()->CreateTestingProfile("Sadia");
-  EXPECT_EQ(SubBrowserName(u"about:blank - Network error - ", u" Dev - Sadia"),
-            browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
-                version_info::Channel::DEV, profile));
-
-  EXPECT_EQ(
-      SubBrowserName(u"about:blank - Network error - ", u" Canary (Incognito)"),
-      browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
-          version_info::Channel::CANARY,
-          TestingProfile::Builder().BuildIncognito(profile)));
 }
 
 TEST_F(BrowserViewTest, UpdateWindowTitle) {
