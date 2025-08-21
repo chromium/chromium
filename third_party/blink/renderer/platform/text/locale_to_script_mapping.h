@@ -39,11 +39,10 @@
 
 namespace blink {
 
-PLATFORM_EXPORT UScriptCode
-LocaleToScriptCodeForFontSelection(const WTF::String&);
-PLATFORM_EXPORT UScriptCode ScriptNameToCode(const WTF::String&);
+PLATFORM_EXPORT UScriptCode LocaleToScriptCodeForFontSelection(const String&);
+PLATFORM_EXPORT UScriptCode ScriptNameToCode(const String&);
 
-PLATFORM_EXPORT UScriptCode ScriptCodeForHanFromSubtags(const WTF::String&,
+PLATFORM_EXPORT UScriptCode ScriptCodeForHanFromSubtags(const String&,
                                                         char delimiter = '-');
 
 inline bool IsUnambiguousHanScript(UScriptCode script) {

@@ -22,7 +22,7 @@ class DummyTokenHandler : public DateTimeFormat::TokenHandler {
     CHECK_GE(count, 1);
   }
 
-  void VisitLiteral(const WTF::String& string) override {
+  void VisitLiteral(const String& string) override {
     CHECK_GT(string.length(), 0u);
   }
 };
@@ -36,6 +36,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   blink::DummyTokenHandler handler;
   // SAFETY: libfuzzer guarantees `data` ad `size` are safe.
   blink::DateTimeFormat::Parse(
-      WTF::String::FromUTF8(UNSAFE_BUFFERS(base::span(data, size))), handler);
+      blink::String::FromUTF8(UNSAFE_BUFFERS(base::span(data, size))), handler);
   return 0;
 }
