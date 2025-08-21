@@ -182,7 +182,10 @@ source_set("core_util") {
     "//ui/accessibility:ax_enums_mojo",
     "//url",
   ]
-  visibility = [ "./*" ]
+  visibility = [
+    "./*",
+    "//services/on_device_model/android/*",
+  ]
 }
 
 source_set("model_execution") {

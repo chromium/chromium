@@ -83,6 +83,9 @@ class BackendSessionImplAndroid : public BackendSession {
   // The accumulated context of the current session.
   std::vector<ml::InputPiece> context_input_pieces_;
 
+  // The feature for which this session was created.
+  const optimization_guide::proto::ModelExecutionFeature feature_;
+
   // Task runner for the sequence that this object is created.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);

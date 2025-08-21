@@ -18,7 +18,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/on_device_model/android/on_device_model_bridge.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
@@ -36,6 +38,7 @@ BackendSessionImplAndroid::BackendSessionImplAndroid(
     on_device_model::mojom::SessionParamsPtr params)
     : java_session_(
           OnDeviceModelBridge::CreateSession(feature, std::move(params))),
+      feature_(feature),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_ = weak_factory_.GetWeakPtr();
@@ -167,6 +170,11 @@ void BackendSessionImplAndroid::OnCompleteOnSequence(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramEnumeration("OnDeviceModel.Android.GenerateResult",
                                 generate_result);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"OnDeviceModel.Android.GenerateResult.",
+                    optimization_guide::GetStringNameForModelExecutionFeature(
+                        feature_)}),
+      generate_result);
   responder_->OnComplete(on_device_model::mojom::ResponseSummary::New());
   responder_.reset();
 }

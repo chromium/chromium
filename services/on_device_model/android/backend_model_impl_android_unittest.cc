@@ -72,6 +72,9 @@ TEST_F(BackendModelImplAndroidTest, GenerateWithDefaultFactory) {
   histogram_tester_.ExpectUniqueSample(
       "OnDeviceModel.Android.GenerateResult",
       BackendSessionImplAndroid::GenerateResult::kApiNotAvailable, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OnDeviceModel.Android.GenerateResult.ScamDetection",
+      BackendSessionImplAndroid::GenerateResult::kApiNotAvailable, 1);
 }
 
 TEST_F(BackendModelImplAndroidTest, AppendAndGenerate) {
@@ -119,6 +122,9 @@ TEST_F(BackendModelImplAndroidTest, AppendAndGenerate) {
   histogram_tester_.ExpectUniqueSample(
       "OnDeviceModel.Android.GenerateResult",
       BackendSessionImplAndroid::GenerateResult::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OnDeviceModel.Android.GenerateResult.ScamDetection",
+      BackendSessionImplAndroid::GenerateResult::kSuccess, 1);
 }
 
 TEST_F(BackendModelImplAndroidTest, GenerateWithUnknownError) {
@@ -138,6 +144,9 @@ TEST_F(BackendModelImplAndroidTest, GenerateWithUnknownError) {
   EXPECT_THAT(response_holder.responses(), ElementsAre(""));
   histogram_tester_.ExpectUniqueSample(
       "OnDeviceModel.Android.GenerateResult",
+      BackendSessionImplAndroid::GenerateResult::kUnknownError, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OnDeviceModel.Android.GenerateResult.ScamDetection",
       BackendSessionImplAndroid::GenerateResult::kUnknownError, 1);
 }
 
@@ -174,6 +183,9 @@ TEST_F(BackendModelImplAndroidTest, ContextIsNotClearedOnNewGenerate) {
   }
   histogram_tester_.ExpectUniqueSample(
       "OnDeviceModel.Android.GenerateResult",
+      BackendSessionImplAndroid::GenerateResult::kSuccess, 2);
+  histogram_tester_.ExpectUniqueSample(
+      "OnDeviceModel.Android.GenerateResult.ScamDetection",
       BackendSessionImplAndroid::GenerateResult::kSuccess, 2);
 }
 

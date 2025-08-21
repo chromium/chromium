@@ -20,6 +20,7 @@ source_set("android") {
   deps = [
     ":jni_headers",
     "//base",
+    "//components/optimization_guide/core:core_util",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//mojo/public/cpp/bindings",
     "//services/on_device_model:backend_interfaces",
