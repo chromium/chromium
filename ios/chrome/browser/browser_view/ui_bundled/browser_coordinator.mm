@@ -1080,20 +1080,6 @@ enum class ToolbarKind {
   self.viewController.webUsageEnabled = webUsageEnabled;
 }
 
-// Displays activity overlay.
-- (base::ScopedClosureRunner)showActivityOverlay {
-  _numberOfActivityOverly++;
-  self.activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [self.activityOverlayCoordinator start];
-  return base::ScopedClosureRunner(base::BindOnce(
-      [](BrowserCoordinator* strongSelf) {
-        [strongSelf decreaseActivityOverlay];
-      },
-      self));
-}
-
 // Hides activity overlay number. Remove it if the number becomes 0..
 - (void)decreaseActivityOverlay {
   _numberOfActivityOverly--;
@@ -2342,6 +2328,20 @@ enum class ToolbarKind {
   params.user_initiated = NO;
   params.in_incognito = self.isOffTheRecord;
   _urlLoadingBrowserAgent->Load(params);
+}
+
+// Displays activity overlay.
+- (base::ScopedClosureRunner)showActivityOverlay {
+  _numberOfActivityOverly++;
+  self.activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.activityOverlayCoordinator start];
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](BrowserCoordinator* strongSelf) {
+        [strongSelf decreaseActivityOverlay];
+      },
+      self));
 }
 
 - (void)showAddCreditCard {
