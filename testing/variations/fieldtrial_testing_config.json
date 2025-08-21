@@ -11177,24 +11177,6 @@
             ]
         }
     ],
-    "GetDisplayMediaIgnoreAudioPermissionFailures": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GetDisplayMediaIgnoreAudioPermissionFailures"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicAssetsUpdate": [
         {
             "platforms": [
@@ -15000,6 +14982,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "GetDisplayMediaIgnoreAudioPermissionFailures",
                         "MacCatapLoopbackAudioForScreenShare"
                     ]
                 }
