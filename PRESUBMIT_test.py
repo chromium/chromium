@@ -5875,5 +5875,68 @@ class CheckAnonymousNamespaceTest(unittest.TestCase):
             'chrome/test.txt' in results[0].message),
 
 
+class CheckEnabledByDefaultCommitMessageTest(unittest.TestCase):
+    """Test the presubmit for enabled-by-default commit messages."""
+
+    def testFeatureEnabledByDefaultWithTagInDescription(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('foo.cc', ['FEATURE_ENABLED_BY_DEFAULT'])
+        ]
+        mock_input_api.change.DescriptionText = lambda: (
+            'Enable my feature\n\nEnabled-by-default-reason: launching!')
+
+        results = PRESUBMIT.CheckEnabledByDefaultCommitMessage(
+            mock_input_api, MockOutputApi())
+        self.assertEqual([], results)
+
+    def testFeatureEnabledByDefaultWithTagInDescriptionDifferentCase(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('foo.cc', ['FEATURE_ENABLED_BY_DEFAULT'])
+        ]
+        mock_input_api.change.DescriptionText = lambda: (
+            'Enable my feature\n\nENABLED-BY-DEFAULT-REASON= launching!')
+
+        results = PRESUBMIT.CheckEnabledByDefaultCommitMessage(
+            mock_input_api, MockOutputApi())
+        self.assertEqual([], results)
+
+    def testFeatureEnabledByDefaultWithoutTag(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('foo.cc', ['FEATURE_ENABLED_BY_DEFAULT'])
+        ]
+        mock_input_api.change.DescriptionText = lambda: 'Enable my feature'
+
+        results = PRESUBMIT.CheckEnabledByDefaultCommitMessage(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertIn('The string "FEATURE_ENABLED_BY_DEFAULT" was found',
+                      results[0].message)
+
+    def testNoFeatureEnabledByDefault(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('foo.cc', ['some other change'])
+        ]
+        mock_input_api.change.DescriptionText = lambda: 'My cool feature'
+
+        results = PRESUBMIT.CheckEnabledByDefaultCommitMessage(
+            mock_input_api, MockOutputApi())
+        self.assertEqual([], results)
+
+    def testFeatureEnabledByDefaultInNonCppFile(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('foo.txt', ['FEATURE_ENABLED_BY_DEFAULT'])
+        ]
+        mock_input_api.change.DescriptionText = lambda: 'My cool feature'
+
+        results = PRESUBMIT.CheckEnabledByDefaultCommitMessage(
+            mock_input_api, MockOutputApi())
+        self.assertEqual([], results)
+
+
 if __name__ == '__main__':
     unittest.main()

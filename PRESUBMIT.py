@@ -7878,3 +7878,41 @@ def CheckNoBrowserStarInUnittests(input_api, output_api):
     or determine if a browser_test is more appropriate.
     """
     return [output_api.PresubmitPromptWarning(WARNING_MSG, items=problems)]
+
+
+def CheckEnabledByDefaultCommitMessage(input_api, output_api):
+    """Checks that if a change enables a feature by default, the commit message
+    contains an Enabled-by-default-reason: tag. This helps reviewers understand
+    the reason the flag is being enabled and acts as an additional guard
+    against accidentally enabling a feature by default when it was not intended.
+    For example, this could happen if a flag is being enabled during local
+    development, but should be turned off when committing the change."""
+
+    files_with_string = set()
+    for f, _, line in input_api.RightHandSideLines(
+            source_file_filter=lambda x: _IsCPlusPlusFile(
+                input_api, x.LocalPath())):
+        if 'FEATURE_ENABLED_BY_DEFAULT' in line:
+            files_with_string.add(f.LocalPath())
+
+    if not files_with_string:
+        return []
+
+    pattern = input_api.re.compile(r'Enabled-by-default-reason[:=]',
+                                   input_api.re.IGNORECASE)
+    if any(
+            pattern.search(line)
+            for line in input_api.change.DescriptionText().splitlines()):
+        return []
+
+    error_message = (
+        'The string "FEATURE_ENABLED_BY_DEFAULT" was found in a C++ file, '
+        'which suggests a feature is being enabled by default.\n'
+        'Please add a line to your commit description with a reason the flag '
+        'is being enabled by default. E.g. "launching" or "killswitch".\n'
+        'Use the format:\n'
+        'Enabled-by-default-reason: [reason]\n\n'
+        'Files containing "ENABLED_BY_DEFAULT":\n' +
+        '\n'.join('  ' + f for f in sorted(list(files_with_string))))
+
+    return [output_api.PresubmitError(error_message)]
