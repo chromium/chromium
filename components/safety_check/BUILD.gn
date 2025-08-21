@@ -22,6 +22,15 @@ source_set("safety_check") {
   ]
 }
 
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "update_check_helper_unittest.cc" ]

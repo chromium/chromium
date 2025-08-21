@@ -154,6 +154,7 @@
 #include "components/remote_cocoa/app_shim/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
+#include "components/safety_check/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -3502,15 +3503,17 @@ const FeatureEntry::FeatureVariation
 };
 
 const FeatureEntry::FeatureParam kSafetyHub_NoDelay[] = {
-    {features::kPasswordCheckNotificationIntervalName, "0d"},
-    {features::kRevokedPermissionsNotificationIntervalName, "0d"},
-    {features::kNotificationPermissionsNotificationIntervalName, "0d"},
-    {features::kSafeBrowsingNotificationIntervalName, "0d"}};
+    {safety_check::features::kPasswordCheckNotificationIntervalName, "0d"},
+    {safety_check::features::kRevokedPermissionsNotificationIntervalName, "0d"},
+    {safety_check::features::kNotificationPermissionsNotificationIntervalName,
+     "0d"},
+    {safety_check::features::kSafeBrowsingNotificationIntervalName, "0d"}};
 const FeatureEntry::FeatureParam kSafetyHub_WithDelay[] = {
-    {features::kPasswordCheckNotificationIntervalName, "0d"},
-    {features::kRevokedPermissionsNotificationIntervalName, "5m"},
-    {features::kNotificationPermissionsNotificationIntervalName, "5m"},
-    {features::kSafeBrowsingNotificationIntervalName, "5m"}};
+    {safety_check::features::kPasswordCheckNotificationIntervalName, "0d"},
+    {safety_check::features::kRevokedPermissionsNotificationIntervalName, "5m"},
+    {safety_check::features::kNotificationPermissionsNotificationIntervalName,
+     "5m"},
+    {safety_check::features::kSafeBrowsingNotificationIntervalName, "5m"}};
 const FeatureEntry::FeatureVariation kSafetyHubVariations[] = {
     {"for testing no delay", kSafetyHub_NoDelay, std::size(kSafetyHub_NoDelay),
      nullptr},
@@ -10089,7 +10092,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"safety-hub", flag_descriptions::kSafetyHubName,
      flag_descriptions::kSafetyHubDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSafetyHub,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(safety_check::features::kSafetyHub,
                                     kSafetyHubVariations,
                                     "SafetyHub")},
 
