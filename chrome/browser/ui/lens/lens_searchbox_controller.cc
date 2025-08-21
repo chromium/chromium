@@ -49,6 +49,9 @@ std::string ScaleBitmapAndEncodeToDataUri(SkBitmap bitmap) {
 
 namespace lens {
 
+LensSearchboxController::LensSearchboxInitializationData::
+    LensSearchboxInitializationData() = default;
+
 LensSearchboxController::LensSearchboxController(
     LensSearchController* lens_search_controller)
     : lens_search_controller_(lens_search_controller) {}
@@ -73,9 +76,10 @@ void LensSearchboxController::BindSidePanelGhostLoader(
   side_panel_ghost_loader_page_.Bind(std::move(page));
 }
 
-void LensSearchboxController::OnSessionStart() {
+void LensSearchboxController::OnSessionStart(bool suppress_contextualization) {
   // Initialize any data needed for the searchbox.
   init_data_ = std::make_unique<LensSearchboxInitializationData>();
+  init_data_->suppress_contextualization = suppress_contextualization;
 }
 
 void LensSearchboxController::SetSidePanelSearchboxHandler(
@@ -252,11 +256,14 @@ LensSearchboxController::GetPageClassification() const {
   // visual search path.
   const LensOverlayController::State state =
       lens_search_controller_->lens_overlay_controller()->state();
-  if (state == LensOverlayController::State::kLivePageAndResults ||
+  bool state_supports_contextualization =
+      state == LensOverlayController::State::kLivePageAndResults ||
       state == LensOverlayController::State::kOverlay ||
       (state == LensOverlayController::State::kOff &&
        lens_search_controller_->lens_search_contextualization_controller()
-           ->IsActive())) {
+           ->IsActive());
+  if (state_supports_contextualization &&
+      !init_data_->suppress_contextualization) {
     return metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
   }
   return init_data_->thumbnail_uri.empty()

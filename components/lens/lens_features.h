@@ -214,6 +214,13 @@ extern const base::FeatureParam<int> kLensSearchSidePanelDefaultWidth;
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<int> kLensOverlayEntrypointLabelAltId;
 
+// Whether the Lens overlay text selection context menu entrypoint should
+// issue contextual queries. If false, contextualization will be suppressed for
+// all queries in the session.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<bool>
+    kLensOverlayTextSelectionContextMenuEntrypointContextualize;
+
 // The URL for the Lens home page.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetHomepageURLForLens();
@@ -964,6 +971,12 @@ extern std::string GetStraightToSrpQuery();
 // entrypoint.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayTextSelectionContextMenuEntrypointEnabled();
+
+// Whether the Lens overlay text selection context menu entrypoint should
+// issue contextual queries. If false, contextualization will be suppressed for
+// all queries in the session.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayTextSelectionContextMenuEntrypointContextualized();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

@@ -49,8 +49,9 @@ class LensSearchboxController : public LensSearchboxClient {
       mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page);
 
   // Must be called at the start of a session so the proper state is
-  // initialized.
-  void OnSessionStart();
+  // initialized. Optionally set whether to suppress contextualization for the
+  // current session.
+  void OnSessionStart(bool suppress_contextualization = false);
 
   // This method is used to set up communication between this instance and the
   // searchbox WebUI. This is called by the WebUIController when the WebUI is
@@ -141,7 +142,7 @@ class LensSearchboxController : public LensSearchboxClient {
   // Data class for storing state for the searchbox.
   struct LensSearchboxInitializationData {
    public:
-    LensSearchboxInitializationData() = default;
+    LensSearchboxInitializationData();
     ~LensSearchboxInitializationData() = default;
     // The text query in the searchbox.
     std::string text_query = "";
@@ -151,6 +152,9 @@ class LensSearchboxController : public LensSearchboxClient {
 
     // The latest suggest inputs from the query controller.
     lens::proto::LensOverlaySuggestInputs suggest_inputs_;
+
+    // Whether to suppress contextualization for the current session.
+    bool suppress_contextualization = false;
   };
 
   // Called on the UI thread with the processed thumbnail URI.
