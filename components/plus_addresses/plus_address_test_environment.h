@@ -6,7 +6,7 @@
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TEST_ENVIRONMENT_H_
 
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
-#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
+#include "components/plus_addresses/core/browser/settings/fake_plus_address_setting_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

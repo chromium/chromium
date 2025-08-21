@@ -298,7 +298,7 @@ test("components_unittests") {
     "//components/persistent_cache:unit_tests",
     "//components/plus_addresses:unit_tests",
     "//components/plus_addresses/core/browser/metrics:unit_tests",
-    "//components/plus_addresses/settings:unit_tests",
+    "//components/plus_addresses/core/browser/settings:unit_tests",
     "//components/plus_addresses/webdata:unit_tests",
     "//components/policy/core/browser:unit_tests",
     "//components/policy/core/common:unit_tests",

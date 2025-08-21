@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_SETTINGS_MOCK_PLUS_ADDRESS_SETTING_SERVICE_H_
-#define COMPONENTS_PLUS_ADDRESSES_SETTINGS_MOCK_PLUS_ADDRESS_SETTING_SERVICE_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_SETTINGS_MOCK_PLUS_ADDRESS_SETTING_SERVICE_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_SETTINGS_MOCK_PLUS_ADDRESS_SETTING_SERVICE_H_
 
-#include "components/plus_addresses/settings/plus_address_setting_service.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -28,4 +28,4 @@ class MockPlusAddressSettingService : public PlusAddressSettingService {
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_SETTINGS_MOCK_PLUS_ADDRESS_SETTING_SERVICE_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_SETTINGS_MOCK_PLUS_ADDRESS_SETTING_SERVICE_H_

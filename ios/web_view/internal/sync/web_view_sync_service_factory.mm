@@ -17,7 +17,7 @@
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #import "components/password_manager/core/browser/sharing/password_sender_service.h"
-#import "components/plus_addresses/settings/plus_address_setting_service.h"
+#import "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
 #import "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/sync_util.h"

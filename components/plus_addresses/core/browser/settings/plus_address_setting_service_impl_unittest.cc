@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/settings/plus_address_setting_service_impl.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_service_impl.h"
 
 #include <memory>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
-#include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
-#include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_sync_bridge.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_sync_test_util.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_sync_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

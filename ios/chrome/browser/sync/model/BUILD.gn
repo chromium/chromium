@@ -33,7 +33,7 @@ source_set("model") {
     "//components/network_time",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sharing",
-    "//components/plus_addresses/settings",
+    "//components/plus_addresses/core/browser/settings",
     "//components/plus_addresses/webdata",
     "//components/pref_registry",
     "//components/prefs",

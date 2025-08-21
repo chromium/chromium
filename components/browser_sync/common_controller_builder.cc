@@ -47,7 +47,7 @@
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sync/password_data_type_controller.h"
 #include "components/password_manager/core/browser/sync/password_local_data_batch_uploader.h"
-#include "components/plus_addresses/settings/plus_address_setting_service.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/sync_utils/plus_address_data_type_controller.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"

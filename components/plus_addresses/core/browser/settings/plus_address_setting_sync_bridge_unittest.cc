@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_sync_bridge.h"
 
 #include <memory>
 #include <optional>
@@ -10,8 +10,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
-#include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_sync_test_util.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_store.h"

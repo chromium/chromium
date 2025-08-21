@@ -31,7 +31,7 @@ static_library("test_support") {
   public_deps = [
     "//base",
     "//base/test:test_support",
-    "//components/plus_addresses/settings",
+    "//components/plus_addresses/core/browser/settings",
     "//components/sync",
   ]
 }
