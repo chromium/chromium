@@ -11226,7 +11226,7 @@
 <translation id="885746075120788020">无论是在哪部 Chrome 操作系统设备上，您只需登录自己的 Google 账号，便能使用您保存的偏好设置和活动记录。您可在“设置”中选择要同步的内容。</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{安装应用？}other{安装应用？}}</translation>
 <translation id="8858369206579825206">隐私控制</translation>
-<translation id="8859174528519900719">辅助框架：<ph name="SUBFRAME_SITE" /></translation>
+<translation id="8859174528519900719">子框架：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">无法加载《服务条款》</translation>
 <translation id="8859662783913000679">家长账号</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} 个账号}other{{COUNT} 个账号}}</translation>
@@ -11311,7 +11311,7 @@
 <translation id="8915307125957890427">右键点击某个标签页，选择“向组中添加标签页”，然后选择“新建组”</translation>
 <translation id="8915370057835397490">正在加载建议</translation>
 <translation id="8915916167043355778">全部关闭</translation>
-<translation id="8916476537757519021">隐身辅助框架：<ph name="SUBFRAME_SITE" /></translation>
+<translation id="8916476537757519021">无痕模式子框架：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">立即开启</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">正在安装应用…</translation>
