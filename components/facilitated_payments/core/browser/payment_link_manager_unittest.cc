@@ -1807,6 +1807,8 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, OnPaymentAppSelected_ClearsStrikes) {
   strike_database.AddStrikes(2);
   ASSERT_EQ(2, strike_database.GetStrikes());
 
+  test_api(*payment_link_manager_).set_is_payment_app_available(true);
+
   // Trigger the call.
   test_api(*payment_link_manager_)
       .OnPaymentAppSelected("com.example.app", "com.example.app.activity");
@@ -1828,6 +1830,8 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, OnPaymentAppSelected_InvokesApp) {
   test_api(*payment_link_manager_)
       .set_initiate_payment_request_details(std::move(request_details));
 
+  test_api(*payment_link_manager_).set_is_payment_app_available(true);
+
   EXPECT_CALL(
       *mock_device_delegate_,
       InvokePaymentApp(package_name, activity_name, GURL(payment_link)));
@@ -1838,6 +1842,173 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, OnPaymentAppSelected_InvokesApp) {
   // Trigger the call.
   test_api(*payment_link_manager_)
       .OnPaymentAppSelected(package_name, activity_name);
+}
+
+// Test that when a payment app is selected, the app is invoked.
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       OnPaymentAppSelected_InvokedApp_RecordHistogram) {
+  base::HistogramTester histogram_tester;
+  // Setup for InvokePaymentApp call.
+  const std::string package_name = "com.example.app";
+  const std::string activity_name = "com.example.app.activity";
+  const std::string payment_link =
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path";
+  auto request_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  request_details->payment_link_ = payment_link;
+  test_api(*payment_link_manager_)
+      .set_initiate_payment_request_details(std::move(request_details));
+
+  test_api(*payment_link_manager_)
+      .set_is_payment_app_available(/*is_payment_app_available=*/true);
+  test_api(*payment_link_manager_)
+      .set_scheme(PaymentLinkValidator::Scheme::kPromptPay);
+
+  EXPECT_CALL(
+      *mock_device_delegate_,
+      InvokePaymentApp(package_name, activity_name, GURL(payment_link)));
+
+  // Trigger the call.
+  test_api(*payment_link_manager_)
+      .OnPaymentAppSelected(package_name, activity_name);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2AOnly.FopSelector.UserAction",
+      PaymentLinkFopSelectorAction::kPaymentAppSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2AOnly.FopSelector.UserAction.PromptPay",
+      PaymentLinkFopSelectorAction::kPaymentAppSelected,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       OnPaymentAppSelected_WithEwalletAvailable_RecordHistogram) {
+  base::HistogramTester histogram_tester;
+  feature_list_.InitAndEnableFeature(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+
+  // Setup for InvokePaymentApp call.
+  const std::string package_name = "com.example.app";
+  const std::string activity_name = "com.example.app.activity";
+  const GURL payment_link(
+      "https://www.itmx.co.th/facilitated-payment/"
+      "prompt-pay?path=fake_path");
+
+  // Setup eWallet.
+  payments_data_manager_.AddEwalletForTest(autofill::Ewallet(
+      /*instrument_id=*/100, u"nickname",
+      /*display_icon_url=*/GURL("http://www.example.com"), u"ewallet_name",
+      u"account_display_name",
+      /*supported_payment_link_uris=*/
+      {u"^https:\\/\\/www\\.itmx\\.co\\.th\\/facilitated-payment\\/"
+       u"prompt-pay.+"},
+      /*is_fido_enrolled=*/true));
+
+  // Setup payment app.
+  ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
+      .WillByDefault(testing::Return(1));
+
+  // Trigger payment flow.
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  // Trigger the call.
+  test_api(*payment_link_manager_)
+      .OnPaymentAppSelected(package_name, activity_name);
+
+  // Verify histograms.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletAndA2A.FopSelector.UserAction",
+      PaymentLinkFopSelectorAction::kPaymentAppSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletAndA2A.FopSelector.UserAction."
+      "PromptPay",
+      PaymentLinkFopSelectorAction::kPaymentAppSelected,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PaymentLinkManagerTestForA2AFlow, OnEwalletSelected_RecordHistogram) {
+  base::HistogramTester histogram_tester;
+  const GURL payment_link(
+      "https://www.itmx.co.th/facilitated-payment/"
+      "prompt-pay?path=fake_path");
+
+  // Setup eWallet.
+  payments_data_manager_.AddEwalletForTest(autofill::Ewallet(
+      /*instrument_id=*/100, u"nickname",
+      /*display_icon_url=*/GURL("http://www.example.com"), u"ewallet_name",
+      u"account_display_name",
+      /*supported_payment_link_uris=*/
+      {u"^https:\\/\\/www\\.itmx\\.co\\.th\\/facilitated-payment\\/"
+       u"prompt-pay.+"},
+      /*is_fido_enrolled=*/true));
+
+  // Trigger payment flow.
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  // Trigger the eWallet selection.
+  test_api(*payment_link_manager_)
+      .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
+
+  // Verify histograms.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletOnly.FopSelector.UserAction",
+      PaymentLinkFopSelectorAction::kEwalletSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletOnly.FopSelector.UserAction.PromptPay",
+      PaymentLinkFopSelectorAction::kEwalletSelected,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       OnEwalletSelected_WithPaymentAppAvailable_RecordHistogram) {
+  base::HistogramTester histogram_tester;
+  feature_list_.InitAndEnableFeature(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+
+  const GURL payment_link(
+      "https://www.itmx.co.th/facilitated-payment/"
+      "prompt-pay?path=fake_path");
+
+  // Setup eWallet.
+  payments_data_manager_.AddEwalletForTest(autofill::Ewallet(
+      /*instrument_id=*/100, u"nickname",
+      /*display_icon_url=*/GURL("http://www.example.com"), u"ewallet_name",
+      u"account_display_name",
+      /*supported_payment_link_uris=*/
+      {u"^https:\\/\\/www\\.itmx\\.co\\.th\\/facilitated-payment\\/"
+       u"prompt-pay.+"},
+      /*is_fido_enrolled=*/true));
+
+  // Setup payment app.
+  ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
+      .WillByDefault(testing::Return(1));
+
+  // Trigger payment flow.
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  // Trigger the eWallet selection.
+  test_api(*payment_link_manager_)
+      .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
+
+  // Verify histograms.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletAndA2A.FopSelector.UserAction",
+      PaymentLinkFopSelectorAction::kEwalletSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.EwalletAndA2A.FopSelector.UserAction."
+      "PromptPay",
+      PaymentLinkFopSelectorAction::kEwalletSelected,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace payments::facilitated

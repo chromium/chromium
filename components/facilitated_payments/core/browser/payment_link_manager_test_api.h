@@ -43,6 +43,10 @@ class PaymentLinkManagerTestApi {
     payment_link_manager_->is_device_bound_for_logging_ = is_device_bound;
   }
 
+  void set_is_payment_app_available(bool is_payment_app_available) {
+    payment_link_manager_->is_payment_app_available_ = is_payment_app_available;
+  }
+
   bool is_device_bound() {
     return payment_link_manager_->is_device_bound_for_logging_;
   }

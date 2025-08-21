@@ -97,6 +97,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.facilitated_payments.core.ui_utils.FopSelectorAction;
+import org.chromium.components.facilitated_payments.core.ui_utils.PaymentLinkFopSelectorAction;
 import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.components.payments.ui.test_support.FakeClock;
@@ -743,6 +744,114 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT,
+        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM
+    })
+    public void testEwalletAndA2AShowsFinancialAccountsManagementSettings() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "FacilitatedPayments.EwalletAndA2A.FopSelector.UserAction",
+                                PaymentLinkFopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED)
+                        .build();
+
+        // The additional info is the second to last item of the screen items list.
+        int additionalInfoPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 2;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(additionalInfoPos)
+                .model
+                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        histogramWatcher.assertExpected();
+        verify(mSettingsNavigation)
+                .startSettings(
+                        mContext, SettingsNavigation.SettingsFragment.NON_CARD_PAYMENT_METHODS);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT,
+        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM
+    })
+    public void testA2AOnlyShowsFinancialAccountsManagementSettings() {
+        mCoordinator.showSheetForPaymentLink(List.of(), List.of(PAYMENT_APP_1));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "FacilitatedPayments.A2AOnly.FopSelector.UserAction",
+                                PaymentLinkFopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED)
+                        .build();
+
+        // The additional info is the third to last item of the screen items list.
+        int additionalInfoPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 3;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(additionalInfoPos)
+                .model
+                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        histogramWatcher.assertExpected();
+        verify(mSettingsNavigation)
+                .startSettings(
+                        mContext, SettingsNavigation.SettingsFragment.NON_CARD_PAYMENT_METHODS);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT,
+        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM
+    })
+    public void testEwalletOnlyShowsFinancialAccountsManagementSettings() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "FacilitatedPayments.EwalletOnly.FopSelector.UserAction",
+                                PaymentLinkFopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED)
+                        .build();
+
+        // The additional info is the third to last item of the screen items list.
+        int additionalInfoPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 3;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(additionalInfoPos)
+                .model
+                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        histogramWatcher.assertExpected();
+        verify(mSettingsNavigation)
+                .startSettings(
+                        mContext, SettingsNavigation.SettingsFragment.NON_CARD_PAYMENT_METHODS);
+    }
+
+    @Test
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
     public void
             separatePixPreferenceItem_testSingleFidoUnenrolledEwalletShowNonCardPaymentMethodsSettings() {
@@ -1017,6 +1126,102 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                                 FopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED)
                         .build();
 
+        int lastItemPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 1;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(lastItemPos)
+                .model
+                .get(FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        histogramWatcher.assertExpected();
+        verify(mSettingsNavigation)
+                .startSettings(mContext, SettingsNavigation.SettingsFragment.PAYMENT_METHODS);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testEwalletAndA2AShowManagePaymentMethodsSettingsOnFooter() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "FacilitatedPayments.EwalletAndA2A.FopSelector.UserAction",
+                                PaymentLinkFopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED)
+                        .build();
+
+        // The footer is the last item of the screen items list.
+        int lastItemPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 1;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(lastItemPos)
+                .model
+                .get(FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        histogramWatcher.assertExpected();
+        verify(mSettingsNavigation)
+                .startSettings(mContext, SettingsNavigation.SettingsFragment.PAYMENT_METHODS);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testA2AOnlyShowManagePaymentMethodsSettingsOnFooter() {
+        mCoordinator.showSheetForPaymentLink(List.of(), List.of(PAYMENT_APP_1));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "FacilitatedPayments.A2AOnly.FopSelector.UserAction",
+                                PaymentLinkFopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED)
+                        .build();
+
+        // The footer is the last item of the screen items list.
+        int lastItemPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 1;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(lastItemPos)
+                .model
+                .get(FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        histogramWatcher.assertExpected();
+        verify(mSettingsNavigation)
+                .startSettings(mContext, SettingsNavigation.SettingsFragment.PAYMENT_METHODS);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testEwalletOnlyShowManagePaymentMethodsSettingsOnFooter() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "FacilitatedPayments.EwalletOnly.FopSelector.UserAction",
+                                PaymentLinkFopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED)
+                        .build();
+
+        // The footer is the last item of the screen items list.
         int lastItemPos =
                 mFacilitatedPaymentsPaymentMethodsModel
                                 .get(SCREEN_VIEW_MODEL)

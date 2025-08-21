@@ -79,6 +79,7 @@ import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.facilitated_payments.core.ui_utils.FopSelectorAction;
+import org.chromium.components.facilitated_payments.core.ui_utils.PaymentLinkFopSelectorAction;
 import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -111,6 +112,11 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     @VisibleForTesting
     static final String EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM =
             "FacilitatedPayments.Ewallet.FopSelector.UserAction.";
+
+    // This histogram name should be in sync with the one in
+    // components/facilitated_payments/core/metrics/facilitated_payments_metrics.cc:LogNonCardPaymentMethodsFopSelected.
+    static final String PAYMENT_LINK_FOP_SELECTOR_TYPES_USER_ACTION_HISTOGRAM =
+            "FacilitatedPayments.{PaymentLinkFopSelectorTypes}.FopSelector.UserAction";
 
     private Context mContext;
     private PropertyModel mModel;
@@ -360,10 +366,22 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                         .with(
                                 FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
-                                () ->
-                                        this.onManagePaymentMethodsOptionSelected(
-                                                getNonCardPaymentMethodsFopSelectorUserActionHistogram(
-                                                        ewallets, apps)))
+                                () -> {
+                                    startSettings(PAYMENT_METHODS);
+                                    if (!ewallets.isEmpty()) {
+                                        this.recordManagePaymentMethodsOptionSelected(
+                                                getEwalletFopSelectorUserActionHistogram(ewallets));
+                                    }
+                                    if (ChromeFeatureList.isEnabled(
+                                            ChromeFeatureList
+                                                    .FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT)) {
+                                        this
+                                                .recordManagePaymentMethodsOptionSelectedNonCardPaymentMethods(
+                                                        getPaymentLinkFopSelectorTypesUserActionHistogram(
+                                                                !ewallets.isEmpty(),
+                                                                !apps.isEmpty()));
+                                    }
+                                })
                         .build());
     }
 
@@ -401,11 +419,16 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                     if (ChromeFeatureList.isEnabled(
                             ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM)) {
                         startSettings(NON_CARD_PAYMENT_METHODS);
+                        recordHistogramOnTurnOffPaymentPromptLinkNonCardPaymentMethodsClicked(
+                                getPaymentLinkFopSelectorTypesUserActionHistogram(
+                                        !ewallets.isEmpty(), !apps.isEmpty()));
                     } else {
                         startSettings(FINANCIAL_ACCOUNTS);
                     }
-                    recordHistogramOnTurnOffPaymentPromptLinkClicked(
-                            getNonCardPaymentMethodsFopSelectorUserActionHistogram(ewallets, apps));
+                    if (!ewallets.isEmpty()) {
+                        recordHistogramOnTurnOffPaymentPromptLinkClicked(
+                                getEwalletFopSelectorUserActionHistogram(ewallets));
+                    }
                 });
 
         return new ListItem(
@@ -506,10 +529,22 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     private void onManagePaymentMethodsOptionSelected(String histogramName) {
         startSettings(PAYMENT_METHODS);
 
+        recordManagePaymentMethodsOptionSelected(histogramName);
+    }
+
+    private void recordManagePaymentMethodsOptionSelected(String histogramName) {
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName,
                 FopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED,
                 FopSelectorAction.MAX_VALUE);
+    }
+
+    private void recordManagePaymentMethodsOptionSelectedNonCardPaymentMethods(
+            String histogramName) {
+        RecordHistogram.recordEnumeratedHistogram(
+                histogramName,
+                PaymentLinkFopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED,
+                PaymentLinkFopSelectorAction.MAX_VALUE);
     }
 
     private void recordHistogramOnTurnOffPaymentPromptLinkClicked(String histogramName) {
@@ -519,9 +554,15 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 FopSelectorAction.MAX_VALUE);
     }
 
-    // TODO(crbug.com/433617327): unusedApps will be used in a later patch to update the histogram.
-    private String getNonCardPaymentMethodsFopSelectorUserActionHistogram(
-            List<Ewallet> ewallets, List<ResolveInfo> unusedApps) {
+    private void recordHistogramOnTurnOffPaymentPromptLinkNonCardPaymentMethodsClicked(
+            String histogramName) {
+        RecordHistogram.recordEnumeratedHistogram(
+                histogramName,
+                PaymentLinkFopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED,
+                PaymentLinkFopSelectorAction.MAX_VALUE);
+    }
+
+    private String getEwalletFopSelectorUserActionHistogram(List<Ewallet> ewallets) {
         if (ewallets.size() == 1) {
             if (ewallets.get(0).getIsFidoEnrolled()) {
                 return EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM + "SingleBoundEwallet";
@@ -553,6 +594,19 @@ class FacilitatedPaymentsPaymentMethodsMediator {
             default:
                 return "";
         }
+    }
+
+    private static String getPaymentLinkFopSelectorTypesUserActionHistogram(
+            boolean hasEwallet, boolean hasApps) {
+        if (hasApps && hasEwallet) {
+            return PAYMENT_LINK_FOP_SELECTOR_TYPES_USER_ACTION_HISTOGRAM.replace(
+                    "{PaymentLinkFopSelectorTypes}", "EwalletAndA2A");
+        }
+        return hasApps
+                ? PAYMENT_LINK_FOP_SELECTOR_TYPES_USER_ACTION_HISTOGRAM.replace(
+                        "{PaymentLinkFopSelectorTypes}", "A2AOnly")
+                : PAYMENT_LINK_FOP_SELECTOR_TYPES_USER_ACTION_HISTOGRAM.replace(
+                        "{PaymentLinkFopSelectorTypes}", "EwalletOnly");
     }
 
     // Continue button is shown when among all the targetTypes only one targetType is present. The

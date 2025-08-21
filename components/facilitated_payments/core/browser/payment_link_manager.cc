@@ -227,6 +227,9 @@ void PaymentLinkManager::OnEwalletAccountSelected(
 
   LogEwalletFopSelected(GetAvailableEwalletsConfiguration());
   LogEwalletFopSelectorResultUkm(/*accepted=*/true, ukm_source_id_, scheme_);
+  LogNonCardPaymentMethodsFopSelected(
+      GetPaymentLinkFopSelectorType(),
+      PaymentLinkFopSelectorAction::kEwalletSelected, scheme_);
 
   ShowProgressScreen();
 
@@ -250,6 +253,10 @@ void PaymentLinkManager::OnPaymentAppSelected(std::string_view package_name,
   if (auto* strike_database = GetOrCreateStrikeDatabase()) {
     strike_database->ClearStrikes();
   }
+
+  LogNonCardPaymentMethodsFopSelected(
+      GetPaymentLinkFopSelectorType(),
+      PaymentLinkFopSelectorAction::kPaymentAppSelected, scheme_);
 
   client_->GetDeviceDelegate()->InvokePaymentApp(
       package_name, activity_name,
