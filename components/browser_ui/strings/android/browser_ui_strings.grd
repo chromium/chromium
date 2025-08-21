@@ -1008,6 +1008,27 @@
       <message name="IDS_FONT_SIZE_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font size.">
         Text scaling set to <ph name="TEXT_SCALING">%1$s<ex>100%</ex></ph>
       </message>
+      <message name="IDS_FONT_FAMILY_SANS_SERIF_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font family to sans serif.">
+        Font Sans Serif
+      </message>
+      <message name="IDS_FONT_FAMILY_SERIF_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font family to serif.">
+        Font Serif
+      </message>
+      <message name="IDS_FONT_FAMILY_MONOSPACE_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font family to monospace.">
+        Font Mono
+      </message>
+      <message name="IDS_FONT_SIZE_SLIDER_ACCESSIBILITY_LABEL" desc="Accessibility label for slider to allow user to change font size.">
+        Font size slider
+      </message>
+      <message name="IDS_LIGHT_THEME_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change to light theme.">
+        Theme color light
+      </message>
+      <message name="IDS_SEPIA_THEME_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change to sepia theme.">
+        Theme color sepia
+      </message>
+      <message name="IDS_DARK_THEME_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change to dark theme.">
+        Theme color dark
+      </message>
       <message name="IDS_FORCE_ENABLE_ZOOM_TITLE" desc="Title of preference that allows the user to zoom in on any webpage, even if the page tries to disable zooming.">
         Force enable zoom
       </message>

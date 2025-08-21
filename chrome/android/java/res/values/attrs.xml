@@ -27,7 +27,7 @@ found in the LICENSE file.
         <attr name="newTabButtonStyle" format="reference" />
     </declare-styleable>
 
-     <declare-styleable name="TabGroupColorPickerContainer">
+    <declare-styleable name="TabGroupColorPickerContainer">
         <attr name="colorPickerButtonStyle" format="reference" />
     </declare-styleable>
 </resources>

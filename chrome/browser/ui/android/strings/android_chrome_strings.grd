@@ -6980,7 +6980,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
 
       <!-- Reader mode -->
       <message name="IDS_READER_MODE_BOTTOM_SHEET_TITLE" desc="Title of the Reading Mode bottom sheet. [CHAR_LIMIT=27]">
-        Reading mode
+        Reading Mode
       </message>
       <message name="IDS_READER_MODE_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Content description of the Reading Mode bottom sheet.">
         Reading mode bottom sheet

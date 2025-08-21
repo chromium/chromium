@@ -101,4 +101,7 @@ found in the LICENSE file.
     <!-- Colors used in Google Pay icon -->
     <color name="google_pay_icon_grey_dark">#3C4043</color>
 
+    <!-- Sepia color for reader mode prefs theme button. -->
+    <color name="reader_mode_prefs_sepia_theme_button_color">#F8F1E3</color>
+
 </resources>
