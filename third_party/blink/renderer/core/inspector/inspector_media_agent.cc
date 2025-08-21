@@ -127,9 +127,9 @@ void InspectorMediaAgent::RegisterAgent() {
     return;
   }
 
-  PlayersCreated(players);
   for (const auto& player_id : players) {
     const auto& media_player = cache->MediaPlayerFromId(player_id);
+    PlayerCreated(media_player);
     Vector<InspectorPlayerProperty> properties;
     properties.AppendRange(media_player.properties.Values().begin(),
                            media_player.properties.Values().end());
@@ -185,13 +185,14 @@ void InspectorMediaAgent::PlayerMessagesLogged(
       playerId, ConvertVector<protocol::Media::PlayerMessage>(messages));
 }
 
-void InspectorMediaAgent::PlayersCreated(const Vector<WebString>& player_ids) {
-  auto protocol_players =
-      std::make_unique<protocol::Array<protocol::Media::PlayerId>>();
-  protocol_players->reserve(player_ids.size());
-  for (const auto& player_id : player_ids)
-    protocol_players->push_back(player_id);
-  GetFrontend()->playersCreated(std::move(protocol_players));
+void InspectorMediaAgent::PlayerCreated(const MediaPlayer& media_player) {
+  auto player_object = protocol::Media::Player::create()
+                           .setPlayerId(media_player.player_id)
+                           .build();
+  if (media_player.dom_node_id) {
+    player_object->setDomNodeId(media_player.dom_node_id);
+  }
+  GetFrontend()->playerCreated(std::move(player_object));
 }
 
 void InspectorMediaAgent::Trace(Visitor* visitor) const {

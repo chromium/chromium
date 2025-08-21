@@ -66,6 +66,11 @@ experimental domain Media
       # Extra data attached to an error, such as an HRESULT, Video Codec, etc.
       object data
 
+  type Player extends object
+    properties
+      PlayerId playerId
+      optional DOM.BackendNodeId domNodeId
+
   # This can be called multiple times, and can be used to set / override /
   # remove player properties. A null propValue indicates removal.
   event playerPropertiesChanged
@@ -93,11 +98,11 @@ experimental domain Media
       array of PlayerError errors
 
   # Called whenever a player is created, or when a new agent joins and receives
-  # a list of active players. If an agent is restored, it will receive the full
-  # list of player ids and all events again.
-  event playersCreated
+  # a list of active players. If an agent is restored, it will receive one
+  # event for each active player.
+  event playerCreated
     parameters
-      array of PlayerId players
+      Player player
 
   # Enables the Media domain
   command enable

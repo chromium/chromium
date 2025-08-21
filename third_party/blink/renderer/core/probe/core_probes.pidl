@@ -221,7 +221,7 @@ interface CoreProbes {
   void PlayerEventsAdded(ExecutionContext* context, String player_id, const Vector<InspectorPlayerEvent>& events);
   void PlayerMessagesLogged(ExecutionContext* context, String player_id, const Vector<InspectorPlayerMessage>& messages);
   void PlayerPropertiesChanged(ExecutionContext* context, String player_id, const Vector<InspectorPlayerProperty>& properties);
-  void PlayersCreated(ExecutionContext* context, const Vector<WebString>& players);
+  void PlayerCreated(ExecutionContext* context, const MediaPlayer& player);
   void SetDevToolsIds(CoreProbeSink*, ResourceRequest& request, const FetchInitiatorInfo&);
   void DidMutateStyleSheet(Document*, CSSStyleSheet* style_sheet);
   void DidReplaceStyleSheetText(Document*, CSSStyleSheet* style_sheet, const String& text);

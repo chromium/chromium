@@ -20,9 +20,14 @@ class MockMediaInspectorContext : public blink::MediaInspectorContext {
   MockMediaInspectorContext() = default;
   virtual ~MockMediaInspectorContext() = default;
 
+  void SetDomNodeIdForPlayer(const blink::WebString& player_id,
+                             int dom_node_id) override {
+    MockSetDomNodeIdForPlayer(dom_node_id);
+  }
+
   blink::WebString CreatePlayer() override { return "TestPlayer"; }
 
-  void DestroyPlayer(const blink::WebString& playerId) override {
+  void DestroyPlayer(const blink::WebString& player_id) override {
     MockDestroyPlayer();
   }
 
@@ -55,6 +60,7 @@ class MockMediaInspectorContext : public blink::MediaInspectorContext {
   MOCK_METHOD0(MockDestroyPlayer, void());
   MOCK_METHOD0(MockIncrementActiveSessionCount, void());
   MOCK_METHOD0(MockDecrementActiveSessionCount, void());
+  MOCK_METHOD1(MockSetDomNodeIdForPlayer, void(int));
 };
 
 class InspectorMediaEventHandlerTest : public testing::Test {
@@ -62,7 +68,7 @@ class InspectorMediaEventHandlerTest : public testing::Test {
   InspectorMediaEventHandlerTest() {
     mock_context_ = std::make_unique<MockMediaInspectorContext>();
     handler_ =
-        std::make_unique<InspectorMediaEventHandler>(mock_context_.get());
+        std::make_unique<InspectorMediaEventHandler>(mock_context_.get(), 123);
   }
 
   InspectorMediaEventHandlerTest(const InspectorMediaEventHandlerTest&) =
@@ -171,6 +177,12 @@ MATCHER_P(ErrorsEqualTo, errors, "") {
     if (errors[i] != arg[i])
       return false;
   return true;
+}
+
+TEST_F(InspectorMediaEventHandlerTest, CallsSetDomNodeId) {
+  EXPECT_CALL(*mock_context_, MockSetDomNodeIdForPlayer(123)).Times(1);
+  handler_ =
+      std::make_unique<InspectorMediaEventHandler>(mock_context_.get(), 123);
 }
 
 TEST_F(InspectorMediaEventHandlerTest, ConvertsProperties) {

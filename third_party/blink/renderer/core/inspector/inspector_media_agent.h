@@ -16,6 +16,7 @@ namespace blink {
 class InspectedFrames;
 class WorkerGlobalScope;
 class ExecutionContext;
+struct MediaPlayer;
 
 class CORE_EXPORT InspectorMediaAgent final
     : public InspectorBaseAgent<protocol::Media::Metainfo> {
@@ -42,7 +43,7 @@ class CORE_EXPORT InspectorMediaAgent final
                             const Vector<InspectorPlayerMessage>&);
   void PlayerPropertiesChanged(const WebString&,
                                const Vector<InspectorPlayerProperty>&);
-  void PlayersCreated(const Vector<WebString>&);
+  void PlayerCreated(const MediaPlayer&);
 
   // blink-gc methods.
   void Trace(Visitor*) const override;

@@ -28,6 +28,7 @@ struct MediaPlayer final : public GarbageCollected<MediaPlayer> {
   void Trace(Visitor*) const {}
 
   WebString player_id;
+  int dom_node_id = 0;
   Vector<InspectorPlayerError> errors;
   Vector<InspectorPlayerEvent> events;
   Vector<InspectorPlayerMessage> messages;
@@ -47,15 +48,17 @@ class CORE_EXPORT MediaInspectorContextImpl final
 
   // MediaInspectorContext methods.
   WebString CreatePlayer() override;
-  void DestroyPlayer(const WebString& playerId) override;
+  void DestroyPlayer(const WebString& player_id) override;
+  void SetDomNodeIdForPlayer(const WebString& player_id,
+                             int dom_node_id) override;
 
-  void NotifyPlayerErrors(WebString playerId,
+  void NotifyPlayerErrors(WebString player_id,
                           const InspectorPlayerErrors&) override;
-  void NotifyPlayerEvents(WebString playerId,
+  void NotifyPlayerEvents(WebString player_id,
                           const InspectorPlayerEvents&) override;
-  void NotifyPlayerMessages(WebString playerId,
+  void NotifyPlayerMessages(WebString player_id,
                             const InspectorPlayerMessages&) override;
-  void SetPlayerProperties(WebString playerId,
+  void SetPlayerProperties(WebString player_id,
                            const InspectorPlayerProperties&) override;
 
   // GarbageCollected methods.
