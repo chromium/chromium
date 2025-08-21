@@ -985,6 +985,16 @@ AccountProfileMapper::AccountProfileMapper(
       system_identity_manager_, std::ref(num_consumer_accounts),
       std::ref(num_managed_accounts), std::ref(num_unknown_accounts)));
 
+  base::UmaHistogramCounts100(
+      "Signin.IOSAccountsOnDeviceCount",
+      num_consumer_accounts + num_managed_accounts + num_unknown_accounts);
+  base::UmaHistogramCounts100("Signin.IOSAccountsOnDeviceCount.Consumer",
+                              num_consumer_accounts);
+  base::UmaHistogramCounts100("Signin.IOSAccountsOnDeviceCount.Managed",
+                              num_managed_accounts);
+  base::UmaHistogramCounts100("Signin.IOSAccountsOnDeviceCount.Unknown",
+                              num_unknown_accounts);
+
   auto account_types_summary =
       signin::AccountManagementTypeMetricsRecorder::GetAccountTypesSummary(
           num_consumer_accounts, num_managed_accounts);

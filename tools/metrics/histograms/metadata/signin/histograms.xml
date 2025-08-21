@@ -1958,11 +1958,29 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IOSAccountsOnDeviceCount{AccountType}" units="accounts"
+    expires_after="2026-01-25">
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    [iOS only] Records the number of {AccountType} accounts on the device
+    (across all profiles) at browser startup. See also
+    &quot;Signin.IOSAccountsOnDeviceManagementTypesSummary&quot;.
+  </summary>
+  <token key="AccountType">
+    <variant name="" summary="all"/>
+    <variant name=".Consumer" summary="consumer"/>
+    <variant name=".Managed" summary="managed (enterprise/EDU)"/>
+    <variant name=".Unknown" summary="unknown-type"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.IOSAccountsOnDeviceManagementTypesHadUnknownTypes"
     enum="BooleanPresent" expires_after="2026-01-25">
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
     Companion to &quot;Signin.IOSAccountsOnDeviceManagementTypesSummary&quot;.
     Records whether any unknown-type accounts were present at browser startup.
@@ -1973,7 +1991,7 @@ prefs when the profile is loaded.  -->
     enum="AccountManagementTypesSummary" expires_after="2026-01-25">
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
     [iOS only] Records the numbers of consumer and enterprise/EDU accounts on
     the device at browser startup{DeviceType}. Accounts for which the type was
