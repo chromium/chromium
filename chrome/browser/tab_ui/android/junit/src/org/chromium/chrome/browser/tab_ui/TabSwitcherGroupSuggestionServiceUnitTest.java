@@ -101,9 +101,10 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     }
 
     @Test
-    public void testDestroy_removesObserver() {
+    public void testDestroy() {
         mService.destroy();
         verify(mTabGroupModelFilterSupplier).removeObserver(any());
+        verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
     }
 
     @Test
