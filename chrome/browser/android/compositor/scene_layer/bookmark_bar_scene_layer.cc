@@ -5,9 +5,11 @@
 #include "chrome/browser/android/compositor/scene_layer/bookmark_bar_scene_layer.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "cc/input/android/offset_tag_android.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -22,10 +24,9 @@ BookmarkBarSceneLayer::BookmarkBarSceneLayer(JNIEnv* env,
     : SceneLayer(env, jobj),
       container_(cc::slim::Layer::Create()),
       snapshot_(cc::slim::UIResourceLayer::Create()) {
-  // TODO(crbug.com/430058443): Make visible once layer is ready.
-  layer()->SetIsDrawable(false);
-  container_->SetIsDrawable(false);
-  snapshot_->SetIsDrawable(false);
+  layer()->SetIsDrawable(true);
+  container_->SetIsDrawable(true);
+  snapshot_->SetIsDrawable(true);
 
   container_->SetMasksToBounds(true);
   container_->AddChild(snapshot_);
@@ -57,7 +58,8 @@ void BookmarkBarSceneLayer::UpdateBookmarkBarLayer(
     jint scene_layer_width,
     jint scene_layer_height,
     jint snapshot_offset_width,
-    jint snapshot_offset_height) {
+    jint snapshot_offset_height,
+    const base::android::JavaParamRef<jobject>& joffset_tag) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   ui::Resource* resource = resource_manager->GetResource(
@@ -66,6 +68,8 @@ void BookmarkBarSceneLayer::UpdateBookmarkBarLayer(
   if (!resource) {
     return;
   }
+
+  viz::OffsetTag offset_tag = cc::android::FromJavaOffsetTag(env, joffset_tag);
 
   // We update the bounds because this update may have been caused by window
   // size changes. We update the position because the update may have been
@@ -77,11 +81,12 @@ void BookmarkBarSceneLayer::UpdateBookmarkBarLayer(
   snapshot_->SetBounds(resource->size());
   snapshot_->SetPosition(gfx::PointF(snapshot_offset_width, 0));
   snapshot_->SetUIResourceId(resource->ui_resource()->id());
+
+  container_->SetOffsetTag(offset_tag);
 }
 
 void BookmarkBarSceneLayer::ShowBookmarkBar(JNIEnv* env) {
-  // TODO(crbug.com/430058443): Make visible once layer is ready.
-  layer()->SetIsDrawable(false);
+  layer()->SetIsDrawable(true);
 }
 
 void BookmarkBarSceneLayer::HideBookmarkBar(JNIEnv* env) {

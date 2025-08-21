@@ -27,16 +27,21 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.BookmarkBarVisibilityObserver;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
@@ -67,7 +72,10 @@ public class BookmarkBarCoordinator
     private final ViewResourceAdapter mViewResourceAdapter;
     private final ResourceManager mResourceManager;
     private final BookmarkBarSceneLayer mBookmarkBarSceneLayer;
+    private final PropertyModel mBookmarkBarSceneLayerModel;
+    private final CompositorModelChangeProcessor mChangeProcessor;
     private boolean mIsResourceRegistered;
+    private @Nullable OffsetTag mOffsetTag;
 
     // Tracks whether or not the bookmark bar should be shown at all. We keep this state in addition
     // to setting visibility directly on |mView| because we need to differentiate the Android
@@ -78,6 +86,7 @@ public class BookmarkBarCoordinator
      * Constructs the bookmark bar coordinator.
      *
      * @param activity The activity which is hosting the bookmark bar.
+     * @param layoutManager LayoutManager to add SceneLayer to and bind model to.
      * @param requestUpdate Runnable to request an update for the layout manager and cc layers.
      * @param resourceManager The resource manager for providing resources to C++ layers.
      * @param browserControlsStateProvider The state provider for browser controls.
@@ -91,6 +100,7 @@ public class BookmarkBarCoordinator
      */
     public BookmarkBarCoordinator(
             Activity activity,
+            LayoutManager layoutManager,
             Runnable requestUpdate,
             ResourceManager resourceManager,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -109,7 +119,8 @@ public class BookmarkBarCoordinator
         mViewResourceAdapter = mViewResourceFrameLayout.getResourceAdapter();
         registerResource();
 
-        mBookmarkBarSceneLayer = new BookmarkBarSceneLayer(mViewResourceFrameLayout.getId());
+        mBookmarkBarSceneLayer =
+                new BookmarkBarSceneLayer(mViewResourceFrameLayout.getId(), mResourceManager);
         mBookmarkBarSceneLayer.setVisibility(true);
 
         mHeightChangeCallback = heightChangeCallback;
@@ -191,6 +202,18 @@ public class BookmarkBarCoordinator
                         this::handleBookmarkBarChange);
         PropertyModelChangeProcessor.create(model, mView, BookmarkBarViewBinder::bind);
 
+        // All dimensions and offsets require the first layout pass to complete, so don't set here.
+        mBookmarkBarSceneLayerModel =
+                new PropertyModel.Builder(BookmarkBarSceneLayerProperties.ALL_KEYS)
+                        .with(BookmarkBarSceneLayerProperties.VISIBILITY, true)
+                        .build();
+        updateOffsetTag();
+        mChangeProcessor =
+                layoutManager.createCompositorMCP(
+                        mBookmarkBarSceneLayerModel,
+                        mBookmarkBarSceneLayer,
+                        BookmarkBarSceneLayer::bind);
+
         mTopControlsStacker = topControlsStacker;
         mTopControlsStacker.addControl(this);
     }
@@ -200,6 +223,7 @@ public class BookmarkBarCoordinator
         mTopControlsStacker.removeControl(this);
         mItemsAdapter.destroy();
         mMediator.destroy();
+        mChangeProcessor.destroy();
         mView.removeOnLayoutChangeListener(this);
         mBrowserControlsStateProvider.removeObserver(this);
         if (mIsResourceRegistered) unregisterResource();
@@ -233,6 +257,7 @@ public class BookmarkBarCoordinator
         mViewResourceAdapter.triggerBitmapCapture();
         mViewResourceAdapter.invalidate(null);
         mRequestUpdate.run();
+        mBookmarkBarSceneLayer.updateProperties(mBookmarkBarSceneLayerModel);
     }
 
     /**
@@ -341,16 +366,28 @@ public class BookmarkBarCoordinator
             int oldTop,
             int oldRight,
             int oldBottom) {
+        // This layout change listener is used on |mView|, which is the entire Bookmarks Bar. The
+        // View's width/height are thus the width/height of the entire scene layer, and its padding
+        // defines the offset of the snapshot within the SceneLayer of the tightly bound
+        // |mViewResourceFrameLayout|.
         final int oldHeight = oldBottom - oldTop;
         final int newHeight = bottom - top;
         if (newHeight != oldHeight) {
+            mBookmarkBarSceneLayerModel.set(
+                    BookmarkBarSceneLayerProperties.SCENE_LAYER_HEIGHT, newHeight);
             mHeightChangeCallback.onResult(null);
         }
         final int oldWidth = oldRight - oldLeft;
         final int newWidth = right - left;
         if (oldWidth != newWidth) {
+            mBookmarkBarSceneLayerModel.set(
+                    BookmarkBarSceneLayerProperties.SCENE_LAYER_WIDTH, newWidth);
             handleBookmarkBarChange();
         }
+        mBookmarkBarSceneLayerModel.set(
+                BookmarkBarSceneLayerProperties.SNAPSHOT_OFFSET_WIDTH, v.getPaddingLeft());
+        mBookmarkBarSceneLayerModel.set(
+                BookmarkBarSceneLayerProperties.SNAPSHOT_OFFSET_HEIGHT, v.getPaddingTop());
     }
 
     // BrowserControlsStateProvider.Observer implementation:
@@ -375,18 +412,38 @@ public class BookmarkBarCoordinator
         mMediator.onBrowserControlsChanged(
                 mBrowserControlsStateProvider.getTopControlsHeight(),
                 mBrowserControlsStateProvider.getBottomControlsHeight());
+        mMediator.setTopMargin(sceneLayerHeightOffset());
     }
 
     @Override
     public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
         // TODO(crbug.com/430058918): Replace w/ positioning construct like `BottomControlsStacker`.
-        // NOTE: Top controls height is the sum of all top browser control heights which includes
-        // that of the bookmark bar. Subtract the bookmark bar's height from the top controls height
-        // when calculating top margin in order to bottom align the bookmark bar relative to other
-        // top browser controls.
-        mMediator.setTopMargin(topControlsHeight - getTopControlHeight());
+        mMediator.setTopMargin(sceneLayerHeightOffset());
         mMediator.onBrowserControlsChanged(
                 topControlsHeight, mBrowserControlsStateProvider.getBottomControlsHeight());
+        mBookmarkBarSceneLayerModel.set(
+                BookmarkBarSceneLayerProperties.SCENE_LAYER_OFFSET_HEIGHT,
+                sceneLayerHeightOffset());
+    }
+
+    @Override
+    public void onControlsConstraintsChanged(
+            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+            BrowserControlsOffsetTagsInfo offsetTagsInfo,
+            int constraints,
+            boolean shouldUpdateOffsets) {
+        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+            mOffsetTag = offsetTagsInfo.getTopControlsOffsetTag();
+            updateOffsetTag();
+        }
+    }
+
+    @Override
+    public void onControlsPositionChanged(
+            @BrowserControlsStateProvider.ControlsPosition int controlsPosition) {
+        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+            updateOffsetTag();
+        }
     }
 
     // Private methods:
@@ -395,6 +452,23 @@ public class BookmarkBarCoordinator
         return (BookmarkBarButton)
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.bookmark_bar_button, parent, false);
+    }
+
+    private int sceneLayerHeightOffset() {
+        // Top controls height is the sum of all top browser control heights which includes that of
+        // the bookmark bar. Subtract the bookmark bar's height from the top controls height when
+        // calculating offset/topMargin in order to bottom align the bookmark bar relative to other
+        // top browser controls.
+        return mBrowserControlsStateProvider.getTopControlsHeight() - getTopControlHeight();
+    }
+
+    private void updateOffsetTag() {
+        // The Bookmarks Bar will only be present when the control container is at the top.
+        if (mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.TOP) {
+            mBookmarkBarSceneLayerModel.set(BookmarkBarSceneLayerProperties.OFFSET_TAG, mOffsetTag);
+        } else {
+            mBookmarkBarSceneLayerModel.set(BookmarkBarSceneLayerProperties.OFFSET_TAG, null);
+        }
     }
 
     // Custom animator for BookmarkBar RecyclerView:

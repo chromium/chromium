@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -80,6 +81,7 @@ public class BookmarkBarRenderTest {
     @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJniMock;
     @Mock private ResourceFactory.Natives mResourceFactoryJniMock;
 
+    @Mock private LayoutManager mLayoutManager;
     @Mock private ResourceManager mResourceManager;
     @Mock private DynamicResourceLoader mDynamicResourceLoader;
     @Mock private BrowserControlsManager mBrowserControlsManager;
@@ -115,6 +117,7 @@ public class BookmarkBarRenderTest {
                     mCoordinator =
                             new BookmarkBarCoordinator(
                                     activity,
+                                    mLayoutManager,
                                     /* requestUpdate= */ () -> {},
                                     mResourceManager,
                                     mBrowserControlsManager,

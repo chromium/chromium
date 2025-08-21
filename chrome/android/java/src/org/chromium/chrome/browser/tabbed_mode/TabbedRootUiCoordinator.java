@@ -1820,6 +1820,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarCoordinator =
                     new BookmarkBarCoordinator(
                             mActivity,
+                            mLayoutManager,
                             mLayoutManager::requestUpdate,
                             mCompositorViewHolderSupplier.get().getResourceManager(),
                             mBrowserControlsManager,

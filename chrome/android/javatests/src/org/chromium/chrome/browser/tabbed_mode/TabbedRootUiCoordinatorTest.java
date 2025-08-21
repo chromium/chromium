@@ -39,6 +39,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayer;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayerJni;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -75,11 +77,13 @@ public class TabbedRootUiCoordinatorTest {
     private TabbedRootUiCoordinator mTabbedRootUiCoordinator;
 
     @Mock private PrivacySandboxBridgeJni mPrivacySandboxBridgeJni;
+    @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJni;
     @Mock private SearchEngineChoiceService mSearchEngineChoiceService;
 
     @Before
     public void setUp() {
         PrivacySandboxBridgeJni.setInstanceForTesting(mPrivacySandboxBridgeJni);
+        BookmarkBarSceneLayerJni.setInstanceForTesting(mBookmarkBarSceneLayerJni);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

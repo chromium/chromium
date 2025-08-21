@@ -33,7 +33,8 @@ class BookmarkBarSceneLayer : public SceneLayer {
       jint scene_layer_width,
       jint scene_layer_height,
       jint snapshot_offset_width,
-      jint snapshot_offset_height);
+      jint snapshot_offset_height,
+      const base::android::JavaParamRef<jobject>& joffset_tag);
 
   void ShowBookmarkBar(JNIEnv* env);
   void HideBookmarkBar(JNIEnv* env);

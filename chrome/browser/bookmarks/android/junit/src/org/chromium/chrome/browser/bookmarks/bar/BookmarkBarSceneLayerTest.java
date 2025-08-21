@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.ui.resources.ResourceManager;
 
 /** Unit tests for {BookmarkBarSceneLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 public class BookmarkBarSceneLayerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BookmarkBarSceneLayerJni mSceneLayerJni;
+    @Mock private ResourceManager mResourceManager;
 
     private static final long NATIVE_PTR = 123L;
     private static final int RESOURCE_ID = 456;
@@ -42,7 +44,7 @@ public class BookmarkBarSceneLayerTest {
     public void setUp() {
         BookmarkBarSceneLayerJni.setInstanceForTesting(mSceneLayerJni);
         doReturn(NATIVE_PTR).when(mSceneLayerJni).init(any());
-        mSceneLayer = new BookmarkBarSceneLayer(RESOURCE_ID);
+        mSceneLayer = new BookmarkBarSceneLayer(RESOURCE_ID, mResourceManager);
         mSceneLayer.initializeNative();
     }
 

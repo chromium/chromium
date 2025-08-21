@@ -10,11 +10,14 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.List;
@@ -31,10 +34,18 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
 
     private long mNativePtr;
     private final int mResourceId;
+    private final ResourceManager mResourceManager;
     private boolean mIsVisible;
 
-    public BookmarkBarSceneLayer(int resourceId) {
+    /** A simple view binder that pushes the whole model to be updated. */
+    public static void bind(
+            PropertyModel model, BookmarkBarSceneLayer view, @Nullable PropertyKey key) {
+        view.updateProperties(model);
+    }
+
+    public BookmarkBarSceneLayer(int resourceId, ResourceManager resourceManager) {
         mResourceId = resourceId;
+        mResourceManager = resourceManager;
         initializeNative();
     }
 
@@ -55,6 +66,21 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
         } else {
             BookmarkBarSceneLayerJni.get().hideBookmarkBar(mNativePtr);
         }
+    }
+
+    /** Push all information about the scene layer / snapshot to native-side code at once. */
+    public void updateProperties(PropertyModel model) {
+        BookmarkBarSceneLayerJni.get()
+                .updateBookmarkBarLayer(
+                        mNativePtr,
+                        mResourceManager,
+                        mResourceId,
+                        model.get(BookmarkBarSceneLayerProperties.SCENE_LAYER_OFFSET_HEIGHT),
+                        model.get(BookmarkBarSceneLayerProperties.SCENE_LAYER_WIDTH),
+                        model.get(BookmarkBarSceneLayerProperties.SCENE_LAYER_HEIGHT),
+                        model.get(BookmarkBarSceneLayerProperties.SNAPSHOT_OFFSET_WIDTH),
+                        model.get(BookmarkBarSceneLayerProperties.SNAPSHOT_OFFSET_HEIGHT),
+                        model.get(BookmarkBarSceneLayerProperties.OFFSET_TAG));
     }
 
     // SceneLayer overrides:
@@ -84,10 +110,6 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
     @Override
     public @Nullable SceneOverlayLayer getUpdatedSceneOverlayTree(
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
-        // TODO(crbug.com/430058443): Stubbed. Update to use a CompositorModelChangeProcessor.
-        BookmarkBarSceneLayerJni.get()
-                .updateBookmarkBarLayer(
-                        mNativePtr, resourceManager, mResourceId, (int) yOffset, 0, 0, 0, 0);
         return this;
     }
 
@@ -142,7 +164,8 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
                 int sceneLayerWidth,
                 int sceneLayerHeight,
                 int snapshotOffsetWidth,
-                int snapshotOffsetHeight);
+                int snapshotOffsetHeight,
+                @Nullable OffsetTag offsetTag);
 
         void hideBookmarkBar(long nativeBookmarkBarSceneLayer);
 

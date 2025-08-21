@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -85,6 +86,7 @@ public class BookmarkBarCoordinatorTest {
     @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJniMock;
     @Mock private ResourceFactory.Natives mResourceFactoryJniMock;
 
+    @Mock private LayoutManager mLayoutManager;
     @Mock private Runnable mLayoutManagerRequestUpdate;
     @Mock private ResourceManager mResourceManager;
     @Mock private DynamicResourceLoader mDynamicResourceLoader;
@@ -156,6 +158,7 @@ public class BookmarkBarCoordinatorTest {
         mCoordinator =
                 new BookmarkBarCoordinator(
                         activity,
+                        mLayoutManager,
                         mLayoutManagerRequestUpdate,
                         mResourceManager,
                         mBrowserControlsManager,
