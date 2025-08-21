@@ -480,7 +480,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                     () -> {
                         // Bail out if there was a state change while we waited for the runnable to
                         // execute.
-                        if (newControlsPosition != ControlsPosition.TOP) return;
+                        if (mCurrentPosition.get() != ControlsPosition.TOP) return;
                         LayoutParams progressBarLayoutParams =
                                 (LayoutParams) mToolbarProgressBarContainer.getLayoutParams();
                         progressBarLayoutParams.setAnchorId(mControlContainer.getView().getId());
