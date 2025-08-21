@@ -15,7 +15,7 @@ from collections import defaultdict
 from typing import Collection, List, Optional, Set, Tuple
 
 from blinkpy.common.memoized import memoized
-from blinkpy.common.net.git_cl import BuildStatuses, GitCL
+from blinkpy.common.net.git_cl import BuildStatuses, CLRevisionID, GitCL
 from blinkpy.common.net.rpc import Build
 from blinkpy.common.net.web_test_results import (
     WebTestResult,
@@ -165,7 +165,10 @@ class WPTExpectationsUpdater:
                                  can_trigger_jobs=False)
         builds = [Build(builder) for builder in self._get_try_bots()]
         try:
-            build_to_status = resolver.resolve_builds(builds, self.patchset)
+            issue = self.git_cl.get_issue_number()
+            assert issue is not None
+            cl = CLRevisionID(issue, self.patchset)
+            build_to_status = resolver.resolve_builds(builds, cl)
             _log.debug('Latest try jobs: %r', build_to_status)
         except UnresolvedBuildException as error:
             raise ScriptError(

@@ -14,7 +14,12 @@ from concurrent.futures import Executor
 from typing import Collection, List, MutableMapping, Optional
 
 from blinkpy.common.memoized import memoized
-from blinkpy.common.net.git_cl import BuildStatus, BuildStatuses, GitCL
+from blinkpy.common.net.git_cl import (
+    BuildStatus,
+    BuildStatuses,
+    CLRevisionID,
+    GitCL,
+)
 from blinkpy.common.net.rpc import Build, RPCError
 from blinkpy.common.net.web_test_results import (
     IncompleteResultsReason,
@@ -68,6 +73,12 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         action='store_false',
         default=True,
         help='Do not trigger any try jobs.')
+    issue_option = optparse.make_option(
+        '--issue',
+        default=None,
+        type='int',
+        help=('CL number to fetch try results from. '
+              'Defaults to `git cl issue` for current branch.'))
     patchset_option = optparse.make_option(
         '--patchset',
         default=None,
@@ -87,6 +98,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 action='callback',
                 help=('Comma-separated-list of builders to pull new baselines '
                       'from (can also be provided multiple times).')),
+            self.issue_option,
             self.patchset_option,
             self.no_optimize_option,
             self.dry_run_option,
@@ -134,6 +146,13 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                        'positional parameters.')
             return 1
 
+        issue = options.issue or self.git_cl.get_issue_number()
+        if issue is None:
+            _log.error('No CL detected for current branch.')
+            _log.error('For Cider-G, you must specify `--issue`.')
+            return 1
+        cl = CLRevisionID(issue, options.patchset)
+
         if not self.check_ok_to_run():
             return 1
 
@@ -146,8 +165,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             can_trigger_jobs=(options.trigger_jobs and not self._dry_run))
         builds = [Build(builder) for builder in self.selected_try_bots]
         try:
-            build_statuses = build_resolver.resolve_builds(
-                builds, options.patchset)
+            build_statuses = build_resolver.resolve_builds(builds, cl)
         except RPCError as error:
             _log.error('%s', error)
             _log.error('Request payload: %s',

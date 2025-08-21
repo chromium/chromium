@@ -17,7 +17,7 @@ class MockGitCL:
                  host,
                  try_job_results={},
                  status='closed',
-                 issue_number='1234',
+                 issue_number=1234,
                  time_out=False,
                  git_error_output=None):
         """Constructs a fake GitCL with canned return values.

@@ -79,7 +79,7 @@ class BuildResolver:
 
     def resolve_builds(self,
                        builds: Collection[Build],
-                       patchset: Optional[int] = None) -> BuildStatuses:
+                       cl: CLRevisionID | None = None) -> BuildStatuses:
         """Resolve builders (maybe with build numbers) into statuses.
 
         Arguments:
@@ -90,7 +90,8 @@ class BuildResolver:
                     be triggered.
                   * For CI builders, the latest failing build.
                 Multiple builds from the same builder are allowed.
-            patchset: Patchset that try build results should be fetched from.
+            cl: Issue and patchset that try build results should be fetched
+                from.
         """
         try_builders_to_infer = set()
         for build in builds:
@@ -112,7 +113,7 @@ class BuildResolver:
         # Handle implied tryjobs first, since there are more failure modes.
         if try_builders_to_infer:
             try_build_statuses = self.fetch_or_trigger_try_jobs(
-                try_builders_to_infer, patchset)
+                try_builders_to_infer, cl)
             build_statuses.update(try_build_statuses)
             # Re-request completed try builds so that the resolver can check
             # for interrupted steps.
@@ -181,31 +182,32 @@ class BuildResolver:
         return None
 
     def fetch_or_trigger_try_jobs(
-            self,
-            builders: Collection[str],
-            patchset: Optional[int] = None,
+        self,
+        builders: Collection[str],
+        cl: CLRevisionID | None = None,
     ) -> BuildStatuses:
         """Fetch or trigger try jobs for the current CL.
 
         Arguments:
             builders: Try builder names.
-            patchset: Patchset that build results should be fetched from.
-                Defaults to the latest patchset.
+            cl: Issue and patchset that try build results should be fetched
+                from. Defaults to current branch's issue and latest patchset.
 
         Raises:
             UnresolvedBuildException: If the CL issue number is not set or no
                 try jobs are available but try jobs cannot be triggered.
         """
-        issue_number = self._git_cl.get_issue_number()
-        if not issue_number.isdigit():
-            raise UnresolvedBuildException(
-                'No issue number for current branch.')
-        cl = CLRevisionID(int(issue_number), patchset)
+        if not cl:
+            issue_number = self._git_cl.get_issue_number()
+            if issue_number is None:
+                raise UnresolvedBuildException(
+                    'No issue number for current branch.')
+            cl = CLRevisionID(issue_number)
         _log.info(f'Fetching status for {pluralize("build", len(builders))} '
                   f'from {cl}.')
-        build_statuses = self._git_cl.latest_try_jobs(issue_number,
+        build_statuses = self._git_cl.latest_try_jobs(cl.issue,
                                                       builder_names=builders,
-                                                      patchset=patchset)
+                                                      patchset=cl.patchset)
         if not build_statuses and not self._can_trigger_jobs:
             raise UnresolvedBuildException(
                 "Aborted: no try jobs and '--no-trigger-jobs' or '--dry-run' "
