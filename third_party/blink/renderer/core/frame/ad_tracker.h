@@ -202,6 +202,11 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   friend class AdTrackerSimTest;
   friend class AdTrackerTest;
 
+  struct AdScriptData {
+    AdScriptIdentifier id;
+    std::unique_ptr<AdProvenance> provenance;
+  };
+
   // Similar to the public IsAdScriptInStack method but instead of returning an
   // ancestry chain, it returns only one script (the most immediate one).
   bool IsAdScriptInStackHelper(
@@ -255,19 +260,11 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   HeapHashMap<WeakMember<ExecutionContext>, KnownAdScriptsAndProvenance>
       context_known_ad_scripts_;
 
-  // Maps the identifier of a detected ad script to its AdProvenance.
-  HashMap<AdScriptIdentifier, std::unique_ptr<AdProvenance>>
-      ad_script_provenances_;
+  // A map of all known ad script ids to their metadata.
+  HashMap<int, AdScriptData> ad_script_data_;
 
   // The number of ad-related async tasks currently running in the stack.
   int running_ad_async_tasks_ = 0;
-
-  // The known ad-related script ids.
-  // TODO(jkarlin): We don't use the debugger id in the
-  // AdScriptIdentifier for the AdTracker itself, it's just for dev-tools. See
-  // if we can remove it completely and just use script ids within the
-  // AdTracker.
-  HashMap<int, AdScriptIdentifier> ad_script_ids_;
 };
 
 template <>

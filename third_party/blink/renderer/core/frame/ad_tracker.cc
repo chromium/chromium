@@ -195,8 +195,8 @@ void AdTracker::Will(const probe::CallFunction& probe) {
     return;
   }
 
-  auto it = ad_script_ids_.find(probe.function->ScriptId());
-  if (it != ad_script_ids_.end() && !bottom_most_ad_script_.has_value()) {
+  auto it = ad_script_data_.find(probe.function->ScriptId());
+  if (it != ad_script_data_.end() && !bottom_most_ad_script_.has_value()) {
     bottom_most_ad_script_ = probe.function->ScriptId();
   }
 }
@@ -349,9 +349,9 @@ bool AdTracker::IsAdScriptInStackHelper(
   // of script ids for ad frames.
   if (bottom_most_ad_script_.has_value()) {
     if (out_ad_script) {
-      auto it = ad_script_ids_.find(bottom_most_ad_script_.value());
-      if (it != ad_script_ids_.end()) {
-        *out_ad_script = it->value;
+      auto it = ad_script_data_.find(bottom_most_ad_script_.value());
+      if (it != ad_script_data_.end()) {
+        *out_ad_script = it->value.id;
       }
     }
     return true;
@@ -362,7 +362,7 @@ bool AdTracker::IsAdScriptInStackHelper(
 
   // If we're not aware of any ad scripts at all, or any scripts in this
   // context, don't bother looking at the stack.
-  if (ad_script_ids_.empty()) {
+  if (ad_script_data_.empty()) {
     return false;
   }
   auto it = context_known_ad_scripts_.find(execution_context);
@@ -379,12 +379,12 @@ bool AdTracker::IsAdScriptInStackHelper(
     return false;
   }
 
-  auto script_it = ad_script_ids_.find(top_script_id);
-  if (script_it != ad_script_ids_.end() && out_ad_script) {
-    *out_ad_script = script_it->value;
+  auto script_it = ad_script_data_.find(top_script_id);
+  if (script_it != ad_script_data_.end() && out_ad_script) {
+    *out_ad_script = script_it->value.id;
   }
 
-  return script_it != ad_script_ids_.end();
+  return script_it != ad_script_data_.end();
 }
 
 bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
@@ -436,11 +436,6 @@ void AdTracker::OnScriptIdAvailableForKnownAdScript(
   auto it = context_known_ad_scripts_.find(execution_context);
   DCHECK(it != context_known_ad_scripts_.end());
 
-  AdScriptIdentifier current_ad_script = AdScriptIdentifier(
-      GetDebuggerIdForContext(v8_context), script_id, script_name);
-
-  ad_script_ids_.insert(script_id, current_ad_script);
-
   const HashMap<String, std::unique_ptr<AdProvenance>>&
       known_ad_scripts_and_provenance = it->value;
 
@@ -456,7 +451,11 @@ void AdTracker::OnScriptIdAvailableForKnownAdScript(
   // URL, and are intended to share the same provenance. While this approach
   // might not perfectly mirror the script loading ancestry in all complex
   // scenarios, it's considered sufficient for our tracking purposes.
-  ad_script_provenances_.insert(current_ad_script, ad_provenance->Clone());
+  ad_script_data_.insert(
+      script_id,
+      AdScriptData(AdScriptIdentifier(GetDebuggerIdForContext(v8_context),
+                                      script_id, script_name),
+                   ad_provenance->Clone()));
 }
 
 AdTracker::AdScriptAncestry AdTracker::GetAncestry(
@@ -469,18 +468,17 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(
   bool max_size_reached = false;
 
   // TODO(yaoxia): Determine if we should CHECK that that the script ID in each
-  // step is guaranteed to be present in `ad_script_provenances_`.
-  auto provenance_it = ad_script_provenances_.find(ad_script);
-  if (provenance_it == ad_script_provenances_.end()) {
+  // step is guaranteed to be present in `ad_script_data_`.
+  auto provenance_it = ad_script_data_.find(ad_script.id);
+  if (provenance_it == ad_script_data_.end()) {
     return ancestry;
   }
 
-  // The input `ad_script` may not have a name set, but anything stored in
-  // ad_script_provenances_ should, so prefer that AdScriptIdentifier.
-  ancestry.ancestry_chain.push_back(provenance_it->key);
+  ancestry.ancestry_chain.push_back(provenance_it->value.id);
 
-  while (provenance_it != ad_script_provenances_.end()) {
-    const std::unique_ptr<AdProvenance>& ad_provenance = provenance_it->value;
+  while (provenance_it != ad_script_data_.end()) {
+    const std::unique_ptr<AdProvenance>& ad_provenance =
+        provenance_it->value.provenance;
 
     bool root_reached = false;
     switch (ad_provenance->Type()) {
@@ -511,7 +509,7 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(
       break;
     }
 
-    provenance_it = ad_script_provenances_.find(ancestry.ancestry_chain.back());
+    provenance_it = ad_script_data_.find(ancestry.ancestry_chain.back().id);
   }
 
   base::UmaHistogramBoolean(
