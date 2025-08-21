@@ -219,7 +219,7 @@ Suggestion::PlusAddressPayload::~PlusAddressPayload() = default;
 
 Suggestion::AutofillAiPayload::AutofillAiPayload() = default;
 
-Suggestion::AutofillAiPayload::AutofillAiPayload(base::Uuid guid)
+Suggestion::AutofillAiPayload::AutofillAiPayload(EntityInstance::EntityId guid)
     : guid(std::move(guid)) {}
 
 Suggestion::AutofillAiPayload::AutofillAiPayload(const AutofillAiPayload&) =

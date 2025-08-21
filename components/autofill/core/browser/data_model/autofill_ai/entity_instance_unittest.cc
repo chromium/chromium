@@ -278,7 +278,6 @@ TEST(AutofillEntityInstanceTest, FrecencyOrder_SortEntitiesByFrecency) {
 
   // Set first passport as have been used once.
   EntityInstance& top_entity = entities[0];
-  base::Uuid first_top_entity_guid = top_entity.guid();
   top_entity.RecordEntityUsed(test::kJune2017);
   sort_entities();
   EXPECT_EQ(entities[0].guid(), top_entity.guid());
@@ -286,7 +285,6 @@ TEST(AutofillEntityInstanceTest, FrecencyOrder_SortEntitiesByFrecency) {
   // Now set second passport as have been used twice. Note that the second use
   // date is the same as the one for the first passport.
   top_entity = entities[1];
-  base::Uuid second_top_entity_guid = top_entity.guid();
   top_entity.RecordEntityUsed(test::kJanuary2017);
   top_entity.RecordEntityUsed(test::kJune2017);
   sort_entities();

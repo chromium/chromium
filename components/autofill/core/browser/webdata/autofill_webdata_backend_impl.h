@@ -152,7 +152,7 @@ class AutofillWebDataBackendImpl
       base::OnceCallback<void(EntityInstanceChange)> on_success,
       WebDatabase* db);
   WebDatabase::State RemoveEntityInstance(
-      base::Uuid guid,
+      EntityInstance::EntityId guid,
       base::OnceCallback<void(EntityInstanceChange)> on_success,
       WebDatabase* db);
   WebDatabase::State RemoveEntityInstancesModifiedBetween(

@@ -205,6 +205,18 @@ struct AttributeInstance::CompareByType {
 // metadata. The type is an EntityType.
 class EntityInstance final {
  public:
+  // A globally unique identifier for entities.
+  // Use `base::Uuid` whenever you can for new entities, as it would be
+  // preferred to migrate from this to `base::Uuid`, which is currently not
+  // possible unfortunately because some legacy entities still have IDs with
+  // different formats.
+  struct EntityId : public base::StrongAlias<struct EntityIdTag, std::string> {
+   public:
+    using base::StrongAlias<struct EntityIdTag, std::string>::StrongAlias;
+    explicit EntityId(const base::Uuid uuid)
+        : EntityId(uuid.AsLowercaseString()) {}
+  };
+
   // Controls whether the attributes of the entity instance can be edited by the
   // user.
   using AreAttributesReadOnly =
@@ -226,7 +238,7 @@ class EntityInstance final {
   EntityInstance(EntityType type,
                  base::flat_set<AttributeInstance,
                                 AttributeInstance::CompareByType> attributes,
-                 base::Uuid guid,
+                 EntityId guid,
                  std::string nickname,
                  base::Time date_modified,
                  size_t use_count,
@@ -276,7 +288,7 @@ class EntityInstance final {
   }
 
   // Globally unique identifier of this entity.
-  const base::Uuid& guid() const LIFETIME_BOUND { return guid_; }
+  const EntityId& guid() const LIFETIME_BOUND { return guid_; }
 
   // The nickname assigned to this instance by the user.
   const std::string& nickname() const LIFETIME_BOUND { return nickname_; }
@@ -344,7 +356,7 @@ class EntityInstance final {
   EntityType type_;
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attributes_;
-  base::Uuid guid_;
+  EntityId guid_;
   std::string nickname_;
   base::Time date_modified_;
   size_t use_count_;
@@ -359,11 +371,11 @@ std::ostream& operator<<(std::ostream& os, const EntityInstance& e);
 struct EntityInstance::CompareByGuid {
   using is_transparent = void;
 
-  bool operator()(const EntityInstance& lhs, const base::Uuid& rhs) const {
+  bool operator()(const EntityInstance& lhs, const EntityId& rhs) const {
     return lhs.guid() < rhs;
   }
 
-  bool operator()(const base::Uuid& lhs, const EntityInstance& rhs) const {
+  bool operator()(const EntityId& lhs, const EntityInstance& rhs) const {
     return lhs < rhs.guid();
   }
 

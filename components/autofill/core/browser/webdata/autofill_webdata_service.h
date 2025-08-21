@@ -108,7 +108,7 @@ class AutofillWebDataService : public WebDataServiceBase {
       EntityInstance entity,
       base::OnceCallback<void(EntityInstanceChange)> on_success);
   void RemoveEntityInstance(
-      base::Uuid guid,
+      EntityInstance::EntityId guid,
       base::OnceCallback<void(EntityInstanceChange)> on_success);
   void RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
                                             base::Time delete_end);

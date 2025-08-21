@@ -20,10 +20,6 @@
 
 class WebDatabase;
 
-namespace base {
-class Uuid;
-}
-
 namespace autofill {
 
 class AttributeInstance;
@@ -84,7 +80,7 @@ class EntityTable : public WebDatabaseTable {
 
   // Returns true if removing the entity succeeded, even if there were zero or
   // multiple matches.
-  bool RemoveEntityInstance(const base::Uuid& guid);
+  bool RemoveEntityInstance(const EntityInstance::EntityId& guid);
 
   // Removes all stored entities and their attributes that were modified in the
   // given range [`delete_begin`, `delete_end`).
@@ -126,7 +122,8 @@ class EntityTable : public WebDatabaseTable {
 
   // Loads the content of `attributes` table into memory. The 2D map returned is
   // keyed by UUID and AttributeTypeName of the loaded attributes.
-  std::map<base::Uuid, std::map<std::string, std::vector<AttributeRecord>>>
+  std::map<EntityInstance::EntityId,
+           std::map<std::string, std::vector<AttributeRecord>>>
   LoadAttributes() const;
 
   // Attempts to create an `EntityInstance` object provided information loaded
@@ -134,7 +131,7 @@ class EntityTable : public WebDatabaseTable {
   // and `std::nullopt` otherwise.
   std::optional<EntityInstance> ValidateInstance(
       std::string_view type_name,
-      base::Uuid guid,
+      EntityInstance::EntityId guid,
       std::string nickname,
       base::Time date_modified,
       int use_count,

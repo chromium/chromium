@@ -166,7 +166,7 @@ class AutofillAiManagerTest : public testing::Test {
     webdata_helper_.WaitUntilIdle();
   }
 
-  void RemoveEntityInstance(base::Uuid guid) {
+  void RemoveEntityInstance(EntityInstance::EntityId guid) {
     edm().RemoveEntityInstance(guid);
     webdata_helper_.WaitUntilIdle();
   }

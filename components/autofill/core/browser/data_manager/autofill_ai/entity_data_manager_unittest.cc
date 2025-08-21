@@ -91,7 +91,8 @@ class EntityDataManagerTest_InitiallyEmpty : public EntityDataManagerTest {
     return entity_data_manager().GetEntityInstances();
   }
 
-  base::optional_ref<const EntityInstance> GetInstance(const base::Uuid& guid) {
+  base::optional_ref<const EntityInstance> GetInstance(
+      const EntityInstance::EntityId& guid) {
     helper().WaitUntilIdle();
     return entity_data_manager().GetEntityInstance(guid);
   }
@@ -224,9 +225,9 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, GetEntityInstance) {
   ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
 
   EXPECT_THAT(entity_data_manager().GetEntityInstance(pp.guid()), Optional(pp));
-  EXPECT_EQ(
-      entity_data_manager().GetEntityInstance(base::Uuid::GenerateRandomV4()),
-      std::nullopt);
+  EXPECT_EQ(entity_data_manager().GetEntityInstance(
+                EntityInstance::EntityId(base::Uuid::GenerateRandomV4())),
+            std::nullopt);
 }
 
 }  // namespace

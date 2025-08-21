@@ -282,7 +282,7 @@ EntityInstance::EntityInstance(
     EntityType type,
     base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
         attributes,
-    base::Uuid guid,
+    EntityId guid,
     std::string nickname,
     base::Time date_modified,
     size_t use_count,
@@ -326,7 +326,7 @@ std::ostream& operator<<(std::ostream& os, const AttributeInstance& a) {
 std::ostream& operator<<(std::ostream& os, const EntityInstance& e) {
   os << "- name: " << '"' << e.type() << '"' << std::endl;
   os << "- nickname: " << '"' << e.nickname() << '"' << std::endl;
-  os << "- guid: " << '"' << e.guid().AsLowercaseString() << '"' << std::endl;
+  os << "- guid: " << '"' << e.guid() << '"' << std::endl;
   os << "- date modified: " << '"' << e.date_modified() << '"' << std::endl;
   for (const AttributeInstance& a : e.attributes()) {
     os << "- attribute " << a << std::endl;

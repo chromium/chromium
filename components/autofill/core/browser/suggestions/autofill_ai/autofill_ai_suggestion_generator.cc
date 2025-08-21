@@ -400,10 +400,12 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     return {};
   }
 
-  auto entities_used_to_build_suggestions = base::MakeFlatSet<base::Uuid>(
-      suggestions_with_metadata, {}, [](const SuggestionWithMetadata& s) {
-        return s.suggestion.GetPayload<Suggestion::AutofillAiPayload>().guid;
-      });
+  auto entities_used_to_build_suggestions =
+      base::MakeFlatSet<EntityInstance::EntityId>(
+          suggestions_with_metadata, {}, [](const SuggestionWithMetadata& s) {
+            return s.suggestion.GetPayload<Suggestion::AutofillAiPayload>()
+                .guid;
+          });
 
   // Labels need to be consistent across the whole fill group. That is, as the
   // user clicks around fields they need to see the same set of attributes as a

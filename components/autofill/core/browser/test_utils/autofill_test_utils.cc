@@ -924,7 +924,8 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
   }
   return EntityInstance(
       EntityType(EntityTypeName::kPassport), std::move(attributes),
-      base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
+      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
+      std::string(options.nickname),
       base::Time::FromTimeT(options.date_modified.ToTimeT()), /*use_count=*/0,
       /*use_date=*/base::Time::FromTimeT(0), EntityInstance::RecordType::kLocal,
       options.are_attributes_read_only);
@@ -968,7 +969,8 @@ EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
   }
   return EntityInstance(
       EntityType(EntityTypeName::kDriversLicense), std::move(attributes),
-      base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
+      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
+      std::string(options.nickname),
       base::Time::FromTimeT(options.date_modified.ToTimeT()), /*use_count=*/0,
       /*use_date=*/base::Time::FromTimeT(0),
       EntityInstance::RecordType::kLocal);
@@ -993,8 +995,9 @@ EntityInstance GetKnownTravelerNumberInstance(
   }
   return EntityInstance(
       EntityType(EntityTypeName::kKnownTravelerNumber), std::move(attributes),
-      base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
-      base::Time::FromTimeT(kJune2017.ToTimeT()), /*use_count=*/0,
+      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
+      std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
+      /*use_count=*/0,
       /*use_date=*/base::Time::FromTimeT(0),
       EntityInstance::RecordType::kLocal);
 }
@@ -1011,8 +1014,9 @@ EntityInstance GetRedressNumberEntityInstance(RedressNumberOptions options) {
 
   return EntityInstance(
       EntityType(EntityTypeName::kRedressNumber), std::move(attributes),
-      base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
-      base::Time::FromTimeT(kJune2017.ToTimeT()), /*use_count=*/0,
+      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
+      std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
+      /*use_count=*/0,
       /*use_date=*/base::Time::FromTimeT(0),
       EntityInstance::RecordType::kLocal);
 }
@@ -1065,8 +1069,9 @@ EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
   }
   return EntityInstance(
       EntityType(EntityTypeName::kVehicle), std::move(attributes),
-      base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
-      base::Time::FromTimeT(kJune2017.ToTimeT()), /*use_count=*/0,
+      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
+      std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
+      /*use_count=*/0,
       /*use_date=*/base::Time::FromTimeT(0),
       EntityInstance::RecordType::kLocal);
 }
@@ -1104,8 +1109,9 @@ EntityInstance GetNationalIdCardEntityInstance(NationalIdCardOptions options) {
   }
   return EntityInstance(
       EntityType(EntityTypeName::kNationalIdCard), std::move(attributes),
-      base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
-      base::Time::FromTimeT(kJune2017.ToTimeT()), /*use_count=*/0,
+      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
+      std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
+      /*use_count=*/0,
       /*use_date=*/base::Time::FromTimeT(0),
       EntityInstance::RecordType::kLocal);
 }

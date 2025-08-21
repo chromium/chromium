@@ -113,7 +113,8 @@ using AutofillProfileChange =
 // Identified by `EntityInstance::guid()`. The EntityInstance is present for
 // `ADD` and `UPDATE` operations but absent for `REMOVE` operations.
 using EntityInstanceChange =
-    AutofillDataModelChange<std::optional<EntityInstance>, base::Uuid>;
+    AutofillDataModelChange<std::optional<EntityInstance>,
+                            EntityInstance::EntityId>;
 
 // Identified by `CreditCard::guid()` for local cards and
 // `CreditCard::server_id()` for server cards.

@@ -491,7 +491,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddOrUpdateEntityInstance(
     ReportResult(Result::kAddOrUpdateEntityInstance_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
-  base::Uuid guid = entity.guid();
+  EntityInstance::EntityId guid = entity.guid();
   ui_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(on_success),
@@ -502,7 +502,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddOrUpdateEntityInstance(
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::RemoveEntityInstance(
-    base::Uuid guid,
+    EntityInstance::EntityId guid,
     base::OnceCallback<void(EntityInstanceChange)> on_success,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());

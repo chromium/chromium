@@ -130,7 +130,7 @@ void AutofillWebDataService::AddOrUpdateEntityInstance(
 }
 
 void AutofillWebDataService::RemoveEntityInstance(
-    base::Uuid guid,
+    EntityInstance::EntityId guid,
     base::OnceCallback<void(EntityInstanceChange)> on_success) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,

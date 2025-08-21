@@ -158,7 +158,7 @@ TEST_F(EntityTableTest, GetEntityInstancesSkipsEmptyInstances) {
       R"(UPDATE autofill_ai_attributes
          SET attribute_type = attribute_type || 'some-garbage-suffix'
          WHERE entity_guid = ?)"));
-  attributes_update.BindString(0, pp.guid().AsLowercaseString());
+  attributes_update.BindString(0, *pp.guid());
   ASSERT_TRUE(attributes_update.Run())
       << "The UPDATE failed: " << test_api(table()).db()->GetErrorMessage()
       << " (Check the table and column names in the "

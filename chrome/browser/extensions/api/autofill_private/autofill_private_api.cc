@@ -1009,11 +1009,6 @@ AutofillPrivateRemoveEntityInstanceFunction::Run() {
       autofill_private::RemoveEntityInstance::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  base::Uuid guid = base::Uuid::ParseLowercase(parameters->guid);
-  if (!guid.is_valid()) {
-    return RespondNow(Error(kErrorAutofillAiEntityInstanceNotFound));
-  }
-
   Profile* profile = Profile::FromBrowserContext(browser_context());
   EntityDataManager* entity_data_manager =
       profile ? AutofillEntityDataManagerFactory::GetForProfile(profile)
@@ -1022,7 +1017,8 @@ AutofillPrivateRemoveEntityInstanceFunction::Run() {
   if (!entity_data_manager) {
     return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
-  entity_data_manager->RemoveEntityInstance(guid);
+  entity_data_manager->RemoveEntityInstance(
+      EntityInstance::EntityId(parameters->guid));
   return RespondNow(NoArguments());
 }
 
@@ -1056,11 +1052,6 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
       autofill_private::GetEntityInstanceByGuid::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  base::Uuid guid = base::Uuid::ParseLowercase(parameters->guid);
-  if (!guid.is_valid()) {
-    return RespondNow(Error(kErrorAutofillAiEntityInstanceNotFound));
-  }
-
   Profile* profile = Profile::FromBrowserContext(browser_context());
   EntityDataManager* entity_data_manager =
       profile ? AutofillEntityDataManagerFactory::GetForProfile(profile)
@@ -1070,7 +1061,8 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
     return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
   base::optional_ref<const EntityInstance> entity_instance =
-      entity_data_manager->GetEntityInstance(guid);
+      entity_data_manager->GetEntityInstance(
+          EntityInstance::EntityId(parameters->guid));
   if (!entity_instance.has_value()) {
     return RespondNow(Error(kErrorAutofillAiEntityInstanceNotFound));
   }

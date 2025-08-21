@@ -11,7 +11,6 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
-#include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/history/core/browser/history_service.h"
@@ -58,7 +57,7 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
   void AddOrUpdateEntityInstance(EntityInstance entity);
 
   // Removes an entity if it exists in the database; otherwise it's a no-op.
-  void RemoveEntityInstance(base::Uuid guid);
+  void RemoveEntityInstance(EntityInstance::EntityId guid);
 
   // Removes all entities in the database whose EntityInstance::date_modified()
   // is in the range.
@@ -80,7 +79,7 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
 
   // Equivalent to looking up `guid` in `GetEntityInstances()`.
   base::optional_ref<const EntityInstance> GetEntityInstance(
-      const base::Uuid& guid) const LIFETIME_BOUND;
+      const EntityInstance::EntityId& guid) const LIFETIME_BOUND;
 
   // history::HistoryServiceObserver:
   void OnHistoryDeletions(history::HistoryService*,
@@ -88,7 +87,8 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
 
   // Records the date an entity was used and also increments the number of times
   // it was used.
-  void RecordEntityUsed(const base::Uuid& guid, base::Time use_date);
+  void RecordEntityUsed(const EntityInstance::EntityId& guid,
+                        base::Time use_date);
 
   // Notifies the observers that the entity instances have changed.
   void NotifyEntityInstancesChanged();
@@ -103,7 +103,7 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
   void LoadEntities();
 
   base::optional_ref<EntityInstance> GetMutableEntityInstance(
-      const base::Uuid& guid);
+      const EntityInstance::EntityId& guid);
 
   // Non-null except perhaps in TestEntityDataManager, which overrides all
   // functions that access it.

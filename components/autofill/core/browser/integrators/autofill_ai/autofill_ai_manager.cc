@@ -330,7 +330,7 @@ void AutofillAiManager::HandleSavePromptResult(
 }
 
 void AutofillAiManager::HandleUpdatePromptResult(
-    const base::Uuid& entity_uuid,
+    const EntityInstance::EntityId& entity_uuid,
     AutofillClient::EntitySaveOrUpdatePromptResult result) {
   if (!result.entity) {
     if (result.did_user_decline) {
@@ -443,9 +443,9 @@ void AutofillAiManager::AddStrikeForSaveAttempt(const GURL& url,
 }
 
 void AutofillAiManager::AddStrikeForUpdateAttempt(
-    const base::Uuid& entity_uuid) {
+    const EntityInstance::EntityId& entity_uuid) {
   if (update_strike_db_) {
-    update_strike_db_->AddStrike(entity_uuid.AsLowercaseString());
+    update_strike_db_->AddStrike(*entity_uuid);
   }
 }
 
@@ -464,9 +464,10 @@ void AutofillAiManager::ClearStrikesForSave(const GURL& url,
   }
 }
 
-void AutofillAiManager::ClearStrikesForUpdate(const base::Uuid& entity_uuid) {
+void AutofillAiManager::ClearStrikesForUpdate(
+    const EntityInstance::EntityId& entity_uuid) {
   if (update_strike_db_) {
-    update_strike_db_->ClearStrikes(entity_uuid.AsLowercaseString());
+    update_strike_db_->ClearStrikes(*entity_uuid);
   }
 }
 
@@ -493,9 +494,9 @@ bool AutofillAiManager::IsSaveBlockedByStrikeDatabase(
 }
 
 bool AutofillAiManager::IsUpdateBlockedByStrikeDatabase(
-    const base::Uuid& entity_uuid) const {
+    const EntityInstance::EntityId& entity_uuid) const {
   return !update_strike_db_ ||
-         update_strike_db_->ShouldBlockFeature(entity_uuid.AsLowercaseString());
+         update_strike_db_->ShouldBlockFeature(*entity_uuid);
 }
 
 base::WeakPtr<AutofillAiManager> AutofillAiManager::GetWeakPtr() {

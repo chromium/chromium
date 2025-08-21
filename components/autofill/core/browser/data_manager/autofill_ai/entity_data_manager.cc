@@ -79,7 +79,7 @@ void EntityDataManager::AddOrUpdateEntityInstance(EntityInstance entity) {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EntityDataManager::RemoveEntityInstance(base::Uuid guid) {
+void EntityDataManager::RemoveEntityInstance(EntityInstance::EntityId guid) {
   webdata_service_->RemoveEntityInstance(
       std::move(guid),
       base::BindOnce(
@@ -104,7 +104,7 @@ void EntityDataManager::RemoveEntityInstancesModifiedBetween(
 }
 
 base::optional_ref<const EntityInstance> EntityDataManager::GetEntityInstance(
-    const base::Uuid& guid) const {
+    const EntityInstance::EntityId& guid) const {
   auto it = entities_.find(guid);
   if (it == entities_.end()) {
     return std::nullopt;
@@ -113,7 +113,7 @@ base::optional_ref<const EntityInstance> EntityDataManager::GetEntityInstance(
 }
 
 base::optional_ref<EntityInstance> EntityDataManager::GetMutableEntityInstance(
-    const base::Uuid& guid) {
+    const EntityInstance::EntityId& guid) {
   auto it = entities_.find(guid);
   if (it == entities_.end()) {
     return std::nullopt;
@@ -129,7 +129,7 @@ void EntityDataManager::OnHistoryDeletions(
   }
 }
 
-void EntityDataManager::RecordEntityUsed(const base::Uuid& guid,
+void EntityDataManager::RecordEntityUsed(const EntityInstance::EntityId& guid,
                                          base::Time use_date) {
   base::optional_ref<EntityInstance> entity = GetMutableEntityInstance(guid);
   if (!entity) {

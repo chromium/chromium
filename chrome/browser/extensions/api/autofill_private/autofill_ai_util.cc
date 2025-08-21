@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
@@ -81,8 +80,7 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
     const EntityInstance& entity_instance = *entity_instances[i];
     autofill_private::EntityInstanceWithLabels& entity_instance_with_labels =
         output.emplace_back();
-    entity_instance_with_labels.guid =
-        entity_instance.guid().AsLowercaseString();
+    entity_instance_with_labels.guid = *entity_instance.guid();
     entity_instance_with_labels.entity_instance_label =
         base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
     entity_instance_with_labels.entity_instance_sub_label = base::UTF16ToUTF8(
@@ -235,10 +233,10 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
   }
   EntityType entity_type(entity_type_name.value());
   // Newly added entity instances need to have a guid generated for them.
-  base::Uuid guid =
+  EntityInstance::EntityId guid(
       private_api_entity_instance.guid.empty()
-          ? base::Uuid::GenerateRandomV4()
-          : base::Uuid::ParseLowercase(private_api_entity_instance.guid);
+          ? base::Uuid::GenerateRandomV4().AsLowercaseString()
+          : private_api_entity_instance.guid);
   return EntityInstance(
       std::move(entity_type), attribute_instances, std::move(guid),
       private_api_entity_instance.nickname, base::Time::Now(), /*use_count=*/0,
@@ -298,7 +296,7 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
       GetDeleteEntityTypeStringForI18n(entity_instance.type());
   private_api_entity_instance.attribute_instances =
       std::move(private_api_attribute_instances);
-  private_api_entity_instance.guid = entity_instance.guid().AsLowercaseString();
+  private_api_entity_instance.guid = *entity_instance.guid();
   private_api_entity_instance.nickname = entity_instance.nickname();
   return private_api_entity_instance;
 }

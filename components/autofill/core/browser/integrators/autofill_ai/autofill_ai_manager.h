@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/uuid.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
@@ -18,10 +17,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
-
-namespace base {
-class Uuid;
-}  // namespace base
 
 namespace autofill {
 
@@ -87,12 +82,13 @@ class AutofillAiManager {
 
   // Strike database related methods:
   void AddStrikeForSaveAttempt(const GURL& url, const EntityInstance& entity);
-  void AddStrikeForUpdateAttempt(const base::Uuid& entity_uuid);
+  void AddStrikeForUpdateAttempt(const EntityInstance::EntityId& entity_uuid);
   void ClearStrikesForSave(const GURL& url, const EntityInstance& entity);
-  void ClearStrikesForUpdate(const base::Uuid& entity_uuid);
+  void ClearStrikesForUpdate(const EntityInstance::EntityId& entity_uuid);
   bool IsSaveBlockedByStrikeDatabase(const GURL& url,
                                      const EntityInstance& entity) const;
-  bool IsUpdateBlockedByStrikeDatabase(const base::Uuid& entity_uuid) const;
+  bool IsUpdateBlockedByStrikeDatabase(
+      const EntityInstance::EntityId& entity_uuid) const;
 
   // Attempts to display an import bubble for `form` if Autofill AI is
   // interested in the form. Returns whether an import bubble will be shown.
@@ -107,7 +103,7 @@ class AutofillAiManager {
   // Updates the `EntityDataManager` and the update strike database depending on
   // the prompt `result`.
   void HandleUpdatePromptResult(
-      const base::Uuid& entity_uuid,
+      const EntityInstance::EntityId& entity_uuid,
       AutofillClient::EntitySaveOrUpdatePromptResult result);
 
   LogManager* GetCurrentLogManager();
