@@ -202,19 +202,6 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
-    public void testNavigateToFledgePage() {
-        startPrivacySandboxSettingsV4();
-        onView(withText(R.string.ad_privacy_page_fledge_link_row_label)).perform(click());
-
-        onViewWaiting(withText(R.string.settings_fledge_page_toggle_sub_label));
-        assertThat(
-                mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Fledge.Opened"));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testNavigateToFledgePageV2() {
         startPrivacySandboxSettingsV4();
         onView(withText(R.string.ad_privacy_page_fledge_link_row_label)).perform(click());

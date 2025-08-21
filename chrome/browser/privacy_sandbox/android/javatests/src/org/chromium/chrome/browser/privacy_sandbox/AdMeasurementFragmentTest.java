@@ -26,7 +26,6 @@ import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 
 import android.view.View;
 
-import androidx.annotation.StringRes;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 
@@ -40,11 +39,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -115,13 +110,6 @@ public final class AdMeasurementFragmentTest {
                                                         .settings_ad_measurement_page_toggle_label)))));
     }
 
-    private View getRootView(@StringRes int text) {
-        View[] view = {null};
-        onView(withText(text)).check((v, e) -> view[0] = v.getRootView());
-        ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
-        return view[0];
-    }
-
     private void setAdMeasurementPrefEnabled(boolean isEnabled) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -143,19 +131,6 @@ public final class AdMeasurementFragmentTest {
 
     @Test
     @SmallTest
-    @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
-    public void testRenderAdMeasurement() throws IOException {
-        setAdMeasurementPrefEnabled(true);
-        startAdMeasuremenSettings();
-        mRenderTestRule.render(
-                getRootView(R.string.settings_ad_measurement_page_toggle_sub_label),
-                "ad_measurement_page_toggle_on");
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void adMeasurementDisclaimerMetrics() throws IOException {
         setAdMeasurementPrefEnabled(true);
         startAdMeasuremenSettings();

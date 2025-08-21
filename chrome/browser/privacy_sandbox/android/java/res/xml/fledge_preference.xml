@@ -10,17 +10,17 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="fledge_toggle"
         android:title="@string/settings_fledge_page_toggle_label"
-        android:summary="@string/settings_fledge_page_toggle_sub_label" />
+        android:summary="@string/settings_site_suggested_ads_page_toggle_sub_label_v2" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="fledge_description"
-        android:summary="@string/settings_fledge_page_explanation"
+        android:summary="@string/settings_site_suggested_ads_page_explanation_v2_clank"
         app:allowDividerAbove="false" />
 
     <org.chromium.chrome.browser.privacy_sandbox.PreferenceCategoryWithClickableSummary
         android:key="fledge_heading"
         android:title="@string/settings_fledge_page_current_sites_heading"
-        android:summary="@string/settings_fledge_page_current_sites_description" />
+        android:summary="@string/settings_site_suggested_ads_current_sites_description_v2" />
 
     <PreferenceCategory
         android:key="current_fledge_sites"
@@ -48,12 +48,11 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
         android:key="fledge_page_footer"
-        android:summary="@string/settings_fledge_page_footer_new"/>
+        android:summary="@string/settings_site_suggested_ads_page_footer_v2"/>
 
     <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
         android:key="fledge_page_disclaimer"
         android:summary="@string/settings_site_suggested_ads_page_disclaimer_clank"
-        android:visibility="gone"
         app:allowDividerAbove="false"/>
 
 </PreferenceScreen>

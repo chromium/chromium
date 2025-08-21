@@ -105,23 +105,6 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                                 "</link1>",
                                 new ChromeClickableSpan(
                                         getContext(), this::onManagingAdPrivacyClicked))));
-        mTopicsPageFooterPreference.setSummary(
-                SpanApplier.applySpans(
-                        getResources().getString(R.string.settings_topics_page_footer_new),
-                        new SpanApplier.SpanInfo(
-                                "<link1>",
-                                "</link1>",
-                                new ChromeClickableSpan(
-                                        getContext(), this::onFledgeSettingsLinkClicked)),
-                        new SpanApplier.SpanInfo(
-                                "<link2>",
-                                "</link2>",
-                                new ChromeClickableSpan(getContext(), this::onCookieSettingsLink)),
-                        new SpanApplier.SpanInfo(
-                                "<link3>",
-                                "</link3>",
-                                new ChromeClickableSpan(
-                                        getContext(), this::onManagingAdPrivacyClicked))));
         maybeApplyAdTopicsContentParity();
         maybeApplyAdsApiUxEnhancements();
     }
@@ -144,10 +127,6 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     private void maybeApplyAdsApiUxEnhancements() {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
-            return;
-        }
         mTopicsPageFooterPreference.setSummary(
                 SpanApplier.applySpans(
                         getResources().getString(R.string.settings_ad_topics_page_footer_v2),
@@ -169,7 +148,6 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         }
         ClickableSpansTextMessagePreference disclaimerPreference =
                 findPreference(TOPICS_DISCLAIMER);
-        disclaimerPreference.setVisible(true);
         disclaimerPreference.setSummary(
                 SpanApplier.applySpans(
                         getResources().getString(disclaimerStringResId),

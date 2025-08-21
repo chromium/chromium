@@ -80,7 +80,8 @@ public final class TopicsFragmentTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_PRIVACY_SANDBOX)
-                    .setRevision(1)
+                    .setRevision(2)
+                    .setDescription("Launched Ads API UX Enhancements")
                     .build();
 
     @Rule
@@ -156,10 +157,7 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testRenderTopicsOff() throws IOException {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
@@ -169,10 +167,7 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testRenderTopicsEmpty() throws IOException {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
@@ -182,10 +177,7 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testRenderTopicsPopulated() throws IOException {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -217,7 +209,6 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void adTopicsDisclaimerMetrics() throws IOException {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
@@ -239,10 +230,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
-    })
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void adTopicsDisclaimerMetricsAdTopicsContentParity() throws IOException {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
@@ -265,7 +253,6 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testRenderTopicsOffV2() throws IOException {
         setTopicsPrefEnabled(false);
@@ -520,28 +507,6 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
-    public void testFooterFledgeLink() throws IOException {
-        setTopicsPrefEnabled(true);
-        mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
-        startTopicsSettings();
-        TopicsFragment fragment = mSettingsActivityTestRule.getFragment();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
-                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-                });
-        // Open a Fledge settings activity.
-        onView(withText(containsString("suggested ads"))).perform(clickOnClickableSpan(0));
-        onViewWaiting(withText(R.string.settings_fledge_page_toggle_sub_label))
-                .check(matches(isDisplayed()));
-        // Close the additional activity by navigating back.
-        pressBack();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void displaysFledgeFooterLinkV2() throws IOException {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -602,10 +567,7 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
-    })
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testRenderTopicsOffV2AdTopicsContentParity() throws IOException {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
@@ -618,22 +580,6 @@ public final class TopicsFragmentTest {
     @SmallTest
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
-    public void testRenderTopicsOffAdTopicsContentParity() throws IOException {
-        setTopicsPrefEnabled(false);
-        startTopicsSettings();
-        mRenderTestRule.render(
-                getTopicsRootViewAdTopicsContentParity(),
-                "topics_page_off_ad_topics_content_parity");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
-    })
     public void testRenderTopicsEmptyAdTopicsContentParity() throws IOException {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
@@ -645,10 +591,7 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
-    })
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testRenderTopicsPopulatedAdTopicsContentParity() throws IOException {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);

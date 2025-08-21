@@ -15,7 +15,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -68,13 +67,8 @@ public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     private void maybeApplyAdsApiUxEnhancements() {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
-            return;
-        }
         ClickableSpansTextMessagePreference disclaimerPreference =
                 findPreference(DISCLAIMER_PREFERENCE);
-        disclaimerPreference.setVisible(true);
         disclaimerPreference.setSummary(
                 SpanApplier.applySpans(
                         getResources()
