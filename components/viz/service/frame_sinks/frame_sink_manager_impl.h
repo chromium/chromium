@@ -45,6 +45,7 @@
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -114,7 +115,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Mac |task_runner| will be the resize helper task runner. May only be called
   // once.
   void BindAndSetClient(
-      mojo::PendingReceiver<mojom::FrameSinkManager> receiver,
+      mojo::PendingReceiver<mojom::FrameSinkManager> interface_receiver,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       mojo::PendingRemote<mojom::FrameSinkManagerClient> client,
       SharedImageInterfaceProvider* shared_image_interface_provider);
@@ -600,7 +601,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   //     |client_|. Used for some unit tests.
   raw_ptr<mojom::FrameSinkManagerClient, DanglingUntriaged> client_ = nullptr;
 
-  mojo::Receiver<mojom::FrameSinkManager> frame_sink_manager_receiver_{this};
+  using Receiver = mojo::Receiver<mojom::FrameSinkManager>;
+  using DirectReceiver = mojo::DirectReceiver<mojom::FrameSinkManager>;
+  std::variant<Receiver, DirectReceiver> frame_sink_manager_receiver_;
   mojo::Receiver<mojom::FrameSinksMetricsRecorder> metrics_receiver_{this};
   mojo::Receiver<mojom::FrameSinkManagerTestApi> test_api_receiver_{this};
 

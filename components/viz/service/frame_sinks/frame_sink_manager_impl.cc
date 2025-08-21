@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/input/utils.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
@@ -41,6 +42,7 @@
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace viz {
 
@@ -90,7 +92,13 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
       log_capture_pipeline_in_webrtc_(params.log_capture_pipeline_in_webrtc),
       debug_settings_(params.debug_renderer_settings),
       host_process_id_(params.host_process_id),
-      hint_session_factory_(params.hint_session_factory) {
+      hint_session_factory_(params.hint_session_factory),
+      frame_sink_manager_receiver_(std::in_place_type<Receiver>, this) {
+  if (mojo::IsDirectReceiverSupported() &&
+      features::IsVizDirectCompositorThreadIpcFrameSinkManagerEnabled()) {
+    frame_sink_manager_receiver_.emplace<DirectReceiver>(
+        mojo::DirectReceiverKey{}, this);
+  }
   surface_manager_.AddObserver(&hit_test_manager_);
   surface_manager_.AddObserver(this);
 
@@ -135,16 +143,22 @@ FrameSinkBundleImpl* FrameSinkManagerImpl::GetFrameSinkBundle(
 }
 
 void FrameSinkManagerImpl::BindAndSetClient(
-    mojo::PendingReceiver<mojom::FrameSinkManager> receiver,
+    mojo::PendingReceiver<mojom::FrameSinkManager> interface_receiver,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingRemote<mojom::FrameSinkManagerClient> client,
     SharedImageInterfaceProvider* shared_image_interface_provider) {
   DCHECK(!client_);
-  DCHECK(!frame_sink_manager_receiver_.is_bound());
   DCHECK(shared_image_interface_provider);
   shared_image_interface_provider_ = shared_image_interface_provider;
-  frame_sink_manager_receiver_.Bind(std::move(receiver),
-                                    std::move(task_runner));
+
+  std::visit(absl::Overload{[&](Receiver& receiver) {
+                              receiver.Bind(std::move(interface_receiver),
+                                            task_runner);
+                            },
+                            [&](DirectReceiver& receiver) {
+                              receiver.Bind(std::move(interface_receiver));
+                            }},
+             frame_sink_manager_receiver_);
   client_remote_.Bind(std::move(client));
   client_ = client_remote_.get();
 }
@@ -262,8 +276,11 @@ void FrameSinkManagerImpl::CreateFrameSinkBundle(
   if (base::Contains(bundle_map_, bundle_id)) {
     uint32_t client_id = bundle_id.client_id();
     uint32_t bundle_id_value = bundle_id.bundle_id();
-    frame_sink_manager_receiver_.ReportBadMessage(
-        "Duplicate FrameSinkBundle ID");
+    std::visit(
+        [](auto& receiver) {
+          receiver.ReportBadMessage("Duplicate FrameSinkBundle ID");
+        },
+        frame_sink_manager_receiver_);
     base::debug::Alias(&client_id);
     base::debug::Alias(&bundle_id_value);
     return;
@@ -283,7 +300,11 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
   TRACE_EVENT("viz", "FrameSinkManagerImpl::CreateCompositorFrameSink",
               "frame_sink_id", frame_sink_id);
   if (base::Contains(sink_map_, frame_sink_id)) {
-    frame_sink_manager_receiver_.ReportBadMessage("Duplicate FrameSinkId");
+    std::visit(
+        [](auto& receiver) {
+          receiver.ReportBadMessage("Duplicate FrameSinkId");
+        },
+        frame_sink_manager_receiver_);
     return;
   }
   if (bundle_id && !GetFrameSinkBundle(*bundle_id)) {

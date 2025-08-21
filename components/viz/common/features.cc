@@ -427,6 +427,13 @@ BASE_FEATURE(kVizDirectCompositorThreadIpcNonRoot,
              "VizDirectCompositorThreadIpcNonRoot",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables IPCs to directly target Viz's compositor thread for FrameSinkManager
+// messages and, in turn, all interfaces associated with it e.g. root compositor
+// frame sink, display private - skipping the IO thread hop.
+BASE_FEATURE(kVizDirectCompositorThreadIpcFrameSinkManager,
+             "VizDirectCompositorThreadIpcFrameSinkManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Null Hypothesis test for viz. This will be used in an meta experiment to
 // judge finch variation.
 BASE_FEATURE(kVizNullHypothesis,
@@ -475,6 +482,11 @@ bool IsDelegatedCompositingEnabled() {
 
 bool IsVizDirectCompositorThreadIpcNonRootEnabled() {
   return base::FeatureList::IsEnabled(kVizDirectCompositorThreadIpcNonRoot);
+}
+
+bool IsVizDirectCompositorThreadIpcFrameSinkManagerEnabled() {
+  return base::FeatureList::IsEnabled(
+      kVizDirectCompositorThreadIpcFrameSinkManager);
 }
 
 bool IsUsingVizFrameSubmissionForWebView() {

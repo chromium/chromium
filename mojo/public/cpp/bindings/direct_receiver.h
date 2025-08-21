@@ -39,6 +39,7 @@ class FrameSinkImpl;
 
 namespace viz {
 class CompositorFrameSinkImpl;
+class FrameSinkManagerImpl;
 }
 
 namespace mojo {
@@ -122,6 +123,7 @@ class DirectReceiverKey {
   friend class mojo::test::direct_receiver_unittest::ServiceImpl;
   friend class blink::WidgetInputHandlerImpl;
   friend class viz::CompositorFrameSinkImpl;
+  friend class viz::FrameSinkManagerImpl;
 };
 
 // DirectReceiver is a wrapper around the standard Receiver<T> type that always
@@ -159,6 +161,12 @@ class DirectReceiver {
 
   void set_disconnect_handler(base::OnceClosure handler) {
     receiver_.set_disconnect_handler(std::move(handler));
+  }
+
+  bool is_bound() const { return receiver_.is_bound(); }
+
+  void ReportBadMessage(std::string_view error) {
+    receiver_.ReportBadMessage(error);
   }
 
   // Binds this object to `receiver` to receive IPC directly on the calling

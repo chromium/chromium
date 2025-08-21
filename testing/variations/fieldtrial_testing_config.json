@@ -26442,14 +26442,20 @@
             ]
         }
     ],
-    "VizDirectCompositorThreadIpcNonRoot": [
+    "VizDirectCompositorThreadIpcAndroid": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledFSM",
+                    "enable_features": [
+                        "VizDirectCompositorThreadIpcFrameSinkManager"
+                    ]
+                },
+                {
+                    "name": "EnabledNonRoot",
                     "enable_features": [
                         "VizDirectCompositorThreadIpcNonRoot"
                     ]
@@ -26457,14 +26463,20 @@
             ]
         }
     ],
-    "VizDirectCompositorThreadIpcNonRootWindows": [
+    "VizDirectCompositorThreadIpcWindows": [
         {
             "platforms": [
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledFSM",
+                    "enable_features": [
+                        "VizDirectCompositorThreadIpcFrameSinkManager"
+                    ]
+                },
+                {
+                    "name": "EnabledNonRoot",
                     "enable_features": [
                         "VizDirectCompositorThreadIpcNonRoot"
                     ]
