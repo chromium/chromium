@@ -724,12 +724,6 @@ NavigationHistoryEntry* NavigationApi::MakeEntryFromItem(HistoryItem& item) {
 
 NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     NavigateEventDispatchParams* params) {
-  // TODO(japhet): The draft spec says to cancel any ongoing navigate event
-  // before invoking DispatchNavigateEvent(), because not all navigations will
-  // fire a navigate event, but all should abort an ongoing navigate event.
-  // The main case were that would be a problem (browser-initiated back/forward)
-  // is not implemented yet. Move this once it is implemented.
-  InformAboutCanceledNavigation(CancelNavigationReason::kNavigateEvent);
   CHECK(window_);
 
   if (HasEntriesAndEventsDisabled()) {
@@ -748,6 +742,19 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     return DispatchResult::kContinue;
   }
 
+  LocalFrame* frame = window_->GetFrame();
+  auto* script_state = ToScriptStateForMainWorld(frame);
+  ScriptState::Scope scope(script_state);
+
+  while (ongoing_navigate_event_) {
+    AbortOngoingNavigation(script_state,
+                           CancelNavigationReason::kNavigateEvent);
+  }
+  CHECK(!ongoing_api_method_tracker_);
+  if (!window_) {
+    return DispatchResult::kAbort;
+  }
+
   const String& key = params->destination_item
                           ? params->destination_item->GetNavigationApiKey()
                           : String();
@@ -763,10 +770,6 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   }
 
   PromoteUpcomingNavigationToOngoing(key);
-
-  LocalFrame* frame = window_->GetFrame();
-  auto* script_state = ToScriptStateForMainWorld(frame);
-  ScriptState::Scope scope(script_state);
 
   auto* init = NavigateEventInit::Create();
   V8NavigationType::Enum navigation_type =
@@ -957,6 +960,11 @@ bool NavigationApi::HasNonDroppedOngoingNavigation() const {
 }
 
 void NavigationApi::DidFailOngoingNavigation(ScriptValue value) {
+  if (ongoing_api_method_tracker_) {
+    ongoing_api_method_tracker_->RejectFinishedPromise(value);
+    ongoing_api_method_tracker_ = nullptr;
+  }
+
   auto* isolate = window_->GetIsolate();
   v8::Local<v8::Message> message =
       v8::Exception::CreateMessage(isolate, value.V8Value());
@@ -968,11 +976,6 @@ void NavigationApi::DidFailOngoingNavigation(ScriptValue value) {
   event->SetType(event_type_names::kNavigateerror);
   DispatchEvent(*event);
 
-  if (ongoing_api_method_tracker_) {
-    ongoing_api_method_tracker_->RejectFinishedPromise(value);
-    ongoing_api_method_tracker_ = nullptr;
-  }
-
   if (transition_) {
     transition_->RejectFinishedPromise(value);
     transition_ = nullptr;
@@ -980,12 +983,12 @@ void NavigationApi::DidFailOngoingNavigation(ScriptValue value) {
 }
 
 void NavigationApi::DidFinishOngoingNavigation() {
-  DispatchEvent(*Event::Create(event_type_names::kNavigatesuccess));
-
   if (ongoing_api_method_tracker_) {
     ongoing_api_method_tracker_->ResolveFinishedPromise();
     ongoing_api_method_tracker_ = nullptr;
   }
+
+  DispatchEvent(*Event::Create(event_type_names::kNavigatesuccess));
 
   if (transition_) {
     transition_->ResolveFinishedPromise();
