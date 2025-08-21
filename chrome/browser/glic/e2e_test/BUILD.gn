@@ -91,7 +91,10 @@ test("glic_internal_e2e_interactive_ui_tests") {
   if (checkout_glic_e2e_tests) {
     # Real internal test code is defined in this target.
     deps += [ "internal:e2e_tests" ]
-    data += [ "internal/wpr_recordings/" ]
+    data += [
+      "internal/wpr_recordings/",
+      "internal/test_data/",
+    ]
   }
 
   if (use_aura) {
