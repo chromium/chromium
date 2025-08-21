@@ -155,4 +155,8 @@ static_library("cardboard") {
   ]
 
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  # Missing includes are fixed upstream
+  # TODO(crbug.com/440184687): Remove this once a release contains the fix
+  use_libcxx_modules = false
 }

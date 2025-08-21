@@ -185,6 +185,10 @@ if (enable_openxr) {
         "log",
       ]
     }
+
+    # Missing includes are fixed upstream
+    # TODO(crbug.com/440183782): Remove this once a release contains the fix
+    use_libcxx_modules = false
   }
 
   config("config") {
