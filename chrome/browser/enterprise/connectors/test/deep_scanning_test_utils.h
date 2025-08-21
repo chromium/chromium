@@ -143,6 +143,13 @@ class EventReportValidator : public EventReportValidatorBase {
           expected_user_justifications);
 
   void ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
+      chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+          expected_dangerous_download_event,
+      chrome::cros::reporting::proto::DlpSensitiveDataEvent
+          expected_sensitive_data_event,
+      const std::set<std::string>* expected_mimetypes);
+
+  void ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       const std::string& expected_url,
       const std::string& expected_tab_url,
       const std::string& expected_source,
@@ -198,6 +205,13 @@ class EventReportValidator : public EventReportValidatorBase {
       const std::optional<std::string>& expected_content_transfer_method);
 
   void ExpectUnscannedFileEvents(
+      chrome::cros::reporting::proto::UnscannedFileEvent
+          expected_unscanned_file_event,
+      const std::vector<std::string>& expected_filenames,
+      const std::vector<std::string>& expected_sha256s,
+      const std::set<std::string>* expected_mimetypes);
+
+  void ExpectUnscannedFileEvents(
       const std::string& expected_url,
       const std::string& expected_tab_url,
       const std::string& expected_source,
@@ -215,7 +229,8 @@ class EventReportValidator : public EventReportValidatorBase {
 
   void ExpectDangerousDownloadEvent(
       chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
-          expected_dangerous_download_event);
+          expected_dangerous_download_event,
+      const std::set<std::string>* expected_mimetypes = nullptr);
 
   void ExpectDangerousDownloadEvent(
       const std::string& expected_url,
