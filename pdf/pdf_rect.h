@@ -61,7 +61,7 @@ class PdfRect {
 
   void Union(const PdfRect& rect);
 
-  friend bool operator==(const PdfRect&, const PdfRect&) = default;
+  friend constexpr bool operator==(const PdfRect&, const PdfRect&) = default;
 
   // Exposes offsetof() values for the private variables.
   static constexpr size_t offsetof_left() { return offsetof(PdfRect, left_); }

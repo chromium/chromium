@@ -35,14 +35,6 @@ RangeSet& RangeSet::operator=(const RangeSet& other) = default;
 
 RangeSet::~RangeSet() = default;
 
-bool RangeSet::operator==(const RangeSet& other) const {
-  return other.ranges_ == ranges_;
-}
-
-bool RangeSet::operator!=(const RangeSet& other) const {
-  return other.ranges_ != ranges_;
-}
-
 void RangeSet::Union(const gfx::Range& range) {
   if (range.is_empty())
     return;

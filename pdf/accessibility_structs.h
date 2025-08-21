@@ -127,8 +127,8 @@ struct AccessibilityDocInfo {
   AccessibilityDocInfo& operator=(const AccessibilityDocInfo&) = delete;
   ~AccessibilityDocInfo();
 
-  bool operator==(const AccessibilityDocInfo& other) const;
-  bool operator!=(const AccessibilityDocInfo& other) const;
+  friend constexpr bool operator==(const AccessibilityDocInfo&,
+                                   const AccessibilityDocInfo&) = default;
 
   uint32_t page_count = 0;
   bool is_tagged = false;

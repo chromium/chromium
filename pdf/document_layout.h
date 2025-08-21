@@ -43,15 +43,7 @@ class DocumentLayout final {
 
     ~Options();
 
-    friend bool operator==(const Options& lhs, const Options& rhs) {
-      return lhs.direction() == rhs.direction() &&
-             lhs.default_page_orientation() == rhs.default_page_orientation() &&
-             lhs.page_spread() == rhs.page_spread();
-    }
-
-    friend bool operator!=(const Options& lhs, const Options& rhs) {
-      return !(lhs == rhs);
-    }
+    friend constexpr bool operator==(const Options&, const Options&) = default;
 
     // Serializes layout options to a base::Value::Dict.
     base::Value::Dict ToValue() const;
