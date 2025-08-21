@@ -165,6 +165,10 @@ void GlicE2ETest::LoginTestAccountOrForceFakeSignin() {
     // Sign in to opted in test account.
     CHECK(test_account.has_value());
     sign_in_functions.TurnOnSync(*test_account, 0);
+    // The test account should be configured correctly to already have this
+    // capability, but if it doesn't, we'll just force it here, as it is
+    // necessary for glic eligibility.
+    SetModelExecutionCapability(browser()->profile(), true);
   } else {
     SigninWithPrimaryAccount(browser()->profile());
     SetModelExecutionCapability(browser()->profile(), true);
