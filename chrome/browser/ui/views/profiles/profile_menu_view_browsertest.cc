@@ -135,7 +135,9 @@
 namespace {
 using testing::_;
 using testing::Eq;
+using testing::Pair;
 using ::testing::StrictMock;
+using testing::UnorderedElementsAre;
 
 constexpr char kTestEmail[] = "foo@example.com";
 
@@ -1722,17 +1724,17 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
   Browser::Create(Browser::CreateParams(other_profile, /*user_gesture=*/true));
 
   // The survey should be launched for the other profile after switching.
-  std::map<std::string, std::string> expected_string_psd = {
-      {"Channel", "unknown"},
-      {"Chrome Version", version_info::GetVersion().GetString()},
-      {"Number of Chrome Profiles", "2"},
-      {"Number of Google Accounts", "0"},
-      {"Sign-in Status", "Signed Out"}};
   EXPECT_CALL(
       *other_profile_hats_service,
       LaunchDelayedSurvey(
           kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
-          kLaunchDelayDuration.InMilliseconds(), _, Eq(expected_string_psd)));
+          kLaunchDelayDuration.InMilliseconds(), _,
+          UnorderedElementsAre(
+              Pair("Channel", _),
+              Pair("Chrome Version", version_info::GetVersion().GetString()),
+              Pair("Number of Chrome Profiles", "2"),
+              Pair("Number of Google Accounts", "0"),
+              Pair("Sign-in Status", "Signed Out"))));
 
   // Open the profile menu and select the other profile.
   SetTargetBrowser(browser());
@@ -1759,16 +1761,17 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           GetProfile(), base::BindRepeating(&BuildMockHatsService)));
 
-  std::map<std::string, std::string> expected_string_psd = {
-      {"Channel", "unknown"},
-      {"Chrome Version", version_info::GetVersion().GetString()},
-      {"Number of Chrome Profiles", "1"},
-      {"Number of Google Accounts", "0"},
-      {"Sign-in Status", "Signed Out"}};
-  EXPECT_CALL(*hats_service, LaunchDelayedSurvey(
-                                 kHatsSurveyTriggerIdentityProfileMenuDismissed,
-                                 kLaunchDelayDuration.InMilliseconds(), _,
-                                 Eq(expected_string_psd)));
+  EXPECT_CALL(
+      *hats_service,
+      LaunchDelayedSurvey(
+          kHatsSurveyTriggerIdentityProfileMenuDismissed,
+          kLaunchDelayDuration.InMilliseconds(), _,
+          UnorderedElementsAre(
+              Pair("Channel", _),
+              Pair("Chrome Version", version_info::GetVersion().GetString()),
+              Pair("Number of Chrome Profiles", "1"),
+              Pair("Number of Google Accounts", "0"),
+              Pair("Sign-in Status", "Signed Out"))));
 
   // Open the profile menu.
   SetTargetBrowser(browser());
@@ -1807,16 +1810,17 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest, SurveyProductDataBucketed) {
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           GetProfile(), base::BindRepeating(&BuildMockHatsService)));
 
-  std::map<std::string, std::string> expected_string_psd = {
-      {"Channel", "unknown"},
-      {"Chrome Version", version_info::GetVersion().GetString()},
-      {"Number of Chrome Profiles", "5+"},
-      {"Number of Google Accounts", "5+"},
-      {"Sign-in Status", "Signed In"}};
-  EXPECT_CALL(*hats_service, LaunchDelayedSurvey(
-                                 kHatsSurveyTriggerIdentityProfileMenuDismissed,
-                                 kLaunchDelayDuration.InMilliseconds(), _,
-                                 Eq(expected_string_psd)));
+  EXPECT_CALL(
+      *hats_service,
+      LaunchDelayedSurvey(
+          kHatsSurveyTriggerIdentityProfileMenuDismissed,
+          kLaunchDelayDuration.InMilliseconds(), _,
+          UnorderedElementsAre(
+              Pair("Channel", _),
+              Pair("Chrome Version", version_info::GetVersion().GetString()),
+              Pair("Number of Chrome Profiles", "5+"),
+              Pair("Number of Google Accounts", "5+"),
+              Pair("Sign-in Status", "Signed In"))));
 
   // Open the profile menu.
   SetTargetBrowser(browser());

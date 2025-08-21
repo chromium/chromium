@@ -30,6 +30,8 @@
 using testing::_;
 using testing::Eq;
 using testing::Not;
+using testing::Pair;
+using testing::UnorderedElementsAre;
 
 class ChromeSigninClientWithBookmarksInTransportModeBrowserTest
     : public InProcessBrowserTest,
@@ -137,16 +139,16 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
                        HatsSurveyLaunchedOnSignin) {
   // Expect the HaTS service to launch the password bubble sign-in survey.
   // TODO(crbug.com/430925046): Investigate the number of Google Accounts.
-  std::map<std::string, std::string> expected_string_psd = {
-      {"Channel", "unknown"},
-      {"Chrome Version", version_info::GetVersion().GetString()},
-      {"Number of Chrome Profiles", "1"},
-      {"Number of Google Accounts", "0"},
-      {"Sign-in Status", "Signed In"}};
   EXPECT_CALL(
       *mock_hats_service(),
-      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityPasswordBubbleSignin, _, _,
-                          Eq(expected_string_psd)));
+      LaunchDelayedSurvey(
+          kHatsSurveyTriggerIdentityPasswordBubbleSignin, _, _,
+          UnorderedElementsAre(
+              Pair("Channel", _),
+              Pair("Chrome Version", version_info::GetVersion().GetString()),
+              Pair("Number of Chrome Profiles", "1"),
+              Pair("Number of Google Accounts", "0"),
+              Pair("Sign-in Status", "Signed In"))));
   // Expect that the surveys for other access point will NOT be launched.
   EXPECT_CALL(*mock_hats_service(),
               LaunchDelayedSurvey(

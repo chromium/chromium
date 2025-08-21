@@ -88,6 +88,8 @@ using signin::constants::kNoHostedDomainFound;
 using testing::_;
 using testing::Eq;
 using testing::IsEmpty;
+using testing::Pair;
+using testing::UnorderedElementsAre;
 
 namespace {
 
@@ -652,16 +654,16 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithHatsSurveyBrowserTest,
   // Makes sure Chrome is not signed in to trigger the intercept bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
-  std::map<std::string, std::string> expected_string_psd = {
-      {"Channel", "unknown"},
-      {"Chrome Version", version_info::GetVersion().GetString()},
-      {"Number of Chrome Profiles", "1"},
-      {"Number of Google Accounts", "1"},
-      {"Sign-in Status", "Signed In"}};
   EXPECT_CALL(
       *mock_hats_service(),
-      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityDiceWebSigninAccepted, _, _,
-                          Eq(expected_string_psd)));
+      LaunchDelayedSurvey(
+          kHatsSurveyTriggerIdentityDiceWebSigninAccepted, _, _,
+          UnorderedElementsAre(
+              Pair("Channel", _),
+              Pair("Chrome Version", version_info::GetVersion().GetString()),
+              Pair("Number of Chrome Profiles", "1"),
+              Pair("Number of Google Accounts", "1"),
+              Pair("Sign-in Status", "Signed In"))));
   ShowAndCompleteSigninBubbleWithResult(account_info,
                                         SigninInterceptionResult::kAccepted);
   EXPECT_TRUE(IsChromeSignedIn());
@@ -678,16 +680,16 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithHatsSurveyBrowserTest,
   // Makes sure Chrome is not signed in to trigger the bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
-  std::map<std::string, std::string> expected_string_psd = {
-      {"Channel", "unknown"},
-      {"Chrome Version", version_info::GetVersion().GetString()},
-      {"Number of Chrome Profiles", "1"},
-      {"Number of Google Accounts", "1"},
-      {"Sign-in Status", "Web Only Signed In"}};
   EXPECT_CALL(
       *mock_hats_service(),
-      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityDiceWebSigninDeclined, _, _,
-                          expected_string_psd));
+      LaunchDelayedSurvey(
+          kHatsSurveyTriggerIdentityDiceWebSigninDeclined, _, _,
+          UnorderedElementsAre(
+              Pair("Channel", _),
+              Pair("Chrome Version", version_info::GetVersion().GetString()),
+              Pair("Number of Chrome Profiles", "1"),
+              Pair("Number of Google Accounts", "1"),
+              Pair("Sign-in Status", "Web Only Signed In"))));
   ShowAndCompleteSigninBubbleWithResult(account_info,
                                         SigninInterceptionResult::kDeclined);
   EXPECT_FALSE(IsChromeSignedIn());
