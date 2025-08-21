@@ -2378,7 +2378,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private void maybeRecordExternalAppClickInfo(
             @IntentHandler.ExternalAppId int externalId, Intent intent) {
         if (externalId != ExternalAppId.PIXEL_LAUNCHER
-                || externalId != ExternalAppId.SAMSUNG_LAUNCHER) {
+                && externalId != ExternalAppId.SAMSUNG_LAUNCHER) {
             return;
         }
 
