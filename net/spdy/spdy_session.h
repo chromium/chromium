@@ -351,10 +351,7 @@ class NET_EXPORT SpdySession
   ~SpdySession() override;
 
   const HostPortPair& host_port_pair() const {
-    return spdy_session_key_.host_port_proxy_pair().first;
-  }
-  const HostPortProxyPair& host_port_proxy_pair() const {
-    return spdy_session_key_.host_port_proxy_pair();
+    return spdy_session_key_.host_port_pair();
   }
   const SpdySessionKey& spdy_session_key() const { return spdy_session_key_; }
 
