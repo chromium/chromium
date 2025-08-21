@@ -224,6 +224,14 @@ struct UserProfileInfo {
   bool is_managed;
 };
 
+// Information about the active browser window.
+struct ActiveBrowserInfo {
+  // The unique ID of the active browser window.
+  int32 window_id;
+  // Whether the active browser window is using the current user profile.
+  bool using_this_profile;
+};
+
 // The result of `WebClientCreated()`. Contains information that needs to be
 // available before the web client is initialized.
 struct WebClientInitialState {
@@ -242,6 +250,8 @@ struct WebClientInitialState {
   bool panel_is_active;
   bool browser_is_open;
   bool browser_is_active;
+  // The active browser window, if there is one.
+  ActiveBrowserInfo? active_browser_info;
   // Reflects the enabling state of always-detached mode.
   bool always_detached_mode;
   bool enable_zero_state_suggestions;
@@ -931,6 +941,9 @@ interface WebClient {
   // of visibility and focus). Some activity, such as responsiveness checks,
   // may be paused or resumed accordingly.
   NotifyBrowserIsActiveChanged(bool browser_active);
+
+  // The active browser has changed.
+  NotifyActiveBrowserChanged(ActiveBrowserInfo? active_browser_info);
 
   // Notify that the closed captioning setting has changed.
   NotifyClosedCaptioningSettingChanged(bool enabled);

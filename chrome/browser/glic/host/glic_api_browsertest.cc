@@ -708,6 +708,18 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testIsBrowserOpen) {
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testActiveBrowser) {
+  browser_activator().SetMode(BrowserActivator::Mode::kFirst);
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  ExecuteJsTest();
+
+  // Open and activate a new incognito browser.
+  browser_activator().SetActive(CreateIncognitoBrowser());
+  ContinueJsTest();
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testEnableDragResize) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));

@@ -266,7 +266,7 @@ class TestRunner implements TestStepper {
   // If `run()` or `stepComplete()` returns 'next-step', this function is called
   // to continue running the test.
   stepComplete(payload: any): Promise<TestResult> {
-    console.info(`Continue test${this.testName}`);
+    console.info(`Continue ${this.testName}`);
     if (payload !== null) {
       this.fixture!.testParams = payload;
     }

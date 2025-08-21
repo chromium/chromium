@@ -121,6 +121,10 @@ class GlicSharingManagerImpl : public GlicSharingManager {
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer);
 
+  GlicFocusedBrowserManager& focused_browser_manager() {
+    return focused_browser_manager_;
+  }
+
  private:
   void GetContextFromTabImpl(
       tabs::TabInterface* tab,

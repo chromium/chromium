@@ -54,17 +54,27 @@ GlicFocusedBrowserManager::~GlicFocusedBrowserManager() {
 }
 
 BrowserWindowInterface* GlicFocusedBrowserManager::GetFocusedBrowser() const {
-  return focused_browser_state_.focused_browser.get();
+  return browser_state_.focused_state.focused_browser.get();
 }
 
 BrowserWindowInterface* GlicFocusedBrowserManager::GetCandidateBrowser() const {
-  return focused_browser_state_.candidate_browser.get();
+  return browser_state_.focused_state.candidate_browser.get();
+}
+
+BrowserWindowInterface* GlicFocusedBrowserManager::GetActiveBrowser() const {
+  return browser_state_.active_browser.get();
 }
 
 base::CallbackListSubscription
 GlicFocusedBrowserManager::AddFocusedBrowserChangedCallback(
     FocusedBrowserChangedCallback callback) {
   return focused_browser_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+GlicFocusedBrowserManager::AddActiveBrowserChangedCallback(
+    base::RepeatingCallback<void(BrowserWindowInterface*)> callback) {
+  return active_browser_callback_list_.Add(std::move(callback));
 }
 
 void GlicFocusedBrowserManager::OnBrowserAdded(Browser* browser) {
@@ -148,13 +158,26 @@ void GlicFocusedBrowserManager::MaybeUpdateFocusedBrowser(bool debounce) {
 }
 
 void GlicFocusedBrowserManager::PerformMaybeUpdateFocusedBrowser() {
-  FocusedBrowserState new_focused_browser_state = ComputeFocusedBrowserState();
-  if (!focused_browser_state_.IsSame(new_focused_browser_state)) {
-    focused_browser_state_ = new_focused_browser_state;
-    focused_browser_callback_list_.Notify(
-        focused_browser_state_.candidate_browser.get(),
-        focused_browser_state_.focused_browser.get());
+  BrowserState old_state = browser_state_;
+  browser_state_ = ComputeBrowserState();
+  if (!IsWeakPtrSame(old_state.active_browser, browser_state_.active_browser)) {
+    active_browser_callback_list_.Notify(browser_state_.active_browser.get());
   }
+  if (!old_state.focused_state.IsSame(browser_state_.focused_state)) {
+    focused_browser_callback_list_.Notify(
+        browser_state_.focused_state.candidate_browser.get(),
+        browser_state_.focused_state.focused_browser.get());
+  }
+}
+
+GlicFocusedBrowserManager::BrowserState
+GlicFocusedBrowserManager::ComputeBrowserState() {
+  BrowserState browser_state;
+  browser_state.focused_state = ComputeFocusedBrowserState();
+  BrowserWindowInterface* active_browser = ComputeActiveBrowser();
+  browser_state.active_browser =
+      active_browser ? active_browser->GetWeakPtr() : nullptr;
+  return browser_state;
 }
 
 GlicFocusedBrowserManager::FocusedBrowserState
@@ -172,12 +195,6 @@ GlicFocusedBrowserManager::ComputeFocusedBrowserState() {
 }
 
 BrowserWindowInterface* GlicFocusedBrowserManager::ComputeBrowserCandidate() {
-#if BUILDFLAG(IS_MAC)
-  if (!ui::IsActiveApplication()) {
-    return nullptr;
-  }
-#endif
-
   if (window_controller_->IsAttached()) {
     // When attached, we only allow focus if attached window is active.
     Browser* const attached_browser = window_controller_->attached_browser();
@@ -190,17 +207,30 @@ BrowserWindowInterface* GlicFocusedBrowserManager::ComputeBrowserCandidate() {
     return nullptr;
   }
 
-  Browser* const active_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* active_browser = ComputeActiveBrowser();
   if (!active_browser || !IsBrowserValidForSharingInProfile(
                              active_browser, window_controller_->profile())) {
     return nullptr;
   }
 
-  if (window_controller_->IsActive() || active_browser->IsActive()) {
-    return active_browser;
-  }
+  return active_browser;
+}
 
-  return nullptr;
+BrowserWindowInterface* GlicFocusedBrowserManager::ComputeActiveBrowser() {
+#if BUILDFLAG(IS_MAC)
+  if (!ui::IsActiveApplication()) {
+    return nullptr;
+  }
+#endif
+
+  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  if (!active_browser) {
+    return nullptr;
+  }
+  if (!window_controller_->IsActive() && !active_browser->IsActive()) {
+    return nullptr;
+  }
+  return active_browser;
 }
 
 bool GlicFocusedBrowserManager::IsBrowserStateValid(
@@ -224,5 +254,13 @@ bool GlicFocusedBrowserManager::FocusedBrowserState::IsSame(
   return IsWeakPtrSame(candidate_browser, other.candidate_browser) &&
          IsWeakPtrSame(focused_browser, other.focused_browser);
 }
+
+GlicFocusedBrowserManager::BrowserState::BrowserState() = default;
+GlicFocusedBrowserManager::BrowserState::~BrowserState() = default;
+GlicFocusedBrowserManager::BrowserState::BrowserState(const BrowserState& src) =
+    default;
+GlicFocusedBrowserManager::BrowserState&
+GlicFocusedBrowserManager::BrowserState::operator=(const BrowserState& src) =
+    default;
 
 }  // namespace glic

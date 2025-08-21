@@ -401,6 +401,15 @@ export declare interface GlicBrowserHost {
   isBrowserOpen?(): ObservableValue<boolean>;
 
   /**
+   * Provides information about the currently active browser window. Emits
+   * undefined if there is no active browser window.
+   *
+   * A browser window is considered active if it is the current active window,
+   * or if the panel is active and it is the last browser window that had focus.
+   */
+  activeBrowser?(): ObservableValue<ActiveBrowserInfo|undefined>;
+
+  /**
    * Returns the observable state of the currently focused tab. Updates are sent
    * whenever:
    * - The user switches active tabs, which causes a change in `tabId`.
@@ -1715,6 +1724,14 @@ export declare interface ZeroStateSuggestions {
 export declare interface SuggestionContent {
   /** The suggestion text. Always provided. */
   suggestion: string;
+}
+
+/** Information about the active browser window. */
+export declare interface ActiveBrowserInfo {
+  /** The unique ID of the active browser window. */
+  windowId: string;
+  /** Whether the active browser window is using the current user profile. */
+  usingThisProfile: boolean;
 }
 
 /** Describes the capability of the glic host. */

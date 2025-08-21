@@ -37,6 +37,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/host/auth_controller.h"
+#include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -117,6 +118,19 @@ mojom::GetContextResultPtr LogErrorAndUnwrapResult(
     return mojom::GetContextResult::NewErrorReason(result.error().message);
   }
   return std::move(result.value());
+}
+
+glic::mojom::ActiveBrowserInfoPtr CreateActiveBrowserInfo(
+    Profile* profile,
+    BrowserWindowInterface* browser) {
+  if (!browser) {
+    return nullptr;
+  }
+  glic::mojom::ActiveBrowserInfoPtr active_browser_info =
+      glic::mojom::ActiveBrowserInfo::New();
+  active_browser_info->window_id = GetWindowId(*browser);
+  active_browser_info->using_this_profile = browser->GetProfile() == profile;
+  return active_browser_info;
 }
 
 // Monitors the panel state and the browser widget state. Emits an event any
@@ -561,6 +575,12 @@ class GlicWebClientHandler
             base::BindRepeating(&GlicWebClientHandler::OnFocusedBrowserChanged,
                                 base::Unretained(this)));
 
+    active_browser_changed_subscription_ =
+        glic_sharing_manager_->focused_browser_manager()
+            .AddActiveBrowserChangedCallback(base::BindRepeating(
+                &GlicWebClientHandler::OnActiveBrowserChanged,
+                base::Unretained(this)));
+
     browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
 
     system_permission_settings_observation_ =
@@ -614,6 +634,10 @@ class GlicWebClientHandler
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
     browser_active_ = glic_sharing_manager_->GetFocusedBrowser();
     state->browser_is_active = browser_active_;
+
+    state->active_browser_info = CreateActiveBrowserInfo(
+        profile_,
+        glic_sharing_manager_->focused_browser_manager().GetActiveBrowser());
 
     state->always_detached_mode = GlicWindowController::AlwaysDetached();
 
@@ -1454,6 +1478,11 @@ class GlicWebClientHandler
     web_client_->NotifyBrowserIsActiveChanged(is_browser_active);
   }
 
+  void OnActiveBrowserChanged(BrowserWindowInterface* browser_interface) {
+    web_client_->NotifyActiveBrowserChanged(
+        CreateActiveBrowserInfo(profile_, browser_interface));
+  }
+
   bool ShouldDoApiActivationGating() const {
     return base::FeatureList::IsEnabled(features::kGlicApiActivationGating) &&
            !active_state_calculator_.IsActive();
@@ -1507,6 +1536,7 @@ class GlicWebClientHandler
   base::CallbackListSubscription pinned_tab_data_changed_subscription_;
   base::CallbackListSubscription focus_data_changed_subscription_;
   base::CallbackListSubscription focused_browser_changed_subscription_;
+  base::CallbackListSubscription active_browser_changed_subscription_;
   base::CallbackListSubscription actor_task_state_changed_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;

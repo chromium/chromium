@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActiveBrowserInfo, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js';
 
@@ -211,6 +211,12 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
       this.host.pageMetadataObservers.delete(payload.tabId);
     }
   }
+
+  glicWebClientNotifyActiveBrowserChanged(payload: {
+    activeBrowserInfo?: ActiveBrowserInfo,
+  }): void {
+    this.host.activeBrowserInfo.assignAndSignal(payload.activeBrowserInfo);
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -223,6 +229,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private panelState = ObservableValueImpl.withNoValue<PanelState>();
   canAttachPanelValue = ObservableValueImpl.withNoValue<boolean>();
   private focusedTabStateV2 = ObservableValueImpl.withNoValue<FocusedTabData>();
+  activeBrowserInfo =
+      ObservableValueImpl.withNoValue<ActiveBrowserInfo|undefined>();
   private permissionStateMicrophone =
       ObservableValueImpl.withNoValue<boolean>();
   private permissionStateLocation = ObservableValueImpl.withNoValue<boolean>();
@@ -307,6 +315,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.osHotkeyState.assignAndSignal({hotkey: state.hotkey});
     this.closedCaptioningState.assignAndSignal(
         state.closedCaptioningSettingEnabled);
+    this.activeBrowserInfo.assignAndSignal(state.activeBrowserInfo);
     for (const capability of state.hostCapabilities) {
       this.hostCapabilities.add(capability);
     }
@@ -563,6 +572,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   isBrowserOpen(): ObservableValue<boolean> {
     return this.isBrowserOpenValue;
+  }
+
+  activeBrowser(): ObservableValue<ActiveBrowserInfo|undefined> {
+    return this.activeBrowserInfo;
   }
 
   getFocusedTabStateV2(): ObservableValueImpl<FocusedTabData> {

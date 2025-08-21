@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
@@ -117,6 +118,10 @@ int GetTabId(content::WebContents* web_contents) {
   } else {
     return tabs::TabHandle::Null().raw_value();
   }
+}
+
+int GetWindowId(BrowserWindowInterface& browser) {
+  return browser.GetSessionID().id();
 }
 
 const GURL& GetTabUrl(content::WebContents* web_contents) {

@@ -18,13 +18,10 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata.mojom-webui.js';
 import type {BrowserProxy} from '../browser_proxy.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
-import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskState as ActorTaskStateMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabContext as TabContextMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientHandlerInterface, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../glic.mojom-webui.js';
-import {CurrentView as CurrentViewMojo, PinCandidatesObserverReceiver, SettingsPageField as SettingsPageFieldMojo, WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
-import type {HostCapability as HostCapabilityMojo} from '../glic.mojom-webui.js';
-import {ResponseStopCause as ResponseStopCauseMojo} from '../glic.mojom-webui.js';
-import type {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, DraggableArea, GetPinCandidatesOptions, HostCapability, Journal, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, ViewChangedNotification, ViewChangeRequest, WebPageData, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActiveBrowserInfo as ActiveBrowserInfoMojo, ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskState as ActorTaskStateMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabContext as TabContextMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientHandlerInterface, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../glic.mojom-webui.js';
+import {CurrentView as CurrentViewMojo, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
+import type {ActiveBrowserInfo, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, DraggableArea, GetPinCandidatesOptions, HostCapability, Journal, OnResponseStoppedDetails, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, ViewChangedNotification, ViewChangeRequest, WebPageData, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, ClientView, CreateTaskErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason} from '../glic_api/glic_api.js';
-import type {OnResponseStoppedDetails} from '../glic_api/glic_api.js';
 import {ObservableValue} from '../observable.js';
 import type {ObservableValueReadOnly} from '../observable.js';
 import {OneShotTimer} from '../timer.js';
@@ -249,6 +246,13 @@ class WebClientImpl implements WebClientInterface {
         {taskId, state: clientState});
   }
 
+  notifyActiveBrowserChanged(activeBrowserInfo: ActiveBrowserInfoMojo|null):
+      void {
+    this.sender.requestNoResponse('glicWebClientNotifyActiveBrowserChanged', {
+      activeBrowserInfo: activeBrowserInfoToClient(activeBrowserInfo),
+    });
+  }
+
   requestViewChange(requestMojo: ViewChangeRequestMojo): void {
     let request: ViewChangeRequest|undefined;
     if (requestMojo.details.actuation) {
@@ -370,6 +374,8 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         },
         loggingEnabled: loadTimeData.getBoolean('loggingEnabled'),
         hostCapabilities: hostCapabilitiesToClient(hostCapabilities),
+        activeBrowserInfo:
+            activeBrowserInfoToClient(initialState.activeBrowserInfo),
       }),
     };
   }
@@ -1594,6 +1600,16 @@ function tabContextOptionsFromClient(options: TabContextOptions):
         0 :
         options.annotatedPageContentMode,
   };
+}
+
+function activeBrowserInfoToClient(info: ActiveBrowserInfoMojo|null):
+    ActiveBrowserInfo|undefined {
+  if (!info) {
+    return undefined;
+  }
+  return replaceProperties(info, {
+    windowId: windowIdToClient(info.windowId),
+  });
 }
 
 // Taken from mojo_type_utils.ts
