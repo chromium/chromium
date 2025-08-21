@@ -4,7 +4,7 @@
 
 #include <stddef.h>
 
-#include "chrome/browser/ui/views/accelerator_table.h"
+#include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/accelerators/accelerator.h"
 

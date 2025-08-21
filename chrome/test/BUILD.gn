@@ -7596,6 +7596,7 @@ test("unit_tests") {
       "../browser/notifications/mac/stub_notification_dispatcher_mac.h",
       "../browser/policy/browser_dm_token_storage_mac_unittest.cc",
       "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_unittest.mm",
+      "../browser/ui/accelerator_table_unittest_mac.mm",
       "../browser/ui/cocoa/applescript/apple_event_util_unittest.mm",
       "../browser/ui/cocoa/bookmarks/bookmark_menu_bridge_unittest.mm",
       "../browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller_unittest.mm",
@@ -8124,6 +8125,7 @@ test("unit_tests") {
       "../browser/themes/theme_service_unittest.cc",
       "../browser/themes/theme_syncable_service_unittest.cc",
       "../browser/translate/translate_manager_render_view_host_unittest.cc",
+      "../browser/ui/accelerator_table_unittest.cc",
       "../browser/ui/browser_close_unittest.cc",
       "../browser/ui/browser_command_controller_unittest.cc",
       "../browser/ui/browser_finder_unittest.cc",
@@ -10391,7 +10393,6 @@ test("unit_tests") {
       "../browser/enterprise/data_protection/data_protection_page_user_data_unittest.cc",
       "../browser/enterprise/watermark/watermark_style_policy_handler_unittest.cc",
       "../browser/enterprise/watermark/watermark_view_unittest.cc",
-      "../browser/ui/views/accelerator_table_unittest.cc",
       "../browser/ui/views/apps/app_info_dialog/app_info_dialog_views_unittest.cc",
       "../browser/ui/views/apps/app_info_dialog/app_info_permissions_panel_unittest.cc",
       "../browser/ui/views/autofill/popup/custom_cursor_suppressor_unittest.cc",
@@ -10569,7 +10570,6 @@ test("unit_tests") {
     if (is_mac) {
       sources += [
         "../browser/media_galleries/mac/mtp_device_delegate_impl_mac_unittest.mm",
-        "../browser/ui/views/accelerator_table_unittest_mac.mm",
         "../browser/ui/views/desktop_capture/desktop_media_permission_pane_view_mac_unittest.mm",
         "../browser/ui/views/desktop_capture/screen_capture_permission_checker_mac_unittest.mm",
         "../browser/ui/views/frame/browser_non_client_frame_view_mac_unittest.mm",

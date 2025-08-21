@@ -41,7 +41,6 @@ specific_include_rules = {
   ],
   ".*test.*": [
    "!ash",
-   "+ash/accelerators/accelerator_table.h",
    "+ash/constants",
    "+ash/public",
    "+ash/system/mahi/fake_mahi_manager.h",

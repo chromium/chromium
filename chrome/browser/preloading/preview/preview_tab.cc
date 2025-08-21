@@ -209,7 +209,7 @@ void PreviewTab::Activate(base::WeakPtr<content::WebContents> web_contents) {
   web_contents->ActivatePreviewPage();
 }
 
-// Copied from chrome/browser/ui/views/accelerator_table.h
+// Copied from chrome/browser/ui/accelerator_table.h
 struct AcceleratorMapping {
   ui::KeyboardCode keycode;
   int modifiers;

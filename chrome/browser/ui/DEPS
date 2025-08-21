@@ -38,6 +38,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  r"accelerator_table_unittest\.cc": [
+    "+ash/accelerators/accelerator_table.h",
+    "+ash/public/cpp/accelerators.h",
+  ],
   r"application_launch_browsertest\.cc": [
     "+ash/shell.h",
   ],

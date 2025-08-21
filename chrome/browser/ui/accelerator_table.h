@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_ACCELERATOR_TABLE_H_
-#define CHROME_BROWSER_UI_VIEWS_ACCELERATOR_TABLE_H_
+#ifndef CHROME_BROWSER_UI_ACCELERATOR_TABLE_H_
+#define CHROME_BROWSER_UI_ACCELERATOR_TABLE_H_
 
 #include <vector>
 
@@ -52,4 +52,4 @@ bool GetStandardAcceleratorForCommandId(int command_id,
 // repeatedly while its accelerator keys are held down.
 bool IsCommandRepeatable(int command_id);
 
-#endif  // CHROME_BROWSER_UI_VIEWS_ACCELERATOR_TABLE_H_
+#endif  // CHROME_BROWSER_UI_ACCELERATOR_TABLE_H_

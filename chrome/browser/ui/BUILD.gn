@@ -987,6 +987,8 @@ static_library("ui") {
   } else {
     # !is_android
     sources += [
+      "accelerator_table.cc",
+      "accelerator_table.h",
       "breadcrumb_manager_browser_agent.cc",
       "breadcrumb_manager_browser_agent.h",
       "browser.cc",
@@ -3365,8 +3367,6 @@ static_library("ui") {
       "bubble_anchor_util.h",
       "toolbar_controller_util.cc",
       "toolbar_controller_util.h",
-      "views/accelerator_table.cc",
-      "views/accelerator_table.h",
       "views/accessibility/caption_bubble_context_views.cc",
       "views/accessibility/caption_bubble_context_views.h",
       "views/accessibility/caption_bubble_session_observer_views.cc",

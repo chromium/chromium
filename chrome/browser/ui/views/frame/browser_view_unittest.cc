@@ -415,7 +415,7 @@ TEST_F(BrowserViewTest, FindBrowserWindowWithWebContentsTabSwitch) {
 #if !BUILDFLAG(IS_MAC)
 // Test that repeated accelerators are processed or ignored depending on the
 // commands that they refer to. The behavior for different commands is dictated
-// by IsCommandRepeatable() in chrome/browser/ui/views/accelerator_table.h.
+// by IsCommandRepeatable() in chrome/browser/ui/accelerator_table.h.
 TEST_F(BrowserViewTest, DISABLED_RepeatedAccelerators) {
   // A non-repeated Ctrl-L accelerator should be processed.
   const ui::Accelerator kLocationAccel(ui::VKEY_L, ui::EF_PLATFORM_ACCELERATOR);

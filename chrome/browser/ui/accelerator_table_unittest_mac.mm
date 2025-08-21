@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/global_keyboard_shortcuts_mac.h"
-#include "chrome/browser/ui/views/accelerator_table.h"
+#include "chrome/browser/ui/accelerator_table.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
