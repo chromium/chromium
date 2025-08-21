@@ -581,4 +581,35 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act & Assert.
         assertFalse(chromeAndroidTask.isMaximized());
     }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
+    public void setBounds_setsNewBounds() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
+        var newBounds = new Rect(10, 20, 800, 600);
+
+        // Act.
+        chromeAndroidTask.setBounds(newBounds);
+
+        // Assert.
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        var bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mockActivity).startActivity(intentCaptor.capture(), bundleCaptor.capture());
+
+        var capturedIntent = intentCaptor.getValue();
+        assertEquals(
+                Intent.FLAG_ACTIVITY_CLEAR_TOP,
+                capturedIntent.getFlags() & Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        var capturedBundle = bundleCaptor.getValue();
+        Rect capturedBounds = capturedBundle.getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
+        assertEquals(newBounds, capturedBounds);
+    }
 }

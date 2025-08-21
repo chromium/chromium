@@ -126,7 +126,9 @@ void AndroidBaseWindow::Restore() {
 }
 
 void AndroidBaseWindow::SetBounds(const gfx::Rect& bounds) {
-  NOTREACHED();
+  Java_AndroidBaseWindow_setBounds(AttachCurrentThread(),
+                                   java_android_base_window_, bounds.x(),
+                                   bounds.y(), bounds.width(), bounds.height());
 }
 
 void AndroidBaseWindow::FlashFrame(bool flash) {

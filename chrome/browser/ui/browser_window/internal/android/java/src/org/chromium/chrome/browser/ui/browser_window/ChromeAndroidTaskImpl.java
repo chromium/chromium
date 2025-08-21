@@ -353,15 +353,7 @@ final class ChromeAndroidTaskImpl
             // No maximize action in non desktop window mode.
             if (!isInDesktopWindowing(activity.getWindowManager())) return;
             Rect maximizedBounds = getMaximizedBounds(activity.getWindowManager());
-            ActivityOptions options = ActivityOptions.makeBasic();
-            options.setLaunchBounds(maximizedBounds);
-            Intent intent = new Intent(activity, activity.getClass());
-            // TODO(crbug.com/437982549): Replace with new Task API if available.
-            // When maximize() is called while another activity is on top, Chrome is brought to the
-            // foreground. Subsequently, if a back gesture is triggered, FLAG_ACTIVITY_CLEAR_TOP
-            // prevents the other activity from being brought back to the top of the stack.
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            activity.startActivity(intent, options.toBundle());
+            setBoundsInternalLocked(activity, maximizedBounds);
         }
     }
 
@@ -372,6 +364,18 @@ final class ChromeAndroidTaskImpl
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
             if (activityWindowAndroid == null) return;
             getActivity(activityWindowAndroid).moveTaskToBack(/* nonRoot= */ true);
+        }
+    }
+
+    @Override
+    public void setBounds(Rect bounds) {
+        synchronized (mActivityWindowAndroidLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) return;
+            Activity activity = activityWindowAndroid.getActivity().get();
+            if (activity == null) return;
+            setBoundsInternalLocked(activity, bounds);
         }
     }
 
@@ -471,6 +475,19 @@ final class ChromeAndroidTaskImpl
 
     private void assertAlive() {
         assert mState.get() == State.ALIVE : "This Task is not alive.";
+    }
+
+    @GuardedBy("mActivityWindowAndroidLock")
+    private void setBoundsInternalLocked(Activity activity, Rect bounds) {
+        ActivityOptions options = ActivityOptions.makeBasic();
+        options.setLaunchBounds(bounds);
+        Intent intent = new Intent(activity, activity.getClass());
+        // TODO(crbug.com/437982549): Replace with new Task API if available.
+        // When maximize()/setBounds() is called while another activity is on top, Chrome is brought
+        // to the foreground. Subsequently, if a back gesture is triggered, FLAG_ACTIVITY_CLEAR_TOP
+        // prevents the other activity from being brought back to the top of the stack.
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        activity.startActivity(intent, options.toBundle());
     }
 
     @RequiresApi(api = VERSION_CODES.R)

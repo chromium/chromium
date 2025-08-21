@@ -154,6 +154,13 @@ public interface ChromeAndroidTask {
     /** Minimizes this {@link ChromeAndroidTask}. */
     void minimize();
 
+    /**
+     * Sets the {@link ChromeAndroidTask}'s size and position to the specified values.
+     *
+     * @param bounds The new bounds of the {@link ChromeAndroidTask}.
+     */
+    void setBounds(Rect bounds);
+
     /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
     List<ChromeAndroidTaskFeature> getAllFeaturesForTesting();
 }

@@ -100,6 +100,11 @@ final class AndroidBaseWindow {
     }
 
     @CalledByNative
+    private void setBounds(int left, int top, int width, int height) {
+        mChromeAndroidTask.setBounds(new Rect(left, top, width, height));
+    }
+
+    @CalledByNative
     private void clearNativePtr() {
         mNativeAndroidBaseWindow = 0;
     }
