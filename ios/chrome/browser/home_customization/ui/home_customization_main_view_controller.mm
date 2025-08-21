@@ -219,7 +219,24 @@
     return nil;
   }
 
+  id<BackgroundCustomizationConfiguration> configuration =
+      _backgroundCollectionConfiguration.configurations[itemIdentifier];
+  // Don't allow deletion for the default entry.
+  if (configuration.backgroundStyle ==
+      HomeCustomizationBackgroundStyle::kDefault) {
+    return [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                                   previewProvider:nil
+                                                    actionProvider:nil];
+  }
+
   __weak __typeof(self) weakSelf = self;
+
+  // The currently selected background should have the menu item visible but
+  // disabled.
+  UIMenuElementAttributes actionAttributes =
+      ([collectionView.indexPathsForSelectedItems containsObject:indexPath])
+          ? UIMenuElementAttributesDisabled
+          : UIMenuElementAttributesDestructive;
 
   return [UIContextMenuConfiguration
       configurationWithIdentifier:indexPath
@@ -241,8 +258,7 @@
                                        handleDeleteBackgroundActionAtIndexPath:
                                            indexPath];
                                  }];
-                     deleteAction.attributes =
-                         UIMenuElementAttributesDestructive;
+                     deleteAction.attributes = actionAttributes;
 
                      return [UIMenu menuWithTitle:@""
                                          children:@[ deleteAction ]];
@@ -264,6 +280,7 @@
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   NSString* itemIdentifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
+  _selectedBackgroundId = itemIdentifier;
 
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCollectionConfiguration.configurations[itemIdentifier];
@@ -416,7 +433,9 @@
   }
 
   NSDiffableDataSourceSnapshot* snapshot = [self.diffableDataSource snapshot];
-  [self.mutator deleteBackgroundFromRecentlyUsedAtIndex:indexPath.item];
+  [self.mutator
+      deleteBackgroundFromRecentlyUsed:_backgroundCollectionConfiguration
+                                           .configurations[identifier]];
   [snapshot deleteItemsWithIdentifiers:@[ identifier ]];
   [_backgroundCollectionConfiguration.configurations
       removeObjectForKey:identifier];

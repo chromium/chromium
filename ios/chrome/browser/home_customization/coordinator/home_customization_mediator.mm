@@ -329,6 +329,38 @@
   }
 }
 
+// Generates a `RecentlyUsedBackground` for the provided
+// `BackgroundCustomizationConfigurationItem`.
+- (RecentlyUsedBackground)generateRecentBackgroundForConfiguration:
+    (BackgroundCustomizationConfigurationItem*)configuration {
+  switch (configuration.backgroundStyle) {
+    case HomeCustomizationBackgroundStyle::kDefault: {
+      return RecentlyUsedBackground();
+    }
+    case HomeCustomizationBackgroundStyle::kColor: {
+      sync_pb::UserColorTheme colorTheme;
+      colorTheme.set_color(
+          skia::UIColorToSkColor(configuration.backgroundColor));
+      colorTheme.set_browser_color_variant(
+          SchemeVariantToProtoEnum(configuration.colorVariant));
+      return colorTheme;
+    }
+    case HomeCustomizationBackgroundStyle::kPreset: {
+      return configuration.customBackground;
+    }
+    case HomeCustomizationBackgroundStyle::kUserUploaded: {
+      HomeUserUploadedBackground userUploadedBackground;
+      userUploadedBackground.image_path =
+          base::SysNSStringToUTF8(configuration.userUploadedImagePath);
+      userUploadedBackground.framing_coordinates =
+          FramingCoordinatesFromHomeCustomizationFramingCoordinates(
+              configuration.userUploadedFramingCoordinates);
+
+      return userUploadedBackground;
+    }
+  }
+}
+
 #pragma mark - HomeCustomizationMutator
 
 - (void)toggleModuleVisibilityForType:(CustomizationToggleType)type
@@ -451,10 +483,21 @@
   }
 }
 
-- (void)deleteBackgroundFromRecentlyUsedAtIndex:(NSInteger)index {
-  // TODO(crbug.com/408243803): Remove the background at the given index from
-  // the "Recently Used" list. If the background being removed is also set as
-  // the current NTP background, clear the current background as well.
+- (void)deleteBackgroundFromRecentlyUsed:
+    (id<BackgroundCustomizationConfiguration>)backgroundConfiguration {
+  if (![backgroundConfiguration
+          isKindOfClass:[BackgroundCustomizationConfigurationItem class]]) {
+    // Only `BackgroundCustomizationConfigurationItem` exposes required
+    // fields. Other implementations may not support expected properties.
+    return;
+  }
+
+  BackgroundCustomizationConfigurationItem* configurationItem =
+      static_cast<BackgroundCustomizationConfigurationItem*>(
+          backgroundConfiguration);
+
+  _backgroundService->DeleteRecentlyUsedBackground(
+      [self generateRecentBackgroundForConfiguration:configurationItem]);
 }
 
 - (void)fetchBackgroundCustomizationThumbnailURLImage:(GURL)thumbnailURL

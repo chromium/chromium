@@ -7,8 +7,10 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback_forward.h"
 #import "base/logging.h"
 #import "base/strings/strcat.h"
@@ -52,6 +54,24 @@ base::FilePath SaveImageToDirectory(const base::FilePath& directory_path,
 
   return image_relative_file_path;
 }
+
+// Deletes any unused image files that exist in `directory_path` but not in
+// `relative_file_paths_in_use`.
+void DeleteUnusedImageFilePaths(
+    const base::FilePath& directory_path,
+    std::set<base::FilePath> relative_file_paths_in_use) {
+  base::FilePath::StringType file_pattern =
+      base::StrCat({image_filename_prefix, "*", ".jpg"});
+  base::FileEnumerator e(directory_path, false, base::FileEnumerator::FILES,
+                         file_pattern);
+  for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
+    base::FilePath base_name = name.BaseName();
+    if (relative_file_paths_in_use.contains(base_name)) {
+      continue;
+    }
+    base::DeleteFile(name);
+  }
+}
 }  // namespace
 
 UserUploadedImageManager::UserUploadedImageManager(
@@ -92,4 +112,25 @@ UIImage* UserUploadedImageManager::LoadUserUploadedImage(
   }
 
   return image;
+}
+
+void UserUploadedImageManager::DeleteUserUploadedImage(
+    base::FilePath relative_image_file_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::FilePath file_path =
+      storage_directory_path_.Append(relative_image_file_path);
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&base::DeleteFile), file_path));
+}
+
+void UserUploadedImageManager::DeleteUnusedImages(
+    std::set<base::FilePath> relative_file_paths_in_use) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  task_runner_->PostTask(FROM_HERE, base::BindOnce(&DeleteUnusedImageFilePaths,
+                                                   storage_directory_path_,
+                                                   relative_file_paths_in_use));
 }

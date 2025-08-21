@@ -22,6 +22,7 @@ class GURL;
 class HomeBackgroundCustomizationServiceObserver;
 class PrefRegistrySimple;
 class PrefService;
+class UserUploadedImageManager;
 
 // Type of the recently used backgrounds exposed externally.
 typedef std::variant<HomeCustomBackground, sync_pb::UserColorTheme>
@@ -30,6 +31,10 @@ typedef std::variant<HomeCustomBackground, sync_pb::UserColorTheme>
 // Internally used type for storing recently used backgrounds.
 typedef std::variant<sync_pb::ThemeSpecificsIos, HomeUserUploadedBackground>
     RecentlyUsedBackgroundInternal;
+
+// Type of the lru cache used to store recently used backgrounds.
+typedef base::HashingLRUCacheSet<RecentlyUsedBackgroundInternal>
+    RecentlyUsedBackgroundsCache;
 
 namespace std {
 
@@ -106,7 +111,9 @@ bool operator==(sync_pb::ThemeSpecificsIos const& lhs,
 // Service for allowing customization of the Home surface background.
 class HomeBackgroundCustomizationService : public KeyedService {
  public:
-  explicit HomeBackgroundCustomizationService(PrefService* pref_service);
+  explicit HomeBackgroundCustomizationService(
+      PrefService* pref_service,
+      UserUploadedImageManager* user_image_manager);
 
   HomeBackgroundCustomizationService(
       const HomeBackgroundCustomizationService&) = delete;
@@ -127,8 +134,9 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // Returns a list of the recently used backgrounds.
   std::vector<RecentlyUsedBackground> GetRecentlyUsedBackgrounds();
 
-  /// Sets the background to the given parameters. This represents a background
-  /// image url from the NtpBackgroundService.
+  /// Sets the current background to the given parameters without persisting
+  /// this change to disk. This represents a background image url from the
+  /// NtpBackgroundService.
   /// - `background_url` is the URL of the background itself.
   /// - `thumbnail_url` is the URL of the preview thumbnail.
   /// - `attribution_line_1` is the first line of attribution for the author of
@@ -145,11 +153,14 @@ class HomeBackgroundCustomizationService : public KeyedService {
                             const GURL& attribution_action_url,
                             const std::string& collection_id);
 
+  // Sets the current background color to the given parameters without
+  // persisting this change to disk.
   void SetBackgroundColor(
       SkColor color,
       sync_pb::UserColorTheme::BrowserColorVariant color_variant);
 
-  /// Sets the background to a user-uploaded photo.
+  /// Sets the current background to a user-uploaded photo without persisting
+  /// this change to disk.
   /// - `image_path` is the file path to the saved image in the profile
   /// directory.
   /// - `framing_data` contains the coordinates for how the image should be
@@ -158,18 +169,9 @@ class HomeBackgroundCustomizationService : public KeyedService {
       const std::string& image_path,
       const FramingCoordinates& framing_coordinates);
 
-  // Resets the current background to the default/no changes.
+  // Resets the current background to the default/no changes without persisting
+  // this change to disk.
   void ClearCurrentBackground();
-
-  // Adds/Removes HomeBackgroundCustomizationServiceObserver observers.
-  void AddObserver(HomeBackgroundCustomizationServiceObserver* observer);
-  void RemoveObserver(HomeBackgroundCustomizationServiceObserver* observer);
-
-  // Registers the profile prefs associated with this service.
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
-  // Clears the current user-uploaded background.
-  void ClearCurrentUserUploadedBackground();
 
   // Stores the current theme to disk.
   void StoreCurrentTheme();
@@ -178,12 +180,29 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // background.
   void RestoreCurrentTheme();
 
+  // Deletes the recently used background from the stored list.
+  void DeleteRecentlyUsedBackground(RecentlyUsedBackground recent_background);
+
+  // Adds/Removes HomeBackgroundCustomizationServiceObserver observers.
+  void AddObserver(HomeBackgroundCustomizationServiceObserver* observer);
+  void RemoveObserver(HomeBackgroundCustomizationServiceObserver* observer);
+
+  // Registers the profile prefs associated with this service.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Clears the current user-uploaded background without persisting this change
+  // to disk.
+  void ClearCurrentUserUploadedBackground();
+
  private:
   // Alerts observers when the background changes.
   void NotifyObserversOfBackgroundChange();
 
   // Loads the theme data from disk.
   void LoadCurrentTheme();
+
+  // Stores the recently used backgrounds list to disk.
+  void StoreRecentlyUsedBackgroundsList();
 
   // Extracts the current custom background from the current theme, if there is
   // one.
@@ -195,10 +214,12 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // Backgrounds are stored on disk as either `sync_pb::ThemeSpecificsIos` or
   // `HomeUserUploadedBackground`, as those are the 2 types that have easy
   // persistence built-in. However, backgrounds are exposed to the user as
-  // either HomeCustomBackground or sync_pb::UserColorTheme. This method
-  // converts from the internal to the external representation.
+  // either HomeCustomBackground or sync_pb::UserColorTheme. These methods
+  // converts between the two representations..
   RecentlyUsedBackground ConvertBackgroundRepresentation(
       RecentlyUsedBackgroundInternal background);
+  RecentlyUsedBackgroundInternal ConvertBackgroundRepresentation(
+      RecentlyUsedBackground background);
 
   // Encodes the provided theme specifics into a string for persisting to disk.
   std::string EncodeThemeSpecificsIos(
@@ -213,17 +234,28 @@ class HomeBackgroundCustomizationService : public KeyedService {
   void AddToRecentlyUsedBackgroundsList(
       RecentlyUsedBackgroundInternal&& recent_background);
 
+  // Deletes a recently used background (identified by iterator) from the local
+  // state.
+  void DeleteRecentlyUsedBackground(
+      RecentlyUsedBackgroundsCache::iterator recent_background_iterator);
+
+  // Deletes the listed image from disk.
+  void DeleteUserBackgroundImage(
+      HomeUserUploadedBackground user_background_image);
+
   sync_pb::ThemeSpecificsIos current_theme_;
 
   std::optional<HomeUserUploadedBackground> current_user_uploaded_background_;
 
   // In-memory store for the recently used backgrounds. LRU cache keeps the most
   // recently used/added element at the front.
-  base::HashingLRUCacheSet<RecentlyUsedBackgroundInternal>
-      recently_used_backgrounds_;
+  RecentlyUsedBackgroundsCache recently_used_backgrounds_;
 
   // The PrefService associated with the Profile.
   raw_ptr<PrefService> pref_service_;
+
+  // Image manager used for interacting with the filesystem.
+  raw_ptr<UserUploadedImageManager> user_image_manager_;
 
   base::ObserverList<HomeBackgroundCustomizationServiceObserver> observers_;
 };

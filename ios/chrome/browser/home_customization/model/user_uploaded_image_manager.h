@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_USER_UPLOADED_IMAGE_MANAGER_H_
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_USER_UPLOADED_IMAGE_MANAGER_H_
 
+#import <set>
+
 #import "base/files/file_path.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
@@ -35,6 +37,12 @@ class UserUploadedImageManager : public KeyedService {
 
   // Loads an image previously stored at the provided relative file path.
   UIImage* LoadUserUploadedImage(base::FilePath relative_image_file_path);
+
+  // Deletes an image previously stored at the provided relative file path.
+  void DeleteUserUploadedImage(base::FilePath relative_image_file_path);
+
+  // Deletes all images from the managed directory that aren't currently in use.
+  void DeleteUnusedImages(std::set<base::FilePath> relative_file_paths_in_use);
 
  private:
   // File path to store images at.

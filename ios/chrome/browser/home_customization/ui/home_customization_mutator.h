@@ -32,9 +32,9 @@ class GURL;
 - (void)applyBackgroundForConfiguration:
     (id<BackgroundCustomizationConfiguration>)backgroundConfiguration;
 
-// Removes a background item from the "Recently Used" list at the specified
-// index.
-- (void)deleteBackgroundFromRecentlyUsedAtIndex:(NSInteger)index;
+// Removes the given background configuration from the recently used list.
+- (void)deleteBackgroundFromRecentlyUsed:
+    (id<BackgroundCustomizationConfiguration>)backgroundConfiguration;
 
 // Downloads and returns a thumbnail image from the given GURL. The image is
 // returned asynchronously through the `completion` block. The method is
