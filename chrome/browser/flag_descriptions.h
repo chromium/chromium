@@ -3124,9 +3124,6 @@ extern const char kSupervisedUserInterstitialWithoutApprovalsDescription[];
 extern const char kSupportMultipleServerRequestsForPixPaymentsName[];
 extern const char kSupportMultipleServerRequestsForPixPaymentsDescription[];
 
-extern const char kSwapNewTabAndNewTabInGroupAndroidName[];
-extern const char kSwapNewTabAndNewTabInGroupAndroidDescription[];
-
 extern const char kHistoryPaneAndroidName[];
 extern const char kHistoryPaneAndroidDescription[];
 
@@ -4618,7 +4615,6 @@ extern const char kEnableArmHwdrmDescription[];
 // Linux ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_LINUX)
-
 
 extern const char kPulseaudioLoopbackForCastName[];
 extern const char kPulseaudioLoopbackForCastDescription[];

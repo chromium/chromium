@@ -3868,9 +3868,10 @@ const FeatureEntry::FeatureVariation kAndroidThemeModuleVariations[] = {
 
 const FeatureEntry::FeatureParam sAndroidThemeResourceProviderParams[] = {
     {"force_light_theme", "true"}};
-const FeatureEntry::FeatureVariation kAndroidThemeResourceProviderVariations[] = {
-    {"force light theme", sAndroidThemeResourceProviderParams,
-     std::size(sAndroidThemeResourceProviderParams), nullptr},
+const FeatureEntry::FeatureVariation kAndroidThemeResourceProviderVariations[] =
+    {
+        {"force light theme", sAndroidThemeResourceProviderParams,
+         std::size(sAndroidThemeResourceProviderParams), nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -11034,12 +11035,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidTipsNotificationsName,
      flag_descriptions::kAndroidTipsNotificationsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidTipsNotifications)},
-
-    {"swap-new-tab-and-new-tab-in-group-android",
-     flag_descriptions::kSwapNewTabAndNewTabInGroupAndroidName,
-     flag_descriptions::kSwapNewTabAndNewTabInGroupAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kSwapNewTabAndNewTabInGroupAndroid)},
 
     {"history-pane-android", flag_descriptions::kHistoryPaneAndroidName,
      flag_descriptions::kHistoryPaneAndroidDescription, kOsAndroid,

@@ -24242,21 +24242,6 @@
             ]
         }
     ],
-    "SwapNewTabAndNewTabInGroupAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SwapNewTabAndNewTabInGroupAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "SwiftShaderDeprecation": [
         {
             "platforms": [

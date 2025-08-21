@@ -629,8 +629,6 @@ public abstract class ChromeFeatureList {
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
     public static final String SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END =
             "SuppressToolbarCapturesAtGestureEnd";
-    public static final String SWAP_NEW_TAB_AND_NEW_TAB_IN_GROUP_ANDROID =
-            "SwapNewTabAndNewTabInGroupAndroid";
     public static final String SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE =
             "SyncEnablePasswordsSyncErrorMessageAlternative";
     public static final String TABLET_TAB_STRIP_ANIMATION = "TabletTabStripAnimation";
@@ -1339,8 +1337,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SHOW_TAB_LIST_ANIMATIONS, false);
     public static final MutableFlagWithSafeDefault sSuppressToolbarCapturesAtGestureEnd =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END, false);
-    public static final MutableFlagWithSafeDefault sSwapNewTabAndNewTabInGroupAndroid =
-            newMutableFlagWithSafeDefault(SWAP_NEW_TAB_AND_NEW_TAB_IN_GROUP_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabArchivalDragDropAndroid =
             newMutableFlagWithSafeDefault(TAB_ARCHIVAL_DRAG_DROP_ANDROID, true);
     public static final MutableFlagWithSafeDefault sTabCollectionAndroid =

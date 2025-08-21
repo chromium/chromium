@@ -445,7 +445,8 @@ const char kDbdRevampDesktopDescription[] =
 
 const char kDefaultSearchEnginePrewarmName[] = "Default search engine prewarm";
 const char kDefaultSearchEnginePrewarmDescription[] =
-        "Performance optimization to prewarm the default search engine used in the Omnibox";
+    "Performance optimization to prewarm the default search engine used in the "
+    "Omnibox";
 
 const char kDisableAutofillStrikeSystemName[] =
     "Disable the Autofill strike system";
@@ -2782,8 +2783,7 @@ const char kNotificationsSystemFlagDescription[] =
     "center on platforms where these are available.";
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-const char kEnforceManagementDisclaimerName[] =
-    "Enforce management disclaimer";
+const char kEnforceManagementDisclaimerName[] = "Enforce management disclaimer";
 const char kEnforceManagementDisclaimerDescription[] =
     "When enabled, all signed in profiles that never saw the management "
     "disclaimer will be shown the management disclaimer when they open Chrome. "
@@ -5399,12 +5399,6 @@ const char kSupportMultipleServerRequestsForPixPaymentsDescription[] =
     "When enabled, the network interface with Google Payments supports "
     "handling multiple concurrent requests for Pix flows.";
 
-const char kSwapNewTabAndNewTabInGroupAndroidName[] =
-    "Swap new tab and new tab in group order";
-const char kSwapNewTabAndNewTabInGroupAndroidDescription[] =
-    "When enabled swaps the open in new tab and open in new tab in group menu "
-    "items.";
-
 const char kHistoryPaneAndroidName[] = "History Pane Android";
 const char kHistoryPaneAndroidDescription[] =
     "Enables showing a new pane in the hub that displays History.";
@@ -8007,7 +8001,6 @@ const char kEnableArmHwdrmDescription[] = "Enable HW backed Widevine L1 DRM";
 // Linux -----------------------------------------------------------------------
 
 #if BUILDFLAG(IS_LINUX)
-
 
 const char kPulseaudioLoopbackForCastName[] =
     "Linux System Audio Loopback for Cast (pulseaudio)";

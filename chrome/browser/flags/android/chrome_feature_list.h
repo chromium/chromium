@@ -241,7 +241,6 @@ BASE_DECLARE_FEATURE(kShowCloseAllIncognitoTabsButton);
 BASE_DECLARE_FEATURE(kSmallerTabStripTitleLimit);
 BASE_DECLARE_FEATURE(kSubmenusTabContextMenuLffTabStrip);
 BASE_DECLARE_FEATURE(kSuppressToolbarCapturesAtGestureEnd);
-BASE_DECLARE_FEATURE(kSwapNewTabAndNewTabInGroupAndroid);
 BASE_DECLARE_FEATURE(kTabArchivalDragDropAndroid);
 BASE_DECLARE_FEATURE(kTabClosureMethodRefactor);
 BASE_DECLARE_FEATURE(kTabCollectionAndroid);

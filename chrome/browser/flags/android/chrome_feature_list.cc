@@ -408,7 +408,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSmallerTabStripTitleLimit,
     &kSubmenusTabContextMenuLffTabStrip,
     &kSuppressToolbarCapturesAtGestureEnd,
-    &kSwapNewTabAndNewTabInGroupAndroid,
     &kTabArchivalDragDropAndroid,
     &kTabClosureMethodRefactor,
     &kTabCollectionAndroid,
@@ -1352,10 +1351,6 @@ BASE_FEATURE(kSubmenusTabContextMenuLffTabStrip,
 
 BASE_FEATURE(kSuppressToolbarCapturesAtGestureEnd,
              "SuppressToolbarCapturesAtGestureEnd",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSwapNewTabAndNewTabInGroupAndroid,
-             "SwapNewTabAndNewTabInGroupAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabArchivalDragDropAndroid,

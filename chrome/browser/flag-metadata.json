@@ -9437,11 +9437,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "swap-new-tab-and-new-tab-in-group-android",
-    "owners": [ "ckitagawa@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "symphonia-audio-decoding",
     "owners": [ "jophba@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 152
