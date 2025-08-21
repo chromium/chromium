@@ -223,3 +223,173 @@ source_set("impl") {
     deps += [ "//chrome/browser/ui/views/zoom" ]
   }
 }
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "app_menu_browsertest.cc",
+      "chrome_labs/chrome_labs_browsertest.cc",
+      "home_button_browsertest.cc",
+      "pinned_action_toolbar_button_menu_model_browsertest.cc",
+      "pinned_toolbar_actions_container_browsertest.cc",
+    ]
+
+    if (toolkit_views) {
+      sources += [ "toolbar_view_browsertest.cc" ]
+    }
+
+    if (enable_webui_tab_strip) {
+      sources += [ "webui_tab_counter_button_browsertest.cc" ]
+    }
+
+    deps = [
+      ":toolbar",
+      "//base",
+      "//chrome/browser:flags",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/safety_hub:test_support",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/test:test_support",
+      "//components/commerce/core:feature_list",
+      "//components/prefs",
+      "//components/translate/content/browser:test_support",
+      "//components/vector_icons",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
+}
+
+if (!is_android && !is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    if (toolkit_views) {
+      sources = [
+        "app_menu_interactive_uitest.cc",
+        "browser_app_menu_button_interactive_uitest.cc",
+        "reload_button_browsertest.cc",
+        "split_tabs_button_interactive_ui_test.cc",
+        "toolbar_action_hover_card_bubble_view_interactive_uitest.cc",
+        "toolbar_controller_interactive_uitest.cc",
+        "toolbar_view_interactive_uitest.cc",
+      ]
+    }
+
+    if (is_chromeos) {
+      sources += [ "browser_app_menu_button_interactive_uitest_chromeos.cc" ]
+    }
+
+    deps = [
+      ":toolbar",
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/tabs:tab_menu",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/browser/user_education",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/bookmarks/browser",
+      "//components/commerce/core:feature_list",
+      "//components/feature_engagement/test:test_support",
+      "//components/policy/core/browser",
+      "//components/prefs",
+      "//components/user_education/views",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/base:ozone_buildflags",
+      "//ui/views",
+    ]
+  }
+}
+
+if (toolkit_views) {
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [
+      "chrome_labs/chrome_labs_button_unittest.cc",
+      "chrome_labs/chrome_labs_unittest.cc",
+      "pinned_toolbar_actions_container_unittest.cc",
+      "reload_button_unittest.cc",
+      "toolbar_action_view_unittest.cc",
+      "toolbar_actions_bar_bubble_views_unittest.cc",
+      "toolbar_button_unittest.cc",
+      "toolbar_controller_unittest.cc",
+      "toolbar_ink_drop_util_unittest.cc",
+    ]
+
+    deps = [
+      ":toolbar",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:generated_resources",
+      "//chrome/browser",
+      "//chrome/browser:flags",
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/color:mixers",
+      "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:test_support",
+      "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/toolbar:test_support",
+      "//chrome/browser/ui/toolbar/chrome_labs",
+      "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/common:buildflags",
+      "//chrome/test:test_support",
+      "//components/keyed_service/core",
+      "//components/prefs",
+      "//components/user_education/views",
+      "//components/vector_icons",
+      "//components/version_info",
+      "//components/webui/flags",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/accessibility",
+      "//ui/actions",
+      "//ui/base",
+      "//ui/base/dragdrop:types",
+      "//ui/base/mojom",
+      "//ui/compositor",
+      "//ui/events",
+      "//ui/events:test_support",
+      "//ui/gfx",
+      "//ui/gfx:test_support",
+      "//ui/menus",
+      "//ui/views",
+      "//ui/views:test_support",
+      "//ui/views/controls/webview",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//ash/constants",
+        "//chrome/browser/ash/ownership",
+        "//chrome/browser/ash/settings",
+        "//chromeos/ash/components/cryptohome",
+        "//chromeos/ash/components/dbus/session_manager",
+        "//components/user_manager",
+      ]
+    }
+  }
+}

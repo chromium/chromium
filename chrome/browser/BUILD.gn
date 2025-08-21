@@ -4646,7 +4646,14 @@ static_library("browser") {
       "//chrome/browser/ui/tabs/organization:impl",
 
       "//chrome/browser/ui/browser_window/internal",
+
+      # TODO(crbug.com/434882143): Remove this circular dependency when the following files get
+      # componentized:
+      # - c/b/bookmarks/bookmark_merged_surface_service_observer.h
+      # - c/b/lifetime/browser_close_manager.h
+      # - c/b/command_observer.h
       "//chrome/browser/ui/views/toolbar",
+
       "//chrome/browser/ui/views/toolbar:impl",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/webui/searchbox",

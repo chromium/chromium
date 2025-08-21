@@ -2490,7 +2490,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/privacy_sandbox",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
-      "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/views/toolbar:browser_tests",
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/views/webid:test_support",
       "//chrome/browser/ui/web_applications",
@@ -3641,11 +3641,6 @@ if (!is_android) {
       "../browser/ui/views/tabs/tab_search_container_browsertest.cc",
       "../browser/ui/views/tabs/tab_strip_action_container_browsertest.cc",
       "../browser/ui/views/tabs/tab_strip_browsertest.cc",
-      "../browser/ui/views/toolbar/app_menu_browsertest.cc",
-      "../browser/ui/views/toolbar/chrome_labs/chrome_labs_browsertest.cc",
-      "../browser/ui/views/toolbar/home_button_browsertest.cc",
-      "../browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model_browsertest.cc",
-      "../browser/ui/views/toolbar/pinned_toolbar_actions_container_browsertest.cc",
       "../browser/ui/views/user_education/browser_help_bubble_browsertest.cc",
       "../browser/ui/views/user_education/browser_user_education_service_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
@@ -5111,7 +5106,6 @@ if (!is_android) {
         "../browser/ui/views/tab_sharing/tab_sharing_test_utils.h",
         "../browser/ui/views/tab_sharing/tab_sharing_ui_views_browsertest.cc",
         "../browser/ui/views/tabs/tab_group_editor_bubble_view_browsertest.cc",
-        "../browser/ui/views/toolbar/toolbar_view_browsertest.cc",
         "../browser/ui/views/translate/translate_bubble_test_utils_views.cc",
         "../browser/ui/views/translate/translate_bubble_view_browsertest.cc",
         "../browser/ui/views/upgrade_notification_controller_browsertest.cc",
@@ -5871,7 +5865,6 @@ if (!is_android) {
       sources += [
         "../browser/ui/views/frame/webui_tab_strip_container_view_browsertest.cc",
         "../browser/ui/views/frame/webui_tab_strip_field_trial_browsertest.cc",
-        "../browser/ui/views/toolbar/webui_tab_counter_button_browsertest.cc",
         "../browser/ui/webui/tab_strip/tab_strip_ui_browsertest.cc",
       ]
     }
@@ -10348,7 +10341,7 @@ test("unit_tests") {
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/toasts",
-      "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/toolbar:unit_tests",
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/frame",
@@ -10529,15 +10522,6 @@ test("unit_tests") {
       "../browser/ui/views/tabs/tab_strip_unittest.cc",
       "../browser/ui/views/tabs/tab_unittest.cc",
       "../browser/ui/views/task_manager_search_bar_view_unittest.cc",
-      "../browser/ui/views/toolbar/chrome_labs/chrome_labs_button_unittest.cc",
-      "../browser/ui/views/toolbar/chrome_labs/chrome_labs_unittest.cc",
-      "../browser/ui/views/toolbar/pinned_toolbar_actions_container_unittest.cc",
-      "../browser/ui/views/toolbar/reload_button_unittest.cc",
-      "../browser/ui/views/toolbar/toolbar_action_view_unittest.cc",
-      "../browser/ui/views/toolbar/toolbar_actions_bar_bubble_views_unittest.cc",
-      "../browser/ui/views/toolbar/toolbar_button_unittest.cc",
-      "../browser/ui/views/toolbar/toolbar_controller_unittest.cc",
-      "../browser/ui/views/toolbar/toolbar_ink_drop_util_unittest.cc",
       "../browser/ui/views/translate/partial_translate_bubble_view_unittest.cc",
       "../browser/ui/views/translate/translate_bubble_controller_unittest.cc",
       "../browser/ui/views/translate/translate_bubble_view_unittest.cc",
@@ -11275,6 +11259,11 @@ if (!is_android && !is_chromeos_device) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     ldflags = []
 
+    # TODO(crbug.com/434882143): Remove this circular dependency when
+    # c/b/ui/views/extensions/extensions_toolbar_interactive_uitest.h gets componentized.
+    allow_circular_includes_from =
+        [ "//chrome/browser/ui/views/toolbar:interactive_ui_tests" ]
+
     deps = [
       ":chrome_test_launcher",
       ":sync_integration_test_support",
@@ -11372,7 +11361,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/side_panel",
-      "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/views/toolbar:interactive_ui_tests",
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
@@ -11715,13 +11704,6 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/tabs/tab_strip_interactive_uitest.cc",
         "../browser/ui/views/test/view_event_test_base.cc",
         "../browser/ui/views/test/view_event_test_base.h",
-        "../browser/ui/views/toolbar/app_menu_interactive_uitest.cc",
-        "../browser/ui/views/toolbar/browser_app_menu_button_interactive_uitest.cc",
-        "../browser/ui/views/toolbar/reload_button_browsertest.cc",
-        "../browser/ui/views/toolbar/split_tabs_button_interactive_ui_test.cc",
-        "../browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view_interactive_uitest.cc",
-        "../browser/ui/views/toolbar/toolbar_controller_interactive_uitest.cc",
-        "../browser/ui/views/toolbar/toolbar_view_interactive_uitest.cc",
         "../browser/ui/views/translate/translate_bubble_test_utils_views.cc",
         "../browser/ui/views/translate/translate_bubble_view_interactive_uitest.cc",
         "../browser/ui/views/translate/translate_icon_view_interactive_uitest.cc",
@@ -11830,7 +11812,6 @@ if (!is_android && !is_chromeos_device) {
       if (is_chromeos) {
         sources += [
           "../browser/signin/mirror_interactive_uitest.cc",
-          "../browser/ui/views/toolbar/browser_app_menu_button_interactive_uitest_chromeos.cc",
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
           "../browser/ui/webui/print_preview/print_preview_chromeos_interactive_uitest.cc",
           "//ash/drag_drop/drag_drop_interactive_uitest.cc",
