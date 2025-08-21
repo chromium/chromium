@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.Context;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -17,22 +19,28 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @NullMarked
 public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener {
     private final @Nullable NavigationAttachmentsMediator mMediator;
+    private final @Nullable NavigationAttachmentsViewHolder mViewHolder;
 
     public NavigationAttachmentsCoordinator(Context context, ViewGroup parent) {
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
                 || parent.findViewById(R.id.location_bar_navigation_toolbar) == null) {
             mMediator = null;
+            mViewHolder = null;
             return;
         }
 
-        var viewHolder = new NavigationAttachmentsViewHolder(parent);
+        var popup =
+                new NavigationAttachmentsPopup(
+                        context, parent.findViewById(R.id.location_bar_attachments_add));
+        mViewHolder = new NavigationAttachmentsViewHolder(parent, popup);
+
         PropertyModel model =
                 new PropertyModel.Builder(NavigationAttachmentsProperties.ALL_KEYS)
                         .with(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, false)
                         .build();
         PropertyModelChangeProcessor.create(
-                model, viewHolder, NavigationAttachmentsViewBinder::bind);
-        mMediator = new NavigationAttachmentsMediator(model);
+                model, mViewHolder, NavigationAttachmentsViewBinder::bind);
+        mMediator = new NavigationAttachmentsMediator(model, mViewHolder);
     }
 
     public void destroy() {
@@ -47,5 +55,10 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
         if (mMediator != null) {
             mMediator.onUrlFocusChange(hasFocus);
         }
+    }
+
+    @VisibleForTesting
+    @Nullable NavigationAttachmentsViewHolder getViewHolderForTesting() {
+        return mViewHolder;
     }
 }

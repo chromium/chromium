@@ -31,6 +31,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
     private @Mock ViewGroup mParent;
     private @Mock Group mNavigationView;
+    private @Mock NavigationAttachmentsPopup mPopup;
 
     private PropertyModel mModel;
     private NavigationAttachmentsViewHolder mViewHolder;
@@ -39,7 +40,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     public void setUp() {
         doReturn(mNavigationView).when(mParent).findViewById(R.id.location_bar_navigation_toolbar);
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
-        mViewHolder = new NavigationAttachmentsViewHolder(mParent);
+        mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
         PropertyModelChangeProcessor.create(
                 mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
     }

@@ -165,9 +165,10 @@ found in the LICENSE file.
         8%
     </item>
 
-    <!-- Adding search engine logo to the omnibox. -->
+    <!-- Navigation attachments bar -->
+    <dimen name="location_bar_navigation_attachments_popup_width">250dp</dimen>
 
-    <!-- Max size which will fit completely in the composed/rounded bg. -->
+    <!-- Search engine logo. -->
     <dimen name="omnibox_search_engine_logo_favicon_size">17dp</dimen>
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>
 

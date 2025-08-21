@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties associated with the Navigation Attachments bar. */
 @NullMarked
@@ -15,5 +16,9 @@ class NavigationAttachmentsProperties {
     public static final WritableBooleanPropertyKey TOOLBAR_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {TOOLBAR_VISIBLE};
+    /** Action to perform when the user clicks the Add button. */
+    public static final WritableObjectPropertyKey<Runnable> BUTTON_ADD_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    public static final PropertyKey[] ALL_KEYS = {TOOLBAR_VISIBLE, BUTTON_ADD_CLICKED};
 }

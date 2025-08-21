@@ -21,12 +21,14 @@ class NavigationAttachmentsViewHolder {
     public final ChromeImageButton addButton;
     public final ChromeImageButton settingsButton;
     public final SwitchCompat navigationType;
+    public final NavigationAttachmentsPopup popup;
 
-    NavigationAttachmentsViewHolder(ViewGroup parent) {
+    NavigationAttachmentsViewHolder(ViewGroup parent, NavigationAttachmentsPopup popup) {
         attachmentsView = parent.findViewById(R.id.location_bar_attachments);
         navigationToolbar = parent.findViewById(R.id.location_bar_navigation_toolbar);
         addButton = parent.findViewById(R.id.location_bar_attachments_add);
         settingsButton = parent.findViewById(R.id.location_bar_attachments_settings);
         navigationType = parent.findViewById(R.id.location_bar_navigation_type);
+        this.popup = popup;
     }
 }

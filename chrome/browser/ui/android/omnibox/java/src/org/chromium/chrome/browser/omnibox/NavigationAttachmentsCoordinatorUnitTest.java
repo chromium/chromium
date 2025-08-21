@@ -4,88 +4,97 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import android.content.Context;
+import android.app.Activity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.constraintlayout.widget.Group;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link NavigationAttachmentsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NavigationAttachmentsCoordinatorUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
-    private @Mock ViewGroup mParent;
-    private @Mock Group mNavigationView;
-
-    private Context mContext;
+    private Activity mActivity;
     private NavigationAttachmentsCoordinator mCoordinator;
+    private ViewGroup mParent;
 
     @Before
     public void setUp() {
-        mContext = ContextUtils.getApplicationContext();
-        doReturn(mNavigationView).when(mParent).findViewById(R.id.location_bar_navigation_toolbar);
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            mActivity = activity;
+                            mParent = new ConstraintLayout(activity);
+                            mActivity.setContentView(mParent);
+                            LayoutInflater.from(activity)
+                                    .inflate(R.layout.navigation_attachments_bar, mParent, true);
+                        });
     }
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void initialState_toolbarIsHidden() {
-        mCoordinator = new NavigationAttachmentsCoordinator(mContext, mParent);
-        verify(mNavigationView).setVisibility(View.GONE);
-    }
+    public void testToolbarVisibility_featureEnabled() {
+        mCoordinator = new NavigationAttachmentsCoordinator(mActivity, mParent);
+        View navigationToolbar = mParent.findViewById(R.id.location_bar_navigation_toolbar);
+        assertEquals(View.GONE, navigationToolbar.getVisibility());
 
-    private void setUpCoordinatorAndClearInvocations() {
-        mCoordinator = new NavigationAttachmentsCoordinator(mContext, mParent);
-        clearInvocations(mNavigationView);
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void onUrlFocusChange_showsToolbarWhenFeatureEnabledAndFocused() {
-        setUpCoordinatorAndClearInvocations();
         mCoordinator.onUrlFocusChange(true);
-        verify(mNavigationView).setVisibility(View.VISIBLE);
+        assertEquals(View.VISIBLE, navigationToolbar.getVisibility());
+
+        mCoordinator.onUrlFocusChange(false);
+        assertEquals(View.GONE, navigationToolbar.getVisibility());
     }
 
     @Test
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void onUrlFocusChange_hidesToolbarWhenFeatureDisabled() {
-        setUpCoordinatorAndClearInvocations();
-        mCoordinator.onUrlFocusChange(true);
-        verify(mNavigationView, times(0)).setVisibility(anyInt());
+    public void testToolbarVisibility_featureDisabled() {
+        mCoordinator = new NavigationAttachmentsCoordinator(mActivity, mParent);
+        assertNull(mCoordinator.getViewHolderForTesting());
     }
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void onUrlFocusChange_hidesToolbarWhenNotFocused() {
-        setUpCoordinatorAndClearInvocations();
-        // Show it first
-        mCoordinator.onUrlFocusChange(true);
-        verify(mNavigationView).setVisibility(View.VISIBLE);
-        clearInvocations(mNavigationView);
+    public void testAddButton_togglesPopup() {
+        mCoordinator = new NavigationAttachmentsCoordinator(mActivity, mParent);
+        NavigationAttachmentsViewHolder viewHolder = mCoordinator.getViewHolderForTesting();
+        assertNotNull(viewHolder);
+        View addButton = viewHolder.addButton;
+        assertNotNull(addButton);
+        NavigationAttachmentsPopup popup = viewHolder.popup;
+        assertNotNull(popup);
 
-        // Then hide it
-        mCoordinator.onUrlFocusChange(false);
-        verify(mNavigationView).setVisibility(View.GONE);
+        // Popup should not be showing initially.
+        assertFalse(popup.isShowing());
+
+        // Click the add button to show the popup.
+        addButton.performClick();
+        assertTrue(popup.isShowing());
+
+        // Click the add button again to hide the popup.
+        addButton.performClick();
+        assertFalse(popup.isShowing());
     }
 }

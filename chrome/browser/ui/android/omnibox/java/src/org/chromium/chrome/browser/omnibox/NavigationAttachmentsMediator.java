@@ -11,9 +11,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 class NavigationAttachmentsMediator {
     private final PropertyModel mModel;
+    private final NavigationAttachmentsPopup mPopup;
 
-    NavigationAttachmentsMediator(PropertyModel model) {
+    NavigationAttachmentsMediator(PropertyModel model, NavigationAttachmentsViewHolder viewHolder) {
         mModel = model;
+        mPopup = viewHolder.popup;
+
+        mModel.set(
+                NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
     }
 
     void destroy() {}
@@ -21,5 +26,16 @@ class NavigationAttachmentsMediator {
     /** Called when the URL focus changes. */
     void onUrlFocusChange(boolean hasFocus) {
         mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, hasFocus);
+        if (!hasFocus) {
+            mPopup.dismiss();
+        }
+    }
+
+    private void onToggleAttachmentsPopup() {
+        if (mPopup.isShowing()) {
+            mPopup.dismiss();
+        } else {
+            mPopup.show();
+        }
     }
 }
