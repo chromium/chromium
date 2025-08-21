@@ -195,6 +195,13 @@ export class FreAppController {
     for (const panel of document.querySelectorAll<HTMLElement>('.panel')) {
       panel.hidden = panel.id !== id;
     }
+
+    // After making the guest panel visible, programmatically move focus
+    // to the content inside the webview. This ensures that screen readers
+    // announce the new content.
+    if (id === 'guestPanel') {
+      this.webview.focus();
+    }
   }
 
   setState(newState: FreWebUiState): void {
