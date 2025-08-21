@@ -245,6 +245,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/prototypes/diamond",
     "//ios/chrome/browser/shared/ui/elements:activity_overlay",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/shared/ui/util:url_with_title",

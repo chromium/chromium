@@ -165,6 +165,7 @@ NSString* const kMarkAsUnreadActionSymbol = @"text.badge.minus";
 NSString* const kMarkAsReadActionSymbol = @"text.badge.checkmark";
 NSString* const kReadLaterActionSymbol = @"text.badge.plus";
 NSString* const kAddBookmarkActionSymbol = @"star";
+NSString* const kStarLeadingHalfFilledSymbol = @"star.leadinghalf.filled";
 NSString* const kCopyActionSymbol = @"doc.on.doc";
 NSString* const kPasteActionSymbol = @"doc.on.clipboard";
 NSString* const kPlusRectangleSymbol = @"plus.rectangle";

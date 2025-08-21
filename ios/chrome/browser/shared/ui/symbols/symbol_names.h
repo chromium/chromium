@@ -163,6 +163,7 @@ extern NSString* const kMarkAsUnreadActionSymbol;
 extern NSString* const kMarkAsReadActionSymbol;
 extern NSString* const kReadLaterActionSymbol;
 extern NSString* const kAddBookmarkActionSymbol;
+extern NSString* const kStarLeadingHalfFilledSymbol;
 extern NSString* const kCopyActionSymbol;
 extern NSString* const kPasteActionSymbol;
 extern NSString* const kPlusRectangleSymbol;

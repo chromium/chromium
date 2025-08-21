@@ -169,17 +169,22 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_showBookmarks {
+  UIImage* image = DefaultSymbolWithConfiguration(kBookmarksSymbol, nil);
   return [self cr_commandWithInput:@"b"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showBookmarks)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_BOOKMARKS"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_BOOKMARKS"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_addToBookmarks {
+  UIImage* image =
+      DefaultSymbolWithConfiguration(kStarLeadingHalfFilledSymbol, nil);
   return [self cr_commandWithInput:@"d"
                      modifierFlags:Command
                             action:@selector(keyCommand_addToBookmarks)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_ADD_TO_BOOKMARKS"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_ADD_TO_BOOKMARKS"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_reload {
@@ -377,17 +382,21 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_addToReadingList {
+  UIImage* image = DefaultSymbolWithConfiguration(kReadLaterActionSymbol, nil);
   return [self cr_commandWithInput:@"d"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_addToReadingList)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_ADD_TO_READING_LIST"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_ADD_TO_READING_LIST"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_showReadingList {
+  UIImage* image = CustomSymbolWithConfiguration(kReadingListSymbol, nil);
   return [self cr_commandWithInput:@"r"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showReadingList)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_READING_LIST"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_READING_LIST"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_goToTabGrid {
