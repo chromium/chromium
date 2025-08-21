@@ -131,7 +131,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final @Nullable Runnable mHideSoftKeyboard;
     private final boolean mShowAppFilter;
     private final List<AppInfo> mAppInfoList = new ArrayList<>();
-    private final Supplier<@Nullable BottomSheetController> mBottomSheetController;
+    private final @Nullable Supplier<@Nullable BottomSheetController> mBottomSheetController;
     private final @Nullable Supplier<@Nullable Tab> mTabSupplier;
     private final AppInfoCache mAppInfoCache;
     private final @Nullable Runnable mOpenHistoryItemCallback;
@@ -188,7 +188,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             boolean shouldShowClearDataIfAvailable,
             @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
-            Supplier<@Nullable BottomSheetController> bottomSheetController,
+            @Nullable Supplier<@Nullable BottomSheetController> bottomSheetController,
             @Nullable Supplier<@Nullable Tab> tabSupplier,
             @Nullable Runnable hideSoftKeyboard,
             HistoryUmaRecorder umaRecorder,
@@ -673,7 +673,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // to appear at the bottom as expected.
         assumeNonNull(mHideSoftKeyboard).run();
         if (mAppFilterSheet == null) {
-            assert mBottomSheetController.get() != null;
+            assert mBottomSheetController != null && mBottomSheetController.get() != null;
             mAppFilterSheet =
                     new AppFilterCoordinator(
                             mActivity,

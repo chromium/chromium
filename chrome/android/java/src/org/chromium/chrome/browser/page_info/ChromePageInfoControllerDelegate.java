@@ -15,13 +15,13 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -81,17 +81,18 @@ import java.util.function.Consumer;
  * PageInfoController. It also contains logic for Chrome-specific features, like {@link
  * TabbedPaintPreview}
  */
+@NullMarked
 public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate {
     private final WebContents mWebContents;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Context mContext;
     private final Profile mProfile;
-    private final Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
+    private final @Nullable Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
     private final ChromePageInfoHighlight mPageInfoHighlight;
     private final OfflinePageLoadUrlDelegate mOfflinePageLoadUrlDelegate;
-    private String mOfflinePageCreationDate;
-    private final TabCreator mTabCreator;
+    private @Nullable String mOfflinePageCreationDate;
+    private final @Nullable TabCreator mTabCreator;
 
     static final String FEEDBACK_REPORT_TYPE =
             "com.google.chrome.browser.page_info.USER_INITIATED_FEEDBACK_REPORT";
@@ -102,9 +103,9 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate,
             @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
-            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            @Nullable Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             ChromePageInfoHighlight pageInfoHighlight,
-            TabCreator tabCreator) {
+            @Nullable TabCreator tabCreator) {
         super(
                 new ChromeAutocompleteSchemeClassifier(Profile.fromWebContents(webContents)),
                 /* isSiteSettingsAvailable= */ SiteSettingsHelper.isSiteSettingsAvailable(
@@ -288,7 +289,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
                 mContext, PrivacySandboxReferrer.PAGE_INFO_AD_PRIVACY_SECTION);
     }
 
-    @NonNull
     @Override
     public Collection<PageInfoSubpageController> createAdditionalRowViews(
             PageInfoMainController mainController, ViewGroup rowWrapper) {
@@ -344,8 +344,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
 
     /** {@inheritDoc} */
     @Override
-    public @NonNull CookieControlsBridge createCookieControlsBridge(
-            CookieControlsObserver observer) {
+    public CookieControlsBridge createCookieControlsBridge(CookieControlsObserver observer) {
         return new CookieControlsBridge(
                 observer,
                 mWebContents,
@@ -355,18 +354,18 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
 
     /** {@inheritDoc} */
     @Override
-    public @NonNull BrowserContextHandle getBrowserContext() {
+    public BrowserContextHandle getBrowserContext() {
         return mProfile;
     }
 
     /** {@inheritDoc} */
     @Override
-    public @NonNull SiteSettingsDelegate getSiteSettingsDelegate() {
+    public SiteSettingsDelegate getSiteSettingsDelegate() {
         return new ChromeSiteSettingsDelegate(mContext, mProfile);
     }
 
     @Override
-    public void getFavicon(GURL url, Callback<Drawable> callback) {
+    public void getFavicon(GURL url, Callback<@Nullable Drawable> callback) {
         Resources resources = mContext.getResources();
         int size = resources.getDimensionPixelSize(R.dimen.page_info_favicon_size);
         FaviconHelper faviconHelper = new FaviconHelper();
@@ -394,7 +393,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     }
 
     @Override
-    public FragmentManager getFragmentManager() {
+    public @Nullable FragmentManager getFragmentManager() {
         FragmentActivity activity = ((FragmentActivity) mContext);
         if (activity.isFinishing()) return null;
         return activity.getSupportFragmentManager();

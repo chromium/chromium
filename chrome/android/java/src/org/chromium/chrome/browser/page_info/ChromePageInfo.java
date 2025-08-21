@@ -8,10 +8,10 @@ import android.app.Activity;
 import android.view.Gravity;
 
 import androidx.annotation.GravityInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
@@ -28,8 +28,9 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Helper class showing page info dialog for Clank. */
+@NullMarked
 public class ChromePageInfo {
-    private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final @Nullable String mPublisher;
     private final @OpenedFromSource int mSource;
     private final @Nullable Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
@@ -45,7 +46,7 @@ public class ChromePageInfo {
      * @param tabCreator {@link TabCreator} to handle a new tab creation.
      */
     public ChromePageInfo(
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable String publisher,
             @OpenedFromSource int source,
             @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
@@ -80,6 +81,7 @@ public class ChromePageInfo {
         }
 
         Activity activity = TabUtils.getActivity(tab);
+        assert activity != null;
         PageInfoController.show(
                 activity,
                 webContents,

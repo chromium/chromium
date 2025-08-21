@@ -47,14 +47,14 @@ public class PageInfoAboutThisSiteController {
     private static final String TAG = "PageInfo";
 
     private final PageInfoMainController mMainController;
-    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
     private final WebContents mWebContents;
     private @Nullable SiteInfo mSiteInfo;
     private @Nullable EphemeralTabCoordinator mEphemeralTabCoordinator;
     private @Nullable EphemeralTabObserver mEphemeralTabObserver;
-    private final TabCreator mTabCreator;
+    private final @Nullable TabCreator mTabCreator;
 
     static boolean isFeatureEnabled() {
         return PageInfoAboutThisSiteControllerJni.get().isFeatureEnabled();
@@ -62,11 +62,11 @@ public class PageInfoAboutThisSiteController {
 
     public PageInfoAboutThisSiteController(
             PageInfoMainController mainController,
-            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            @Nullable Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             PageInfoRowView rowView,
             PageInfoControllerDelegate delegate,
             WebContents webContents,
-            TabCreator tabCreator) {
+            @Nullable TabCreator tabCreator) {
         mMainController = mainController;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mRowView = rowView;
@@ -149,10 +149,11 @@ public class PageInfoAboutThisSiteController {
     }
 
     private void openInNewTab(String url) {
-        mTabCreator.createNewTab(
-                new LoadUrlParams(url, PageTransition.LINK),
-                TabLaunchType.FROM_LINK,
-                TabUtils.fromWebContents(mWebContents));
+        assumeNonNull(mTabCreator)
+                .createNewTab(
+                        new LoadUrlParams(url, PageTransition.LINK),
+                        TabLaunchType.FROM_LINK,
+                        TabUtils.fromWebContents(mWebContents));
     }
 
     private void setupRow() {

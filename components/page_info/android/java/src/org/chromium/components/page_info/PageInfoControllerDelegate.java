@@ -183,7 +183,7 @@ public abstract class PageInfoControllerDelegate {
      * @return a collection of controllers corresponding to these views.
      */
     public abstract Collection<PageInfoSubpageController> createAdditionalRowViews(
-            PageInfoMainController mainController, @Nullable ViewGroup rowWrapper);
+            PageInfoMainController mainController, ViewGroup rowWrapper);
 
     /**
      * @return Returns the browser context associated with this dialog.
@@ -199,7 +199,7 @@ public abstract class PageInfoControllerDelegate {
      * Fetches a favicon for the current page and passes it to callback.
      * The UI will use a fallback icon if null is supplied.
      */
-    public abstract void getFavicon(GURL url, Callback<Drawable> callback);
+    public abstract void getFavicon(GURL url, Callback<@Nullable Drawable> callback);
 
     /**
      * Checks to see that touch exploration or an accessibility service that can perform gestures
@@ -208,7 +208,7 @@ public abstract class PageInfoControllerDelegate {
      */
     public abstract boolean isAccessibilityEnabled();
 
-    public abstract FragmentManager getFragmentManager();
+    public abstract @Nullable FragmentManager getFragmentManager();
 
     public abstract boolean isIncognito();
 

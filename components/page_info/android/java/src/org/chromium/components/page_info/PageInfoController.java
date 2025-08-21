@@ -626,8 +626,8 @@ public class PageInfoController
     }
 
     @Override
-    public @Nullable Activity getActivity() {
-        return mWindowAndroid.getActivity().get();
+    public Activity getActivity() {
+        return assertNonNull(mWindowAndroid.getActivity().get());
     }
 
     @Override
