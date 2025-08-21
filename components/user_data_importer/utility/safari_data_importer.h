@@ -205,6 +205,9 @@ class SafariDataImporter {
   // history service to import them.
   void ImportHistoryEntries(std::vector<SafariHistoryEntry> history_entries);
 
+  // Invoked if parsing of history fails. Forwards the results to `client_`.
+  void OnHistoryImportFailed();
+
   // Invoked once parsing of history is completed. Forwards the results to
   // `client_`.
   void OnHistoryImportCompleted();
@@ -220,6 +223,9 @@ class SafariDataImporter {
   // Imports bookmarks and reading list entries from pending data into the
   // corresponding BookmarkModel and ReadingListModel.
   void ContinueImportBookmarks();
+
+  // Invoked when all import processing tasks have concluded. Logs metrics.
+  void OnImportComplete();
 
   // Objects used by this importer to do work (esp. parsing)
 

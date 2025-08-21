@@ -4,6 +4,7 @@
 
 #include "components/user_data_importer/utility/safari_data_importer.h"
 
+#include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/containers/span_rust.h"
 #include "base/files/file_util.h"
@@ -210,9 +211,11 @@ class RustHistoryCallback final
       std::vector<user_data_importer::SafariHistoryEntry>)>;
 
   explicit RustHistoryCallback(ParseHistoryCallback parse_history_callback,
-                               base::OnceClosure done_closure)
+                               base::OnceClosure done_closure,
+                               base::OnceClosure failed_closure)
       : parse_history_callback_(parse_history_callback),
-        done_closure_(std::move(done_closure)) {}
+        done_closure_(std::move(done_closure)),
+        failed_closure_(std::move(failed_closure)) {}
 
   ~RustHistoryCallback() override = default;
 
@@ -227,12 +230,13 @@ class RustHistoryCallback final
     }
   }
 
-  // Calls `done_callback_` with 0 to signal that parsing has failed.
-  void Fail() override { std::move(done_closure_).Run(); }
+  // Calls `failed_closure_` to signal that parsing has failed.
+  void Fail() override { std::move(failed_closure_).Run(); }
 
  private:
   ParseHistoryCallback parse_history_callback_;
   base::OnceClosure done_closure_;
+  base::OnceClosure failed_closure_;
 };
 
 SafariDataImporter::SafariDataImporter(
@@ -283,8 +287,14 @@ void SafariDataImporter::PrepareImport(const base::FilePath& path) {
 
 void SafariDataImporter::CompleteImport(
     const std::vector<int>& selected_password_ids) {
-  // The history import process is the only one requiring reading the zip file,
-  // so launch it first.
+  constexpr int kNumTasks = 4;
+
+  // No need to BindPostTask here, because `barrier_closure` is always chained
+  // to another callback which is, itself, posted back to the default runner.
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      kNumTasks, base::BindOnce(&SafariDataImporter::OnImportComplete,
+                                weak_factory_.GetWeakPtr()));
+
   history_urls_imported_ = 0;
   RustHistoryCallback::ParseHistoryCallback parse_history_callback =
       base::BindPostTask(
@@ -294,13 +304,20 @@ void SafariDataImporter::CompleteImport(
 
   base::OnceClosure done_history_closure = base::BindPostTask(
       GetRunner(), base::BindOnce(&SafariDataImporter::OnHistoryImportCompleted,
-                                  weak_factory_.GetWeakPtr()));
+                                  weak_factory_.GetWeakPtr())
+                       .Then(barrier_closure));
+
+  base::OnceClosure failed_history_closure = base::BindPostTask(
+      GetRunner(), base::BindOnce(&SafariDataImporter::OnHistoryImportFailed,
+                                  weak_factory_.GetWeakPtr())
+                       .Then(barrier_closure));
 
   metrics_recorder_.history_metrics().OnImportStarted();
   blocking_worker_.AsyncCall(&BlockingWorker::ImportHistory)
       .WithArgs(std::make_unique<RustHistoryCallback>(
                     std::move(parse_history_callback),
-                    std::move(done_history_closure)),
+                    std::move(done_history_closure),
+                    std::move(failed_history_closure)),
                 history_size_threshold_);
 
   if (password_importer_ &&
@@ -308,25 +325,31 @@ void SafariDataImporter::CompleteImport(
           password_manager::PasswordImporter::kUserInteractionRequired)) {
     metrics_recorder_.password_metrics().OnImportStarted();
 
-    // TODO(crbug.com/407587751): Move this to a task.
     password_importer_->ContinueImport(
         selected_password_ids,
         base::BindOnce(&SafariDataImporter::OnPasswordImportCompleted,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr())
+            .Then(barrier_closure));
   } else {
     client_->OnPasswordsImported(password_manager::ImportResults());
+    // In the case where no passwords need to be imported, just run
+    // `barrier_closure` directly. This is safe because CompleteImport runs on
+    // the main sequence.
+    barrier_closure.Run();
   }
 
   metrics_recorder_.bookmark_metrics().OnImportStarted();
   metrics_recorder_.reading_list_metrics().OnImportStarted();
   GetRunner()->PostTask(
       FROM_HERE, base::BindOnce(&SafariDataImporter::ContinueImportBookmarks,
-                                weak_factory_.GetWeakPtr()));
+                                weak_factory_.GetWeakPtr())
+                     .Then(barrier_closure));
 
   metrics_recorder_.payment_card_metrics().OnImportStarted();
   GetRunner()->PostTask(
       FROM_HERE, base::BindOnce(&SafariDataImporter::ContinueImportPaymentCards,
-                                weak_factory_.GetWeakPtr()));
+                                weak_factory_.GetWeakPtr())
+                     .Then(barrier_closure));
 }
 
 // Called after calling "Import" in order to cancel the import process.
@@ -496,8 +519,8 @@ void SafariDataImporter::PreparePasswords(std::string csv_data) {
         DataTypeMetrics::ImportOutcome::kNotPresent);
 
     // Empty results object, indicating no work could be done.
-    password_manager::ImportResults results;
-    client_->OnPasswordsReady(results);
+    client_->OnPasswordsReady({});
+    return;
   }
 
   metrics_recorder_.password_metrics().LogFileSizeBytes(csv_data.length());
@@ -565,6 +588,7 @@ void SafariDataImporter::OnPasswordsParsed(
   auto error = TranslatePasswordStatusToError(results.status);
   if (error) {
     metrics_recorder_.LogPasswordsError(*error);
+    client_->OnPasswordsReady({});
     return;
   }
 
@@ -648,6 +672,13 @@ void SafariDataImporter::ImportHistoryEntries(
   }
 }
 
+void SafariDataImporter::OnHistoryImportFailed() {
+  metrics_recorder_.history_metrics().LogOutcome(
+      DataTypeMetrics::ImportOutcome::kFailure);
+  metrics_recorder_.history_metrics().OnImportFinished(history_urls_imported_);
+  client_->OnHistoryImported(history_urls_imported_);
+}
+
 void SafariDataImporter::OnHistoryImportCompleted() {
   metrics_recorder_.history_metrics().OnImportFinished(history_urls_imported_);
   metrics_recorder_.history_metrics().LogOutcome(
@@ -721,6 +752,10 @@ void SafariDataImporter::ContinueImportBookmarks() {
 
   client_->OnBookmarksImported(imported_bookmarks_count +
                                imported_reading_list_count);
+}
+
+void SafariDataImporter::OnImportComplete() {
+  metrics_recorder_.OnFlowFinished();
 }
 
 }  // namespace user_data_importer

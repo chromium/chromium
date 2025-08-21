@@ -82,35 +82,63 @@ rust_static_library("zip_ffi_glue") {
   ]
 }
 
-copy("test_archive_files") {
+copy("valid_test_archive_files") {
   sources = [
-    "//components/test/data/user_data_importer/Bookmarks.html",
-    "//components/test/data/user_data_importer/History - Profile 2.json",
-    "//components/test/data/user_data_importer/History.json",
-    "//components/test/data/user_data_importer/Passwords.csv",
-    "//components/test/data/user_data_importer/PaymentCards.json",
+    "//components/test/data/user_data_importer/valid/Bookmarks.html",
+    "//components/test/data/user_data_importer/valid/History - Profile 2.json",
+    "//components/test/data/user_data_importer/valid/History.json",
+    "//components/test/data/user_data_importer/valid/Passwords.csv",
+    "//components/test/data/user_data_importer/valid/PaymentCards.json",
   ]
-  outputs = [ "$target_out_dir/{{source_file_part}}" ]
+  outputs = [ "$target_out_dir/valid/{{source_file_part}}" ]
 }
 
-zip("test_archive") {
+zip("valid_test_archive") {
   testonly = true
-  output = "$root_out_dir/test_archive.zip"
+  output = "$root_out_dir/valid_test_archive.zip"
   inputs = [
-    "$target_out_dir/Bookmarks.html",
-    "$target_out_dir/History.json",
-    "$target_out_dir/History - Profile 2.json",
-    "$target_out_dir/Passwords.csv",
-    "$target_out_dir/PaymentCards.json",
+    "$target_out_dir/valid/Bookmarks.html",
+    "$target_out_dir/valid/History.json",
+    "$target_out_dir/valid/History - Profile 2.json",
+    "$target_out_dir/valid/Passwords.csv",
+    "$target_out_dir/valid/PaymentCards.json",
   ]
-  deps = [ ":test_archive_files" ]
+  deps = [ ":valid_test_archive_files" ]
+}
+
+copy("garbage_test_archive_files") {
+  sources = [
+    "//components/test/data/user_data_importer/garbage/Bookmarks.html",
+    "//components/test/data/user_data_importer/garbage/History.json",
+    "//components/test/data/user_data_importer/garbage/Passwords.csv",
+    "//components/test/data/user_data_importer/garbage/PaymentCards.json",
+  ]
+  outputs = [ "$target_out_dir/garbage/{{source_file_part}}" ]
+}
+
+zip("garbage_test_archive") {
+  testonly = true
+  output = "$root_out_dir/garbage_test_archive.zip"
+  inputs = [
+    "$target_out_dir/garbage/Bookmarks.html",
+    "$target_out_dir/garbage/History.json",
+    "$target_out_dir/garbage/Passwords.csv",
+    "$target_out_dir/garbage/PaymentCards.json",
+  ]
+  deps = [ ":garbage_test_archive_files" ]
 }
 
 if (is_ios) {
   bundle_data("test_archive_bundle_data") {
     testonly = true
-    public_deps = [ ":test_archive" ]
-    sources = [ "$root_out_dir/test_archive.zip" ]
+    public_deps = [
+      ":garbage_test_archive",
+      ":valid_test_archive",
+    ]
+    sources = [
+      "$root_out_dir/garbage_test_archive.zip",
+      "$root_out_dir/valid_test_archive.zip",
+    ]
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
 }
@@ -152,7 +180,10 @@ source_set("unit_tests") {
       "//components/password_manager/services/csv_password/ios:fake_password_parser_service",
     ]
   } else {
-    data_deps = [ ":test_archive" ]
+    data_deps = [
+      ":garbage_test_archive",
+      ":valid_test_archive",
+    ]
     deps += [
       "//components/password_manager/services/csv_password:fake_password_parser_service",
       "//components/user_data_importer/content",

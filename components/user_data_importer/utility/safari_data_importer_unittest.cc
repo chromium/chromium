@@ -232,7 +232,15 @@ class SafariDataImporterTest : public testing::Test {
   void PrepareImportFromFile() {
     base::FilePath zip_archive_path;
     ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &zip_archive_path));
-    PrepareFile(zip_archive_path.Append(FILE_PATH_LITERAL("test_archive.zip")));
+    PrepareFile(
+        zip_archive_path.Append(FILE_PATH_LITERAL("valid_test_archive.zip")));
+  }
+
+  void PrepareImportFromGarbageFile() {
+    base::FilePath zip_archive_path;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &zip_archive_path));
+    PrepareFile(
+        zip_archive_path.Append(FILE_PATH_LITERAL("garbage_test_archive.zip")));
   }
 
   void CancelImport() { importer_->CancelImport(); }
@@ -789,6 +797,26 @@ TEST_F(SafariDataImporterTest, PasswordImportConflicts) {
 TEST_F(SafariDataImporterTest, TotalFailure) {
   ExpectTotalFailure();
   PrepareInvalidFile();
+}
+
+TEST_F(SafariDataImporterTest, HandleGarbageFile) {
+  ExpectBookmarksReady(0);
+  // History is an approximate count based on the filesize, so we don't know
+  // it's garbage yet.
+  EXPECT_CALL(client_, OnHistoryReady(2, _));
+  EXPECT_CALL(client_, OnPasswordsReady(Field(&ImportResults::status,
+                                              ImportResults::Status::NONE)));
+  EXPECT_CALL(client_, OnPaymentCardsReady(0));
+
+  PrepareImportFromGarbageFile();
+
+  EXPECT_CALL(client_, OnPasswordsImported(Field(&ImportResults::status,
+                                                 ImportResults::Status::NONE)));
+  EXPECT_CALL(client_, OnBookmarksImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  EXPECT_CALL(client_, OnHistoryImported(0));  // Actual.
+
+  CompleteImport({});
 }
 
 TEST_F(SafariDataImporterTest, CancelImport) {
