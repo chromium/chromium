@@ -51,6 +51,8 @@ class IdentityCredentialDelegate {
   // the strings and UI affordances can be different.
   // The given `field_type` must be one of the Identity Credentials types
   // supported by AutofillType::GetIdentityCredentialType(), or UNKNOWN_TYPE.
+  // TODO(crbug.com/409962888): Remove this method once the new suggestion
+  // generation flow is launched.
   virtual std::vector<Suggestion> GetVerifiedAutofillSuggestions(
       const FormData& form,
       const FormStructure* form_structure,

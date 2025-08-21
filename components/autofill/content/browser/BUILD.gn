@@ -30,6 +30,8 @@ static_library("browser") {
     "risk/fingerprint.h",
     "scoped_autofill_managers_observation.cc",
     "scoped_autofill_managers_observation.h",
+    "suggestions/identity_credential_suggestion_generator.cc",
+    "suggestions/identity_credential_suggestion_generator.h",
   ]
 
   public_deps = [
@@ -122,6 +124,7 @@ source_set("unit_tests") {
     "content_autofill_driver_unittest.cc",
     "content_identity_credential_delegate_unittest.cc",
     "scoped_autofill_managers_observation_unittest.cc",
+    "suggestions/identity_credential_suggestion_generator_unittest.cc",
   ]
 
   deps = [
