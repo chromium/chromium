@@ -6826,7 +6826,7 @@ targets.bundle(
         "content_unittests": targets.mixin(
             args = [
                 "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter;testing/buildbot/filters/tvos.content_unittests.filter",
             ],
         ),
         "media_unittests": targets.mixin(

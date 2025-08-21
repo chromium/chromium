@@ -193,7 +193,10 @@ bundle_data("components_unittests_use_blink_filters_bundle_data") {
 
 bundle_data("content_unittests_filters_bundle_data") {
   testonly = true
-  sources = [ "//testing/buildbot/filters/ios.content_unittests.filter" ]
+  sources = [
+    "//testing/buildbot/filters/ios.content_unittests.filter",
+    "//testing/buildbot/filters/tvos.content_unittests.filter",
+  ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
