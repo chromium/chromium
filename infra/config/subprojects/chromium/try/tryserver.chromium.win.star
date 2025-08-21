@@ -541,9 +541,7 @@ gpu.try_.optional_tests_builder(
     # default is 6 in _gpu_optional_tests_builder()
     execution_timeout = 5 * time.hour,
     main_list_view = "try",
-    # TODO(crbug.com/375244064): Switch this to 7 after builderful SSD capacity
-    # is merged into the builderless pool.
-    max_concurrent_builds = 9,
+    max_concurrent_builds = 7,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
         location_filters = [
