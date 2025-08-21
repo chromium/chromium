@@ -14,7 +14,10 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -80,11 +83,15 @@ IN_PROC_BROWSER_TEST_F(SearchApiBrowserTest, InvalidTabId) {
                             "No tab with id: -1.");
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test for error if missing browser context.
+// TODO(crbug.com/434262354): Enable browsertest for desktop Android.
 IN_PROC_BROWSER_TEST_F(SearchApiBrowserTest, NoActiveBrowser) {
   auto result = api_test_utils::RunFunctionAndReturnError(
       function(), R"([{"text": "1"}])", nullptr);
+
   EXPECT_EQ("No active browser.", result);
 }
+#endif
 
 }  // namespace extensions

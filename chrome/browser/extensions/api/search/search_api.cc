@@ -19,22 +19,26 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#else
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #endif
 
 namespace extensions {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/434262354): Port to desktop Android by equivalent navigation
-// without browser.
-void NavigateToURL(WindowOpenDisposition disposition,
-                   Browser* browser,
-                   const GURL& url) {
-  NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_FROM_API);
-  navigate_params.window_action = NavigateParams::SHOW_WINDOW;
-  navigate_params.disposition = disposition;
-  Navigate(&navigate_params);
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+content::WebContents* GetActiveWebContents() {
+  for (TabModel* tab_model : TabModelList::models()) {
+    if (tab_model->IsActiveModel()) {
+      content::WebContents* web_contents = tab_model->GetActiveWebContents();
+      if (web_contents) {
+        return web_contents;
+      }
+    }
+  }
+  return nullptr;
 }
 #endif
 
@@ -85,8 +89,6 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
     // find the associated browser.
     web_contents = GetSenderWebContents();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    // TODO(crbug.com/434262354): Port to desktop Android by equivalent
-    // GetActiveWebContents` without browser and tabs.
     if (web_contents) {
       browser = chrome::FindBrowserWithTab(web_contents);
     }
@@ -100,6 +102,13 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
         return RespondNow(Error("No active browser."));
       }
       web_contents = browser->tab_strip_model()->GetActiveWebContents();
+    }
+#else
+    if (!web_contents) {
+      web_contents = GetActiveWebContents();
+      if (!web_contents) {
+        return RespondNow(Error("No active browser."));
+      }
     }
 #endif
   }
@@ -127,16 +136,24 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
       break;
     case Disposition::kNewTab:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      // TODO(crbug.com/434262354): Port to desktop Android by equivalent
-      // navigation without browser.
-      NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB, browser, url);
+      ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                      browser, url);
+#else
+      // TODO(crbug.com//440173000): The search API supports opening url in a
+      // tab vs. window distinction, The `NavigateTOURL` should be refactored to
+      // support the disposition on Android.
+      ExtensionTabUtil::NavigateToURL(web_contents, browser_context(), url);
 #endif
       break;
     case Disposition::kNewWindow:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      // TODO(crbug.com/434262354): Port to desktop Android by equivalent
-      // navigation without browser.
-      NavigateToURL(WindowOpenDisposition::NEW_WINDOW, browser, url);
+      ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_WINDOW,
+                                      browser, url);
+#else
+      // TODO(crbug.com//440173000): The search API supports opening url in a
+      // tab vs. window distinction, The `NavigateTOURL` should be refactored to
+      // support the disposition on Android.
+      ExtensionTabUtil::NavigateToURL(web_contents, browser_context(), url);
 #endif
       break;
   }

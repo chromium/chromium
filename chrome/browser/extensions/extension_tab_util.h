@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "components/tabs/public/split_tab_id.h"
+#include "extensions/buildflags/buildflags.h"
 
 // TODO(jamescook): Switch most of these guards to ENABLE_EXTENSIONS.
 #if !BUILDFLAG(IS_ANDROID)
@@ -309,6 +310,18 @@ class ExtensionTabUtil {
   // fix.
   static GURL ResolvePossiblyRelativeURL(const std::string& url_string,
                                          const Extension* extension);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Navigates to a URL in a specific browser.
+  static void NavigateToURL(WindowOpenDisposition disposition,
+                            Browser* browser,
+                            const GURL& url);
+#else
+  // Navigates to a URL in a specific web contents.
+  static void NavigateToURL(content::WebContents* web_contents,
+                            content::BrowserContext* browser_context,
+                            const GURL& url);
+#endif
 
   // Returns true if navigating to `url` could kill a page or the browser
   // itself, whether by simulating a crash, browser quit, thread hang, or
