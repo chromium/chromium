@@ -2535,8 +2535,8 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)safariDataImportDidDismiss {
   NSIndexPath* indexPath = [self.tableView indexPathForSelectedRow];
-  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
-      SettingsItemTypeSafariDataImport) {
+  if (indexPath && [self.tableViewModel itemTypeForIndexPath:indexPath] ==
+                       SettingsItemTypeSafariDataImport) {
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
   }
 }
