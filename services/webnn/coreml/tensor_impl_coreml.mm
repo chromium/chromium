@@ -179,8 +179,8 @@ TensorImplCoreml::Create(
           std::move(buffer_content));
   return base::MakeRefCounted<TensorImplCoreml>(
       std::move(receiver), std::move(context), std::move(tensor_info),
-      std::move(buffer_state), /*representation_access=*/nullptr,
-      base::PassKey<TensorImplCoreml>());
+      std::move(buffer_state), /*representation=*/nullptr,
+      /*representation_access=*/nullptr, base::PassKey<TensorImplCoreml>());
 }
 
 // static
@@ -254,8 +254,8 @@ TensorImplCoreml::Create(
           std::move(buffer_content));
   return base::MakeRefCounted<TensorImplCoreml>(
       std::move(receiver), std::move(context), std::move(tensor_info),
-      std::move(buffer_state), std::move(representation_access),
-      base::PassKey<TensorImplCoreml>());
+      std::move(buffer_state), std::move(representation),
+      std::move(representation_access), base::PassKey<TensorImplCoreml>());
 }
 
 TensorImplCoreml::TensorImplCoreml(
@@ -263,12 +263,14 @@ TensorImplCoreml::TensorImplCoreml(
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
     scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
+    std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
     std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
         representation_access,
     base::PassKey<TensorImplCoreml> /*pass_key*/)
     : WebNNTensorImpl(std::move(receiver),
                       std::move(context),
-                      std::move(tensor_info)),
+                      std::move(tensor_info),
+                      std::move(representation)),
       buffer_state_(std::move(buffer_state)) {
   representation_access_ = std::move(representation_access);
 }

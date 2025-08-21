@@ -41,6 +41,7 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
       base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info,
       scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
+      std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
       std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
           representation_access,
       base::PassKey<TensorImplCoreml> pass_key);
