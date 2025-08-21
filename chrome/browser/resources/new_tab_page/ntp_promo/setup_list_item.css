@@ -19,6 +19,7 @@
   --setup-list-icon-foreground: var(--color-sys-on-tonal-container);
   --setup-list-icon-size: 40px;
   --setup-list-icon-image-size: 20px;
+  --setup-list-text-max-width: 345px;
 
   display: flex;
 }
@@ -63,6 +64,7 @@
   flex: 1;
   margin-block: 0;
   margin-inline: var(--setup-list-element-spacing);
+  max-width: var(--setup-list-text-max-width);
   vertical-align: middle;
   flex-grow: 1;
 }
@@ -86,4 +88,8 @@
   );
   text-align: center;
   width: var(--setup-list-icon-size);
+}
+
+.completed #actionIcon {
+  color: var(--setup-list-completed-foreground);
 }
