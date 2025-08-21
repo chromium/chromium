@@ -35,6 +35,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_l10n_util.h"
+#include "extensions/common/extension_resource.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
@@ -48,35 +49,31 @@ namespace extensions {
 
 namespace {
 
+BASE_FEATURE(kContentVerifierAssumeRelativePaths,
+             "ContentVerifierAssumeRelativePaths",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 ContentVerifier::TestObserver* g_content_verifier_test_observer = nullptr;
 using content_verifier_utils::CanonicalRelativePath;
 
-// This function converts paths like "//foo/bar", "./foo/bar", and
-// "/foo/bar" to "foo/bar". It also converts path separators to "/".
-base::FilePath NormalizeRelativePath(const base::FilePath& path) {
-  // Remove leading separator characters.
-  auto path_trimmed_separators = base::FilePath(base::TrimString(
-      path.value(), base::FilePath::kSeparators, base::TRIM_LEADING));
-
-  // Ideally, we shouldn't end up here with an absolute path, but it can happen.
-  // For example, an extension's manifest may contain:
-  //
-  // "icons": { "48": "C:/icon.png" }
-  //
-  // In this case, such icon path is rejected on installation, but not when an
-  // installed extension is loaded.
-  //
-  // TODO(https://crbug.com/407932132): Make sure we only reach here with
-  // relative paths and replace this with a CHECK.
-  if (path_trimmed_separators.IsAbsolute()) {
-    return base::FilePath();
+// This function converts paths like "foo/bar", "./foo/bar", and "foo/x/../bar"
+// to "foo/bar". It also converts path separators to "/".
+base::FilePath NormalizeRelativePath(const base::FilePath& relative_path) {
+  // TODO(crbug.com/407932132): Remove this if-check and always assume relative
+  // paths in M144.
+  if (!base::FeatureList::IsEnabled(kContentVerifierAssumeRelativePaths)) {
+    if (relative_path.IsAbsolute()) {
+      return base::FilePath();
+    }
+  } else {
+    CHECK(!relative_path.IsAbsolute());
   }
 
-  base::FilePath path_normalized =
-      content_verifier_utils::NormalizePathComponents(path_trimmed_separators);
+  base::FilePath relative_path_normalized =
+      content_verifier_utils::NormalizePathComponents(relative_path);
 
   std::vector<base::FilePath::StringType> parts =
-      path_normalized.GetComponents();
+      relative_path_normalized.GetComponents();
 
   // Remove all parent directory components from the beginning of the path,
   // since they're ignored when using the path in the request url, e.g.
@@ -91,7 +88,7 @@ base::FilePath NormalizeRelativePath(const base::FilePath& path) {
   base::FilePath::StringType normalized_relative_path =
       base::JoinString(parts, base::FilePath::StringType(1, '/'));
   // Preserve trailing separator, if present.
-  if (path.EndsWithSeparator() && !normalized_relative_path.empty()) {
+  if (relative_path.EndsWithSeparator() && !normalized_relative_path.empty()) {
     normalized_relative_path.push_back('/');
   }
   return base::FilePath(normalized_relative_path);
@@ -105,9 +102,9 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
   if (source_type == ContentVerifierDelegate::VerifierSourceType::NONE)
     return nullptr;
 
-  // The browser image paths from the extension may not be relative (eg
-  // they might have leading '/' or './'), so we strip those to make
-  // comparing to actual relative paths work later on.
+  // The browser image paths from the extension might have '.' or '..'
+  // components, so we strip those to make comparing to actual relative
+  // paths work later on.
   std::set<base::FilePath> original_image_paths =
       delegate->GetBrowserImagePaths(extension);
   auto canonicalize_path = [](const base::FilePath& relative_path) {

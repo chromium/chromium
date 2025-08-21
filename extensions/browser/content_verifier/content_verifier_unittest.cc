@@ -343,12 +343,6 @@ TEST_F(ContentVerifierTest, NormalizeRelativePath) {
     base::FilePath expected(test_case.expected);
     EXPECT_EQ(expected,
               ContentVerifier::NormalizeRelativePathForTesting(input));
-
-    // A leading separator should be ignored.
-    base::FilePath input_with_root(
-        base::FilePath(FILE_PATH_LITERAL("/")).Append(test_case.input));
-    EXPECT_EQ(expected, ContentVerifier::NormalizeRelativePathForTesting(
-                            input_with_root));
   }
 }
 
