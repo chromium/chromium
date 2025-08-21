@@ -164,6 +164,15 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         capabilities["pageLoadStrategy"] = "eager"
     if test_type in ("reftest", "print-reftest"):
         executor_kwargs["reftest_internal"] = kwargs["reftest_internal"]
+        cache_screenshots = True
+        if run_info_data["os"] == "android":
+            try:
+                major_version = int(run_info_data["version"].split(".", 1)[0])
+            except ValueError:
+                pass
+            else:
+                cache_screenshots = major_version < 14
+        executor_kwargs["cache_screenshots"] = cache_screenshots
     if test_type == "wdspec":
         options = {"args": []}
         if kwargs["binary"]:
