@@ -89,7 +89,9 @@ class AddressDataManagerTest : public testing::Test {
         profile_web_database_,
         base::SingleThreadTaskRunner::GetCurrentDefault());
     profile_database_service_->Init(base::NullCallback());
-    ResetAddressDataManager();
+    MakePrimaryAccountAvailable(/*use_sync_transport_mode=*/false,
+                                identity_test_env_, sync_service_);
+    RecreateAddressDataManager();
   }
 
   void TearDown() override { profile_web_database_->ShutdownDatabase(); }
@@ -107,10 +109,7 @@ class AddressDataManagerTest : public testing::Test {
     run_loop.Run();
   }
 
-  void ResetAddressDataManager(bool use_sync_transport_mode = false) {
-    address_data_manager_.reset();
-    MakePrimaryAccountAvailable(use_sync_transport_mode, identity_test_env_,
-                                sync_service_);
+  void RecreateAddressDataManager() {
     address_data_manager_ = std::make_unique<AddressDataManager>(
         profile_database_service_, prefs_.get(), prefs_.get(), &sync_service_,
         identity_test_env_.identity_manager(), &strike_database_,
@@ -610,10 +609,10 @@ TEST_F(AddressDataManagerTest, AddUpdateRemoveProfiles) {
   EXPECT_THAT(address_data_manager().GetProfiles(),
               UnorderedElementsAre(Pointee(profile0), Pointee(profile2)));
 
-  // Reset the PersonalDataManager.  This tests that the personal data was saved
-  // to the web database, and that we can load the profiles from the web
+  // Recreate the address data manager. This tests that the address data was
+  // saved to the web database, and that we can load the profiles from the web
   // database.
-  ResetAddressDataManager();
+  RecreateAddressDataManager();
 
   // Verify that we've loaded the profiles from the web database.
   EXPECT_THAT(address_data_manager().GetProfiles(),
@@ -813,10 +812,10 @@ TEST_F(AddressDataManagerTest, SetEmptyProfile) {
   // Add the empty profile to the database.
   AddProfileToAddressDataManager(profile0);
 
-  // Reset the PersonalDataManager.  This tests that the personal data was saved
-  // to the web database, and that we can load the profiles from the web
+  // Recreate the address data manager. This tests that the address data was
+  // saved to the web database, and that we can load the profiles from the web
   // database.
-  ResetAddressDataManager();
+  RecreateAddressDataManager();
 
   // Verify that we've loaded the profiles from the web database.
   ASSERT_EQ(0U, address_data_manager().GetProfiles().size());
@@ -1212,8 +1211,10 @@ TEST_F(AddressDataManagerTest,
 }
 
 TEST_F(AddressDataManagerTest, AutofillSyncToggleAvailableInTransportMode) {
-  ResetAddressDataManager(
-      /*use_sync_transport_mode=*/true);
+  identity_test_env_.ClearPrimaryAccount();
+  MakePrimaryAccountAvailable(/*use_sync_transport_mode=*/true,
+                              identity_test_env_, sync_service_);
+  RecreateAddressDataManager();
   const CoreAccountInfo& account = sync_service_.GetAccountInfo();
   identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
       account.account_id, account.email, account.gaia,
@@ -1233,7 +1234,15 @@ TEST_F(AddressDataManagerTest, AutofillSyncToggleAvailableInTransportMode) {
 TEST_F(AddressDataManagerTest, CreateAccountNameEmailProfileAfterInitalLoad) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableSupportForNameAndEmail};
-  ResetAddressDataManager();
+
+  const CoreAccountInfo core_info =
+      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+  identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
+      core_info.account_id, core_info.email, core_info.gaia, "", "Full Name",
+      "Full", "en-US", "");
+  RecreateAddressDataManager();
+
   EXPECT_THAT(address_data_manager().GetProfiles(),
               ElementsAre(testing::Property(
                   &AutofillProfile::record_type,

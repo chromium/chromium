@@ -49,6 +49,29 @@ class AccountNameEmailStoreTest : public testing::Test {
         identity_manager_(identity_test_env_.identity_manager()),
         store_(test_adm_, *identity_manager_, *prefs_) {}
 
+  void CreatePrimaryAccount(std::string_view name, std::string_view email) {
+    // Calling `MakePrimaryAccountAvailable` registers the account with the
+    // `AccountTrackerService`. This is a prerequisite for the next call, which
+    // would otherwise crash when trying to update an unknown account.
+    //
+    // This initial call uses an `AccountInfo` with an empty `full_name`, so the
+    // full profile update is deferred to the `UpdateAccountInfoForAccount`
+    // call.
+    AccountInfo info = identity_test_env().MakePrimaryAccountAvailable(
+        email.data(), signin::ConsentLevel::kSignin);
+    info.full_name = name;
+    identity_test_env().UpdateAccountInfoForAccount(info);
+  }
+
+  AccountInfo GetPrimaryAccountInfo() {
+    const CoreAccountInfo core_info =
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    std::optional<AccountInfo> info =
+        identity_manager_->FindExtendedAccountInfo(core_info);
+    CHECK(info.has_value());
+    return info.value();
+  }
+
   void OnAccountUpdated(const AccountInfo& info) {
     signin::UpdateAccountInfoForAccount(identity_manager_.get(), info);
   }
@@ -85,6 +108,15 @@ MATCHER_P2(IsCorrectAccountNameEmail, name_full, email, "") {
 // `AccountInfo` is passed into the `UpdateOrCreateAccountNameEmail` method.
 TEST_F(AccountNameEmailStoreTest, EmptyAccountInfoCreation) {
   account_name_email_store().UpdateOrCreateAccountNameEmail({});
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+}
+
+// Tests that a new `kAccountNameEmail` profile isn't created when the
+// `full_name` field of passed in `AccountInfo` is empty.
+TEST_F(AccountNameEmailStoreTest, EmptyAccountNameCreation) {
+  AccountInfo info;
+  info.email = kTestEmailAddress1;
+  account_name_email_store().UpdateOrCreateAccountNameEmail(info);
   EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
 }
 
@@ -155,31 +187,26 @@ TEST_F(AccountNameEmailStoreTest, RemovingProfile) {
 }
 
 // Tests that the `OnExtendedAccountInfoUpdated` method will create the
-// `kAccountNameEmail` profile on signin
+// `kAccountNameEmail` profile on signin.
 TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoUpdated_CreatePath) {
   ASSERT_THAT(address_data_manager().GetProfiles(), IsEmpty());
-
-  // This call should trigger OnExtendedAccountInfoUpdated and create an Account
-  // Name Email Profile
-  AccountInfo info = identity_test_env().MakePrimaryAccountAvailable(
-      kTestEmailAddress1.data(), signin::ConsentLevel::kSignin);
-  EXPECT_THAT(
-      address_data_manager().GetProfiles(),
-      ElementsAre(IsCorrectAccountNameEmail(base::UTF8ToUTF16(info.full_name),
-                                            base::UTF8ToUTF16(info.email))));
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  EXPECT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(kTestName1),
+                  base::UTF8ToUTF16(kTestEmailAddress1))));
 }
 
 // Tests that the `OnExtendedAccountInfoUpdated` method will update the already
-// existing `kAccountNameEmail` profile
+// existing `kAccountNameEmail` profile.
 TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoUpdated_UpdatePath) {
-  AccountInfo info = identity_test_env().MakePrimaryAccountAvailable(
-      kTestEmailAddress1.data(), signin::ConsentLevel::kSignin);
-
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
   ASSERT_THAT(address_data_manager().GetProfiles(),
               Not(ElementsAre(IsCorrectAccountNameEmail(
                   base::UTF8ToUTF16(kTestName2),
                   base::UTF8ToUTF16(kTestEmailAddress2)))));
 
+  AccountInfo info = GetPrimaryAccountInfo();
   info.full_name = kTestName2;
   info.email = kTestEmailAddress2;
   // This call should trigger OnExtendedAccountInfoUpdated and update the
@@ -196,11 +223,7 @@ TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoUpdated_UpdatePath) {
 // `kAccountNameEmail` autofill profile if primary account info and passed in
 // info have different `GaiaId`s
 TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoUpdated_WrongGaiaId) {
-  AccountInfo info1 = identity_test_env().MakePrimaryAccountAvailable(
-      kTestEmailAddress1.data(), signin::ConsentLevel::kSignin);
-  info1.full_name = kTestName1;
-  info1.email = kTestEmailAddress1;
-  OnAccountUpdated(info1);
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
 
   const std::vector<const AutofillProfile*> profiles_before_update =
       address_data_manager().GetProfiles();
@@ -209,9 +232,9 @@ TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoUpdated_WrongGaiaId) {
                   base::UTF8ToUTF16(kTestName1),
                   base::UTF8ToUTF16(kTestEmailAddress1))));
 
-  const AccountInfo info2 = identity_test_env().MakeAccountAvailable(
+  const AccountInfo info = identity_test_env().MakeAccountAvailable(
       kTestEmailAddress2, {std::nullopt, false, kFakeGaiaId});
-  OnAccountUpdated(info2);
+  OnAccountUpdated(info);
   EXPECT_THAT(profiles_before_update,
               ContainerEq(address_data_manager().GetProfiles()));
 }
@@ -221,12 +244,7 @@ TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoUpdated_WrongGaiaId) {
 // `kAutofillNameAndEmailProfileNotSelectedThreshold` if the user is logged in
 // but `kAccountNameEmail` profile was deleted.
 TEST_F(AccountNameEmailStoreTest, OnAddressDataChanged_ProfileDeleted) {
-  AccountInfo info = identity_test_env().MakePrimaryAccountAvailable(
-      kTestEmailAddress1.data(), signin::ConsentLevel::kSignin);
-  info.full_name = kTestName1;
-  info.email = kTestEmailAddress1;
-  OnAccountUpdated(info);
-
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
   ASSERT_EQ(pref_service().GetInteger(
                 prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
             0);
@@ -243,11 +261,7 @@ TEST_F(AccountNameEmailStoreTest, OnAddressDataChanged_ProfileDeleted) {
 // `kAutofillNameAndEmailProfileNotSelectedCounter` pref if a profile other than
 // the `kAccountNameEmail` was deleted.
 TEST_F(AccountNameEmailStoreTest, OnAddressDataChanged_PrefNotChanged) {
-  AccountInfo info = identity_test_env().MakePrimaryAccountAvailable(
-      kTestEmailAddress1.data(), signin::ConsentLevel::kSignin);
-  info.full_name = kTestName1;
-  info.email = kTestEmailAddress1;
-  OnAccountUpdated(info);
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
 
   AutofillProfile profile{
       AutofillProfile::RecordType::kAccount,
@@ -272,11 +286,7 @@ TEST_F(AccountNameEmailStoreTest, OnAddressDataChanged_PrefNotChanged) {
 // number greater than the threshold, after the name change there will be new
 // `kAccountNameEmail` profile and pref will be set to 0.
 TEST_F(AccountNameEmailStoreTest, ProfileReappearsAfterNameChange) {
-  AccountInfo info = identity_test_env().MakePrimaryAccountAvailable(
-      kTestEmailAddress1.data(), signin::ConsentLevel::kSignin);
-  info.full_name = kTestName1;
-  info.email = kTestEmailAddress1;
-  OnAccountUpdated(info);
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
 
   address_data_manager().RemoveProfile(
       address_data_manager()
@@ -289,6 +299,7 @@ TEST_F(AccountNameEmailStoreTest, ProfileReappearsAfterNameChange) {
                 prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
             features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get());
 
+  AccountInfo info = GetPrimaryAccountInfo();
   info.full_name = kTestName2;
   OnAccountUpdated(info);
 
