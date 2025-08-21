@@ -16,6 +16,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
@@ -39,6 +41,7 @@ import org.chromium.ui.resources.ResourceManager;
  * removes/creates children as necessary.  This object is built by its native counterpart.
  */
 @JNINamespace("android")
+@NullMarked
 public class TabStripSceneLayer extends SceneOverlayLayer {
     private static boolean sTestFlag;
     private long mNativePtr;
@@ -142,7 +145,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr);
     }
 
-    public void updateOffsetTag(OffsetTag offsetTag) {
+    public void updateOffsetTag(@Nullable OffsetTag offsetTag) {
         TabStripSceneLayerJni.get().updateOffsetTag(mNativePtr, offsetTag);
     }
 
@@ -371,7 +374,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         void finishBuildingFrame(long nativeTabStripSceneLayer);
 
-        void updateOffsetTag(long nativeTabStripSceneLayer, OffsetTag offsetTag);
+        void updateOffsetTag(long nativeTabStripSceneLayer, @Nullable OffsetTag offsetTag);
 
         void updateTabStripLayer(
                 long nativeTabStripSceneLayer,
