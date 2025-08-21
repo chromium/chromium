@@ -6,6 +6,7 @@
 #define JNI_ZERO_COMMON_APIS_H_
 
 #include <jni.h>
+#include <stdint.h>
 
 #include "third_party/jni_zero/java_refs.h"
 #include "third_party/jni_zero/jni_export.h"
