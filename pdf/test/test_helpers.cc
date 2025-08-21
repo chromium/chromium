@@ -136,6 +136,26 @@ testing::AssertionResult FuzzyMatchesPngFile(
   return MatchesPngFileImpl(actual_image, expected_png_file, comparator);
 }
 
+bool IsBitmapBlank(const SkBitmap& bitmap) {
+  for (int i = 0; i < bitmap.width(); ++i) {
+    for (int j = 0; j < bitmap.height(); ++j) {
+      if (bitmap.getColor(i, j) != SK_ColorWHITE) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+bool IsImageBlank(const SkImage& image) {
+  SkBitmap bitmap;
+  if (!image.asLegacyBitmap(&bitmap)) {
+    ADD_FAILURE();
+    return false;
+  }
+  return IsBitmapBlank(bitmap);
+}
+
 void CheckPdfRendering(base::span<const uint8_t> pdf_data,
                        int page_index,
                        const gfx::Size& size_in_points,

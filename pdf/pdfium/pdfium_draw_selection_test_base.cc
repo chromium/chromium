@@ -22,21 +22,6 @@
 
 namespace chrome_pdf {
 
-namespace {
-
-bool IsBitmapBlank(const SkBitmap& bitmap) {
-  for (int i = 0; i < bitmap.width(); ++i) {
-    for (int j = 0; j < bitmap.height(); ++j) {
-      if (bitmap.getColor(i, j) != SK_ColorWHITE) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-}  // namespace
-
 void PDFiumDrawSelectionTestBase::DrawSelectionAndCompare(
     PDFiumEngine& engine,
     int page_index,
