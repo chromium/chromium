@@ -364,10 +364,6 @@ std::string SavePasswordProgressLogger::GetStringFromID(
     case SavePasswordProgressLogger::STRING_GENERATION_DISABLED_SAVING_DISABLED:
       return "Generation disabled: saving disabled";
     case SavePasswordProgressLogger::
-        STRING_GENERATION_DISABLED_CHROME_DOES_NOT_SYNC_PASSWORDS:
-      return "Generation disabled: Chrome no longer syncs passwords and GMS is "
-             "no up to date to do it either";
-    case SavePasswordProgressLogger::
         STRING_GENERATION_DISABLED_NOT_ABLE_TO_SAVE_PASSWORDS:
       return "Generation disabled: not able to save passwords";
     case SavePasswordProgressLogger::STRING_GENERATION_DISABLED_NO_SYNC:
