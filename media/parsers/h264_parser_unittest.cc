@@ -112,7 +112,7 @@ TEST(H264ParserTest, StreamFileParsing) {
       << "Couldn't open stream file: " << file_path.MaybeAsASCII();
 
   H264Parser parser;
-  parser.SetStream(stream.data(), stream.length());
+  parser.SetStream(stream.bytes());
 
   // Parse until the end of stream/unsupported stream/error in stream is found.
   size_t num_parsed_nalus = 0;
@@ -200,7 +200,7 @@ TEST(H264ParserTest, GetCurrentSubsamplesNormal) {
   subsamples.emplace_back(5u, 20u);
   subsamples.emplace_back(10u, 0u);
   H264Parser parser;
-  parser.SetEncryptedStream(kStream, std::size(kStream), subsamples);
+  parser.SetEncryptedStream(kStream, subsamples);
 
   H264NALU nalu;
   ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&nalu));
@@ -248,7 +248,7 @@ TEST(H264ParserTest, GetCurrentSubsamplesSubsampleNotStartingAtNaluBoundary) {
   subsamples.emplace_back(4u, 24u);
   subsamples.emplace_back(18, 0);
   H264Parser parser;
-  parser.SetEncryptedStream(kStream, std::size(kStream), subsamples);
+  parser.SetEncryptedStream(kStream, subsamples);
 
   H264NALU nalu;
   ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&nalu));
@@ -311,7 +311,7 @@ TEST(H264ParserTest, RecoveryPointSEIParsing) {
   };
 
   H264Parser parser;
-  parser.SetStream(kStream, std::size(kStream));
+  parser.SetStream(kStream);
 
   H264NALU target_nalu;
   ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&target_nalu));
@@ -396,7 +396,7 @@ TEST(H264ParserTest, RecursiveSEIParsing) {
   };
 
   H264Parser parser;
-  parser.SetStream(kStream, std::size(kStream));
+  parser.SetStream(kStream);
 
   H264NALU target_nalu;
   ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&target_nalu));

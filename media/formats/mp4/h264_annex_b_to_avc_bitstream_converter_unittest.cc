@@ -68,7 +68,7 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, Success) {
       // parameter set are write to the output or not.
       EXPECT_TRUE(mp4::AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(&output));
       H264Parser parser;
-      parser.SetStream(output.data(), output.size());
+      parser.SetStream(output);
       std::vector<H264NALU> parameter_sets;
       while (true) {
         H264NALU nalu;
@@ -172,7 +172,7 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, PPS_SwitchWithoutReconfig) {
     // parameter set are write to the output or not.
     EXPECT_FALSE(mp4::AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(&output));
     H264Parser parser;
-    parser.SetStream(output.data(), output.size());
+    parser.SetStream(output);
     std::vector<H264NALU> parameter_sets;
     while (true) {
       H264NALU nalu;
@@ -251,7 +251,7 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, REXT) {
     // parameter set are write to the output or not.
     EXPECT_FALSE(mp4::AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(&output));
     H264Parser parser;
-    parser.SetStream(output.data(), output.size());
+    parser.SetStream(output);
     std::vector<H264NALU> parameter_sets;
     while (true) {
       H264NALU nalu;

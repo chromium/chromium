@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/span.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -874,23 +875,23 @@ size_t V4L2VideoEncodeAccelerator::CopyIntoOutputBuffer(
   bool inserted_pps = false;
   while (parser.AdvanceToNextNALU(&nalu) == H264Parser::kOk) {
     // nalu.size is always without the start code, regardless of the NALU type.
-    if (nalu.size + kH264StartCodeSize > remaining_dst_size) {
+    if (nalu.data.size() + kH264StartCodeSize > remaining_dst_size) {
       VLOGF(1) << "Output data did not fit in the BitstreamBuffer";
       break;
     }
 
     switch (nalu.nal_unit_type) {
       case H264NALU::kSPS:
-        cached_sps_.resize(nalu.size);
-        memcpy(cached_sps_.data(), nalu.data, nalu.size);
+        cached_sps_.resize(nalu.data.size());
+        base::as_writable_byte_span(cached_sps_).copy_from(nalu.data);
         cached_h264_header_size_ =
             cached_sps_.size() + cached_pps_.size() + 2 * kH264StartCodeSize;
         inserted_sps = true;
         break;
 
       case H264NALU::kPPS:
-        cached_pps_.resize(nalu.size);
-        memcpy(cached_pps_.data(), nalu.data, nalu.size);
+        cached_pps_.resize(nalu.data.size());
+        base::as_writable_byte_span(cached_pps_).copy_from(nalu.data);
         cached_h264_header_size_ =
             cached_sps_.size() + cached_pps_.size() + 2 * kH264StartCodeSize;
         inserted_pps = true;
@@ -907,8 +908,8 @@ size_t V4L2VideoEncodeAccelerator::CopyIntoOutputBuffer(
           VLOGF(1) << "Cannot inject IDR slice without SPS and PPS";
           break;
         }
-        if (cached_h264_header_size_ + nalu.size + kH264StartCodeSize >
-                remaining_dst_size) {
+        if (cached_h264_header_size_ + nalu.data.size() + kH264StartCodeSize >
+            remaining_dst_size) {
           VLOGF(1) << "Not enough space to inject a stream header before IDR";
           break;
         }
@@ -925,7 +926,7 @@ size_t V4L2VideoEncodeAccelerator::CopyIntoOutputBuffer(
         break;
     }
 
-    CopyNALUPrependingStartCode(nalu.data, nalu.size, &dst_ptr,
+    CopyNALUPrependingStartCode(nalu.data.data(), nalu.data.size(), &dst_ptr,
                                 &remaining_dst_size);
   }
 

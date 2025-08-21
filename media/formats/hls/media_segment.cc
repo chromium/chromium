@@ -4,7 +4,8 @@
 
 #include "media/formats/hls/media_segment.h"
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -47,13 +48,13 @@ std::optional<std::string> MediaSegment::EncryptionData::GetIVStr(
     return std::nullopt;
   }
   std::string str;
-  char* write_buffer = base::WriteInto(&str, 17);
+  base::WriteInto(&str, 17);
   uint64_t msb, lsb;
   std::tie(msb, lsb) = iv.value();
-  msb = base::ByteSwap(msb);
-  lsb = base::ByteSwap(lsb);
-  UNSAFE_TODO(memcpy(write_buffer, &msb, 8));
-  UNSAFE_TODO(memcpy(&write_buffer[8], &lsb, 8));
+
+  base::SpanWriter writer(base::as_writable_byte_span(str));
+  writer.WriteU64BigEndian(msb);
+  writer.WriteU64BigEndian(lsb);
   return str;
 }
 

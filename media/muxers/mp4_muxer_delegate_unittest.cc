@@ -1676,7 +1676,7 @@ TEST_P(Mp4MuxerDelegateTest, VideoFrameResolutionChanged) {
         mp4::AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(&mdat_written_data));
 
     H264Parser parser;
-    parser.SetStream(mdat_written_data.data(), mdat_written_data.size());
+    parser.SetStream(mdat_written_data);
     std::vector<H264NALU> nalus;
     while (true) {
       H264NALU nalu;

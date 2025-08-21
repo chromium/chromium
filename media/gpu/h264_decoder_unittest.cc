@@ -87,7 +87,7 @@ H264Decoder::H264Accelerator::Status ParseSliceHeader(
     full_data.insert(full_data.end(), span.begin(), span.end());
   }
   H264Parser parser;
-  parser.SetStream(full_data.data(), full_data.size());
+  parser.SetStream(full_data);
   while (true) {
     H264NALU nalu;
     H264Parser::Result res = parser.AdvanceToNextNALU(&nalu);

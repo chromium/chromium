@@ -107,14 +107,14 @@ static std::string AnnexBToString(
   std::stringstream ss;
 
   H264Parser parser;
-  parser.SetEncryptedStream(&buffer[0], buffer.size(), subsamples);
+  parser.SetEncryptedStream(buffer, subsamples);
 
   H264NALU nalu;
   bool first = true;
   size_t current_subsample_index = 0;
   while (parser.AdvanceToNextNALU(&nalu) == H264Parser::kOk) {
-    size_t subsample_index = AVC::FindSubsampleIndex(buffer, &subsamples,
-                                                     nalu.data);
+    size_t subsample_index =
+        AVC::FindSubsampleIndex(buffer, &subsamples, nalu.data.data());
     if (!first) {
       ss << (subsample_index == current_subsample_index ? "," : " ");
     } else {
@@ -433,20 +433,20 @@ TEST_F(AVCConversionTest, InsertParamSetsAnnexB) {
   expected.is_conformant = true;
   expected.is_keyframe = true;
 
-  for (size_t i = 0; i < std::size(test_cases); ++i) {
+  for (auto test_case : test_cases) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
 
-    AvcStringToAnnexB(test_cases[i].input, &buf, &subsamples);
+    AvcStringToAnnexB(test_case.input, &buf, &subsamples);
 
     EXPECT_TRUE(AVC::InsertParamSetsAnnexB(avc_config, &buf, &subsamples))
-        << "'" << test_cases[i].input << "' insert failed.";
+        << "'" << test_case.input << "' insert failed.";
     EXPECT_PRED2(AnalysesMatch,
                  AVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
                  expected)
-        << "'" << test_cases[i].input << "' created invalid AnnexB.";
-    EXPECT_EQ(test_cases[i].expected, AnnexBToString(buf, subsamples))
-        << "'" << test_cases[i].input << "' generated unexpected output.";
+        << "'" << test_case.input << "' created invalid AnnexB.";
+    EXPECT_EQ(test_case.expected, AnnexBToString(buf, subsamples))
+        << "'" << test_case.input << "' generated unexpected output.";
   }
 }
 

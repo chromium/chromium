@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/types/to_address.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -114,7 +115,7 @@ bool AVC::InsertParamSetsAnnexB(const AVCDecoderConfigurationRecord& avc_config,
                                 std::vector<SubsampleEntry>* subsamples) {
   std::unique_ptr<H264Parser> parser(new H264Parser());
   const uint8_t* start = &(*buffer)[0];
-  parser->SetEncryptedStream(start, buffer->size(), *subsamples);
+  parser->SetEncryptedStream(*buffer, *subsamples);
 
   H264NALU nalu;
   if (parser->AdvanceToNextNALU(&nalu) != H264Parser::kOk)
@@ -124,8 +125,7 @@ bool AVC::InsertParamSetsAnnexB(const AVCDecoderConfigurationRecord& avc_config,
 
   if (nalu.nal_unit_type == H264NALU::kAUD) {
     // Move insert point to just after the AUD.
-    config_insert_point +=
-        (nalu.data + base::checked_cast<size_t>(nalu.size)) - start;
+    config_insert_point += base::to_address(nalu.data.end()) - start;
   }
 
   // Clear |parser| and |start| since they aren't needed anymore and
@@ -203,7 +203,7 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
   }
 
   H264Parser parser;
-  parser.SetEncryptedStream(buffer, size, subsamples);
+  parser.SetEncryptedStream(base::span(buffer, size), subsamples);
 
   typedef enum {
     kAUDAllowed,

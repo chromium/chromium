@@ -236,7 +236,7 @@ class H264FrameReassembler {
     // whole frame.
     bool is_start_of_new_frame;
     // Size in bytes of the NALU under analysis.
-    off_t nalu_size;
+    size_t nalu_size;
   };
   // Parses |data| and returns either std::nullopt, if parsing |data| fails, or
   // a FrameBoundaryInfo describing the first |nalu_size| bytes of |data|.
@@ -1294,7 +1294,7 @@ H264FrameReassembler::FindH264FrameBoundary(const uint8_t* const data,
       // found a new NALU boundary. Pretend it's a frame boundary and move on.
       return FrameBoundaryInfo{.is_whole_frame = true,
                                .is_start_of_new_frame = true,
-                               .nalu_size = nalu.size};
+                               .nalu_size = nalu.data.size()};
     }
     DCHECK_EQ(result, H264Parser::kOk);
 
@@ -1313,12 +1313,12 @@ H264FrameReassembler::FindH264FrameBoundary(const uint8_t* const data,
       return std::nullopt;
     }
 
-    CHECK_GE(nalu.data, data);
-    CHECK_LE(nalu.data, data + data_size);
-    const auto nalu_size = nalu.data - data + nalu.size;
+    CHECK_GE(nalu.data.data(), data);
+    CHECK_LE(nalu.data.data(), data + data_size);
+    const auto nalu_size = nalu.data.data() - data + nalu.data.size();
     VLOGF(4) << "H264NALU type " << kKnownNALUNames[nalu.nal_unit_type]
              << ", NALU size=" << nalu_size
-             << " bytes, payload size=" << nalu.size << " bytes";
+             << " bytes, payload size=" << nalu.data.size() << " bytes";
 
     switch (nalu.nal_unit_type) {
       case H264NALU::kSPS:

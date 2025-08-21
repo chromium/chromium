@@ -575,7 +575,7 @@ class ExternalVideoEncoder::VEAClientImpl final
     if (encoded_data.empty()) {
       return std::nullopt;
     }
-    h264_parser_.SetStream(encoded_data.data(), encoded_data.size());
+    h264_parser_.SetStream(encoded_data);
     double total_quantizer = 0;
     int num_slices = 0;
 

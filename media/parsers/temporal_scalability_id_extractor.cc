@@ -82,7 +82,7 @@ bool TemporalScalabilityIdExtractor::ParseChunk(base::span<const uint8_t> chunk,
 
 bool TemporalScalabilityIdExtractor::ParseH264(base::span<const uint8_t> chunk,
                                                BitstreamMetadata& md) {
-  h264_->SetStream(chunk.data(), chunk.size());
+  h264_->SetStream(chunk);
   H264NALU nalu;
   H264Parser::Result result;
   while ((result = h264_->AdvanceToNextNALU(&nalu)) != H264Parser::kEOStream) {
@@ -96,7 +96,7 @@ bool TemporalScalabilityIdExtractor::ParseH264(base::span<const uint8_t> chunk,
     constexpr size_t kPrefixNALLocatedBytePos = 3;
     constexpr size_t kH264SVCExtensionFlagLocatedBytePos = 1;
     if (nalu.nal_unit_type == H264NALU::kPrefix &&
-        static_cast<size_t>(nalu.size) > kPrefixNALLocatedBytePos) {
+        nalu.data.size() > kPrefixNALLocatedBytePos) {
       bool svc_extension_flag =
           (nalu.data[kH264SVCExtensionFlagLocatedBytePos] & 0b1000'0000) >> 7;
       // nal_unit_header_svc_extension exists iff svc_extension_flag is true.

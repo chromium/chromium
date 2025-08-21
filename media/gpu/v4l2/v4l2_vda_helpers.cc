@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/to_address.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -217,8 +218,9 @@ bool H264InputBufferFragmentSplitter::AdvanceFrameFragment(const uint8_t* data,
     switch (nalu.nal_unit_type) {
       case H264NALU::kNonIDRSlice:
       case H264NALU::kIDRSlice:
-        if (nalu.size < 1)
+        if (nalu.data.size() < 1) {
           return false;
+        }
 
         has_frame_data = true;
 
@@ -265,8 +267,7 @@ bool H264InputBufferFragmentSplitter::AdvanceFrameFragment(const uint8_t* data,
         return true;
       }
     }
-    *endpos =
-        UNSAFE_TODO((nalu.data + base::checked_cast<size_t>(nalu.size))) - data;
+    *endpos = base::to_address(nalu.data.end()) - data;
   }
   NOTREACHED();
 }
