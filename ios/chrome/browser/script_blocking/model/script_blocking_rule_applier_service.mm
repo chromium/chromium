@@ -80,9 +80,7 @@ ScriptBlockingRuleApplierService::ScriptBlockingRuleApplierService(
       &script_blocking::ContentRuleListData::GetInstance());
   tracking_protection_settings_observation_.Observe(
       tracking_protection_settings_);
-  const std::optional<std::string>& rules =
-      script_blocking::ContentRuleListData::GetInstance().GetContentRuleList();
-  ApplyRules(rules.has_value() ? *rules : "");
+  BuildAndApplyRules();
 }
 
 ScriptBlockingRuleApplierService::~ScriptBlockingRuleApplierService() {
@@ -98,27 +96,38 @@ void ScriptBlockingRuleApplierService::Shutdown() {
 
 void ScriptBlockingRuleApplierService::OnScriptBlockingRuleListUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const std::optional<std::string>& rules =
-      script_blocking::ContentRuleListData::GetInstance().GetContentRuleList();
-  ApplyRules(rules.has_value() ? *rules : "");
+  BuildAndApplyRules();
 }
 
 void ScriptBlockingRuleApplierService::OnTrackingProtectionExceptionsChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const std::optional<std::string>& rules =
-      script_blocking::ContentRuleListData::GetInstance().GetContentRuleList();
-  ApplyRules(rules.has_value() ? *rules : "");
+  BuildAndApplyRules();
 }
 
 void ScriptBlockingRuleApplierService::OnFpProtectionEnabledChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const std::optional<std::string>& rules =
-      script_blocking::ContentRuleListData::GetInstance().GetContentRuleList();
-  ApplyRules(rules.has_value() ? *rules : "");
+  BuildAndApplyRules();
 }
 
-void ScriptBlockingRuleApplierService::ApplyRules(
-    const std::string& base_rules_json) {
+void ScriptBlockingRuleApplierService::BuildAndApplyRules() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::optional<std::string> final_rules_json = BuildRules();
+
+  if (final_rules_json.has_value()) {
+    content_rule_list_manager_->UpdateRuleList(
+        kScriptBlockingRuleListKey, std::move(*final_rules_json),
+        base::BindOnce(&ScriptBlockingRuleApplierService::OnRuleUpdateCompleted,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    content_rule_list_manager_->RemoveRuleList(
+        kScriptBlockingRuleListKey,
+        base::BindOnce(&ScriptBlockingRuleApplierService::OnRuleUpdateCompleted,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+std::optional<std::string> ScriptBlockingRuleApplierService::BuildRules() {
   // TODO(crbug.com/436881800): Clean up the dry-run feature flag after the
   // experiment.
   bool is_dry_run = base::FeatureList::IsEnabled(
@@ -127,27 +136,26 @@ void ScriptBlockingRuleApplierService::ApplyRules(
 
   // In blocking mode (not a dry run), the feature is incognito-only.
   if (!is_dry_run && !tracking_protection_settings_->IsFpProtectionEnabled()) {
-    content_rule_list_manager_->RemoveRuleList(
-        kScriptBlockingRuleListKey,
-        base::BindOnce(&ScriptBlockingRuleApplierService::OnRuleUpdateCompleted,
-                       weak_factory_.GetWeakPtr()));
-    return;
+    return std::nullopt;
+  }
+
+  const std::optional<std::string>& base_rules_json =
+      script_blocking::ContentRuleListData::GetInstance().GetContentRuleList();
+
+  // If the base rule list is not present, there are no rules to apply.
+  if (!base_rules_json.has_value()) {
+    return std::nullopt;
   }
 
   // Read the base anti-fingerprinting blocklist.
   std::optional<base::Value> rules_value =
-      base::JSONReader::Read(base_rules_json);
+      base::JSONReader::Read(*base_rules_json);
 
-  // If the base rule list is empty or invalid, there are no rules to apply,
-  // so any existing list should be removed. An exception list is meaningless
-  // without a base list.
+  // If the base rule list is empty or invalid, there are no rules to apply.
+  // An exception list is meaningless without a base list.
   if (!rules_value || !rules_value->is_list() ||
       rules_value->GetList().empty()) {
-    content_rule_list_manager_->RemoveRuleList(
-        kScriptBlockingRuleListKey,
-        base::BindOnce(&ScriptBlockingRuleApplierService::OnRuleUpdateCompleted,
-                       weak_factory_.GetWeakPtr()));
-    return;
+    return std::nullopt;
   }
 
   // Apply exceptions to the rule list, if any.
@@ -162,11 +170,7 @@ void ScriptBlockingRuleApplierService::ApplyRules(
 
   std::string rules_json;
   base::JSONWriter::Write(rules_list, &rules_json);
-
-  content_rule_list_manager_->UpdateRuleList(
-      kScriptBlockingRuleListKey, rules_json,
-      base::BindOnce(&ScriptBlockingRuleApplierService::OnRuleUpdateCompleted,
-                     weak_factory_.GetWeakPtr()));
+  return rules_json;
 }
 
 void ScriptBlockingRuleApplierService::OnRuleUpdateCompleted(NSError* error) {

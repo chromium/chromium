@@ -18,7 +18,8 @@ ContentRuleListData::~ContentRuleListData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ContentRuleListData::SetContentRuleList(std::string content_rule_list) {
+void ContentRuleListData::SetContentRuleList(
+    std::optional<std::string> content_rule_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   content_rule_list_ = std::move(content_rule_list);
   // Notify all registered observers of the update.

@@ -57,8 +57,14 @@ class ScriptBlockingRuleApplierService
   void OnTrackingProtectionExceptionsChanged() override;
   void OnFpProtectionEnabledChanged() override;
 
-  // Applies the given rules to the profile.
-  void ApplyRules(const std::string& base_rules_json);
+  // Determines the rules to be applied based on the current state and
+  // applies them.
+  void BuildAndApplyRules();
+
+  // Builds the content of the rule list based on the base list and exceptions.
+  // Returns std::nullopt if no rules should be applied (i.e., the list
+  // should be removed).
+  std::optional<std::string> BuildRules();
 
   // Handles the completion of the rule update operation.
   void OnRuleUpdateCompleted(NSError* error);

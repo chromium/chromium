@@ -111,12 +111,12 @@ std::string AntiFingerprintingContentRuleListComponentInstallerPolicy::
 // static
 void AntiFingerprintingContentRuleListComponentInstallerPolicy::
     PopulateContentRuleListData(std::optional<std::string> json) {
-  if (!json) {
-    return;
+  std::optional<std::string> transformed_json;
+  if (json.has_value()) {
+    transformed_json = TransformJsonForDryRun(std::move(*json));
   }
-
   script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
-      TransformJsonForDryRun(std::move(*json)));
+      std::move(transformed_json));
 }
 
 AntiFingerprintingContentRuleListComponentInstallerPolicy::
