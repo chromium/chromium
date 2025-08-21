@@ -83,8 +83,8 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
                             new SettingsStylingController(
                                     Objects.requireNonNull(getContext()), getPreferenceScreen());
 
-                    mItemBackgroundDecoration.updateBackgroundStyleDetails(
-                            stylingController.generateBackgroundStyleDetails());
+                    mItemBackgroundDecoration.updatePreferenceStyles(
+                            stylingController.generatePreferenceStyles());
                     recyclerView.invalidateItemDecorations();
                 });
     }

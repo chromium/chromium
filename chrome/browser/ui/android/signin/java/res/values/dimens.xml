@@ -23,4 +23,6 @@ found in the LICENSE file.
     <item type="dimen" name="dialog_fixed_width_minor_automotive">100%</item>
     <item type="dimen" name="dialog_fixed_height_major_automotive">100%</item>
     <item type="dimen" name="dialog_fixed_height_minor_automotive">100%</item>
+    <dimen name="signout_button_top_margin">16dp</dimen>
+    <dimen name="signout_button_bottom_margin">32dp</dimen>
 </resources>

@@ -89,8 +89,8 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
                             new SettingsStylingController(
                                     Objects.requireNonNull(getContext()), getPreferenceScreen());
 
-                    mItemBackgroundDecoration.updateBackgroundStyleDetails(
-                            stylingController.generateBackgroundStyleDetails());
+                    mItemBackgroundDecoration.updatePreferenceStyles(
+                            stylingController.generatePreferenceStyles());
                     recyclerView.invalidateItemDecorations();
                 });
     }

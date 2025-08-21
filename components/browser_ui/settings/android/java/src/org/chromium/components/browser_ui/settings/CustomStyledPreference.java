@@ -14,6 +14,8 @@ import java.lang.annotation.RetentionPolicy;
 /** An interface for preferences that should have custom background styling applied to them. */
 @NullMarked
 public interface CustomStyledPreference {
+    int DEFAULT = -1;
+
     @IntDef({BackgroundStyle.NONE, BackgroundStyle.CARD})
     @Retention(RetentionPolicy.SOURCE)
     @interface BackgroundStyle {
@@ -24,4 +26,20 @@ public interface CustomStyledPreference {
     /** Returns the custom background style for the preference. */
     @BackgroundStyle
     int getCustomBackgroundStyle();
+
+    /**
+     * @return The custom top margin for the preference in pixels. If DEFAULT, the default margin
+     *     will be used.
+     */
+    default int getCustomTopMargin() {
+        return DEFAULT;
+    }
+
+    /**
+     * @return The custom bottom margin for the preference in pixels. If DEFAULT, the default margin
+     *     will be used.
+     */
+    default int getCustomBottomMargin() {
+        return DEFAULT;
+    }
 }

@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT;
+
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -20,19 +22,6 @@ import java.util.ArrayList;
 /** Controller to assign styling to preferences in a settings screen. */
 @NullMarked
 public class SettingsStylingController {
-    /** A class that holds the background style details for a preference screen. */
-    public static class BackgroundStyleDetails {
-        public final float topRadius;
-        public final float bottomRadius;
-
-        /** An empty style with no background. */
-        public static final BackgroundStyleDetails EMPTY = new BackgroundStyleDetails(0, 0);
-
-        private BackgroundStyleDetails(float topRadius, float bottomRadius) {
-            this.topRadius = topRadius;
-            this.bottomRadius = bottomRadius;
-        }
-    }
 
     private final PreferenceScreen mPreferenceScreen;
     private final float mOuterRadius;
@@ -56,18 +45,18 @@ public class SettingsStylingController {
     }
 
     /**
-     * Traverses the preference screen and returns a list of background style details for each
-     * visible preference.
+     * Traverses the preference screen and returns a list of preference styles for each visible
+     * preference.
      *
-     * @return A list of {@link BackgroundStyleDetails} objects.
+     * @return A list of {@link PreferenceStyle} objects.
      */
-    public ArrayList<BackgroundStyleDetails> generateBackgroundStyleDetails() {
+    public ArrayList<PreferenceStyle> generatePreferenceStyles() {
         ArrayList<Preference> visiblePreferences = getVisiblePreferences();
-        ArrayList<BackgroundStyleDetails> backgroundStyles = new ArrayList<>();
+        ArrayList<PreferenceStyle> preferenceStyles = new ArrayList<>();
         for (int i = 0; i < visiblePreferences.size(); i++) {
-            backgroundStyles.add(getBackgroundStyleDetailsForPosition(visiblePreferences, i));
+            preferenceStyles.add(getPreferenceStyleForPosition(visiblePreferences, i));
         }
-        return backgroundStyles;
+        return preferenceStyles;
     }
 
     private ArrayList<Preference> getVisiblePreferences() {
@@ -113,12 +102,12 @@ public class SettingsStylingController {
                 || preference instanceof CustomStyledPreference;
     }
 
-    private @NonNull BackgroundStyleDetails getBackgroundStyleDetailsForPosition(
+    private @NonNull PreferenceStyle getPreferenceStyleForPosition(
             ArrayList<Preference> visiblePreferences, int position) {
         Preference currentPref = visiblePreferences.get(position);
 
         if (hasCustomStyling(currentPref)) {
-            return getBackgroundStyleDetailsForCustomPreference(currentPref);
+            return getPreferenceStyleForCustomPreference(currentPref);
         }
 
         Preference prefAbove = (position > 0) ? visiblePreferences.get(position - 1) : null;
@@ -131,27 +120,30 @@ public class SettingsStylingController {
         boolean isBottom = (prefBelow == null) || hasCustomStyling(prefBelow);
 
         if (isTop && isBottom) {
-            return new BackgroundStyleDetails(mOuterRadius, mOuterRadius);
+            return new PreferenceStyle(mOuterRadius, mOuterRadius, DEFAULT, DEFAULT);
         } else if (isTop) {
-            return new BackgroundStyleDetails(mOuterRadius, mInnerRadius);
+            return new PreferenceStyle(mOuterRadius, mInnerRadius, DEFAULT, DEFAULT);
         } else if (isBottom) {
-            return new BackgroundStyleDetails(mInnerRadius, mOuterRadius);
+            return new PreferenceStyle(mInnerRadius, mOuterRadius, DEFAULT, DEFAULT);
         } else {
-            return new BackgroundStyleDetails(mInnerRadius, mInnerRadius);
+            return new PreferenceStyle(mInnerRadius, mInnerRadius, DEFAULT, DEFAULT);
         }
     }
 
-    private BackgroundStyleDetails getBackgroundStyleDetailsForCustomPreference(
-            Preference preference) {
+    private PreferenceStyle getPreferenceStyleForCustomPreference(Preference preference) {
         if (preference instanceof PreferenceCategory) {
-            return BackgroundStyleDetails.EMPTY;
+            return PreferenceStyle.EMPTY;
         }
         if (preference instanceof CustomStyledPreference customStyledPreference) {
             if (customStyledPreference.getCustomBackgroundStyle() == BackgroundStyle.CARD) {
-                return new BackgroundStyleDetails(mOuterRadius, mOuterRadius);
+                return new PreferenceStyle(
+                        mOuterRadius,
+                        mOuterRadius,
+                        customStyledPreference.getCustomTopMargin(),
+                        customStyledPreference.getCustomBottomMargin());
             }
         }
 
-        return BackgroundStyleDetails.EMPTY;
+        return PreferenceStyle.EMPTY;
     }
 }

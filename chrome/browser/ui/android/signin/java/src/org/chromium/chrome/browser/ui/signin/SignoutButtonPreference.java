@@ -92,4 +92,20 @@ public class SignoutButtonPreference extends Preference implements CustomStyledP
     public @BackgroundStyle int getCustomBackgroundStyle() {
         return BackgroundStyle.CARD;
     }
+
+    /**
+     * @return The custom top margin for the preference in pixels.
+     */
+    @Override
+    public int getCustomTopMargin() {
+        return mContext.getResources().getDimensionPixelSize(R.dimen.signout_button_top_margin);
+    }
+
+    /**
+     * @return The custom bottom margin for the preference in pixels.
+     */
+    @Override
+    public int getCustomBottomMargin() {
+        return mContext.getResources().getDimensionPixelSize(R.dimen.signout_button_bottom_margin);
+    }
 }

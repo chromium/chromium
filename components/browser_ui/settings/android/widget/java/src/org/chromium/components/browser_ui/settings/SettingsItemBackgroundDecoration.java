@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -16,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.settings.SettingsStylingController.BackgroundStyleDetails;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
     private final int mHorizontalMargin;
     private final int mVerticalMargin;
     private final Context mContext;
-    private @Nullable ArrayList<BackgroundStyleDetails> mBackgroundStyleDetails;
+    private @Nullable ArrayList<PreferenceStyle> mPreferenceStyles;
 
     /**
      * A flag to ensure that the background update logic in {@link #onDraw(Canvas, RecyclerView,
@@ -47,7 +48,6 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
     public SettingsItemBackgroundDecoration(Context context) {
         mContext = context;
         mUpdateBackgrounds = true;
-        mBackgroundStyleDetails = null;
         mHorizontalMargin =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.settings_item_horizontal_margin);
@@ -57,13 +57,12 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
     }
 
     /**
-     * Updates the background styles for the preferences.
+     * Updates the preference styles for the preferences.
      *
-     * @param backgroundStyleDetails The new list of background styles.
+     * @param preferenceStyles The new list of preference styles.
      */
-    public void updateBackgroundStyleDetails(
-            ArrayList<BackgroundStyleDetails> backgroundStyleDetails) {
-        mBackgroundStyleDetails = backgroundStyleDetails;
+    public void updatePreferenceStyles(ArrayList<PreferenceStyle> preferenceStyles) {
+        mPreferenceStyles = preferenceStyles;
         mUpdateBackgrounds = true;
     }
 
@@ -85,8 +84,18 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
             @NonNull RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
         mUpdateBackgrounds = true;
-        outRect.top = getVerticalMargin();
-        outRect.bottom = getVerticalMargin();
+
+        int position = parent.getChildAdapterPosition(view);
+        if (position == RecyclerView.NO_POSITION
+                || mPreferenceStyles == null
+                || position >= mPreferenceStyles.size()) {
+            return;
+        }
+
+        PreferenceStyle style = mPreferenceStyles.get(position);
+        outRect.top = style.getTopMargin() != DEFAULT ? style.getTopMargin() : getVerticalMargin();
+        outRect.bottom =
+                style.getBottomMargin() != DEFAULT ? style.getBottomMargin() : getVerticalMargin();
         outRect.left = getHorizontalMargin();
         outRect.right = getHorizontalMargin();
     }
@@ -94,16 +103,15 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
     @Override
     public void onDraw(
             @NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-        if (!mUpdateBackgrounds || mBackgroundStyleDetails == null) return;
+        if (!mUpdateBackgrounds || mPreferenceStyles == null) return;
 
         for (int i = 0; i < parent.getChildCount(); i++) {
             View childView = parent.getChildAt(i);
             int position = parent.getChildAdapterPosition(childView);
-            if (position == RecyclerView.NO_POSITION
-                    || position >= mBackgroundStyleDetails.size()) {
+            if (position == RecyclerView.NO_POSITION || position >= mPreferenceStyles.size()) {
                 continue;
             }
-            applyBackgroundStyle(childView, mBackgroundStyleDetails.get(position));
+            applyBackgroundStyle(childView, mPreferenceStyles.get(position));
         }
         mUpdateBackgrounds = false;
         super.onDraw(c, parent, state);
@@ -113,14 +121,15 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
      * Applies the specified background style to the given view.
      *
      * @param view The view to apply the background to.
-     * @param style The {@link BackgroundStyleDetails} to apply.
+     * @param style The {@link PreferenceStyle} to apply.
      */
-    private void applyBackgroundStyle(View view, @NonNull BackgroundStyleDetails style) {
-        if (style == BackgroundStyleDetails.EMPTY) {
+    private void applyBackgroundStyle(View view, @NonNull PreferenceStyle style) {
+        if (style == PreferenceStyle.EMPTY) {
             view.setBackground(null);
             return;
         }
-        view.setBackground(createRoundedDrawable(mContext, style.topRadius, style.bottomRadius));
+        view.setBackground(
+                createRoundedDrawable(mContext, style.getTopRadius(), style.getBottomRadius()));
     }
 
     /**
