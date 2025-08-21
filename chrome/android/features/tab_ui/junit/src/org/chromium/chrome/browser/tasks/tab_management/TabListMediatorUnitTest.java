@@ -5551,6 +5551,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void tabMergeIntoGroup_Gts_UpdatesCards() {
         // Setup with two tabs, but pretend tab 1's card is already gone.
         initAndAssertAllProperties();
@@ -5575,6 +5576,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void tabMoveOutOfGroup_Gts_UpdatesCards() {
         // Setup with a single group of two tabs.
         initAndAssertAllProperties();

@@ -135,7 +135,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     private final Map<Token, Integer> mGroupIdToRootIdMap = new HashMap<>();
     private final TabModelInternal mTabModel;
     private final TabUngrouper mTabUngrouper;
-    private final boolean mWasTabCollectionsActive;
 
     /**
      * The set of tab group IDs that are currently hiding. This cannot be stored on {@link TabGroup}
@@ -143,6 +142,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
      */
     private final Set<Token> mHidingTabGroups = new HashSet<>();
 
+    private boolean mWasTabCollectionsActive;
     private int mCurrentGroupIndex = TabList.INVALID_TAB_INDEX;
     private boolean mShouldRecordUma = true;
     private boolean mTabRestoreCompleted;
@@ -1178,6 +1178,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         // a tab group. See crbug.com/356330532 for more details.
         resetFilterState();
         addTabGroupIdsForAllTabGroups();
+        mWasTabCollectionsActive = false;
     }
 
     @VisibleForTesting
