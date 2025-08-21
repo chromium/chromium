@@ -15,6 +15,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -1473,6 +1474,7 @@ public class ManualFillingControllerTest {
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
         verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.BOTTOM));
+        verify(mMockKeyboardAccessory, never()).setHasStickyLastItem(anyBoolean());
     }
 
     @Test
@@ -1490,6 +1492,7 @@ public class ManualFillingControllerTest {
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
         verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.TOP));
+        verify(mMockKeyboardAccessory).setHasStickyLastItem(false);
     }
 
     @Test
@@ -1509,6 +1512,7 @@ public class ManualFillingControllerTest {
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
         verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.TOP));
+        verify(mMockKeyboardAccessory).setHasStickyLastItem(false);
     }
 
     @Test
@@ -1528,6 +1532,7 @@ public class ManualFillingControllerTest {
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
         verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.TOP));
+        verify(mMockKeyboardAccessory).setHasStickyLastItem(false);
     }
 
     @Test
@@ -1547,6 +1552,7 @@ public class ManualFillingControllerTest {
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
         verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.BOTTOM));
+        verify(mMockKeyboardAccessory).setHasStickyLastItem(true);
     }
 
     @Test

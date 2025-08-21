@@ -56,6 +56,7 @@ class KeyboardAccessoryView extends LinearLayout {
     private boolean mShouldSkipClosingAnimation;
     private boolean mDisableAnimations;
     private boolean mAllowClicksWhileObscured;
+    private boolean mHasStickyLastItem;
 
     protected RecyclerView mBarItemsView;
 
@@ -105,7 +106,8 @@ class KeyboardAccessoryView extends LinearLayout {
 
         private int getItemOffsetInternal(
                 final View view, final RecyclerView parent, RecyclerView.State state) {
-            if (!isLastItem(parent, view, parent.getAdapter().getItemCount())) {
+            if (!isLastItem(parent, view, parent.getAdapter().getItemCount())
+                    || !mHasStickyLastItem) {
                 return mHorizontalMargin;
             }
             if (view.getWidth() == 0 && state.didStructureChange()) {
@@ -316,6 +318,10 @@ class KeyboardAccessoryView extends LinearLayout {
 
     boolean areClicksAllowedWhenObscured() {
         return mAllowClicksWhileObscured;
+    }
+
+    void setHasStickyLastItem(boolean hasStickyLastItem) {
+        mHasStickyLastItem = hasStickyLastItem;
     }
 
     void setAccessibilityMessage(boolean hasSuggestions) {

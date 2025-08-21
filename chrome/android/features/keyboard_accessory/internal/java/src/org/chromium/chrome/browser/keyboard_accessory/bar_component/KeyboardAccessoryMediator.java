@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OFFSET_AND_GRAVITY;
@@ -304,6 +305,7 @@ class KeyboardAccessoryMediator
                 || propertyKey == OBFUSCATED_CHILD_AT_CALLBACK
                 || propertyKey == SHOW_SWIPING_IPH
                 || propertyKey == HAS_SUGGESTIONS
+                || propertyKey == HAS_STICKY_LAST_ITEM
                 || propertyKey == ANIMATION_LISTENER) {
             return;
         }
@@ -351,6 +353,10 @@ class KeyboardAccessoryMediator
 
     void setOffsetAndGravity(@Px int offset, int gravity) {
         mModel.set(OFFSET_AND_GRAVITY, new Pair<Integer, Integer>(offset, gravity));
+    }
+
+    void setHasStickyLastItem(boolean hasStickyLastItem) {
+        mModel.set(HAS_STICKY_LAST_ITEM, hasStickyLastItem);
     }
 
     boolean isShown() {

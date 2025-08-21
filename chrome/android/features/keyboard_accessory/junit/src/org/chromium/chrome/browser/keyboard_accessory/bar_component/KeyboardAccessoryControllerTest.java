@@ -11,6 +11,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,6 +24,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CRE
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OFFSET_AND_GRAVITY;
@@ -149,12 +152,12 @@ public class KeyboardAccessoryControllerTest {
         mModel.set(VISIBLE, true);
         verify(mMockPropertyObserver).onPropertyChanged(mModel, VISIBLE);
 
-        assertThat(mModel.get(VISIBLE), is(true));
+        assertTrue(mModel.get(VISIBLE));
 
         // Resetting the visibility on the model to should make it propagate that it's visible.
         mModel.set(VISIBLE, false);
         verify(mMockPropertyObserver, times(2)).onPropertyChanged(mModel, VISIBLE);
-        assertThat(mModel.get(VISIBLE), is(false));
+        assertFalse(mModel.get(VISIBLE));
     }
 
     @Test
@@ -204,21 +207,21 @@ public class KeyboardAccessoryControllerTest {
         // Setting the visibility on the model should make it propagate that it's visible.
         mModel.set(VISIBLE, true);
         verify(mMockPropertyObserver).onPropertyChanged(mModel, VISIBLE);
-        assertThat(mModel.get(VISIBLE), is(true));
+        assertTrue(mModel.get(VISIBLE));
 
         // Marking it as visible again should not result in a notification.
         mModel.set(VISIBLE, true);
         verify(mMockPropertyObserver) // Unchanged number of invocations.
                 .onPropertyChanged(mModel, VISIBLE);
-        assertThat(mModel.get(VISIBLE), is(true));
+        assertTrue(mModel.get(VISIBLE));
     }
 
     @Test
     public void testTogglesVisibility() {
         mCoordinator.show();
-        assertThat(mModel.get(VISIBLE), is(true));
+        assertTrue(mModel.get(VISIBLE));
         mCoordinator.dismiss();
-        assertThat(mModel.get(VISIBLE), is(false));
+        assertFalse(mModel.get(VISIBLE));
     }
 
     @Test
@@ -520,11 +523,11 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testSkipAnimationsOnlyUntilNextShow() {
-        assertThat(mModel.get(SKIP_CLOSING_ANIMATION), is(false));
+        assertFalse(mModel.get(SKIP_CLOSING_ANIMATION));
         mCoordinator.skipClosingAnimationOnce();
-        assertThat(mModel.get(SKIP_CLOSING_ANIMATION), is(true));
+        assertTrue(mModel.get(SKIP_CLOSING_ANIMATION));
         mCoordinator.show();
-        assertThat(mModel.get(SKIP_CLOSING_ANIMATION), is(false));
+        assertFalse(mModel.get(SKIP_CLOSING_ANIMATION));
     }
 
     @Test
@@ -533,18 +536,18 @@ public class KeyboardAccessoryControllerTest {
         mCoordinator.show();
         Callback<Integer> obfuscatedChildAt = mModel.get(OBFUSCATED_CHILD_AT_CALLBACK);
         assertThat(obfuscatedChildAt, notNullValue());
-        assertThat(mModel.get(SHOW_SWIPING_IPH), is(false));
+        assertFalse(mModel.get(SHOW_SWIPING_IPH));
 
         // Notify the mediator to show the IPH because at least one of three items is not visible.
         mModel.get(BAR_ITEMS).add(mock(BarItem.class));
         mModel.get(BAR_ITEMS).add(mock(BarItem.class));
         mModel.get(BAR_ITEMS).add(mock(BarItem.class));
         obfuscatedChildAt.onResult(1);
-        assertThat(mModel.get(SHOW_SWIPING_IPH), is(true));
+        assertTrue(mModel.get(SHOW_SWIPING_IPH));
 
         // Any change that changes the visibility should reset the swiping IPH.
         mModel.set(VISIBLE, false);
-        assertThat(mModel.get(SHOW_SWIPING_IPH), is(false));
+        assertFalse(mModel.get(SHOW_SWIPING_IPH));
     }
 
     @Test
@@ -592,10 +595,10 @@ public class KeyboardAccessoryControllerTest {
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
         autofillSuggestionProvider.notifyObservers(List.of(mock(AutofillSuggestion.class)));
 
-        assertThat(mModel.get(HAS_SUGGESTIONS), is(true));
+        assertTrue(mModel.get(HAS_SUGGESTIONS));
 
         autofillSuggestionProvider.notifyObservers(List.of());
-        assertThat(mModel.get(HAS_SUGGESTIONS), is(false));
+        assertFalse(mModel.get(HAS_SUGGESTIONS));
     }
 
     @Test
@@ -637,6 +640,15 @@ public class KeyboardAccessoryControllerTest {
         Pair<Integer, Integer> testOffsetAndGravity = new Pair<>(testOffset, testGravity);
         mCoordinator.setOffsetAndGravity(testOffset, testGravity);
         assertThat(mModel.get(OFFSET_AND_GRAVITY), is(testOffsetAndGravity));
+    }
+
+    @Test
+    public void testHasStickyLastItem() {
+        mCoordinator.setHasStickyLastItem(true);
+        assertTrue(mModel.get(HAS_STICKY_LAST_ITEM));
+
+        mCoordinator.setHasStickyLastItem(false);
+        assertFalse(mModel.get(HAS_STICKY_LAST_ITEM));
     }
 
     private int getGenerationImpressionCount() {

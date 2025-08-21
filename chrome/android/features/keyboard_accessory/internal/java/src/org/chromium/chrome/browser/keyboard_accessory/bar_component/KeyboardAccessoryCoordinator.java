@@ -338,6 +338,14 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
         mMediator.setOffsetAndGravity(offset, gravity);
     }
 
+    /**
+     * Defines whether the last item in the Keyboard Accessory bar should be aligned to the end of
+     * the bar.
+     */
+    public void setHasStickyLastItem(boolean hasStickyLastItem) {
+        mMediator.setHasStickyLastItem(hasStickyLastItem);
+    }
+
     /** Triggers the accessory to be shown. */
     public void show() {
         TraceEvent.begin("KeyboardAccessoryCoordinator#show");

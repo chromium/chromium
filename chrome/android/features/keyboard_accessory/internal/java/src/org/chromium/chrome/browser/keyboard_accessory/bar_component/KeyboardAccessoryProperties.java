@@ -64,6 +64,8 @@ class KeyboardAccessoryProperties {
             new WritableBooleanPropertyKey("show_swiping_iph");
     static final WritableBooleanPropertyKey HAS_SUGGESTIONS =
             new WritableBooleanPropertyKey("has_suggestions");
+    static final WritableBooleanPropertyKey HAS_STICKY_LAST_ITEM =
+            new WritableBooleanPropertyKey("has_sticky_last_item");
 
     static final WritableObjectPropertyKey<KeyboardAccessoryView.AnimationListener>
             ANIMATION_LISTENER = new WritableObjectPropertyKey<>("animation_listener");
@@ -80,6 +82,7 @@ class KeyboardAccessoryProperties {
                         ON_TOUCH_EVENT_CALLBACK,
                         SHOW_SWIPING_IPH,
                         HAS_SUGGESTIONS,
+                        HAS_STICKY_LAST_ITEM,
                         ANIMATION_LISTENER)
                 .with(BAR_ITEMS, new ListModel<>())
                 .with(VISIBLE, false)

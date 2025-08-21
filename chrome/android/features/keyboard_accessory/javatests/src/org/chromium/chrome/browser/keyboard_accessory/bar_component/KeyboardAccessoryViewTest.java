@@ -32,6 +32,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CRE
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
@@ -240,6 +241,7 @@ public class KeyboardAccessoryViewTest {
                                     .with(DISABLE_ANIMATIONS_FOR_TESTING, true)
                                     .with(OBFUSCATED_CHILD_AT_CALLBACK, unused -> {})
                                     .with(SHOW_SWIPING_IPH, false)
+                                    .with(HAS_STICKY_LAST_ITEM, true)
                                     .build();
                     AsyncViewStub viewStub =
                             mActivityTestRule
