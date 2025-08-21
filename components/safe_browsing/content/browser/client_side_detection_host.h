@@ -105,6 +105,9 @@ class ClientSideDetectionHost
    public:
     // Represents the result of an intelligent scan.
     struct IntelligentScanResult {
+      static constexpr int kModelVersionUnavailable = -1;
+      static IntelligentScanResult Failure(int model_version);
+
       std::string brand;
       std::string intent;
       int model_version;

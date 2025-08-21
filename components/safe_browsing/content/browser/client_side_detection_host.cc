@@ -674,6 +674,16 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
 };
 
 // static
+ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanResult
+ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanResult::
+    Failure(int model_version) {
+  return {.brand = "",
+          .intent = "",
+          .model_version = model_version,
+          .execution_success = false};
+}
+
+// static
 std::unique_ptr<ClientSideDetectionHost> ClientSideDetectionHost::Create(
     content::WebContents* tab,
     std::unique_ptr<Delegate> delegate,

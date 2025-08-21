@@ -22,7 +22,6 @@ namespace safe_browsing {
 
 // Android implementation of IntelligentScanDelegate. This class is responsible
 // for managing sessions and executing the model.
-// TODO(crbug.com/424075615): Implement this class.
 class ClientSideDetectionIntelligentScanDelegateAndroid
     : public ClientSideDetectionHost::IntelligentScanDelegate {
  public:
@@ -45,9 +44,18 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   bool ResetOnDeviceSession() override;
   bool ShouldShowScamWarning(
       std::optional<IntelligentScanVerdict> verdict) override;
+
+  // KeyedService implementation.
   void Shutdown() override;
 
+  bool IsSessionAliveForTesting() { return !!current_inquiry_; }
+  void SetPauseSessionExecutionForTesting(bool pause) {
+    pause_session_execution_for_testing_ = pause;
+  }
+
  private:
+  class Inquiry;
+
   void OnPrefsUpdated();
 
   // Starts on-device model download.
@@ -58,9 +66,15 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   // It may be null after shutdown.
   std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
 
+  // A wrapper of the current on-device model session. This is null if there is
+  // no active inquiry.
+  std::unique_ptr<Inquiry> current_inquiry_;
+
   // PrefChangeRegistrar used to track when the enhanced protection state
   // changes.
   PrefChangeRegistrar pref_change_registrar_;
+
+  bool pause_session_execution_for_testing_ = false;
 };
 
 }  // namespace safe_browsing
