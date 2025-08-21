@@ -51,6 +51,7 @@ class DesktopBrowserWindowCapabilities;
 class DevtoolsUIController;
 class ExclusiveAccessManager;
 class FindBarController;
+class FullscreenControlHost;
 class HistoryClustersSidePanelCoordinator;
 class HistorySidePanelCoordinator;
 class IncognitoClearBrowsingDataDialogCoordinator;
@@ -409,6 +410,10 @@ class BrowserWindowFeatures {
     return exclusive_access_manager_.get();
   }
 
+  FullscreenControlHost* fullscreen_control_host() {
+    return fullscreen_control_host_.get();
+  }
+
   HistoryClustersSidePanelCoordinator*
   history_clusters_side_panel_coordinator() {
     return history_clusters_side_panel_coordinator_.get();
@@ -472,6 +477,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<ImmersiveModeController> immersive_mode_controller_;
 
   std::unique_ptr<ExclusiveAccessManager> exclusive_access_manager_;
+
+  std::unique_ptr<FullscreenControlHost> fullscreen_control_host_;
 
   std::unique_ptr<lens::LensOverlayEntryPointController>
       lens_overlay_entry_point_controller_;

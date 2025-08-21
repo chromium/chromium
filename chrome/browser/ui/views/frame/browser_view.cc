@@ -4484,8 +4484,6 @@ void BrowserView::OnWidgetDestroying(views::Widget* widget) {
   while (browser()->tab_strip_model()->count()) {
     browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
   }
-  // Destroy the fullscreen control host, as it observes the native window.
-  fullscreen_control_host_.reset();
 }
 
 void BrowserView::OnWidgetActivationChanged(views::Widget* widget,
@@ -5608,15 +5606,18 @@ void BrowserView::PrepareFullscreen(bool fullscreen) {
       focus_manager->ClearFocus();
     }
 
-    fullscreen_control_host_ = std::make_unique<FullscreenControlHost>(this);
+    if (auto* const fullscreen_control_host =
+            browser_->GetFeatures().fullscreen_control_host()) {
+      fullscreen_control_host->OnEnterFullscreen();
+    }
   } else {
     // Hide the fullscreen bubble as soon as possible, since the mode toggle can
     // take enough time for the user to notice.
     exclusive_access_bubble_.reset();
 
-    if (fullscreen_control_host_) {
-      fullscreen_control_host_->Hide(false);
-      fullscreen_control_host_.reset();
+    if (auto* const fullscreen_control_host =
+            browser_->GetFeatures().fullscreen_control_host()) {
+      fullscreen_control_host->OnExitFullscreen();
     }
 
     // Clear the active web contents when exiting a tab fullscreen to prepare

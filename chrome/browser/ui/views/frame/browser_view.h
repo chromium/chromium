@@ -77,7 +77,6 @@ class ContentsContainerView;
 class ContentsLayoutManager;
 struct DropData;
 class ExclusiveAccessBubbleViews;
-class FullscreenControlHost;
 class InfoBarContainerView;
 class LocationBarView;
 class MultiContentsView;
@@ -799,9 +798,6 @@ class BrowserView : public BrowserWindow,
 
   // Testing interface:
   views::View* GetContentsContainerForTest() { return contents_container_; }
-  FullscreenControlHost* fullscreen_control_host_for_test() {
-    return fullscreen_control_host_.get();
-  }
   views::View* GetSidePanelRoundedCornerForTesting() {
     return side_panel_rounded_corner_;
   }
@@ -1304,8 +1300,6 @@ class BrowserView : public BrowserWindow,
   // The class that registers for keyboard shortcuts for extension commands.
   std::unique_ptr<ExtensionKeybindingRegistryViews>
       extension_keybinding_registry_;
-
-  std::unique_ptr<FullscreenControlHost> fullscreen_control_host_;
 
   // If the Window Placement experiment is enabled and fullscreen is requested
   // on a particular display, this closure will be called after fullscreen is

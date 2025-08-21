@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -81,16 +82,11 @@ bool IsExitUiEnabled() {
 
 }  // namespace
 
-FullscreenControlHost::FullscreenControlHost(BrowserView* browser_view)
-    : browser_view_(browser_view) {
-  if (IsFullscreenExitUIEnabled()) {
-    event_monitor_ = views::EventMonitor::CreateWindowMonitor(
-        this, browser_view->GetNativeWindow(),
-        {ui::EventType::kMouseMoved, ui::EventType::kKeyPressed,
-         ui::EventType::kKeyReleased, ui::EventType::kTouchPressed,
-         ui::EventType::kGestureLongPress});
-  }
-}
+FullscreenControlHost::FullscreenControlHost(
+    BrowserView* browser_view,
+    ExclusiveAccessManager* exclusive_access_manager)
+    : browser_view_(browser_view),
+      exclusive_access_manager_(CHECK_DEREF(exclusive_access_manager)) {}
 
 FullscreenControlHost::~FullscreenControlHost() = default;
 
@@ -120,9 +116,6 @@ void FullscreenControlHost::OnKeyEvent(const ui::KeyEvent& event) {
     return;
   }
 
-  ExclusiveAccessManager* const exclusive_access_manager =
-      browser_view_->browser()->GetFeatures().exclusive_access_manager();
-
   // FullscreenControlHost UI is not needed for the keyboard input method in any
   // fullscreen mode except for tab-initiated fullscreen (and only when the user
   // is required to press and hold the escape key to exit).
@@ -137,7 +130,7 @@ void FullscreenControlHost::OnKeyEvent(const ui::KeyEvent& event) {
   // fullscreen mode but there won't be a fullscreen exit message to trigger
   // the UI cleanup for the exit bubble.  To handle this case, we need to check
   // to make sure the UI is in the right fullscreen mode before proceeding.
-  if (!exclusive_access_manager->fullscreen_controller()
+  if (!exclusive_access_manager_->fullscreen_controller()
            ->IsWindowFullscreenForTabOrPending()) {
     key_press_delay_timer_.Stop();
     if (IsVisible() && input_entry_method_ == InputEntryMethod::KEYBOARD) {
@@ -151,7 +144,7 @@ void FullscreenControlHost::OnKeyEvent(const ui::KeyEvent& event) {
   // KeyboardLockController class.
   if (event.type() == ui::EventType::kKeyPressed &&
       !key_press_delay_timer_.IsRunning() &&
-      exclusive_access_manager->keyboard_lock_controller()
+      exclusive_access_manager_->keyboard_lock_controller()
           ->RequiresPressAndHoldEscToExit()) {
     key_press_delay_timer_.Start(
         FROM_HERE, kKeyPressPopupDelay,
@@ -246,6 +239,33 @@ void FullscreenControlHost::Hide(bool animate) {
 
 bool FullscreenControlHost::IsVisible() const {
   return IsPopupCreated() && fullscreen_control_popup_->IsVisible();
+}
+
+void FullscreenControlHost::OnEnterFullscreen() {
+  // TODO(crbug.com/439876404): Change this to a CHECK once cause of sequential
+  // OnEnterFullscreen() calls is fixed.
+  if (event_monitor_) {
+    LOG(ERROR) << "FullscreenControlHost: Event monitor already exists";
+  }
+
+  if (IsFullscreenExitUIEnabled() && !event_monitor_) {
+    event_monitor_ = views::EventMonitor::CreateWindowMonitor(
+        this, browser_view_->GetNativeWindow(),
+        {ui::EventType::kMouseMoved, ui::EventType::kKeyPressed,
+         ui::EventType::kKeyReleased, ui::EventType::kTouchPressed,
+         ui::EventType::kGestureLongPress});
+  }
+}
+
+void FullscreenControlHost::OnExitFullscreen() {
+  Hide(false);
+
+  popup_timeout_timer_.Stop();
+  key_press_delay_timer_.Stop();
+
+  input_entry_method_ = InputEntryMethod::NOT_ACTIVE;
+  in_mouse_cooldown_mode_ = false;
+  event_monitor_.reset();
 }
 
 FullscreenControlPopup* FullscreenControlHost::GetPopup() {

@@ -103,9 +103,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
 
  protected:
   FullscreenControlHost* GetFullscreenControlHost() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->fullscreen_control_host_for_test();
+    return browser()->GetFeatures().fullscreen_control_host();
   }
 
   FullscreenControlView* GetFullscreenControlView() {
@@ -185,6 +183,8 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
     return &GetFullscreenControlHost()->popup_timeout_timer_;
   }
 
+  bool IsInFullScreen() { return !!GetFullscreenControlHost()->event_monitor_; }
+
   void RunLoopUntilVisibilityChanges() {
     base::RunLoop run_loop;
     SetPopupVisibilityChangedCallback(run_loop.QuitClosure());
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MouseExitFullscreen) {
   views::test::ButtonTestApi(GetFullscreenExitButton())
       .NotifyClick(mouse_click);
 
-  ASSERT_FALSE(GetFullscreenControlHost());
+  ASSERT_FALSE(IsInFullScreen());
   ASSERT_FALSE(browser_view->IsFullscreen());
 }
 
@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, TouchPopupInteraction) {
   views::test::ButtonTestApi(GetFullscreenExitButton())
       .NotifyClick(touch_event);
 
-  ASSERT_FALSE(GetFullscreenControlHost());
+  ASSERT_FALSE(IsInFullScreen());
   ASSERT_FALSE(browser_view->IsFullscreen());
 }
 

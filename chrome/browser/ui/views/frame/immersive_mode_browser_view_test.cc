@@ -306,9 +306,11 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   // Make sure the fullscreen control popup doesn't show up.
   ui::MouseEvent mouse_move(ui::EventType::kMouseMoved, gfx::Point(1, 1),
                             gfx::Point(), base::TimeTicks(), 0, 0);
-  ASSERT_TRUE(browser_view->fullscreen_control_host_for_test());
-  browser_view->fullscreen_control_host_for_test()->OnMouseEvent(mouse_move);
-  EXPECT_FALSE(browser_view->fullscreen_control_host_for_test()->IsVisible());
+  auto* const fullscreen_control_host =
+      browser()->GetFeatures().fullscreen_control_host();
+  ASSERT_NE(fullscreen_control_host, nullptr);
+  fullscreen_control_host->OnMouseEvent(mouse_move);
+  EXPECT_FALSE(fullscreen_control_host->IsVisible());
 }
 
 // Regression test for crbug.com/883104.  Make sure that immersive fullscreen is
@@ -335,9 +337,11 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   // Make sure the fullscreen control popup doesn't show up.
   ui::MouseEvent mouse_move(ui::EventType::kMouseMoved, gfx::Point(1, 1),
                             gfx::Point(), base::TimeTicks(), 0, 0);
-  ASSERT_TRUE(browser_view->fullscreen_control_host_for_test());
-  browser_view->fullscreen_control_host_for_test()->OnMouseEvent(mouse_move);
-  EXPECT_FALSE(browser_view->fullscreen_control_host_for_test()->IsVisible());
+  auto* const fullscreen_control_host =
+      browser()->GetFeatures().fullscreen_control_host();
+  ASSERT_NE(fullscreen_control_host, nullptr);
+  fullscreen_control_host->OnMouseEvent(mouse_move);
+  EXPECT_FALSE(fullscreen_control_host->IsVisible());
 }
 
 // Test the shelf visibility affected by entering and exiting tab fullscreen and

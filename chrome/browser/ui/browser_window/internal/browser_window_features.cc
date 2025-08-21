@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/views/frame/contents_border_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
@@ -359,6 +360,11 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
         send_tab_to_self::SendTabToSelfToolbarBubbleController>(browser);
 
     if (browser_view) {
+      // Initialize fullscreen control host after exclusive access manager is
+      // ready.
+      fullscreen_control_host_ = std::make_unique<FullscreenControlHost>(
+          browser_view, exclusive_access_manager_.get());
+
       // The controller should only be created if the
       // PinnedToolbarActionsContainer exists for the browser, this might not be
       // the case for browsers with a custom tab toolbar.
@@ -659,6 +665,9 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 
   desktop_browser_window_capabilities_.reset();
   signin_view_controller_->TearDownPreBrowserWindowDestruction();
+
+  // Destroy fullscreen control host before exclusive access manager.
+  fullscreen_control_host_.reset();
 
   if (pinned_toolbar_actions_controller_) {
     pinned_toolbar_actions_controller_->TearDown();
