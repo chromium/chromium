@@ -3818,10 +3818,11 @@ public class StripLayoutHelper
      */
     private void onTabMergeToOrMoveOutOfGroup() {
         finishAnimations();
-        // Moving a tab into/out-of a group may cause the orders of views (i.e. the
-        // group indicator) to change. The bottom indicator width may also change.
-        // Rebuild views to address this.
-        rebuildStripViews();
+        // Moving a tab into/out-of a group may cause the orders of views (i.e. the group indicator)
+        // to change. The bottom indicator width may also change. Rebuild views to address this. We
+        // need to rebuild tabs as well, since we get this signal before we get the #didMoveTab
+        // event, meaning mStripViews is still stale.
+        rebuildStripTabs(/* deferAnimations= */ false);
         // Since views may have swapped, re-calculate ideal positions here.
         computeIdealViewPositions();
     }
