@@ -94,7 +94,7 @@ void CheckPdfRendering(base::span<const uint8_t> pdf_data,
   ASSERT_TRUE(exports.RenderPDFPageToBitmap(pdf_data, page_number, settings,
                                             page_bitmap.getPixels()));
 
-  EXPECT_TRUE(MatchesPngFile(page_bitmap.asImage().get(),
+  EXPECT_TRUE(MatchesPngFile(*page_bitmap.asImage(),
                              GetReferenceFilePath(expected_png_filename)));
 }
 

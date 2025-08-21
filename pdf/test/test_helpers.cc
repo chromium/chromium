@@ -40,11 +40,11 @@ namespace {
 base::test::TaskEnvironment* g_task_environment = nullptr;
 
 testing::AssertionResult MatchesPngFileImpl(
-    const SkImage* actual_image,
+    const SkImage& actual_image,
     const base::FilePath& expected_png_file,
     const cc::PixelComparator& comparitor) {
   SkBitmap actual_bitmap;
-  if (!actual_image->asLegacyBitmap(&actual_bitmap)) {
+  if (!actual_image.asLegacyBitmap(&actual_bitmap)) {
     return testing::AssertionFailure() << "Reference: " << expected_png_file;
   }
 
@@ -120,14 +120,14 @@ base::FilePath GetReferenceFilePath(
 }
 
 testing::AssertionResult MatchesPngFile(
-    const SkImage* actual_image,
+    const SkImage& actual_image,
     const base::FilePath& expected_png_file) {
   return MatchesPngFileImpl(actual_image, expected_png_file,
                             cc::ExactPixelComparator());
 }
 
 testing::AssertionResult FuzzyMatchesPngFile(
-    const SkImage* actual_image,
+    const SkImage& actual_image,
     const base::FilePath& expected_png_file) {
   // Effectively a "FuzzyPixelOffByTwoComparator".
   cc::FuzzyPixelComparator comparator;
@@ -162,7 +162,7 @@ void CheckPdfRendering(base::span<const uint8_t> pdf_data,
                        const base::FilePath& expected_png_file) {
   SkBitmap page_bitmap =
       RenderPdfToSkBitmap(pdf_data, page_index, size_in_points);
-  EXPECT_TRUE(MatchesPngFile(page_bitmap.asImage().get(), expected_png_file));
+  EXPECT_TRUE(MatchesPngFile(*page_bitmap.asImage(), expected_png_file));
 }
 
 void CheckFuzzyPdfRendering(base::span<const uint8_t> pdf_data,
@@ -171,8 +171,7 @@ void CheckFuzzyPdfRendering(base::span<const uint8_t> pdf_data,
                             const base::FilePath& expected_png_file) {
   SkBitmap page_bitmap =
       RenderPdfToSkBitmap(pdf_data, page_index, size_in_points);
-  EXPECT_TRUE(
-      FuzzyMatchesPngFile(page_bitmap.asImage().get(), expected_png_file));
+  EXPECT_TRUE(FuzzyMatchesPngFile(*page_bitmap.asImage(), expected_png_file));
 }
 
 sk_sp<SkSurface> CreateSkiaSurfaceForTesting(const gfx::Size& size,

@@ -60,12 +60,12 @@ base::FilePath GetReferenceFilePath(
 // Matches `actual_image` against the PNG at the file path `expected_png_file`.
 // The path must be relative to //pdf/test/data.
 testing::AssertionResult MatchesPngFile(
-    const SkImage* actual_image,
+    const SkImage& actual_image,
     const base::FilePath& expected_png_file);
 
 // Same as MatchesPngFile() above, but with a fuzzy pixel comparator.
 testing::AssertionResult FuzzyMatchesPngFile(
-    const SkImage* actual_image,
+    const SkImage& actual_image,
     const base::FilePath& expected_png_file);
 
 // Returns true if all pixels are blank.

@@ -1183,7 +1183,7 @@ class PDFiumPageThumbnailTest : public PDFiumTestBase {
         expectation_file_prefix, page_index, device_pixel_ratio,
         /*use_skia=*/GetParam(), use_platform_suffix);
 
-    EXPECT_TRUE(MatchesPngFile(image.get(), expectation_png_file_path));
+    EXPECT_TRUE(MatchesPngFile(*image, expectation_png_file_path));
   }
 
   sk_sp<SkImage> GenerateThumbnailImage(

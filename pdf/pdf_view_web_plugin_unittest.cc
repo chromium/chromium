@@ -2850,8 +2850,8 @@ class PdfViewWebPluginInkTest
     plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
     const base::FilePath stroked_image_png_file =
         GetInkTestDataFilePath(expected_filename);
-    EXPECT_TRUE(MatchesPngFile(canvas_.GetBitmap().asImage().get(),
-                               stroked_image_png_file));
+    EXPECT_TRUE(
+        MatchesPngFile(*canvas_.GetBitmap().asImage(), stroked_image_png_file));
 
     // Finish the stroke.  After a stroke is finished there is nothing more to
     // be drawn by PdfInkModule, as the completed stroke is provided by a
@@ -2869,8 +2869,8 @@ class PdfViewWebPluginInkTest
     // stroke disappearing, causing a flash for the user unless the snapshot
     // from the most recent stroke is reused.
     plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
-    EXPECT_TRUE(MatchesPngFile(canvas_.GetBitmap().asImage().get(),
-                               stroked_image_png_file));
+    EXPECT_TRUE(
+        MatchesPngFile(*canvas_.GetBitmap().asImage(), stroked_image_png_file));
     EXPECT_TRUE(plugin_->HasInkInputsSnapshotForTesting());
 
     // Simulate how the snapshot eventually gets updated, after all necessary

@@ -140,7 +140,7 @@ void PDFiumDrawSelectionTestBase::DrawAndCompareImpl(
 
   base::FilePath expectation_path = GetReferenceFilePath(
       sub_directory, expected_png_filename, use_platform_suffix);
-  EXPECT_TRUE(MatchesPngFile(page_bitmap.asImage().get(), expectation_path));
+  EXPECT_TRUE(MatchesPngFile(*page_bitmap.asImage(), expectation_path));
 }
 
 void PDFiumDrawSelectionTestBase::TestDrawBlank(

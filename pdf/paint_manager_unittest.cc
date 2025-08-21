@@ -179,9 +179,7 @@ class PaintManagerTest : public testing::Test {
         skcpu::Recorder::TODO(),
         SkIRect::MakeWH(plugin_size.width(), plugin_size.height()), {});
     ASSERT_TRUE(snapshot);
-
-    EXPECT_TRUE(
-        MatchesPngFile(snapshot.get(), GetTestDataFilePath(expected_png)));
+    EXPECT_TRUE(MatchesPngFile(*snapshot, GetTestDataFilePath(expected_png)));
   }
 
   NiceMock<FakeClient> client_;
@@ -271,9 +269,9 @@ TEST_F(PaintManagerTest, DoPaintFirst) {
                    {{{25, 50, 200, 100},
                      CreateSkiaImageForTesting({200, 100}, SK_ColorGRAY)}},
                    /*fake_pending=*/{});
-
-  EXPECT_TRUE(MatchesPngFile(snapshot.get(),
-                             GetTestDataFilePath("do_paint_first.png")));
+  ASSERT_TRUE(snapshot);
+  EXPECT_TRUE(
+      MatchesPngFile(*snapshot, GetTestDataFilePath("do_paint_first.png")));
 }
 
 TEST_F(PaintManagerTest, PaintImage) {
