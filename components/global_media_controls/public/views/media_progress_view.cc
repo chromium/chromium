@@ -60,6 +60,10 @@ constexpr int kStraightProgressIndicatorGap = 4;
 // and straight lines will take.
 constexpr base::TimeDelta kSlideAnimationDuration = base::Milliseconds(200);
 
+// Defines how long the animation for transitioning between a thicker and
+// thinner progress line.
+constexpr base::TimeDelta kThicknessAnimationDuration = base::Milliseconds(150);
+
 // Defines how frequently the progress will be updated.
 constexpr base::TimeDelta kProgressUpdateFrequency = base::Milliseconds(100);
 
@@ -104,11 +108,13 @@ MediaProgressView::MediaProgressView(
           std::move(playback_state_change_for_dragging_callback)),
       seek_callback_(std::move(seek_callback)),
       on_update_progress_callback_(std::move(on_update_progress_callback)),
-      slide_animation_(this) {
+      slide_animation_(this),
+      thickness_animation_(this) {
   SetFlipCanvasOnPaintForRTLUI(true);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   slide_animation_.SetSlideDuration(kSlideAnimationDuration);
+  thickness_animation_.SetSlideDuration(kThicknessAnimationDuration);
   straight_progress_stroke_width_ = kStrokeWidth;
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
@@ -125,9 +131,15 @@ MediaProgressView::~MediaProgressView() = default;
 // gfx::AnimationDelegate implementations:
 
 void MediaProgressView::AnimationProgressed(const gfx::Animation* animation) {
-  CHECK(animation == &slide_animation_);
-  progress_amp_fraction_ = animation->GetCurrentValue();
-  OnPropertyChanged(&progress_amp_fraction_, views::kPropertyEffectsPaint);
+  if (animation == &slide_animation_) {
+    progress_amp_fraction_ = animation->GetCurrentValue();
+    OnPropertyChanged(&progress_amp_fraction_, views::kPropertyEffectsPaint);
+  } else if (animation == &thickness_animation_) {
+    straight_progress_stroke_width_ =
+        animation->CurrentValueBetween(kStrokeWidth, kLargeStrokeWidth);
+    OnPropertyChanged(&straight_progress_stroke_width_,
+                      views::kPropertyEffectsPaint);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -286,14 +298,12 @@ void MediaProgressView::OnBlur() {
 }
 
 void MediaProgressView::OnMouseEntered(const ui::MouseEvent& event) {
-  straight_progress_stroke_width_ = kLargeStrokeWidth;
-  SchedulePaint();
+  thickness_animation_.Show();
 }
 
 void MediaProgressView::OnMouseExited(const ui::MouseEvent& event) {
   if (!is_dragging_) {
-    straight_progress_stroke_width_ = kStrokeWidth;
-    SchedulePaint();
+    thickness_animation_.Hide();
   }
 }
 
@@ -479,7 +489,7 @@ void MediaProgressView::DelayedProgressDragStarted(double location) {
 
   // Enlarge the straight progress line stroke width when the user starts
   // dragging the progress line.
-  straight_progress_stroke_width_ = kLargeStrokeWidth;
+  thickness_animation_.Show();
   drag_state_change_callback_.Run(DragState::kDragStarted);
 
   // Seek to the location for the dragging event so that if the user only
@@ -506,7 +516,7 @@ void MediaProgressView::OnProgressDragEnded() {
     // Reset the straight progress line stroke width if the mouse is not
     // hovering over the view.
     if (!IsMouseHovered()) {
-      straight_progress_stroke_width_ = kStrokeWidth;
+      thickness_animation_.Hide();
     }
     drag_state_change_callback_.Run(DragState::kDragEnded);
   }

@@ -166,6 +166,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   // lines.
   gfx::SlideAnimation slide_animation_;
 
+  // Animation for progress line to transition between thicker and less thick
+  // states.
+  gfx::SlideAnimation thickness_animation_;
+
   // Timer to continuously update the progress value if the media is playing.
   std::unique_ptr<base::OneShotTimer> update_progress_timer_ =
       std::make_unique<base::OneShotTimer>();
