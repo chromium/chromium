@@ -629,7 +629,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         }
 
         for (TabModelObserver obs : mTabModelObservers) obs.willAddTab(tab, type);
-
+        // Clear the multi-selection set before adding the tab.
+        clearMultiSelection(/* notifyObservers= */ false);
         boolean hasAnyTabs = mCurrentTabSupplier.hasValue();
         boolean selectTab =
                 mOrderController.willOpenInForeground(type, isIncognito())
@@ -822,6 +823,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 obs.willCloseTab(tab, didCloseAlone);
             }
         }
+
+        Set<Integer> tabsToCloseIds = new HashSet<>();
+        for (Tab tab : tabsToClose) {
+            tabsToCloseIds.add(tab.getId());
+        }
+        setTabsMultiSelected(tabsToCloseIds, /* isSelected= */ false);
 
         if (!allowUndo) {
             notifyOnFinishingMultipleTabClosure(tabsToClose, params.saveToTabRestoreService);

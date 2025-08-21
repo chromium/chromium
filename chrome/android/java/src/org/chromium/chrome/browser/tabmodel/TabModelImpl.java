@@ -302,7 +302,8 @@ public class TabModelImpl extends TabModelJniBridge {
                     : "Attempting to add a tab with a duplicate id=" + tab.getId();
 
             for (TabModelObserver obs : mObservers) obs.willAddTab(tab, type);
-
+            // Clear the multi-selection set before adding the tab.
+            clearMultiSelection(/* notifyObservers= */ false);
             boolean selectTab =
                     mOrderController.willOpenInForeground(type, isIncognitoBranded())
                             || (mTabs.size() == 0
@@ -533,7 +534,9 @@ public class TabModelImpl extends TabModelJniBridge {
         }
 
         allowUndo &= supportsPendingClosures();
-
+        if (isTabMultiSelected(tabToClose.getId())) {
+            setTabsMultiSelected(Collections.singleton(tabToClose.getId()), /* isSelected= */ false);
+        }
         startTabClosure(tabToClose, recommendedNextTab, uponExit, allowUndo, tabCloseType);
         List<Tab> tabsToClose = Collections.singletonList(tabToClose);
         if (notifyPending && allowUndo) {

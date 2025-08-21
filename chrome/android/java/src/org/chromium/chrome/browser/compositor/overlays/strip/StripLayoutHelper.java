@@ -2967,9 +2967,8 @@ public class StripLayoutHelper
             if (button.getType() == ButtonType.NEW_TAB) {
                 handleNewTabClick();
             } else if (button.getType() == ButtonType.TAB_CLOSE) {
-                StripLayoutTab tab = (StripLayoutTab) button.getParentView();
-                clearMultiSelectionForTab(tab);
-                handleCloseButtonClick(tab, motionEventButtonState);
+                handleCloseButtonClick(
+                        (StripLayoutTab) button.getParentView(), motionEventButtonState);
                 return;
             }
         }
@@ -3190,16 +3189,6 @@ public class StripLayoutHelper
         }
         if (mModel == null) return;
         mModel.clearMultiSelection(notifyObservers);
-    }
-
-    /**
-     * Clears the multi-selection set for the given tab.
-     *
-     * @param tab The tab to clear the multi-selection set for.
-     */
-    private void clearMultiSelectionForTab(@Nullable StripLayoutTab tab) {
-        if (tab == null || tab.isDying() || mModel == null) return;
-        mModel.setTabsMultiSelected(Collections.singleton(tab.getTabId()), /* isSelected= */ false);
     }
 
     /**
