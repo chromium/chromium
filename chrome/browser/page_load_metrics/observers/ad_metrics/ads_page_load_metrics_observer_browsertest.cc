@@ -324,15 +324,10 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
             expected_final_viewport_density);
 }
 
-// TODO(crbug.com/431787502): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AverageViewportAdDensity_ImageAd \
-  DISABLED_AverageViewportAdDensity_ImageAd
-#else
-#define MAYBE_AverageViewportAdDensity_ImageAd AverageViewportAdDensity_ImageAd
-#endif
+// TODO(crbug.com/431787502): Re-enable this test.
+// The test seems to be flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       MAYBE_AverageViewportAdDensity_ImageAd) {
+                       DISABLED_AverageViewportAdDensity_ImageAd) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("pixel.png")});
 
