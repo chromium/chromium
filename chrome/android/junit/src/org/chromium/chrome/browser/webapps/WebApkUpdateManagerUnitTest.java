@@ -47,6 +47,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
+import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.blink.mojom.DisplayMode;
@@ -88,6 +89,8 @@ import java.util.Map;
         shadows = {ShadowUrlUtilities.class, BackgroundShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebApkUpdateManagerUnitTest {
+    @Rule public PausedExecutorTestRule mPausedExecutorTestRule = new PausedExecutorTestRule();
+
     @Mock public Activity mActivityMock;
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
 
@@ -874,6 +877,7 @@ public class WebApkUpdateManagerUnitTest {
         assertTrue(new File(updateRequestPath).exists());
 
         tryCompletingUpdate(updateManager, storage, WebApkInstallResult.FAILURE);
+        mPausedExecutorTestRule.runAllBackgroundAndUi();
 
         assertNull(storage.getPendingUpdateRequestPath());
         assertFalse(new File(updateRequestPath).exists());
@@ -899,6 +903,7 @@ public class WebApkUpdateManagerUnitTest {
         assertTrue(new File(updateRequestPath).exists());
 
         updateManager.getStoreUpdateRequestCallback().onResult(false);
+        mPausedExecutorTestRule.runAllBackgroundAndUi();
 
         assertNull(storage.getPendingUpdateRequestPath());
         assertFalse(new File(updateRequestPath).exists());

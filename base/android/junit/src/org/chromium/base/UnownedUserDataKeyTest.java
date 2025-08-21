@@ -17,6 +17,7 @@ import android.os.Looper;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
@@ -25,6 +26,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.BuildConfig;
 
@@ -36,6 +38,8 @@ import java.util.concurrent.FutureTask;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class UnownedUserDataKeyTest {
+    @Rule public PausedExecutorTestRule mPausedExecutorTestRule = new PausedExecutorTestRule();
+
     private static void forceGC() {
         try {
             // Run GC and finalizers a few times.
@@ -838,6 +842,7 @@ public class UnownedUserDataKeyTest {
                 new FutureTask<>(
                         () -> assertAsserts(() -> Foo.KEY.retrieveDataFromHost(mHost1)), null);
         PostTask.postTask(TaskTraits.USER_VISIBLE, getTask);
+        mPausedExecutorTestRule.runAllBackgroundAndUi();
         getTask.get();
 
         // Manual cleanup to ensure we can verify host map size during tear down.

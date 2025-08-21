@@ -16,6 +16,7 @@ import android.app.ApplicationExitInfo;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -27,6 +28,7 @@ import org.chromium.android_webview.metrics.TrackExitReasons.AppStateData;
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
+import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
@@ -44,6 +46,8 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30, manifest = Config.NONE)
 public class TrackExitReasonsTest {
+    @Rule public PausedExecutorTestRule mPausedExecutorTestRule = new PausedExecutorTestRule();
+
     private static final String TAG = "ExitReasonsTest";
     private final MockAwContentsLifecycleNotifier mMockNotifier =
             new MockAwContentsLifecycleNotifier();
@@ -153,7 +157,7 @@ public class TrackExitReasonsTest {
         long currentTimeMillis = 7L;
         TrackExitReasons.setCurrentTimeMillisForTest(currentTimeMillis);
         // A few valid return values from ProcessExitReasonFromSystem#getExitReason.
-        int reasonsToTest[] = {
+        int[] reasonsToTest = {
             ApplicationExitInfo.REASON_ANR,
             ApplicationExitInfo.REASON_CRASH_NATIVE,
             ApplicationExitInfo.REASON_FREEZER,
@@ -232,7 +236,8 @@ public class TrackExitReasonsTest {
                 };
         int calls = writeFinished.getCallCount();
         TrackExitReasons.updateAppState(resultCallback);
-        writeFinished.waitForCallback(calls);
+        mPausedExecutorTestRule.runAllBackgroundAndUi();
+        assertEquals(calls + 1, writeFinished.getCallCount());
 
         AppStateData data = TrackExitReasons.readData().get(0);
         assertEquals(timeMillis, data.mTimeMillis);
@@ -243,7 +248,8 @@ public class TrackExitReasonsTest {
         TrackExitReasons.setCurrentTimeMillisForTest(++timeMillis);
         calls = writeFinished.getCallCount();
         TrackExitReasons.updateAppState(resultCallback);
-        writeFinished.waitForCallback(calls);
+        mPausedExecutorTestRule.runAllBackgroundAndUi();
+        assertEquals(calls + 1, writeFinished.getCallCount());
 
         data = TrackExitReasons.readData().get(0);
         assertEquals(timeMillis, data.mTimeMillis);
@@ -254,7 +260,8 @@ public class TrackExitReasonsTest {
         TrackExitReasons.setCurrentTimeMillisForTest(++timeMillis);
         calls = writeFinished.getCallCount();
         TrackExitReasons.updateAppState(resultCallback);
-        writeFinished.waitForCallback(calls);
+        mPausedExecutorTestRule.runAllBackgroundAndUi();
+        assertEquals(calls + 1, writeFinished.getCallCount());
 
         data = TrackExitReasons.readData().get(0);
         assertEquals(timeMillis - 1, data.mTimeMillis);
@@ -279,7 +286,8 @@ public class TrackExitReasonsTest {
                     };
             int calls = writeFinished.getCallCount();
             TrackExitReasons.startTrackingStartup(resultCallback);
-            writeFinished.waitForCallback(calls);
+            mPausedExecutorTestRule.runAllBackgroundAndUi();
+            assertEquals(calls + 1, writeFinished.getCallCount());
 
             if (i <= TrackExitReasons.MAX_DATA_LIST_SIZE) {
                 assertEquals(i, TrackExitReasons.readData().size());
@@ -324,7 +332,8 @@ public class TrackExitReasonsTest {
         mMockNotifier.mState = AppState.DESTROYED;
         calls = writeFinished.getCallCount();
         TrackExitReasons.updateAppState(resultCallback);
-        writeFinished.waitForCallback(calls);
+        mPausedExecutorTestRule.runAllBackgroundAndUi();
+        assertEquals(calls + 1, writeFinished.getCallCount());
 
         dataList = TrackExitReasons.readData();
         assertEquals(1, dataList.size());
@@ -338,7 +347,8 @@ public class TrackExitReasonsTest {
         TrackExitReasons.setCurrentTimeMillisForTest(currentTimeMillis);
         calls = writeFinished.getCallCount();
         TrackExitReasons.startTrackingStartup(resultCallback);
-        writeFinished.waitForCallback(calls);
+        mPausedExecutorTestRule.runAllBackgroundAndUi();
+        assertEquals(calls + 1, writeFinished.getCallCount());
 
         dataList = TrackExitReasons.readData();
         assertEquals(2, dataList.size());
@@ -367,7 +377,8 @@ public class TrackExitReasonsTest {
         calls = writeFinished.getCallCount();
         mMockNotifier.mState = AppState.FOREGROUND;
         TrackExitReasons.finishTrackingStartup(mMockNotifier::getAppState, resultCallback);
-        writeFinished.waitForCallback(calls);
+        mPausedExecutorTestRule.runAllBackgroundAndUi();
+        assertEquals(calls + 1, writeFinished.getCallCount());
 
         histogramWatcher.assertExpected();
         dataList = TrackExitReasons.readData();
