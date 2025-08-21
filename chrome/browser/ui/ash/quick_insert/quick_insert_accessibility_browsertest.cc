@@ -32,6 +32,7 @@
 #include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,6 +45,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -62,9 +64,15 @@ namespace {
 // They should test Quick Insert view components on a low-level.
 // They are browser tests in order to bring in ChromeVox so that we can test
 // announcements.
-class QuickInsertAccessibilityBrowserTest : public InProcessBrowserTest {
+class QuickInsertAccessibilityBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<ash::ManifestVersion> {
  public:
-  QuickInsertAccessibilityBrowserTest() = default;
+  QuickInsertAccessibilityBrowserTest() {
+    bool is_manifest_v3 = GetParam() == ash::ManifestVersion::kThree;
+    scoped_feature_list_.InitWithFeatureStates(
+        {{::features::kAccessibilityManifestV3ChromeVox, is_manifest_v3}});
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -84,9 +92,18 @@ class QuickInsertAccessibilityBrowserTest : public InProcessBrowserTest {
   ash::test::SpeechMonitor* sm() { return chromevox_test_utils_->sm(); }
 
   std::unique_ptr<ash::ChromeVoxTestUtils> chromevox_test_utils_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+INSTANTIATE_TEST_SUITE_P(ManifestV2,
+                         QuickInsertAccessibilityBrowserTest,
+                         ::testing::Values(ash::ManifestVersion::kTwo));
+
+INSTANTIATE_TEST_SUITE_P(ManifestV3,
+                         QuickInsertAccessibilityBrowserTest,
+                         ::testing::Values(ash::ManifestVersion::kThree));
+
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        FocusingEmptySearchFieldAnnouncesPlaceholder) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -106,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        SetDescendantAnnouncesDescendant) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -136,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        SetDescendantAnnouncesDescendantAfterKeyEvent) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -170,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        SetDescendantToTextfieldAnnouncesPlaceholder) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -216,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
 #define MAYBE_SetDescendantThenFocusingSearchFieldAnnouncesDescendant \
   SetDescendantThenFocusingSearchFieldAnnouncesDescendant
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     QuickInsertAccessibilityBrowserTest,
     MAYBE_SetDescendantThenFocusingSearchFieldAnnouncesDescendant) {
   std::unique_ptr<views::Widget> widget =
@@ -245,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        FocusingNonEmptySearchFieldAnnouncesPlaceholder) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -266,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        FocusingSearchFieldClearButtonAnnouncesTooltip) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -291,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        FocusingSearchFieldBackButtonAnnouncesTooltip) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -313,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        FocusingEmojiBarItemsAnnouncesGrid) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -376,7 +393,17 @@ class QuickInsertAccessibilityWithGifsFlagDisabledBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityWithGifsFlagDisabledBrowserTest,
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2,
+    QuickInsertAccessibilityWithGifsFlagDisabledBrowserTest,
+    ::testing::Values(ash::ManifestVersion::kTwo));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3,
+    QuickInsertAccessibilityWithGifsFlagDisabledBrowserTest,
+    ::testing::Values(ash::ManifestVersion::kThree));
+
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityWithGifsFlagDisabledBrowserTest,
                        FocusingGifsButtonAnnouncesLabel) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -405,7 +432,15 @@ class QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest,
+INSTANTIATE_TEST_SUITE_P(ManifestV2,
+                         QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest,
+                         ::testing::Values(ash::ManifestVersion::kTwo));
+
+INSTANTIATE_TEST_SUITE_P(ManifestV3,
+                         QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest,
+                         ::testing::Values(ash::ManifestVersion::kThree));
+
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest,
                        FocusingGifsToggleAnnouncesPressedState) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -425,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest,
                        TogglingGifsToggleAnnouncesPressedState) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -452,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        FocusingMoreEmojisAnnouncesTooltip) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -472,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        SectionsAnnouncesHeadings) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -506,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        FocusingSectionShowAllAnnounces) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -530,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        ListItemAnnouncesTextWithAction) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -558,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        ListItemAnnouncesPreviewMetadata) {
   ash::QuickInsertPreviewBubbleController preview_controller;
   std::unique_ptr<views::Widget> widget =
@@ -594,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        ImageRowItemAnnouncesTitle) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -629,7 +664,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        ImageRowMoreItemsButtonAnnouncesTooltip) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -660,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        SetDescendantToImageGridItemAnnouncesTitle) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -735,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        FocusingItemInSectionListViewAnnouncesSizeAndPosition) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -785,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        FocusingItemWithSubmenuAnnouncesMenuRole) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -805,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        FocusingEmojiResultButtonAnnouncesNameOfEmoji) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -824,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        FocusingSymbolResultButtonAnnouncesNameOfSymbol) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -843,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        FocusingEmoticonResultButtonAnnouncesNameOfEmoticon) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -863,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        StoppingSearchAnnouncesEmojiResults) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -885,7 +920,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        StoppingSearchAnnouncesNoResults) {
   std::unique_ptr<views::Widget> widget =
       views::test::TestWidgetBuilder()
@@ -907,7 +942,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        ShowingFeatureTourAnnouncesContents) {
   ash::QuickInsertFeatureTour feature_tour;
 
@@ -927,7 +962,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(QuickInsertAccessibilityBrowserTest,
                        InsertingAnnouncesInsertionBeforeTextfieldRefocus) {
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager::UserManager::Get());
