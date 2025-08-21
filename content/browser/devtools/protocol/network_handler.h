@@ -351,6 +351,9 @@ class NetworkHandler : public DevToolsDomainHandler,
       bool disable_third_party_cookie_metadata,
       bool disable_third_party_cookie_heuristics) override;
 
+  void GetIPProtectionProxyStatus(
+      std::unique_ptr<GetIPProtectionProxyStatusCallback> callback) override;
+
   // Protocol builders.
   static String BuildPrivateNetworkRequestPolicy(
       network::mojom::PrivateNetworkRequestPolicy policy);

@@ -174,6 +174,9 @@ class MockIpProtectionCore : public IpProtectionCore {
       const GURL& request_url) override {
     return false;
   }
+  IpProxyStatus GetIpProxyStatus() override {
+    return IpProxyStatus::kUnavailable;
+  }
 };
 
 struct HistogramState {

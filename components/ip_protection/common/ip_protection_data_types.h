@@ -232,6 +232,14 @@ struct TryGetProbabilisticRevealTokensOutcome {
   std::string epoch_id;
 };
 
+enum class IpProxyStatus {
+  kOk,
+  kFeatureNotEnabled,
+  kMaskedDomainListNotEnabled,
+  kMaskedDomainListNotPopulated,
+  kAuthTokensUnavailable,
+  kUnavailable
+};
 }  // namespace ip_protection
 
 #endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_DATA_TYPES_H_

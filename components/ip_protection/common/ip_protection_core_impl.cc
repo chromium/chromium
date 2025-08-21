@@ -15,6 +15,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/content_settings/core/common/content_settings_rules.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/ip_protection/common/ip_protection_core_impl.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
@@ -313,6 +314,26 @@ void IpProtectionCoreImpl::SetTrackingProtectionContentSetting(
     const ContentSettingsForOneType& settings) {
   tp_content_settings_ =
       content_settings::HostIndexedContentSettings::Create(settings);
+}
+
+IpProxyStatus IpProtectionCoreImpl::GetIpProxyStatus() {
+  // Checking conditions that may cause IP protection to not work when it is
+  // eligible to be run
+  if (!net::features::kIpPrivacyEnableIppInDevTools.Get() ||
+      !base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
+    return IpProxyStatus::kFeatureNotEnabled;
+  }
+  if (!masked_domain_list_manager_->IsEnabled()) {
+    return IpProxyStatus::kMaskedDomainListNotEnabled;
+  }
+  if (!IpProtectionCoreImpl::IsMdlPopulated()) {
+    return IpProxyStatus::kMaskedDomainListNotPopulated;
+  }
+  if (!AreAuthTokensAvailable()) {
+    return IpProxyStatus::kAuthTokensUnavailable;
+  }
+  return IsIpProtectionEnabled() ? IpProxyStatus::kOk
+                                 : IpProxyStatus::kUnavailable;
 }
 
 }  // namespace ip_protection

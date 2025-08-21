@@ -25,7 +25,7 @@ class SchemefulSite;
 namespace ip_protection {
 
 struct BlindSignedAuthToken;
-
+enum class IpProxyStatus;
 // Core business logic for IP Protection.
 class IpProtectionCore {
  public:
@@ -105,6 +105,8 @@ class IpProtectionCore {
   // ProbabilisticRevealToken headers.
   virtual bool ShouldRequestIncludeProbabilisticRevealToken(
       const GURL& request_url) = 0;
+
+  virtual IpProxyStatus GetIpProxyStatus() = 0;
 };
 
 }  // namespace ip_protection

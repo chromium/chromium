@@ -100,3 +100,12 @@ struct TryGetProbabilisticRevealTokensOutcome {
   // corresponding key used to decrypt the tokens.
   string epoch_id;
 };
+
+enum IpProxyStatus {
+  kOk,
+  kFeatureNotEnabled,
+  kMaskedDomainListNotEnabled,
+  kMaskedDomainListNotPopulated,
+  kAuthTokensUnavailable,
+  kUnavailable
+};

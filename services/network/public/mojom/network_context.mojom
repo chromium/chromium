@@ -6,6 +6,7 @@ module network.mojom;
 
 import "components/content_settings/core/common/content_settings.mojom";
 import "components/ip_protection/mojom/core.mojom";
+import "components/ip_protection/mojom/data_types.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -1046,6 +1047,12 @@ interface NetworkContext {
   GetPrivateStateTokenRedemptionRecords()
       => (map<url.mojom.Origin, array<ToplevelRedemptionRecord>>
               issuer_redemption_record_map);
+
+  // Gets the current IP Proxy status from IpProtectionCore.
+  //
+  // Only returns a kOk status if both kEnableIpPrivacyProxy and
+  // kMaskedDomainList are enabled, and IP Protection is available and on.
+  GetIpProxyStatus() => (ip_protection.mojom.IpProxyStatus status);
 
   // Deletes all Trust Tokens issued by |issuer|.
   //

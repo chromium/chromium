@@ -2385,6 +2385,23 @@ String GetTrustTokenRefreshPolicy(
   }
 }
 
+String BuildIpProxyStatus(ip_protection::IpProxyStatus status) {
+  switch (status) {
+    case ip_protection::IpProxyStatus::kOk:
+      return protocol::Network::IpProxyStatusEnum::Available;
+    case ip_protection::IpProxyStatus::kFeatureNotEnabled:
+      return protocol::Network::IpProxyStatusEnum::FeatureNotEnabled;
+    case ip_protection::IpProxyStatus::kMaskedDomainListNotEnabled:
+      return protocol::Network::IpProxyStatusEnum::MaskedDomainListNotEnabled;
+    case ip_protection::IpProxyStatus::kMaskedDomainListNotPopulated:
+      return protocol::Network::IpProxyStatusEnum::MaskedDomainListNotPopulated;
+    case ip_protection::IpProxyStatus::kAuthTokensUnavailable:
+      return protocol::Network::IpProxyStatusEnum::AuthTokensUnavailable;
+    case ip_protection::IpProxyStatus::kUnavailable:
+      return protocol::Network::IpProxyStatusEnum::Unavailable;
+  }
+}
+
 std::unique_ptr<protocol::Network::TrustTokenParams> BuildTrustTokenParams(
     const network::mojom::TrustTokenParams& params) {
   auto protocol_params =
@@ -3720,6 +3737,27 @@ DispatchResponse NetworkHandler::SetCookieControls(
   return Response::Success();
 }
 
+void NetworkHandler::GetIPProtectionProxyStatus(
+    std::unique_ptr<GetIPProtectionProxyStatusCallback> callback) {
+  if (!storage_partition_) {
+    callback->sendFailure(DispatchResponse::InternalError());
+    return;
+  }
+
+  network::mojom::NetworkContext* context =
+      storage_partition_->GetNetworkContext();
+
+  base::OnceCallback<void(ip_protection::IpProxyStatus)> internal_callback =
+      base::BindOnce(
+          [](std::unique_ptr<GetIPProtectionProxyStatusCallback>
+                 devtools_callback,
+             ip_protection::IpProxyStatus status) {
+            devtools_callback->sendSuccess(BuildIpProxyStatus(status));
+          },
+          std::move(callback));
+
+  context->GetIpProxyStatus(std::move(internal_callback));
+}
 namespace {
 
 String GetTrustTokenOperationStatus(

@@ -174,6 +174,14 @@ struct StructTraits<
       ip_protection::TryGetProbabilisticRevealTokensOutcome* out);
 };
 
+template <>
+struct EnumTraits<ip_protection::mojom::IpProxyStatus,
+                  ip_protection::IpProxyStatus> {
+  static ip_protection::mojom::IpProxyStatus ToMojom(
+      ip_protection::IpProxyStatus);
+  static bool FromMojom(ip_protection::mojom::IpProxyStatus input,
+                        ip_protection::IpProxyStatus* output);
+};
 }  // namespace mojo
 
 #endif  // COMPONENTS_IP_PROTECTION_MOJOM_DATA_TYPES_MOJOM_TRAITS_H_

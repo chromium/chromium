@@ -246,4 +246,53 @@ bool StructTraits<
          data.ReadEpochId(&out->epoch_id);
 }
 
+// static
+ip_protection::mojom::IpProxyStatus EnumTraits<
+    ip_protection::mojom::IpProxyStatus,
+    ip_protection::IpProxyStatus>::ToMojom(ip_protection::IpProxyStatus input) {
+  switch (input) {
+    case ip_protection::IpProxyStatus::kOk:
+      return ip_protection::mojom::IpProxyStatus::kOk;
+    case ip_protection::IpProxyStatus::kFeatureNotEnabled:
+      return ip_protection::mojom::IpProxyStatus::kFeatureNotEnabled;
+    case ip_protection::IpProxyStatus::kMaskedDomainListNotEnabled:
+      return ip_protection::mojom::IpProxyStatus::kMaskedDomainListNotEnabled;
+    case ip_protection::IpProxyStatus::kMaskedDomainListNotPopulated:
+      return ip_protection::mojom::IpProxyStatus::kMaskedDomainListNotPopulated;
+    case ip_protection::IpProxyStatus::kAuthTokensUnavailable:
+      return ip_protection::mojom::IpProxyStatus::kAuthTokensUnavailable;
+    case ip_protection::IpProxyStatus::kUnavailable:
+      return ip_protection::mojom::IpProxyStatus::kUnavailable;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<ip_protection::mojom::IpProxyStatus,
+                ip_protection::IpProxyStatus>::
+    FromMojom(ip_protection::mojom::IpProxyStatus input,
+              ip_protection::IpProxyStatus* output) {
+  switch (input) {
+    case ip_protection::mojom::IpProxyStatus::kOk:
+      *output = ip_protection::IpProxyStatus::kOk;
+      return true;
+    case ip_protection::mojom::IpProxyStatus::kFeatureNotEnabled:
+      *output = ip_protection::IpProxyStatus::kFeatureNotEnabled;
+      return true;
+    case ip_protection::mojom::IpProxyStatus::kMaskedDomainListNotEnabled:
+      *output = ip_protection::IpProxyStatus::kMaskedDomainListNotEnabled;
+      return true;
+    case ip_protection::mojom::IpProxyStatus::kMaskedDomainListNotPopulated:
+      *output = ip_protection::IpProxyStatus::kMaskedDomainListNotPopulated;
+      return true;
+    case ip_protection::mojom::IpProxyStatus::kAuthTokensUnavailable:
+      *output = ip_protection::IpProxyStatus::kAuthTokensUnavailable;
+      return true;
+    case ip_protection::mojom::IpProxyStatus::kUnavailable:
+      *output = ip_protection::IpProxyStatus::kUnavailable;
+      return true;
+  }
+  return false;
+}
+
 }  // namespace mojo

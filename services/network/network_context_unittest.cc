@@ -5195,6 +5195,137 @@ TEST_F(NetworkContextTest,
   }
 }
 
+TEST_F(NetworkContextTest, IpProtectionCoreIPProxyStatusMdlNotPopulated) {
+  const std::string url = "http://foo.com";
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{net::features::kEnableIpProtectionProxy,
+        {{"IpPrivacyAlwaysCreateCore", "true"}}},
+       {network::features::kMaskedDomainList, {}}},
+      {});
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  content_settings::RuleMetaData metadata;
+  metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
+
+  // Verify with a TRACKING_PROTECTION exception.
+  {
+    network_context->SetTrackingProtectionContentSetting(
+        {ContentSettingPatternSource(ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsPattern::FromString(url),
+                                     base::Value(CONTENT_SETTING_ALLOW),
+                                     content_settings::ProviderType::kNone,
+                                     /*incognito=*/true, metadata.Clone())});
+    base::RunLoop run_loop;
+
+    ip_protection::IpProxyStatus received_status;
+
+    network_context->GetIpProxyStatus(base::BindOnce(
+        [](base::RunLoop* run_loop, ip_protection::IpProxyStatus* out_status,
+           ip_protection::IpProxyStatus status) {
+          *out_status = status;
+          run_loop->Quit();
+        },
+        &run_loop, &received_status));
+
+    run_loop.Run();
+
+    EXPECT_EQ(received_status,
+              ip_protection::IpProxyStatus::kMaskedDomainListNotPopulated);
+    // Verify that the MaskedDomainList is unpopulated.
+    EXPECT_FALSE(network_context->ip_protection_core()->IsMdlPopulated());
+  }
+}
+
+TEST_F(NetworkContextTest, IpProtectionCoreIPProxyStatusIPProxyFlagNotEnabled) {
+  const std::string url = "http://foo.com";
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{network::features::kMaskedDomainList, {}}},
+      {{net::features::kEnableIpProtectionProxy}});
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  content_settings::RuleMetaData metadata;
+  metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
+
+  // Verify with a TRACKING_PROTECTION exception.
+  {
+    network_context->SetTrackingProtectionContentSetting(
+        {ContentSettingPatternSource(ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsPattern::FromString(url),
+                                     base::Value(CONTENT_SETTING_ALLOW),
+                                     content_settings::ProviderType::kNone,
+                                     /*incognito=*/true, metadata.Clone())});
+    base::RunLoop run_loop;
+
+    ip_protection::IpProxyStatus received_status;
+
+    network_context->GetIpProxyStatus(base::BindOnce(
+        [](base::RunLoop* run_loop, ip_protection::IpProxyStatus* out_status,
+           ip_protection::IpProxyStatus status) {
+          *out_status = status;
+          run_loop->Quit();
+        },
+        &run_loop, &received_status));
+
+    // Wait for the callback to be executed.
+    run_loop.Run();
+
+    EXPECT_EQ(received_status,
+              ip_protection::IpProxyStatus::kFeatureNotEnabled);
+    // Verify that the IpProtectionProxy feature is disabled.
+    EXPECT_FALSE(
+        base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy));
+  }
+}
+
+TEST_F(NetworkContextTest, IpProtectionCoreIPProxyStatusMdlNotEnabled) {
+  const std::string url = "http://foo.com";
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{net::features::kEnableIpProtectionProxy,
+        {{"IpPrivacyAlwaysCreateCore", "true"}}}},
+      {{network::features::kMaskedDomainList}});
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  content_settings::RuleMetaData metadata;
+  metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
+
+  // Verify with a TRACKING_PROTECTION exception.
+  {
+    network_context->SetTrackingProtectionContentSetting(
+        {ContentSettingPatternSource(ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsPattern::FromString(url),
+                                     base::Value(CONTENT_SETTING_ALLOW),
+                                     content_settings::ProviderType::kNone,
+                                     /*incognito=*/true, metadata.Clone())});
+    base::RunLoop run_loop;
+
+    ip_protection::IpProxyStatus received_status;
+
+    network_context->GetIpProxyStatus(base::BindOnce(
+        [](base::RunLoop* run_loop, ip_protection::IpProxyStatus* out_status,
+           ip_protection::IpProxyStatus status) {
+          *out_status = status;
+          run_loop->Quit();
+        },
+        &run_loop, &received_status));
+
+    run_loop.Run();
+
+    EXPECT_EQ(received_status,
+              ip_protection::IpProxyStatus::kMaskedDomainListNotEnabled);
+    // Verify that the MaskedDomainList feature is disabled.
+    EXPECT_FALSE(base::FeatureList::IsEnabled(features::kMaskedDomainList));
+  }
+}
+
 TEST_F(NetworkContextTest, PrivacyModeDisabledByDefault) {
   const GURL kURL("http://foo.com");
   const GURL kOtherURL("http://other.com");

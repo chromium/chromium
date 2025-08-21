@@ -23,6 +23,7 @@
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
+#include "ip_protection_data_types.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
@@ -125,6 +126,9 @@ class MockIpProtectionCore : public IpProtectionCore {
   bool ShouldRequestIncludeProbabilisticRevealToken(
       const GURL& request_url) override {
     return false;
+  }
+  IpProxyStatus GetIpProxyStatus() override {
+    return IpProxyStatus::kUnavailable;
   }
 };
 

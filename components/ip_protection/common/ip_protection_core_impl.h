@@ -92,6 +92,8 @@ class IpProtectionCoreImpl
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
+  IpProxyStatus GetIpProxyStatus() override;
+
  protected:
   // Set the enabled status of IP Protection.
   void set_ip_protection_enabled(bool enabled);

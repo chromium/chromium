@@ -210,6 +210,10 @@ class MockIpProtectionCore : public IpProtectionCore {
     return (prt_registry_ && prt_registry_->IsRegistered(request_url));
   }
 
+  IpProxyStatus GetIpProxyStatus() override {
+    return IpProxyStatus::kUnavailable;
+  }
+
   void SetIpProtectionEnabled(bool value) { is_ip_protection_enabled_ = value; }
 
   // Set the proxy list returned from `ProxyList()`.

@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_switches.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -2113,6 +2114,26 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_IPProtection,
               testing::Optional(true));
 }
 
+// TODO(crbug.com/440167934): add browser test for IP Proxy Status Available
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_IPProtection,
+                       GetIpProxyStatus_MdlNotPopulated) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  Attach();
+
+  const content::URLLoaderInterceptor interceptor(
+      base::BindRepeating(&MockIppRequests, /*cached=*/false, "a.test"));
+
+  SendCommandSync("Network.enable");
+
+  const base::Value::Dict* result =
+      SendCommandSync("Network.getIPProtectionProxyStatus");
+
+  const std::string* status_string = result->FindString("status");
+
+  ASSERT_TRUE(status_string);
+  // Expect MaskedDomainListNotPopulated since flags are on
+  EXPECT_EQ(*status_string, "MaskedDomainListNotPopulated");
+}
 class DevToolsProtocolTest_IPProtectionDisabled
     : public DevToolsProtocolTest_IPProtection {
  public:
@@ -2191,6 +2212,26 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_THAT(third_party_response.FindBool("isIpProtectionUsed"),
               std::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_IPProtectionDisabled,
+                       GetIpProxyStatus_IPProtectionDisabled) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  Attach();
+
+  const content::URLLoaderInterceptor interceptor(
+      base::BindRepeating(&MockIppRequests, /*cached=*/false, "a.test"));
+
+  SendCommandSync("Network.enable");
+
+  const base::Value::Dict* result =
+      SendCommandSync("Network.getIPProtectionProxyStatus");
+
+  const std::string* status_string = result->FindString("status");
+
+  ASSERT_TRUE(status_string);
+  // Expect FeatureNotEnabled since IPProtectionDisabled
+  EXPECT_EQ(*status_string, "FeatureNotEnabled");
 }
 
 #if !BUILDFLAG(IS_ANDROID)
