@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/auto_spanification_helper.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -503,8 +504,8 @@ class VideoCaptureOverlayRenderTest
         // Map from I420 planar [0,255] (of which only [16,235] is used) values
         // to interleaved [0.0,1.0] values.
         const gfx::Size& size = frame.visible_rect().size();
-        std::unique_ptr<gfx::ColorTransform::TriStim[]> colors(
-            new gfx::ColorTransform::TriStim[size.GetArea()]);
+        auto colors = base::HeapArray<gfx::ColorTransform::TriStim>::WithSize(
+            size.GetArea());
         int pos = 0;
         for (int row = 0; row < size.height(); ++row) {
           const uint8_t* y =
@@ -527,7 +528,7 @@ class VideoCaptureOverlayRenderTest
         // Execute the YUV→RGB conversion.
         gfx::ColorTransform::NewColorTransform(frame.ColorSpace(),
                                                png_color_space)
-            ->Transform(colors.get(), size.GetArea());
+            ->Transform(colors.data(), size.GetArea());
 
         // Map back from interleaved [0.0,1.0] values to intervealed ARGB,
         // setting alpha=100%.
