@@ -11320,7 +11320,9 @@
                         "glic-panel-reset-session-timeout-delay-h": "1"
                     },
                     "enable_features": [
-                        "GlicResetPanelOnSessionTimeout"
+                        "GlicPanelResetOnSessionTimeout",
+                        "GlicPanelResetOnStart",
+                        "GlicPanelSetPositionOnDrag"
                     ]
                 }
             ]
