@@ -264,7 +264,9 @@ class CloudOpenTask : public BrowserListObserver,
   OfficeFilesTransferRequired transfer_required_ =
       OfficeFilesTransferRequired::kNotRequired;
   bool need_new_files_app_ = false;
-  raw_ptr<BrowserDelegate> files_app_browser_;
+  // TODO(crbug.com/440001206): Clients should fetch BrowserDelegate refs
+  // dynamically or handle BrowserDelegate destruction events directly.
+  raw_ptr<BrowserDelegate, DanglingUntriaged> files_app_browser_;
   bool files_app_closed_ = false;
 };
 
