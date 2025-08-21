@@ -507,6 +507,7 @@ public class CollaborationIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky, see crbug.com/440302092")
     public void testDataSharingLeaveGroup() {
         mCollaborationTestUtils.setUpSyncAndSignIn();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
