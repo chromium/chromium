@@ -29,33 +29,29 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/invalidate_type.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_navigator.h"
-#include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/prefetch_priority.h"
-#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/save_page_type.h"
+#include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_capability_type.h"
 #include "content/public/common/stop_find_action.h"
 #include "ipc/constants.mojom.h"
 #include "net/base/network_handle.h"
-#include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-forward.h"
-#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-forward.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-forward.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/gfx/geometry/rect.h"
@@ -96,6 +92,7 @@ class WakeLockContext;
 
 namespace net {
 class HttpNoVarySearchData;
+class HttpRequestHeaders;
 struct LoadStateWithParam;
 }  // namespace net
 
@@ -106,6 +103,7 @@ class InterfaceProvider;
 namespace ui {
 struct AXPropertyFilter;
 struct AXTreeUpdate;
+class AXMode;
 class AXNode;
 class ColorProvider;
 class ColorProviderSource;
@@ -121,6 +119,10 @@ class BackForwardTransitionAnimationManager;
 class BrowserContext;
 class BrowserPluginGuestDelegate;
 class GuestPageHolder;
+class NavigationController;
+class NavigationEntry;
+class PrefetchHandle;
+class PreloadPipelineInfo;
 class PrerenderHandle;
 class RenderFrameHost;
 class RenderViewHost;

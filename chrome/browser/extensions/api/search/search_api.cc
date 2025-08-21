@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/common/extensions/api/search.h"
 #include "components/search_engines/util.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 
