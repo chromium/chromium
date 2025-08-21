@@ -3181,6 +3181,9 @@ extern const char kWebFeedOnboardingDescription[];
 extern const char kWebFeedSortName[];
 extern const char kWebFeedSortDescription[];
 
+extern const char kWebSerialWiredDevicesAndroidName[];
+extern const char kWebSerialWiredDevicesAndroidDescription[];
+
 extern const char kWebXrSharedBuffersName[];
 extern const char kWebXrSharedBuffersDescription[];
 

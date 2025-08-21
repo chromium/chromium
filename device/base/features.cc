@@ -39,5 +39,10 @@ BASE_FEATURE(GmsCoreLocationRequestParamOverride,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+// Controls whether to enable Web Serial API for wired devices on Android.
+BASE_FEATURE(WebSerialWiredDevicesAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features
 }  // namespace device

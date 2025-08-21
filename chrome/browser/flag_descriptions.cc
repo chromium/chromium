@@ -5507,6 +5507,11 @@ const char kWebFeedSortDescription[] =
     "Allows users to sort their web content in the web feed. "
     "Only works if Web Feed is also enabled.";
 
+const char kWebSerialWiredDevicesAndroidName[] =
+    "Web Serial API for Wired Devices";
+const char kWebSerialWiredDevicesAndroidDescription[] =
+    "Provides a way for websites to interact with wired serial devices";
+
 const char kWebXrSharedBuffersName[] = "WebXR Shared Buffers";
 const char kWebXrSharedBuffersDescription[] =
     "Toggles whether or not WebXR attempts to use SharedBuffers for moving "
