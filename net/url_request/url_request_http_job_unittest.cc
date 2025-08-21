@@ -89,7 +89,6 @@ namespace {
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::Pair;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
@@ -1627,27 +1626,27 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
 
     InSequence s;
     EXPECT_CALL(GetMockService(), ShouldDefer)
-        .WillOnce(Invoke([](Unused, Unused, Unused) {
+        .WillOnce([](Unused, Unused, Unused) {
           return device_bound_sessions::SessionService::DeferralParams(
               device_bound_sessions::Session::Id("test"));
-        }));
+        });
     EXPECT_CALL(GetMockService(), DeferRequestForRefresh)
-        .WillOnce(Invoke([](URLRequest* request, Unused,
-                            device_bound_sessions::SessionServiceMock::
-                                RefreshCompleteCallback callback) {
+        .WillOnce([](URLRequest* request, Unused,
+                     device_bound_sessions::SessionServiceMock::
+                         RefreshCompleteCallback callback) {
           request->set_device_bound_session_usage(
               net::device_bound_sessions::SessionUsage::kDeferred);
           std::move(callback).Run(device_bound_sessions::SessionService::
                                       RefreshResult::kUnreachable);
-        }));
+        });
     EXPECT_CALL(GetMockService(), ShouldDefer)
-        .WillOnce(Invoke([expected_key](URLRequest* request, Unused, Unused) {
+        .WillOnce([expected_key](URLRequest* request, Unused, Unused) {
           EXPECT_THAT(request->device_bound_session_deferrals(),
                       ElementsAre(Pair(expected_key,
                                        device_bound_sessions::SessionService::
                                            RefreshResult::kUnreachable)));
           return std::nullopt;
-        }));
+        });
   }
 
   request_->Start();
@@ -1685,7 +1684,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   EXPECT_CALL(GetMockService(), ShouldDefer)
-      .WillOnce(Invoke([](Unused, Unused, Unused) { return std::nullopt; }));
+      .WillOnce([](Unused, Unused, Unused) { return std::nullopt; });
   request_->Start();
   delegate_.RunUntilComplete();
   EXPECT_THAT(delegate_.request_status(), IsOk());
@@ -1732,22 +1731,21 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
             device_bound_sessions::SessionService::RefreshResult::
                 kUnreachable));
     EXPECT_CALL(GetMockService(), ShouldDefer)
-        .WillOnce(Invoke([first_expected_key](URLRequest* request, Unused,
-                                              Unused) {
+        .WillOnce([first_expected_key](URLRequest* request, Unused, Unused) {
           EXPECT_THAT(request->device_bound_session_deferrals(),
                       ElementsAre(Pair(first_expected_key,
                                        device_bound_sessions::SessionService::
                                            RefreshResult::kUnreachable)));
           return device_bound_sessions::SessionService::DeferralParams(
               device_bound_sessions::Session::Id("test2"));
-        }));
+        });
     EXPECT_CALL(GetMockService(), DeferRequestForRefresh)
         .WillOnce(base::test::RunOnceCallback<2>(
             device_bound_sessions::SessionService::RefreshResult::
                 kUnreachable));
     EXPECT_CALL(GetMockService(), ShouldDefer)
-        .WillOnce(Invoke([first_expected_key, second_expected_key](
-                             URLRequest* request, Unused, Unused) {
+        .WillOnce([first_expected_key, second_expected_key](URLRequest* request,
+                                                            Unused, Unused) {
           EXPECT_THAT(
               request->device_bound_session_deferrals(),
               UnorderedElementsAre(Pair(first_expected_key,
@@ -1758,7 +1756,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
                                             RefreshResult::kUnreachable)));
 
           return std::nullopt;
-        }));
+        });
   }
 
   request_->Start();
@@ -1796,22 +1794,22 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
         .WillOnce(Return(device_bound_sessions::SessionService::DeferralParams(
             device_bound_sessions::Session::Id("test"))));
     EXPECT_CALL(GetMockService(), DeferRequestForRefresh)
-        .WillOnce(Invoke([](URLRequest* request, Unused,
-                            device_bound_sessions::SessionServiceMock::
-                                RefreshCompleteCallback callback) {
+        .WillOnce([](URLRequest* request, Unused,
+                     device_bound_sessions::SessionServiceMock::
+                         RefreshCompleteCallback callback) {
           request->set_device_bound_session_usage(
               net::device_bound_sessions::SessionUsage::kDeferred);
           std::move(callback).Run(device_bound_sessions::SessionService::
                                       RefreshResult::kUnreachable);
-        }));
+        });
     EXPECT_CALL(GetMockService(), ShouldDefer)
-        .WillOnce(Invoke([expected_key](URLRequest* request, Unused, Unused) {
+        .WillOnce([expected_key](URLRequest* request, Unused, Unused) {
           EXPECT_THAT(request->device_bound_session_deferrals(),
                       ElementsAre(Pair(expected_key,
                                        device_bound_sessions::SessionService::
                                            RefreshResult::kUnreachable)));
           return std::nullopt;
-        }));
+        });
   }
 
   request_->Start();

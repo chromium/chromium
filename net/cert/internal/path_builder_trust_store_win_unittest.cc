@@ -38,7 +38,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;

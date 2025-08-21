@@ -22,7 +22,6 @@
 #include "url/scheme_host_port.h"
 
 using testing::_;
-using testing::Invoke;
 
 namespace net {
 

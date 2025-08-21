@@ -104,7 +104,6 @@ using testing::Eq;
 using testing::Field;
 using testing::Gt;
 using testing::InSequence;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::MockFunction;
 using testing::NotNull;
@@ -14467,9 +14466,9 @@ class HttpCacheNoVarySearchMockFileOperationsTest
       if (expect_load_) {
         load_expectations_ +=
             EXPECT_CALL(*file_operations, Load)
-                .WillOnce(DoAll(Invoke(maybe_block),
-                                Return(base::unexpected(
-                                    base::File::FILE_ERROR_NOT_FOUND))));
+                .WillOnce(
+                    DoAll(maybe_block, Return(base::unexpected(
+                                           base::File::FILE_ERROR_NOT_FOUND))));
       }
       load_expectations_ += EXPECT_CALL(*file_operations, AtomicSave)
                                 .WillOnce(Return(base::ok()));

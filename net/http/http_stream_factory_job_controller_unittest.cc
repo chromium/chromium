@@ -3897,7 +3897,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
   // The main job should be resumed without delay when alt job fails.
   EXPECT_CALL(*job_factory_.main_job(), Resume())
       .Times(1)
-      .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   job_controller_->OnStreamFailed(job_factory_.alternative_job(),
                                   ERR_QUIC_PROTOCOL_ERROR);
   FastForwardBy(base::Microseconds(0));
@@ -5469,7 +5469,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
       base::RunLoop run_loop;
       EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _))
           .Times(1)
-          .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+          .WillOnce([&run_loop]() { run_loop.Quit(); });
       stream->NotifySessionOneRttKeyAvailable();
       run_loop.Run();
     } else {
@@ -5623,7 +5623,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
       base::RunLoop run_loop;
       EXPECT_CALL(request_delegate, OnStreamReadyImpl(_, _))
           .Times(1)
-          .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+          .WillOnce([&run_loop]() { run_loop.Quit(); });
       tcp_data->socket()->OnConnectComplete(MockConnect());
       run_loop.Run();
     } else {
@@ -6007,7 +6007,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
     base::RunLoop run_loop;
     EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _))
         .Times(1)
-        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     run_loop.Run();
   }
   histogram_tester.ExpectUniqueSample(
@@ -6170,7 +6170,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
     base::RunLoop run_loop;
     EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _))
         .Times(1)
-        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     run_loop.Run();
   }
   histogram_tester.ExpectUniqueSample("Net.AlternateProtocolUsage",
@@ -6207,7 +6207,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
     base::RunLoop run_loop;
     EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _))
         .Times(1)
-        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     run_loop.Run();
   }
   histogram_tester.ExpectUniqueSample(
@@ -6254,7 +6254,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
     base::RunLoop run_loop;
     EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _))
         .Times(1)
-        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     run_loop.Run();
   }
   histogram_tester.ExpectUniqueSample(

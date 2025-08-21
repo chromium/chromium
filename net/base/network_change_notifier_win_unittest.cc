@@ -228,10 +228,10 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
         // Due to an expected race, it's theoretically possible for more than
         // one call to occur, though unlikely.
         .Times(AtLeast(1))
-        .WillRepeatedly(Invoke([&loop]() {
+        .WillRepeatedly([&loop]() {
           loop.QuitWhenIdle();
           return false;
-        }));
+        });
 
     loop.Run();
 
