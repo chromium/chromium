@@ -1749,8 +1749,10 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   }
 
   // Navigation commands
-  command_updater_.UpdateCommandEnabled(IDC_BACK, CanGoBack(browser_));
-  command_updater_.UpdateCommandEnabled(IDC_FORWARD, CanGoForward(browser_));
+  command_updater_.UpdateCommandEnabled(IDC_BACK,
+                                        ShouldEnableBackButton(browser_));
+  command_updater_.UpdateCommandEnabled(IDC_FORWARD,
+                                        ShouldEnableForwardButton(browser_));
   const bool can_reload = CanReload(browser_);
   command_updater_.UpdateCommandEnabled(IDC_RELOAD, can_reload);
   command_updater_.UpdateCommandEnabled(IDC_RELOAD_BYPASSING_CACHE, can_reload);

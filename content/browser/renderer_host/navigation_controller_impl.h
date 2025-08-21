@@ -135,6 +135,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   bool CanGoBack() override;
   bool CanGoForward() override;
   bool CanGoToOffset(int offset) override;
+  bool ShouldEnableBackButton() override;
+  bool ShouldEnableForwardButton() override;
   WeakNavigationHandleVector GoBack() override;
   WeakNavigationHandleVector GoForward() override;
   WeakNavigationHandleVector GoToIndex(int index) override;

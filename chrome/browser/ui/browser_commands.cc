@@ -719,6 +719,13 @@ bool CanGoBack(content::WebContents* web_contents) {
   return web_contents->GetController().CanGoBack();
 }
 
+bool ShouldEnableBackButton(const Browser* browser) {
+  return browser->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetController()
+      .ShouldEnableBackButton();
+}
+
 enum class BackNavigationMenuIPHTrigger : int {
   kUserPerformsManyBackNavigation = 0,
   kUserPerformsChainedBackNavigation,
@@ -794,6 +801,13 @@ bool CanGoForward(const Browser* browser) {
 
 bool CanGoForward(content::WebContents* web_contents) {
   return web_contents->GetController().CanGoForward();
+}
+
+bool ShouldEnableForwardButton(const Browser* browser) {
+  return browser->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetController()
+      .ShouldEnableForwardButton();
 }
 
 void GoForward(Browser* browser, WindowOpenDisposition disposition) {

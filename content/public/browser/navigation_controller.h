@@ -515,6 +515,19 @@ class NavigationController {
   virtual bool CanGoForward() = 0;
   virtual bool CanGoToOffset(int offset) = 0;
 
+  // Whether the back and forward buttons should be enabled in the browser UI.
+  // These need to be decoupled from the corresponding `CanGo*` methods; if
+  // there are only skippable entries in the navigation history for a direction,
+  // we should enable that direction's button so that the user can long-press to
+  // select a skippable entry if they choose. However, in this situation
+  // `CanGo*` will be false, and a direct click on the button will do nothing,
+  // in order to prevent a poor user experience in the case of history
+  // manipulation. See
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/history_manipulation_intervention.md
+  // for more details.
+  virtual bool ShouldEnableBackButton() = 0;
+  virtual bool ShouldEnableForwardButton() = 0;
+
   // Returns a vector of weak pointers to the NavigationHandles created for this
   // navigation. There may be multiple NavigationHandles if more than one frame
   // needs to navigate, or there may be none if the navigation is immediately

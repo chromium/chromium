@@ -1187,6 +1187,26 @@ bool NavigationControllerImpl::CanGoBack() {
   return GetIndexForGoBack().has_value();
 }
 
+bool NavigationControllerImpl::ShouldEnableBackButton() {
+  std::optional<int> back_index = GetIndexForGoBack();
+
+  if (back_index.has_value()) {
+    return true;
+  }
+
+  // If we don't have a valid index to go back to, but entries still exist
+  // behind the current one, that means all of them are skippable. We should
+  // still show the back button, so the user can long-press/hover to select a
+  // skippable entry, but clicking the button will do nothing. This also avoids
+  // changing the button's state if the user interacts with the page and thus
+  // disables the history manipulation intervention.
+  if (GetEntryAtOffset(-1)) {
+    return true;
+  }
+
+  return false;
+}
+
 std::optional<int> NavigationControllerImpl::GetIndexForGoForward() {
   for (int index = GetIndexForOffset(1); index < GetEntryCount(); index++) {
     if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
@@ -1198,6 +1218,26 @@ std::optional<int> NavigationControllerImpl::GetIndexForGoForward() {
 
 bool NavigationControllerImpl::CanGoForward() {
   return GetIndexForGoForward().has_value();
+}
+
+bool NavigationControllerImpl::ShouldEnableForwardButton() {
+  std::optional<int> forward_index = GetIndexForGoForward();
+
+  if (forward_index.has_value()) {
+    return true;
+  }
+
+  // If we don't have a valid index to go forward to, but entries still exist
+  // in front of the current one, that means all of them are skippable. We
+  // should still show the forward button, so the user can long-press/hover to
+  // select a skippable entry, but clicking the button will do nothing. This
+  // also avoids changing the button's state if the user interacts with the page
+  // and thus disables the history manipulation intervention.
+  if (GetEntryAtOffset(1)) {
+    return true;
+  }
+
+  return false;
 }
 
 bool NavigationControllerImpl::CanGoToOffset(int offset) {
@@ -1225,22 +1265,26 @@ bool NavigationControllerImpl::CanGoToOffsetWithSkipping(int offset) {
 
 NavigationController::WeakNavigationHandleVector
 NavigationControllerImpl::GoBack() {
+  if (!CanGoBack()) {
+    return NavigationController::WeakNavigationHandleVector();
+  }
+
   const std::optional<int> target_index = GetIndexForGoBack();
-
   CHECK(target_index.has_value());
-
   return GoToIndex(*target_index);
 }
 
 NavigationController::WeakNavigationHandleVector
 NavigationControllerImpl::GoForward() {
+  if (!CanGoForward()) {
+    return NavigationController::WeakNavigationHandleVector();
+  }
+
   // Note that at least one entry (the last one) will be non-skippable since
   // entries are marked skippable only when they add another entry because of
   // redirect or pushState.
   const std::optional<int> target_index = GetIndexForGoForward();
-
   CHECK(target_index.has_value());
-
   return GoToIndex(*target_index);
 }
 

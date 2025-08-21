@@ -86,10 +86,12 @@ void OpenURLOffTheRecord(Profile* profile, const GURL& url);
 
 bool CanGoBack(const Browser* browser);
 bool CanGoBack(content::WebContents* web_contents);
+bool ShouldEnableBackButton(const Browser* browser);
 void GoBack(Browser* browser, WindowOpenDisposition disposition);
 void GoBack(content::WebContents* web_contents);
 bool CanGoForward(const Browser* browser);
 bool CanGoForward(content::WebContents* web_contents);
+bool ShouldEnableForwardButton(const Browser* browser);
 void GoForward(Browser* browser, WindowOpenDisposition disposition);
 void GoForward(content::WebContents* web_contents);
 void NavigateToIndexWithDisposition(Browser* browser,
