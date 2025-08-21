@@ -8751,7 +8751,7 @@
             ],
             "experiments": [
                 {
-                    "name": "DirtyWritebackMaxBytes",
+                    "name": "Enabled",
                     "enable_features": [
                         "CrOSLateBootDirtyWritebackMaxBytes"
                     ]
