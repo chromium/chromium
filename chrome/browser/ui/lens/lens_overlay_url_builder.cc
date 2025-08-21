@@ -438,14 +438,19 @@ bool IsValidSearchResultsUrl(const GURL& url) {
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
+bool IsAimQuery(const GURL& url) {
+  std::string param_value;
+  net::GetValueForKeyInQuery(url, kModeParameterKey, &param_value);
+  return param_value == kAimModeParameterValue;
+}
+
 bool ShouldOpenSearchURLInNewTab(const GURL& url) {
   std::string param_value;
   net::GetValueForKeyInQuery(url, kModeParameterKey, &param_value);
   const bool is_shopping_mode = param_value == kShoppingModeParameterValue;
-  const bool is_aim_mode = param_value == kAimModeParameterValue;
   return IsValidSearchResultsUrl(url) &&
          (is_shopping_mode ||
-          (is_aim_mode && !lens::features::ShouldShowAimInSidePanel()));
+          (IsAimQuery(url) && !lens::features::ShouldShowAimInSidePanel()));
 }
 
 GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url) {

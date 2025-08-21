@@ -827,6 +827,13 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
                                       kChromeSideSearchVersionHeaderValue);
   SetSidePanelIsOffline(net::NetworkChangeNotifier::IsOffline());
   SetSidePanelNewTabUrl(GURL());
+
+  // If this is an AIM query, to be opened in the side panel, exit early to
+  // prevent the ghost loader from being shown. AIM supports soft navigations to
+  // handle custom animations, and showing the ghost loader would cover those.
+  if (lens::features::GetSidePanelGhostLoaderDisabledForAim() && IsAimQuery(nav_url)) {
+    return;
+  }
   SetSidePanelIsLoadingResults(true);
 }
 
