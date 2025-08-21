@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -474,6 +475,7 @@ class DeferredChecker {
 
   void CheckClickingEnabledAfterDelay(base::TimeDelta time,
                                       bool expected_enabled) {
+    test::RunPendingTasks();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         WTF::BindOnce(&DeferredChecker::CheckClickingEnabled,
