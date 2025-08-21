@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import static androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -13,11 +15,13 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.RequiresApi;
+import androidx.core.view.WindowCompat;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
@@ -217,6 +221,36 @@ final class ChromeAndroidTaskImpl
     @Override
     public boolean isMinimized() {
         return !isVisible();
+    }
+
+    @Override
+    public boolean isFullscreen() {
+        // TODO(crbug.com/438268202): Change the if statement to an assert.
+        // We don't expect ChromeAndroidTask to work for R and below.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            Log.w(TAG, "isFullscreen() requires Android R+; returning false");
+            return false;
+        }
+
+        synchronized (mActivityWindowAndroidLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) return false;
+            Activity activity = activityWindowAndroid.getActivity().get();
+            if (activity == null) return false;
+            Window window = activity.getWindow();
+            var windowManager = activity.getWindowManager();
+            /**
+             * See {@link CompositorViewHolder#isInFullscreenMode}.
+             */
+            return !windowManager
+                            .getMaximumWindowMetrics()
+                            .getWindowInsets()
+                            .isVisible(WindowInsets.Type.statusBars())
+                    || WindowCompat.getInsetsController(window, window.getDecorView())
+                                    .getSystemBarsBehavior()
+                            == BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
+        }
     }
 
     @Override

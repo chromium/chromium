@@ -56,7 +56,8 @@ bool AndroidBaseWindow::IsMinimized() const {
 }
 
 bool AndroidBaseWindow::IsFullscreen() const {
-  NOTREACHED();
+  return Java_AndroidBaseWindow_isFullscreen(AttachCurrentThread(),
+                                             java_android_base_window_);
 }
 
 gfx::NativeWindow AndroidBaseWindow::GetNativeWindow() const {

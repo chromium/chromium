@@ -121,6 +121,9 @@ public interface ChromeAndroidTask {
     /** Returns true if the window is minimized. */
     boolean isMinimized();
 
+    /** Returns whether this {@link ChromeAndroidTask} is currently in fullscreen mode. */
+    boolean isFullscreen();
+
     /**
      * Returns the most recent timestamp when this {@link ChromeAndroidTask} became active, i.e.,
      * when its state changed from nonexistent or inactive (minimized/unfocused), to the active

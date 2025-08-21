@@ -63,6 +63,11 @@ final class AndroidBaseWindow {
     }
 
     @CalledByNative
+    private boolean isFullscreen() {
+        return mChromeAndroidTask.isFullscreen();
+    }
+
+    @CalledByNative
     @JniType("std::vector<int>")
     private int[] getBounds() {
         Rect bounds = mChromeAndroidTask.getBounds();

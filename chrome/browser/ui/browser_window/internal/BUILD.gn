@@ -154,6 +154,7 @@ if (is_android) {
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/ui/browser_window:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
@@ -199,7 +200,9 @@ if (is_android) {
       "//base/test:public_transit_java",
       "//chrome/android:chrome_java",
       "//chrome/browser/flags:java",
+      "//chrome/browser/tab:java",
       "//chrome/browser/ui/browser_window:java",
+      "//chrome/test/android:chrome_java_integration_test_support",
       "//chrome/test/android:chrome_java_test_support_common",
       "//chrome/test/android:chrome_java_transit",
       "//third_party/androidx:androidx_test_runner_java",

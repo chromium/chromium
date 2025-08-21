@@ -42,6 +42,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -342,6 +343,38 @@ public class ChromeAndroidTaskIntegrationTest {
         // Assert.
         var chromeAndroidTask = getChromeAndroidTask(taskId);
         assertNull(chromeAndroidTask);
+    }
+
+    @Test
+    @MediumTest
+    public void isFullscreen_falseByDefault() {
+        // Arrange.
+        mFreshCtaTransitTestRule.startOnBlankPage();
+        int taskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
+        assertNotNull(chromeAndroidTask);
+
+        // Assert.
+        assertFalse(chromeAndroidTask.isFullscreen());
+    }
+
+    @Test
+    @MediumTest
+    public void isFullscreen_trueWhenFullscreen() {
+        // Arrange.
+        mFreshCtaTransitTestRule.startOnBlankPage();
+        int taskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
+        assertNotNull(chromeAndroidTask);
+
+        // Act.
+        FullscreenTestUtils.togglePersistentFullscreenAndAssert(
+                /* tab= */ mFreshCtaTransitTestRule.getActivityTab(),
+                /* state= */ true,
+                /* activity= */ mFreshCtaTransitTestRule.getActivity());
+
+        // Assert.
+        assertTrue(chromeAndroidTask.isFullscreen());
     }
 
     private @Nullable ChromeAndroidTask getChromeAndroidTask(int taskId) {
