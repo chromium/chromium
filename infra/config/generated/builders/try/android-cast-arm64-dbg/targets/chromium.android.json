@@ -206,6 +206,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//base:base_junit_tests/",
+        "module_scheme": "junit",
         "name": "base_junit_tests",
         "resultdb": {
           "enable": true,
@@ -272,6 +273,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//content/public/android:content_junit_tests/",
+        "module_scheme": "junit",
         "name": "content_junit_tests",
         "resultdb": {
           "enable": true,
@@ -294,6 +296,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//net/android:net_junit_tests/",
+        "module_scheme": "junit",
         "name": "net_junit_tests",
         "resultdb": {
           "enable": true,

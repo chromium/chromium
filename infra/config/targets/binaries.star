@@ -35,6 +35,7 @@ targets.binaries.generated_script(
     label = "//android_webview/test:android_webview_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -191,6 +192,7 @@ targets.binaries.generated_script(
     label = "//base:base_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.script(
@@ -315,6 +317,7 @@ targets.binaries.generated_script(
     label = "//build/android:build_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -691,6 +694,7 @@ targets.binaries.generated_script(
     label = "//components:components_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.script(
@@ -739,6 +743,7 @@ targets.binaries.generated_script(
     label = "//content/public/android:content_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.script(
@@ -916,6 +921,7 @@ targets.binaries.generated_script(
     label = "//device:device_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -1355,6 +1361,7 @@ targets.binaries.generated_script(
     label = "//testing/android/junit:junit_unit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -1411,6 +1418,7 @@ targets.binaries.generated_script(
     label = "//media/base/android:media_base_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.script(
@@ -1491,6 +1499,7 @@ targets.binaries.generated_script(
     label = "//components/module_installer/android:module_installer_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -1595,6 +1604,7 @@ targets.binaries.generated_script(
     label = "//net/android:net_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.script(
@@ -1688,6 +1698,7 @@ targets.binaries.generated_script(
     label = "//components/paint_preview/player/android:paint_preview_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.generated_script(
@@ -1695,6 +1706,7 @@ targets.binaries.generated_script(
     label = "//chrome/browser/password_manager/android:password_manager_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -1885,6 +1897,7 @@ targets.binaries.generated_script(
     label = "//services:services_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -2114,6 +2127,7 @@ targets.binaries.generated_script(
     label = "//chrome/browser/touch_to_fill/password_manager/android:touch_to_fill_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.script(
@@ -2159,6 +2173,7 @@ targets.binaries.generated_script(
     label = "//ui:ui_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -2393,6 +2408,7 @@ targets.binaries.generated_script(
     label = "//chrome/android/webapk/libs/client:webapk_client_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.generated_script(
@@ -2400,6 +2416,7 @@ targets.binaries.generated_script(
     label = "//chrome/android/webapk/shell_apk:webapk_shell_apk_h2o_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.generated_script(
@@ -2407,6 +2424,7 @@ targets.binaries.generated_script(
     label = "//chrome/android/webapk/shell_apk:webapk_shell_apk_junit_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.generated_script(
