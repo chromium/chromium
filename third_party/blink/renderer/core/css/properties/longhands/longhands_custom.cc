@@ -4264,13 +4264,8 @@ const CSSValue* FlexBasis::ParseSingleValue(
   // css_parsing_utils::ValidWidthOrHeightKeyword.
   if (css_parsing_utils::IdentMatches<
           CSSValueID::kAuto, CSSValueID::kContent, CSSValueID::kMinContent,
-          CSSValueID::kMaxContent, CSSValueID::kFitContent>(
-          stream.Peek().Id())) {
-    return css_parsing_utils::ConsumeIdent(stream);
-  }
-
-  if (RuntimeEnabledFeatures::LayoutStretchEnabled() &&
-      CSSValueID::kStretch == stream.Peek().Id()) {
+          CSSValueID::kMaxContent, CSSValueID::kFitContent,
+          CSSValueID::kStretch>(stream.Peek().Id())) {
     return css_parsing_utils::ConsumeIdent(stream);
   }
 

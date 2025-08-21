@@ -7346,7 +7346,8 @@ bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context) {
       id == CSSValueID::kWebkitMaxContent ||
       id == CSSValueID::kWebkitFillAvailable ||
       id == CSSValueID::kWebkitFitContent || id == CSSValueID::kMinContent ||
-      id == CSSValueID::kMaxContent || id == CSSValueID::kFitContent) {
+      id == CSSValueID::kMaxContent || id == CSSValueID::kFitContent ||
+      id == CSSValueID::kStretch) {
     switch (id) {
       case CSSValueID::kWebkitMinContent:
         context.Count(WebFeature::kCSSValuePrefixedMinContent);
@@ -7363,10 +7364,6 @@ bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context) {
       default:
         break;
     }
-    return true;
-  }
-  if (RuntimeEnabledFeatures::LayoutStretchEnabled() &&
-      id == CSSValueID::kStretch) {
     return true;
   }
   return false;

@@ -2862,10 +2862,6 @@
       base_feature: "LayoutNGShapeCache",
     },
     {
-      name: "LayoutStretch",
-      status: "stable",
-    },
-    {
       name: "LayoutStretchCacheFix",
       status: "stable",
     },

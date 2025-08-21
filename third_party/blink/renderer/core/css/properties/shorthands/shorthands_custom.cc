@@ -1555,11 +1555,8 @@ bool Flex::ParseShorthand(bool important,
         if (css_parsing_utils::IdentMatches<
                 CSSValueID::kAuto, CSSValueID::kContent,
                 CSSValueID::kMinContent, CSSValueID::kMaxContent,
-                CSSValueID::kFitContent>(stream.Peek().Id())) {
-          flex_basis = css_parsing_utils::ConsumeIdent(stream);
-        }
-        if (RuntimeEnabledFeatures::LayoutStretchEnabled() &&
-            CSSValueID::kStretch == stream.Peek().Id()) {
+                CSSValueID::kFitContent, CSSValueID::kStretch>(
+                stream.Peek().Id())) {
           flex_basis = css_parsing_utils::ConsumeIdent(stream);
         }
 
