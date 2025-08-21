@@ -51,6 +51,10 @@ IN_PROC_BROWSER_TEST_F(LensSidePanelTest, PostMessageCommunication) {
   RunTest("lens/side_panel/post_message_communication_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensSidePanelTest, Composebox) {
+  RunTest("lens/side_panel/composebox_test.js", "mocha.run()");
+}
+
 using LensGhostLoaderTest = LensSidePanelWebUIBrowserTest;
 IN_PROC_BROWSER_TEST_F(LensGhostLoaderTest, GhostLoaderState) {
   RunTest("lens/ghost_loader/ghost_loader_state_test.js", "mocha.run()");
