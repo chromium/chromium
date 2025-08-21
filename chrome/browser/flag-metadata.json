@@ -4677,7 +4677,7 @@
   {
     "name": "enable-webrtc-hide-local-ips-with-mdns",
     "owners": [ "hta@chromium.org" ],
-    "expiry_milestone": 142
+    "expiry_milestone": 156
   },
   {
     "name": "enable-webrtc-pipewire-camera",
