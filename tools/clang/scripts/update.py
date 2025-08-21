@@ -59,8 +59,9 @@ STAMP_FILENAME = 'cr_build_revision'
 STAMP_FILE = os.path.normpath(os.path.join(LLVM_BUILD_DIR, STAMP_FILENAME))
 OLD_STAMP_FILE = os.path.normpath(
     os.path.join(LLVM_BUILD_DIR, '..', STAMP_FILENAME))
+FORCE_HEAD_REVISION_FILENAME = 'force_head_revision'
 FORCE_HEAD_REVISION_FILE = os.path.normpath(
-    os.path.join(LLVM_BUILD_DIR, '..', 'force_head_revision'))
+    os.path.join(LLVM_BUILD_DIR, '..', FORCE_HEAD_REVISION_FILENAME))
 
 
 def RmTree(dir):
