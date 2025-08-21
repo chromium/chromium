@@ -25,7 +25,8 @@ void ConfirmInfoBarDelegate::InfoBarDismissed() {
   }
 }
 
-ConfirmInfoBarDelegate* ConfirmInfoBarDelegate::AsConfirmInfoBarDelegate() {
+const ConfirmInfoBarDelegate* ConfirmInfoBarDelegate::AsConfirmInfoBarDelegate()
+    const {
   return this;
 }
 
@@ -60,6 +61,10 @@ bool ConfirmInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
 std::u16string ConfirmInfoBarDelegate::GetButtonTooltip(
     InfoBarButton button) const {
   return std::u16string();
+}
+
+bool ConfirmInfoBarDelegate::ShouldShowLinkBeforeButton() const {
+  return false;
 }
 
 #if BUILDFLAG(IS_IOS)
