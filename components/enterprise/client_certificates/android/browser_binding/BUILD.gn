@@ -1,0 +1,59 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+assert(enterprise_client_certificates)
+assert(is_android)
+
+source_set("browser_binding") {
+  visibility = [
+    "//components/enterprise/client_certificates/android/browser_binding:*",
+  ]
+  public_deps = [ ":interface" ]
+  deps = [ ":android" ]
+}
+
+source_set("interface") {
+  sources = [
+    "browser_key.h",
+    "browser_key_store.h",
+  ]
+  public_deps = [
+    "//base",
+    "//device/fido",
+  ]
+}
+
+source_set("android") {
+  visibility = [ ":*" ]
+  sources = [
+    "browser_key_android.cc",
+    "browser_key_android.h",
+    "browser_key_store_android.cc",
+    "browser_key_store_android.h",
+  ]
+  deps = [
+    ":interface",
+    "//base",
+    "//components/enterprise/client_certificates/android:browser_binding_jni",
+    "//device/fido",
+    "//net",
+    "//third_party/boringssl",
+    "//third_party/jni_zero",
+  ]
+}
+
+source_set("android_unittests") {
+  testonly = true
+  sources = [ "browser_key_store_android_unittest.cc" ]
+  deps = [
+    ":android",
+    ":interface",
+    "//base",
+    "//components/enterprise/client_certificates/android:browser_binding_jni",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -9,4 +9,8 @@ assert(enterprise_client_certificates)
 source_set("unit_tests") {
   testonly = true
   deps = [ "//components/enterprise/client_certificates/core:unit_tests" ]
+
+  if (is_android) {
+    deps += [ "//components/enterprise/client_certificates/android/browser_binding:android_unittests" ]
+  }
 }
