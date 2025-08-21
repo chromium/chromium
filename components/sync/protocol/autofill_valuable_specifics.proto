@@ -59,9 +59,6 @@ message VehicleRegistration {
   // The owner of the vehicle as it appears on their vehicle registration
   // documents.
   optional string owner_name = 8;
-
-  // The owner's address as it appears on their vehicle registration documents.
-  optional string owner_address = 9;
 }
 
 // Valuables coming from Google Wallet.
