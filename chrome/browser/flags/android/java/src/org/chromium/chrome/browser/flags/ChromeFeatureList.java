@@ -1065,6 +1065,11 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTestDefaultDisabled =
             newCachedFlag(TEST_DEFAULT_DISABLED, false);
     public static final CachedFlag sTestDefaultEnabled = newCachedFlag(TEST_DEFAULT_ENABLED, true);
+    public static final CachedFlag sToolbarPhoneAnimationRefactor =
+            newCachedFlag(
+                    TOOLBAR_PHONE_ANIMATION_REFACTOR,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sToolbarSnapshotRefactor =
             newCachedFlag(
                     TOOLBAR_SNAPSHOT_REFACTOR,
@@ -1234,6 +1239,7 @@ public abstract class ChromeFeatureList {
                     sTabStripLayoutOptimization,
                     sTabWindowManagerReportIndicesMismatch,
                     sTabletTabStripAnimation,
+                    sToolbarPhoneAnimationRefactor,
                     sToolbarSnapshotRefactor,
                     sTopControlsRefactor,
                     sTouchToSearchCallout,
@@ -1358,8 +1364,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_SWITCHER_GROUP_SUGGESTIONS_TEST_MODE_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherForeignFaviconSupport =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT, true);
-    public static final MutableFlagWithSafeDefault sToolbarPhoneAnimationRefactor =
-            newMutableFlagWithSafeDefault(TOOLBAR_PHONE_ANIMATION_REFACTOR, false);
     public static final MutableFlagWithSafeDefault sToolbarTabletResizeRefactor =
             newMutableFlagWithSafeDefault(TOOLBAR_TABLET_RESIZE_REFACTOR, false);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
