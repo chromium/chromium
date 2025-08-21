@@ -253,6 +253,8 @@ import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.theme.ThemeResourceWrapper;
+import org.chromium.ui.theme.ThemeResourceWrapperProvider;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 import org.chromium.webapk.lib.client.WebApkNavigationClient;
@@ -274,7 +276,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 AppMenuBlocker,
                 MenuOrKeyboardActionController,
                 CompositorViewHolder.Initializer,
-                TabModelInitializer {
+                TabModelInitializer,
+                ThemeResourceWrapperProvider {
     public static final String UNFOLD_LATENCY_BEGIN_TIMESTAMP = "unfold_latency_begin_timestamp";
     public static final String IS_FROM_RECREATING = "is_from_recreating";
 
@@ -3111,6 +3114,25 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return mThemeResourceProvider.getSystemService(name);
         }
         return super.getSystemService(name);
+    }
+
+    @Override
+    public boolean hasThemeResourceWrapper() {
+        return mThemeResourceProvider != null;
+    }
+
+    @Override
+    public void attachThemeObserver(ThemeResourceWrapper.ThemeObserver observer) {
+        if (mThemeResourceProvider != null) {
+            mThemeResourceProvider.addObserver(observer);
+        }
+    }
+
+    @Override
+    public void detachThemeObserver(ThemeResourceWrapper.ThemeObserver observer) {
+        if (mThemeResourceProvider != null) {
+            mThemeResourceProvider.removeObserver(observer);
+        }
     }
 
     public TabStateThemeResourceProvider getThemeResourceProviderForTesting() {

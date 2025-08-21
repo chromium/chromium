@@ -72,6 +72,8 @@ import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.theme.ThemeResourceWrapper;
+import org.chromium.ui.theme.ThemeResourceWrapperProvider;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for ChromeActivity. */
@@ -351,5 +353,36 @@ public class ChromeActivityUnitTest {
         chromeActivity.getResources();
 
         verify(mThemeResourceProvider).getResources();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
+    public void testHasThemeResourceWrapper() {
+        TestChromeActivity chromeActivity = new TestChromeActivity();
+        chromeActivity.setThemeResourceProviderForTesting(mThemeResourceProvider);
+        Assert.assertTrue(
+                "Should be changeable with a provider.", chromeActivity.hasThemeResourceWrapper());
+
+        chromeActivity.setThemeResourceProviderForTesting(null);
+        Assert.assertFalse(
+                "Should not be changeable without a provider.",
+                chromeActivity.hasThemeResourceWrapper());
+
+        assertEquals(chromeActivity, ThemeResourceWrapperProvider.getFromContext(chromeActivity));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
+    public void testAttachThemeObserver() {
+        TestChromeActivity chromeActivity = new TestChromeActivity();
+        chromeActivity.setThemeResourceProviderForTesting(mThemeResourceProvider);
+
+        ThemeResourceWrapper.ThemeObserver observer =
+                mock(ThemeResourceWrapper.ThemeObserver.class);
+        chromeActivity.attachThemeObserver(observer);
+        verify(mThemeResourceProvider).addObserver(observer);
+
+        chromeActivity.detachThemeObserver(observer);
+        verify(mThemeResourceProvider).removeObserver(observer);
     }
 }
