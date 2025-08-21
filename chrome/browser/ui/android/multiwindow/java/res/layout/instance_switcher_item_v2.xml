@@ -88,10 +88,10 @@ found in the LICENSE file.
             android:visibility="gone"
             android:src="@drawable/material_ic_close_24dp"
             android:contentDescription="@string/close"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="16dp"
-            android:scaleType="fitCenter"
+            android:layout_width="@dimen/min_touch_target_size"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:layout_marginEnd="4dp"
+            android:scaleType="center"
             app:tint="@color/instance_switcher_item_foreground_color_list"/>
 
         <org.chromium.ui.listmenu.ListMenuButton
