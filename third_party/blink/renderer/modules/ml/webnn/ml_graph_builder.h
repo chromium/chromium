@@ -234,6 +234,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* neg(MLOperand* input,
                  MLOperatorOptions* options,
                  ExceptionState& exception_state);
+  MLOperand* roundEven(MLOperand* input,
+                       MLOperatorOptions* options,
+                       ExceptionState& exception_state);
   MLOperand* sign(MLOperand* input,
                   MLOperatorOptions* options,
                   ExceptionState& exception_state);

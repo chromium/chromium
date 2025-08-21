@@ -530,6 +530,12 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   reciprocal->setOutput(SupportedDataTypesToDataTypeLimits(
       data_type_limits.reciprocal_input.data_types));
   op_support_limits->setReciprocal(reciprocal);
+  MLSingleInputSupportLimits* round_even = MLSingleInputSupportLimits::Create();
+  round_even->setInput(
+      SupportedTensorLimitsToTensorLimits(data_type_limits.round_even_input));
+  round_even->setOutput(SupportedDataTypesToDataTypeLimits(
+      data_type_limits.round_even_input.data_types));
+  op_support_limits->setRoundEven(round_even);
   MLSingleInputSupportLimits* sign = MLSingleInputSupportLimits::Create();
   sign->setInput(
       SupportedTensorLimitsToTensorLimits(data_type_limits.sign_input));

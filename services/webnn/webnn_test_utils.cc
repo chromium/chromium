@@ -623,6 +623,7 @@ ContextProperties GetContextPropertiesForTesting() {
        /*neg_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*reciprocal_input=*/
        {SupportedDataTypes::All(), kMaxRank},
+       /*round_even_input*/ {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*sign_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*sin_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*sqrt_input=*/{SupportedDataTypes::All(), kMaxRank},
