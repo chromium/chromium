@@ -27,28 +27,44 @@ class BubbleControllerBase;
 // It maintains a queue of pending bubble requests and decides which one to
 // show based on a defined priority system.
 //
-// Here is a rough version of the bubble show algorithm:
-//   * bubble A is showing.
-//   * Now bubble B wants to show.
-//      * If priority(B) > priority(A):
-//         * Hide and queue A, show B.
-//         * On closing B, the next high priority bubble shows.
-//      * If priority(B) < priority(A):
-//         * Queue B.
-//         * On closing A, the next high priortiy bubble shows.
-//      * If priority(B) == priority(A):
-//         * Continue to show A.
-//      * If both A and B are password bubbles, then B replaces A irrespective
-//        of the priority.
+// Here's the bubble management algorithm:
 //
-//   * Logic for queueing bubbles:
-//      * Queue is sorted by priority of the bubble and time created.
-//      * There can only be a single entry per bubble type.
-//        If a bubble of a certain priority is to be shown and there is
-//        already one of that priority in the queue, check whether the existing
-//        one has been in the queue for longer than x. If so, replace it. If
-//        not, discard the new entry. Password bubbles are exempted where the
-//        new bubble willalways replace the older one.
+// === Show Request Logic ===
+// When a new bubble (B) requests to be shown:
+//
+// 1. If no bubble is currently showing:
+//    - Show B immediately.
+//
+// 2. If a bubble (A) is already showing:
+//    - The manager checks if B should preempt A. Preemption happens if:
+//      a) priority(B) > priority(A), OR
+//      b) Both A and B are password bubbles.
+//    - HOWEVER, preemption is blocked if the user is currently hovering their
+//      mouse over bubble A.
+//
+//    - If B preempts A:
+//      - Hide A and add it to the pending queue.
+//      - Show B.
+//
+//    - If B does not preempt A (lower/equal priority, or A is hovered):
+//      - Add B to the pending queue. A remains visible.
+//
+// === Queue and Hiding Logic ===
+//
+// - When the active bubble is hidden (e.g., closed by the user or preempted):
+//   - The manager processes the pending queue to show the next highest-priority
+//     bubble.
+//
+// - The pending queue has the following rules:
+//   - It is sorted by priority (descending) and then by request time
+//     (ascending).
+//   - Only one bubble of a specific type (e.g., kSaveUpdateCard) can be in
+//     the queue at any time.
+//   - If a request comes in for a bubble type that's already queued:
+//     - The new bubble replaces the old one if it's a password bubble OR if
+//       the old one has been in the queue for longer than a timeout
+//       (kPendingRequestTimeout).
+//     - Otherwise, the new request is discarded.
 class BubbleManager {
  public:
   virtual ~BubbleManager() = default;
