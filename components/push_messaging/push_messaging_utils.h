@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_UTILS_H_
-#define CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_UTILS_H_
+#ifndef COMPONENTS_PUSH_MESSAGING_PUSH_MESSAGING_UTILS_H_
+#define COMPONENTS_PUSH_MESSAGING_PUSH_MESSAGING_UTILS_H_
 
 #include <string>
+
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 
 class GURL;
@@ -21,7 +22,8 @@ std::string GetGcmEndpointForChannel(version_info::Channel channel);
 
 // Returns the URL used to send push messages to the subscription identified
 // by |subscription_id|.
-GURL CreateEndpoint(const std::string& subscription_id);
+GURL CreateEndpoint(version_info::Channel channel,
+                    const std::string& subscription_id);
 
 // Checks size and prefix to determine whether it is a VAPID key
 bool IsVapidKey(const std::string& application_server_key);
@@ -38,4 +40,4 @@ blink::mojom::PushSubscriptionOptionsPtr MakeOptions(
 
 }  // namespace push_messaging
 
-#endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_UTILS_H_
+#endif  // COMPONENTS_PUSH_MESSAGING_PUSH_MESSAGING_UTILS_H_

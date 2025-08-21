@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_CONSTANTS_H_
-#define CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_CONSTANTS_H_
+#ifndef COMPONENTS_PUSH_MESSAGING_PUSH_MESSAGING_CONSTANTS_H_
+#define COMPONENTS_PUSH_MESSAGING_PUSH_MESSAGING_CONSTANTS_H_
 
 #include "base/time/time.h"
 
@@ -13,7 +13,8 @@ extern const char kPushMessagingWebpushEndpoint[];
 
 // The GCM endpoint to use on non-Stable channels.
 extern const char kPushMessagingStagingGcmEndpoint[];
-// Endpoint to replace the StagingGcmEndpoint in the future through feature rollout.
+// Endpoint to replace the StagingGcmEndpoint in the future through feature
+// rollout.
 extern const char kPushMessagingStagingWebpushEndpoint[];
 
 // The tag of the notification that will be automatically shown if a webapp
@@ -30,4 +31,4 @@ inline constexpr base::TimeDelta kPushSubscriptionExpirationPeriodTimeDelta =
 inline constexpr base::TimeDelta kPushSubscriptionRefreshTimeDelta =
     base::Minutes(2);
 
-#endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_CONSTANTS_H_
+#endif  // COMPONENTS_PUSH_MESSAGING_PUSH_MESSAGING_CONSTANTS_H_

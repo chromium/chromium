@@ -31,13 +31,11 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
-#include "chrome/browser/push_messaging/push_messaging_constants.h"
-#include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_unsubscribed_entry.h"
-#include "chrome/browser/push_messaging/push_messaging_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -53,6 +51,9 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/push_messaging/push_messaging_constants.h"
+#include "components/push_messaging/push_messaging_features.h"
+#include "components/push_messaging/push_messaging_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/devtools_background_services_context.h"
@@ -187,6 +188,10 @@ PendingMessage::PendingMessage(const PendingMessage& other) = default;
 PendingMessage::PendingMessage(PendingMessage&& other) = default;
 PendingMessage& PendingMessage::operator=(PendingMessage&& other) = default;
 PendingMessage::~PendingMessage() = default;
+
+GURL CreateEndpointFromChromeChannel(const std::string& subscription_id) {
+  return push_messaging::CreateEndpoint(chrome::GetChannel(), subscription_id);
+}
 
 }  // namespace
 
@@ -1118,7 +1123,7 @@ void PushMessagingServiceImpl::DidSubscribe(
 
   switch (result) {
     case InstanceID::SUCCESS: {
-      const GURL endpoint = push_messaging::CreateEndpoint(subscription_id);
+      const GURL endpoint = CreateEndpointFromChromeChannel(subscription_id);
 
       // Make sure that this subscription has associated encryption keys prior
       // to returning it to the developer - they'll need this information in
@@ -1196,7 +1201,7 @@ void PushMessagingServiceImpl::GetSubscriptionInfo(
     return;
   }
 
-  const GURL endpoint = push_messaging::CreateEndpoint(subscription_id);
+  const GURL endpoint = CreateEndpointFromChromeChannel(subscription_id);
   const std::string& app_id = app_identifier.app_id();
   std::optional<base::Time> expiration_time = app_identifier.expiration_time();
 

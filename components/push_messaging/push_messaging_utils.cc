@@ -2,25 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/push_messaging/push_messaging_utils.h"
+#include "components/push_messaging/push_messaging_utils.h"
 
 #include "base/base64url.h"
 #include "base/version_info/channel.h"
-#include "chrome/browser/push_messaging/push_messaging_constants.h"
-#include "chrome/browser/push_messaging/push_messaging_features.h"
-#include "chrome/common/channel_info.h"
+#include "components/push_messaging/push_messaging_constants.h"
+#include "components/push_messaging/push_messaging_features.h"
 #include "url/gurl.h"
 
 namespace push_messaging {
 
 std::string GetGcmEndpointForChannel(version_info::Channel channel) {
   if (base::FeatureList::IsEnabled(
-        features::kPushMessagingGcmEndpointWebpushPath)) {
-      if (base::FeatureList::IsEnabled(
-           features::kPushMessagingGcmEndpointEnvironment)) {
-        if (channel != version_info::Channel::STABLE) {
-          return kPushMessagingStagingWebpushEndpoint;
-        }
+          features::kPushMessagingGcmEndpointWebpushPath)) {
+    if (base::FeatureList::IsEnabled(
+            features::kPushMessagingGcmEndpointEnvironment)) {
+      if (channel != version_info::Channel::STABLE) {
+        return kPushMessagingStagingWebpushEndpoint;
+      }
     }
     return kPushMessagingWebpushEndpoint;
   }
@@ -33,9 +32,9 @@ std::string GetGcmEndpointForChannel(version_info::Channel channel) {
   return kPushMessagingGcmEndpoint;
 }
 
-GURL CreateEndpoint(const std::string& subscription_id) {
-  const GURL endpoint(GetGcmEndpointForChannel(chrome::GetChannel()) +
-                      subscription_id);
+GURL CreateEndpoint(version_info::Channel channel,
+                    const std::string& subscription_id) {
+  const GURL endpoint(GetGcmEndpointForChannel(channel) + subscription_id);
   DCHECK(endpoint.is_valid());
   return endpoint;
 }
@@ -55,8 +54,9 @@ bool IsVapidKey(const std::string& application_server_key) {
 }
 
 std::string NormalizeSenderInfo(const std::string& application_server_key) {
-  if (!IsVapidKey(application_server_key))
+  if (!IsVapidKey(application_server_key)) {
     return application_server_key;
+  }
 
   std::string encoded_application_server_key;
   base::Base64UrlEncode(application_server_key,

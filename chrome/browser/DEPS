@@ -252,6 +252,7 @@ include_rules = [
   "+components/performance_manager/embedder",
   "+components/performance_manager/test_support",
   "+components/permissions",
+  "+components/push_messaging",
   "+components/sampling_profiler",
   "+components/server_certificate_database",
   "+components/webid",
