@@ -455,6 +455,15 @@ def AddGTestOptions(parser):
       dest='store_tombstones', action='store_true',
       help='Add tombstones in results if crash.')
   parser.add_argument(
+      '--do-not-store-tombstones',
+      dest='store_tombstones',
+      action='store_false',
+      help=('Do not add tombstones in results if a crash occurs. This is the '
+            'default behavior, but is available via an explicit flag for '
+            'cases such as crbug.com/419062315 where tombstones should not '
+            'be stored and --store-tombstones cannot be removed from the '
+            'command line.'))
+  parser.add_argument(
       '-s', '--suite',
       dest='suite_name', nargs='+', metavar='SUITE_NAME', required=True,
       help='Executable name of the test suite to run.')
@@ -641,6 +650,15 @@ def AddInstrumentationTestOptions(parser):
       '--store-tombstones',
       action='store_true', dest='store_tombstones',
       help='Add tombstones in results if crash.')
+  parser.add_argument(
+      '--do-not-store-tombstones',
+      dest='store_tombstones',
+      action='store_false',
+      help=('Do not add tombstones in results if a crash occurs. This is the '
+            'default behavior, but is available via an explicit flag for '
+            'cases such as crbug.com/419062315 where tombstones should not '
+            'be stored and --store-tombstones cannot be removed from the '
+            'command line.'))
   parser.add_argument(
       '--strict-mode',
       dest='strict_mode', default='testing',
