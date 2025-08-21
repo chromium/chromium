@@ -54,6 +54,12 @@ enum LoadingBehaviorFlag {
   // Indicates that the RaceNetworkRequest is dispatched for the main and
   // subresources. crbug.com/1420517 for more details.
   kLoadingBehaviorServiceWorkerRaceNetworkRequest = 1 << 12,
+  // Indicates that the SyntheticResponse is used for the main resource. The
+  // response header is served from the locally stored cache. This doesn't
+  // guarantee that the synthetic response successfully returned the response.
+  // The bit will be sent even in the fallback case e.g. inconsistent headers.
+  // crbug.com/1420517 for more details.
+  kLoadingBehaviorServiceWorkerSyntheticResponse = 1 << 13,
 };
 
 }  // namespace blink

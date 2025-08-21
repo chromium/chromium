@@ -32,6 +32,7 @@
 #include "content/public/browser/site_instance.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using page_load_metrics::PageAbortReason;
@@ -126,6 +127,7 @@ const char kHistogramGWSIsFirstNavigationForGWS[] =
 const char kHistogramGWSConnectionReuseStatus[] =
     HISTOGRAM_PREFIX "ConnectionReuseStatus";
 const char kHistogramIncognitoSuffix[] = ".Incognito";
+const char kHistogramSyntheticResponseSuffix[] = ".SyntheticResponse";
 
 // Prerender related histograms.
 const char kHistogramPrerenderHostReused[] =
@@ -407,6 +409,10 @@ void GWSPageLoadMetricsObserver::OnParseStart(
   if (page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerParseStartSearch,
                         timing.parse_timing->parse_start.value());
+    is_header_from_synthetic_response_ =
+        (GetDelegate().GetMainFrameMetadata().behavior_flags &
+         blink::LoadingBehaviorFlag::
+             kLoadingBehaviorServiceWorkerSyntheticResponse) != 0;
   }
 }
 
@@ -466,7 +472,11 @@ void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
         {histogram_name,
          is_prerendered_ ? internal::kHistogramPrerenderSuffix
                          : internal::kHistogramNonPrerenderSuffix,
-         IsIncognitoProfile() ? internal::kHistogramIncognitoSuffix : ""});
+         IsIncognitoProfile() ? internal::kHistogramIncognitoSuffix : "",
+         page_load_metrics::IsServiceWorkerControlled(GetDelegate()) &&
+                 is_header_from_synthetic_response_
+             ? internal::kHistogramSyntheticResponseSuffix
+             : ""});
     PAGE_LOAD_HISTOGRAM(histogram_name, timing);
     PAGE_LOAD_HISTOGRAM(histogram_with_suffix, timing);
   };

@@ -443,3 +443,32 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest,
                   internal::kHistogramServiceWorkerLargestContentfulPaint),
               testing::ElementsAre(base::Bucket(4780, 1)));
 }
+
+TEST_F(ServiceWorkerPageLoadMetricsObserverTest,
+       WithServiceWorker_SyntheticResponse) {
+  page_load_metrics::mojom::PageLoadTiming timing;
+  InitializeTestPageLoadTiming(&timing);
+
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+
+  page_load_metrics::mojom::FrameMetadata metadata;
+  metadata.behavior_flags |=
+      blink::LoadingBehaviorFlag::kLoadingBehaviorServiceWorkerControlled;
+  metadata.behavior_flags |= blink::LoadingBehaviorFlag::
+      kLoadingBehaviorServiceWorkerSyntheticResponse;
+  tester()->SimulateTimingAndMetadataUpdate(timing, metadata);
+  tester()->NavigateToUntrackedUrl();
+
+  tester()->histogram_tester().ExpectTotalCount(
+      base::StrCat({internal::kHistogramServiceWorkerParseStart,
+                    internal::kHistogramSyntheticResponseSuffix}),
+      1);
+  tester()->histogram_tester().ExpectTotalCount(
+      base::StrCat({internal::kHistogramServiceWorkerFirstContentfulPaint,
+                    internal::kHistogramSyntheticResponseSuffix}),
+      1);
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(base::StrCat(
+                  {internal::kHistogramServiceWorkerLargestContentfulPaint,
+                   internal::kHistogramSyntheticResponseSuffix})),
+              testing::ElementsAre(base::Bucket(4780, 1)));
+}

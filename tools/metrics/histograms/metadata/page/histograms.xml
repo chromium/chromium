@@ -1501,19 +1501,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.PaintTiming.{MileStone}2{PageLoadType}{IncognitoSuffix}"
+    name="PageLoad.Clients.GoogleSearch.PaintTiming.{MileStone}2{PageLoadType}{IncognitoSuffix}{SyntheticResponseSuffix}"
     units="ms" expires_after="2026-02-09">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation start to the time {MileStone}, for Google
-    Search page loads on {PageLoadType} with {IncognitoSuffix}. The actual value
-    is recorded via `startTime` in performance.mark()'s markOptions. If
-    `startTime` is not set, this metric is not recorded. This is recorded by
-    emitting `performance.mark()` in JavaScript, which is done after the
-    navigation commit phase in Search. This is only recorded in the outermost
-    main frame.
+    Search page loads on {PageLoadType} with
+    {IncognitoSuffix}{SyntheticResponseSuffix}. The actual value is recorded via
+    `startTime` in performance.mark()'s markOptions. If `startTime` is not set,
+    this metric is not recorded. This is recorded by emitting
+    `performance.mark()` in JavaScript, which is done after the navigation
+    commit phase in Search. This is only recorded in the outermost main frame.
   </summary>
   <token key="MileStone">
     <variant name="AFTEnd" summary="AFT end event is sent"/>
@@ -1531,6 +1531,11 @@ chromium-metrics-reviews@google.com.
     <variant name=".Prerender" summary="Prerendered page load"/>
   </token>
   <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
+  <token key="SyntheticResponseSuffix">
+    <variant name="" summary=""/>
+    <variant name=".SyntheticResponse"
+        summary="and the response is returned with the synthetic response"/>
+  </token>
 </histogram>
 
 <histogram
@@ -2431,6 +2436,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.ServiceWorker2.PaintTiming.{Timing}.SyntheticResponse"
+    units="ms" expires_after="2026-02-01">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The {Timing} time of pages with the Service Worker fetch handlers. Metrics
+    won't be recorded if pages are not controlled by service workers. This is
+    recorded only when the response is created with the synthetic response.
+  </summary>
+  <token key="Timing">
+    <variant name="NavigationToFirstContentfulPaint"/>
+    <variant name="NavigationToLargestContentfulPaint2"/>
+  </token>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.ServiceWorker2.PaintTiming.{Timing}.{HandlerType}"
     units="ms" expires_after="2025-04-13">
   <owner>yyanagisawa@chromium.org</owner>
@@ -2451,6 +2472,26 @@ chromium-metrics-reviews@google.com.
         summary="The fetch handler is recognized as not skippable."/>
     <variant name="SkippableFetchHandler"
         summary="The fetch handler is recognized as skippable."/>
+  </token>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart{SyntheticResponseSuffix}"
+    units="ms" expires_after="2026-02-01">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    parser started, for page controlled by service worker.
+    {SyntheticResponseSuffix} Only recorded for navigations that start in the
+    foreground and stay in the foreground until parse start. This metric is
+    emitted when the parser starts for a navigation.
+  </summary>
+  <token key="SyntheticResponseSuffix">
+    <variant name=""/>
+    <variant name=".SyntheticResponse"
+        summary="This is recorded only when the response is created with the
+                 synthetic response."/>
   </token>
 </histogram>
 

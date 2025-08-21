@@ -3224,6 +3224,11 @@ void DocumentLoader::CreateParserPostCommit() {
       loading_behavior = static_cast<LoadingBehaviorFlag>(
           loading_behavior | kLoadingBehaviorServiceWorkerRaceNetworkRequest);
     }
+    if (response_.FromSyntheticResponse()) {
+      loading_behavior = static_cast<LoadingBehaviorFlag>(
+          loading_behavior | kLoadingBehaviorServiceWorkerSyntheticResponse);
+    }
+
     GetLocalFrameClient().DidObserveLoadingBehavior(loading_behavior);
   }
 

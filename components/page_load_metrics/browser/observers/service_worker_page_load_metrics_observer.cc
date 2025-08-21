@@ -94,6 +94,8 @@ const char kHistogramNoServiceWorkerFirstContentfulPaintDocs[] =
 const char kHistogramServiceWorkerSubresourceTotalRouterEvaluationTime[] =
     "ServiceWorker.RouterEvaluator.SubresourceTotalEvaluationTime";
 
+const char kHistogramSyntheticResponseSuffix[] = ".SyntheticResponse";
+
 }  // namespace internal
 
 namespace {
@@ -231,6 +233,13 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
             kHistogramServiceWorkerFirstContentfulPaintRaceNetworkRequestEligible,
         timing.paint_timing->first_contentful_paint.value());
   }
+
+  if (IsServiceWorkerSyntheticResponseEnabled()) {
+    PAGE_LOAD_HISTOGRAM(
+        base::StrCat({internal::kHistogramServiceWorkerFirstContentfulPaint,
+                      internal::kHistogramSyntheticResponseSuffix}),
+        timing.paint_timing->first_contentful_paint.value());
+  }
 }
 
 void ServiceWorkerPageLoadMetricsObserver::OnDomContentLoadedEventStart(
@@ -287,6 +296,12 @@ void ServiceWorkerPageLoadMetricsObserver::OnParseStart(
             internal::kHistogramServiceWorkerParseStartForwardBackNoStore,
             timing.parse_timing->parse_start.value());
       }
+    }
+    if (IsServiceWorkerSyntheticResponseEnabled()) {
+      PAGE_LOAD_HISTOGRAM(
+          base::StrCat({internal::kHistogramServiceWorkerParseStart,
+                        internal::kHistogramSyntheticResponseSuffix}),
+          timing.parse_timing->parse_start.value());
     }
   } else {
     PAGE_LOAD_HISTOGRAM(internal::kBackgroundHistogramServiceWorkerParseStart,
@@ -354,6 +369,12 @@ void ServiceWorkerPageLoadMetricsObserver::RecordTimingHistograms() {
               kHistogramServiceWorkerLargestContentfulPaintRaceNetworkRequestEligible,
           all_frames_largest_contentful_paint.Time().value());
     }
+    if (IsServiceWorkerSyntheticResponseEnabled()) {
+      PAGE_LOAD_HISTOGRAM(
+          base::StrCat({internal::kHistogramServiceWorkerLargestContentfulPaint,
+                        internal::kHistogramSyntheticResponseSuffix}),
+          all_frames_largest_contentful_paint.Time().value());
+    }
   }
   RecordSubresourceLoad();
 }
@@ -372,6 +393,14 @@ bool ServiceWorkerPageLoadMetricsObserver::
   return (GetDelegate().GetMainFrameMetadata().behavior_flags &
           blink::LoadingBehaviorFlag::
               kLoadingBehaviorServiceWorkerRaceNetworkRequest);
+}
+
+bool ServiceWorkerPageLoadMetricsObserver::
+    IsServiceWorkerSyntheticResponseEnabled() {
+  CHECK(page_load_metrics::IsServiceWorkerControlled(GetDelegate()));
+  return (GetDelegate().GetMainFrameMetadata().behavior_flags &
+          blink::LoadingBehaviorFlag::
+              kLoadingBehaviorServiceWorkerSyntheticResponse) != 0;
 }
 
 void ServiceWorkerPageLoadMetricsObserver::RecordSubresourceLoad() {

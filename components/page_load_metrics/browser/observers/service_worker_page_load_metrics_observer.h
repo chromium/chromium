@@ -38,6 +38,7 @@ extern const char kHistogramServiceWorkerFirstContentfulPaintDocs[];
 extern const char kHistogramNoServiceWorkerFirstContentfulPaintDocs[];
 
 extern const char kHistogramServiceWorkerSubresourceTotalRouterEvaluationTime[];
+extern const char kHistogramSyntheticResponseSuffix[];
 
 }  // namespace internal
 
@@ -82,6 +83,7 @@ class ServiceWorkerPageLoadMetricsObserver
   void RecordTimingHistograms();
   bool IsServiceWorkerFetchHandlerSkippable();
   bool IsServiceWorkerEligibleForRaceNetworkRequest();
+  bool IsServiceWorkerSyntheticResponseEnabled();
   void RecordSubresourceLoad();
 
   ui::PageTransition transition_ = ui::PAGE_TRANSITION_LINK;
