@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
 
     using TraceContext = perfetto::DataSource<DataSource>::TraceContext;
 
-    DataSource() = default;
+    DataSource();
     ~DataSource() override;
 
     void OnSetup(const SetupArgs& args) override;

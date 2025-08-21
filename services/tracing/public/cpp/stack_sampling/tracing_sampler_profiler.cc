@@ -284,6 +284,8 @@ perfetto::StaticString UnwinderTypeToString(
 
 }  // namespace
 
+TracingSamplerProfiler::DataSource::DataSource() = default;
+
 TracingSamplerProfiler::DataSource::~DataSource() = default;
 
 void TracingSamplerProfiler::DataSource::OnSetup(const SetupArgs& args) {
