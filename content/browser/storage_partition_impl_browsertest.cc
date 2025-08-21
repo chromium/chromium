@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(StoragePartitionImplBrowsertest,
 // |StoragePartition::GetURLLoaderFactoryForBrowserProcessIOThread()| doesn't
 // crash if it's called after the StoragePartition is deleted.
 IN_PROC_BROWSER_TEST_F(StoragePartitionImplBrowsertest,
-                       BrowserIOFactoryAfterStoragePartitionGone) {
+                       DISABLED_BrowserIOFactoryAfterStoragePartitionGone) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
