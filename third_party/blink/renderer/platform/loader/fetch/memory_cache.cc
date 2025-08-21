@@ -277,7 +277,18 @@ void MemoryCache::RemoveInternal(ResourceMap* resource_map,
 
   Update(resource, resource->size(), 0);
   resource_map->erase(it);
-  strong_references_.erase(resource);
+  if (base::FeatureList::IsEnabled(features::kMemoryCacheIntelligentPruning)) {
+    // If intelligent pruning is on, the resource can only be in the new
+    // tiered vector. We perform a "lazy" remove for performance.
+    size_t index = tiered_strong_references_.Find(resource);
+    if (index != kNotFound) {
+      tiered_strong_references_[index] = nullptr;
+    }
+  } else {
+    // Otherwise, the resource can only be in the original strong references
+    // set.
+    strong_references_.erase(resource);
+  }
 }
 
 bool MemoryCache::Contains(const Resource* resource) const {
@@ -521,24 +532,22 @@ void MemoryCache::PruneTieredStrongReferences() {
   const size_t max_threshold = static_cast<size_t>(
       features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get());
 
-  size_t current_total_size = 0;
-  for (Resource* resource : tiered_strong_references_) {
-    current_total_size += resource->size();
-  }
-
   // Enforce a maximum lifetime for all strong references.
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta max_lifetime = strong_references_prune_duration_;
 
   EraseIf(tiered_strong_references_, [&](const Member<Resource>& resource) {
-    if (now - resource->MemoryCacheLastAccessed() > max_lifetime) {
-      // This resource IS expired. Update the size and return true
-      // to erase it.
-      current_total_size -= resource->size();
-      return true;
-    }
-    return false;
+    // Erase the resource if it's null (due to lazy removal by
+    // `RemoveInternal`) or if it has expired
+    return !resource ||
+           (now - resource->MemoryCacheLastAccessed() > max_lifetime);
   });
+
+  size_t current_total_size = 0;
+  for (Resource* resource : tiered_strong_references_) {
+    CHECK(resource, base::NotFatalUntil::M145);
+    current_total_size += resource->size();
+  }
 
   //  Early exit if already under budget
   if (current_total_size <= max_threshold) {
@@ -551,6 +560,8 @@ void MemoryCache::PruneTieredStrongReferences() {
   // The sorting is "Just-In-Time" for the eviction decisions.
   std::sort(tiered_strong_references_.begin(), tiered_strong_references_.end(),
             [this](const Member<Resource>& a, const Member<Resource>& b) {
+              CHECK(a, base::NotFatalUntil::M145);
+              CHECK(b, base::NotFatalUntil::M145);
               // Note: `>` sorts in descending order (highest value first).
               return CalculateResourceValue(a.Get()) >
                      CalculateResourceValue(b.Get());
