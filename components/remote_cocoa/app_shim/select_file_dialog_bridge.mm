@@ -614,7 +614,6 @@ void SelectFileDialogBridge::OnPanelEnded(bool did_cancel) {
           BOOL is_package =
               [NSWorkspace.sharedWorkspace isFilePackageAtPath:path];
           if (!exists || (is_directory && !is_package)) {
-            NSLog(@"dropping %@", path);
             continue;
           }
         }
