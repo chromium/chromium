@@ -3,11 +3,6 @@
 // found in the LICENSE file.
 
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/services/credentials.h"
 
 #include <errno.h>
@@ -87,12 +82,14 @@ bool ChrootToSafeEmptyDir() {
   // PID namespace). With a process, we can just use /proc/self.
   pid_t pid = -1;
 
-  alignas(16) char stack_buf[PTHREAD_STACK_MIN_CONST];
+  alignas(16) std::array<char, PTHREAD_STACK_MIN_CONST> stack_buf;
 
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY) || \
     defined(ARCH_CPU_MIPS_FAMILY)
-  // The stack grows downward.
-  void* stack = stack_buf + sizeof(stack_buf);
+  // SAFETY: This is the `stack` argument of `clone(2)`. Because the stack grows
+  // downward on these architectures, this is the topmost address of the memory
+  // space for the stack, and the address will not be dereferenced.
+  void* stack = UNSAFE_BUFFERS(stack_buf.data() + stack_buf.size());
 #else
 #error "Unsupported architecture"
 #endif
