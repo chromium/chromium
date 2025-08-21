@@ -11,7 +11,6 @@
 // providing a compile time condition over the entire file.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-#include <memory>
 #include <string>
 
 #include "base/check_deref.h"
@@ -82,6 +81,8 @@ HeadlessModeBrowserTest::HeadlessModeBrowserTest() {
   embedded_test_server()->AddDefaultHandlers(test_data);
 }
 
+HeadlessModeBrowserTest::~HeadlessModeBrowserTest() = default;
+
 void HeadlessModeBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   AppendHeadlessCommandLineSwitches(command_line);
@@ -106,7 +107,9 @@ void HeadlessModeBrowserTest::AppendHeadlessCommandLineSwitches(
     headful_mode_ = true;
   } else {
     command_line->AppendSwitch(::switches::kHeadless);
-    headless::InitHeadlessMode();
+    auto init_headless_mode = headless::InitHeadlessMode();
+    CHECK(init_headless_mode.has_value()) << init_headless_mode.error();
+    headless_mode_handle_ = std::move(headless::InitHeadlessMode().value());
   }
 }
 

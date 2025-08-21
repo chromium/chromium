@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_HEADLESS_HEADLESS_MODE_BROWSERTEST_H_
 #define CHROME_BROWSER_HEADLESS_HEADLESS_MODE_BROWSERTEST_H_
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -18,6 +20,7 @@ class WebContents;
 }
 
 namespace headless {
+class HeadlessModeHandle;
 
 class HeadlessModeBrowserTest : public InProcessBrowserTest {
  public:
@@ -26,7 +29,7 @@ class HeadlessModeBrowserTest : public InProcessBrowserTest {
   HeadlessModeBrowserTest(const HeadlessModeBrowserTest&) = delete;
   HeadlessModeBrowserTest& operator=(const HeadlessModeBrowserTest&) = delete;
 
-  ~HeadlessModeBrowserTest() override = default;
+  ~HeadlessModeBrowserTest() override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
@@ -42,6 +45,7 @@ class HeadlessModeBrowserTest : public InProcessBrowserTest {
 
  private:
   bool headful_mode_ = false;
+  std::unique_ptr<HeadlessModeHandle> headless_mode_handle_;
 };
 
 enum StartWindowMode {

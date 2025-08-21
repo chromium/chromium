@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/types/expected.h"
 
 namespace headless {
 
@@ -32,8 +33,9 @@ bool IsOldHeadlessMode();
 bool IsChromeSchemeUrlAllowed();
 
 // Initializes headless mode returning a handle that would clean up the state
-// upon destruction.
-std::unique_ptr<HeadlessModeHandle> InitHeadlessMode();
+// upon destruction or a meaningful error message.
+base::expected<std::unique_ptr<HeadlessModeHandle>, std::string>
+InitHeadlessMode();
 
 }  // namespace headless
 
