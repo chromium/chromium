@@ -10,6 +10,11 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#import "components/optimization_guide/optimization_guide_buildflags.h"
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+#include "base/memory/weak_ptr.h"
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 namespace auto_deletion {
 class AutoDeletionService;
@@ -52,9 +57,12 @@ namespace network_time {
 class NetworkTimeTracker;
 }
 
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 namespace optimization_guide {
-class OptimizationGuideGlobalState;
+class OnDeviceModelComponentStateManager;
+class OnDeviceModelServiceController;
 }  // namespace optimization_guide
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 namespace os_crypt_async {
 class OSCryptAsync;
@@ -219,9 +227,14 @@ class ApplicationContext {
   // Returns the AutoDeletionService instance.
   virtual auto_deletion::AutoDeletionService* GetAutoDeletionService() = 0;
 
-  // Returns the OptimizationGuideGlobalState instance.
-  virtual optimization_guide::OptimizationGuideGlobalState*
-  GetOptimizationGuideGlobalState() = 0;
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  // Returns the application's OnDeviceModelServiceController which manages the
+  // on-device model service.
+  virtual optimization_guide::OnDeviceModelServiceController*
+  GetOnDeviceModelServiceController(
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+          on_device_component_manager) = 0;
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
 
  protected:
   // Sets the global ApplicationContext instance.

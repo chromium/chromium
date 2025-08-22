@@ -106,8 +106,12 @@ class TestingApplicationContext : public ApplicationContext {
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
   AdditionalFeaturesController* GetAdditionalFeaturesController() override;
   auto_deletion::AutoDeletionService* GetAutoDeletionService() override;
-  optimization_guide::OptimizationGuideGlobalState*
-  GetOptimizationGuideGlobalState() override;
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  optimization_guide::OnDeviceModelServiceController*
+  GetOnDeviceModelServiceController(
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+          on_device_component_manager) override;
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -138,8 +142,6 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
   raw_ptr<IOSChromeIOThread> ios_chrome_io_thread_;
   std::unique_ptr<auto_deletion::AutoDeletionService> auto_deletion_service_;
-  std::unique_ptr<optimization_guide::OptimizationGuideGlobalState>
-      optimization_guide_global_state_;
   std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
 };
 

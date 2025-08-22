@@ -79,10 +79,8 @@ void OptimizationGuideServiceFactory::InitializePredictionModelStore() {
   base::PathService::Get(ios::DIR_USER_DATA, &model_downloads_dir);
   model_downloads_dir = model_downloads_dir.Append(
       optimization_guide::kOptimizationGuideModelStoreDirPrefix);
-  GetApplicationContext()
-      ->GetOptimizationGuideGlobalState()
-      ->prediction_model_store()
-      .Initialize(model_downloads_dir);
+  optimization_guide::IOSChromePredictionModelStore::GetInstance()->Initialize(
+      model_downloads_dir);
 }
 
 OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()

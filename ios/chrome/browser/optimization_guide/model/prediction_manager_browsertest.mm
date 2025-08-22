@@ -164,6 +164,10 @@ class PredictionManagerTestBase : public PlatformTest {
   void TearDown() override {
     download::BackgroundDownloadTaskHelper::SetIgnoreLocalSSLErrorForTesting(
         false);
+    // Reinitialize the store, so that tests do not use state from the
+    // previous test.
+    optimization_guide::IOSChromePredictionModelStore::GetInstance()
+        ->ResetForTesting();
     PlatformTest::TearDown();
   }
 

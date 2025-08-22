@@ -15,7 +15,6 @@
 #import "components/os_crypt/async/browser/test_utils.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_global_state.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
@@ -348,11 +347,11 @@ TestingApplicationContext::GetAutoDeletionService() {
   return auto_deletion_service_.get();
 }
 
-optimization_guide::OptimizationGuideGlobalState*
-TestingApplicationContext::GetOptimizationGuideGlobalState() {
-  if (!optimization_guide_global_state_) {
-    optimization_guide_global_state_ =
-        std::make_unique<optimization_guide::OptimizationGuideGlobalState>();
-  }
-  return optimization_guide_global_state_.get();
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+optimization_guide::OnDeviceModelServiceController*
+TestingApplicationContext::GetOnDeviceModelServiceController(
+    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+        on_device_component_manager) {
+  return nullptr;
 }
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
