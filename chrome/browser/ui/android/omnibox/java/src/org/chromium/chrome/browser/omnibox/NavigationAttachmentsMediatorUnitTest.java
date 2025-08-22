@@ -4,25 +4,28 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import android.content.Context;
+import android.content.Intent;
 import android.view.ViewGroup;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link NavigationAttachmentsMediator}. */
@@ -32,17 +35,16 @@ public class NavigationAttachmentsMediatorUnitTest {
     private @Mock ViewGroup mViewGroup;
     private @Mock NavigationAttachmentsViewHolder mViewHolder;
     private @Mock NavigationAttachmentsPopup mPopup;
+    private @Mock WindowAndroid mWindowAndroid;
 
-    private Context mContext;
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mViewGroup, mPopup);
-        mMediator = new NavigationAttachmentsMediator(mModel, mViewHolder);
+        mMediator = new NavigationAttachmentsMediator(mWindowAndroid, mModel, mViewHolder);
     }
 
     @Test
@@ -81,5 +83,23 @@ public class NavigationAttachmentsMediatorUnitTest {
         doReturn(true).when(mPopup).isShowing();
         runnable.run();
         verify(mPopup).dismiss();
+    }
+
+    @Test
+    public void onCameraButtonClicked_launchesImagePicker() {
+        Runnable runnable = mModel.get(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED);
+        assertNotNull(runnable);
+
+        runnable.run();
+
+        verify(mPopup).dismiss();
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mWindowAndroid).showCancelableIntent(intentCaptor.capture(), any(), any());
+
+        Intent intent = intentCaptor.getValue();
+        assertEquals(Intent.ACTION_GET_CONTENT, intent.getAction());
+        assertTrue(intent.hasCategory(Intent.CATEGORY_OPENABLE));
+        assertEquals("image/*", intent.getType());
+        assertTrue(intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false));
     }
 }

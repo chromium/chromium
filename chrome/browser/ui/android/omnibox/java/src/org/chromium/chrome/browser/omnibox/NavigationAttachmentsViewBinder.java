@@ -26,6 +26,9 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey == NavigationAttachmentsProperties.BUTTON_ADD_CLICKED) {
             view.addButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run());
+        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED) {
+            view.popup.mCameraButton.setOnClickListener(
+                    v -> model.get(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED).run());
         }
     }
 }

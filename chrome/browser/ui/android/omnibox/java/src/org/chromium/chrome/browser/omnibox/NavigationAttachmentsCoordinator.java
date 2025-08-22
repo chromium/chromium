@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -21,7 +22,8 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
     private final @Nullable NavigationAttachmentsMediator mMediator;
     private final @Nullable NavigationAttachmentsViewHolder mViewHolder;
 
-    public NavigationAttachmentsCoordinator(Context context, ViewGroup parent) {
+    public NavigationAttachmentsCoordinator(
+            Context context, WindowAndroid windowAndroid, ViewGroup parent) {
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
                 || parent.findViewById(R.id.location_bar_navigation_toolbar) == null) {
             mMediator = null;
@@ -40,7 +42,7 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
                         .build();
         PropertyModelChangeProcessor.create(
                 model, mViewHolder, NavigationAttachmentsViewBinder::bind);
-        mMediator = new NavigationAttachmentsMediator(model, mViewHolder);
+        mMediator = new NavigationAttachmentsMediator(windowAndroid, model, mViewHolder);
     }
 
     public void destroy() {

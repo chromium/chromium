@@ -20,5 +20,11 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> BUTTON_ADD_CLICKED =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = {TOOLBAR_VISIBLE, BUTTON_ADD_CLICKED};
+    /** Action to perform when the user clicks the Camera button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_CAMERA_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    public static final PropertyKey[] ALL_KEYS = {
+        TOOLBAR_VISIBLE, BUTTON_ADD_CLICKED, POPUP_CAMERA_CLICKED
+    };
 }

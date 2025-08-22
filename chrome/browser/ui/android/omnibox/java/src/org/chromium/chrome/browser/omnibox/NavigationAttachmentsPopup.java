@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -19,6 +20,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 class NavigationAttachmentsPopup {
     private final AnchoredPopupWindow mPopupWindow;
     private final View mContentView;
+    /* package */ Button mCameraButton;
 
     NavigationAttachmentsPopup(Context context, View anchorView) {
         mContentView =
@@ -41,6 +43,7 @@ class NavigationAttachmentsPopup {
                                 R.dimen.location_bar_navigation_attachments_popup_width),
                 0);
         mPopupWindow.setHorizontalOverlapAnchor(true);
+        mCameraButton = mContentView.findViewById(R.id.navigation_attachments_pick_picture_button);
     }
 
     void show() {

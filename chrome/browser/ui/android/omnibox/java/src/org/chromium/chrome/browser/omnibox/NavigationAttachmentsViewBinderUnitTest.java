@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.constraintlayout.widget.Group;
 
@@ -16,6 +18,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -23,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.ChromeImageButton;
 
 /** Unit tests for {@link NavigationAttachmentsViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -32,6 +36,8 @@ public class NavigationAttachmentsViewBinderUnitTest {
     private @Mock ViewGroup mParent;
     private @Mock Group mNavigationView;
     private @Mock NavigationAttachmentsPopup mPopup;
+    private @Mock ChromeImageButton mAddButton;
+    private @Mock Button mCameraButton;
 
     private PropertyModel mModel;
     private NavigationAttachmentsViewHolder mViewHolder;
@@ -39,8 +45,10 @@ public class NavigationAttachmentsViewBinderUnitTest {
     @Before
     public void setUp() {
         doReturn(mNavigationView).when(mParent).findViewById(R.id.location_bar_navigation_toolbar);
+        doReturn(mAddButton).when(mParent).findViewById(R.id.location_bar_attachments_add);
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
+        mViewHolder.popup.mCameraButton = mCameraButton;
         PropertyModelChangeProcessor.create(
                 mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
     }
@@ -52,5 +60,31 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
         mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, false);
         verify(mNavigationView).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void addButtonClickListener_isCalled() {
+        Runnable runnable = mock(Runnable.class);
+        mModel.set(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, runnable);
+
+        ArgumentCaptor<View.OnClickListener> listenerCaptor =
+                ArgumentCaptor.forClass(View.OnClickListener.class);
+        verify(mAddButton).setOnClickListener(listenerCaptor.capture());
+        listenerCaptor.getValue().onClick(mAddButton);
+
+        verify(runnable).run();
+    }
+
+    @Test
+    public void cameraButtonClickListener_isCalled() {
+        Runnable runnable = mock(Runnable.class);
+        mModel.set(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED, runnable);
+
+        ArgumentCaptor<View.OnClickListener> listenerCaptor =
+                ArgumentCaptor.forClass(View.OnClickListener.class);
+        verify(mCameraButton).setOnClickListener(listenerCaptor.capture());
+        listenerCaptor.getValue().onClick(mCameraButton);
+
+        verify(runnable).run();
     }
 }
