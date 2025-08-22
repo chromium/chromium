@@ -323,14 +323,22 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void destroy() {
         assertOnUiThread();
-        for (Tab tab : this) {
+        // Cache the list of tabs so we have them before native is destroyed.
+        List<Tab> tabs = getAllTabs();
+
+        // Destroy native first to avoid any weak ptrs to TabAndroid objects from outliving the
+        // tab's themselves.
+        if (mNativeTabCollectionTabModelImplPtr != 0) {
+            TabCollectionTabModelImplJni.get().destroy(mNativeTabCollectionTabModelImplPtr);
+            mNativeTabCollectionTabModelImplPtr = 0;
+        }
+
+        for (Tab tab : tabs) {
             if (mModelDelegate.isReparentingInProgress()
                     && mAsyncTabParamsManager.hasParamsForTabId(tab.getId())) {
                 continue;
             }
 
-            // TabStripCollection in native only holds weak ptrs to tabs and will be deleted shortly
-            // so this is safe.
             if (tab.isInitialized()) tab.destroy();
         }
 
@@ -340,11 +348,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             } else {
                 mPendingTabClosureManager.destroy();
             }
-        }
-
-        if (mNativeTabCollectionTabModelImplPtr != 0) {
-            TabCollectionTabModelImplJni.get().destroy(mNativeTabCollectionTabModelImplPtr);
-            mNativeTabCollectionTabModelImplPtr = 0;
         }
 
         mTabIdToTabs.clear();
