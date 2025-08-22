@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -2372,6 +2373,145 @@ TEST_F(PdfViewWebPluginSaveInBlocksTest, ReleaseSaveBuffer) {
 
   pdf_receiver_.FlushForTesting();
 }
+
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+class PdfViewWebPluginSaveInBlocksToGoogleDriveTest
+    : public PdfViewWebPluginSaveInBlocksTest {
+ protected:
+  void FreeHandler(mojo::Remote<pdf::mojom::SaveDataBufferHandler>& handler) {
+    handler.reset();
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  std::pair<mojo::Remote<pdf::mojom::SaveDataBufferHandler>, uint32_t>
+  GetSaveDataBufferHandler(pdf::mojom::SaveRequestType request_type) {
+    base::test::TestFuture<pdf::mojom::SaveDataBufferHandlerGetResultPtr>
+        future;
+    plugin_->GetSaveDataBufferHandlerForDrive(
+        request_type,
+        future.GetCallback<pdf::mojom::SaveDataBufferHandlerGetResultPtr>());
+    pdf::mojom::SaveDataBufferHandlerGetResultPtr result = future.Take();
+    mojo::Remote<pdf::mojom::SaveDataBufferHandler> handler(
+        std::move(result->handler));
+    return {std::move(handler), result->total_file_size};
+  }
+
+  void ReadSaveDataBufferAndExpectResult(
+      mojo::Remote<pdf::mojom::SaveDataBufferHandler>& handler,
+      base::span<const uint8_t> expected_file_data,
+      uint32_t offset,
+      uint32_t block_size) {
+    base::test::TestFuture<mojo_base::BigBuffer> read_future;
+    handler->Read(offset, block_size,
+                  read_future.GetCallback<mojo_base::BigBuffer>());
+    mojo_base::BigBuffer block = read_future.Take();
+    auto expected_block_data = expected_file_data.subspan(offset, block_size);
+    EXPECT_THAT(block, ElementsAreArray(expected_block_data));
+  }
+};
+
+TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest, OriginalInOneBlock) {
+  base::span<const uint8_t> data(TestPDFiumEngine::kLoadedData);
+  auto [handler, total_file_size] =
+      GetSaveDataBufferHandler(pdf::mojom::SaveRequestType::kOriginal);
+  EXPECT_EQ(total_file_size, static_cast<uint32_t>(data.size()));
+  ReadSaveDataBufferAndExpectResult(handler, data, 0, data.size());
+  FreeHandler(handler);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
+}
+
+TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest, OriginalInMulipleBlocks) {
+  plugin_->SetMaxSaveBufferSizeForTesting(3);
+
+  base::span<const uint8_t> data(TestPDFiumEngine::kLoadedData);
+  ASSERT_GT(data.size(), 3u);
+  auto [handler, total_file_size] =
+      GetSaveDataBufferHandler(pdf::mojom::SaveRequestType::kOriginal);
+  EXPECT_EQ(total_file_size, static_cast<uint32_t>(data.size()));
+  ReadSaveDataBufferAndExpectResult(handler, data, 0, 3);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 1u);
+  ReadSaveDataBufferAndExpectResult(handler, data, 3, data.size() - 3);
+  FreeHandler(handler);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
+}
+
+TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest,
+       GetNullptrForDataSizeGreaterThanIntMax) {
+  EXPECT_CALL(*engine_ptr_, GetLoadedByteSize)
+      .WillRepeatedly(Return(static_cast<uint32_t>(INT_MAX) + 1));
+  base::test::TestFuture<pdf::mojom::SaveDataBufferHandlerGetResultPtr> future;
+  plugin_->GetSaveDataBufferHandlerForDrive(
+      pdf::mojom::SaveRequestType::kOriginal,
+      future.GetCallback<pdf::mojom::SaveDataBufferHandlerGetResultPtr>());
+  pdf::mojom::SaveDataBufferHandlerGetResultPtr result = future.Take();
+  EXPECT_FALSE(result);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
+}
+
+TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest, EditedInOneBlock) {
+  plugin_->EnteredEditMode();
+
+  base::span<const uint8_t> data(TestPDFiumEngine::kSaveData);
+  auto [handler, total_file_size] =
+      GetSaveDataBufferHandler(pdf::mojom::SaveRequestType::kEdited);
+  EXPECT_EQ(total_file_size, static_cast<uint32_t>(data.size()));
+  ReadSaveDataBufferAndExpectResult(handler, data, 0, data.size());
+  FreeHandler(handler);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
+}
+
+TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest, EditedInMultipleBlocks) {
+  plugin_->EnteredEditMode();
+  plugin_->SetMaxSaveBufferSizeForTesting(2);
+
+  base::span<const uint8_t> data(TestPDFiumEngine::kSaveData);
+  ASSERT_GT(data.size(), 2u);
+
+  auto [handler, total_file_size] =
+      GetSaveDataBufferHandler(pdf::mojom::SaveRequestType::kEdited);
+  EXPECT_EQ(total_file_size, static_cast<uint32_t>(data.size()));
+  ReadSaveDataBufferAndExpectResult(handler, data, 0, 2);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 1u);
+
+  ReadSaveDataBufferAndExpectResult(handler, data, 2, data.size() - 2);
+  FreeHandler(handler);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
+}
+
+TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest,
+       GetEditedInMultipleBlockForDriveAndSaveSimulatenously) {
+  plugin_->EnteredEditMode();
+  plugin_->SetMaxSaveBufferSizeForTesting(2);
+
+  base::span<const uint8_t> data(TestPDFiumEngine::kSaveData);
+  ASSERT_GT(data.size(), 2u);
+  ExpectResponse(data, 0, 2, "token-1");
+  ExpectResponse(data, 2, data.size() - 2, "token-2");
+
+  auto [handler, total_file_size] =
+      GetSaveDataBufferHandler(pdf::mojom::SaveRequestType::kEdited);
+  EXPECT_EQ(total_file_size, static_cast<uint32_t>(data.size()));
+  ReadSaveDataBufferAndExpectResult(handler, data, 0, 2);
+  plugin_->OnMessage(
+      CreateRequest(pdf::mojom::SaveRequestType::kEdited, 0, 0, "token-1"));
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 1u);
+  EXPECT_FALSE(plugin_->IsSaveDataBufferEmptyForTesting());
+
+  ReadSaveDataBufferAndExpectResult(handler, data, 2, data.size() - 2);
+  FreeHandler(handler);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
+  EXPECT_FALSE(plugin_->IsSaveDataBufferEmptyForTesting());
+
+  plugin_->OnMessage(CreateRequest(pdf::mojom::SaveRequestType::kEdited, 2,
+                                   data.size() - 2, "token-2"));
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
+  EXPECT_TRUE(plugin_->IsSaveDataBufferEmptyForTesting());
+  pdf_receiver_.FlushForTesting();
+}
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 class PdfViewWebPluginSubmitFormTest
     : public PdfViewWebPluginWithoutInitializeTest {

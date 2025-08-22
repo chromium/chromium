@@ -377,6 +377,13 @@ if (enable_pdf) {
       "v8_value_converter.h",
     ]
 
+    if (enable_pdf_save_to_drive) {
+      sources += [
+        "save_data_buffer_handler_for_drive.cc",
+        "save_data_buffer_handler_for_drive.h",
+      ]
+    }
+
     friend = [ ":pdf_unittests" ]
 
     configs += [ ":strict" ]

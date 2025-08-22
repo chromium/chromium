@@ -53,6 +53,11 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "v8/include/v8.h"
 
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "pdf/save_data_buffer_handler_for_drive.h"
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
 #endif
@@ -420,6 +425,11 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void GetPdfBytes(uint32_t size_limit, GetPdfBytesCallback callback) override;
   void GetPageText(int32_t page_index, GetPageTextCallback callback) override;
   void GetMostVisiblePageIndex(GetMostVisiblePageIndexCallback callback) override;
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+  void GetSaveDataBufferHandlerForDrive(
+      pdf::mojom::SaveRequestType request_type,
+      GetSaveDataBufferHandlerForDriveCallback callback) override;
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
   // UrlLoader::Client:
   bool IsValid() const override;
@@ -526,6 +536,32 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     return save_data_buffer_.empty();
   }
 
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+  size_t GetSaveToDriveBufferHandlerReceiverSizeForTesting() const {
+    return save_data_buffer_handler_receivers_.size();
+  }
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+
+  // Returns the size of the original PDF file. It does not handle files larger
+  // than INT_MAX. If the file is larger than that, it returns 0.
+  uint32_t GetOriginalFileSize();
+
+  // Returns a block of data from the original PDF file.
+  std::vector<uint8_t> GetOriginalFileData(uint32_t offset,
+                                           uint32_t block_size);
+
+  // Populates `buffer` with the modified PDF file data.
+  // The `buffer` is released if the file is larger than `INT_MAX`.
+  void PopulateBufferWithModifiedFileData(std::vector<uint8_t>& buffer);
+
+  // Gets a block of modified PDF data from `buffer`.
+  // `PopulateBufferWithModifiedFileData()` must be called first to populate
+  // `buffer`.
+  std::vector<uint8_t> GetModifiedFileDataFromBuffer(
+      base::span<const uint8_t> buffer,
+      uint32_t offset,
+      uint32_t block_size);
+
  private:
   // Callback that runs after `LoadUrl()`. The `loader` is the loader used to
   // load the URL, and `result` is the result code for the load.
@@ -612,26 +648,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void SaveToBuffer(pdf::mojom::SaveRequestType request_type,
                     const std::string& token);
   void SaveToFile(const std::string& token);
-
-  // Returns the size of the original PDF file. It does not handle files larger
-  // than INT_MAX. If the file is larger than that, it returns 0.
-  uint32_t GetOriginalFileSize();
-
-  // Returns a block of data from the original PDF file.
-  std::vector<uint8_t> GetOriginalFileData(uint32_t offset,
-                                           uint32_t block_size);
-
-  // Populates `buffer` with the modified PDF file data.
-  // The `buffer` is released if the file is larger than `INT_MAX`.
-  void PopulateBufferWithModifiedFileData(std::vector<uint8_t>& buffer);
-
-  // Gets a block of modified PDF data from `buffer`.
-  // `PopulateBufferWithModifiedFileData()` must be called first to populate
-  // `buffer`.
-  std::vector<uint8_t> GetModifiedFileDataFromBuffer(
-      base::span<const uint8_t> buffer,
-      uint32_t offset,
-      uint32_t block_size);
 
   // For a call in `SaveBlockToBuffer()`, ensures `offset` and `block_size` have
   // expected values and returns the effective `block_size`.
@@ -1037,6 +1053,15 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   // Maximum size of save data in each block.
   uint32_t max_save_buffer_size_;
+
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+  // Owns all the receivers for `pdf::mojom::SaveDataBufferHandler`. Each
+  // receiver is associated with a Save to Drive handler and is used to read the
+  // corresponding data request. Once a receiver is destroyed, the corresponding
+  // buffer and handler are freed.
+  mojo::UniqueReceiverSet<pdf::mojom::SaveDataBufferHandler>
+      save_data_buffer_handler_receivers_;
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
   // Used to allow the embedder to scroll-to and highlight a text fragment.
   mojo::Receiver<blink::mojom::AnnotationAgentContainer>
