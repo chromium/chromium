@@ -133,7 +133,8 @@ const CGFloat kGenericButtonHeight = 32.0f;
   _inputPlateContainerView.backgroundColor =
       [UIColor colorNamed:kPrimaryBackgroundColor];
   _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
-  _inputPlateContainerView.layer.shadowColor = [UIColor blackColor].CGColor;
+  _inputPlateContainerView.layer.shadowColor =
+      [UIColor colorNamed:kTextPrimaryColor].CGColor;
   _inputPlateContainerView.layer.shadowOpacity = kInputPlateShadowOpacity;
   _inputPlateContainerView.layer.shadowRadius = kInputPlateShadowRadius;
   _inputPlateContainerView.layer.shadowOffset = CGSizeZero;
