@@ -248,6 +248,10 @@ class CORE_EXPORT StyleSheetContents final
 
   bool DidLoadErrorOccur() const { return did_load_error_occur_; }
 
+  // NOTE: “medium” must be the same as is later used for EnsureRuleSet(),
+  // or the set of mixins and the rule set may be inconsistent.
+  MixinMap& ExtractMixins(const MediaQueryEvaluator& medium);
+
   RuleSet& GetRuleSet() {
     DCHECK(rule_set_);
     return *rule_set_.Get();
@@ -307,6 +311,13 @@ class CORE_EXPORT StyleSheetContents final
 
   HeapHashSet<WeakMember<CSSStyleSheet>> loading_clients_;
   HeapHashSet<WeakMember<CSSStyleSheet>> completed_clients_;
+
+  // Mixins extracted from this stylesheet. We cache this not because
+  // it is expensive to compute (it isn't), but to have better control
+  // over when we need to invalidate based on mixins changing.
+  // Generally cleared whenever rule_set_ is.
+  MixinMap mixins_;
+  bool has_cached_mixins_ = false;
 
   Member<RuleSet> rule_set_;
   // If we have modified the style sheet since last creating

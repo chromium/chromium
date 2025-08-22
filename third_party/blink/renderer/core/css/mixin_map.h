@@ -33,6 +33,10 @@ struct MixinMap {
   MediaQueryResultFlags media_query_result_flags;
   HeapVector<MediaQuerySetResult> media_query_set_results;
 
+  // Add everything from “other” to this map, overwriting
+  // any mixins that may already exist.
+  void Merge(const MixinMap& other);
+
   void Trace(Visitor* visitor) const {
     visitor->Trace(mixins);
     visitor->Trace(media_query_set_results);

@@ -746,14 +746,7 @@ MixinMap StyleEngine::EffectiveMixinsForTreeScope(TreeScope& tree_scope) {
     return collection->Mixins();
   }
 
-  const MixinMap& child_mixins = collection->Mixins();
-  for (const auto& [name, value] : child_mixins.mixins) {
-    inherited_mixins.mixins.insert(name, value);
-  }
-  inherited_mixins.media_query_result_flags.Add(
-      child_mixins.media_query_result_flags);
-  inherited_mixins.media_query_set_results.AppendVector(
-      child_mixins.media_query_set_results);
+  inherited_mixins.Merge(collection->Mixins());
   return inherited_mixins;
 }
 
