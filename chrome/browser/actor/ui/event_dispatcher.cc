@@ -87,12 +87,6 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<AttemptLoginToolRequest>,   NoUiEvents<ScriptToolRequest>,
     NoUiEvents<ScrollToToolRequest>};
 
-// TODO(crbug.com/425784083): Remove FirstActEventsFn once functionality moves
-// to ActorTaskChangeFn.
-constexpr absl::Overload FirstActEventsFn{
-    NoUiEvents<UiEventDispatcher::FirstActInfo>,
-};
-
 constexpr absl::Overload ActorTaskAsyncChangeFn{
     [](const UiEventDispatcher::AddTab& c) {
       return EventSequence<AsyncUiEvent>{
@@ -129,11 +123,6 @@ struct VisitorTraits<PostToolEventsFn> {
 };
 
 template <>
-struct VisitorTraits<FirstActEventsFn> {
-  static constexpr const char* phase_name = "FirstAct";
-};
-
-template <>
 struct VisitorTraits<ActorTaskAsyncChangeFn> {
   static constexpr const char* phase_name = "ActorTaskAsyncChange";
 };
@@ -158,18 +147,6 @@ struct InputTraits<ToolRequest> {
   static constexpr auto debug_info = [](const ToolRequest& tr) {
     return tr.JournalEvent();
   };
-};
-
-template <>
-struct InputTraits<UiEventDispatcher::FirstActInfo> {
-  static constexpr const char* name = "FirstActInfo";
-  static constexpr auto convert_fn = std::identity();
-  static constexpr auto debug_info =
-      [](const UiEventDispatcher::FirstActInfo& info) {
-        return absl::StrFormat("task_id=%d tab? %s",
-                               info.task_id.GetUnsafeValue(),
-                               info.tab_handle.has_value() ? "yes" : "no");
-      };
 };
 
 template <>
@@ -222,11 +199,6 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
 
   void OnPostTool(const ToolRequest& tr, UiCompleteCallback callback) override {
     On<PostToolEventsFn>(tr, std::move(callback));
-  }
-
-  void OnPreFirstAct(const FirstActInfo& first_act_info,
-                     UiCompleteCallback callback) override {
-    On<FirstActEventsFn>(first_act_info, std::move(callback));
   }
 
   void OnActorTaskAsyncChange(const ActorTaskAsyncChange& change,

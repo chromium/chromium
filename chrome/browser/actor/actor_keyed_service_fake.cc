@@ -32,10 +32,6 @@ TaskId ActorKeyedServiceFake::CreateTaskForTesting() {
       static_cast<ui::MockUiEventDispatcher*>(task_ui_event_dispatcher.get());
 
   for (auto& mock : {mock_ui_dispatcher, mock_task_ui_dispatcher}) {
-    ON_CALL(*mock, OnPreFirstAct(_, _))
-        .WillByDefault(Invoke(Invoke(
-            UiEventDispatcherCallback<ui::UiEventDispatcher::FirstActInfo>(
-                base::BindRepeating(MakeOkResult)))));
     ON_CALL(*mock, OnPreTool(_, _))
         .WillByDefault(Invoke(UiEventDispatcherCallback<ToolRequest>(
             base::BindRepeating(MakeOkResult))));

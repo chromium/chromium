@@ -228,31 +228,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     }
   }
 
-  if (state_ == State::kInit) {
-    // This is the first Act() by this ExecutionEngine, so we should notify
-    // the UI, then kickoff the first action.
-    //
-    // TODO(crbug.com/411462297): Make sure we're property dispatching
-    // StartingToActOnTab UiEvents when tasks aren't scoped to a single tab.
-    // This won't work if the first action sequence is creating the tab on which
-    // following sequences will act.
-    // TODO(crbug.com/420669167): This needs to support taking multiple tabs. Is
-    // it even the right interface? Different sets of tabs might be acted on in
-    // followup sequences...
-    ui_event_dispatcher_->OnPreFirstAct(
-        ui::UiEventDispatcher::FirstActInfo{
-            .task_id = task_->id(),
-            .tab_handle = acting_tab_handles.empty()
-                              ? std::nullopt
-                              : std::make_optional(tabs::TabHandle(
-                                    *acting_tab_handles.begin()))},
-        base::BindOnce(&ExecutionEngine::KickOffNextAction, GetWeakPtr()));
-  } else {
-    // We previously notified the UI, so just kickoff the first action.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ExecutionEngine::KickOffNextAction,
-                                  GetWeakPtr(), MakeOkResult()));
-  }
+  KickOffNextAction(MakeOkResult());
 }
 
 void ExecutionEngine::KickOffNextAction(

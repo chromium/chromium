@@ -27,11 +27,6 @@ class MockUiEventDispatcher : public UiEventDispatcher {
               (override));
 
   MOCK_METHOD(void,
-              OnPreFirstAct,
-              (const FirstActInfo& first_act_info, UiCompleteCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
               OnActorTaskAsyncChange,
               (const ActorTaskAsyncChange& change, UiCompleteCallback callback),
               (override));

@@ -45,10 +45,6 @@ class UiEventDispatcher {
  public:
   using UiCompleteCallback =
       base::OnceCallback<void(::actor::mojom::ActionResultPtr)>;
-  struct FirstActInfo {
-    TaskId task_id;
-    std::optional<tabs::TabInterface::Handle> tab_handle;
-  };
   struct AddTab {
     TaskId task_id;
     tabs::TabInterface::Handle handle;
@@ -78,13 +74,6 @@ class UiEventDispatcher {
   // once the UI has completed its post-tool.
   virtual void OnPostTool(const ToolRequest& tool_request,
                           UiCompleteCallback callback) = 0;
-
-  // Should be called before the first ToolRequest is processed.  Callback will
-  // be made once the UI has initialized.
-  // TODO(crbug.com/425784083): remove this in favor of
-  // AddTab/OnActorTaskSyncChange
-  virtual void OnPreFirstAct(const FirstActInfo& first_act_info,
-                             UiCompleteCallback callback) = 0;
 
   // Should be called when a Tool changes the ActorTask.
   virtual void OnActorTaskAsyncChange(const ActorTaskAsyncChange& change,
