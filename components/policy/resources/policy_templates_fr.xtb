@@ -524,6 +524,18 @@ Si elle est définie sur "PromptInTab", lorsque l'authentification de l'utilisat
 Si elle est définie sur "True", tous les liens s'ouvrent par défaut dans le navigateur Chrome.
 Si cette règle n'est pas configurée, les liens s'ouvrent par défaut dans les applis Android pour les utilisateurs gérés et dans le navigateur pour les utilisateurs standards.</translation>
 <translation id="1402227992519954892">Activer les rapports sur les infos des applis de l'appareil</translation>
+<translation id="1402798007140502418">Cette règle indique aux navigateurs qu'ils doivent effectuer des vérifications supplémentaires pour les extensions, par exemple vérifier si une extension appartient à une catégorie bloquée par l'administrateur.
+
+Cette règle sera automatiquement activée si des règles sont configurées dans la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />, et désactivée dans le cas contraire.
+
+Lorsque cette règle est activée, elle indique à <ph name="PRODUCT_NAME" /> qu'il doit consulter le service cloud pour déterminer si une extension doit être bloquée.
+Cette vérification des règles est effectuée pour les nouvelles installations et sur toutes les extensions actuellement installées, au démarrage et périodiquement.
+
+Lorsque cette règle est désactivée, elle indique à <ph name="PRODUCT_NAME" /> qu'il n'a pas besoin d'effectuer de vérifications supplémentaires pour déterminer si une extension doit être bloquée en fonction des règles d'entreprise définies dans la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Si l'extension n'est pas autorisée, <ph name="PRODUCT_NAME" /> bloque l'installation. Si une extension non autorisée est déjà installée, <ph name="PRODUCT_NAME" /> la désactive.
+
+Les règles Chrome prévaudront sur cette règle, par exemple si l'extension se trouve dans <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> ou <ph name="EXTENSION_INSTALL_FORCED_POLICY_NAME" />.</translation>
 <translation id="1405444733221330570">Activer Orca</translation>
 <translation id="1407977345632185991">Ne pas autoriser Créer des thèmes avec l'IA.</translation>
 <translation id="141279920573530952">Cette règle permet d'établir la liste des sites automatiquement autorisés à accéder à tous les ports série disponibles.
@@ -8185,6 +8197,7 @@ Pour que les modifications apportées à cette règle puissent être appliquées
       Elle n'a aucune incidence non plus, sauf si la règle <ph name="ACCESS_CODE_CAST_ENABLED_POLICY_NAME" /> est activée.</translation>
 <translation id="6598235178374410284">Avatar de l'utilisateur</translation>
 <translation id="6600377630856879433">Autoriser les captures de fenêtre et d'onglet selon ces origines</translation>
+<translation id="6601216729409808032">Active des vérifications supplémentaires des règles cloud pour autoriser ou bloquer l'installation d'extensions.</translation>
 <translation id="6603004149426829878">Toujours transmettre les signaux de localisation disponibles au serveur tout en mettant à jour le fuseau horaire</translation>
 <translation id="6604049565198492174">Si cette règle est activée, la configuration réseau est appliquée par utilisateur pour chaque appareil <ph name="PRODUCT_NAME" />. La configuration réseau est une chaîne au format JSON conformément au format de configuration de réseau ouvert.</translation>
 <translation id="660567106648774919">Cette règle est obsolète (veuillez utiliser la règle <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> à la place).
@@ -10393,6 +10406,7 @@ Consultez la section 5.2 du document RFC 8828 (https://tools.ietf.org/html/rfc
 <translation id="8250048892729838843">Cette règle est obsolète. Si cette règle est activée ou qu'elle n'est pas configurée, l'appareil peut recevoir des contrôles de rapports précis.
       Si cette règle est désactivée, les appareils enregistrés ne reçoivent pas de contrôles de rapports précis.</translation>
 <translation id="82530263956734297">Identifiants d'extension à exclure de la liste de blocage</translation>
+<translation id="8254749125469750814">Ne pas valider si une extension peut être installée ou non avec un service cloud.</translation>
 <translation id="8256006033157034334">Cette règle est obsolète et incompatible, veuillez utiliser la règle <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> à la place.</translation>
 <translation id="8256688113167012935">Définit quel nom de compte s'affiche sur l'écran de connexion de <ph name="PRODUCT_OS_NAME" /> pour le compte local de l'appareil correspondant.
 
@@ -10663,6 +10677,7 @@ Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
           Si cette règle n'est pas configurée, le clavier virtuel d'accessibilité est initialement désactivé, mais les utilisateurs peuvent l'activer à tout moment dans les paramètres d'accessibilité.
 
           Cette règle n'a aucune incidence sur l'activation du clavier virtuel tactile. Par exemple, le clavier virtuel tactile s'affiche toujours sur une tablette, même si cette règle est définie sur "False". Utilisez la règle <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> pour contrôler le comportement du clavier virtuel tactile.</translation>
+<translation id="8409698803092210478">Valider si une extension peut être installée ou non avec un service cloud.</translation>
 <translation id="8410477879938914253">Cette règle ne concerne que les sessions Invité gérées.
       Si elle est définie sur "True" ou si elle n'est pas configurée, une boîte de dialogue invitant l'utilisateur à confirmer ou à refuser la déconnexion s'affichera une fois la dernière fenêtre fermée.
       Si cette règle est définie sur "False", la boîte de dialogue ne pourra pas s'afficher et la fonctionnalité de déconnexion automatique une fois la dernière fenêtre fermée sera désactivée.</translation>

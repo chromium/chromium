@@ -1495,6 +1495,7 @@
 <translation id="3498215018399854026">Не удалось связаться с вашими родителями. Повторите попытку.</translation>
 <translation id="350069200438440499">Имя файла:</translation>
 <translation id="3501300228850242680">Метал (музыка)</translation>
+<translation id="350274464456291051">Вы можете изменить имя <ph name="BEGIN_LINK" />в аккаунте Google <ph name="ACCOUNT" /><ph name="END_LINK" /></translation>
 <translation id="350421688684366066">Этикетки (с высоким лоском)</translation>
 <translation id="350763432931695541">Выполняется извлечение текста со следующих нескольких страниц.</translation>
 <translation id="3507869775212388416">Вакансии в сфере юриспруденции</translation>
@@ -2157,6 +2158,7 @@
 <translation id="457875822857220463">Доставка</translation>
 <translation id="4579699065574932398">Банковские услуги</translation>
 <translation id="4582595824823167856">Получить SMS</translation>
+<translation id="4584094413232466841">Удалить эту информацию из данных для автозаполнения Chrome?</translation>
 <translation id="4586607503179159908">Способ оплаты подтвержден</translation>
 <translation id="4587425331216688090">Удалить адрес из Chrome?</translation>
 <translation id="459089498662672729">Администратор не рекомендует вставлять сюда контент со страницы <ph name="ORIGIN_NAME" />.</translation>
@@ -2401,7 +2403,6 @@
 <translation id="4990241977441916452">Конверт A2</translation>
 <translation id="4992066212339426712">Включить звук</translation>
 <translation id="4994095017621319069">1 группа вкладок больше не доступна.</translation>
-<translation id="4994348767896109801">Персонализация объявлений зависит от множества факторов, включая этот параметр, <ph name="BEGIN_LINK_1" />темы рекламы<ph name="END_LINK_1" />, ваши <ph name="BEGIN_LINK_2" />настройки файлов cookie<ph name="END_LINK_2" />, а также параметры сайта, который вы просматриваете. Подробнее о том, <ph name="BEGIN_LINK_3" />как управлять конфиденциальностью в рекламе<ph name="END_LINK_3" />…</translation>
 <translation id="4995474875135717171">Изменен:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы настроить поиск по сайту и задать поисковую систему по умолчанию.</translation>
 <translation id="4998950033665438990">Картон (односторонний)</translation>
@@ -2821,7 +2822,6 @@
 <translation id="5680642791693447368">Триллеры, криминальные и детективные фильмы</translation>
 <translation id="568292603005599551">Положение изображения по оси X</translation>
 <translation id="5684874026226664614">Не удалось перевести страницу</translation>
-<translation id="568489534660743582">Сайты персонализируют рекламу на основе многих факторов, в том числе с помощью этой функции. Даже если параметр отключен, сайты по-прежнему будут показывать объявления, однако они могут меньше соответствовать вашим интересам.</translation>
 <translation id="5688137257686092846">Косметологи и имиджмейкеры</translation>
 <translation id="5689199277474810259">Экспортировать как JSON</translation>
 <translation id="5689516760719285838">Геоданные</translation>
@@ -2886,6 +2886,7 @@
 <translation id="5813119285467412249">&amp;Повторить добавление</translation>
 <translation id="5813753398265398978">Физика</translation>
 <translation id="5817918615728894473">Подключить</translation>
+<translation id="5820625124144807242">После проверки заказа войдите в аккаунт <ph name="BNPL_ISSUER_NAME" /> или создайте его. Этот аккаунт будет автоматически связан с Google Pay.</translation>
 <translation id="5826507051599432481">Общее имя (CN)</translation>
 <translation id="5830698870816298009">использование и перемещение камеры</translation>
 <translation id="583281660410589416">Неизвестно</translation>
@@ -3986,7 +3987,6 @@
 <translation id="759889825892636187">Сайт <ph name="HOST_NAME" /> пока не может обработать этот запрос.</translation>
 <translation id="7599089013883397081">Превышено время ожидания</translation>
 <translation id="7602868996817972616">Спросите Google об этой странице</translation>
-<translation id="7608583484192556132">Персонализация объявлений зависит от множества факторов, включая этот параметр, <ph name="BEGIN_LINK_1" />рекламу, предлагаемую сайтами<ph name="END_LINK_1" />, ваши <ph name="BEGIN_LINK_2" />настройки файлов cookie<ph name="END_LINK_2" />, а также параметры сайта, который вы просматриваете. Подробнее о том, <ph name="BEGIN_LINK_3" />как управлять конфиденциальностью в рекламе<ph name="END_LINK_3" />…</translation>
 <translation id="7610193165460212391">Значение <ph name="VALUE" /> лежит за пределами разрешенного диапазона.</translation>
 <translation id="761261689936461781">Толстая</translation>
 <translation id="7613889955535752492">Срок действия: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

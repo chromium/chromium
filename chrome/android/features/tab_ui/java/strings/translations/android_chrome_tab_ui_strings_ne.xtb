@@ -60,7 +60,7 @@
 <translation id="2894757982205307093">समूहमा नयाँ ट्याब थप्नुहोस्</translation>
 <translation id="2918484639460781603">सेटिङमा जानुहोस्</translation>
 <translation id="2928243913527329289">Google | यो स्टोरबारे जानकारी</translation>
-<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> वटा वस्तु चयन गरिएका छन्}other{<ph name="ITEMS_COUNT_MANY" /> वटा वस्तु चयन गरिएका छन्}}</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> वस्तु चयन गरिएको छ}other{<ph name="ITEMS_COUNT_MANY" /> वटा वस्तु चयन गरिएका छन्}}</translation>
 <translation id="3008554597174452548">उत्पादनको मूल्य ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="3026391124054406831">आफ्ना ट्याबहरू व्यवस्थापन गर्न समूहहरू बनाउनुहोस्।</translation>
 <translation id="3051031624272448591">तपाईं जुनसुकै बेला हिस्ट्रीमा गई ती ट्याबहरू फेरि खोल्न सक्नुहुन्छ</translation>
@@ -153,7 +153,6 @@
 <translation id="709473454666962555">ट्याब समूह चयन गर्नुहोस्</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ट्याब सेयर गर्नुहोस्}other{ट्याबहरू सेयर गर्नुहोस्}}</translation>
 <translation id="7129458170538955174">यो स्टोरसम्बन्धी जानकारी स्क्रिनको आधा भाग ओगट्ने गरी खोलिएको छ</translation>
-<translation id="7151209024774799310">समूहबाट ट्याबहरू हटाउनुहोस्</translation>
 <translation id="7204204600596740190">एकभन्दा बढी ट्याब चयन गर्ने मोड</translation>
 <translation id="7211038039686180558">तपाईंका ट्याब समूहहरू स्वतः सेभ गरिन्छ र तपाईंले साइन इन गरेका सबै डिभाइसहरूमा अपडेट गरिन्छ</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> चयन गरिएको छ</translation>

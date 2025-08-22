@@ -523,6 +523,18 @@ Als je dit beleid instelt op PromptInTab, wordt na het verlopen van de verificat
 Als je het beleid instelt op Waar, worden alle links standaard geopend in de Chrome-browser.
 Als je het beleid niet instelt, worden links standaard geopend in Android-apps voor beheerde gebruikers en in de browser voor consumenten.</translation>
 <translation id="1402227992519954892">Rapportage van app-informatie van apparaat aanzetten</translation>
+<translation id="1402798007140502418">Dit beleid geeft aan browsers aan dat ze aanvullende checks voor extensies moeten uitvoeren, zoals nagaan of een extensie in een categorie staat die is geblokkeerd door de beheerder.
+
+Dit beleid wordt automatisch toegepast als er regels zijn ingesteld in <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />. Anders wordt het niet toegepast.
+
+Als je dit beleid toepast, wordt aan <ph name="PRODUCT_NAME" /> aangegeven dat de cloudservice moet worden geraadpleegd om te bepalen of een extensie moet worden geblokkeerd.
+Deze beleidscheck wordt uitgevoerd voor nieuwe installaties en voor alle op dit moment geïnstalleerde extensies, zowel bij het opstarten als periodiek.
+
+Als je dit beleid niet toepast, wordt aan <ph name="PRODUCT_NAME" /> aangegeven dat er geen aanvullende checks hoeven te worden uitgevoerd om te bepalen of een extensie moet worden geblokkeerd op basis van bedrijfsregels die zijn gedefinieerd in de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Als de extensie niet is toegestaan, blokkeert <ph name="PRODUCT_NAME" /> de installatie. Voor extensies die al zijn geïnstalleerd, zet <ph name="PRODUCT_NAME" /> de extensie uit.
+
+Chrome-beleid heeft voorrang op dit beleid, bijvoorbeeld als de extensie in <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> of <ph name="EXTENSION_INSTALL_FORCED_POLICY_NAME" /> staat.</translation>
 <translation id="1405444733221330570">Orca aanzetten</translation>
 <translation id="1407977345632185991">Sta Thema's maken niet toe.</translation>
 <translation id="141279920573530952">Als je dit beleid instelt, kun je een lijst met sites maken die automatisch toestemming krijgen voor toegang tot alle beschikbare seriële poorten.
@@ -8141,6 +8153,7 @@ Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bij
       Dit beleid is niet geldig tenzij het beleid <ph name="ACCESS_CODE_CAST_ENABLED_POLICY_NAME" /> wordt toegepast.</translation>
 <translation id="6598235178374410284">Avatarafbeelding van gebruiker</translation>
 <translation id="6600377630856879433">Venster- en tabbladopname door deze oorsprongen toestaan</translation>
+<translation id="6601216729409808032">Hiermee worden aanvullende cloudbeleidschecks aangezet om de installatie van extensies toe te staan of te blokkeren.</translation>
 <translation id="6603004149426829878">Beschikbare locatiesignalen altijd verzenden naar de server wanneer de tijdzone wordt bepaald</translation>
 <translation id="6604049565198492174">Als je het beleid instelt, kan de netwerkconfiguratie per gebruiker worden toegepast op elk <ph name="PRODUCT_NAME" />-apparaat. De netwerkconfiguratie is een json-tekenreeks zoals gedefinieerd in de Open Network Configuration-indeling.</translation>
 <translation id="660567106648774919">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
@@ -10343,6 +10356,7 @@ Zie RFC 8828 artikel 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) 
 <translation id="8250048892729838843">Dit beleid is beëindigd. Als je dit beleid toepast of niet instelt, kan het apparaat opties voor gedetailleerde rapportage krijgen.
       Als je het beleid niet toepast, kunnen ingeschreven apparaten geen opties voor gedetailleerde rapportage krijgen.</translation>
 <translation id="82530263956734297">Extensie-ID's die zijn vrijgesteld van de blokkeringslijst</translation>
+<translation id="8254749125469750814">Niet valideren of een extensie wel of niet kan worden geïnstalleerd met een cloudservice.</translation>
 <translation id="8256006033157034334">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Hiermee wordt de weergave van de accountnaam in <ph name="PRODUCT_OS_NAME" /> op het aanmeldscherm beheerd voor het bijbehorende lokale account van het apparaat.
 
@@ -10612,6 +10626,7 @@ Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
           Als je dit beleid niet instelt, staat het virtuele toetsenbord voor toegankelijkheid in eerste instantie uit. De gebruiker kan het toetsenbord op elk moment aanzetten via de toegankelijkheidsinstellingen.
 
           Dit beleid bepaalt niet of het virtuele aanraaktoetsenbord aanstaat. Het virtuele aanraaktoetsenbord wordt bijvoorbeeld nog steeds getoond op een tablet, ook als dit beleid is ingesteld op Onwaar. Gebruik het beleid <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> om het gedrag van het virtuele aanraaktoetsenbord te bepalen.</translation>
+<translation id="8409698803092210478">Valideren of een extensie wel of niet kan worden geïnstalleerd met een cloudservice.</translation>
 <translation id="8410477879938914253">Het beleid is alleen van toepassing op beheerde gastsessies.
       Als je het beleid instelt op True of niet instelt, wordt er een dialoogvenster getoond waarin de gebruiker wordt gevraagd het uitloggen te bevestigen of te weigeren als het laatste venster wordt gesloten.
       Als je het beleid instelt op False, wordt het dialoogvenster niet getoond en wordt automatisch uitloggen nadat het laatste venster is gesloten ook uitgezet.</translation>

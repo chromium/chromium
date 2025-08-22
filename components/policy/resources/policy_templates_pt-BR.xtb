@@ -538,6 +538,21 @@ Se definida como PromptInTab, quando a autenticação do usuário expirar, uma n
 Se ela for definida como verdadeira, todos os links serão abertos no navegador Chrome por padrão.
 Se ela for deixada sem definição, os links serão abertos por padrão em apps Android para usuários gerenciados e no navegador para consumidores.</translation>
 <translation id="1402227992519954892">Ativar relatórios de informações de apps do dispositivo</translation>
+<translation id="1402798007140502418">Esta política indica aos navegadores que eles precisam realizar verificações adicionais para extensões, como verificar se uma extensão está em uma categoria bloqueada pelo administrador.
+
+Esta política será definida automaticamente como "Ativada" se alguma regra for configurada no <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+Caso contrário, ela será "Desativada".
+
+Se esta política for ativada, ela sinaliza ao <ph name="PRODUCT_NAME" /> que ele precisa consultar o serviço do Cloud para determinar se uma extensão deve ser bloqueada.
+Essa verificação de política é realizada para novas instalações e em todas as extensões instaladas, tanto na inicialização quanto periodicamente.
+
+Quando esta política é desativada, o <ph name="PRODUCT_NAME" /> entende que não precisa fazer outras verificações
+para determinar se uma extensão deve ser bloqueada com base nas regras corporativas definidas no <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Se a extensão não for permitida, o <ph name="PRODUCT_NAME" /> vai bloquear a instalação. Para extensões já instaladas, o <ph name="PRODUCT_NAME" /> vai desativá-las.
+
+As políticas do Chrome terão precedência sobre esta política, por exemplo, se a extensão estiver em <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />
+ou <ph name="EXTENSION_INSTALL_FORCED_POLICY_NAME" />.</translation>
 <translation id="1405444733221330570">Ativar Orca</translation>
 <translation id="1407977345632185991">Não permitir a criação de temas.</translation>
 <translation id="141279920573530952">Se a política for definida, você vai poder listar sites com permissão automática para acessar todas as portas seriais disponíveis.
@@ -8537,6 +8552,7 @@ Mudanças na política são aplicadas apenas enquanto o ARC não está em execu�
       Esta política não tem efeito a menos que a política <ph name="ACCESS_CODE_CAST_ENABLED_POLICY_NAME" /> esteja ativada.</translation>
 <translation id="6598235178374410284">Imagem do avatar do usuário</translation>
 <translation id="6600377630856879433">Permitir captura de janela e guia por estas origens</translation>
+<translation id="6601216729409808032">Ativa outras verificações de política de nuvem para permitir/bloquear a instalação de extensões.</translation>
 <translation id="6603004149426829878">Sempre enviar qualquer sinal de localização disponível para o servidor ao determinar o fuso horário</translation>
 <translation id="6604049565198492174">Se a política for definida, será possível aplicar a configuração de rede por usuário para cada dispositivo <ph name="PRODUCT_NAME" />. A configuração de rede é uma string formatada em JSON, conforme definido pelo formato Open Network Configuration.</translation>
 <translation id="660567106648774919">Esta política está obsoleta. Use a <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
@@ -10831,6 +10847,7 @@ Consulte a seção 5.2 do RFC 8828 (https://tools.ietf.org/html/rfc8828.html#sec
 <translation id="8250048892729838843">Esta política foi descontinuada. Se ela for ativada ou deixada sem definição, o dispositivo poderá receber controles de geração de relatórios granulares.
       Se ela for desativada, os dispositivos registrados não vão receber controles de geração de relatórios granulares.</translation>
 <translation id="82530263956734297">IDs de extensão que serão isentos da lista de bloqueio</translation>
+<translation id="8254749125469750814">Não valide se uma extensão pode ser instalada ou não com um serviço de nuvem.</translation>
 <translation id="8256006033157034334">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Controla o nome da conta que o <ph name="PRODUCT_OS_NAME" /> mostra na tela de login para a conta local de dispositivo correspondente.
 
@@ -11114,6 +11131,7 @@ Se a política for definida como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
           Se esta política não for definida, o teclado virtual de acessibilidade ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento nas configurações de acessibilidade.
 
           Esta política não afeta a ativação do teclado virtual de toque. Por exemplo, o teclado virtual de toque ainda será mostrado em um tablet, mesmo se esta política for definida como "false". Use a política <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> para controlar o comportamento do teclado virtual de toque.</translation>
+<translation id="8409698803092210478">Verifique se uma extensão pode ser instalada ou não com um serviço de nuvem.</translation>
 <translation id="8410477879938914253">Esta política se aplica apenas a sessões de visitante gerenciadas.
       Se a política for definida como verdadeira ou deixada sem definição, uma caixa de diálogo será exibida e pedirá que o usuário confirme ou negue que quer sair da conta depois que a última janela for fechada.
       Se a política for definida como falsa, a caixa de diálogo não será exibida e, portanto, a saída automática será desativada após o fechamento da última janela.</translation>

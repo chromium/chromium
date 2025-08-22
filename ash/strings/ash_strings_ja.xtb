@@ -336,6 +336,7 @@
 <translation id="2107581415810719320">他のボタン <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C ケーブルは Thunderbolt に対応していません。デバイスのパフォーマンスが制限される可能性があります。</translation>
 <translation id="2108303511227308752">キーボード ショートカット「Alt+Backspace」が変更されました。Delete キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+Backspace キーを押してください。</translation>
+<translation id="2115680839221566783">バッテリー残量 <ph name="PERCENTAGE" />%。充電を一時停止しています。</translation>
 <translation id="2126242104232412123">新しいデスク</translation>
 <translation id="2132302418721800944">全画面を録画</translation>
 <translation id="2135456203358955318">ドッキング拡大鏡</translation>
@@ -1370,7 +1371,7 @@
 <translation id="5429993543155113935">シークレット ウィンドウは現在サポートされていません</translation>
 <translation id="5431318178759467895">カラー</translation>
 <translation id="5433020815079095860">音声入力</translation>
-<translation id="543584294741034249">外部ディスプレイは最大 <ph name="DISPLAY_LIMIT" /> 台接続できます。</translation>
+<translation id="543584294741034249">外部ディスプレイは <ph name="DISPLAY_LIMIT" /> 台まで接続できます。</translation>
 <translation id="544691375626129091">該当するすべてのユーザーをこのセッションに追加済みです。</translation>
 <translation id="54609108002486618">管理対象</translation>
 <translation id="5460938382730614333">マーカーはオンになっています。</translation>
@@ -1677,6 +1678,7 @@
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> に「<ph name="ROUTE_TITLE" />」をキャスト中</translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />、<ph name="NUMBER" /> 件の予定</translation>
+<translation id="6448529022565414427">充電を一時停止しています</translation>
 <translation id="6449483711453944360">Linux アプリとシークレット ウィンドウは現在サポートされていません</translation>
 <translation id="6450245544201845082">右クリックのショートカットは現在無効になっています</translation>
 <translation id="6452181791372256707">拒否</translation>

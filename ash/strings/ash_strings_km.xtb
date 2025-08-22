@@ -336,6 +336,7 @@
 <translation id="2107581415810719320">ប៊ូតុង​ផ្សេងទៀត <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">ខ្សែ USB-C របស់អ្នកមិនអាចប្រើ Thunderbolt បានទេ។ ប្រតិបត្តិការឧបករណ៍អាចត្រូវ​បានដាក់កំហិត។</translation>
 <translation id="2108303511227308752">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច Alt + Backspace។ ដើម្បីប្រើ​គ្រាប់ចុច Delete សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + backspace។</translation>
+<translation id="2115680839221566783">ថ្ម​មានកម្រិត <ph name="PERCENTAGE" />%។ កំពុងផ្អាក​ការសាកថ្ម។</translation>
 <translation id="2126242104232412123">តុធ្វើការថ្មី</translation>
 <translation id="2132302418721800944">ថតវីដេអូ​ពេញអេក្រង់</translation>
 <translation id="2135456203358955318">កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត</translation>
@@ -1677,6 +1678,7 @@
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> នៅលើ <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522">ថ្ងៃទី <ph name="DATE" />, ព្រឹត្តិការណ៍ <ph name="NUMBER" /></translation>
+<translation id="6448529022565414427">កំពុងផ្អាកការសាកថ្ម</translation>
 <translation id="6449483711453944360">បច្ចុប្បន្ន មិនអាចប្រើ​ផ្ទាំងឯកជន និងកម្មវិធី Linux បានទេ</translation>
 <translation id="6450245544201845082">បច្ចុប្បន្ន ផ្លូវ​កាត់សម្រាប់ចុចកណ្ដុរខាងស្ដាំត្រូវបានបិទ</translation>
 <translation id="6452181791372256707">បដិសេធ</translation>

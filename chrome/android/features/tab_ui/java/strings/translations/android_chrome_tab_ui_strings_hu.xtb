@@ -153,7 +153,6 @@
 <translation id="709473454666962555">Lapcsoport kiválasztása</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Lap megosztása}other{Lapok megosztása}}</translation>
 <translation id="7129458170538955174">Az üzlettel kapcsolatos információs panel félmagasságban van megnyitva</translation>
-<translation id="7151209024774799310">Lapok eltávolítása</translation>
 <translation id="7204204600596740190">Több lapot kiválasztó mód</translation>
 <translation id="7211038039686180558">A rendszer automatikusan menti a lapcsoportokat, és frissíti őket az összes bejelentkezett eszközén.</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" />: kiválasztva</translation>

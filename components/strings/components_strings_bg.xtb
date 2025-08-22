@@ -1496,6 +1496,7 @@
 <translation id="3498215018399854026">Не можахме да се свържем с родителя ви. Моля, опитайте отново.</translation>
 <translation id="350069200438440499">Име на файла:</translation>
 <translation id="3501300228850242680">Метъл (музика)</translation>
+<translation id="350274464456291051">Можете да редактирате името си <ph name="BEGIN_LINK" />в профила си в Google (<ph name="ACCOUNT" />)<ph name="END_LINK" />.</translation>
 <translation id="350421688684366066">Етикети (силно гланцирани)</translation>
 <translation id="350763432931695541">Текстът на следващите няколко страници се извлича</translation>
 <translation id="3507869775212388416">Работни места за юристи</translation>
@@ -2158,6 +2159,7 @@
 <translation id="457875822857220463">Бърза доставка</translation>
 <translation id="4579699065574932398">Банкиране</translation>
 <translation id="4582595824823167856">Получаване на SMS</translation>
+<translation id="4584094413232466841">Да се премахне ли тази информация от функцията на Chrome за автоматично попълване?</translation>
 <translation id="4586607503179159908">Начинът на плащане е потвърден</translation>
 <translation id="4587425331216688090">Адресът да се премахне ли от Chrome?</translation>
 <translation id="459089498662672729">Според администраторско правило поставянето на информация от <ph name="ORIGIN_NAME" /> на това място не е препоръчително</translation>
@@ -2402,7 +2404,6 @@
 <translation id="4990241977441916452">Плик A2</translation>
 <translation id="4992066212339426712">Включване на звука</translation>
 <translation id="4994095017621319069">1 група раздели вече не е налице</translation>
-<translation id="4994348767896109801">Рекламите, които виждате, могат да бъдат персонализирани. Това зависи от много неща, включително тази настройка, <ph name="BEGIN_LINK_1" />рекламните теми<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />настройките ви за „бисквитките“<ph name="END_LINK_2" />, както и от това дали сайтът, който преглеждате, персонализира рекламите. Научете повече за <ph name="BEGIN_LINK_3" />управлението на поверителността при рекламите<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Последна промяна:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да управлявате настройките за търсене в сайтовете и основната си търсеща машина</translation>
 <translation id="4998950033665438990">Еднолицев картон</translation>
@@ -2822,7 +2823,6 @@
 <translation id="5680642791693447368">Трилъри, криминални и детективски филми</translation>
 <translation id="568292603005599551">Позиция на изображението по оста X</translation>
 <translation id="5684874026226664614">Ами сега! Тази страница не можа да се преведе.</translation>
-<translation id="568489534660743582">Предложените от сайтовете реклами са само едно от многото неща, чрез които даден сайт може да персонализира рекламите. Дори и без предложени реклами сайтовете пак могат да ви показват реклами, но е възможно те да не са толкова интересни.</translation>
 <translation id="5688137257686092846">Козметични грижи и салони за красота</translation>
 <translation id="5689199277474810259">Експортиране във формат JSON</translation>
 <translation id="5689516760719285838">Местоположение</translation>
@@ -2887,6 +2887,7 @@
 <translation id="5813119285467412249">&amp;Възстановяване на добавянето</translation>
 <translation id="5813753398265398978">Физика</translation>
 <translation id="5817918615728894473">Сдвояване</translation>
+<translation id="5820625124144807242">След като прегледате поръчката си, трябва да влезете в профила си в(ъв) <ph name="BNPL_ISSUER_NAME" /> или да си създадете такъв. Този профил автоматично ще бъде свързан с Google Pay.</translation>
 <translation id="5826507051599432481">Общо име (CN)</translation>
 <translation id="5830698870816298009">Използване и местене на камерата</translation>
 <translation id="583281660410589416">Неизвестно</translation>
@@ -3987,7 +3988,6 @@
 <translation id="759889825892636187">Понастоящем <ph name="HOST_NAME" /> не може да обработи тази заявка.</translation>
 <translation id="7599089013883397081">Времето за изчакване при изтегляне изтече</translation>
 <translation id="7602868996817972616">Попитайте Google за тази страница</translation>
-<translation id="7608583484192556132">Рекламите, които виждате, могат да бъдат персонализирани. Това зависи от много неща, включително тази настройка, <ph name="BEGIN_LINK_1" />предложените от сайтовете реклами<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />настройките ви за „бисквитките“<ph name="END_LINK_2" />, както и от това дали сайтът, който преглеждате, персонализира рекламите. Научете повече за <ph name="BEGIN_LINK_3" />управлението на поверителността при рекламите<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Стойността е извън обхват <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Дебела</translation>
 <translation id="7613889955535752492">Валидна до: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

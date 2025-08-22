@@ -299,7 +299,6 @@
 <translation id="2120553909046681540">તમારી સંસ્થાએ ખાનગી બ્રાઉઝિંગ બંધ કર્યું છે.</translation>
 <translation id="2122754583996902531">તમારું બ્રાઉઝર મેનેજ કરવામાં આવી રહ્યું છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">અમારા મૉડલને બહેતર બનાવવા માટે, તમારી સંસ્થાની ચૅટનો ઉપયોગ કરવામાં આવતો નથી. Gemini અચોક્કસ માહિતી બતાવી શકે છે, જેમાં લોકો વિશેની અચોક્કસ માહિતી શામેલ છે, તેથી તેને બે વાર ચેક કરો. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
-<translation id="2126034128616392756">નીચેના પાસવર્ડ Google Password Manager પર આયાત કરવામાં આવ્યા ન હતા, કારણ કે તેઓ જરૂરિયાતો સાથે મેળ ખાતા નથી.</translation>
 <translation id="2139867232736819575">તમે કૉપિ કરેલી ટેક્સ્ટ માટે શોધ કરો</translation>
 <translation id="2147127444698817042">માત્ર iPhone પર ઉપલબ્ધ છે</translation>
 <translation id="2148799636999124959">તમારા સાચવેલા પાસવર્ડ વડે સાઇટ અને ઍપમાં ઝડપથી સાઇન ઇન કરો.</translation>
@@ -532,6 +531,7 @@
 <translation id="3059270601560379555">નવી શોધ</translation>
 <translation id="3064547930554042309">ડાઉનલોડ મેનેજ કરો</translation>
 <translation id="3072279342064724558">પાસવર્ડ પહેલેથી જ અસ્તિત્વમાં છે</translation>
+<translation id="3073258549280822127">કામ કરતી નથી</translation>
 <translation id="3073633853887034268">સમજાઈ ગયું</translation>
 <translation id="3076846064362030967">તમને તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવામાં આવશે નહીં. જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.
 
@@ -556,6 +556,7 @@
 <translation id="3140825265190223781">સાચવેલા પાસવર્ડ અને પાસકી</translation>
 <translation id="3143515551205905069">સિંક કરવાનું રદ કરો</translation>
 <translation id="3144126448740580210">થઈ ગયું</translation>
+<translation id="3148052723910099040">નિયમિત ટૅબ ગ્રિડ</translation>
 <translation id="3157387275655328056">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="315778507796115851">ઇતિહાસ</translation>
 <translation id="31652791196570636">છોડી દો</translation>
@@ -588,6 +589,7 @@
 <translation id="3277021493514034324">સાઇટનું ઍડ્રેસ કૉપિ કર્યું</translation>
 <translation id="3280562213547448728">વૉઇસ શોધ</translation>
 <translation id="3289505634533552500">વૉઇસ શોધ</translation>
+<translation id="3295904109373959849">ટૅબના ગ્રૂપની ગ્રિડ</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, નવી ઍક્ટિવિટી</translation>
 <translation id="3305294846493618482">વધુ</translation>
 <translation id="3311748811247479259">બંધ</translation>
@@ -928,6 +930,7 @@
 <translation id="4682496302933121474">પેજનો અનુવાદ કરીએ?</translation>
 <translation id="4682686630151240767">1. iPhone સેટિંગ ખોલો</translation>
 <translation id="4691892551491778176">જ્યારે તમે આ સુવિધાનો ઉપયોગ કરો, ત્યારે પેજનું કન્ટેન્ટ અને URLs Googleને મોકલવામાં આવે છે, પરંતુ તેનો ઉપયોગ જનરેટિવ AI મૉડલને બહેતર બનાવવા માટે કરવામાં આવશે નહીં. તમે આને કોઈપણ સમયે સેટિંગમાં જઈને બંધ કરી શકો છો.</translation>
+<translation id="4697240968720007067">માત્ર એક ટૅપમાં, Googleની શ્રેષ્ઠ ઍપ મેળવો</translation>
 <translation id="4699172675775169585">કૅશ કરેલી છબીઓ અને ફાઇલો</translation>
 <translation id="4709570498586527752">અલગ-અલગ સમયે તમારા માટે સૌથી વધુ સંબંધિત સુવિધાઓ</translation>
 <translation id="4717844083556844785">વર્તમાન વેબપેજ છૂપા મોડમાં છે</translation>
@@ -982,6 +985,7 @@
 <translation id="4876665338492917862"><ph name="LAST_OPENING_DATE" />ના રોજ ખોલેલી</translation>
 <translation id="4877597489778380935">મને પછીથી યાદ કરાવો</translation>
 <translation id="4881695831933465202">ખોલો</translation>
+<translation id="4883766694719903356">છૂપી ટૅબની ગ્રિડ</translation>
 <translation id="488785315393301722">વિગતો બતાવો</translation>
 <translation id="4889521386764567563">વર્તમાન પ્રોફાઇલ</translation>
 <translation id="4893713555726946316">'પેજમાં શોધો' છુપાવો</translation>
@@ -1231,6 +1235,7 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવેલું બ્રાઉઝર. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">સિંક થાય છે…</translation>
+<translation id="5838430324585198889">Google ઍપ વડે તમારા iPad માટે વધુ સુવિધાઓ અનલૉક કરો</translation>
 <translation id="583923961930319521">તમારા બધા ડિવાઇસ પર પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="5843013299019689749">બૅકગ્રાઉન્ડનો કાળો રંગ</translation>
 <translation id="5844284118433003733">તમે સાઇન ઇન હો ત્યારે, સમગ્ર Googleની સેવાઓમાં તમને સંરક્ષિત કરવા માટે આ ડેટા તમારા Google એકાઉન્ટ સાથે લિંક કરવામાં આવે છે, ઉદાહરણ તરીકે કોઈ સુરક્ષા સંબંધી બનાવ બાદ Gmailમાં સુરક્ષા વધારવી.</translation>
@@ -1342,6 +1347,7 @@
 <translation id="6234310016144827337">તમારું કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="6236952928980352967">ચેતવણી રિસ્ટોર કરો</translation>
 <translation id="623755660902014047">વાંચન મોડ</translation>
+<translation id="6241132809279377987">Google ઍપ વડે તમારા iPhone માટે વધુ સુવિધાઓ અનલૉક કરો</translation>
 <translation id="6247557882553405851">Google પાસવર્ડ મેનેજર</translation>
 <translation id="6251835855431997163">ઑટોમૅટિક રીતે <ph name="VALUE" /> ભરો</translation>
 <translation id="6254066287920239840">બ્રાઉઝરને બદલે ઍપ્લિકેશનમાં લિંક્સ ખોલો.</translation>
@@ -1965,6 +1971,7 @@
 <translation id="8605219856220328675">ટૅબ બંધ કરો.</translation>
 <translation id="8609743333007776886">બુકમાર્કમાં ${url}ને ઉમેરો</translation>
 <translation id="8611922158252451755">લિંક ધરાવતી કોઈપણ વ્યક્તિ બધા ટૅબમાં ફેરફાર કરી શકે છે, તેથી સમજદારીપૂર્વક શેર કરો. લિંકની સમયસીમા 48 કલાકમાં સમાપ્ત થાય છે.</translation>
+<translation id="8614671330774943747">ટૅબ સ્વિચર પર જાઓ</translation>
 <translation id="8620640915598389714">ફેરફાર કરો</translation>
 <translation id="8625706492572042370">હોમ સ્ક્રીનમાં ફેરફાર કરો</translation>
 <translation id="8631370184731241854">લૉક કરેલા છૂપા ટૅબ</translation>
@@ -2031,6 +2038,7 @@
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="8822421075653507124">આ ડિવાઇસનો સલામત રીતે ઉપયોગ કરી શકાય તેની ખાતરી કરવા માટે, તમારી સંસ્થાને તેની ઑપરેટિંગ સિસ્ટમ, બ્રાઉઝર, સેટિંગ અને ડિવાઇસ પર કયું સૉફ્ટવેર ઇન્સ્ટૉલ કરેલું છે તે વિશેની માહિતી જોવાની કદાચ જરૂર પડી શકે છે.</translation>
 <translation id="882557203579758546">પેજમાં શોધો…</translation>
+<translation id="8829809207373502270">આ પાસકી હવે કામ કરતી નથી. તેને <ph name="WEBSITE" />માંથી ડિલીટ કરવામાં આવી હતી અને ટૂંક સમયમાં અહીંથી પણ ડિલીટ કરવામાં આવશે. <ph name="BEGIN_LINK" />પાસકી વિશે<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">તમામ નિષ્ક્રિય ટૅબ બંધ કરો</translation>
 <translation id="8837654851594567190">પબ્લિશર મુજબ સૉર્ટ કરો</translation>
 <translation id="8840513115188359703">તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થશો નહિ.</translation>

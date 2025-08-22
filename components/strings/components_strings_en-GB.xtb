@@ -1496,6 +1496,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3498215018399854026">We could not reach your parent at the moment. Please try again.</translation>
 <translation id="350069200438440499">File name:</translation>
 <translation id="3501300228850242680">Metal (Music)</translation>
+<translation id="350274464456291051">You can edit your name <ph name="BEGIN_LINK" />in your Google Account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="350421688684366066">Labels (high gloss)</translation>
 <translation id="350763432931695541">Extracting text in next few pages</translation>
 <translation id="3507869775212388416">Legal Jobs</translation>
@@ -2158,6 +2159,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="457875822857220463">Delivery</translation>
 <translation id="4579699065574932398">Banking</translation>
 <translation id="4582595824823167856">Get a text message</translation>
+<translation id="4584094413232466841">Remove this info from Chrome autofill?</translation>
 <translation id="4586607503179159908">Payment method verified</translation>
 <translation id="4587425331216688090">Remove address from Chrome?</translation>
 <translation id="459089498662672729">Pasting from <ph name="ORIGIN_NAME" /> to this location is not recommended by administrator policy</translation>
@@ -2402,7 +2404,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4990241977441916452">Envelope A2</translation>
 <translation id="4992066212339426712">Unmute</translation>
 <translation id="4994095017621319069">1 tab group no longer available</translation>
-<translation id="4994348767896109801">Whether an ad that you see is personalised can depend on many things, including this setting, <ph name="BEGIN_LINK_1" />ad topics<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" /> and if the site that you're viewing personalises ads. Learn more about <ph name="BEGIN_LINK_3" />managing your ad privacy<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Modified:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage Site Search and your default search engine</translation>
 <translation id="4998950033665438990">Single face</translation>
@@ -2822,7 +2823,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5680642791693447368">Thriller, crime and mystery films</translation>
 <translation id="568292603005599551">Image X position</translation>
 <translation id="5684874026226664614">Oops. This page could not be translated.</translation>
-<translation id="568489534660743582">Site-suggested ads are just one of many things that a site can use to personalise ads. Even without site-suggested ads, sites can still show you ads but they may be less interesting.</translation>
 <translation id="5688137257686092846">Cosmetology and Beauty Professionals</translation>
 <translation id="5689199277474810259">Export to JSON</translation>
 <translation id="5689516760719285838">Location</translation>
@@ -2887,6 +2887,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5813119285467412249">&amp;Redo Add</translation>
 <translation id="5813753398265398978">Physics</translation>
 <translation id="5817918615728894473">Pair</translation>
+<translation id="5820625124144807242">Once you review your order, you must sign in to or create an account with <ph name="BNPL_ISSUER_NAME" />. This account will be automatically linked to Google Pay.</translation>
 <translation id="5826507051599432481">Common Name (CN)</translation>
 <translation id="5830698870816298009">camera use and movement</translation>
 <translation id="583281660410589416">Unknown</translation>
@@ -3987,7 +3988,6 @@ Additional details:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> is currently unable to handle this request.</translation>
 <translation id="7599089013883397081">Downloading timed out</translation>
 <translation id="7602868996817972616">Ask Google about this page</translation>
-<translation id="7608583484192556132">Whether an ad that you see is personalised can depend on many things, including this setting, <ph name="BEGIN_LINK_1" />site-suggested ads<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" /> and if the site that you're viewing personalises ads. Learn more about <ph name="BEGIN_LINK_3" />managing your ad privacy<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Value is out of range <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Thick</translation>
 <translation id="7613889955535752492">Exp: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

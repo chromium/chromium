@@ -60,7 +60,7 @@
 <translation id="2894757982205307093">Mae tab newydd yn y grŵp</translation>
 <translation id="2918484639460781603">Mynd i'r gosodiadau</translation>
 <translation id="2928243913527329289">Google | Ynghylch y siop hon</translation>
-<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> wedi'i ddewis.}zero{<ph name="ITEMS_COUNT_MANY" /> wedi'u dewis}two{<ph name="ITEMS_COUNT_MANY" /> wedi'u dewis}few{<ph name="ITEMS_COUNT_MANY" /> wedi'u dewis}many{<ph name="ITEMS_COUNT_MANY" /> wedi'u dewis}other{<ph name="ITEMS_COUNT_MANY" /> wedi'u dewis}}</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> wedi'i dewis.}zero{<ph name="ITEMS_COUNT_MANY" /> wedi'u dewis}two{<ph name="ITEMS_COUNT_MANY" /> wedi'u dewis}few{<ph name="ITEMS_COUNT_MANY" /> wedi'u dewis}many{<ph name="ITEMS_COUNT_MANY" /> wedi'u dewis}other{<ph name="ITEMS_COUNT_MANY" /> wedi'u dewis}}</translation>
 <translation id="3008554597174452548">Stopio olrhain y cynnyrch</translation>
 <translation id="3026391124054406831">Creu grwpiau i drefnu eich tabiau.</translation>
 <translation id="3051031624272448591">Gallwch bob amser eu cael yn ôl yn yr hanes</translation>
@@ -153,7 +153,6 @@
 <translation id="709473454666962555">Dewiswch grŵp tabiau</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Rhannu tab}zero{Rhannu tabiau}two{Rhannu tabiau}few{Rhannu tabiau}many{Rhannu tabiau}other{Rhannu tabiau}}</translation>
 <translation id="7129458170538955174">Gwybodaeth am y siop hon wedi'i hagor ar hanner uchder</translation>
-<translation id="7151209024774799310">Tynnu tabiau o'r grŵp</translation>
 <translation id="7204204600596740190">Modd dewis mwy nag un</translation>
 <translation id="7211038039686180558">Mae eich grwpiau tabiau yn cael eu cadw a'u diweddaru'n awtomatig ar draws eich holl ddyfeisiau sydd wedi'u mewngofnodi</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> Wedi'i ddewis</translation>

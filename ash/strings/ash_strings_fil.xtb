@@ -336,6 +336,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2107581415810719320">Iba pang Button <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Hindi sinusuportahan ng iyong USB-C cable ang Thunderbolt. Posibleng maging limitado ang performance ng device.</translation>
 <translation id="2108303511227308752">Nagbago ang keyboard shortcut na Alt + Backspace. Para magamit ang Delete key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + backspace.</translation>
+<translation id="2115680839221566783">Nasa <ph name="PERCENTAGE" />% ang baterya. Naka-hold ang pag-charge.</translation>
 <translation id="2126242104232412123">Bagong desk</translation>
 <translation id="2132302418721800944">I-record ang full screen</translation>
 <translation id="2135456203358955318">Naka-dock na magnifier</translation>
@@ -1677,6 +1678,7 @@ Walang nakakonektang device.</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> event</translation>
+<translation id="6448529022565414427">Naka-hold ang pag-charge</translation>
 <translation id="6449483711453944360">Kasalukuyang hindi sinusuportahan ang mga Linux app at Incognito window</translation>
 <translation id="6450245544201845082">Kasalukuyang naka-off ang shortcut para sa pag-right click</translation>
 <translation id="6452181791372256707">Tanggihan</translation>

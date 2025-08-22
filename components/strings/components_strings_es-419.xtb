@@ -1361,7 +1361,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3266367459139339908">Chrome lanzará nuevas formas de limitar lo que los sitios pueden aprender sobre ti cuando te muestran anuncios personalizados, por ejemplo:</translation>
 <translation id="3266793032086590337">Valor (en conflicto)</translation>
 <translation id="3268451620468152448">Pestañas abiertas</translation>
-<translation id="3270041629388773465">Guarda tus CVCs para finalizar tus compras más rápido.</translation>
+<translation id="3270041629388773465">Guarda tus CVCs para finalizar tus compras más rápido</translation>
 <translation id="3270847123878663523">&amp;Deshacer Reorganizar</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> desea conectarse</translation>
 <translation id="3272091146646336650">B súper</translation>
@@ -1497,6 +1497,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3498215018399854026">No pudimos comunicarnos con ninguno de tus padres. Vuelve a intentarlo.</translation>
 <translation id="350069200438440499">Nombre de archivo:</translation>
 <translation id="3501300228850242680">Metal (música)</translation>
+<translation id="350274464456291051">Puedes editar tu nombre <ph name="BEGIN_LINK" />en tu Cuenta de Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="350421688684366066">Etiquetas (brillo intenso)</translation>
 <translation id="350763432931695541">Extrayendo texto en las siguientes páginas</translation>
 <translation id="3507869775212388416">Trabajos del sector jurídico</translation>
@@ -2159,6 +2160,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="457875822857220463">Entrega</translation>
 <translation id="4579699065574932398">Actividad bancaria</translation>
 <translation id="4582595824823167856">Recibir un mensaje de texto</translation>
+<translation id="4584094413232466841">¿Quieres quitar esta información de la función autocompletar de Chrome?</translation>
 <translation id="4586607503179159908">Se verificó la forma de pago</translation>
 <translation id="4587425331216688090">¿Confirmas que quieres quitar la dirección de Chrome?</translation>
 <translation id="459089498662672729">La política del administrador no recomienda pegar contenido de <ph name="ORIGIN_NAME" /> en esta ubicación</translation>
@@ -2403,7 +2405,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4990241977441916452">Sobre A2</translation>
 <translation id="4992066212339426712">Dejar de silenciar</translation>
 <translation id="4994095017621319069">1 grupo de pestañas ya no está disponible</translation>
-<translation id="4994348767896109801">La personalización de un anuncio que ves puede depender de muchos factores, como este parámetro de configuración, los <ph name="BEGIN_LINK_1" />temas de anuncios<ph name="END_LINK_1" />, tu <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> y si el sitio que estás viendo personaliza los anuncios. Obtén más información para <ph name="BEGIN_LINK_3" />administrar tu privacidad en los anuncios<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Modificado:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar la búsqueda de sitios y tu motor de búsqueda predeterminado</translation>
 <translation id="4998950033665438990">Simple faz</translation>
@@ -2823,7 +2824,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5680642791693447368">Películas de suspenso, crimen y misterio</translation>
 <translation id="568292603005599551">Posición en el eje X de la imagen</translation>
 <translation id="5684874026226664614">No se puede traducir esta página.</translation>
-<translation id="568489534660743582">Los anuncios sugeridos por sitios son solo una de las muchas opciones que un sitio puede usar para personalizar los anuncios. Incluso sin los anuncios sugeridos por sitios, los sitios pueden seguir mostrándote anuncios, pero es posible que sean menos interesantes.</translation>
 <translation id="5688137257686092846">Cosmética y esteticistas</translation>
 <translation id="5689199277474810259">Exportar a JSON</translation>
 <translation id="5689516760719285838">Ubicación</translation>
@@ -2888,6 +2888,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5813119285467412249">&amp;Rehacer Agregar</translation>
 <translation id="5813753398265398978">Física</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
+<translation id="5820625124144807242">Después de revisar tu pedido, debes acceder a tu cuenta o crear una con <ph name="BNPL_ISSUER_NAME" />. Esta cuenta se vinculará automáticamente a Google Pay.</translation>
 <translation id="5826507051599432481">Nombre común (CN)</translation>
 <translation id="5830698870816298009">uso y movimiento de la cámara</translation>
 <translation id="583281660410589416">Desconocido</translation>
@@ -3988,7 +3989,6 @@ Detalles adicionales:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> no puede procesar esta solicitud en este momento.</translation>
 <translation id="7599089013883397081">Se agotó el tiempo de espera para descargar tus archivos</translation>
 <translation id="7602868996817972616">Preguntar a Google acerca de esta página</translation>
-<translation id="7608583484192556132">La personalización de un anuncio que ves puede depender de muchos factores, como este parámetro de configuración, los <ph name="BEGIN_LINK_1" />anuncios sugeridos por sitios<ph name="END_LINK_1" />, tu <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> y si el sitio que estás viendo personaliza los anuncios. Obtén más información para <ph name="BEGIN_LINK_3" />administrar tu privacidad en los anuncios<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">El valor <ph name="VALUE" /> está fuera del rango.</translation>
 <translation id="761261689936461781">Grueso</translation>
 <translation id="7613889955535752492">Vencimiento: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

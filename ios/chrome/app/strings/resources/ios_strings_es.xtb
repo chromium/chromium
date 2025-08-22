@@ -299,7 +299,6 @@
 <translation id="2120553909046681540">Tu organización ha desactivado la navegación privada.</translation>
 <translation id="2122754583996902531">Tu navegador está administrado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Las conversaciones de tu organización no se usan para mejorar nuestros modelos. Gemini puede mostrar información incorrecta (incluidos datos sobre personas), así que comprueba sus respuestas. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
-<translation id="2126034128616392756">Las siguientes contraseñas no se han importado al Gestor de contraseñas de Google porque no cumplen los requisitos.</translation>
 <translation id="2139867232736819575">Buscar el texto que has copiado</translation>
 <translation id="2147127444698817042">Solo disponible en iPhone</translation>
 <translation id="2148799636999124959">Inicia sesión rápidamente en sitios y aplicaciones con tus contraseñas guardadas.</translation>
@@ -532,6 +531,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="3059270601560379555">Nueva búsqueda</translation>
 <translation id="3064547930554042309">Gestionar descargas</translation>
 <translation id="3072279342064724558">La contraseña ya existe</translation>
+<translation id="3073258549280822127">No funciona</translation>
 <translation id="3073633853887034268">Entendido</translation>
 <translation id="3076846064362030967">No se cerrará la sesión de tu cuenta de Google. Es posible que <ph name="BEGIN_LINK" />otras formas de actividad<ph name="END_LINK" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlas cuando quieras.
 
@@ -556,6 +556,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3140825265190223781">Contraseñas y llaves de acceso guardadas</translation>
 <translation id="3143515551205905069">Cancelar sincronización</translation>
 <translation id="3144126448740580210">HECHO</translation>
+<translation id="3148052723910099040">Cuadrícula de pestañas normales</translation>
 <translation id="3157387275655328056">Añadir a lista de lectura</translation>
 <translation id="315778507796115851">Historial</translation>
 <translation id="31652791196570636">Cerrar</translation>
@@ -588,6 +589,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3277021493514034324">Se ha copiado la dirección del sitio web</translation>
 <translation id="3280562213547448728">Búsqueda por voz</translation>
 <translation id="3289505634533552500">Búsqueda por voz</translation>
+<translation id="3295904109373959849">Cuadrícula de grupos de pestañas</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, actividad nueva</translation>
 <translation id="3305294846493618482">más</translation>
 <translation id="3311748811247479259">Desactivada</translation>
@@ -928,6 +930,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4682496302933121474">¿Traducir página?</translation>
 <translation id="4682686630151240767">1. Abre los ajustes del iPhone</translation>
 <translation id="4691892551491778176">Cuando usas esta función, el contenido de la página y las URLs se envían a Google, pero no se usan para mejorar los modelos de IA generativa. Puedes desactivar esta opción en Configuración cuando quieras.</translation>
+<translation id="4697240968720007067">Consigue las mejores apps de Google con un toque</translation>
 <translation id="4699172675775169585">Archivos e imágenes en caché</translation>
 <translation id="4709570498586527752">Las funciones más relevantes para ti en diferentes momentos</translation>
 <translation id="4717844083556844785">La página web actual está en Incógnito</translation>
@@ -982,6 +985,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4876665338492917862">Abierto el <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Recordar más tarde</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4883766694719903356">Cuadrícula de pestañas de Incógnito</translation>
 <translation id="488785315393301722">Mostrar detalles</translation>
 <translation id="4889521386764567563">Perfil actual</translation>
 <translation id="4893713555726946316">Ocultar Buscar en la página</translation>
@@ -1231,6 +1235,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5819208479324046259">Gestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
+<translation id="5838430324585198889">Disfruta de más funciones para tu iPad con las apps de Google</translation>
 <translation id="583923961930319521">Usar contraseñas en todos tus dispositivos</translation>
 <translation id="5843013299019689749">Color de fondo negro</translation>
 <translation id="5844284118433003733">Cuando inicias sesión, estos datos se vinculan a tu cuenta de Google para protegerte en los servicios de Google (por ejemplo, con una mayor protección en Gmail tras un incidente de seguridad).</translation>
@@ -1342,6 +1347,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6234310016144827337">Comprueba tu conexión y vuelve a intentarlo</translation>
 <translation id="6236952928980352967">Restaurar advertencia</translation>
 <translation id="623755660902014047">Modo Lectura</translation>
+<translation id="6241132809279377987">Disfruta de más funciones para tu iPhone con las apps de Google</translation>
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
 <translation id="6251835855431997163">Autocompletar <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Abrir enlaces en la aplicación en lugar de en el navegador.</translation>
@@ -1965,6 +1971,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8605219856220328675">Cerrar pestaña.</translation>
 <translation id="8609743333007776886">Añadir ${url} a Marcadores</translation>
 <translation id="8611922158252451755">Cualquier persona que tenga el enlace puede editar todas las pestañas, así que comparte con cuidado. El enlace caduca al cabo de 48 horas.</translation>
+<translation id="8614671330774943747">Ir a la Función de cambio de pestaña</translation>
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8625706492572042370">Editar pantalla de inicio</translation>
 <translation id="8631370184731241854">Pestañas de Incógnito bloqueadas</translation>
@@ -2031,6 +2038,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8822421075653507124">Para asegurarse de que este dispositivo se puede usar de forma segura, es posible que tu organización necesite ver información sobre su sistema operativo, navegador, configuración y el software instalado en el dispositivo.</translation>
 <translation id="882557203579758546">Buscar en la página…</translation>
+<translation id="8829809207373502270">Esta llave de acceso ya no funciona. Se ha eliminado de <ph name="WEBSITE" /> y pronto se eliminará de aquí. <ph name="BEGIN_LINK" />Información sobre las llaves de acceso<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Cerrar todas las inactivas</translation>
 <translation id="8837654851594567190">Ordenar por editor</translation>
 <translation id="8840513115188359703">No se cerrará la sesión en tu cuenta de Google.</translation>
@@ -2153,7 +2161,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="956218893102219091">Usa tu ubicación precisa para obtener los resultados de Gemini más precisos, en lugar de una ubicación estimada basada en tu dirección IP. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Estás siguiendo a <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Borrar datos de navegación</translation>
-<translation id="963102227019621224">Actividad en la Web y en Aplicaciones</translation>
+<translation id="963102227019621224">Actividad en la Web y en Apps</translation>
 <translation id="966593914872420832">Búsqueda por voz</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Unirte al grupo de pestañas con <ph name="OWNER_NAME" />}=1{Unirte al grupo de pestañas con <ph name="OWNER_NAME" /> y {COUNT} persona más}other{Unirte al grupo de pestañas con <ph name="OWNER_NAME" /> y {COUNT} personas más}}</translation>
 <translation id="973493300226275298">Haz un seguimiento del precio de un producto en las tiendas online. Recibirás alertas cuando baje de precio.</translation>

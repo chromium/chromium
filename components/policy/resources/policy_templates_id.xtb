@@ -542,6 +542,21 @@ Jika kebijakan ini disetel ke PromptInTab, tab baru dengan halaman login Google 
 Jika kebijakan disetel ke Benar (True), semua link akan dibuka di browser Chrome secara default.
 Jika kebijakan ini tidak disetel, link akan dibuka secara default di aplikasi Android untuk pengguna terkelola dan di browser untuk konsumen.</translation>
 <translation id="1402227992519954892">Aktifkan pelaporan info aplikasi perangkat</translation>
+<translation id="1402798007140502418">Kebijakan ini memberi tahu browser bahwa mereka perlu melakukan pemeriksaan tambahan untuk ekstensi, seperti memeriksa apakah sebuah ekstensi masuk dalam kategori yang diblokir oleh administrator.
+
+Kebijakan ini akan otomatis disetel ke Aktif jika ada aturan yang dikonfigurasi di <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />,
+dan akan Disetel ke Nonaktif jika tidak ada aturan yang dikonfigurasi.
+
+Jika kebijakan ini disetel ke Aktif, kebijakan ini akan memberi sinyal ke <ph name="PRODUCT_NAME" /> agar memeriksa layanan Cloud untuk menentukan apakah suatu ekstensi harus diblokir.
+Pemeriksaan kebijakan ini dilakukan untuk penginstalan baru dan pada semua ekstensi yang saat ini diinstal, baik saat dimulai maupun secara berkala.
+
+Jika kebijakan ini disetel ke Nonaktif, kebijakan ini memberi sinyal ke <ph name="PRODUCT_NAME" /> bahwa tidak perlu melakukan pemeriksaan tambahan
+untuk menentukan apakah suatu ekstensi harus diblokir berdasarkan aturan perusahaan yang ditentukan di <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Jika ekstensi tidak diizinkan, <ph name="PRODUCT_NAME" /> akan memblokir penginstalan. Untuk ekstensi yang sudah diinstal, <ph name="PRODUCT_NAME" /> akan menonaktifkannya.
+
+Kebijakan Chrome akan memiliki prioritas lebih tinggi daripada kebijakan ini, misalnya jika ekstensi tercantum dalam <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />,
+atau <ph name="EXTENSION_INSTALL_FORCED_POLICY_NAME" />.</translation>
 <translation id="1405444733221330570">Aktifkan Orca</translation>
 <translation id="1407977345632185991">Jangan izinkan Buat Tema.</translation>
 <translation id="141279920573530952">Menyetel kebijakan memungkinkan Anda menetapkan daftar situs yang otomatis diizinkan untuk mengakses semua port serial yang tersedia.
@@ -8557,6 +8572,7 @@ Perubahan kebijakan hanya berlaku saat ARC tidak berjalan, misalnya saat memulai
       Kebijakan ini tidak akan berpengaruh kecuali jika kebijakan <ph name="ACCESS_CODE_CAST_ENABLED_POLICY_NAME" /> disetel ke Aktif.</translation>
 <translation id="6598235178374410284">Gambar avatar pengguna</translation>
 <translation id="6600377630856879433">Mengizinkan tangkapan Jendela dan Tab berdasarkan asal berikut</translation>
+<translation id="6601216729409808032">Mengaktifkan pemeriksaan kebijakan cloud tambahan untuk mengizinkan/memblokir penginstalan ekstensi.</translation>
 <translation id="6603004149426829878">Selalu kirim sinyal lokasi yang tersedia ke server sembari menentukan zona waktu</translation>
 <translation id="6604049565198492174">Jika kebijakan disetel, pendorongan konfigurasi jaringan akan diizinkan bagi tiap pengguna untuk tiap perangkat <ph name="PRODUCT_NAME" />. Konfigurasi jaringan berupa string berformat JSON, seperti yang didefinisikan oleh format Konfigurasi Jaringan Terbuka.</translation>
 <translation id="660567106648774919">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
@@ -10853,6 +10869,7 @@ Lihat RFC 8828 bagian 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2)
 <translation id="8250048892729838843">Kebijakan ini tidak digunakan lagi. Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat akan diizinkan menerima kontrol pelaporan terperinci.
       Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan menerima kontrol pelaporan terperinci.</translation>
 <translation id="82530263956734297">ID Ekstensi yang dikeluarkan dari daftar yang tidak diizinkan</translation>
+<translation id="8254749125469750814">Tidak memvalidasi apakah ekstensi dapat diinstal atau tidak dengan layanan cloud.</translation>
 <translation id="8256006033157034334">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Mengontrol nama akun yang ditampilkan <ph name="PRODUCT_OS_NAME" /> di layar masuk untuk akun lokal perangkat yang sesuai.
 
@@ -11141,6 +11158,7 @@ Jika kebijakan ini disetel ke <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR
           Jika kebijakan ini tidak disetel, keyboard virtual aksesibilitas awalnya akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja menggunakan setelan aksesibilitas.
 
           Kebijakan ini tidak memengaruhi apakah keyboard virtual sentuh diaktifkan atau tidak. Misalnya, keyboard virtual sentuh masih akan muncul di perangkat tablet meskipun kebijakan ini disetel ke false (salah). Gunakan kebijakan <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> untuk mengontrol perilaku keyboard virtual sentuh.</translation>
+<translation id="8409698803092210478">Memvalidasi apakah ekstensi dapat diinstal atau tidak dengan layanan cloud.</translation>
 <translation id="8410477879938914253">Kebijakan ini hanya berlaku untuk sesi tamu terkelola.
       Jika kebijakan disetel ke Benar (True) atau tidak disetel, dialog yang meminta pengguna untuk mengonfirmasi atau menolak logout saat jendela terakhir ditutup akan ditampilkan.
       Jika kebijakan disetel ke Salah (False), dialog tidak akan ditampilkan sehingga logout otomatis akan dinonaktifkan setelah jendela terakhir ditutup.</translation>

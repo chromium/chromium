@@ -336,6 +336,7 @@
 <translation id="2107581415810719320">Друг бутон: <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C кабелът ви не поддържа Thunderbolt. Ефективността на устройството може да е ограничена.</translation>
 <translation id="2108303511227308752">Клавишната комбинация Alt + Backspace се промени. За да използвате клавиша за изтриване, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + Backspace.</translation>
+<translation id="2115680839221566783">Батерията е на <ph name="PERCENTAGE" />%. Зареждането е поставено на пауза.</translation>
 <translation id="2126242104232412123">Нов работен кът</translation>
 <translation id="2132302418721800944">Записване на целия екран</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
@@ -1677,6 +1678,7 @@
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> се предава към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6445915701151710649">процесор</translation>
 <translation id="6447111710783417522"><ph name="NUMBER" /> събитие на <ph name="DATE" /></translation>
+<translation id="6448529022565414427">Зареждането е поставено на пауза</translation>
 <translation id="6449483711453944360">Понастоящем не се поддържат приложения за Linux и прозорци в режим „инкогнито“</translation>
 <translation id="6450245544201845082">Понастоящем прекият път с десния бутон на мишката е изключен</translation>
 <translation id="6452181791372256707">Отхвърляне</translation>

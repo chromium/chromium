@@ -299,7 +299,6 @@
 <translation id="2120553909046681540">Танай байгууллага хувийн хөтчийг унтраасан.</translation>
 <translation id="2122754583996902531">Таны хөтчийг удирдаж байна. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Танай байгууллагын чатыг манай загварыг сайжруулахад ашигладаггүй. Gemini хүний талаар зэрэг алдаатай мэдээлэл үзүүлж болзошгүй тул хариултыг нь дахин шалгана уу. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
-<translation id="2126034128616392756">Дараах нууц үгнүүд шаардлагад нийцээгүй тул Google Нууц үгний менежер лүү импортлоогүй.</translation>
 <translation id="2139867232736819575">Хуулсан текстээ хайх</translation>
 <translation id="2147127444698817042">Зөвхөн iPhone дээр боломжтой</translation>
 <translation id="2148799636999124959">Хадгалсан нууц үгээрээ сайт болон аппад түргэн нэвтрээрэй.</translation>
@@ -532,6 +531,7 @@
 <translation id="3059270601560379555">Шинэ хайлт</translation>
 <translation id="3064547930554042309">Татаж авсан файлыг удирдах</translation>
 <translation id="3072279342064724558">Нууц үг аль хэдийн байна</translation>
+<translation id="3073258549280822127">Ажиллахгүй байна</translation>
 <translation id="3073633853887034268">Ойлголоо</translation>
 <translation id="3076846064362030967">Та Google Бүртгэлээсээ гарахгүй. Таныг нэвтэрсэн үед <ph name="BEGIN_LINK" />бусад төрлийн үйл ажиллагааг<ph name="END_LINK" /> Google Бүртгэлд тань хадгалж магадгүй. Та тэдгээрийг хүссэн үедээ устгах боломжтой.
 
@@ -556,6 +556,7 @@
 <translation id="3140825265190223781">Хадгалсан нууц үг, нэвтрэх түлхүүр</translation>
 <translation id="3143515551205905069">Синкийг цуцлах</translation>
 <translation id="3144126448740580210">ДУУССАН</translation>
+<translation id="3148052723910099040">Энгийн табын хүснэгт</translation>
 <translation id="3157387275655328056">Унших жагсаалтад нэмэх</translation>
 <translation id="315778507796115851">Түүх</translation>
 <translation id="31652791196570636">Хаах</translation>
@@ -588,6 +589,7 @@
 <translation id="3277021493514034324">Сайтын хаягийг хуулсан</translation>
 <translation id="3280562213547448728">Дуут хайлт</translation>
 <translation id="3289505634533552500">Дуут хайлт</translation>
+<translation id="3295904109373959849">Табын бүлгийн хүснэгт</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, шинэ үйл ажиллагаа</translation>
 <translation id="3305294846493618482">бусад</translation>
 <translation id="3311748811247479259">Унтраалттай байна</translation>
@@ -928,6 +930,7 @@
 <translation id="4682496302933121474">Хуудсыг орчуулах уу?</translation>
 <translation id="4682686630151240767">1. iPhone-н тохиргоог нээнэ үү</translation>
 <translation id="4691892551491778176">Таныг энэ онцлогийг ашиглах үед хуудасны агуулга, URL-г Google-д илгээдэг ч үүсгэгч ХОУ-ы загварыг сайжруулахад ашиглахгүй. Та хүссэн үедээ үүнийг тохиргооноос унтраах боломжтой.</translation>
+<translation id="4697240968720007067">Google-н шилдэг аппуудыг нэг товшилтоор аваарай</translation>
 <translation id="4699172675775169585">Кэшлсэн дүрс ба файл</translation>
 <translation id="4709570498586527752">Өөр өөр цагт танд хамгийн хамааралтай онцлогууд</translation>
 <translation id="4717844083556844785">Одоогийн веб хуудас Нууцлалтай горимд байна</translation>
@@ -982,6 +985,7 @@
 <translation id="4876665338492917862"><ph name="LAST_OPENING_DATE" />-нд нээсэн</translation>
 <translation id="4877597489778380935">Надад дараа сануул</translation>
 <translation id="4881695831933465202">Нээх</translation>
+<translation id="4883766694719903356">Нууцлалтай табын хүснэгт</translation>
 <translation id="488785315393301722">Дэлгэрэнгүй мэдээллийг харуул</translation>
 <translation id="4889521386764567563">Одоогийн профайл</translation>
 <translation id="4893713555726946316">Хуудаснаас олохыг нуух</translation>
@@ -1231,6 +1235,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5819208479324046259"><ph name="MANAGER" /> удирддаг. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синк хийж байна…</translation>
+<translation id="5838430324585198889">Google аппаар өөрийн iPad-д зориулж илүү олон онцлогийн түгжээг тайлаарай</translation>
 <translation id="583923961930319521">Бүх төхөөрөмж дээрээ нууц үгээ ашиглах</translation>
 <translation id="5843013299019689749">Хар дэвсгэр өнгө</translation>
 <translation id="5844284118433003733">Таныг нэвтэрсэн үед аюулгүй байдалтай холбоотой тохиолдлын дараа Gmail-д хамгаалалтыг нэмэх зэргээр таныг Google-н үйлчилгээнүүдэд хамгаалахын тулд энэ өгөгдлийг Google Бүртгэлтэй тань холбодог.</translation>
@@ -1342,6 +1347,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6234310016144827337">Холболтоо шалгаад, дахин оролдоно уу</translation>
 <translation id="6236952928980352967">Сануулгыг сэргээх</translation>
 <translation id="623755660902014047">Уншлагын горим</translation>
+<translation id="6241132809279377987">Google аппаар өөрийн iPhone-д зориулж илүү олон онцлогийн түгжээг тайлаарай</translation>
 <translation id="6247557882553405851">Google-н Нууц үгний менежер</translation>
 <translation id="6251835855431997163"><ph name="VALUE" />-г автоматаар бөглөх</translation>
 <translation id="6254066287920239840">Апп-д хөтчийн оронд холбоосыг нээнэ үү.</translation>
@@ -1965,6 +1971,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8605219856220328675">Цонхыг хаах.</translation>
 <translation id="8609743333007776886">Хавчуургад ${url} нэмэх</translation>
 <translation id="8611922158252451755">Холбоостой дурын хүн бүх табыг засах боломжтой тул сайтар бодолцож хуваалцаарай. Холбоосны хугацаа 48 цагийн дараа дуусна.</translation>
+<translation id="8614671330774943747">Таб хооронд шилжүүлэгч рүү очих</translation>
 <translation id="8620640915598389714">Засах</translation>
 <translation id="8625706492572042370">Үндсэн нүүрийг засах</translation>
 <translation id="8631370184731241854">Түгжээтэй нууцлалтай таб</translation>
@@ -2031,6 +2038,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8820817407110198400">Хавчуургууд</translation>
 <translation id="8822421075653507124">Энэ төхөөрөмжийг аюулгүй ашиглах боломжтой эсэхийг нягтлахын тулд танай байгууллага үйлдлийн систем, хөтөч, тохиргоог нь болон төхөөрөмж дээр суулгасан программ хангамжийн талаарх мэдээллийг харах шаардлагатай байж магадгүй.</translation>
 <translation id="882557203579758546">Хуудаснаас олох…</translation>
+<translation id="8829809207373502270">Энэ нэвтрэх түлхүүр ажиллахаа больсон. Уг нэвтрэх түлхүүрийг <ph name="WEBSITE" />-с устгасан ба удахгүй эндээс устгана. <ph name="BEGIN_LINK" />Нэвтрэх түлхүүр<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Бүх идэвхгүй табыг хаах</translation>
 <translation id="8837654851594567190">Нийтлэгчээр эрэмбэлэх</translation>
 <translation id="8840513115188359703">Таныг Google Бүртгэлээс гаргахгүй.</translation>

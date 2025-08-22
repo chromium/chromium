@@ -299,7 +299,6 @@
 <translation id="2120553909046681540">您的组织关闭了无痕浏览。</translation>
 <translation id="2122754583996902531">您的浏览器处于受管理状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">我们不会使用贵组织的对话内容来改进模型。Gemini 显示的信息（包括与人相关的信息）不一定准确，请注意核查。<ph name="YOUR_PRIVACY_GEMINI" /></translation>
-<translation id="2126034128616392756">以下密码不符合要求，因此未导入 Google 密码管理工具。</translation>
 <translation id="2139867232736819575">搜索您复制的文字</translation>
 <translation id="2147127444698817042">仅适用于 iPhone</translation>
 <translation id="2148799636999124959">使用您已保存的密码快速登录网站和应用。</translation>
@@ -532,6 +531,7 @@
 <translation id="3059270601560379555">新搜索</translation>
 <translation id="3064547930554042309">管理下载内容</translation>
 <translation id="3072279342064724558">密码已存在</translation>
+<translation id="3073258549280822127">已失效</translation>
 <translation id="3073633853887034268">知道了</translation>
 <translation id="3076846064362030967">您不会因此而退出自己的 Google 账号。当您登录后，系统可能会将<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 账号中。您可以随时删除这些记录。
 
@@ -556,6 +556,7 @@
 <translation id="3140825265190223781">已保存的密码和通行密钥</translation>
 <translation id="3143515551205905069">取消同步</translation>
 <translation id="3144126448740580210">完成</translation>
+<translation id="3148052723910099040">常规标签页网格</translation>
 <translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="315778507796115851">历史记录</translation>
 <translation id="31652791196570636">关闭</translation>
@@ -588,6 +589,7 @@
 <translation id="3277021493514034324">已复制网站地址</translation>
 <translation id="3280562213547448728">语音搜索</translation>
 <translation id="3289505634533552500">语音搜索</translation>
+<translation id="3295904109373959849">标签页分组网格</translation>
 <translation id="3302837541200840455">“<ph name="TAB_TITLE" />”，有新活动</translation>
 <translation id="3305294846493618482">更多</translation>
 <translation id="3311748811247479259">已关闭</translation>
@@ -928,6 +930,7 @@
 <translation id="4682496302933121474">翻译网页吗？</translation>
 <translation id="4682686630151240767">1. 打开 iPhone 设置</translation>
 <translation id="4691892551491778176">当您使用此功能时，网页内容和网址会发送给 Google，但不会用于改进生成式 AI 模型。您随时可以在设置中关闭此功能。</translation>
+<translation id="4697240968720007067">点按一下，即可获取 Google 精选应用</translation>
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4709570498586527752">在不同时间为您提供最相关的功能</translation>
 <translation id="4717844083556844785">当前网页处于无痕模式</translation>
@@ -982,6 +985,7 @@
 <translation id="4876665338492917862">上次打开日期：<ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">以后再提醒我</translation>
 <translation id="4881695831933465202">打开</translation>
+<translation id="4883766694719903356">无痕式标签页网格</translation>
 <translation id="488785315393301722">显示详细信息</translation>
 <translation id="4889521386764567563">当前个人资料</translation>
 <translation id="4893713555726946316">隐藏“在当前页面中查找”</translation>
@@ -1231,6 +1235,7 @@
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">正在同步…</translation>
+<translation id="5838430324585198889">在 iPad 上使用 Google 应用，解锁更多精彩功能</translation>
 <translation id="583923961930319521">在您的所有设备上使用密码</translation>
 <translation id="5843013299019689749">黑色背景颜色</translation>
 <translation id="5844284118433003733">当您登录后，这些数据将与您的 Google 账号关联，以便在各种 Google 服务中保护您，例如：于安全事件发生后在 Gmail 中加强对您的保护力度。</translation>
@@ -1342,6 +1347,7 @@
 <translation id="6234310016144827337">请检查网络连接，然后重试</translation>
 <translation id="6236952928980352967">恢复警告</translation>
 <translation id="623755660902014047">朗读模式</translation>
+<translation id="6241132809279377987">在 iPhone 上使用 Google 应用，解锁更多精彩功能</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
 <translation id="6251835855431997163">自动填充<ph name="VALUE" /></translation>
 <translation id="6254066287920239840">在应用（而非浏览器）中打开链接。</translation>
@@ -1965,6 +1971,7 @@
 <translation id="8605219856220328675">关闭标签页。</translation>
 <translation id="8609743333007776886">将 ${url} 添加到书签</translation>
 <translation id="8611922158252451755">知道链接的任何人都能修改所有标签页，因此请谨慎分享。链接将在 48 小时后失效。</translation>
+<translation id="8614671330774943747">打开标签页切换器</translation>
 <translation id="8620640915598389714">修改</translation>
 <translation id="8625706492572042370">修改主屏幕</translation>
 <translation id="8631370184731241854">锁定无痕式标签页</translation>
@@ -2031,6 +2038,7 @@
 <translation id="8820817407110198400">书签</translation>
 <translation id="8822421075653507124">为确保您可以安全地使用此设备，您的组织可能需要查看设备操作系统、浏览器、设置以及设备上安装的软件等相关信息。</translation>
 <translation id="882557203579758546">在网页中查找…</translation>
+<translation id="8829809207373502270">此通行密钥已失效，目前已从 <ph name="WEBSITE" /> 中删除，很快也会从此处删除。<ph name="BEGIN_LINK" />关于通行密钥<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">关闭所有闲置标签页</translation>
 <translation id="8837654851594567190">按发布者排序</translation>
 <translation id="8840513115188359703">您不会因此而退出自己的 Google 账号。</translation>

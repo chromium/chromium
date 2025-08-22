@@ -366,7 +366,6 @@
 <translation id="1235458158152011030">已知網路</translation>
 <translation id="123578888592755962">磁碟空間已滿</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
-<translation id="1237251612871334180">須更新才能儲存密碼</translation>
 <translation id="1237950098253310325">使用 Ctrl + 向上鍵或向下鍵調整「<ph name="BUTTON_NAME" />」的順序</translation>
 <translation id="1238293488628890871">要切換設定檔嗎？</translation>
 <translation id="1239594683407221485">在「檔案」應用程式中探索裝置內容。</translation>
@@ -756,6 +755,7 @@
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> 已加密。請要求檔案擁有者解密。</translation>
 <translation id="151501797353681931">由 Safari 匯入</translation>
 <translation id="1515163294334130951">啟動</translation>
+<translation id="1515246388279049673">取代舊群組</translation>
 <translation id="1517467582299994451">如要使用代碼建立投放連線，請開啟 Chrome 瀏覽器同步處理設定</translation>
 <translation id="1519090060276706457">還原視窗的時間過長</translation>
 <translation id="1521442365706402292">管理憑證</translation>
@@ -1892,6 +1892,7 @@
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">無法在網站上擷取檔案</translation>
 <translation id="2300383962156589922">自訂及控制 <ph name="APP_NAME" /></translation>
+<translation id="2300434721407965566">充電到 80% 時停止，有助延長電池壽命。</translation>
 <translation id="2301064673700597535">合格憑證聲明</translation>
 <translation id="2301382460326681002">擴充功能根目錄無效。</translation>
 <translation id="2301402091755573488">已分享的分頁</translation>
@@ -2132,6 +2133,7 @@
 <translation id="2453860139492968684">結束</translation>
 <translation id="2454206500483040640">已分區</translation>
 <translation id="2454247629720664989">關鍵字</translation>
+<translation id="2454316638749081703">瀏覽網頁時，可以輕鬆向 Gemini 詢問目前分頁的相關問題</translation>
 <translation id="2454524890947537054">要核准網頁要求嗎？</translation>
 <translation id="2454913962395846391">自動偵測時區</translation>
 <translation id="245650153866130664">如果要自動重新整理票證，請勾選「記住密碼」。你的密碼只會儲存在你的裝置上。</translation>
@@ -2997,6 +2999,7 @@
 <translation id="3039491566278747710">無法在裝置上安裝離線政策。</translation>
 <translation id="3040982432432547149">協助我們改善 Chromebook 適用的 Steam</translation>
 <translation id="304169924727249890">加入<ph name="OWNER_FIRST_NAME" />的分頁群組</translation>
+<translation id="3042097545107738107">變更最佳化充電策略。</translation>
 <translation id="3043016484125065343">登入即可查看書籤</translation>
 <translation id="3043126717220766543">清除群組建議</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -3108,6 +3111,7 @@
 <translation id="3132277757485842847">無法與你的手機維持連線狀態。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
 <translation id="3132896062549112541">規則</translation>
 <translation id="3132996321662585180">每天更新</translation>
+<translation id="3133743499784536658">建立新群組</translation>
 <translation id="3134312457920437826">擴充功能使用不支援的資訊清單版本，因此無法安裝。</translation>
 <translation id="3134393957315651797">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。實驗說明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">預設的黃色顯示圖片</translation>
@@ -3593,6 +3597,7 @@
 <translation id="3493043608231401654">將「<ph name="TAB_TITLE" />」從分頁群組中移除</translation>
 <translation id="3493486281776271508">需要網際網路連線</translation>
 <translation id="3493881266323043047">有效性</translation>
+<translation id="3494893110166252544"><ph name="PERCENTAGE" />% - 目前暫停充電</translation>
 <translation id="3495496470825196617">充電時閒置電源</translation>
 <translation id="3495660573538963482">Google 助理設定</translation>
 <translation id="3495675993466884458">系統管理員已允許 <ph name="APP_ORIGIN" /> 錄製你的螢幕畫面</translation>
@@ -3694,6 +3699,7 @@
 <translation id="3563432852173030730">無法下載 Kiosk 應用程式。</translation>
 <translation id="3563558822383875692">正在設定 DLC。</translation>
 <translation id="3564334271939054422">您所使用的 Wi-Fi 網路 (<ph name="NETWORK_ID" />) 可能會要求您造訪登入頁面。</translation>
+<translation id="3564456410937306182">進一步瞭解自動調節充電功能。</translation>
 <translation id="3564659095423213915">這個資料夾只會儲存到這部裝置。如果儲存到「<ph name="ACCOUNT_FOLDER" />」，這個資料夾也會儲存到你的帳戶。</translation>
 <translation id="3564848315152754834">USB 安全金鑰</translation>
 <translation id="3566211766752891194">顯示分頁記憶體用量</translation>
@@ -4451,7 +4457,6 @@
 <translation id="405181879009056822">ChromeOS 設定</translation>
 <translation id="4052120076834320548">最小</translation>
 <translation id="4052913941260326985">建立 QR code(&amp;Q)</translation>
-<translation id="405365679581583349">更新 Google Play 服務</translation>
 <translation id="4053833479432165765">將頁面安裝為應用程式(&amp;I)...</translation>
 <translation id="4054070260844648638">向所有人顯示</translation>
 <translation id="4056908315660577142">你已達到貴家長為「<ph name="APP_NAME" />」這款 Chrome 應用程式設定的使用時間限制。你明天可以使用 <ph name="TIME_LIMIT" />。</translation>
@@ -4825,7 +4830,6 @@
 <translation id="4333854382783149454">PKCS #1 SHA-1 (使用 RSA 加密)</translation>
 <translation id="4334768748331667190">之後不會再顯示<ph name="MODULE_NAME" /></translation>
 <translation id="4335835283689002019">安全瀏覽功能已關閉</translation>
-<translation id="4338034474804311322">如要恢復將密碼儲存至 Google 密碼管理工具，請更新 Google Play 服務</translation>
 <translation id="4338363401382232853">分割畫面視窗建議</translation>
 <translation id="4339203724549370495">解除安裝應用程式</translation>
 <translation id="4340125850502689798">使用者名稱無效</translation>
@@ -4987,7 +4991,6 @@
 <translation id="4442863809158514979">查看網路權限</translation>
 <translation id="4442937638623063085">找不到任何設定檔，請輸入電信業者提供的啟用代碼。</translation>
 <translation id="4443536555189480885">說明(&amp;H)</translation>
-<translation id="4444191890945732856">正在與 Gemini 分享這個頁面</translation>
 <translation id="4444304522807523469">存取透過 USB 附加或是在區域網路上的文件掃描器</translation>
 <translation id="4444512841222467874">如果未釋出可用空間，系統可能會自動移除使用者和資料。</translation>
 <translation id="4445446646109808714">使用者授權協議：<ph name="EULA_LINK" /></translation>
@@ -5837,7 +5840,6 @@
 <translation id="5064921774605267982">開啟<ph name="PROFILE_NAME" />的設定檔。這個設定檔是由你的家長管理。</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">在 Chrome OS 設定中管理安全 DNS</translation>
-<translation id="5066523884829290323">前往該網站變更</translation>
 <translation id="5066534201484101197">使用過度捲動效果瀏覽不同頁面</translation>
 <translation id="5067399438976153555">一律啟用</translation>
 <translation id="5067867186035333991">當 <ph name="HOST" /> 要求存取麥克風時詢問我。</translation>
@@ -6494,6 +6496,7 @@
 <translation id="5527463195266282916">試圖降級外掛程式。</translation>
 <translation id="5527474464531963247">你也可以選取其他網路。</translation>
 <translation id="5527597176701279474">正在安裝「<ph name="APP_NAME" />」</translation>
+<translation id="5527822190489075064">最佳化充電效能</translation>
 <translation id="5528295196101251711">VM 名稱</translation>
 <translation id="5529554942700688235">記憶體用量節省摘要，已釋出 <ph name="MEMORY_VALUE" /></translation>
 <translation id="5530977410273748884">如要將密碼儲存到 Google 密碼管理工具，請按一下這個按鍵</translation>
@@ -7849,7 +7852,6 @@
 <translation id="6521214596282732365">網站通常會使用你的字型，方便你透過線上的設計及圖像工具建立具有高度一致性的內容</translation>
 <translation id="6523574494641144162">Google 密碼管理工具無法將這些密碼儲存在你的 Google 帳戶中，你可以改為儲存至這部裝置。</translation>
 <translation id="652492607360843641">你已連上<ph name="NETWORK_TYPE" />網路。</translation>
-<translation id="6525594601091660913">&gt; 檔案上傳完成</translation>
 <translation id="6525767484449074555">按一下「安裝」</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6527574156657772563">沒有可用的裝置。請在手機上登入 Google 帳戶，即可與這台 <ph name="DEVICE_TYPE" /> 連結。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -8132,6 +8134,7 @@
 <translation id="6718849325281682232">Chrome 主題顏色已更新，更能滿足個別需求，深色和淺色模式使用起來更順暢</translation>
 <translation id="671928215901716392">鎖定螢幕</translation>
 <translation id="6721744718589119342">我們可能會透過電子郵件要求提供更多資訊，或告知最新消息</translation>
+<translation id="6721770155320398589">充電上限</translation>
 <translation id="6721972322305477112">檔案(&amp;F)</translation>
 <translation id="672208878794563299">這個網站下次會再詢問你。</translation>
 <translation id="6722744767592605627">你可以復原 <ph name="EMAIL" />，但系統將刪除本機資料。</translation>
@@ -8149,6 +8152,7 @@
 <translation id="6729192290958770680">請輸入你的使用者名稱</translation>
 <translation id="6729280095610283088">明亮的北極光照射在森林上空。</translation>
 <translation id="6729493062119577923">共用分頁群組活動</translation>
+<translation id="6730744976532805323">與 Gemini 分享目前分頁，即使切換分頁也一樣</translation>
 <translation id="6731320427842222405">這可能需要幾分鐘的時間</translation>
 <translation id="6732956960067639542">請改為開啟新的 Chrome 瀏覽器工作階段。</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID：<ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -8587,6 +8591,7 @@
 <translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">全新的手勢瀏覽功能正式登場</translation>
 <translation id="7025190659207909717">行動數據服務管理</translation>
+<translation id="7025575154794296384">警告</translation>
 <translation id="7025895441903756761">安全性與隱私權</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{在無痕視窗中開啟所有網址(&amp;I)}=1{在無痕視窗中開啟(&amp;I)}other{在無痕視窗中開啟所有 ({COUNT} 個) 網址(&amp;I)}}</translation>
 <translation id="7027432471322992835">停用觸控板</translation>
@@ -8713,6 +8718,7 @@
 <translation id="7125148293026877011">刪除 Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /> 鍵</translation>
 <translation id="7125932261198019860">確認印表機已連上 Chromebook 使用的 Wi-Fi 網路，或使用 USB 傳輸線。<ph name="LINK_BEGIN" />進一步瞭解相容性<ph name="LINK_END" /></translation>
+<translation id="7127286300357471051">選擇與 Gemini 分享目前分頁時，分頁的完整內容和網址都會傳送給 Google。</translation>
 <translation id="7127980134843952133">下載記錄</translation>
 <translation id="7128151990937044829">封鎖通知時，在網址列上顯示圖示</translation>
 <translation id="7130438335435247835">存取點名稱 (APN)</translation>
@@ -8901,6 +8907,7 @@
 <translation id="7269229526547981029">這個設定檔是由 <ph name="PROFILE_MANAGER" /> 管理，<ph name="ACCOUNT_MANAGER" /> 要求必須為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶設定新的設定檔</translation>
 <translation id="7269736181983384521">鄰近分享功能數據用量</translation>
 <translation id="7271278495464744706">啟用詳細說明</translation>
+<translation id="7272299278407797215">取代舊群組</translation>
 <translation id="7272674038937250585">沒有任何說明</translation>
 <translation id="7273110280511444812">最後附加日期為 <ph name="DATE" /></translation>
 <translation id="7273894023751806510">一律禁止 <ph name="HOST" /> 控制 MIDI 裝置及重設程式</translation>
@@ -9004,6 +9011,7 @@
 <translation id="7343372807593926528">請先說明問題再傳送意見回饋。</translation>
 <translation id="7344585835349671209">管理裝置上的 HTTPS/SSL 憑證</translation>
 <translation id="7345706641791090287">確認你的密碼</translation>
+<translation id="7345713233326828297">你先前已從這個資料夾建立群組。</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7347751611463936647">如要使用這個擴充功能，請輸入「<ph name="EXTENSION_KEYWORD" />」，然後按 TAB 鍵，接著再輸入你的指令或搜尋項目。</translation>
 <translation id="7347943691222276892">按一下即可離開「<ph name="SUBPAGE_TITLE" />」。</translation>
@@ -9359,6 +9367,7 @@
 <translation id="7585490016012953607">備援密碼：最多可暫時儲存 3 個月</translation>
 <translation id="7586498138629385861">在 Chrome 應用程式開啟的狀態下保持 Chrome 繼續執行。</translation>
 <translation id="7587806318633605613">建議字詞記錄</translation>
+<translation id="7588381637439911806">建立新群組</translation>
 <translation id="7589448773774086276">使用目前分頁建立新的分割檢視畫面</translation>
 <translation id="7589461650300748890">哎唷，請注意！</translation>
 <translation id="7590883480672980941">輸入法設定</translation>
@@ -9727,7 +9736,6 @@
 <translation id="7830276128493844263">系統設定中的定位服務為關閉狀態</translation>
 <translation id="7830833461614351956">要將 <ph name="NUM_OF_FILES" /> 個檔案複製到「<ph name="CLOUD_PROVIDER" />」再開啟嗎？</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
-<translation id="7833184285837312660">協助我變更</translation>
 <translation id="7833720883933317473">你所儲存的自訂字詞會顯示在這裡</translation>
 <translation id="7834832693620032149">如要分享音訊，請改為分享分頁或視窗</translation>
 <translation id="7836577093182643605">這份主題封鎖清單列出了你不希望與其他網站分享的主題</translation>
@@ -11211,7 +11219,6 @@
 <translation id="8838770651474809439">漢堡</translation>
 <translation id="8838841425230629509">將群組從書籤列上取消固定</translation>
 <translation id="883924185304953854">以圖搜尋</translation>
-<translation id="8841786407272321022">密碼只會儲存在這部裝置上。如要將新密碼儲存到 Google 帳戶，請更新 Google Play 服務。</translation>
 <translation id="8841843049738266382">讀取及變更列入許可清單的使用者</translation>
 <translation id="8841884135319684422">結束工作</translation>
 <translation id="8842594465773264717">刪除這個指紋</translation>
@@ -11252,7 +11259,6 @@
 <translation id="8868838761037459823">行動數據詳細資料</translation>
 <translation id="8870413625673593573">最近關閉的分頁</translation>
 <translation id="8871043459130124414">只會在你點選擴充功能後執行</translation>
-<translation id="8871126140396172266"><ph name="WINDOW_TITLE" /> - 正在與 Gemini 分享這個頁面</translation>
 <translation id="8871551568777368300">已由管理員固定</translation>
 <translation id="8871696467337989339">你正在使用不受支援的命令列標幟：<ph name="BAD_FLAG" />。這可能會危及穩定性與安全性。</translation>
 <translation id="8871974300055371298">內容設定</translation>
@@ -11351,6 +11357,7 @@
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{正在存取 USB 裝置的擴充功能：<ph name="EXTENSION1" />}=2{正在存取裝置的擴充功能：<ph name="EXTENSION1" />、<ph name="EXTENSION2" />}other{正在存取裝置的擴充功能：<ph name="EXTENSION1" />、<ph name="EXTENSION2" />和另外 {3} 個}}</translation>
 <translation id="8934732568177537184">繼續</translation>
 <translation id="8938800817013097409">USB-C 裝置 (背面右側連接埠)</translation>
+<translation id="8940056662913003694">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> 天前用過}=1{<ph name="TIME_COUNT" /> 天前用過}=2{<ph name="TIME_COUNT" /> 週前用過}other{<ph name="TIME_COUNT" /> 週前用過}}</translation>
 <translation id="8940081510938872932">目前電腦過於繁忙，請稍後再試。</translation>
 <translation id="8940888110818450052">登入選項</translation>
 <translation id="8941173171815156065">撤銷「<ph name="PERMISSION" />」權限</translation>

@@ -299,7 +299,6 @@
 <translation id="2120553909046681540">మీ సంస్థ, ప్రైవేట్ బ్రౌజింగ్‌ను ఆఫ్ చేసింది.</translation>
 <translation id="2122754583996902531">మీ బ్రౌజర్ మేనేజ్ చేయబడుతుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">మీ సంస్థకు సంబంధించిన చాట్‌లు, మా మోడల్స్‌ను మెరుగుపరచడానికి ఉపయోగించబడవు. Gemini, వ్యక్తుల గురించి సహా, తప్పుడు సమాచారాన్ని డిస్‌ప్లే చేయవచ్చు, కాబట్టి దాన్ని ఒకటికి రెండుసార్లు డబుల్-చెక్ చేయండి. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
-<translation id="2126034128616392756">కింది పాస్‌వర్డ్‌లు Google Password Managerకు దిగుమతి చేయబడలేదు, ఎందుకంటే అవి ఆవశ్యకతలకు అనుగుణంగా లేవు.</translation>
 <translation id="2139867232736819575">మీరు కాపీ చేసిన వచనం కోసం వెతకండి</translation>
 <translation id="2147127444698817042">iPhoneలో మాత్రమే అందుబాటులో ఉంది</translation>
 <translation id="2148799636999124959">సేవ్ చేసిన మీ పాస్‌వర్డ్‌లతో సైట్‌లు, యాప్‌లకు త్వరగా సైన్ ఇన్ చేయండి.</translation>
@@ -532,6 +531,7 @@
 <translation id="3059270601560379555">కొత్త సెర్చ్</translation>
 <translation id="3064547930554042309">డౌన్‌లోడ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="3072279342064724558">పాస్‌వర్డ్ ఇప్పటికే ఉంది</translation>
+<translation id="3073258549280822127">పని చేయదు</translation>
 <translation id="3073633853887034268">అర్థమైంది</translation>
 <translation id="3076846064362030967">మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు. మీరు సైన్ ఇన్ చేసినప్పుడు, <ph name="BEGIN_LINK" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. మీరు వాటిని ఎప్పుడైనా తొలగించవచ్చు.
 
@@ -556,6 +556,7 @@
 <translation id="3140825265190223781">సేవ్ చేసిన పాస్‌వర్డ్‌లు, పాస్-కీలు</translation>
 <translation id="3143515551205905069">సింక్‌ను రద్దు చేయండి</translation>
 <translation id="3144126448740580210">పూర్తయింది</translation>
+<translation id="3148052723910099040">సాధారణ ట్యాబ్ గ్రిడ్</translation>
 <translation id="3157387275655328056">పఠన లిస్ట్‌కు జోడించండి</translation>
 <translation id="315778507796115851">హిస్టరీ</translation>
 <translation id="31652791196570636">విస్మరించండి</translation>
@@ -588,6 +589,7 @@
 <translation id="3277021493514034324">సైట్ అడ్రస్‌ కాపీ చేయబడింది</translation>
 <translation id="3280562213547448728">వాయిస్ సెర్చ్</translation>
 <translation id="3289505634533552500">వాయిస్ సెర్చ్</translation>
+<translation id="3295904109373959849">ట్యాబ్ గ్రూప్‌ల గ్రిడ్</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, కొత్త యాక్టివిటీ</translation>
 <translation id="3305294846493618482">మరిన్ని</translation>
 <translation id="3311748811247479259">ఆఫ్ చేయబడి ఉంది</translation>
@@ -928,6 +930,7 @@
 <translation id="4682496302933121474">పేజీని అనువదించాలా?</translation>
 <translation id="4682686630151240767">1. iPhone సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="4691892551491778176">మీరు ఈ ఫీచర్‌ను ఉపయోగించినప్పుడు, పేజీ కంటెంట్ ఇంకా URLలు Googleకు పంపబడతాయి, కానీ జెనరేటివ్ AI మోడల్స్‌ను మెరుగుపరచడానికి ఉపయోగించబడవు. దీన్ని మీరు సెట్టింగ్‌లలో ఎప్పుడైనా ఆఫ్ చేయవచ్చు.</translation>
+<translation id="4697240968720007067">ఒకే ట్యాప్‌తో Googleకు చెందిన అత్యుత్తమ యాప్‌లను పొందండి</translation>
 <translation id="4699172675775169585">కాష్ చేసిన చిత్రాలు మరియు ఫైళ్లు</translation>
 <translation id="4709570498586527752">వేర్వేరు సమయాల్లో మీ కోసం అత్యంత సంబంధిత ఫీచర్‌లు</translation>
 <translation id="4717844083556844785">ప్రస్తుత వెబ్‌పేజీ అజ్ఞాత మోడ్‌లో ఉంది</translation>
@@ -982,6 +985,7 @@
 <translation id="4876665338492917862"><ph name="LAST_OPENING_DATE" /> తేదీన తెరవబడింది</translation>
 <translation id="4877597489778380935">నాకు తర్వాత గుర్తు చేయండి</translation>
 <translation id="4881695831933465202">తెరువు</translation>
+<translation id="4883766694719903356">అజ్ఞాత ట్యాబ్ గ్రిడ్</translation>
 <translation id="488785315393301722">వివరాలను చూపించు</translation>
 <translation id="4889521386764567563">ప్రస్తుత ప్రొఫైల్</translation>
 <translation id="4893713555726946316">'పేజీలో కనుగొనండి'ని దాచండి</translation>
@@ -1231,6 +1235,7 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">సింకింగ్…</translation>
+<translation id="5838430324585198889">Google యాప్‌లతో మీ iPad కోసం మరిన్ని ఫీచర్‌లను అన్‌లాక్ చేయండి</translation>
 <translation id="583923961930319521">మీ పరికరాలన్నింటిలో పాస్‌వర్డ్‌లను ఉపయోగించండి</translation>
 <translation id="5843013299019689749">నలుపు బ్యాక్‌గ్రౌండ్ రంగు</translation>
 <translation id="5844284118433003733">మీరు సైన్ ఇన్ చేసినప్పుడు, Google సర్వీస్‌లన్నింటిలో మిమ్మల్ని సురక్షితంగా ఉంచడం కోసం ఈ డేటా మీ Google ఖాతాకు లింక్ చేయబడుతుంది, ఉదాహరణకు సెక్యూరిటీకి సంబంధించిన ఒక సంఘటన జరిగిన తర్వాత Gmailలో రక్షణను పెంచడం జరుగుతుంది.</translation>
@@ -1342,6 +1347,7 @@
 <translation id="6234310016144827337">మీ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
 <translation id="6236952928980352967">హెచ్చరికను రీస్టోర్ చేయండి</translation>
 <translation id="623755660902014047">రీడింగ్ మోడ్</translation>
+<translation id="6241132809279377987">Google యాప్‌లతో మీ iPhone కోసం మరిన్ని ఫీచర్‌లను అన్‌లాక్ చేయండి</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6251835855431997163"><ph name="VALUE" />‌ను ఆటోఫిల్ చేయండి</translation>
 <translation id="6254066287920239840">లింక్‌లను బ్రౌజర్‌కు బదులుగా యాప్‌లో తెరవండి.</translation>
@@ -1965,6 +1971,7 @@
 <translation id="8605219856220328675">ట్యాబ్‌ను మూసివేయండి.</translation>
 <translation id="8609743333007776886">బుక్‌మార్క్‌లకు ${url}ను జోడించండి</translation>
 <translation id="8611922158252451755">లింక్ ఉన్న ఎవరైనా అన్ని ట్యాబ్‌లను ఎడిట్ చేయగలరు, కాబట్టి షేర్ చేసేటప్పుడు శ్రద్ధ వహించండి. లింక్ గడువు 48 గంటలలో ముగుస్తుంది.</translation>
+<translation id="8614671330774943747">ట్యాబ్ స్విచర్‌కు వెళ్లండి</translation>
 <translation id="8620640915598389714">ఎడిట్</translation>
 <translation id="8625706492572042370">మొదటి స్క్రీన్‌ను ఎడిట్ చేయండి</translation>
 <translation id="8631370184731241854">లాక్ చేసిన అజ్ఞాత ట్యాబ్‌లు</translation>
@@ -2031,6 +2038,7 @@
 <translation id="8820817407110198400">బుక్‌మార్క్‌లు</translation>
 <translation id="8822421075653507124">ఈ పరికరాన్ని సురక్షితంగా వినియోగించవచ్చని నిర్ధారించుకోవడానికి, దాని ఆపరేటింగ్ సిస్టమ్, బ్రౌజర్, సెట్టింగ్‌ల గురించిన సమాచారాన్ని, పరికరంలో ఏ సాఫ్ట్‌వేర్ ఇన్‌స్టాల్ చేసి ఉంది అనే వాటిని మీ సంస్థ తెలుసుకోవాల్సి రావచ్చు.</translation>
 <translation id="882557203579758546">పేజీలో కనుగొనండి…</translation>
+<translation id="8829809207373502270">ఈ పాస్-కీ ఇకపై పని చేయదు. అది <ph name="WEBSITE" /> నుండి తొలగించబడింది, అలాగే త్వరలో ఇక్కడి నుండి కూడా తొలగించబడుతుంది. <ph name="BEGIN_LINK" />పాస్-కీల సమాచారం<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">ఇన్‌యాక్టివ్ ట్యాబ్‌లన్నింటినీ మూసివేయండి</translation>
 <translation id="8837654851594567190">పబ్లిషర్ ఆధారంగా క్రమపద్ధతిలో అమర్చండి</translation>
 <translation id="8840513115188359703">మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు.</translation>

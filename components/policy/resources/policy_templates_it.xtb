@@ -538,6 +538,18 @@ Se impostata su ChiediInUnaScheda, quando l'autenticazione dell'utente scade, ap
 Se la policy è impostata su True, tutti i link vengono aperti per impostazione predefinita nel browser Chrome.
 Se la policy non viene configurata, i link vengono aperti per impostazione predefinita nelle app per Android per gli utenti gestiti e nel browser per i consumatori.</translation>
 <translation id="1402227992519954892">Attiva i report sulle informazioni relative alle app del dispositivo</translation>
+<translation id="1402798007140502418">Questa policy indica ai browser che devono eseguire controlli aggiuntivi per le estensioni, ad esempio verificare se un'estensione appartiene a una categoria bloccata dall'amministratore.
+
+Questa policy verrà automaticamente attivata se sono configurate regole in <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e disattivata in caso contrario.
+
+Se questa policy è attiva, <ph name="PRODUCT_NAME" /> deve consultare il servizio cloud per determinare se un'estensione deve essere bloccata.
+Questo controllo delle policy viene eseguito per le nuove installazioni e su tutte le estensioni attualmente installate, sia all'avvio sia periodicamente.
+
+Se questa policy è disattivata, <ph name="PRODUCT_NAME" /> non deve eseguire controlli aggiuntivi per determinare se un'estensione deve essere bloccata in base alle regole aziendali definite in <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Se l'estensione non è consentita, <ph name="PRODUCT_NAME" /> bloccherà l'installazione. <ph name="PRODUCT_NAME" /> disattiverà le estensioni già installate.
+
+Le policy di Chrome avranno la precedenza su questa policy, ad esempio se l'estensione si trova in <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> o <ph name="EXTENSION_INSTALL_FORCED_POLICY_NAME" />.</translation>
 <translation id="1405444733221330570">Attiva Orca</translation>
 <translation id="1407977345632185991">Non consentire Crea temi.</translation>
 <translation id="141279920573530952">La configurazione della policy consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione ad accedere a tutte le porte seriali disponibili.
@@ -8328,6 +8340,7 @@ Le modifiche alla policy vengono applicate solo mentre ARC non è in esecuzione,
       Questa policy non ha effetto a meno che la policy <ph name="ACCESS_CODE_CAST_ENABLED_POLICY_NAME" /> non venga attivata.</translation>
 <translation id="6598235178374410284">Immagine avatar utente</translation>
 <translation id="6600377630856879433">Consenti acquisizione schede e finestre in base a queste origini</translation>
+<translation id="6601216729409808032">Attiva controlli aggiuntivi delle policy per il cloud per consentire/bloccare l'installazione di estensioni.</translation>
 <translation id="6603004149426829878">Consente di inviare sempre al server i segnali relativi alla posizione disponibili durante le operazioni per stabilire il fuso orario</translation>
 <translation id="6604049565198492174">La configurazione della policy consente di forzare l'applicazione della configurazione di rete per utente su ogni dispositivo <ph name="PRODUCT_NAME" />. La configurazione di rete è una stringa in formato JSON come definita nel formato Open Network Configuration.</translation>
 <translation id="660567106648774919">Questa policy è deprecata. Utilizza la policy <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
@@ -10570,6 +10583,7 @@ Per una descrizione dettagliata di tutti i valori di gestione, consulta la sezio
 <translation id="8250048892729838843">Questa policy è stata ritirata. Se la policy viene attivata o se non viene configurata, il dispositivo potrà ricevere i controlli di reporting granulare.
       Se viene disattivata, i dispositivi registrati non riceveranno i controlli di reporting granulare.</translation>
 <translation id="82530263956734297">ID delle estensioni da escludere dalla lista bloccata</translation>
+<translation id="8254749125469750814">Non convalidare se un'estensione può essere installata o meno con un servizio cloud.</translation>
 <translation id="8256006033157034334">Questa policy è deprecata e non è supportata. Utilizza la policy <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Controlla il nome account visualizzato da <ph name="PRODUCT_OS_NAME" /> nella schermata di accesso per il corrispondente account del dispositivo.
 
@@ -10850,6 +10864,7 @@ Se questa policy viene impostata su <ph name="PROVISION_MANAGED_CLIENT_CERTIFICA
           Se questa policy non viene impostata, inizialmente la tastiera virtuale di accessibilità è disattivata, ma l'utente può attivarla in qualsiasi momento usando le impostazioni di accessibilità.
 
           Questa policy non influisce sull'attivazione o meno della tastiera virtuale touch. Ad esempio, la tastiera virtuale touch viene comunque visualizzata sui tablet anche se la policy viene impostata su False. Utilizza la policy <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> per controllare il comportamento della tastiera virtuale touch.</translation>
+<translation id="8409698803092210478">Convalida se un'estensione può essere installata o meno con un servizio cloud.</translation>
 <translation id="8410477879938914253">La policy viene applicata soltanto alle sessioni Ospite gestite.
       Se la policy viene impostata su True o se non viene configurata, viene visualizzata una finestra di dialogo che chiede all'utente di confermare o annullare la disconnessione quando l'ultima finestra viene chiusa.
       Se viene impostata su False, la finestra di dialogo non viene visualizzata e la disconnessione automatica viene disattivata dopo la chiusura dell'ultima finestra.</translation>
