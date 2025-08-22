@@ -54,7 +54,8 @@
     "strike keys": "import constraints",
     "disambiguation order": [ "Name", "Country" ],
     "syncable": false,
-    "experiment feature": "AutofillAiNationalIdCard"
+    "experiment feature": "AutofillAiNationalIdCard",
+    "excluded geo-ips": [ "IN" ]
   },
   {
     "name": "Known Traveler Number",

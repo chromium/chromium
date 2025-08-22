@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -100,6 +101,20 @@ TEST(AutofillEntityTypeTest, Disabled) {
   EXPECT_TRUE(EntityType(kPassport).enabled());
   EXPECT_TRUE(EntityType(kDriversLicense).enabled());
   EXPECT_TRUE(EntityType(kVehicle).enabled());
+}
+
+// Tests that specifying an "excluded geo-ip" disabled the entity in countries
+// with that geo ip.
+TEST(AutofillEntityTypeTest, EnabledWithCountryCode) {
+  EntityType e = EntityType(EntityTypeName::kNationalIdCard);
+  EXPECT_FALSE(e.enabled());
+  EXPECT_FALSE(e.enabled(GeoIpCountryCode("US")));
+
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiNationalIdCard};
+  EXPECT_TRUE(e.enabled(GeoIpCountryCode("US")));
+  EXPECT_TRUE(e.enabled(GeoIpCountryCode("DE")));
+  EXPECT_FALSE(e.enabled(GeoIpCountryCode("IN")));
 }
 
 TEST(AutofillEntityTypeTest, EntityGetNameForI18n) {
