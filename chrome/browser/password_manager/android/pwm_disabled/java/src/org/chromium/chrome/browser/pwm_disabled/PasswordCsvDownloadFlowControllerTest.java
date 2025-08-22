@@ -46,7 +46,7 @@ import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -76,6 +76,8 @@ import java.util.List;
         shadows = {ShadowToast.class})
 @DoNotBatch(reason = "The ReauthenticationManager setup should not leak between tests.")
 public class PasswordCsvDownloadFlowControllerTest {
+    @Rule public PausedExecutorTestRule mPausedExecutorTestRule = new PausedExecutorTestRule();
+
     private static final String TEST_FILE_DATA =
             "name,url,username,password,note\n"
                     + "example.com,https://example.com/,Someone,Secret,\"Note Line 1\n"
@@ -270,7 +272,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         // Return the result of the create document intent (the file name).
         shadowActivity.receiveResult(
                 startedIntent, RESULT_OK, new Intent().setData(Uri.fromFile(destinationFile)));
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        mPausedExecutorTestRule.runAllBackgroundAndUi();
 
         assertFalse(exportDialog.isShowing());
 
@@ -289,7 +291,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         errorAlertDialog
                 .getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
                 .performClick();
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        mPausedExecutorTestRule.runAllBackgroundAndUi();
 
         // The source file should not have been deleted, because the write to the destination
         // file didn't complete.
@@ -337,7 +339,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         // Return the result of the create document intent (the file name).
         shadowActivity.receiveResult(
                 startedIntent, RESULT_OK, new Intent().setData(Uri.fromFile(destinationFile)));
-        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        mPausedExecutorTestRule.runAllBackgroundAndUi();
 
         assertFalse(dialog.isShowing());
 

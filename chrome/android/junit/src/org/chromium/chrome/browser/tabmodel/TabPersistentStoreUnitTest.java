@@ -38,9 +38,10 @@ import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
-import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -72,6 +73,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class TabPersistentStoreUnitTest {
+    @Rule public PausedExecutorTestRule mPausedExecutorTestRule = new PausedExecutorTestRule();
+
     private static final @TabId int RESTORE_TAB_ID_1 = 31;
     private static final @TabId int RESTORE_TAB_ID_2 = 32;
     private static final @TabId int RESTORE_TAB_ID_3 = 33;
@@ -138,8 +141,8 @@ public class TabPersistentStoreUnitTest {
             SequencedTaskRunner runner = mPersistentStore.getTaskRunnerForTests();
             if (!mockingDetails(runner).isMock()) {
                 runner.execute(() -> flushed.set(true));
-                BaseRobolectricTestRule.runAllBackgroundAndUi();
-                assert flushed.get();
+                mPausedExecutorTestRule.runAllBackgroundAndUi();
+                CriteriaHelper.pollUiThreadForJUnit(flushed::get);
             }
         }
     }
