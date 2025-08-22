@@ -332,6 +332,10 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_secondary_list_baseline</item>
     </style>
 
+    <style name="TextAppearance.ListMenuItem.Subtitle" parent="TextAppearance.TextSmall">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
     <!-- Error Text Styles -->
     <style name="TextAppearance.ErrorCaption" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_error</item>

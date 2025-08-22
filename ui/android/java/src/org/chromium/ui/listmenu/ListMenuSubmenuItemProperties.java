@@ -6,6 +6,7 @@ package org.chromium.ui.listmenu;
 
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
@@ -26,6 +27,12 @@ public class ListMenuSubmenuItemProperties {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
-        TITLE, START_ICON_BITMAP, CLICK_LISTENER, ON_HOVER, ENABLED, SUBMENU_ITEMS
+        TITLE,
+        START_ICON_BITMAP,
+        CLICK_LISTENER,
+        ON_HOVER,
+        ENABLED,
+        SUBMENU_ITEMS,
+        IS_TEXT_ELLIPSIZED_AT_END
     };
 }

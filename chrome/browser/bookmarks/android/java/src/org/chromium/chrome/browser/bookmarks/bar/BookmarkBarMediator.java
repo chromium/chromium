@@ -668,6 +668,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         final PropertyModel model =
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
+                        .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                         .with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, childrenList)
                         .with(ListMenuItemProperties.START_ICON_BITMAP, sFolderIconBitmap)
                         .with(ListMenuItemProperties.ENABLED, true)
@@ -681,6 +682,9 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         PropertyModel model =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
+                        .with(ListMenuItemProperties.SUBTITLE, bookmarkItem.getUrl().getSpec())
+                        .with(ListMenuItemProperties.IS_SUBTITLE_ELLIPSIZED_AT_END, true)
+                        .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                         .with(ListMenuItemProperties.ENABLED, true)
                         .with(
                                 ListMenuItemProperties.CLICK_LISTENER,

@@ -31,6 +31,11 @@ public class ListMenuItemProperties {
     public static final WritableIntPropertyKey TITLE_ID = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<CharSequence> TITLE =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<CharSequence> SUBTITLE =
+            new WritableObjectPropertyKey<>();
+    public static final ReadableBooleanPropertyKey IS_SUBTITLE_ELLIPSIZED_AT_END =
+            new ReadableBooleanPropertyKey();
+
     // A11y content description of menu item
     public static final WritableObjectPropertyKey<@Nullable String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
@@ -74,6 +79,8 @@ public class ListMenuItemProperties {
     public static final PropertyKey[] ALL_KEYS = {
         TITLE_ID,
         TITLE,
+        SUBTITLE,
+        IS_SUBTITLE_ELLIPSIZED_AT_END,
         CONTENT_DESCRIPTION,
         START_ICON_ID,
         START_ICON_DRAWABLE,

@@ -8,9 +8,10 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.core.AllOf.allOf;
@@ -167,11 +168,16 @@ public class LanguageSettingsTest {
 
         onView(withText(R.string.languages_item_option_offer_to_translate))
                 .check(matches(isDisplayed()));
+
+        // The view has to 1. have an id of menu_item_end_icon 2. have a parent with a descendant
+        // that has the text languages_item_option_offer_to_translate.
         onView(
                         allOf(
-                                hasSibling(
-                                        withText(
-                                                R.string.languages_item_option_offer_to_translate)),
+                                withParent(
+                                        hasDescendant(
+                                                withText(
+                                                        R.string
+                                                                .languages_item_option_offer_to_translate))),
                                 withId(R.id.menu_item_end_icon)))
                 .check(
                         (v, e) -> {
@@ -199,9 +205,11 @@ public class LanguageSettingsTest {
 
         onView(
                         allOf(
-                                hasSibling(
-                                        withText(
-                                                R.string.languages_item_option_offer_to_translate)),
+                                withParent(
+                                        hasDescendant(
+                                                withText(
+                                                        R.string
+                                                                .languages_item_option_offer_to_translate))),
                                 withId(R.id.menu_item_end_icon)))
                 .check(
                         (v, e) -> {
