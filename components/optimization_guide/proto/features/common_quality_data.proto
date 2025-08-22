@@ -572,7 +572,7 @@ message FormInfo {
   string form_name = 1 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 8
+// Next ID: 9
 message FormControlData {
   // The name for the field.
   string field_name = 1 [features = { field_presence: EXPLICIT }];
@@ -595,6 +595,9 @@ message FormControlData {
 
   // Whether the field is required.
   bool is_required = 7 [features = { field_presence: EXPLICIT }];
+
+  // Redaction decision for form fields.
+  RedactionDecision redaction_decision = 8 [features = { field_presence: EXPLICIT }];
 }
 
 // Represents an option in a select field. See below for example.
@@ -2043,6 +2046,17 @@ enum FormControlType {
   FORM_CONTROL_TYPE_INPUT_WEEK = 32;
 
   FORM_CONTROL_TYPE_OUTPUT = 33;
+}
+
+enum RedactionDecision {
+  // No redaction necessary for this node type.
+  REDACTION_DECISION_NO_REDACTION_NECESSARY = 0;
+
+  // Empty password inputs are not redacted.
+  REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD = 1;
+
+  // Is a password input or was in the past.
+  REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD = 2;
 }
 
 // Indicates the type of media in the media data.
