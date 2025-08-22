@@ -234,7 +234,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
     std::unique_ptr<base::FeatureList> feature_list,
     metrics::MetricsStateManager* metrics_state_manager,
     PlatformFieldTrials* platform_field_trials,
-    SafeSeedManagerBase* safe_seed_manager,
+    SafeSeedManager* safe_seed_manager,
     bool add_entropy_source_to_variations_ids,
     const EntropyProviders& entropy_providers) {
   DCHECK(feature_list);
@@ -665,7 +665,7 @@ VariationsFieldTrialCreator::GetGoogleGroupsFromPrefs() {
 CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
     const EntropyProviders& entropy_providers,
     base::FeatureList* feature_list,
-    SafeSeedManagerBase* safe_seed_manager,
+    SafeSeedManager* safe_seed_manager,
     std::unique_ptr<ClientFilterableState> client_state) {
   TRACE_EVENT0("startup", "VariationsFieldTrialCreator::CreateTrialsFromSeed");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
