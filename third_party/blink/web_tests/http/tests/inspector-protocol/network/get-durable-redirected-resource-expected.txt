@@ -1,0 +1,5 @@
+Tests that only the final redirected response is stored in DurableMessages
+Request for http://127.0.0.1:8000/inspector-protocol/network/resources/redirect1.pl
+-- Test Page.navigate() to a cross origin URL --
+Y29uc29sZS5sb2coJTIySGVsbG8lMjBmcm9tJTIwZmluYWwuanMhJTIyKSUzQiUwQQ==
+

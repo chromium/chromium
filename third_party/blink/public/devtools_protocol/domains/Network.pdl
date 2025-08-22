@@ -1107,6 +1107,10 @@ domain Network
       optional integer maxPostDataSize
       # Whether DirectSocket chunk send/receive events should be reported.
       experimental optional boolean reportDirectSocketTraffic
+      # Enable storing response bodies outside of renderer, so that these survive
+      # a cross-process navigation. Requires maxTotalBufferSize to be set.
+      # Currently defaults to false.
+      experimental optional boolean enableDurableMessages
 
   # Returns all browser cookies. Depending on the backend support, will return detailed cookie
   # information in the `cookies` field.
