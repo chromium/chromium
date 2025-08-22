@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.native_page;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.jank_tracker.JankTracker;
@@ -18,6 +18,8 @@ import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.download.home.DownloadPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
@@ -62,11 +64,12 @@ import org.chromium.ui.util.ColorUtils;
 /**
  * Creates NativePage objects to show chrome-native:// URLs using the native Android view system.
  */
+@NullMarked
 public class NativePageFactory {
     private final Activity mActivity;
     private final BottomSheetController mBottomSheetController;
     private final BrowserControlsManager mBrowserControlsManager;
-    private final Supplier<Tab> mCurrentTabSupplier;
+    private final Supplier<@Nullable Tab> mCurrentTabSupplier;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final TabModelSelector mTabModelSelector;
@@ -74,37 +77,37 @@ public class NativePageFactory {
     private final WindowAndroid mWindowAndroid;
     private final JankTracker mJankTracker;
     private final Supplier<Toolbar> mToolbarSupplier;
-    private final HomeSurfaceTracker mHomeSurfaceTracker;
+    private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
     private final StartupMetricsTracker mStartupMetricsTracker;
-    private NewTabPageCreationTracker mNewTabPageCreationTracker;
+    private @Nullable NewTabPageCreationTracker mNewTabPageCreationTracker;
 
-    private NativePageBuilder mNativePageBuilder;
-    private static NativePage sTestPage;
+    private @Nullable NativePageBuilder mNativePageBuilder;
+    private static @Nullable NativePage sTestPage;
 
     public NativePageFactory(
-            @NonNull Activity activity,
-            @NonNull BottomSheetController sheetController,
-            @NonNull BrowserControlsManager browserControlsManager,
-            @NonNull Supplier<Tab> currentTabSupplier,
-            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
-            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull JankTracker jankTracker,
-            @NonNull Supplier<Toolbar> toolbarSupplier,
+            Activity activity,
+            BottomSheetController sheetController,
+            BrowserControlsManager browserControlsManager,
+            Supplier<@Nullable Tab> currentTabSupplier,
+            Supplier<SnackbarManager> snackbarManagerSupplier,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            TabModelSelector tabModelSelector,
+            Supplier<ShareDelegate> shareDelegateSupplier,
+            WindowAndroid windowAndroid,
+            JankTracker jankTracker,
+            Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
-            @Nullable ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
-            @NonNull OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            @NonNull ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
-            @NonNull StartupMetricsTracker startupMetricsTracker) {
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            ObservableSupplier<Integer> tabStripHeightSupplier,
+            OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
+            StartupMetricsTracker startupMetricsTracker) {
         mActivity = activity;
         mBottomSheetController = sheetController;
         mBrowserControlsManager = browserControlsManager;
@@ -166,7 +169,7 @@ public class NativePageFactory {
         private final BottomSheetController mBottomSheetController;
         private final Supplier<NewTabPageCreationTracker> mNewTabPageCreationTracker;
         private final BrowserControlsManager mBrowserControlsManager;
-        private final Supplier<Tab> mCurrentTabSupplier;
+        private final Supplier<@Nullable Tab> mCurrentTabSupplier;
         private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
         private final ActivityLifecycleDispatcher mLifecycleDispatcher;
         private final TabModelSelector mTabModelSelector;
@@ -174,7 +177,7 @@ public class NativePageFactory {
         private final WindowAndroid mWindowAndroid;
         private final JankTracker mJankTracker;
         private final Supplier<Toolbar> mToolbarSupplier;
-        private final HomeSurfaceTracker mHomeSurfaceTracker;
+        private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
         private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
         private final ObservableSupplier<Integer> mTabStripHeightSupplier;
         private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
@@ -187,7 +190,7 @@ public class NativePageFactory {
                 Supplier<NewTabPageCreationTracker> newTabPageCreationTracker,
                 BottomSheetController sheetController,
                 BrowserControlsManager browserControlsManager,
-                Supplier<Tab> currentTabSupplier,
+                Supplier<@Nullable Tab> currentTabSupplier,
                 Supplier<SnackbarManager> snackbarManagerSupplier,
                 ActivityLifecycleDispatcher lifecycleDispatcher,
                 TabModelSelector tabModelSelector,
@@ -195,7 +198,7 @@ public class NativePageFactory {
                 WindowAndroid windowAndroid,
                 JankTracker jankTracker,
                 Supplier<Toolbar> toolbarSupplier,
-                HomeSurfaceTracker homeSurfaceTracker,
+                @Nullable HomeSurfaceTracker homeSurfaceTracker,
                 ObservableSupplier<TabContentManager> tabContentManagerSupplier,
                 ObservableSupplier<Integer> tabStripHeightSupplier,
                 OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
@@ -360,14 +363,18 @@ public class NativePageFactory {
      * @param pdfInfo Information of the pdf, or null if there is no associated pdf download.
      * @return A NativePage showing the specified url or null.
      */
-    public NativePage createNativePage(
-            String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo) {
+    public @Nullable NativePage createNativePage(
+            String url, @Nullable NativePage candidatePage, Tab tab, @Nullable PdfInfo pdfInfo) {
         return createNativePageForURL(url, candidatePage, tab, tab.isIncognito(), pdfInfo);
     }
 
     @VisibleForTesting
-    NativePage createNativePageForURL(
-            String url, NativePage candidatePage, Tab tab, boolean isIncognito, PdfInfo pdfInfo) {
+    @Nullable NativePage createNativePageForURL(
+            String url,
+            @Nullable NativePage candidatePage,
+            Tab tab,
+            boolean isIncognito,
+            @Nullable PdfInfo pdfInfo) {
         NativePage page;
 
         switch (NativePage.nativePageType(url, candidatePage, isIncognito, pdfInfo != null)) {
@@ -395,6 +402,7 @@ public class NativePageFactory {
                 page = getBuilder().buildManagementPage(tab);
                 break;
             case NativePageType.PDF:
+                assumeNonNull(pdfInfo);
                 page = getBuilder().buildPdfPage(tab, url, pdfInfo);
                 break;
             default:
@@ -423,7 +431,7 @@ public class NativePageFactory {
      * @param activity The current activity which owns the tab.
      * @return A NativePage showing the specified url or null.
      */
-    public static NativePage createNativePageForCustomTab(
+    public static @Nullable NativePage createNativePageForCustomTab(
             String url,
             NativePage candidatePage,
             Tab tab,
@@ -441,7 +449,12 @@ public class NativePageFactory {
         } else {
             page =
                     buildPdfPage(
-                            url, tab, pdfInfo, browserControlsManager, tabModelSelector, activity);
+                            url,
+                            tab,
+                            assumeNonNull(pdfInfo),
+                            browserControlsManager,
+                            tabModelSelector,
+                            activity);
         }
         page.updateForUrl(url);
         return page;
@@ -472,7 +485,8 @@ public class NativePageFactory {
         private final Tab mTab;
         private final BrowserControlsStateProvider mBrowserControlsStateProvider;
         private final TabModelSelector mTabModelSelector;
-        private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+        private final @Nullable ObservableSupplier<EdgeToEdgeController>
+                mEdgeToEdgeControllerSupplier;
 
         public TabShim(
                 Tab tab,

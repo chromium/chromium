@@ -119,7 +119,7 @@ public class DownloadManagerUiConfig {
             mUseGenericViewTypes = SysUtils.isLowEndDevice();
         }
 
-        public Builder setOtrProfileId(OtrProfileId otrProfileId) {
+        public Builder setOtrProfileId(@Nullable OtrProfileId otrProfileId) {
             mOtrProfileId = otrProfileId;
             return this;
         }

@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
@@ -38,8 +39,8 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
     public DownloadPage(
             Activity activity,
             SnackbarManager snackbarManager,
-            ModalDialogManager modalDialogManager,
-            OtrProfileId otrProfileId,
+            @Nullable ModalDialogManager modalDialogManager,
+            @Nullable OtrProfileId otrProfileId,
             NativePageHost host) {
         super(host);
 
