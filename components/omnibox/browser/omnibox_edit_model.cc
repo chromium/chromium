@@ -2113,6 +2113,7 @@ void OmniboxEditModel::OnPopupResultChanged() {
   const AutocompleteResult& result = autocomplete_controller()->result();
   size_t old_selected_line = GetPopupSelection().line;
 
+  OmniboxPopupSelection::LineState old_selected_state = popup_selection_.state;
   if (result.default_match()) {
     OmniboxPopupSelection selection = GetPopupSelection();
     selection.line = 0;
@@ -2131,6 +2132,12 @@ void OmniboxEditModel::OnPopupResultChanged() {
   } else {
     popup_selection_ = OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
                                              OmniboxPopupSelection::NORMAL);
+  }
+  // If the AI button was previously focused and the selection state changed,
+  // remove the focus ring from the AI mode button.
+  if (old_selected_state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM &&
+      popup_selection_.state != OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
+    view_->ApplyFocusRingToAimButton(false);
   }
   popup_view_->UpdatePopupAppearance();
 }
