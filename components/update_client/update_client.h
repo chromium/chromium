@@ -156,13 +156,7 @@ enum class ComponentState {
   kUpdated,      // An update was successfully applied.
   kUpToDate,     // The component was already up to date.
   kUpdateError,  // The service encountered an error.
-  kRun,          // The component is running a server-specified action.
-
-  // TODO(crbug.com/353249967): These states are unsent by the engine and can
-  // be removed, along with translations and mappings associated with them.
-  kDownloadingDiff,
-  kUpdatingDiff,
-  kLastStatus
+  kRun           // The component is running a server-specified action.
 };
 
 // Defines an interface for a generic CRX installer.

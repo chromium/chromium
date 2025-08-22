@@ -122,14 +122,11 @@ void UpdateService::OnCrxStateChange(UpdateFoundCallback update_found_callback,
       break;
     case update_client::ComponentState::kNew:
     case update_client::ComponentState::kChecking:
-    case update_client::ComponentState::kDownloadingDiff:
     case update_client::ComponentState::kDownloading:
-    case update_client::ComponentState::kUpdatingDiff:
     case update_client::ComponentState::kUpdating:
     case update_client::ComponentState::kUpdated:
     case update_client::ComponentState::kUpdateError:
     case update_client::ComponentState::kRun:
-    case update_client::ComponentState::kLastStatus:
       break;
   }
 

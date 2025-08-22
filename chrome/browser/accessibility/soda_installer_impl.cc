@@ -159,9 +159,7 @@ void SodaInstallerImpl::OnEvent(const update_client::CrxUpdateItem& item) {
   switch (item.state) {
     case update_client::ComponentState::kCanUpdate:
     case update_client::ComponentState::kDownloading:
-    case update_client::ComponentState::kDownloadingDiff:
     case update_client::ComponentState::kUpdating:
-    case update_client::ComponentState::kUpdatingDiff:
       downloading_components_[language_code] = item;
 
       if (language_code == LanguageCode::kNone &&
@@ -200,7 +198,6 @@ void SodaInstallerImpl::OnEvent(const update_client::CrxUpdateItem& item) {
     case update_client::ComponentState::kChecking:
     case update_client::ComponentState::kUpdated:
     case update_client::ComponentState::kUpToDate:
-    case update_client::ComponentState::kLastStatus:
     case update_client::ComponentState::kRun:
       // Do nothing.
       break;

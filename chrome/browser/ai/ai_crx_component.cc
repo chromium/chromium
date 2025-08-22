@@ -18,8 +18,6 @@ bool IsDownloadEvent(const component_updater::CrxUpdateItem& item) {
     case update_client::ComponentState::kDownloading:
     case update_client::ComponentState::kUpdating:
     case update_client::ComponentState::kUpToDate:
-    case update_client::ComponentState::kDownloadingDiff:
-    case update_client::ComponentState::kUpdatingDiff:
       return item.downloaded_bytes >= 0 && item.total_bytes >= 0;
     case update_client::ComponentState::kNew:
     case update_client::ComponentState::kChecking:
@@ -27,7 +25,6 @@ bool IsDownloadEvent(const component_updater::CrxUpdateItem& item) {
     case update_client::ComponentState::kUpdated:
     case update_client::ComponentState::kUpdateError:
     case update_client::ComponentState::kRun:
-    case update_client::ComponentState::kLastStatus:
       return false;
   }
 }
@@ -45,9 +42,6 @@ bool IsAlreadyInstalled(const component_updater::CrxUpdateItem& item) {
     case update_client::ComponentState::kUpdating:
     case update_client::ComponentState::kUpdateError:
     case update_client::ComponentState::kRun:
-    case update_client::ComponentState::kDownloadingDiff:
-    case update_client::ComponentState::kUpdatingDiff:
-    case update_client::ComponentState::kLastStatus:
       return false;
   }
 }

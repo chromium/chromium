@@ -504,14 +504,12 @@ UpdateService::UpdateState::State ToUpdateState(
       return UpdateService::UpdateState::State::kCheckingForUpdates;
 
     case update_client::ComponentState::kDownloading:
-    case update_client::ComponentState::kDownloadingDiff:
       return UpdateService::UpdateState::State::kDownloading;
 
     case update_client::ComponentState::kCanUpdate:
       return UpdateService::UpdateState::State::kUpdateAvailable;
 
     case update_client::ComponentState::kUpdating:
-    case update_client::ComponentState::kUpdatingDiff:
       return UpdateService::UpdateState::State::kInstalling;
 
     case update_client::ComponentState::kUpdated:
@@ -524,7 +522,6 @@ UpdateService::UpdateState::State ToUpdateState(
       return UpdateService::UpdateState::State::kUpdateError;
 
     case update_client::ComponentState::kRun:
-    case update_client::ComponentState::kLastStatus:
       NOTREACHED();
   }
 }

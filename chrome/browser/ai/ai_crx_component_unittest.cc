@@ -90,7 +90,6 @@ TEST_F(AICrxComponentTest, DoesntReceiveUpdatesForNonDownloadEvents) {
            ComponentState::kUpdated,
            ComponentState::kUpdateError,
            ComponentState::kRun,
-           ComponentState::kLastStatus,
        }) {
     SendUpdate(component, state, 10);
     monitor.ExpectNoUpdate();

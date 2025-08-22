@@ -6964,14 +6964,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COMPONENTS_SVC_STATUS_UPDATE" desc="Service Status">
         Update
       </message>
-      <message name="IDS_COMPONENTS_SVC_STATUS_DNL_DIFF" desc="Service Status">
-        Downloading diff
-      </message>
       <message name="IDS_COMPONENTS_SVC_STATUS_DNL" desc="Service Status">
         Downloading
-      </message>
-      <message name="IDS_COMPONENTS_SVC_STATUS_UPDT_DIFF" desc="Service Status">
-        Updating diff
       </message>
       <message name="IDS_COMPONENTS_SVC_STATUS_UPDATING" desc="Service Status">
         Updating
