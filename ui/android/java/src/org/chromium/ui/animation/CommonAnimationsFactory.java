@@ -40,7 +40,12 @@ public class CommonAnimationsFactory {
      */
     public static Animator createFadeOutAnimation(View view) {
         ObjectAnimator fadeOut = ObjectAnimator.ofFloat(view, View.ALPHA, 1f, 0f);
-        fadeOut.addListener(onAnimationEnd(ignored -> view.setVisibility(GONE)));
+        fadeOut.addListener(
+                onAnimationEnd(
+                        ignored -> {
+                            view.setVisibility(GONE);
+                            view.setAlpha(1f);
+                        }));
         return fadeOut;
     }
 }

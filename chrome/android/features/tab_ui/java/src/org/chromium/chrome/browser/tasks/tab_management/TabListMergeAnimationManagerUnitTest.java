@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeast;
@@ -37,7 +36,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Holder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 import java.util.List;
@@ -153,16 +151,11 @@ public class TabListMergeAnimationManagerUnitTest {
         mockTargetVisibility(true);
         when(mRecyclerView.findViewHolderForAdapterPosition(1)).thenReturn(mOtherViewHolder);
 
-        PropertyModel otherModel = new PropertyModel(TabProperties.IS_HIGHLIGHTED);
-        otherModel.set(TabProperties.IS_HIGHLIGHTED, true);
-        mOtherViewHolder.model = otherModel;
-
         mAnimationManager.playAnimation(0, List.of(1), mOnAnimationEndRunnable);
         ShadowLooper.runUiThreadTasks();
 
         verify(mOtherView, atLeast(1)).setTranslationX(0f);
         verify(mOtherView, atLeast(1)).setTranslationY(0f);
-        assertFalse(otherModel.get(TabProperties.IS_HIGHLIGHTED));
 
         verify(mRecyclerView).setBlockTouchInput(false);
         verify(mRecyclerView).setSmoothScrolling(false);

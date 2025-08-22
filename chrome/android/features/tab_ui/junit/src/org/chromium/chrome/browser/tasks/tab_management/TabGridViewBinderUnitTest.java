@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabCardHighlightState;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -505,6 +506,25 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mActionButton).setOnClickListener(any());
         verify(mActionButton).setOnTouchListener(isA(OnPeripheralClickListener.class));
+    }
+
+    @Test
+    public void testBindHighlightState() {
+        mModel.set(TabProperties.HIGHLIGHT_STATE, TabCardHighlightState.NOT_HIGHLIGHTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.HIGHLIGHT_STATE);
+        verify(mViewGroup).setIsHighlighted(TabCardHighlightState.NOT_HIGHLIGHTED, false);
+
+        mModel.set(TabProperties.HIGHLIGHT_STATE, TabCardHighlightState.TO_BE_HIGHLIGHTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.HIGHLIGHT_STATE);
+        verify(mViewGroup).setIsHighlighted(TabCardHighlightState.TO_BE_HIGHLIGHTED, false);
+
+        mModel.set(TabProperties.HIGHLIGHT_STATE, TabCardHighlightState.HIGHLIGHTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.HIGHLIGHT_STATE);
+        verify(mViewGroup).setIsHighlighted(TabCardHighlightState.HIGHLIGHTED, false);
+
+        mModel.set(TabProperties.HIGHLIGHT_STATE, TabCardHighlightState.NOT_HIGHLIGHTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.HIGHLIGHT_STATE);
+        verify(mViewGroup, times(2)).setIsHighlighted(TabCardHighlightState.NOT_HIGHLIGHTED, false);
     }
 
     @Test
