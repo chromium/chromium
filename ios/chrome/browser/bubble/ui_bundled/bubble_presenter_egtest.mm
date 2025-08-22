@@ -106,7 +106,9 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH is attempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
-- (void)testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
+// TODO(crbug.com/440549642): This test is flaky.
+- (void)
+    FLAKY_testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
   if ([ChromeEarlGrey isIPadIdiom]) {
     if (@available(iOS 19.0, *)) {
       // TODO(crbug.com/427699033): Re-enable test on iOS 26.
