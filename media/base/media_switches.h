@@ -532,10 +532,6 @@ MEDIA_EXPORT extern const base::FeatureParam<double> kAudioOffloadBufferTimeMs;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioOffload);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationAcceleratedEncodeOnArm64);
-#endif
-
 #if BUILDFLAG(IS_WIN)
 // Enables D3D12 video encode accelerator taking shared image as input.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kD3D12SharedImageEncode);

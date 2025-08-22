@@ -392,13 +392,6 @@ std::vector<Microsoft::WRL::ComPtr<IMFActivate>> EnumerateHardwareEncoders(
   if (!InitializeMediaFoundation()) {
     return encoders;
   }
-#if defined(ARCH_CPU_ARM64)
-  // TODO (crbug.com/1509117): Temporarily disable video encoding on arm64
-  // until we figure out what OS reports all codecs as supported.
-  if (!base::FeatureList::IsEnabled(kMediaFoundationAcceleratedEncodeOnArm64)) {
-    return encoders;
-  }
-#endif
 
   MFTEnum2Type mftenum2_func = GetMFTEnum2Function();
   if (!mftenum2_func) {

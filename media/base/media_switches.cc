@@ -1484,12 +1484,6 @@ BASE_FEATURE(D3D12VideoEncodeAcceleratorL1T3,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-// Allow MF-accelerated video encoding.
-BASE_FEATURE(MediaFoundationAcceleratedEncodeOnArm64,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(D3D12SharedImageEncode, base::FEATURE_DISABLED_BY_DEFAULT);
 
