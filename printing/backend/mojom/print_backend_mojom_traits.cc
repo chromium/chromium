@@ -7,10 +7,7 @@
 #include <set>
 
 #include "base/containers/contains.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -130,32 +127,19 @@ bool StructTraits<printing::mojom::PaperDataView,
     Read(printing::mojom::PaperDataView data,
          printing::PrinterSemanticCapsAndDefaults::Paper* out) {
   std::string display_name;
-  std::string vendor_id;
-  gfx::Size size_um;
-  gfx::Rect printable_area_um;
-  // TODO(crbug.com/372062459): Remove debug code in this function when done.
-  static auto* const crash_key = base::debug::AllocateCrashKeyString(
-      "Bug372062459Paper", base::debug::CrashKeySize::Size64);
   if (!data.ReadDisplayName(&display_name)) {
-    base::debug::ScopedCrashKeyString scoped_crash_str(crash_key,
-                                                       "display_name");
-    base::debug::DumpWithoutCrashing();
     return false;
   }
+  std::string vendor_id;
   if (!data.ReadVendorId(&vendor_id)) {
-    base::debug::ScopedCrashKeyString scoped_crash_str(crash_key, "vendor_id");
-    base::debug::DumpWithoutCrashing();
     return false;
   }
+  gfx::Size size_um;
   if (!data.ReadSizeUm(&size_um)) {
-    base::debug::ScopedCrashKeyString scoped_crash_str(crash_key, "size_um");
-    base::debug::DumpWithoutCrashing();
     return false;
   }
+  gfx::Rect printable_area_um;
   if (!data.ReadPrintableAreaUm(&printable_area_um)) {
-    base::debug::ScopedCrashKeyString scoped_crash_str(crash_key,
-                                                       "printable_area_um");
-    base::debug::DumpWithoutCrashing();
     return false;
   }
 #if BUILDFLAG(IS_CHROMEOS)
@@ -178,10 +162,6 @@ bool StructTraits<printing::mojom::PaperDataView,
 
   // If `max_height_um` is specified, ensure it's larger than size.
   if (max_height_um > 0 && max_height_um < size_um.height()) {
-    base::debug::ScopedCrashKeyString scoped_crash_str(
-        crash_key, base::NumberToString(max_height_um) + "," +
-                       base::NumberToString(size_um.height()));
-    base::debug::DumpWithoutCrashing();
     return false;
   }
 
@@ -189,16 +169,10 @@ bool StructTraits<printing::mojom::PaperDataView,
   // bounds of the paper size.  `max_height_um` doesn't need to be checked here
   // since `printable_area_um` is always relative to `size_um`.
   if (printable_area_um.IsEmpty()) {
-    base::debug::ScopedCrashKeyString scoped_crash_str(
-        crash_key, "printable_area_um empty");
-    base::debug::DumpWithoutCrashing();
     return false;
   }
 
   if (!gfx::Rect(size_um).Contains(printable_area_um)) {
-    base::debug::ScopedCrashKeyString scoped_crash_str(
-        crash_key, size_um.ToString() + "," + printable_area_um.ToString());
-    base::debug::DumpWithoutCrashing();
     return false;
   }
 #if BUILDFLAG(IS_CHROMEOS)
@@ -355,16 +329,6 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
 
   if (HasDuplicateItems(out->user_defined_papers)) {
     DLOG(ERROR) << "Duplicate user_defined_papers detected.";
-    // TODO(crbug.com/372062459): Remove debug code when done.
-    std::string names;
-    for (const auto& user_defined_paper : out->user_defined_papers) {
-      names += user_defined_paper.display_name();
-      names += ' ';
-    }
-    static auto* const crash_key = base::debug::AllocateCrashKeyString(
-        "Bug372062459UserDefinedPaper", base::debug::CrashKeySize::Size1024);
-    base::debug::ScopedCrashKeyString scoped_crash_str(crash_key, names);
-    base::debug::DumpWithoutCrashing();
     return false;
   }
 
