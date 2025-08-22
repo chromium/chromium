@@ -47,10 +47,6 @@
 #include "mojo/buildflags.h"
 #include "mojo/core/embedder/features.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_info.h"
-#endif
-
 #ifndef EFD_ZERO_ON_WAKE
 #define EFD_ZERO_ON_WAKE O_NOFOLLOW
 #endif
@@ -901,16 +897,6 @@ bool ChannelLinux::KernelSupportsUpgradeRequirements() {
       // explicitly require a 4.x+ kernel.
       return false;
     }
-
-#if BUILDFLAG(IS_ANDROID)
-    // Finally, if running on Android it must have API version of at
-    // least 29 (Q). The reason for this was SELinux seccomp policies prior to
-    // that API version wouldn't allow moving a memfd.
-    if (base::android::android_info::sdk_int() <
-        base::android::android_info::SDK_VERSION_Q) {
-      return false;
-    }
-#endif
 
     // Do we have memfd_create support, we check by seeing if we get an
     // -ENOSYS or an -EINVAL. We also support -EPERM because of seccomp
