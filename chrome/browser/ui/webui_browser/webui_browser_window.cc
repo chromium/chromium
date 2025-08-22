@@ -67,7 +67,7 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
     : browser_(std::move(browser)) {
   location_bar_ = std::make_unique<WebUILocationBar>(browser_.get());
   web_contents_delegate_ =
-      std::make_unique<WebUIBrowserWebContentsDelegate>(browser_.get());
+      std::make_unique<WebUIBrowserWebContentsDelegate>(this);
   widget_delegate_ =
       std::make_unique<WidgetDelegate>(web_contents_delegate_.get());
   widget_ = std::make_unique<views::Widget>();
@@ -367,7 +367,9 @@ LocationBar* WebUIBrowserWindow::GetLocationBar() const {
 }
 
 void WebUIBrowserWindow::SetFocusToLocationBar(bool is_user_initiated) {
-  NOTIMPLEMENTED();
+  if (webui_browser::mojom::Page* page = GetWebUIBrowserUI()->page()) {
+    page->SetFocusToLocationBar(is_user_initiated);
+  }
 }
 
 void WebUIBrowserWindow::UpdateReloadStopState(bool is_loading, bool force) {

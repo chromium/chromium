@@ -399,6 +399,14 @@ export class SearchboxElement extends SearchboxElementBase {
     this.onSetInputText_(text);
   }
 
+  focusInput() {
+    this.$.input.focus();
+  }
+
+  selectAll() {
+    this.$.input.select();
+  }
+
   //============================================================================
   // Callbacks
   //============================================================================

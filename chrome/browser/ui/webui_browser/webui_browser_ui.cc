@@ -131,7 +131,10 @@ base::WeakPtr<WebUIBrowserUI> WebUIBrowserUI::GetWeakPtr() {
 }
 
 void WebUIBrowserUI::CreatePageHandler(
+    mojo::PendingRemote<webui_browser::mojom::Page> page,
     mojo::PendingReceiver<webui_browser::mojom::PageHandler> receiver) {
+  page_.reset();
+  page_.Bind(std::move(page));
   auto* render_frame_host = web_ui()->GetRenderFrameHost();
   WebUIBrowserPageHandler::CreateForRenderFrameHost(*render_frame_host,
                                                     std::move(receiver), this);

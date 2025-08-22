@@ -8,8 +8,9 @@ import './icons.html.js';
 import '/strings.m.js';
 import './tab_strip.js';
 import './webview.js';
-import '//resources/cr_components/searchbox/searchbox.js';
+import 'chrome://resources/cr_components/searchbox/searchbox.js';
 
+import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -25,6 +26,7 @@ import {TabStripController} from './tab_strip_controller.js';
 
 export interface WebuiBrowserAppElement {
   $: {
+    address: SearchboxElement,
     appMenuButton: HTMLElement,
     bookmarkBar: BookmarkBar,
     contentRegion: ContentRegion,
@@ -153,6 +155,8 @@ export class WebuiBrowserAppElement extends CrLitElement implements
 
   protected override firstUpdated() {
     this.bookmarkBarController_.init(this.$.bookmarkBar);
+    BrowserProxy.getInstance().callbackRouter.setFocusToLocationBar.addListener(
+        this.setFocusToLocationBar.bind(this));
   }
 
   protected onShowBookmarkBar_() {
@@ -184,6 +188,20 @@ export class WebuiBrowserAppElement extends CrLitElement implements
 
   protected onTabDragMouseMove_(e: MouseEvent) {
     this.$.tabstrip.elementDrag(e);
+  }
+
+  protected setFocusToLocationBar(isUserInitiated: boolean) {
+    this.$.address.focusInput();
+
+    // If the user initiated the selection (e.g. by pressing Ctrl-L) we want to
+    // select everything in order to make it easy to replace the URL. This is
+    // also useful for some cases where we auto-focus (e.g. about:blank set as
+    // the NTP) if they're not actively using the omnibox, which we check by
+    // looking at the focus. See OmniBoxViewViews::SetFocus() for the
+    // inspiration.
+    if (isUserInitiated || this.shadowRoot.activeElement !== this.$.address) {
+      this.$.address.selectAll();
+    }
   }
 }
 

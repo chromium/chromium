@@ -81,12 +81,15 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
     return static_cast<WebUIBrowserWindow*>(browser_->window());
   }
 
+  webui_browser::mojom::Page* page() { return page_.get(); }
+
   base::WeakPtr<WebUIBrowserUI> GetWeakPtr();
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
   // webui_browser::mojom::PageHandlerFactory:
   void CreatePageHandler(
+      mojo::PendingRemote<webui_browser::mojom::Page> page,
       mojo::PendingReceiver<webui_browser::mojom::PageHandler> receiver)
       override;
 
@@ -106,6 +109,7 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
       bookmark_bar_page_handler_;
   std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
 
+  mojo::Remote<webui_browser::mojom::Page> page_;
   mojo::Receiver<webui_browser::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
 

@@ -8,11 +8,21 @@ import "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
-// Used by the WebUI page to bootstrap communication to the browser process.
+// Used by the WebUI page to bootstrap communication to/from the browser
+// process.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
   CreatePageHandler(
-    pending_receiver<PageHandler> handler);
+      pending_remote<Page> page,
+      pending_receiver<PageHandler> handler);
+};
+
+// Requests from the browser to WebUI ui for it.
+interface Page {
+  // Requests the location box be focused. `is_user_initiated` is true if the
+  // user has asked for it explicitly (e.g. by pressing Ctrl-L) rather than this
+  // being done automatically.
+  SetFocusToLocationBar(bool is_user_initiated);
 };
 
 // Browser-side handler for requests from WebUI page.

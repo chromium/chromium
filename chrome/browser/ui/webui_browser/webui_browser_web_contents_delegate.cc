@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -13,8 +14,8 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 
 WebUIBrowserWebContentsDelegate::WebUIBrowserWebContentsDelegate(
-    Browser* browser)
-    : browser_(browser) {}
+    WebUIBrowserWindow* window)
+    : window_(window) {}
 
 WebUIBrowserWebContentsDelegate::~WebUIBrowserWebContentsDelegate() = default;
 
@@ -58,5 +59,15 @@ content::WebContents* WebUIBrowserWebContentsDelegate::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  return browser_->OpenURL(params, std::move(navigation_handle_callback));
+  return window_->browser()->OpenURL(params,
+                                     std::move(navigation_handle_callback));
 }
+
+void WebUIBrowserWebContentsDelegate::SetFocusToLocationBar() {
+  // This is called by WebContentsViewChildFrame implementations in some
+  // circumstances (e.g. about:blank), not via user action.
+  window_->SetFocusToLocationBar(/*user_initiated=*/false);
+}
+
+// TODO(webium): implement ShouldFocusLocationBarByDefault(), perhaps by
+// forwarding to the browser.
