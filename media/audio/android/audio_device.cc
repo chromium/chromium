@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/check_op.h"
@@ -16,12 +17,17 @@ namespace media::android {
 
 AudioDevice::AudioDevice(AudioDeviceId id,
                          AudioDeviceType type,
+                         std::optional<std::string> name,
                          std::optional<std::vector<int>> sample_rates)
-    : id_(id), type_(type), sample_rates_(std::move(sample_rates)) {}
+    : id_(id),
+      type_(type),
+      name_(name),
+      sample_rates_(std::move(sample_rates)) {}
 
 AudioDevice::AudioDevice(const AudioDevice& other)
     : id_(other.id_),
       type_(other.type_),
+      name_(other.name_),
       sample_rates_(other.sample_rates_),
       associated_sco_device_(
           other.associated_sco_device_
@@ -31,6 +37,7 @@ AudioDevice::AudioDevice(const AudioDevice& other)
 AudioDevice& AudioDevice::operator=(const AudioDevice& other) {
   id_ = other.id_;
   type_ = other.type_;
+  name_ = other.name_;
   sample_rates_ = other.sample_rates_;
   associated_sco_device_ =
       other.associated_sco_device_
@@ -47,6 +54,7 @@ AudioDevice::~AudioDevice() = default;
 
 AudioDevice AudioDevice::Default() {
   return AudioDevice(AudioDeviceId::Default(), AudioDeviceType::kUnknown,
+                     /*name=*/std::nullopt,
                      /*sample_rates=*/std::nullopt  // Unknown sample rates
   );
 }

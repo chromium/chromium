@@ -25,6 +25,7 @@ namespace {
 struct AudioDeviceParams {
   AudioDeviceId id;
   AudioDeviceType type;
+  std::optional<std::string> name;
   std::optional<std::vector<int>> sample_rates;
   std::optional<AudioDevice> associated_sco_device;
   bool expected_is_default;
@@ -36,7 +37,8 @@ class AudioAndroidAudioDeviceParameterizedTest
   AudioDevice CreateDevice() {
     auto& params = GetParam();
 
-    AudioDevice device(params.id, params.type, params.sample_rates);
+    AudioDevice device(params.id, params.type, params.name,
+                       params.sample_rates);
     if (params.associated_sco_device.has_value()) {
       device.SetAssociatedScoDevice(
           std::make_unique<AudioDevice>(params.associated_sco_device.value()));
@@ -84,6 +86,7 @@ std::ostream& operator<<(std::ostream& os, const AudioDeviceParams& params) {
 
 bool operator==(const AudioDevice& left, const AudioDevice& right) {
   return left.GetId() == right.GetId() && left.GetType() == right.GetType() &&
+         left.GetName() == right.GetName() &&
          left.GetSampleRates() == right.GetSampleRates() &&
          left.GetAssociatedScoDevice() == right.GetAssociatedScoDevice();
 }
@@ -140,6 +143,7 @@ INSTANTIATE_TEST_SUITE_P(
         AudioDeviceParams{
             .id = AudioDeviceId::Default(),
             .type = AudioDeviceType::kUnknown,
+            .name = std::nullopt,
             .sample_rates = std::nullopt,
             .associated_sco_device = std::nullopt,
             .expected_is_default = true,
@@ -147,6 +151,7 @@ INSTANTIATE_TEST_SUITE_P(
         AudioDeviceParams{
             .id = AudioDeviceId::NonDefault(100).value(),
             .type = AudioDeviceType::kBuiltinMic,
+            .name = std::nullopt,
             .sample_rates = std::vector<int>(),
             .associated_sco_device = std::nullopt,
             .expected_is_default = false,
@@ -154,16 +159,19 @@ INSTANTIATE_TEST_SUITE_P(
         AudioDeviceParams{
             .id = AudioDeviceId::NonDefault(200).value(),
             .type = AudioDeviceType::kBuiltinSpeaker,
+            .name = "Speaker",
             .sample_rates = std::vector<int>{1000, 2000, 3000, 4000, 5000},
             .associated_sco_device = std::nullopt,
             .expected_is_default = false,
         },
         AudioDeviceParams{.id = AudioDeviceId::NonDefault(100).value(),
                           .type = AudioDeviceType::kBluetoothA2dp,
+                          .name = "A2DP",
                           .sample_rates = std::vector<int>{32000},
                           .associated_sco_device = AudioDevice(
                               AudioDeviceId::NonDefault(200).value(),
                               AudioDeviceType::kBluetoothSco,
+                              "SCO",
                               std::vector<int>{16000}),
                           .expected_is_default = false}));
 

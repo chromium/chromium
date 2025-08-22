@@ -14,6 +14,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -253,17 +254,15 @@ std::string GetFallbackDeviceNameForType(AudioDeviceType type) {
   }
 }
 
-// Utility function used by `GetDeviceNames()` to find an A2DP/SCO device pair,
-// if present, and combine it into a single A2DP device with an associated SCO
-// device.
-void CombineBluetoothClassicDevices(
-    std::vector<std::pair<AudioDeviceId, AudioDevice>>& devices,
-    AudioDeviceNames* device_names) {
-  constexpr auto is_a2dp_predicate = [](const auto& pair) -> bool {
-    return pair.second.GetType() == AudioDeviceType::kBluetoothA2dp;
+// Utility function used by `UpdateDeviceCache()` to find an A2DP/SCO device
+// pair, if present, and combine it into a single A2DP device with an associated
+// SCO device.
+void CombineBluetoothClassicDevices(std::vector<AudioDevice>& devices) {
+  constexpr auto is_a2dp_predicate = [](const AudioDevice& device) -> bool {
+    return device.GetType() == AudioDeviceType::kBluetoothA2dp;
   };
-  constexpr auto is_sco_predicate = [](const auto& pair) -> bool {
-    return pair.second.GetType() == AudioDeviceType::kBluetoothSco;
+  constexpr auto is_sco_predicate = [](const AudioDevice& device) -> bool {
+    return device.GetType() == AudioDeviceType::kBluetoothSco;
   };
 
   // It is assumed that only up to 1 of each of these device types will be
@@ -285,11 +284,8 @@ void CombineBluetoothClassicDevices(
     return;
   }
 
-  device_names->remove_if([sco_device](AudioDeviceName& name) {
-    return AudioDeviceId::Parse(name.unique_id) == sco_device->second.GetId();
-  });
-  a2dp_device->second.SetAssociatedScoDevice(
-      std::make_unique<AudioDevice>(std::move(sco_device->second)));
+  a2dp_device->SetAssociatedScoDevice(
+      std::make_unique<AudioDevice>(*sco_device));
   devices.erase(sco_device);
 }
 
@@ -462,61 +458,24 @@ void AudioManagerAndroid::GetDeviceNames(AudioDeviceNames* device_names,
   DCHECK(device_names->empty());
   AddDefaultDevice(device_names);
 
-  std::vector<JniAudioDevice> j_devices =
-      GetJniDelegate().GetDevices(direction == AudioDeviceDirection::kInput);
+  UpdateDeviceCache(direction);
+  const DeviceCache& devices = GetDeviceCache(direction);
 
-  // This container is later converted to a `base::flat_map`, but it starts out
-  // as an `std::vector` in order to avoid the O(n) insertion time of
-  // `base::flat_map`.
-  std::vector<std::pair<AudioDeviceId, AudioDevice>> devices;
+  for (auto& pair : devices) {
+    const AudioDevice& device = pair.second;
 
-  // Populate `devices` and `device_names`.
-  for (auto& j_device : j_devices) {
-    std::optional<AudioDeviceId> device_id =
-        AudioDeviceId::NonDefault(j_device.id);
-    if (!device_id.has_value()) {
-      LOG(WARNING) << "Unexpectedly received device with default ID";
-      continue;
+    std::string device_name;
+    if (device.GetName().has_value()) {
+      device_name = device.GetName().value();
+    } else {
+      device_name = GetFallbackDeviceNameForType(device.GetType());
     }
 
-    std::optional<AudioDeviceType> device_type =
-        IntToAudioDeviceType(j_device.type);
-    if (!device_type.has_value()) {
-      LOG(WARNING) << "No device type matching integer value: "
-                   << j_device.type;
-      device_type = AudioDeviceType::kUnknown;
-    }
-
-    // For both `JniAudioDevice`s and non-default `AudioDevice`s, an empty
-    // vector of sample rates means arbitrary sample rates are supported.
-    std::vector<int> sample_rates = std::move(j_device.sample_rates);
-
-    std::string device_name = j_device.name.value_or(
-        GetFallbackDeviceNameForType(device_type.value()));
     std::string device_id_string =
-        base::NumberToString(device_id->ToAAudioDeviceId());
+        base::NumberToString(device.GetId().ToAAudioDeviceId());
+
     device_names->emplace_back(std::move(device_name),
                                std::move(device_id_string));
-
-    AudioDevice device(device_id.value(), device_type.value(),
-                       std::move(sample_rates));
-    devices.emplace_back(std::move(device_id).value(), std::move(device));
-  }
-
-  // If a Bluetooth SCO output device and a Bluetooth A2DP output device are
-  // both present, remove the SCO device from `devices` and `device_names`, and
-  // instead make it "associated" with the A2DP device.
-  if (direction == AudioDeviceDirection::kOutput) {
-    CombineBluetoothClassicDevices(devices, device_names);
-  }
-
-  switch (direction) {
-    case AudioDeviceDirection::kInput:
-      input_device_cache_ = base::flat_map(devices);
-      break;
-    case AudioDeviceDirection::kOutput:
-      output_device_cache_ = base::flat_map(devices);
-      break;
   }
 }
 
@@ -545,6 +504,60 @@ void AudioManagerAndroid::GetCommunicationDeviceNames(
     std::string device_id_string = base::NumberToString(j_device.id);
     device_names->emplace_back(std::move(j_device.name).value(),
                                std::move(device_id_string));
+  }
+}
+
+void AudioManagerAndroid::UpdateDeviceCache(AudioDeviceDirection direction) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
+  std::vector<JniAudioDevice> j_devices =
+      GetJniDelegate().GetDevices(direction == AudioDeviceDirection::kInput);
+
+  std::vector<AudioDevice> devices;
+  for (auto& j_device : j_devices) {
+    std::optional<AudioDeviceId> device_id =
+        AudioDeviceId::NonDefault(j_device.id);
+    if (!device_id.has_value()) {
+      LOG(WARNING) << "Unexpectedly received device with default ID";
+      continue;
+    }
+
+    std::optional<AudioDeviceType> device_type =
+        IntToAudioDeviceType(j_device.type);
+    if (!device_type.has_value()) {
+      LOG(WARNING) << "No device type matching integer value: "
+                   << j_device.type;
+      device_type = AudioDeviceType::kUnknown;
+    }
+
+    std::optional<std::string> device_name = std::move(j_device.name);
+
+    // For both `JniAudioDevice`s and non-default `AudioDevice`s, an empty
+    // vector of sample rates means arbitrary sample rates are supported.
+    std::vector<int> sample_rates = std::move(j_device.sample_rates);
+
+    devices.emplace_back(std::move(device_id).value(), device_type.value(),
+                         std::move(device_name), std::move(sample_rates));
+  }
+
+  // If a Bluetooth SCO output device and a Bluetooth A2DP output device are
+  // both present, remove the SCO device from `devices`, and instead make it
+  // "associated" with the A2DP device.
+  if (direction == AudioDeviceDirection::kOutput) {
+    CombineBluetoothClassicDevices(devices);
+  }
+
+  auto device_map = base::MakeFlatMap<AudioDeviceId, AudioDevice>(
+      devices, /*comp=*/{}, /*proj=*/[](const AudioDevice& device) {
+        return std::make_pair(device.GetId(), device);
+      });
+  switch (direction) {
+    case AudioDeviceDirection::kInput:
+      input_device_cache_ = device_map;
+      break;
+    case AudioDeviceDirection::kOutput:
+      output_device_cache_ = device_map;
+      break;
   }
 }
 

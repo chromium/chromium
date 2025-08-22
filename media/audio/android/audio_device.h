@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "media/audio/android/audio_device_id.h"
@@ -19,6 +21,7 @@ class MEDIA_EXPORT AudioDevice {
  public:
   AudioDevice(AudioDeviceId id,
               AudioDeviceType type,
+              std::optional<std::string> name,
               std::optional<std::vector<int>> sample_rates);
 
   AudioDevice(const AudioDevice& other);
@@ -34,6 +37,7 @@ class MEDIA_EXPORT AudioDevice {
 
   AudioDeviceId GetId() const { return id_; }
   AudioDeviceType GetType() const { return type_; }
+  std::optional<std::string_view> GetName() const { return name_; }
 
   // Returns information about the sample rates supported by the default device.
   // If equal to `std::nullopt`, the supported sample rates are unknown.
@@ -58,6 +62,7 @@ class MEDIA_EXPORT AudioDevice {
  private:
   AudioDeviceId id_;
   AudioDeviceType type_;
+  std::optional<std::string> name_;
   std::optional<std::vector<int>> sample_rates_;
 
   std::unique_ptr<const AudioDevice> associated_sco_device_;

@@ -205,6 +205,8 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
                       AudioDeviceDirection direction);
   void GetCommunicationDeviceNames(AudioDeviceNames* device_names);
 
+  void UpdateDeviceCache(AudioDeviceDirection direction);
+
   // Retrieve a mapping from device IDs to devices for the specified `direction`
   // which exclusively contains information about devices present during the
   // most recent call to `GetDeviceNames()` for the respective direction.
