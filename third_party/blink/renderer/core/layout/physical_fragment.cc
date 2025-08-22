@@ -360,11 +360,13 @@ PhysicalFragment::PhysicalFragment(FragmentBuilder* builder,
       has_out_of_flow_in_fragmentainer_subtree_(
           builder->HasOutOfFlowInFragmentainerSubtree()),
       propagated_data_((builder->sticky_descendants_ || builder->snap_areas_ ||
-                        builder->scroll_start_target_)
+                        builder->scroll_start_target_ ||
+                        builder->named_triggers_)
                            ? MakeGarbageCollected<PropagatedData>(
                                  builder->sticky_descendants_,
                                  builder->snap_areas_,
-                                 builder->scroll_start_target_)
+                                 builder->scroll_start_target_,
+                                 builder->named_triggers_)
                            : nullptr),
       break_token_(std::move(builder->break_token_)),
       oof_data_(builder->oof_positioned_descendants_.empty() &&
@@ -979,6 +981,13 @@ PhysicalAnchorQuery& PhysicalFragment::OofData::EnsureAnchorQuery() {
     anchor_query_ = MakeGarbageCollected<PhysicalAnchorQuery>();
   }
   return *anchor_query_;
+}
+
+void PhysicalFragment::PropagatedData::Trace(Visitor* visitor) const {
+  visitor->Trace(sticky_descendants);
+  visitor->Trace(snap_areas);
+  visitor->Trace(scroll_initial_target);
+  visitor->Trace(named_triggers);
 }
 
 std::ostream& operator<<(std::ostream& out, const PhysicalFragment& fragment) {

@@ -6,8 +6,10 @@
 
 #include "base/containers/contains.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/named_animation_trigger_map.h"
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -329,6 +331,7 @@ void FragmentBuilder::PropagateFromFragment(
   PropagateStickyDescendants(child);
   PropagateSnapAreas(child);
   PropagateScrollInitialTarget(child);
+  PropagateNamedTriggers(child);
 
   // Propagate info about OOF descendants if necessary. This part must be
   // skipped when adding OOF children to fragmentainers, as propagation is
@@ -1064,6 +1067,8 @@ void FragmentBuilder::Finalize() {
   is_finalized_ = true;
 #endif
 
+  CreateNamedTriggersForSelf();
+
   has_final_size_ = true;
   PropagateSizeDependentData();
 }
@@ -1096,6 +1101,46 @@ void FragmentBuilder::PropagateSizeDependentData() {
     PropagateChildAnchors(*link.fragment, link.offset);
   }
   children_with_size_dependent_propagation_.clear();
+}
+
+void FragmentBuilder::PropagateNamedTriggers(const PhysicalFragment& child) {
+  const GCedNamedAnimationTriggerMap* names_map = child.NamedTriggers();
+  if (!names_map) {
+    return;
+  }
+
+  for (const auto& entry : *names_map) {
+    EnsureNamedTriggers().Set(entry.key, entry.value);
+  }
+}
+
+void FragmentBuilder::CreateNamedTriggersForSelf() {
+  if (!node_) {
+    return;
+  }
+
+  const Element* element = DynamicTo<Element>(node_.GetDOMNode());
+  if (!element || !element->NamedTriggers()) {
+    return;
+  }
+
+  if (const CSSAnimationData* data = Style().Animations()) {
+    GCedNamedAnimationTriggerMap& named_triggers = EnsureNamedTriggers();
+    for (const auto& name : data->TimelineTriggerNameList()) {
+      if (name) {
+        AnimationTrigger* trigger = element->NamedTrigger(name);
+        DCHECK(trigger);
+        named_triggers.Set(name, trigger);
+      }
+    }
+  }
+}
+
+GCedNamedAnimationTriggerMap& FragmentBuilder::EnsureNamedTriggers() {
+  if (!named_triggers_) {
+    named_triggers_ = MakeGarbageCollected<GCedNamedAnimationTriggerMap>();
+  }
+  return *named_triggers_;
 }
 
 }  // namespace blink

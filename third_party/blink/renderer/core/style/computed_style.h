@@ -2583,6 +2583,10 @@ class ComputedStyle final : public ComputedStyleBase {
             static_cast<int>(visibility)) == static_cast<int>(visibility);
   }
 
+  // Returns whether the animation-trigger property names a trigger. The name
+  // might refer to a trigger elsewhere in the DOM.
+  bool HasAnimationTrigger() const;
+
  private:
   bool IsInlineSizeContainer() const {
     return ContainerType() & kContainerTypeInlineSize;

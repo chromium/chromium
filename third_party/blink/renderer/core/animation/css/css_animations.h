@@ -133,6 +133,8 @@ class CORE_EXPORT CSSAnimations final {
                                    CSSAnimationUpdate&,
                                    ComputedStyleBuilder&);
 
+  // This performs an update of the given element's set of named triggers, but
+  // only named triggers which are directly declared on this element via CSS.
   static void UpdateNamedTriggers(const ComputedStyleBuilder& style_builder,
                                   const CSSAnimationUpdate& update,
                                   Element& element);

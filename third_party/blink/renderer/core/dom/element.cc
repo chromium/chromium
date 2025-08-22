@@ -4425,7 +4425,8 @@ const ComputedStyle* Element::StyleForLayoutObject(
   }
 
   if (style->DependsOnSizeContainerQueries() ||
-      style->GetPositionTryFallbacks() || style->HasAnchorFunctions()) {
+      style->GetPositionTryFallbacks() || style->HasAnchorFunctions() ||
+      style->HasAnimationTrigger()) {
     GetDocument().GetStyleEngine().SetStyleAffectedByLayout();
   }
 

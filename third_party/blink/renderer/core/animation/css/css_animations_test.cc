@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
@@ -1319,23 +1320,46 @@ class CSSAnimationsTriggerTest : public CSSAnimationsTest {
       bool expect_same,
       const AnimationTrigger::RangeBoundary* expected_bounday);
 
-  AnimationTrigger* TestAssociatedTrigger(Element& target,
-                                          AtomicString trigger_name) {
+  AnimationTrigger* TestTriggerAssociations(Element& target,
+                                            Element& scroller,
+                                            AtomicString trigger_name) {
     AnimationTrigger* trigger_in_target = GetTrigger(target);
     EXPECT_NE(trigger_in_target, nullptr);
     const ScopedCSSName* name_in_target = GetTriggerName(target);
     EXPECT_NE(name_in_target, nullptr);
     EXPECT_EQ(name_in_target->GetName(), trigger_name);
 
+    const AnimationTrigger* trigger_in_scroller = GetTrigger(scroller);
+    EXPECT_NE(trigger_in_scroller, nullptr);
+    const ScopedCSSName* name_in_scroller = GetTriggerName(scroller);
+    EXPECT_NE(name_in_scroller, nullptr);
+    EXPECT_EQ(name_in_scroller->GetName(), trigger_name);
+
+    EXPECT_EQ(trigger_in_target, trigger_in_scroller);
+
     return trigger_in_target;
   }
 
   const ScopedCSSName* GetTriggerName(Element& element) {
-    return element.NamedTriggers()->begin()->key;
+    LayoutBox* box = element.GetLayoutBox();
+    for (const PhysicalFragment& fragment : box->PhysicalFragments()) {
+      if (!fragment.NamedTriggers()) {
+        continue;
+      }
+      return fragment.NamedTriggers()->begin()->key;
+    }
+    return nullptr;
   }
 
   AnimationTrigger* GetTrigger(Element& element) {
-    return element.NamedTriggers()->begin()->value;
+    LayoutBox* box = element.GetLayoutBox();
+    for (const auto& fragment : box->PhysicalFragments()) {
+      if (!fragment.NamedTriggers()) {
+        continue;
+      }
+      return fragment.NamedTriggers()->begin()->value;
+    }
+    return nullptr;
   }
 
   AnimationTrigger::RangeBoundary* MakeRangeOffsetBoundary(
@@ -1426,9 +1450,10 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerOnceOnly) {
   )HTML");
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
 
   AnimationTrigger* trigger =
-      TestAssociatedTrigger(*target, AtomicString("--trigger"));
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
 
   AnimationTrigger::RangeBoundary* normal =
       MakeGarbageCollected<AnimationTrigger::RangeBoundary>("normal");
@@ -1474,9 +1499,10 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewOnly) {
   )HTML");
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
 
   AnimationTrigger* trigger =
-      TestAssociatedTrigger(*target, AtomicString("--trigger"));
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
 
   AnimationTrigger::RangeBoundary* normal =
       MakeGarbageCollected<AnimationTrigger::RangeBoundary>("normal");
@@ -1522,9 +1548,10 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerScrollOnce) {
   )HTML");
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
 
   AnimationTrigger* trigger =
-      TestAssociatedTrigger(*target, AtomicString("--trigger"));
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
 
   AnimationTrigger::RangeBoundary* pct25 =
       MakeRangeOffsetBoundary(std::nullopt, 25);
@@ -1572,9 +1599,10 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewAlternate) {
   )HTML");
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
 
   AnimationTrigger* trigger =
-      TestAssociatedTrigger(*target, AtomicString("--trigger"));
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
 
   AnimationTrigger::RangeBoundary* contain10 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kContain, 10);
@@ -1624,9 +1652,10 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewRepeat) {
   )HTML");
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
 
   AnimationTrigger* trigger =
-      TestAssociatedTrigger(*target, AtomicString("--trigger"));
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
 
   AnimationTrigger::RangeBoundary* contain10 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kContain, 10);
@@ -1800,12 +1829,13 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeBehavior) {
     </div>
   )HTML");
   Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
 
   target->classList().Add(AtomicString("repeat_trigger"));
   UpdateAllLifecyclePhasesForTest();
 
   AnimationTrigger* repeat_trigger =
-      TestAssociatedTrigger(*target, AtomicString("--trigger"));
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
   EXPECT_EQ(repeat_trigger->behavior(),
             AnimationTrigger::Behavior::Enum::kRepeat);
 
@@ -1814,7 +1844,7 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeBehavior) {
   UpdateAllLifecyclePhasesForTest();
 
   AnimationTrigger* once_trigger =
-      TestAssociatedTrigger(*target, AtomicString("--trigger"));
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
   EXPECT_NE(once_trigger, repeat_trigger);
   EXPECT_EQ(once_trigger->behavior(), AnimationTrigger::Behavior::Enum::kOnce);
 }
@@ -2100,27 +2130,38 @@ TEST_P(CSSAnimationsTriggerTest, ChangeTriggerName) {
     </div>
   )HTML");
   Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+
+  EXPECT_EQ(target->NamedTriggers(), nullptr);
+  EXPECT_EQ(scroller->NamedTriggers(), nullptr);
 
   target->classList().Add(AtomicString("trigger1"));
   UpdateAllLifecyclePhasesForTest();
 
   const ScopedCSSName* name1 = target->NamedTriggers()->begin()->key.Get();
   AnimationTrigger* trigger1 =
-      TestAssociatedTrigger(*target, AtomicString("--trigger1"));
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger1"));
+  EXPECT_EQ(target->NamedTriggers()->size(), 1);
+  EXPECT_EQ(scroller->NamedTriggers(), nullptr);
 
   target->classList().Remove(AtomicString("trigger1"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(target->NamedTriggers()->empty());
+  EXPECT_EQ(scroller->NamedTriggers(), nullptr);
+
   target->classList().Add(AtomicString("trigger2"));
   UpdateAllLifecyclePhasesForTest();
 
   const ScopedCSSName* name2 = target->NamedTriggers()->begin()->key.Get();
   AnimationTrigger* trigger2 =
-      TestAssociatedTrigger(*target, AtomicString("--trigger2"));
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger2"));
   EXPECT_NE(trigger1, trigger2);
 
   // TODO(crbug.com/429392773): test that the animation is removed from
   // trigger1.
   EXPECT_TRUE(target->NamedTriggers()->Contains(name2));
   EXPECT_FALSE(target->NamedTriggers()->Contains(name1));
+  EXPECT_EQ(scroller->NamedTriggers(), nullptr);
 }
 
 }  // namespace blink

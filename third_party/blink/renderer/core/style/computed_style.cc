@@ -3005,6 +3005,19 @@ bool ComputedStyle::ApplyControlFixedSize(const Node* node) const {
   return control && control->GetAutofillState() != WebAutofillState::kNotFilled;
 }
 
+bool ComputedStyle::HasAnimationTrigger() const {
+  CSSAnimationData* data = Animations();
+  if (!data) {
+    return false;
+  }
+
+  return std::any_of(data->TriggerNamesList().begin(),
+                     data->TriggerNamesList().end(),
+                     [](std::optional<Vector<AtomicString>> name_list) {
+                       return name_list.has_value();
+                     });
+}
+
 ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style)
     : ComputedStyleBuilderBase(style) {}
 

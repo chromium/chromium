@@ -1229,10 +1229,6 @@ void CSSAnimations::UpdateNamedTriggers(
         continue;
       }
 
-      // TODO: When the trigger map contains triggers from the subtree, ensure
-      // this cleanup affects only triggers owned by this element. Otherwise,
-      // we'd be disassociating triggers from the subtree.
-
       // NOTE: This is only okay as long as script has no way to
       // access CSS triggers. If it becomes possible to reference a CSS
       // trigger via script, we'll need a way to distinguish between

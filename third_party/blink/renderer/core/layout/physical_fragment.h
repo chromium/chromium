@@ -12,8 +12,10 @@
 
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/named_animation_trigger_map.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
@@ -113,19 +115,18 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     PropagatedData(
         const GCedHeapVector<Member<LayoutBoxModelObject>>* sticky_descendants,
         const GCedHeapVector<Member<Element>>* snap_areas,
-        const Member<const LayoutObject> scroll_initial_target)
+        const Member<const LayoutObject> scroll_initial_target,
+        const GCedNamedAnimationTriggerMap* named_triggers)
         : sticky_descendants(sticky_descendants),
           snap_areas(snap_areas),
-          scroll_initial_target(scroll_initial_target) {}
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(sticky_descendants);
-      visitor->Trace(snap_areas);
-      visitor->Trace(scroll_initial_target);
-    }
+          scroll_initial_target(scroll_initial_target),
+          named_triggers(named_triggers) {}
+    void Trace(Visitor* visitor) const;
     Member<const GCedHeapVector<Member<LayoutBoxModelObject>>>
         sticky_descendants;
     Member<const GCedHeapVector<Member<Element>>> snap_areas;
     Member<const LayoutObject> scroll_initial_target;
+    Member<const GCedNamedAnimationTriggerMap> named_triggers;
   };
 
   PhysicalFragment(FragmentBuilder* builder,
@@ -727,6 +728,10 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     if (!HasAnchorQuery())
       return nullptr;
     return oof_data_->AnchorQuery();
+  }
+
+  const GCedNamedAnimationTriggerMap* NamedTriggers() const {
+    return propagated_data_ ? propagated_data_->named_triggers.Get() : nullptr;
   }
 
   const FragmentedOofData* GetFragmentedOofData() const;
