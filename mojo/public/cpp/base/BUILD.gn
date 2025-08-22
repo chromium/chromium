@@ -224,6 +224,7 @@ source_set("tests") {
     "uuid_unittest.cc",
     "values_unittest.cc",
     "version_unittest.cc",
+    "work_in_progress_unittest.cc",
   ]
 
   public_deps = [

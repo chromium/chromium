@@ -45,6 +45,7 @@ mojom_component("base") {
     "uuid.mojom",
     "values.mojom",
     "version.mojom",
+    "work_in_progress.mojom",
   ]
 
   if (is_win) {
