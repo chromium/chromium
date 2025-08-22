@@ -727,6 +727,7 @@ DiceWebSigninInterceptor::ShouldShowProfileSwitchBubble(
     const GaiaId& intercepted_gaia_id,
     const std::string& intercepted_email_fallback,
     ProfileAttributesStorage* profile_attribute_storage) const {
+  // TODO(crbug.com/438165525): Consider reusing parts of `CanOfferSignin()`.
   // Check if there is already an existing profile with this account.
   base::FilePath profile_path = profile_->GetPath();
   std::vector<ProfileAttributesEntry*> attributes =

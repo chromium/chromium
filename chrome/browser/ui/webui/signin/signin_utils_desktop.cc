@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
+#include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -56,6 +58,8 @@ SigninUIError CanOfferSignin(Profile* profile,
     std::string current_email =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
             .email;
+    // TODO(crbug.com/440302112): Consider checking for the gaia_id equality
+    // instead of the email for reauth flow detection.
     const bool same_email = gaia::AreEmailsSame(current_email, email);
     if (!current_email.empty() && !same_email) {
       return SigninUIError::WrongReauthAccount(email, current_email);
@@ -89,10 +93,14 @@ SigninUIError CanOfferSignin(Profile* profile,
           if (entry->IsOmitted() || entry->GetPath() == profile->GetPath()) {
             continue;
           }
-          if (!entry->IsAuthenticated() && !entry->CanBeManaged()) {
-            continue;
+          // If the feature is disabled, the below check on GaiaId equality is
+          // equivalent to checking if the user is signed in.
+          if (!base::FeatureList::IsEnabled(
+                  syncer::kReplaceSyncPromosWithSignInPromos)) {
+            if (!entry->IsAuthenticated() && !entry->CanBeManaged()) {
+              continue;
+            }
           }
-
           if (base::CommandLine::ForCurrentProcess()->HasSwitch(
                   switches::kBypassAccountAlreadyUsedByAnotherProfileCheck)) {
             continue;

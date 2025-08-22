@@ -479,7 +479,10 @@ source_set("unit_tests") {
   }
 
   if (enable_dice_support) {
-    sources += [ "dice_web_signin_intercept_handler_unittest.cc" ]
+    sources += [
+      "dice_web_signin_intercept_handler_unittest.cc",
+      "signin_utils_desktop_unittest.cc",
+    ]
     deps += [ "//chrome/browser/ui/profiles" ]
   }
 
