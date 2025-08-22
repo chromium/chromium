@@ -502,6 +502,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/431982831")
     public void testSigninFirstRunPages_WithCctPolicy_SigninPromo() throws Exception {
         runFirstRunPagesTest(
                 new FirstRunPagesTestCase().withCctTosDisabled().withHistorySyncPromo());
@@ -733,6 +734,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/431982831")
     public void testMultipleFresViewIntoCustom() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -915,11 +917,10 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     @Policies.Add(
-            @Policies.Item(
-                    key = "CloudManagementEnrollmentToken",
-                    string = TEST_ENROLLMENT_TOKEN))
+            @Policies.Item(key = "CloudManagementEnrollmentToken", string = TEST_ENROLLMENT_TOKEN))
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/431982831")
     public void testCloudManagementDoesNotBlockFirstRun() throws Exception {
         // Ensures FRE is not blocked if cloud management is enabled.
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
