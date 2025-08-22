@@ -14,9 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_value.h"
@@ -28,8 +25,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "storage/browser/file_system/watcher_manager.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace extensions {
 namespace {
@@ -87,49 +84,74 @@ api::file_system_provider::FileSystemInfo ConvertFileSystemToExtension(
   return item;
 }
 
-// Converts the change type from the IDL type to a mojom type. |changed_type|
+// Converts the change type from the IDL type to a storage type. |changed_type|
 // must be specified (not CHANGE_TYPE_NONE).
-crosapi::mojom::FSPChangeType ParseChangeType(
+storage::WatcherManager::ChangeType ParseChangeType(
     const api::file_system_provider::ChangeType& change_type) {
   switch (change_type) {
     case api::file_system_provider::ChangeType::kChanged:
-      return crosapi::mojom::FSPChangeType::kChanged;
+      return storage::WatcherManager::CHANGED;
     case api::file_system_provider::ChangeType::kDeleted:
-      return crosapi::mojom::FSPChangeType::kDeleted;
+      return storage::WatcherManager::DELETED;
     default:
       break;
   }
   NOTREACHED();
 }
 
-crosapi::mojom::CloudFileInfoPtr ParseCloudFileInfo(
+std::unique_ptr<ash::file_system_provider::CloudFileInfo> ParseCloudFileInfo(
     const std::optional<api::file_system_provider::CloudFileInfo>&
         cloud_file_info) {
   if (!cloud_file_info.has_value()) {
     return nullptr;
   }
-  return crosapi::mojom::CloudFileInfo::New(
-      cloud_file_info.value().version_tag);
+  if (!cloud_file_info->version_tag.has_value()) {
+    return nullptr;
+  }
+  return std::make_unique<ash::file_system_provider::CloudFileInfo>(
+      cloud_file_info->version_tag.value());
 }
 
-// Convert the change from the IDL type to mojom type.
-crosapi::mojom::FSPChangePtr ParseChange(
+ash::file_system_provider::ProvidedFileSystemObserver::Change ParseChange(
     const api::file_system_provider::Change& change) {
-  crosapi::mojom::FSPChangePtr result = crosapi::mojom::FSPChange::New();
-  result->path = base::FilePath::FromUTF8Unsafe(change.entry_path);
-  result->type = ParseChangeType(change.change_type);
-  result->cloud_file_info = ParseCloudFileInfo(change.cloud_file_info);
-  return result;
+  return ash::file_system_provider::ProvidedFileSystemObserver::Change(
+      base::FilePath::FromUTF8Unsafe(change.entry_path),
+      ParseChangeType(change.change_type),
+      ParseCloudFileInfo(change.cloud_file_info));
 }
 
-// Converts a list of child changes from the IDL type to mojom type.
-std::vector<crosapi::mojom::FSPChangePtr> ParseChanges(
-    const std::vector<api::file_system_provider::Change>& changes) {
-  std::vector<crosapi::mojom::FSPChangePtr> results;
-  for (const auto& change : changes) {
-    results.push_back(ParseChange(change));
+std::unique_ptr<ash::file_system_provider::ProvidedFileSystemObserver::Changes>
+ParseChanges(
+    const std::optional<std::vector<api::file_system_provider::Change>>&
+        changes) {
+  auto results = std::make_unique<
+      ash::file_system_provider::ProvidedFileSystemObserver::Changes>();
+  if (changes.has_value()) {
+    for (const auto& change : *changes) {
+      results->push_back(ParseChange(change));
+    }
   }
   return results;
+}
+
+std::string ForwardOperationResponseImpl(
+    ash::file_system_provider::RequestManager& manager,
+    int64_t request_id,
+    const ash::file_system_provider::RequestValue& value,
+    std::variant<bool /*has_more*/, base::File::Error /*error*/> arg) {
+  const base::File::Error result = std::visit(
+      absl::Overload{[&](bool has_more) {
+                       return manager.FulfillRequest(request_id, value,
+                                                     has_more);
+                     },
+                     [&](base::File::Error error) {
+                       return manager.RejectRequest(request_id, value, error);
+                     }},
+      arg);
+  if (result != base::File::FILE_OK) {
+    return extensions::FileErrorToString(result);
+  }
+  return "";
 }
 
 }  // namespace
@@ -260,30 +282,23 @@ ExtensionFunction::ResponseAction FileSystemProviderNotifyFunction::Run() {
   std::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  auto callback =
-      base::BindOnce(&FileSystemProviderNotifyFunction::RespondWithError, this);
-  auto id = crosapi::mojom::FileSystemId::New();
-  id->provider = GetProviderId();
-  id->id = params->options.file_system_id;
-
-  crosapi::mojom::FSPWatcherPtr watcher = crosapi::mojom::FSPWatcher::New();
-  watcher->entry_path =
-      base::FilePath::FromUTF8Unsafe(params->options.observed_path);
-  watcher->recursive = params->options.recursive;
-  watcher->last_tag = params->options.tag ? *params->options.tag : "";
-  crosapi::mojom::FSPChangeType type =
-      ParseChangeType(params->options.change_type);
-  std::vector<crosapi::mojom::FSPChangePtr> changes;
-  if (params->options.changes) {
-    changes = ParseChanges(*params->options.changes);
+  auto* file_system = GetProvidedFileSystem(
+      browser_context(),
+      ash::file_system_provider::ProviderId::CreateFromExtensionId(
+          GetProviderId()),
+      params->options.file_system_id);
+  if (!file_system) {
+    return RespondNow(
+        Error(FileErrorToString(base::File::FILE_ERROR_NOT_FOUND)));
   }
 
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->file_system_provider_service_ash()
-      ->NotifyWithProfile(std::move(id), std::move(watcher), type,
-                          std::move(changes), std::move(callback),
-                          Profile::FromBrowserContext(browser_context()));
+  file_system->Notify(
+      base::FilePath::FromUTF8Unsafe(params->options.observed_path),
+      params->options.recursive, ParseChangeType(params->options.change_type),
+      ParseChanges(params->options.changes),
+      params->options.tag.value_or(std::string()),
+      base::BindOnce(&FileSystemProviderNotifyFunction::OnNotifyCompleted,
+                     this));
   return RespondLater();
 }
 
@@ -326,13 +341,9 @@ FileSystemProviderInternalRespondToMountRequestFunction::Run() {
           ? std::variant<bool /*has_more*/, base::File::Error /*error*/>(false)
           : mount_error;
 
-  std::string error =
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->file_system_provider_service_ash()
-          ->ForwardOperationResponse(
-              CHECK_DEREF(provider->GetRequestManager()), params->request_id,
-              ash::file_system_provider::RequestValue(), arg);
+  std::string error = ForwardOperationResponseImpl(
+      CHECK_DEREF(provider->GetRequestManager()), params->request_id,
+      ash::file_system_provider::RequestValue(), arg);
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
@@ -360,12 +371,8 @@ FileSystemProviderInternal::ForwardOperationResult(
         Error(FileErrorToString(base::File::FILE_ERROR_NOT_FOUND)));
   }
 
-  std::string error = crosapi::CrosapiManager::Get()
-                          ->crosapi_ash()
-                          ->file_system_provider_service_ash()
-                          ->ForwardOperationResponse(
-                              CHECK_DEREF(file_system->GetRequestManager()),
-                              request_id, value, arg);
+  std::string error = ForwardOperationResponseImpl(
+      CHECK_DEREF(file_system->GetRequestManager()), request_id, value, arg);
   if (!error.empty()) {
     return RespondNow(Error(error));
   }

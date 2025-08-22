@@ -19,7 +19,6 @@ static_library("file_system_provider") {
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common/extensions/api",
-    "//chromeos/crosapi/mojom",
     "//extensions/browser",
     "//storage/browser",
   ]

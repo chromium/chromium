@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/event_router.h"
 #include "url/gurl.h"
 

@@ -17,7 +17,6 @@ import "chromeos/crosapi/mojom/desk_profiles.mojom";
 import "chromeos/crosapi/mojom/diagnostics_service.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
 import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
-import "chromeos/crosapi/mojom/file_system_provider.mojom";
 import "chromeos/crosapi/mojom/full_restore.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";

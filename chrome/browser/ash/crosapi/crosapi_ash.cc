@@ -15,7 +15,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
-#include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
@@ -86,8 +85,6 @@ Profile* GetAshProfile() {
 CrosapiAsh::CrosapiAsh()
     : diagnostics_service_ash_(std::make_unique<ash::DiagnosticsServiceAsh>()),
       document_scan_ash_(std::make_unique<DocumentScanAsh>()),
-      file_system_provider_service_ash_(
-          std::make_unique<FileSystemProviderServiceAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
       telemetry_diagnostic_routine_service_ash_(
