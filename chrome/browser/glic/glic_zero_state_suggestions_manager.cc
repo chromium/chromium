@@ -153,7 +153,7 @@ void GlicZeroStateSuggestionsManager::
     NotifyZeroStateSuggestionsOnPinnedTabDataChanged(
         bool is_first_run,
         const std::vector<std::string>& supported_tools,
-        const mojom::TabData* data) {
+        const TabDataChange& tab_data_change) {
   NotifyZeroStateSuggestionsOnPinnedTabChanged(
       is_first_run, supported_tools, sharing_manager_->GetPinnedTabs());
 }

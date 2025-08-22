@@ -46,7 +46,7 @@ class GlicPinnedTabManager : public TabStripModelObserver {
   // Registers a callback to be invoked when the TabData for a pinned tab is
   // changed.
   using PinnedTabDataChangedCallback =
-      base::RepeatingCallback<void(const mojom::TabData*)>;
+      base::RepeatingCallback<void(const TabDataChange&)>;
   base::CallbackListSubscription AddPinnedTabDataChangedCallback(
       PinnedTabDataChangedCallback callback);
 
@@ -143,7 +143,7 @@ class GlicPinnedTabManager : public TabStripModelObserver {
 
   // Called by friend PinnedTabObserver.
   void OnTabWillClose(tabs::TabHandle tab_handles);
-  void OnTabDataChanged(tabs::TabHandle tab_handle, mojom::TabDataPtr);
+  void OnTabDataChanged(tabs::TabHandle tab_handle, TabDataChange);
   void OnTabChangedOrigin(tabs::TabHandle tab_handle);
 
   // List of callbacks to invoke when the collection of pinned tabs changes
@@ -152,7 +152,7 @@ class GlicPinnedTabManager : public TabStripModelObserver {
       pinned_tabs_changed_callback_list_;
 
   // List of callbacks to invoke when the tab data for a pinned tab changes.
-  base::RepeatingCallbackList<void(const mojom::TabData*)>
+  base::RepeatingCallbackList<void(const TabDataChange&)>
       pinned_tab_data_changed_callback_list_;
 
   // List of callbacks to invoke when the pinning status for a particular tab

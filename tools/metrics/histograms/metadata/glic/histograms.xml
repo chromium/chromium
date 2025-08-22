@@ -136,6 +136,17 @@ chromium-metrics-reviews@google.com.
 
 </histogram>
 
+<histogram name="Glic.Api.TabData.UpdatesPerNavigation" units="count"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    The number of tab data updates sent by TabDataObserver while on each web
+    page. Recorded when a cross-document navigation completes, or when tab data
+    is no longer observed.
+  </summary>
+</histogram>
+
 <histogram name="Glic.AttachedToBrowser" enum="GlicAttachChangeReason"
     expires_after="2026-01-15">
   <owner>dullweber@chromium.org</owner>

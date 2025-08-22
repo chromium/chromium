@@ -190,7 +190,7 @@ class GlicFocusedTabManager : public content::WebContentsObserver,
       const FocusedTabData& focused_tab_data);
 
   // Calls all registered focused tab data changed callbacks.
-  void NotifyFocusedTabDataChanged(glic::mojom::TabDataPtr tab_data);
+  void NotifyFocusedTabDataChanged(TabDataChange change);
 
   // Callback for changes to focused browser.
   void OnFocusedBrowserChanged(BrowserWindowInterface* candidate_browser,
@@ -200,7 +200,7 @@ class GlicFocusedTabManager : public content::WebContentsObserver,
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
 
   // Callback for tab data changes to focused tab.
-  void FocusedTabDataChanged(glic::mojom::TabDataPtr tab_data);
+  void FocusedTabDataChanged(TabDataChange change);
 
   FocusedTabData ImplToPublic(FocusedTabDataImpl impl);
 

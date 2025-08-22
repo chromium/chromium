@@ -78,7 +78,8 @@ class GlicPinnedTabManager::PinnedTabObserver
     bool was_observable = IsObservable();
     is_audible_ = audible;
     if (was_observable != IsObservable()) {
-      UpdateTabDataAndSend(CreateTabData(web_contents()));
+      UpdateTabDataAndSend(
+          {{TabDataChangeCause::kAudioState}, CreateTabData(web_contents())});
     }
   }
 
@@ -86,7 +87,8 @@ class GlicPinnedTabManager::PinnedTabObserver
     bool was_observable = IsObservable();
     is_foreground_ = IsForeground(visibility);
     if (was_observable != IsObservable()) {
-      UpdateTabDataAndSend(CreateTabData(web_contents()));
+      UpdateTabDataAndSend(
+          {{TabDataChangeCause::kVisibility}, CreateTabData(web_contents())});
     }
   }
 
@@ -113,7 +115,7 @@ class GlicPinnedTabManager::PinnedTabObserver
         new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
 
-  void FocusedTabDataChanged(mojom::TabDataPtr tab_data) {
+  void FocusedTabDataChanged(TabDataChange tab_data) {
     UpdateTabDataAndSend(std::move(tab_data));
   }
 
@@ -129,11 +131,10 @@ class GlicPinnedTabManager::PinnedTabObserver
     pinned_tab_manager_->OnTabChangedOrigin(tab_->GetHandle());
   }
 
-  void UpdateTabDataAndSend(mojom::TabDataPtr tab_data) {
+  void UpdateTabDataAndSend(TabDataChange change) {
     // Add observability info.
-    tab_data->is_observable = IsObservable();
-    pinned_tab_manager_->OnTabDataChanged(tab_->GetHandle(),
-                                          std::move(tab_data));
+    change.tab_data->is_observable = IsObservable();
+    pinned_tab_manager_->OnTabDataChanged(tab_->GetHandle(), std::move(change));
   }
 
   void StartObservation(tabs::TabInterface* tab,
@@ -467,10 +468,9 @@ void GlicPinnedTabManager::NotifyPinnedTabsChanged() {
 }
 
 void GlicPinnedTabManager::OnTabDataChanged(tabs::TabHandle tab_handle,
-                                            mojom::TabDataPtr tab_data) {
+                                            TabDataChange tab_data_change) {
   CHECK(IsTabPinned(tab_handle));
-  pinned_tab_data_changed_callback_list_.Notify(tab_data ? tab_data.get()
-                                                         : nullptr);
+  pinned_tab_data_changed_callback_list_.Notify(tab_data_change);
 }
 
 void GlicPinnedTabManager::OnTabChangedOrigin(tabs::TabHandle tab_handle) {

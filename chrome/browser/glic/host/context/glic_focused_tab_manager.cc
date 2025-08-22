@@ -124,14 +124,13 @@ void GlicFocusedTabManager::PrimaryPageChanged(content::Page& page) {
   MaybeUpdateFocusedTab(/*force_notify=*/true);
 }
 
-void GlicFocusedTabManager::FocusedTabDataChanged(
-    glic::mojom::TabDataPtr tab_data) {
+void GlicFocusedTabManager::FocusedTabDataChanged(TabDataChange change) {
   // `TabDataObserver` is responsible for firing this when appropriate, we just
   // forward events along.
   // Note: we omit calling `MaybeUpdateFocusedTab()` here because observing web
   // contents for changes that might impact focused tab container or candidate
   // are handled separately.
-  NotifyFocusedTabDataChanged(std::move(tab_data));
+  NotifyFocusedTabDataChanged(std::move(change));
 }
 
 void GlicFocusedTabManager::MaybeUpdateFocusedTab(bool force_notify) {
@@ -162,7 +161,8 @@ void GlicFocusedTabManager::MaybeUpdateFocusedTab(bool force_notify) {
   if (focused_instance_changed) {
     NotifyFocusedTabInstanceChanged(focused_tab_state_.focused_tab.get());
     NotifyFocusedTabDataChanged(
-        CreateTabData(focused_tab_state_.focused_tab.get()));
+        {{TabDataChangeCause::kTabChanged},
+         CreateTabData(focused_tab_state_.focused_tab.get())});
   }
 
   if (focused_or_candidate_instance_changed) {
@@ -221,9 +221,8 @@ void GlicFocusedTabManager::NotifyFocusedTabOrCandidateInstanceChanged(
   focused_or_candidate_instance_callback_list_.Notify(focused_tab_data);
 }
 
-void GlicFocusedTabManager::NotifyFocusedTabDataChanged(
-    glic::mojom::TabDataPtr tab_data) {
-  focused_data_callback_list_.Notify(tab_data.get());
+void GlicFocusedTabManager::NotifyFocusedTabDataChanged(TabDataChange change) {
+  focused_data_callback_list_.Notify(change.tab_data.get());
 }
 
 bool GlicFocusedTabManager::IsTabFocused(tabs::TabHandle tab_handle) const {

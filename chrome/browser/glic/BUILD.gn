@@ -306,6 +306,7 @@ source_set("browser_tests") {
     "glic_profile_manager_browsertest.cc",
     "glic_user_status_browsertest.cc",
     "host/context/glic_pinned_tab_manager_browsertest.cc",
+    "host/context/glic_tab_data_browsertest.cc",
     "host/glic_api_browsertest.cc",
     "host/guest_util_browsertest.cc",
     "public/glic_enabling_browsertest.cc",

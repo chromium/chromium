@@ -47,7 +47,7 @@ class GlicZeroStateSuggestionsManager {
   void NotifyZeroStateSuggestionsOnPinnedTabDataChanged(
       bool is_first_run,
       const std::vector<std::string>& supported_tools,
-      const mojom::TabData* data);
+      const TabDataChange& data);
 
   // This handles calls from the webui to return a suggestion, and begin to
   // notify the webui of changes to the zero state suggestsions.

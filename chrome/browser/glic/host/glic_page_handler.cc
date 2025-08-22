@@ -1384,15 +1384,15 @@ class GlicWebClientHandler
                                                     std::move(callback));
   }
 
-  void OnPinnedTabDataChanged(const glic::mojom::TabData* tab_data) {
-    if (!tab_data) {
+  void OnPinnedTabDataChanged(const TabDataChange& change) {
+    if (!change.tab_data) {
       return;
     }
     if (ShouldDoApiActivationGating()) {
       // We will resend all pinned data when shown. No need to cache here.
       return;
     }
-    web_client_->NotifyPinnedTabDataChanged(tab_data->Clone());
+    web_client_->NotifyPinnedTabDataChanged(change.tab_data->Clone());
   }
 
   void NotifyZeroStateSuggestionsChanged(
