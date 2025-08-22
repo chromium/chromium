@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/ai/ai_proofreader.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_proofread_correction.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofread_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofreader_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofreader_proofread_options.h"
@@ -108,6 +109,13 @@ class Proofreader final : public ScriptWrappable,
   Member<AbortSignal::AlgorithmHandle> create_abort_handle_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
+
+// Find list of specific corrections with their locations given an input and the
+// fully corrected input from proofreading.
+MODULES_EXPORT
+HeapVector<Member<ProofreadCorrection>> GetProofreadingCorrections(
+    const String& input,
+    const String& corrected_input);
 
 }  // namespace blink
 

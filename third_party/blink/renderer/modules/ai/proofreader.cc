@@ -4,15 +4,222 @@
 
 #include "third_party/blink/renderer/modules/ai/proofreader.h"
 
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_writing_assistance_create_client.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
+#include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode_string.h"
 
 namespace blink {
+
+// Represents two vector spans with matching subsequences; e.g.
+// ['a', 'b', 'c', 'd'] and ['b', 'c', 'z'] -> {1, 0, 2}
+struct MatchingBlock {
+  // The start index of the matching subsequence in the first list.
+  uint32_t start_a = 0;
+  // The start index of the matching subsequence in the second list.
+  uint32_t start_b = 0;
+  // The size of the matching block.
+  uint32_t size = 0;
+};
+
+// Start and end indices for a pair of subsequences from two vector spans.
+struct BlockPair {
+  size_t start_a;
+  size_t end_a;
+  size_t start_b;
+  size_t end_b;
+};
+
+// Tokenize `text` by splitting it into a vector of words/spaces/punctuation.
+Vector<String> Tokenize(const String& text) {
+  Vector<String> tokens;
+  if (text.empty()) {
+    return tokens;
+  }
+
+  // Obtain a word break iterator for the entire string.
+  // This iterator will find boundaries between words, punctuation, and spaces.
+  TextBreakIterator* it = WordBreakIterator(text, 0, text.length());
+
+  if (!it) {
+    return tokens;
+  }
+
+  // The iterator returns the indices of the boundaries. Iterate through them to
+  // create substrings, which we consider as tokens.
+  int32_t start = it->first();
+  for (int32_t end = it->next(); end != -1; end = it->next()) {
+    tokens.push_back(text.Substring(start, end - start));
+    start = end;
+  }
+
+  return tokens;
+}
+
+// Find the longest matching block in a and b.
+// If there are multiple maximal matching blocks,
+// return one that starts earliest in a, and of all those maximal matching
+// blocks that start earliest in a, return the one that starts earliest in b.
+//
+// I.e:
+// a = [" ", "a", "b"],
+// b = ["a", "b", " ", "a", "b"]
+// returns {0, 2, 3}
+MatchingBlock LongestCommonSubsequence(base::span<const String> a,
+                                       base::span<const String> b) {
+  MatchingBlock result;
+  const size_t a_size = a.size();
+  const size_t b_size = b.size();
+  for (size_t i = 0; i < a_size; ++i) {
+    for (size_t j = 0; j < b_size; ++j) {
+      uint32_t size = 0;
+      while (i + size < a_size && j + size < b_size &&
+             a[i + size] == b[j + size]) {
+        ++size;
+      }
+      if (size > result.size) {
+        result.start_a = i;
+        result.start_b = j;
+        result.size = size;
+      }
+    }
+  }
+  return result;
+}
+
+Vector<MatchingBlock> GetMatchingBlocks(Vector<String> seq_1,
+                                        Vector<String> seq_2) {
+  base::span seq_1_span = seq_1;
+  base::span seq_2_span = seq_2;
+  // A queue of block pairs to compare from the two sequences.
+  Deque<BlockPair> blocks_to_compare_queue;
+  blocks_to_compare_queue.push_back(
+      BlockPair(0, seq_1.size(), 0, seq_2.size()));
+
+  Vector<MatchingBlock> matching_blocks;
+
+  while (!blocks_to_compare_queue.empty()) {
+    BlockPair block_pair = blocks_to_compare_queue.front();
+    blocks_to_compare_queue.pop_front();
+    // Find the longest common subsequence in the two subspans.
+    MatchingBlock matching_block = LongestCommonSubsequence(
+        seq_1_span.subspan(block_pair.start_a,
+                           block_pair.end_a - block_pair.start_a),
+        seq_2_span.subspan(block_pair.start_b,
+                           block_pair.end_b - block_pair.start_b));
+    if (matching_block.size == 0) {
+      continue;
+    }
+    // Calculate the location of the matching block in the two original
+    // sequences.
+    uint32_t matching_start_in_seq_1 =
+        block_pair.start_a + matching_block.start_a;
+    uint32_t matching_start_in_seq_2 =
+        block_pair.start_b + matching_block.start_b;
+    matching_blocks.push_back(MatchingBlock(
+        matching_start_in_seq_1, matching_start_in_seq_2, matching_block.size));
+    // Push the remaining of the blocks to the left of the longest matching
+    // block found in this iteration for further process.
+    if (block_pair.start_a < matching_start_in_seq_1 &&
+        block_pair.start_b < matching_start_in_seq_2) {
+      blocks_to_compare_queue.push_back(
+          BlockPair(block_pair.start_a, matching_start_in_seq_1,
+                    block_pair.start_b, matching_start_in_seq_2));
+    }
+    // Push the remaining of the blocks to the right of the longest matching
+    // block found in this iteration for further process.
+    if (matching_start_in_seq_1 + matching_block.size < block_pair.end_a &&
+        matching_start_in_seq_2 + matching_block.size < block_pair.end_b) {
+      blocks_to_compare_queue.push_back(BlockPair(
+          matching_start_in_seq_1 + matching_block.size, block_pair.end_a,
+          matching_start_in_seq_2 + matching_block.size, block_pair.end_b));
+    }
+  }
+  // Sort all matching blocks increasingly based on the start index in the
+  // first sequence.
+  std::sort(
+      matching_blocks.begin(), matching_blocks.end(),
+      [](MatchingBlock a, MatchingBlock b) { return a.start_a < b.start_a; });
+
+  return matching_blocks;
+}
+
+HeapVector<Member<ProofreadCorrection>> FindDifferences(Vector<String> a,
+                                                        Vector<String> b) {
+  // Index of next token to process.
+  uint32_t a_index = 0;
+  uint32_t b_index = 0;
+  // Index for correction location in the original string that correspond with
+  // the tokenized sequence a.
+  uint32_t correction_start_index = 0;
+  uint32_t correction_end_index = 0;
+
+  HeapVector<Member<ProofreadCorrection>> corrections;
+
+  Vector<MatchingBlock> matching_blocks = GetMatchingBlocks(a, b);
+
+  // Insert zero block at the end to cover the case when there's no matching
+  // block between the two sequences.
+  matching_blocks.push_back(MatchingBlock({a.size(), b.size(), 0}));
+
+  for (const MatchingBlock matching_block : matching_blocks) {
+    // When there's difference in the two tokenized sequence before the next
+    // matching block, a correction should be made to change from "a" to "b".
+    if (a_index < matching_block.start_a || b_index < matching_block.start_b) {
+      auto* correction = MakeGarbageCollected<ProofreadCorrection>();
+      correction->setStartIndex(correction_start_index);
+
+      // Calculate correction_end_index in the original string by accumulating
+      // all the tokens' sizes.
+      for (uint32_t i = a_index; i < matching_block.start_a; ++i) {
+        correction_end_index += a[i].length();
+      }
+      correction->setEndIndex(correction_end_index);
+
+      // Concatenate tokens to find the correction text.
+      String correction_text = "";
+      for (uint32_t i = b_index; i < matching_block.start_b; ++i) {
+        correction_text = correction_text + b[i];
+      }
+      correction->setCorrection(correction_text);
+
+      corrections.push_back(correction);
+    }
+    // Increment correction indexes to the next potential location of difference
+    // in the original string
+    correction_start_index = correction_end_index;
+    for (uint32_t i = matching_block.start_a;
+         i < matching_block.start_a + matching_block.size; ++i) {
+      correction_start_index += a[i].length();
+    }
+    correction_end_index = correction_start_index;
+
+    // Increment index for processed tokens to the next potential location of
+    // difference in the tokenized sequences
+    a_index = matching_block.start_a + matching_block.size;
+    b_index = matching_block.start_b + matching_block.size;
+  }
+
+  return corrections;
+}
+
+HeapVector<Member<ProofreadCorrection>> GetProofreadingCorrections(
+    const String& input,
+    const String& corrected_input) {
+  // Tokenize to find differences on token-level.
+  Vector<String> tokenized_input = Tokenize(input);
+  Vector<String> tokenized_corrected_input = Tokenize(corrected_input);
+
+  HeapVector<Member<ProofreadCorrection>> corrections =
+      FindDifferences(tokenized_input, tokenized_corrected_input);
+  return corrections;
+}
 
 template <>
 void AIWritingAssistanceCreateClient<
@@ -296,6 +503,10 @@ void Proofreader::OnProofreadComplete(
   }
   auto* proofread_result = MakeGarbageCollected<ProofreadResult>();
   proofread_result->setCorrectedInput(corrected_input);
+  // Step 2: Find list of corrections by comparing original input and fully
+  // corrected input from model execution
+  auto corrections = GetProofreadingCorrections(input, corrected_input);
+  proofread_result->setCorrections(corrections);
   resolver->Resolve(std::move(proofread_result));
 }
 
