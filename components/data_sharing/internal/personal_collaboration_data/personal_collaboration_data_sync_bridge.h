@@ -8,6 +8,8 @@
 #include <optional>
 #include <unordered_map>
 
+#include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
@@ -128,6 +130,10 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
   void WriteEntityToSync(const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity);
 
+  // Processes any pending actions that were queued before the bridge was
+  // initialized.
+  void ProcessPendingActions();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.
@@ -142,6 +148,9 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
 
   // List of observers.
   base::ObserverList<PersonalCollaborationDataSyncBridge::Observer> observers_;
+
+  // A list of pending actions to be performed once the bridge is initialized.
+  base::circular_deque<base::OnceClosure> pending_actions_;
 
   // Allows safe temporary use of the PersonalCollaborationDataSyncBridge
   // object if it exists at the time of use.

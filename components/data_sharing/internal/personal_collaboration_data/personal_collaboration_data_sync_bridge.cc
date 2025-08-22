@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
@@ -356,7 +357,10 @@ void PersonalCollaborationDataSyncBridge::CreateOrUpdateSpecifics(
     const std::string& storage_key,
     const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
   if (!is_initialized_ || !change_processor()->IsTrackingMetadata()) {
-    // Ignore any changes before the model is successfully initialized.
+    // The model is not ready. Store in a pending list to be processed later.
+    pending_actions_.emplace_back(base::BindOnce(
+        &PersonalCollaborationDataSyncBridge::CreateOrUpdateSpecifics,
+        weak_ptr_factory_.GetWeakPtr(), storage_key, specifics));
     return;
   }
 
@@ -366,7 +370,10 @@ void PersonalCollaborationDataSyncBridge::CreateOrUpdateSpecifics(
 void PersonalCollaborationDataSyncBridge::RemoveSpecifics(
     const std::string& storage_key) {
   if (!is_initialized_ || !change_processor()->IsTrackingMetadata()) {
-    // Ignore any changes before the model is successfully initialized.
+    // The model is not ready. Store in a pending list to be processed later.
+    pending_actions_.emplace_back(
+        base::BindOnce(&PersonalCollaborationDataSyncBridge::RemoveSpecifics,
+                       weak_ptr_factory_.GetWeakPtr(), storage_key));
     return;
   }
 
@@ -423,6 +430,7 @@ void PersonalCollaborationDataSyncBridge::OnReadAllDataAndMetadata(
   }
 
   is_initialized_ = true;
+  ProcessPendingActions();
   for (auto& observer : observers_) {
     observer.OnInitialized();
   }
@@ -458,6 +466,15 @@ void PersonalCollaborationDataSyncBridge::WriteEntityToSync(
       base::BindOnce(
           &PersonalCollaborationDataSyncBridge::OnDataTypeStoreCommit,
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PersonalCollaborationDataSyncBridge::ProcessPendingActions() {
+  DCHECK(is_initialized_);
+  while (!pending_actions_.empty()) {
+    auto callback = std::move(pending_actions_.front());
+    pending_actions_.pop_front();
+    std::move(callback).Run();
+  }
 }
 
 }  // namespace data_sharing::personal_collaboration_data
