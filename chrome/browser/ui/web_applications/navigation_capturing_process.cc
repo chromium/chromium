@@ -43,8 +43,6 @@
 
 namespace web_app {
 
-using BrowserAndTabOverride = NavigationCapturingProcess::BrowserAndTabOverride;
-
 namespace {
 
 bool IsDispositionValidForNavigationCapturing(
@@ -201,6 +199,47 @@ void RecordInitialNavigationCapturingResult(
 }
 
 }  // namespace
+
+NavigationCapturingOverride::~NavigationCapturingOverride() = default;
+
+// static
+NavigationCapturingOverride NavigationCapturingOverride::CreateForNavigateNew(
+    base::PassKey<NavigationCapturingProcess>,
+    Browser* browser) {
+  CHECK(browser);
+  return NavigationCapturingOverride(browser);
+}
+
+// static
+NavigationCapturingOverride
+NavigationCapturingOverride::CreateForCancelNavigation(
+    base::PassKey<NavigationCapturingProcess>) {
+  return NavigationCapturingOverride(/*browser=*/nullptr);
+}
+
+// static
+NavigationCapturingOverride NavigationCapturingOverride::CreateForFocusExisting(
+    base::PassKey<NavigationCapturingProcess>,
+    content::WebContents* web_contents) {
+  // TODO(crbug.com/428933391): Set result.focused_contents and propagate this
+  // to NavigateParams.
+  return NavigationCapturingOverride(/*browser=*/nullptr);
+}
+
+// static
+NavigationCapturingOverride
+NavigationCapturingOverride::CreateForNavigateExisting(
+    base::PassKey<NavigationCapturingProcess>,
+    Browser* browser,
+    int tab_index) {
+  CHECK(browser->tab_strip_model()->GetWebContentsAt(tab_index));
+  return NavigationCapturingOverride(browser, tab_index);
+}
+
+NavigationCapturingOverride::NavigationCapturingOverride(
+    Browser* browser,
+    std::optional<int> tab_index)
+    : browser_(browser), tab_index_(std::move(tab_index)) {}
 
 // static
 std::unique_ptr<NavigationCapturingProcess>
@@ -376,8 +415,8 @@ void NavigationCapturingProcess::AttachToNextNavigationInWebContents(
           web_contents, std::move(user_data), target_url));
 }
 
-BrowserAndTabOverride
-NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
+std::optional<NavigationCapturingOverride>
+NavigationCapturingProcess::GetInitialNavigationParamsOverride(
     const NavigateParams& params) {
   CHECK(AreWebAppsUserInstallable(&*profile_));
   CHECK(params.url.is_valid());
@@ -647,11 +686,10 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
   return CapturedNewClient(app_display_mode, host_window);
 }
 
-BrowserAndTabOverride
+std::optional<NavigationCapturingOverride>
 NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
     const NavigateParams& params) {
   CHECK(isolated_web_app_navigation_);
-
   if (!first_navigation_app_id_) {
     return CancelInitialNavigation(
         NavigationCapturingInitialResult::kNavigationCanceled);
@@ -1364,7 +1402,8 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
   return result;
 }
 
-BrowserAndTabOverride NavigationCapturingProcess::CapturingDisabled() {
+NavigationCapturingProcess::MaybeNavigationCapturingOverride
+NavigationCapturingProcess::CapturingDisabled() {
   // Don't record debug information for ALL navigations unless expensive DCHECKs
   // are enabled.
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -1378,26 +1417,30 @@ BrowserAndTabOverride NavigationCapturingProcess::CapturingDisabled() {
   return std::nullopt;
 }
 
-BrowserAndTabOverride NavigationCapturingProcess::CancelInitialNavigation(
+NavigationCapturingProcess::MaybeNavigationCapturingOverride
+NavigationCapturingProcess::CancelInitialNavigation(
     NavigationCapturingInitialResult result) {
   debug_data_.Set("!result", "cancel navigation");
   CHECK_EQ(state_, PipelineState::kCreated);
   state_ = PipelineState::kInitialOverrideCalculated;
   initial_nav_handling_result_ = result;
-  return {{nullptr, -1}};
+  return NavigationCapturingOverride::CreateForCancelNavigation(
+      base::PassKey<NavigationCapturingProcess>());
 }
 
-BrowserAndTabOverride NavigationCapturingProcess::NoCapturingOverrideBrowser(
-    Browser* browser) {
+NavigationCapturingProcess::MaybeNavigationCapturingOverride
+NavigationCapturingProcess::NoCapturingOverrideBrowser(Browser* browser) {
   debug_data_.Set("!result", "no capturing, override browser");
   CHECK_EQ(state_, PipelineState::kCreated);
   state_ = PipelineState::kInitialOverrideCalculated;
   initial_nav_handling_result_ =
       NavigationCapturingInitialResult::kOverrideBrowser;
-  return {{browser, -1}};
+  return NavigationCapturingOverride::CreateForNavigateNew(
+      base::PassKey<NavigationCapturingProcess>(), browser);
 }
 
-BrowserAndTabOverride NavigationCapturingProcess::AuxiliaryContext() {
+NavigationCapturingProcess::MaybeNavigationCapturingOverride
+NavigationCapturingProcess::AuxiliaryContext() {
   initial_nav_handling_result_ =
       NavigationCapturingInitialResult::kAuxiliaryContextAppBrowserTab;
   // Don't record debug information for ALL navigations unless expensive DCHECKs
@@ -1412,8 +1455,8 @@ BrowserAndTabOverride NavigationCapturingProcess::AuxiliaryContext() {
   return std::nullopt;
 }
 
-BrowserAndTabOverride NavigationCapturingProcess::AuxiliaryContextInAppWindow(
-    Browser* app_browser) {
+NavigationCapturingProcess::MaybeNavigationCapturingOverride
+NavigationCapturingProcess::AuxiliaryContextInAppWindow(Browser* app_browser) {
   CHECK(app_browser->app_controller());
   initial_nav_handling_result_ =
       NavigationCapturingInitialResult::kAuxiliaryContextAppWindow;
@@ -1423,10 +1466,11 @@ BrowserAndTabOverride NavigationCapturingProcess::AuxiliaryContextInAppWindow(
   debug_data_.Set("!result", "auxiliary context in app window");
   CHECK_EQ(state_, PipelineState::kCreated);
   state_ = PipelineState::kInitialOverrideCalculated;
-  return {{app_browser, -1}};
+  return NavigationCapturingOverride::CreateForNavigateNew(
+      base::PassKey<NavigationCapturingProcess>(), app_browser);
 }
 
-BrowserAndTabOverride
+NavigationCapturingProcess::MaybeNavigationCapturingOverride
 NavigationCapturingProcess::NoInitialActionRedirectionHandlingEligible() {
   initial_nav_handling_result_ =
       NavigationCapturingInitialResult::kNewTabRedirectionEligible;
@@ -1445,7 +1489,8 @@ NavigationCapturingProcess::NoInitialActionRedirectionHandlingEligible() {
   return std::nullopt;
 }
 
-BrowserAndTabOverride NavigationCapturingProcess::ForcedNewAppContext(
+NavigationCapturingProcess::MaybeNavigationCapturingOverride
+NavigationCapturingProcess::ForcedNewAppContext(
     blink::mojom::DisplayMode app_display_mode,
     Browser* host_browser) {
   CHECK(first_navigation_app_id_.has_value());
@@ -1468,10 +1513,12 @@ BrowserAndTabOverride NavigationCapturingProcess::ForcedNewAppContext(
   debug_data_.Set("!result", "forced new app context");
   CHECK_EQ(state_, PipelineState::kCreated);
   state_ = PipelineState::kInitialOverrideCalculated;
-  return {{host_browser, -1}};
+  return NavigationCapturingOverride::CreateForNavigateNew(
+      base::PassKey<NavigationCapturingProcess>(), host_browser);
 }
 
-BrowserAndTabOverride NavigationCapturingProcess::CapturedNewClient(
+NavigationCapturingProcess::MaybeNavigationCapturingOverride
+NavigationCapturingProcess::CapturedNewClient(
     blink::mojom::DisplayMode app_display_mode,
     Browser* host_browser) {
   SCOPED_CRASH_KEY_STRING1024("crbug396028223", "app_display_mode",
@@ -1509,12 +1556,13 @@ BrowserAndTabOverride NavigationCapturingProcess::CapturedNewClient(
                    /*force_iph_off=*/app_display_mode == DisplayMode::kBrowser);
   CHECK_EQ(state_, PipelineState::kCreated);
   state_ = PipelineState::kInitialOverrideCalculated;
-  return {{host_browser, -1}};
+  return NavigationCapturingOverride::CreateForNavigateNew(
+      base::PassKey<NavigationCapturingProcess>(), host_browser);
 }
 
-BrowserAndTabOverride NavigationCapturingProcess::CapturedNavigateExisting(
-    Browser* app_browser,
-    int browser_tab) {
+NavigationCapturingProcess::MaybeNavigationCapturingOverride
+NavigationCapturingProcess::CapturedNavigateExisting(Browser* app_browser,
+                                                     int browser_tab) {
   CHECK(first_navigation_app_id_.has_value());
 
   CHECK(browser_tab != -1);
@@ -1536,13 +1584,14 @@ BrowserAndTabOverride NavigationCapturingProcess::CapturedNavigateExisting(
   debug_data_.Set("!result", "captured navigate existing");
   CHECK_EQ(state_, PipelineState::kCreated);
   state_ = PipelineState::kInitialOverrideCalculated;
-  return {{app_browser, browser_tab}};
+  return NavigationCapturingOverride::CreateForNavigateExisting(
+      base::PassKey<NavigationCapturingProcess>(), app_browser, browser_tab);
 }
 
-BrowserAndTabOverride NavigationCapturingProcess::CapturedFocusExisting(
-    Browser* browser,
-    int browser_tab,
-    const GURL& url) {
+NavigationCapturingProcess::MaybeNavigationCapturingOverride
+NavigationCapturingProcess::CapturedFocusExisting(Browser* browser,
+                                                  int browser_tab,
+                                                  const GURL& url) {
   CHECK(first_navigation_app_id_.has_value());
   const auto& app_id = *first_navigation_app_id_;
 
@@ -1572,10 +1621,15 @@ BrowserAndTabOverride NavigationCapturingProcess::CapturedFocusExisting(
   RecordNavigationCapturingDisplayModeMetrics(app_id, contents,
                                               !is_current_container_window);
 
-  return CancelInitialNavigation(
+  debug_data_.Set("!result", "cancel navigation (focus-existing)");
+  CHECK_EQ(state_, PipelineState::kCreated);
+  state_ = PipelineState::kInitialOverrideCalculated;
+  initial_nav_handling_result_ =
       is_current_container_window
           ? NavigationCapturingInitialResult::kFocusExistingAppWindow
-          : NavigationCapturingInitialResult::kFocusExistingAppBrowserTab);
+          : NavigationCapturingInitialResult::kFocusExistingAppBrowserTab;
+  return NavigationCapturingOverride::CreateForFocusExisting(
+      base::PassKey<NavigationCapturingProcess>(), contents);
 }
 
 void NavigationCapturingProcess::SetLaunchedAppId(
