@@ -139,12 +139,6 @@ BASE_FEATURE(kRestartToGainAccessToKeychain,
 #endif
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kBiometricsAuthForPwdFill,
-             "BiometricsAuthForPwdFill",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 BASE_FEATURE(kSetLeakCheckRequestCriticality,
              "SetLeakCheckRequestCriticality",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -38,20 +38,13 @@ bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
 bool PasswordFeatureManagerImpl::IsBiometricAuthenticationBeforeFillingEnabled()
     const {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  // This checking order is important to ensure balanced experiment groups.
   // First check for `kHadBiometricsAvailable` ensures that user have biometric
-  // scanner on their devices, shrinking down the amount of affected users.
-  // Check for the feature flag happens for everyone no matter whether they
-  // are/aren't using this feature, assuming they could use it(biometric scanner
-  // is available). Final check `kBiometricAuthenticationBeforeFilling` ensures
-  // that toggle in settings that manages this feature is turned on.
+  // scanner on their devices, second check
+  // `kBiometricAuthenticationBeforeFilling` ensures that toggle in settings
+  // that manages this feature is turned on.
   return local_state_ &&
          local_state_->GetBoolean(
              password_manager::prefs::kHadBiometricsAvailable) &&
-#if BUILDFLAG(IS_CHROMEOS)
-         base::FeatureList::IsEnabled(
-             password_manager::features::kBiometricsAuthForPwdFill) &&
-#endif
          pref_service_ &&
          pref_service_->GetBoolean(
              password_manager::prefs::kBiometricAuthenticationBeforeFilling);

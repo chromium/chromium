@@ -138,11 +138,6 @@ BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enables biometric authentication on for Password Autofill on ChromeOS.
-BASE_DECLARE_FEATURE(kBiometricsAuthForPwdFill);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Sets request criticality when calling leak check service to detect leaked
 // passwords.
 BASE_DECLARE_FEATURE(kSetLeakCheckRequestCriticality);
