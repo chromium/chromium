@@ -1212,7 +1212,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"offer_notification", "true"},
     {"price_insights", "true"},
     {"price_tracking", "true"},
-    {"product_specifications", "true"},
     {"pwa_install", "true"},
     {"translate", "true"},
     {"zoom", "true"},

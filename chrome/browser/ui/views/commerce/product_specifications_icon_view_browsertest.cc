@@ -4,15 +4,10 @@
 
 #include "chrome/browser/ui/views/commerce/product_specifications_icon_view.h"
 
-#include <string>
-
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -20,7 +15,6 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 class ProductSpecificationsIconViewBrowserTest : public UiBrowserTest {
@@ -29,47 +23,16 @@ class ProductSpecificationsIconViewBrowserTest : public UiBrowserTest {
     test_features_.InitAndEnableFeature(commerce::kProductSpecifications);
   }
 
-  void SetUp() override {
-    replace_commerce_ui_tab_helper_ = MockCommerceUiTabHelper::ReplaceFactory();
-    UiBrowserTest::SetUp();
-  }
-
   // UiBrowserTest:
-  void PreShow() override {
-    MockCommerceUiTabHelper* mock_tab_helper =
-        static_cast<MockCommerceUiTabHelper*>(browser()
-                                                  ->GetActiveTabInterface()
-                                                  ->GetTabFeatures()
-                                                  ->commerce_ui_tab_helper());
-
-    ON_CALL(*mock_tab_helper, ShouldShowProductSpecificationsIconView)
-        .WillByDefault(testing::Return(true));
-    ON_CALL(*mock_tab_helper, ShouldExpandPageActionIcon)
-        .WillByDefault(testing::Return(true));
-
-    std::string test_name =
-        testing::UnitTest::GetInstance()->current_test_info()->name();
-
-    if (test_name == "InvokeUi_forced_show_add") {
-      ON_CALL(*mock_tab_helper, IsInRecommendedSet)
-          .WillByDefault(testing::Return(false));
-    } else if (test_name == "InvokeUi_forced_show_added") {
-      ON_CALL(*mock_tab_helper, IsInRecommendedSet)
-          .WillByDefault(testing::Return(true));
+  void ShowUi(const std::string& name) override {
+    auto* icon_view = GetChip();
+    if (name == "forced_show_add") {
+      icon_view->ForceVisibleForTesting(/*is_added=*/false);
+    } else if (name == "forced_show_added") {
+      icon_view->ForceVisibleForTesting(/*is_added=*/true);
     } else {
       NOTREACHED();
     }
-
-    // Manually trigger the discounts page action.
-    browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->commerce_ui_tab_helper()
-        ->UpdateProductSpecificationsIconView();
-  }
-
-  void ShowUi(const std::string& name) override {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   }
 
   bool VerifyUi() override {
@@ -85,7 +48,6 @@ class ProductSpecificationsIconViewBrowserTest : public UiBrowserTest {
 
  private:
   base::test::ScopedFeatureList test_features_;
-  ui::UserDataFactory::ScopedOverride replace_commerce_ui_tab_helper_;
 
   BrowserView* GetBrowserView() {
     return BrowserView::GetBrowserViewForBrowser(browser());
@@ -95,15 +57,16 @@ class ProductSpecificationsIconViewBrowserTest : public UiBrowserTest {
     return GetBrowserView()->toolbar()->location_bar();
   }
 
-  IconLabelBubbleView* GetChip() {
+  ProductSpecificationsIconView* GetChip() {
     const ui::ElementContext context =
         views::ElementTrackerViews::GetContextForView(GetLocationBarView());
     views::View* matched_view =
         views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
             kProductSpecificationsChipElementId, context);
 
-    return matched_view ? views::AsViewClass<IconLabelBubbleView>(matched_view)
-                        : nullptr;
+    return matched_view
+               ? views::AsViewClass<ProductSpecificationsIconView>(matched_view)
+               : nullptr;
   }
 };
 

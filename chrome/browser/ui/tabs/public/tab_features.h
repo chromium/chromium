@@ -48,7 +48,6 @@ namespace commerce {
 class CommerceUiTabHelper;
 class PriceInsightsPageActionViewController;
 class DiscountsPageActionViewController;
-class ProductSpecificationsPageActionViewController;
 }  // namespace commerce
 
 namespace enterprise_data_protection {
@@ -226,11 +225,6 @@ class TabFeatures {
     return commerce_discounts_page_action_view_controller_.get();
   }
 
-  commerce::ProductSpecificationsPageActionViewController*
-  commerce_product_specifications_page_action_view_controller() {
-    return commerce_product_specifications_page_action_view_controller_.get();
-  }
-
   LensOverlayController* lens_overlay_controller();
   const LensOverlayController* lens_overlay_controller() const;
 
@@ -375,10 +369,6 @@ class TabFeatures {
   // Responsible for managing the commerce "Price insights" page action.
   std::unique_ptr<commerce::DiscountsPageActionViewController>
       commerce_discounts_page_action_view_controller_;
-
-  // Responsible for managing the commerce "Product Specifications" page action.
-  std::unique_ptr<commerce::ProductSpecificationsPageActionViewController>
-      commerce_product_specifications_page_action_view_controller_;
 
   // Contains the recent collaboration message for a shared tab.
   std::unique_ptr<tab_groups::CollaborationMessagingTabData>

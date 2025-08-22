@@ -3600,8 +3600,6 @@ static_library("ui") {
       "views/commerce/product_specifications_button.h",
       "views/commerce/product_specifications_icon_view.cc",
       "views/commerce/product_specifications_icon_view.h",
-      "views/commerce/product_specifications_page_action_view_controller.cc",
-      "views/commerce/product_specifications_page_action_view_controller.h",
       "views/commerce/shopping_collection_iph_view.cc",
       "views/commerce/shopping_collection_iph_view.h",
       "views/confirm_bubble_views.cc",
@@ -5111,7 +5109,7 @@ static_library("ui") {
     deps += [
       "//chrome/browser/ui/save_to_drive",
       "//chrome/browser/ui/save_to_drive:get_account",
-      "//chrome/browser/ui/views/save_to_drive:get_account_impl"
+      "//chrome/browser/ui/views/save_to_drive:get_account_impl",
     ]
   }
 
