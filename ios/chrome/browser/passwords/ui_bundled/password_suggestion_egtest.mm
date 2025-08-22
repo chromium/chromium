@@ -312,7 +312,8 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 }
 
 // Tests that the bottom sheet does not show if the user isn't signed in.
-- (void)testUserSignedOut {
+// TODO(crbug.com/440577394): This test is flaky.
+- (void)FLAKY_testUserSignedOut {
   [ChromeEarlGrey signOutAndClearIdentities];
 
   [self loadSignupPage];
