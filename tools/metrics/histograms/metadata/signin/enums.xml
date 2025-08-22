@@ -740,6 +740,7 @@ chromium-metrics-reviews@google.com.
   <int value="33" label="Composebox Query Controller"/>
   <int value="34" label="Document Suggestions Service"/>
   <int value="35" label="Enterprise Search Aggregator"/>
+  <int value="36" label="Parent Permission Dialog"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

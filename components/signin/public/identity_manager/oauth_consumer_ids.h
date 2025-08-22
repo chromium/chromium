@@ -48,7 +48,8 @@ enum class OAuthConsumerId {
   kComposeboxQueryController = 33,
   kDocumentSuggestionsService = 34,
   kEnterpriseSearchAggregator = 35,
-  kMaxValue = kEnterpriseSearchAggregator,
+  kParentPermissionDialog = 36,
+  kMaxValue = kParentPermissionDialog,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

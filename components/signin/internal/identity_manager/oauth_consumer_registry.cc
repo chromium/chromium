@@ -55,6 +55,7 @@ constexpr char kDocumentSuggestionsServiceName[] =
     "document_suggestions_service";
 constexpr char kEnterpriseSearchAggregatorName[] =
     "enterprise_search_aggregator";
+constexpr char kParentPermissionDialogName[] = "parent_permission_dialog";
 
 }  // namespace
 
@@ -235,6 +236,10 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kEnterpriseSearchAggregatorName,
           /*scopes=*/{GaiaConstants::kDiscoveryEngineCompleteQueryOAuth2Scope});
+    case OAuthConsumerId::kParentPermissionDialog:
+      return OAuthConsumer(
+          /*name=*/kParentPermissionDialogName,
+          /*scopes=*/{GaiaConstants::kAccountsReauthOAuth2Scope});
   }
   NOTREACHED();
 }
