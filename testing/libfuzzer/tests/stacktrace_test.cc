@@ -61,7 +61,9 @@ TEST(FuzzerStacktraceTest, SymbolizesUAF) {
       R"(READ of size 4 at 0x[0-9a-f]+ thread T[0-9]+)",
 #if BUILDFLAG(IS_WIN)
       R"(#0 0x[0-9a-f]+ in TriggerUAF [A-Z]:\\.*testing\\libfuzzer\\tests\\stacktrace_test_fuzzer.cc:[0-9]+)",
-#else  // BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_MAC)
+      R"(#0 0x[0-9a-f]+ in TriggerUAF\(\) \(.*/stacktrace_test_fuzzer:arm64\+0x[0-9a-f]+\))",
+#else
       R"(#0 0x[0-9a-f]+ in TriggerUAF\(\) testing/libfuzzer/tests/stacktrace_test_fuzzer.cc:[0-9]+:[0-9]+)",
 #endif
   };
