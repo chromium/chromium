@@ -139,7 +139,7 @@ void FakeConciergeClient::ImportDiskImage(
       FROM_HERE,
       base::BindOnce(&FakeConciergeClient::NotifyAllDiskImageProgress,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::Seconds(1));
+      base::Seconds(2));
 }
 
 void FakeConciergeClient::ExportDiskImage(
@@ -158,7 +158,7 @@ void FakeConciergeClient::ExportDiskImage(
       FROM_HERE,
       base::BindOnce(&FakeConciergeClient::NotifyAllDiskImageProgress,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::Seconds(1));
+      base::Seconds(2));
 }
 
 void FakeConciergeClient::CancelDiskImageOperation(
