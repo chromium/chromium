@@ -131,8 +131,9 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
         browser_view, contents_view_));
-    view_bounds_observer_.Observe(contents_view_);
   }
+
+  view_bounds_observer_.Observe(contents_view_);
 }
 
 ContentsContainerView::~ContentsContainerView() = default;
