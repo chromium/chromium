@@ -83,6 +83,7 @@ using ::permissions::PredictionRequestFeatures;
 using ::permissions::PredictionService;
 using ::test::BuildBitmap;
 using ::test::DelayedPassageEmbedderMock;
+using ::test::EmbedderMetadataProviderFake;
 using ::test::PassageEmbedderMock;
 using ::test::PermissionsAiv3HandlerFake;
 using ::test::PermissionsAiv4HandlerFake;
@@ -187,6 +188,8 @@ constexpr char kAiv4ComputeEmbeddingsDurationHistogram[] =
     "Permissions.AIv4.ComputeEmbeddingsDuration";
 constexpr char kAiv4PassageEmbeddingsComputationTimeoutHistogram[] =
     "Permissions.AIv4.PassageEmbeddingsComputationTimeout";
+constexpr char kAiv4EmbedderMetadataValidHistogram[] =
+    "Permissions.AIv4.EmbedderMetadataValid";
 // A CPSSv1 model that returns a constant value of 0.5;
 // its meaning is defined by the max_likely threshold we use in the
 // signature_model_executor to differentiate between
@@ -1057,6 +1060,16 @@ class Aiv4ModelPredictionServiceBrowserTestBase
         &passage_embedder_);
     passage_embedder_.set_status(
         passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
+
+    embedder_metadata_provider_fake.AddObserver(model_handler_provider());
+    embedder_metadata_provider_fake.NotifyObservers(
+        EmbedderMetadataProviderFake::GetValidEmbedderMetadata());
+  }
+
+  void TearDownOnMainThread() override {
+    AivXModelPredictionServiceBrowserTest<
+        PermissionsAiv4HandlerFake>::TearDownOnMainThread();
+    embedder_metadata_provider_fake.RemoveObserver(model_handler_provider());
   }
 
   RequestType request_type() const override {
@@ -1080,6 +1093,8 @@ class Aiv4ModelPredictionServiceBrowserTestBase
   void set_model_handler(PermissionsAiv4HandlerFake* handler) override {
     aiv4_model_handler_ = handler;
   }
+
+  EmbedderMetadataProviderFake embedder_metadata_provider_fake;
 
  private:
   PassageEmbedderMock passage_embedder_;
@@ -1237,6 +1252,7 @@ struct Aiv4ModelFailureTestCase {
   SkBitmap snapshot;
   ComputeEmbeddingsStatus compute_embeddings_status;
   std::optional<PassageEmbedderMock> passage_embedder;
+  passage_embeddings::EmbedderMetadata embedder_metadata;
 };
 
 class Aiv4ModelFailureBrowserTest
@@ -1266,6 +1282,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
             /*passage_embedder=*/PassageEmbedderMock(),
+            /*embedder_metadata=*/
+            EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
         },
         {
             /*test_name=*/"EmptyInnerText",
@@ -1275,6 +1293,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
             /*passage_embedder=*/PassageEmbedderMock(),
+            /*embedder_metadata=*/
+            EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
         },
         {
             /*test_name=*/"EmbedderModelFails",
@@ -1284,6 +1304,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kExecutionFailure,
             /*passage_embedder=*/PassageEmbedderMock(),
+            /*embedder_metadata=*/
+            EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
         },
         {
             /*test_name=*/"EmbedderModelDoesNotExist",
@@ -1293,6 +1315,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
             /*passage_embedder=*/std::nullopt,
+            /*embedder_metadata=*/
+            EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
         },
         {
             /*test_name=*/"PageIsNotInEnglish",
@@ -1302,6 +1326,19 @@ INSTANTIATE_TEST_SUITE_P(
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
             /*passage_embedder=*/PassageEmbedderMock(),
+            /*embedder_metadata=*/
+            EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
+        },
+        {
+            /*test_name=*/"InvalidEmbedderMetadata",
+            /*page_language=*/"en",
+            /*inner_text=*/"some valid text for aiv4 model",
+            /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
+            /*compute_embeddings_status=*/
+            ComputeEmbeddingsStatus::kSuccess,
+            /*passage_embedder=*/PassageEmbedderMock(),
+            /*embedder_metadata=*/
+            EmbedderMetadataProviderFake::GetInvalidEmbedderMetadata(),
         },
     }), /*name_generator=*/
     [](const testing::TestParamInfo<Aiv4ModelFailureBrowserTest::ParamType>&
@@ -1313,11 +1350,14 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelFailureBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   PushModelFileToModelExecutor(ModelFilePath(kOneReturnAiv4Model));
 
+  embedder_metadata_provider_fake.NotifyObservers(GetParam().embedder_metadata);
+
   // We setup various failure conditions defined by the testcases.
   prediction_based_permission_ui_selector()->set_snapshot_for_testing(
       GetParam().snapshot);
   set_dummy_inner_text_for_testing(GetParam().inner_text);
   std::unique_ptr<PassageEmbedderMock> passage_embedder;
+
   if (GetParam().passage_embedder.has_value()) {
     passage_embedder = std::make_unique<PassageEmbedderMock>(
         GetParam().passage_embedder.value());
@@ -1327,6 +1367,7 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelFailureBrowserTest,
   } else {
     model_handler_provider()->set_passage_embedder_for_testing(nullptr);
   }
+  embedder_metadata_provider_fake.NotifyObservers(GetParam().embedder_metadata);
 
   // We expect a vanilla CPSSv3 call without input from the
   // on-device model.
@@ -1582,6 +1623,9 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
 
   histogram_tester().ExpectTotalCount(kAiv4ComputeEmbeddingsDurationHistogram,
                                       /*expected_count=*/1);
+
+  histogram_tester().ExpectBucketCount(kAiv4EmbedderMetadataValidHistogram,
+                                       /*sample=*/true, /*expected_count=*/1);
 
   histogram_tester().ExpectBucketCount(
       request_type() == RequestType::kNotifications

@@ -15,7 +15,10 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
+#include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h"
+#include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/permissions/test/enums_to_string.h"
+#include "chrome/browser/permissions/test/mock_passage_embedder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -36,9 +39,12 @@
 
 namespace {
 using Decision = PredictionBasedPermissionUiSelector::Decision;
-using PredictionSource =
-    permissions::PermissionPredictionSource;
-using base::test::FeatureRef;
+using ::test::EmbedderMetadataProviderFake;
+using ::test::PassageEmbedderMock;
+using PredictionSource = permissions::PermissionPredictionSource;
+using ::base::test::FeatureRef;
+using ::permissions::PredictionModelHandlerProvider;
+using ::testing::NiceMock;
 
 constexpr char kOnDevPredServiceResponseNotificationsHistogram[] =
     "Permissions.OnDevicePredictionService.Response.Notifications";
@@ -52,6 +58,19 @@ constexpr char kAIv3ResponseNotificationsHistogram[] =
     "Permissions.AIv3.Response.Notifications";
 constexpr char kAIv3ResponseGeolocationHistogram[] =
     "Permissions.AIv3.Response.Geolocation";
+constexpr char kAIv4ResponseNotificationsHistogram[] =
+    "Permissions.AIv4.Response.Notifications";
+constexpr char kAIv4ResponseGeolocationHistogram[] =
+    "Permissions.AIv4.Response.Geolocation";
+
+std::unique_ptr<KeyedService> BuildPredictionModelHandler(
+    OptimizationGuideKeyedService* optimization_guide,
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+    passage_embeddings::Embedder* passage_embedder,
+    content::BrowserContext* context) {
+  return std::make_unique<PredictionModelHandlerProvider>(
+      optimization_guide, embedder_metadata_provider, passage_embedder);
+}
 
 }  // namespace
 
@@ -61,6 +80,11 @@ class PredictionBasedPermissionUiSelectorTestBase : public testing::Test {
       : testing_profile_(std::make_unique<TestingProfile>()) {}
 
   void SetUp() override {
+    model_handler_provider_ = SetupPredictionModelHandlerForTesting();
+    // Required to get correct prediction type in case of AIv4.
+    embedder_metadata_provider_fake_.NotifyObservers(
+        EmbedderMetadataProviderFake::GetValidEmbedderMetadata());
+
     InitFeatureList();
 
     // Enable msbb.
@@ -97,8 +121,6 @@ class PredictionBasedPermissionUiSelectorTestBase : public testing::Test {
     }
   }
 
-  TestingProfile* profile() { return testing_profile_.get(); }
-
   Decision SelectUiToUseAndGetDecision(
       PredictionBasedPermissionUiSelector* selector,
       permissions::RequestType request_type) {
@@ -118,11 +140,27 @@ class PredictionBasedPermissionUiSelectorTestBase : public testing::Test {
 
     return actual_decision.value();
   }
+
+  TestingProfile* profile() { return testing_profile_.get(); }
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
 
  private:
+  PredictionModelHandlerProvider* SetupPredictionModelHandlerForTesting() {
+    return static_cast<PredictionModelHandlerProvider*>(
+        PredictionModelHandlerProviderFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile(),
+                base::BindRepeating(&BuildPredictionModelHandler,
+                                    /*optimization_guide=*/nullptr,
+                                    &embedder_metadata_provider_fake_,
+                                    &passage_embedder_)));
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> testing_profile_;
+  PassageEmbedderMock passage_embedder_;
+  EmbedderMetadataProviderFake embedder_metadata_provider_fake_;
+  raw_ptr<PredictionModelHandlerProvider> model_handler_provider_;
 };
 
 class PredictionBasedPermissionUiSelectorTest
@@ -169,6 +207,7 @@ TEST_P(PredictionBasedPermissionUiDecisionTest,
   EXPECT_EQ(GetParam().expected_decision.warning_reason,
             decision.warning_reason);
 }
+
 TEST_F(PredictionBasedPermissionUiSelectorTest, ConcurrentRequestsTest) {
   base::HistogramTester histogram_tester;
   PredictionBasedPermissionUiSelector prediction_selector(profile());
@@ -190,6 +229,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, ConcurrentRequestsTest) {
       "Permissions.PredictionService.ConcurrentRequests",
       permissions::PermissionPredictionSupportedType::kNotifications, 1);
 }
+
 TEST_F(PredictionBasedPermissionUiSelectorTest, RequestsWithFewPromptsAreSent) {
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -532,6 +572,21 @@ INSTANTIATE_TEST_SUITE_P(
             PredictionSource::kOnDeviceAiv3AndServerSideModel,
             /*request_type=*/permissions::RequestType::kGeolocation,
             /*updated_histograms=*/{kAIv3ResponseGeolocationHistogram},
+        },
+        // ----------------------- on-device AIv4 + server-side CPSSv3
+        {
+            /*holdback_chance=*/0,
+            /*prediction_source=*/
+            PredictionSource::kOnDeviceAiv4AndServerSideModel,
+            /*request_type=*/permissions::RequestType::kNotifications,
+            /*updated_histograms=*/{kAIv4ResponseNotificationsHistogram},
+        },
+        {
+            /*holdback_chance=*/1,
+            /*prediction_source=*/
+            PredictionSource::kOnDeviceAiv4AndServerSideModel,
+            /*request_type=*/permissions::RequestType::kGeolocation,
+            /*updated_histograms=*/{kAIv4ResponseGeolocationHistogram},
         },
 
     }),

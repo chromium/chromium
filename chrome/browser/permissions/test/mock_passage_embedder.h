@@ -93,6 +93,28 @@ class DelayedPassageEmbedderMock : public PassageEmbedderMock {
   base::WeakPtrFactory<DelayedPassageEmbedderMock> weak_ptr_factory_{this};
 };
 
+class EmbedderMetadataProviderFake
+    : public passage_embeddings::EmbedderMetadataProvider {
+ public:
+  EmbedderMetadataProviderFake();
+  ~EmbedderMetadataProviderFake() override;
+
+  // passage_embeddings::EmbedderMetadataProvider:
+  void AddObserver(
+      passage_embeddings::EmbedderMetadataObserver* observer) override;
+  void RemoveObserver(
+      passage_embeddings::EmbedderMetadataObserver* observer) override;
+
+  void NotifyObservers(passage_embeddings::EmbedderMetadata metadata);
+
+  static passage_embeddings::EmbedderMetadata GetValidEmbedderMetadata();
+  static passage_embeddings::EmbedderMetadata GetInvalidEmbedderMetadata();
+
+ private:
+  base::ObserverList<passage_embeddings::EmbedderMetadataObserver>
+      observer_list_;
+};
+
 }  // namespace test
 
 #endif  // CHROME_BROWSER_PERMISSIONS_TEST_MOCK_PASSAGE_EMBEDDER_H_

@@ -739,7 +739,8 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
     // AIvX models take priority over each other in the following order:
     // AIv4, AIv3, AIv1
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    if (PredictionModelHandlerProvider::IsAiv4ModelAvailable()) {
+    if (PredictionModelHandlerProvider::IsAiv4ModelAvailable() &&
+        PredictionModelHandlerProviderFactory::GetForBrowserContext(profile_)) {
       VLOG(1) << "[CPSS] GetPredictionTypeToUse AIv4";
       return PredictionSource::kOnDeviceAiv4AndServerSideModel;
     }

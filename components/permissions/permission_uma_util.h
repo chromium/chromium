@@ -906,6 +906,10 @@ class PermissionUmaUtil {
   // during the Aiv4 workflow.
   static void RecordPassageEmbeddingsCalculationTimeout(bool timeout);
 
+  // Records whether the passage embedder metadata was valid when the AIv4
+  // workflow was initiated.
+  static void RecordPassageEmbedderMetadataValid(bool valid);
+
   // Records if the browser was active at the time the prompt started displaying
   static void RecordPromptShownInActiveBrowser(
       RequestTypeForUma request_type,

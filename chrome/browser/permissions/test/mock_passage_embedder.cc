@@ -10,9 +10,14 @@
 namespace test {
 
 using passage_embeddings::ComputeEmbeddingsStatus;
+using passage_embeddings::EmbedderMetadata;
 using passage_embeddings::PassagePriority;
 using passage_embeddings::TestEmbedder;
 using TaskId = passage_embeddings::Embedder::TaskId;
+
+// ---------------------------------------------------------------------------
+// --------------------------- PassageEmbedderMock ---------------------------
+// ---------------------------------------------------------------------------
 
 TaskId PassageEmbedderMock::ComputePassagesEmbeddings(
     PassagePriority priority,
@@ -32,8 +37,13 @@ void PassageEmbedderMock::set_status(ComputeEmbeddingsStatus status) {
   status_ = status;
 }
 
+// ---------------------------------------------------------------------------
+// ----------------------- DelayedPassageEmbedderMock ------------------------
+// ---------------------------------------------------------------------------
+
 DelayedPassageEmbedderMock::DelayedPassageEmbedderMock() = default;
 DelayedPassageEmbedderMock::~DelayedPassageEmbedderMock() = default;
+
 void DelayedPassageEmbedderMock::ReleaseCallback() {
   if (execution_callback_) {
     std::move(execution_callback_).Run();
@@ -72,4 +82,38 @@ TaskId DelayedPassageEmbedderMock::ComputePassagesEmbeddings(
           weak_ptr_factory_.GetWeakPtr()));
   return 0;
 }
+
+// ---------------------------------------------------------------------------
+// ----------------------- EmbedderMetadataProviderFake ----------------------
+// ---------------------------------------------------------------------------
+
+EmbedderMetadataProviderFake::EmbedderMetadataProviderFake() = default;
+EmbedderMetadataProviderFake::~EmbedderMetadataProviderFake() = default;
+
+// static
+EmbedderMetadata EmbedderMetadataProviderFake::GetValidEmbedderMetadata() {
+  return EmbedderMetadata(1, 768);
+}
+
+// static
+EmbedderMetadata EmbedderMetadataProviderFake::GetInvalidEmbedderMetadata() {
+  return EmbedderMetadata(0, 0);
+}
+
+void EmbedderMetadataProviderFake::AddObserver(
+    passage_embeddings::EmbedderMetadataObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void EmbedderMetadataProviderFake::RemoveObserver(
+    passage_embeddings::EmbedderMetadataObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void EmbedderMetadataProviderFake::NotifyObservers(EmbedderMetadata metadata) {
+  observer_list_.Notify(
+      &passage_embeddings::EmbedderMetadataObserver::EmbedderMetadataUpdated,
+      std::move(metadata));
+}
+
 }  // namespace test

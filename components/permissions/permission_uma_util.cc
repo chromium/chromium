@@ -2211,4 +2211,10 @@ void PermissionUmaUtil::RecordPassageEmbeddingsCalculationTimeout(
   base::UmaHistogramBoolean(
       "Permissions.AIv4.PassageEmbeddingsComputationTimeout", timeout);
 }
+
+// static
+void PermissionUmaUtil::RecordPassageEmbedderMetadataValid(bool valid) {
+  base::UmaHistogramBoolean("Permissions.AIv4.EmbedderMetadataValid", valid);
+}
+
 }  // namespace permissions

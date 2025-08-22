@@ -512,6 +512,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.AIv4.EmbedderMetadataValid" enum="BooleanValid"
+    expires_after="2026-02-01">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the passage embedder metadata was valid when the AIv4
+    workflow was initiated. Recorded when the PassageEmbedderDelegate attempts
+    to retrieve the passage embedder.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.AIv4.FinishedPassageEmbeddingsTaskOutdated"
     enum="BooleanSuccess" expires_after="2026-02-01">
   <owner>elklm@chromium.org</owner>

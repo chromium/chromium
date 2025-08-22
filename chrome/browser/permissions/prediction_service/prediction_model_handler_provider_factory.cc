@@ -67,6 +67,8 @@ PredictionModelHandlerProviderFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   passage_embeddings::Embedder* passage_embedder = nullptr;
+  passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider =
+      nullptr;
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4)) {
     if (!passage_embeddings::PassageEmbedderModelObserverFactory::GetForProfile(
             profile)) {
@@ -76,6 +78,7 @@ PredictionModelHandlerProviderFactory::BuildServiceInstanceForBrowserContext(
                    passage_embeddings::
                        ChromePassageEmbeddingsServiceController::Get()) {
       passage_embedder = passage_embeddings_service_controller->GetEmbedder();
+      embedder_metadata_provider = passage_embeddings_service_controller;
       VLOG(1)
           << "[PermissionsAI]: PassageEmbeddingsServiceController available, "
              "passage_embedder setup."
@@ -91,7 +94,7 @@ PredictionModelHandlerProviderFactory::BuildServiceInstanceForBrowserContext(
                "enabled, passage embedder not setup.";
   }
   return std::make_unique<permissions::PredictionModelHandlerProvider>(
-      optimization_guide, passage_embedder);
+      optimization_guide, embedder_metadata_provider, passage_embedder);
 }
 
 bool PredictionModelHandlerProviderFactory::ServiceIsCreatedWithBrowserContext()

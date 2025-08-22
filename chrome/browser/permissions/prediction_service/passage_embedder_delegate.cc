@@ -20,8 +20,16 @@ Embedder* PassageEmbedderDelegate::get_passage_embedder() {
   if (auto* prediction_model_handler_provider =
           PredictionModelHandlerProviderFactory::GetForBrowserContext(
               profile_)) {
+    bool is_ready = prediction_model_handler_provider->IsPassageEmbedderReady();
+    PermissionUmaUtil::RecordPassageEmbedderMetadataValid(is_ready);
+    if (!is_ready) {
+      VLOG(1) << "[PermissionsAIv4] "
+                 "PassageEmbedderDelegate::get_passage_embedder is not ready.";
+      return nullptr;
+    }
     return prediction_model_handler_provider->GetPassageEmbedder();
   }
+  PermissionUmaUtil::RecordPassageEmbedderMetadataValid(false);
   return nullptr;
 }
 
