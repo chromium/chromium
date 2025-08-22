@@ -1,6 +1,5 @@
 include_rules = [
   "+google_apis",
-  "+google/protobuf",
   "+net",
   "+jingle",
   "+services/network/proxy_resolving_client_socket.h",

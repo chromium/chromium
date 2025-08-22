@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "remoting/signaling/message_channel_strategy.h"
 
 namespace remoting {
@@ -42,20 +43,21 @@ class FtlMessageChannelStrategy : public MessageChannelStrategy {
                   const MessageCallback& on_incoming_msg);
 
   // MessageChannelStrategy implementation.
-  void OnMessageReceived(
-      std::unique_ptr<google::protobuf::MessageLite> message) override;
   std::unique_ptr<ScopedProtobufHttpRequest> CreateChannel(
       base::OnceClosure on_channel_ready,
-      const base::RepeatingCallback<void(
-          std::unique_ptr<google::protobuf::MessageLite>)>& on_incoming_msg,
       base::OnceCallback<void(const HttpStatus&)> on_channel_closed) override;
   base::TimeDelta GetInactivityTimeout() const override;
   void set_on_channel_active(base::RepeatingClosure on_channel_active) override;
 
  private:
+  void OnReceiveMessagesResponse(
+      std::unique_ptr<ftl::ReceiveMessagesResponse> response);
+
   StreamOpener stream_opener_;
   MessageCallback on_incoming_msg_;
   base::RepeatingClosure on_channel_active_;
+
+  base::WeakPtrFactory<FtlMessageChannelStrategy> weak_factory_{this};
 };
 
 }  // namespace remoting

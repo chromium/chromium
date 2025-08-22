@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "google/protobuf/message_lite.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/scoped_protobuf_http_request.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
@@ -33,15 +32,12 @@ void FtlMessageChannelStrategy::Initialize(
   on_incoming_msg_ = on_incoming_msg;
 }
 
-void FtlMessageChannelStrategy::OnMessageReceived(
-    std::unique_ptr<google::protobuf::MessageLite> message) {
-  ftl::ReceiveMessagesResponse response;
-  response.CheckTypeAndMergeFrom(*message);
-
-  switch (response.body_case()) {
+void FtlMessageChannelStrategy::OnReceiveMessagesResponse(
+    std::unique_ptr<ftl::ReceiveMessagesResponse> response) {
+  switch (response->body_case()) {
     case ftl::ReceiveMessagesResponse::BodyCase::kInboxMessage: {
       VLOG(1) << "Received message";
-      on_incoming_msg_.Run(response.inbox_message());
+      on_incoming_msg_.Run(response->inbox_message());
       break;
     }
     case ftl::ReceiveMessagesResponse::BodyCase::kPong:
@@ -55,7 +51,8 @@ void FtlMessageChannelStrategy::OnMessageReceived(
       VLOG(1) << "Received end of batch";
       break;
     default:
-      LOG(WARNING) << "Received unknown message type: " << response.body_case();
+      LOG(WARNING) << "Received unknown message type: "
+                   << response->body_case();
       break;
   }
 }
@@ -63,18 +60,11 @@ void FtlMessageChannelStrategy::OnMessageReceived(
 std::unique_ptr<ScopedProtobufHttpRequest>
 FtlMessageChannelStrategy::CreateChannel(
     base::OnceClosure on_channel_ready,
-    const base::RepeatingCallback<
-        void(std::unique_ptr<google::protobuf::MessageLite>)>& on_incoming_msg,
     base::OnceCallback<void(const HttpStatus&)> on_channel_closed) {
   return stream_opener_.Run(
       std::move(on_channel_ready),
-      base::BindRepeating(
-          [](const base::RepeatingCallback<void(
-                 std::unique_ptr<google::protobuf::MessageLite>)>& callback,
-             std::unique_ptr<ftl::ReceiveMessagesResponse> response) {
-            callback.Run(std::move(response));
-          },
-          on_incoming_msg),
+      base::BindRepeating(&FtlMessageChannelStrategy::OnReceiveMessagesResponse,
+                          weak_factory_.GetWeakPtr()),
       std::move(on_channel_closed));
 }
 

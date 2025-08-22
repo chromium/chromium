@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "google/protobuf/message_lite.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/scoped_protobuf_http_request.h"
 #include "remoting/signaling/ftl_services_context.h"
@@ -105,14 +104,6 @@ void MessageChannel::OnReceiveMessagesStreamClosed(const HttpStatus& status) {
   RunStreamClosedCallbacks(status);
 }
 
-void MessageChannel::OnProtobufMessageReceived(
-    std::unique_ptr<google::protobuf::MessageLite> response) {
-  // `MessageLite` is a common super-type for all protos. Strategy impls should
-  // use `CheckTypeAndMergeFrom` to convert to their expected response proto.
-  // TODO: joedow - Consider how best to templatize this.
-  strategy_->OnMessageReceived(std::move(response));
-}
-
 void MessageChannel::RunStreamReadyCallbacks() {
   if (stream_ready_callbacks_.empty()) {
     return;
@@ -160,8 +151,6 @@ void MessageChannel::StartReceivingMessagesInternal() {
   receive_messages_stream_ = strategy_->CreateChannel(
       base::BindOnce(&MessageChannel::OnReceiveMessagesStreamReady,
                      weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&MessageChannel::OnProtobufMessageReceived,
-                          weak_factory_.GetWeakPtr()),
       base::BindOnce(&MessageChannel::OnReceiveMessagesStreamClosed,
                      weak_factory_.GetWeakPtr()));
 }

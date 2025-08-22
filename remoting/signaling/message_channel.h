@@ -15,10 +15,6 @@
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
 
-namespace google::protobuf {
-class MessageLite;
-}  // namespace google::protobuf
-
 namespace remoting {
 
 class HttpStatus;
@@ -75,8 +71,6 @@ class MessageChannel final {
 
   void OnReceiveMessagesStreamReady();
   void OnReceiveMessagesStreamClosed(const HttpStatus& status);
-  void OnProtobufMessageReceived(
-      std::unique_ptr<google::protobuf::MessageLite> response);
   void OnChannelActive();
 
   void RunStreamReadyCallbacks();

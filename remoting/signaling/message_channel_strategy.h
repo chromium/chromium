@@ -10,10 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 
-namespace google::protobuf {
-class MessageLite;
-}  // namespace google::protobuf
-
 namespace remoting {
 
 class HttpStatus;
@@ -29,15 +25,9 @@ class MessageChannelStrategy {
   virtual void set_on_channel_active(
       base::RepeatingClosure on_channel_active) = 0;
 
-  // Called when a new message is received from the stream.
-  virtual void OnMessageReceived(
-      std::unique_ptr<google::protobuf::MessageLite> message) = 0;
-
   // Creates the specific channel implementation for the stream.
   virtual std::unique_ptr<ScopedProtobufHttpRequest> CreateChannel(
       base::OnceClosure on_channel_ready,
-      const base::RepeatingCallback<void(
-          std::unique_ptr<google::protobuf::MessageLite>)>& on_incoming_msg,
       base::OnceCallback<void(const HttpStatus&)> on_channel_closed) = 0;
 
   // Returns the inactivity timeout for the stream.
