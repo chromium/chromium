@@ -24691,6 +24691,8 @@ Called by update_net_error_codes.py.-->
   <int value="18" label="Opened from an extension"/>
   <int value="19" label="Opened from the New Tab Page"/>
   <int value="20" label="Opened from the Reading List toast"/>
+  <int value="21" label="Opened from the New Tab Page footer"/>
+  <int value="22" label="Opened from the New Tab Page customization promo"/>
 </enum>
 
 <enum name="SignedExchangeLoadResult">

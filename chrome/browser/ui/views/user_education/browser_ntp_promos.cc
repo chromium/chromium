@@ -6,12 +6,19 @@
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/user_education/ntp_promo_identifiers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -23,6 +30,7 @@
 #include "components/user_education/common/user_education_metadata.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_urls.h"
+#include "ui/actions/actions.h"
 
 using user_education::NtpPromoContent;
 using user_education::NtpPromoSpecification;
@@ -85,6 +93,35 @@ void InvokeExtensionsPromo(BrowserWindowInterface* browser) {
   Navigate(&params);
 }
 
+NtpPromoSpecification::Eligibility CheckCustomizationPromoEligibility(
+    Profile* profile) {
+  auto* background_service =
+      NtpCustomBackgroundServiceFactory::GetForProfile(profile);
+  auto* theme_service = ThemeServiceFactory::GetForProfile(profile);
+  if (!background_service || !theme_service) {
+    return NtpPromoSpecification::Eligibility::kIneligible;
+  }
+  // Infer that if a custom background or theme is used, customization has
+  // taken place.
+  const bool customized =
+      background_service->GetCustomBackground().has_value() ||
+      (theme_service->GetThemeID() != ThemeHelper::kDefaultThemeID);
+  return customized ? NtpPromoSpecification::Eligibility::kCompleted
+                    : NtpPromoSpecification::Eligibility::kEligible;
+}
+
+void InvokeCustomizationPromo(BrowserWindowInterface* browser) {
+  actions::ActionManager::Get()
+      .FindAction(kActionSidePanelShowCustomizeChrome)
+      ->InvokeAction(
+          actions::ActionInvocationContext::Builder()
+              .SetProperty(
+                  kSidePanelOpenTriggerKey,
+                  static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                      SidePanelOpenTrigger::kNewTabPageCustomizationPromo))
+              .Build());
+}
+
 }  // namespace
 
 void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
@@ -130,4 +167,15 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
       user_education::Metadata(
           141, "cjgrant@google.com",
           "Promotes Chrome extensions on the New Tab Page")));
+
+  registry.AddPromo(NtpPromoSpecification(
+      kNtpCustomizationPromoId,
+      NtpPromoContent("palette", IDS_NTP_CUSTOMIZATION_PROMO,
+                      IDS_NTP_CUSTOMIZATION_PROMO_ACTION_BUTTON),
+      base::BindRepeating(&CheckCustomizationPromoEligibility),
+      /*show_callback=*/base::DoNothing(),
+      base::BindRepeating(&InvokeCustomizationPromo),
+      /*show_after=*/{},
+      user_education::Metadata(141, "cjgrant@google.com",
+                               "Promotes customization of the New Tab Page")));
 }
