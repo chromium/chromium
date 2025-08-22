@@ -13,9 +13,9 @@ grd_prefix = "new_tab_page"
 
 build_webui("build") {
   icons_html_files = [
-    "modules/v2/icons.html",
-    "modules/v2/most_relevant_tab_resumption/icons.html",
-    "modules/v2/tab_groups/icons.html",
+    "modules/icons.html",
+    "modules/most_relevant_tab_resumption/icons.html",
+    "modules/tab_groups/icons.html",
     "ntp_promo/ntp_promo_icons.html",
   ]
 
@@ -26,16 +26,16 @@ build_webui("build") {
 
   extra_grdp_files = [
     "$target_gen_dir/icons/resources.grdp",
-    "$target_gen_dir/modules/v2/authentication/icons/resources.grdp",
-    "$target_gen_dir/modules/v2/calendar/icons/resources.grdp",
-    "$target_gen_dir/modules/v2/tab_groups/icons/resources.grdp",
+    "$target_gen_dir/modules/authentication/icons/resources.grdp",
+    "$target_gen_dir/modules/calendar/icons/resources.grdp",
+    "$target_gen_dir/modules/tab_groups/icons/resources.grdp",
   ]
 
   extra_grdp_deps = [
     "icons:build_grdp",
-    "modules/v2/authentication/icons:build_grdp",
-    "modules/v2/calendar/icons:build_grdp",
-    "modules/v2/tab_groups/icons:build_grdp",
+    "modules/authentication/icons:build_grdp",
+    "modules/calendar/icons:build_grdp",
+    "modules/tab_groups/icons:build_grdp",
   ]
 
   if (optimize_webui) {

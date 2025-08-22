@@ -1,0 +1,17 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# List of files that don't need to be passed to html_to_wrapper().
+tab_groups_ts_files = [
+  "modules/tab_groups/icon_container.ts",
+  "modules/tab_groups/tab_groups_proxy.ts",
+]
+
+# List of files that should be passed to html_to_wrapper().
+tab_groups_web_component_files = [ "modules/tab_groups/module.ts" ]
+
+tab_groups_css_files = [
+  "modules/tab_groups/icon_container.css",
+  "modules/tab_groups/module.css",
+]

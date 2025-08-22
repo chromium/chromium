@@ -5,14 +5,14 @@
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './ntp_promo_icons.html.js';
 import './setup_list_item.js';
-import '../modules/v2/icons.html.js';
-import '../modules/v2/module_header.js';
+import '../modules/icons.html.js';
+import '../modules/module_header.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit} from '../i18n_setup.js';
-import type {ModuleHeaderElement} from '../modules/v2/module_header.js';
+import type {ModuleHeaderElement} from '../modules/module_header.js';
 import type {NtpPromoClientCallbackRouter, NtpPromoHandlerInterface, Promo} from '../ntp_promo.mojom-webui.js';
 
 import {NtpPromoProxyImpl} from './ntp_promo_proxy.js';

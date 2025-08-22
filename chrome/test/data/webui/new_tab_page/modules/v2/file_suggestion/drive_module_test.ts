@@ -4,7 +4,7 @@
 
 import {DriveSuggestionHandlerRemote} from 'chrome://new-tab-page/drive_suggestion.mojom-webui.js';
 import type {DisableModuleEvent, DismissModuleInstanceEvent, DriveModuleV2Element} from 'chrome://new-tab-page/lazy_load.js';
-import {driveModuleV2Descriptor, FileProxy} from 'chrome://new-tab-page/lazy_load.js';
+import {driveModuleDescriptor, FileProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -73,7 +73,7 @@ suite('DriveModuleV2', () => {
         handler.setResultFor('getFiles', Promise.resolve(data));
 
         const module =
-            await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
+            await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
         assertTrue(!!module);
         document.body.append(module);
         await handler.whenCalled('getFiles');
@@ -88,7 +88,7 @@ suite('DriveModuleV2', () => {
   test('module does not render if there are no files', async () => {
     handler.setResultFor('getFiles', Promise.resolve({files: []}));
 
-    const module = await driveModuleV2Descriptor.initialize(0);
+    const module = await driveModuleDescriptor.initialize(0);
     await handler.whenCalled('getFiles');
     assertFalse(!!module);
   });
@@ -108,7 +108,7 @@ suite('DriveModuleV2', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
     const driveModule =
-        await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
+        await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!driveModule);
     document.body.append(driveModule);
     await microtasksFinished();
@@ -142,7 +142,7 @@ suite('DriveModuleV2', () => {
         };
         handler.setResultFor('getFiles', Promise.resolve(data));
         const driveModule =
-            await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
+            await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
         document.body.append(driveModule);
         await microtasksFinished();
 
@@ -175,7 +175,7 @@ suite('DriveModuleV2', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
     const moduleElement =
-        await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
+        await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!moduleElement);
     document.body.append(moduleElement);
     await microtasksFinished();
@@ -217,7 +217,7 @@ suite('DriveModuleV2', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
     const driveModule =
-        await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
+        await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!driveModule);
     document.body.append(driveModule);
     await microtasksFinished();

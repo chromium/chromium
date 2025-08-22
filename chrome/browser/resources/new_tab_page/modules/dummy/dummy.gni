@@ -1,0 +1,11 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# List of files that don't need to be passed to html_to_wrapper().
+dummy_ts_files = [ "modules/dummy/foo_proxy.ts" ]
+
+# List of files that should be passed to html_to_wrapper().
+dummy_web_component_files = [ "modules/dummy/module.ts" ]
+
+dummy_css_files = [ "modules/dummy/module.css" ]

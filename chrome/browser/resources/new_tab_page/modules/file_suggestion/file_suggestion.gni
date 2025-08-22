@@ -1,0 +1,18 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# List of files that don't need to be passed to html_to_wrapper().
+file_suggestion_ts_files = [
+  "modules/file_suggestion/file_module_proxy.ts",
+  "modules/file_suggestion/microsoft_files_proxy.ts",
+]
+
+# List of files that should be passed to html_to_wrapper().
+file_suggestion_web_component_files = [
+  "modules/file_suggestion/file_suggestion.ts",
+  "modules/file_suggestion/drive_module.ts",
+  "modules/file_suggestion/microsoft_files_module.ts",
+]
+
+file_suggestion_css_files = [ "modules/file_suggestion/file_suggestion.css" ]

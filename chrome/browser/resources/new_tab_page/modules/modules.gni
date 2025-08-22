@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("./v2/authentication/authentication.gni")
-import("./v2/calendar/calendar.gni")
-import("./v2/file_suggestion/file_suggestion.gni")
-import("./v2/most_relevant_tab_resumption/most_relevant_tab_resumption.gni")
-import("./v2/tab_groups/tab_groups.gni")
+import("./authentication/authentication.gni")
+import("./calendar/calendar.gni")
+import("./file_suggestion/file_suggestion.gni")
+import("./most_relevant_tab_resumption/most_relevant_tab_resumption.gni")
+import("./tab_groups/tab_groups.gni")
 
 if (!is_official_build) {
-  import("./v2/dummy/dummy.gni")
+  import("./dummy/dummy.gni")
 }
 
 # List of files that don't need to be passed to html_to_wrapper().
@@ -19,12 +19,11 @@ modules_ts_files =
       "modules/module_descriptors.ts",
       "modules/module_registry.ts",
       "modules/microsoft_auth_frame_connector.ts",
-    ] + authentication_ts_files + calendar_v2_ts_files +
-    file_suggestion_ts_files + most_relevant_tab_resumption_v2_ts_files +
-    tab_groups_ts_files
+    ] + authentication_ts_files + calendar_ts_files + file_suggestion_ts_files +
+    most_relevant_tab_resumption_ts_files + tab_groups_ts_files
 
 if (!is_official_build) {
-  modules_ts_files += dummy_v2_ts_files
+  modules_ts_files += dummy_ts_files
 }
 
 # List of files that should be passed to html_to_wrapper().
@@ -32,24 +31,24 @@ modules_web_component_files =
     [
       "modules/info_dialog.ts",
       "modules/module_wrapper.ts",
-      "modules/v2/module_header.ts",
-      "modules/v2/modules.ts",
-    ] + authentication_web_component_files + calendar_v2_web_component_files +
-    file_suggestion_v2_web_component_files +
-    most_relevant_tab_resumption_v2_web_component_files +
+      "modules/module_header.ts",
+      "modules/modules.ts",
+    ] + authentication_web_component_files + calendar_web_component_files +
+    file_suggestion_web_component_files +
+    most_relevant_tab_resumption_web_component_files +
     tab_groups_web_component_files
 
 modules_css_files =
     [
       "modules/info_dialog.css",
       "modules/module_wrapper.css",
-      "modules/v2/module_header.css",
-      "modules/v2/modules.css",
+      "modules/module_header.css",
+      "modules/modules.css",
     ] + authentication_css_files + calendar_css_files +
-    file_suggestion_v2_css_files + most_relevant_tab_resumption_v2_css_files +
+    file_suggestion_css_files + most_relevant_tab_resumption_css_files +
     tab_groups_css_files
 
 if (!is_official_build) {
-  modules_web_component_files += dummy_v2_web_component_files
-  modules_css_files += dummy_v2_css_files
+  modules_web_component_files += dummy_web_component_files
+  modules_css_files += dummy_css_files
 }
