@@ -1,7 +1,7 @@
 Name: serde_json
 URL: https://crates.io/crates/serde_json
-Version: 1.0.142
-Revision: 1731167cd5dd6358944aabf8ab8504a2f5162018
+Version: 1.0.143
+Revision: 10102c49bfd95e5b8d42a6c0b9530b1732a6fea8
 Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/serde_json-v1/LICENSE-APACHE

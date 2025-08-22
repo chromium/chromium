@@ -1935,7 +1935,7 @@ pub trait Formatter {
 }
 
 /// This structure compacts a JSON value with no extra whitespace.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct CompactFormatter;
 
 impl Formatter for CompactFormatter {}
