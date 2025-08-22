@@ -49,6 +49,7 @@ export {ViewerPropertiesDialogElement} from './elements/viewer_properties_dialog
 export {ViewerSaveControlsMixin} from './elements/viewer_save_controls_mixin.js';
 // <if expr="enable_pdf_save_to_drive">
 export {ViewerSaveToDriveBubbleElement} from './elements/viewer_save_to_drive_bubble.js';
+export {ViewerSaveToDriveControlsElement} from './elements/viewer_save_to_drive_controls.js';
 // </if>
 // <if expr="enable_pdf_ink2">
 export {ViewerSidePanelElement} from './elements/viewer_side_panel.js';
@@ -67,6 +68,9 @@ export {NavigatorDelegate, PdfNavigator, WindowOpenDisposition} from './navigato
 export {OpenPdfParamsParser, ViewMode} from './open_pdf_params_parser.js';
 export {getFilenameFromURL, PdfViewerElement} from './pdf_viewer.js';
 export {PdfViewerBaseElement} from './pdf_viewer_base.js';
+// <if expr="enable_pdf_save_to_drive">
+export {PdfViewerPrivateProxy, PdfViewerPrivateProxyImpl} from './pdf_viewer_private_proxy.js';
+// </if>
 // <if expr="enable_pdf_ink2">
 export {hexToColor} from './pdf_viewer_utils.js';
 // </if>

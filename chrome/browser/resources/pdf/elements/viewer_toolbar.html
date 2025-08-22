@@ -91,7 +91,9 @@ import {AnnotationMode} from '../constants.js';
 <if expr="enable_pdf_ink2">
         .hasInk2Edits="${this.hasInk2Edits}"
 </if>
-        .isFormFieldFocused="${this.isFormFieldFocused_()}">
+        .isFormFieldFocused="${this.isFormFieldFocused_()}"
+        .progress="${this.saveToDriveProgress}"
+        .uploading="${this.saveToDriveUploading}">
     </viewer-save-to-drive-controls>` : ''}
 </if>
     <viewer-download-controls id="downloads"

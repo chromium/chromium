@@ -118,6 +118,8 @@ export class ViewerToolbarElement extends CrLitElement {
 
       // <if expr="enable_pdf_save_to_drive">
       pdfSaveToDriveEnabled: {type: Boolean},
+      saveToDriveProgress: {type: Number},
+      saveToDriveUploading: {type: Boolean},
       // </if> enable_pdf_save_to_drive
     };
   }
@@ -145,6 +147,8 @@ export class ViewerToolbarElement extends CrLitElement {
 
   // <if expr="enable_pdf_save_to_drive">
   accessor pdfSaveToDriveEnabled: boolean = false;
+  accessor saveToDriveProgress: number = 0;
+  accessor saveToDriveUploading: boolean = false;
   // </if> enable_pdf_save_to_drive
 
   // <if expr="enable_pdf_ink2">

@@ -59,21 +59,21 @@ const tests = [
     document.body.appendChild(element);
     await microtasksFinished();
 
-    // Initially the button should be in non-uploading state
+    // Initially the button should be in non-uploading state.
     chrome.test.assertEq('pdf:add-to-drive', element.$.save.ironIcon);
     chrome.test.assertFalse(
         !!element.shadowRoot.querySelector('circular-progress-ring'));
 
-    // Once we start showing the upload progress, the icon will change
-    element.showUploadProgress(10);
+    // Once upload is in progress, the icon will change.
+    element.uploading = true;
+    element.progress = 10;
     await microtasksFinished();
     chrome.test.assertEq('pdf:arrow-upward-alt', element.$.save.ironIcon);
     chrome.test.assertTrue(
         !!element.shadowRoot.querySelector('circular-progress-ring'));
 
-
-    // If we reset the button, it should go back to the initial state
-    element.reset();
+    // Once upload is reset, it should go back to the initial state.
+    element.uploading = false;
     await microtasksFinished();
     chrome.test.assertEq('pdf:add-to-drive', element.$.save.ironIcon);
     chrome.test.assertFalse(

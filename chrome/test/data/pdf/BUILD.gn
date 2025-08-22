@@ -88,6 +88,7 @@ build_webui_tests("build") {
       "circular_progress_ring_test.ts",
       "save_to_drive_bubble_test.ts",
       "save_to_drive_controls_test.ts",
+      "save_to_drive_test.ts",
     ]
   }
 

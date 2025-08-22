@@ -46,8 +46,8 @@ export class ViewerSaveToDriveControlsElement extends ViewerSaveControlsBase {
     };
   }
 
-  protected accessor progress: number = 0;
-  protected accessor uploading: boolean = false;
+  accessor progress: number = 0;
+  accessor uploading: boolean = false;
 
   protected getIronIcon(): string {
     return this.uploading ? 'pdf:arrow-upward-alt' : 'pdf:add-to-drive';
@@ -66,24 +66,6 @@ export class ViewerSaveToDriveControlsElement extends ViewerSaveControlsBase {
   // ViewerSaveControlsMixin implementation.
   override getMenu(): CrActionMenuElement {
     return this.$.menu;
-  }
-
-  /*
-   * Resets the save button back to its initial state.
-   */
-  reset(): void {
-    this.uploading = false;
-  }
-
-  /*
-   * Reflects the current upload progress by updating the icon and
-   * showing the progress ring.
-   * @param progress The current upload progress as a percentage.
-   *                 A value between 0 and 100.
-   */
-  showUploadProgress(progress: number): void {
-    this.uploading = true;
-    this.progress = progress;
   }
 }
 

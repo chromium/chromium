@@ -80,6 +80,11 @@ import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents, verifyPdfHeader} from './pdf_viewer_utils.js';
 // clang-format on
 
+// <if expr="enable_pdf_save_to_drive">
+const SaveToDriveErrorType = chrome.pdfViewerPrivate.SaveToDriveErrorType;
+const SaveToDriveStatus = chrome.pdfViewerPrivate.SaveToDriveStatus;
+type SaveToDriveProgress = chrome.pdfViewerPrivate.SaveToDriveProgress;
+// </if> enable_pdf_save_to_drive
 const SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 
@@ -157,6 +162,32 @@ const BACKGROUND_COLOR: number = 0xff282828;
 // LINT.ThenChange(//chrome/browser/resources/pdf/pdf_embedder.css:PdfBackgroundColor, //components/pdf/common/pdf_util.cc:PdfBackgroundColor)
 // clang-format on
 
+// <if expr="enable_pdf_save_to_drive">
+function convertSaveToDriveProgressToSaveToDriveState(
+    progress: SaveToDriveProgress): SaveToDriveState {
+  switch (progress.errorType) {
+    case SaveToDriveErrorType.NO_ERROR:
+      if (progress.status === SaveToDriveStatus.INITIATED ||
+          progress.status === SaveToDriveStatus.UPLOAD_IN_PROGRESS) {
+        return SaveToDriveState.UPLOADING;
+      }
+      return SaveToDriveState.UNINITIALIZED;
+    case SaveToDriveErrorType.UNKNOWN_ERROR:
+      return SaveToDriveState.UNKNOWN_ERROR;
+    case SaveToDriveErrorType.QUOTA_EXCEEDED:
+      return SaveToDriveState.STORAGE_FULL_ERROR;
+    case SaveToDriveErrorType.OFFLINE:
+    case SaveToDriveErrorType.OAUTH_ERROR:
+      return SaveToDriveState.SESSION_TIMEOUT_ERROR;
+    case SaveToDriveErrorType.ACCOUNT_CHOOSER_CANCELED:
+    case SaveToDriveErrorType.PARENT_FOLDER_SELECTION_FAILED:
+      return SaveToDriveState.UNKNOWN_ERROR;
+    default:
+      assertNotReached();
+  }
+}
+// </if> enable_pdf_save_to_drive
+
 export interface PdfViewerElement {
   $: {
     content: HTMLElement,
@@ -223,6 +254,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
       // <if expr="enable_pdf_save_to_drive">
       pdfSaveToDriveEnabled_: {type: Boolean},
+      saveToDriveFileSizeBytes_: {type: Number},
+      saveToDriveState_: {type: String},
+      saveToDriveUploadedBytes_: {type: Number},
       // </if>
 
       showPasswordDialog_: {type: Boolean},
@@ -290,6 +324,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // </if>
   // <if expr="enable_pdf_save_to_drive">
   protected accessor pdfSaveToDriveEnabled_: boolean = false;
+  protected accessor saveToDriveFileSizeBytes_: number = 0;
+  protected accessor saveToDriveState_: SaveToDriveState =
+      SaveToDriveState.UNINITIALIZED;
+  protected accessor saveToDriveUploadedBytes_: number = 0;
   // </if>
   private pdfSearchifySaveEnabled_: boolean = false;
   private pdfUseShowSaveFilePicker_: boolean = false;
@@ -412,7 +450,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         this.handleMaybeUpdateViewport_.bind(this));
 
     // <if expr="enable_pdf_save_to_drive">
-    chrome.pdfViewerPrivate.onSaveToDriveProgress.addListener(
+    PdfViewerPrivateProxyImpl.getInstance().onSaveToDriveProgress.addListener(
         this.handleSaveToDriveProgress_.bind(this));
     // </if>
 
@@ -1054,12 +1092,15 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   // <if expr="enable_pdf_save_to_drive">
   private handleSaveToDriveProgress_(
-      streamUrl: string,
-      _progress: chrome.pdfViewerPrivate.SaveToDriveProgress) {
+      streamUrl: string, progress: SaveToDriveProgress) {
     if (streamUrl !== this.browserApi!.getStreamInfo().streamUrl) {
       return;
     }
     // TODO(crbug.com/424208776): Implement the progress update.
+    this.saveToDriveUploadedBytes_ = progress.uploadedBytes ?? 0;
+    this.saveToDriveFileSizeBytes_ = progress.fileSizeBytes ?? 0;
+    this.saveToDriveState_ =
+        convertSaveToDriveProgressToSaveToDriveState(progress);
   }
   // </if>
 
@@ -1225,6 +1266,31 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   // <if expr="enable_pdf_save_to_drive">
+  getStreamUrlForTesting(): string {
+    return this.browserApi!.getStreamInfo().streamUrl;
+  }
+
+  setOnSaveToDriveProgressListenerForTesting() {
+    PdfViewerPrivateProxyImpl.getInstance().onSaveToDriveProgress.addListener(
+        this.handleSaveToDriveProgress_.bind(this));
+  }
+
+  // Calculates the save to Drive progress in percentage. Returns 0 if the PDF
+  // is not uploading to Drive.
+  protected getSaveToDriveProgress_(): number {
+    if (!this.isSaveToDriveUploading_()) {
+      return 0;
+    }
+    assert(this.saveToDriveFileSizeBytes_ > 0);
+    return Math.round(
+        (this.saveToDriveUploadedBytes_ / this.saveToDriveFileSizeBytes_) *
+        100);
+  }
+
+  protected isSaveToDriveUploading_(): boolean {
+    return this.saveToDriveState_ === SaveToDriveState.UPLOADING;
+  }
+
   protected onSaveToDrive_(e: CustomEvent<SaveRequestType>) {
     PdfViewerPrivateProxyImpl.getInstance().saveToDrive(e.detail);
     // TODO(crbug.com/427449996): Implement the save PDF to drive logics. This
