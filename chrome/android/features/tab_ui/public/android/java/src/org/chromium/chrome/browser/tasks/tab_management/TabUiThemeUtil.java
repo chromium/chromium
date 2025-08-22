@@ -111,7 +111,7 @@ public class TabUiThemeUtil {
                         : ChromeSemanticColorUtils.getTabInactiveHoverColor(context);
         float overlayAlpha =
                 ResourcesCompat.getFloat(
-                        context.getResources(), R.dimen.tsr_folio_tab_inactive_hover_alpha);
+                        context.getResources(), R.dimen.multi_selected_tab_hover_overlay_alpha);
         return ColorUtils.getColorWithOverlay(baseColor, overlayColor, overlayAlpha);
     }
 
