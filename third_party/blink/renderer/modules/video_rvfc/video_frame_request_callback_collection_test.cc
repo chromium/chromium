@@ -109,13 +109,11 @@ TEST_F(VideoFrameRequestCallbackCollectionTest, CreateCallbackDuringExecution) {
   CallbackId created_id = 0;
 
   auto callback = CreateCallback();
-  EXPECT_CALL(*callback, Invoke(_, _))
-      .WillOnce(testing::WithoutArgs(testing::Invoke([&]() {
-        created_callback = CreateCallback();
-        created_id =
-            collection()->RegisterFrameCallback(created_callback.Get());
-        EXPECT_CALL(*created_callback, Invoke(_, _)).Times(0);
-      })));
+  EXPECT_CALL(*callback, Invoke(_, _)).WillOnce(testing::WithoutArgs([&]() {
+    created_callback = CreateCallback();
+    created_id = collection()->RegisterFrameCallback(created_callback.Get());
+    EXPECT_CALL(*created_callback, Invoke(_, _)).Times(0);
+  }));
 
   collection()->RegisterFrameCallback(callback.Get());
   collection()->ExecuteFrameCallbacks(kDefaultTimestamp,
@@ -143,8 +141,8 @@ TEST_F(VideoFrameRequestCallbackCollectionTest, CancelCallbackDuringExecution) {
 
   auto cancelling_callback = CreateCallback();
   EXPECT_CALL(*cancelling_callback, Invoke(_, _))
-      .WillOnce(testing::WithoutArgs(testing::Invoke(
-          [&]() { collection()->CancelFrameCallback(expected_target_id); })));
+      .WillOnce(testing::WithoutArgs(
+          [&]() { collection()->CancelFrameCallback(expected_target_id); }));
   collection()->RegisterFrameCallback(cancelling_callback.Get());
 
   auto target_callback = CreateCallback();

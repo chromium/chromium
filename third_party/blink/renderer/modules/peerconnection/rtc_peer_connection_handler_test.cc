@@ -76,7 +76,6 @@ static const char kDummySdpType[] = "dummy type";
 
 using testing::_;
 using testing::ElementsAre;
-using testing::Invoke;
 using testing::IsNull;
 using testing::NiceMock;
 using testing::NotNull;
@@ -1124,7 +1123,7 @@ TEST_F(RTCPeerConnectionHandlerTest,
   std::unique_ptr<webrtc::IceCandidate> native_candidate(
       mock_dependency_factory_->CreateIceCandidate("sdpMid", 1, kDummySdp));
   EXPECT_CALL(*mock_client_, DidChangeSessionDescriptions(_, _, _, _))
-      .WillOnce(testing::Invoke([&] { pc_handler_.reset(); }));
+      .WillOnce([&] { pc_handler_.reset(); });
   observer->OnIceCandidate(native_candidate.get());
 }
 

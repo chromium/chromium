@@ -74,7 +74,6 @@
 using base::TimeTicks;
 using base::test::RunOnceClosure;
 using ::testing::_;
-using ::testing::Invoke;
 
 namespace {
 
@@ -380,14 +379,14 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     InitializeRecorder();
     EXPECT_CALL(*mock_callback_interface_, OnEncodedAudio)
         .WillRepeatedly(
-            Invoke([this](const media::AudioParameters& params,
-                          scoped_refptr<media::DecoderBuffer> encoded_data,
-                          std::optional<media::AudioEncoder::CodecDescription>
-                              codec_description,
-                          base::TimeTicks capture_time) {
+            [this](const media::AudioParameters& params,
+                   scoped_refptr<media::DecoderBuffer> encoded_data,
+                   std::optional<media::AudioEncoder::CodecDescription>
+                       codec_description,
+                   base::TimeTicks capture_time) {
               OnEncodedAudio(params, encoded_data, std::move(codec_description),
                              capture_time);
-            }));
+            });
   }
 
   void TearDown() override {

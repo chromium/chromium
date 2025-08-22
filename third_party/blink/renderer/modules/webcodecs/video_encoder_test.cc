@@ -36,7 +36,6 @@ namespace {
 using testing::_;
 using testing::ByMove;
 using testing::DoAll;
-using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 using testing::WithArgs;
@@ -220,27 +219,28 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
     media::MockVideoEncoder* mock_media_encoder = media_encoder.get();
 
     EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
-        .WillOnce(DoAll(Invoke([encoder = encoder]() {
-                          media::VideoEncoderInfo info;
-                          info.implementation_name = "MockEncoderName";
-                          info.is_hardware_accelerated = true;
-                          encoder->CallOnMediaEncoderInfoChanged(info);
-                        }),
-                        Return(ByMove(std::unique_ptr<media::VideoEncoder>(
-                            std::move(media_encoder))))));
+        .WillOnce(DoAll(
+            [encoder = encoder]() {
+              media::VideoEncoderInfo info;
+              info.implementation_name = "MockEncoderName";
+              info.is_hardware_accelerated = true;
+              encoder->CallOnMediaEncoderInfoChanged(info);
+            },
+            Return(ByMove(std::unique_ptr<media::VideoEncoder>(
+                std::move(media_encoder))))));
     EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
         .WillOnce(Return(ByMove(
             std::make_unique<media::MockVideoEncoderMetricsProvider>())));
     EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
-        .WillOnce(WithArgs<4>(
-            Invoke([quit_closure = run_loop.QuitWhenIdleClosure()](
-                       media::VideoEncoder::EncoderStatusCB done_cb) {
+        .WillOnce(
+            WithArgs<4>([quit_closure = run_loop.QuitWhenIdleClosure()](
+                            media::VideoEncoder::EncoderStatusCB done_cb) {
               scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                   FROM_HERE, WTF::BindOnce(std::move(done_cb),
                                            media::EncoderStatus::Codes::kOk));
               scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                   FROM_HERE, std::move(quit_closure));
-            })));
+            }));
 
     encoder->configure(config, es);
     ASSERT_FALSE(es.HadException());
@@ -261,24 +261,25 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
     media::MockVideoEncoder* mock_media_encoder = media_encoder.get();
 
     EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
-        .WillOnce(DoAll(Invoke([encoder = encoder]() {
-                          media::VideoEncoderInfo info;
-                          info.implementation_name = "MockEncoderName";
-                          info.is_hardware_accelerated = false;
-                          encoder->CallOnMediaEncoderInfoChanged(info);
-                        }),
-                        Return(ByMove(std::unique_ptr<media::VideoEncoder>(
-                            std::move(media_encoder))))));
+        .WillOnce(DoAll(
+            [encoder = encoder]() {
+              media::VideoEncoderInfo info;
+              info.implementation_name = "MockEncoderName";
+              info.is_hardware_accelerated = false;
+              encoder->CallOnMediaEncoderInfoChanged(info);
+            },
+            Return(ByMove(std::unique_ptr<media::VideoEncoder>(
+                std::move(media_encoder))))));
     EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
-        .WillOnce(WithArgs<4>(
-            Invoke([quit_closure = run_loop.QuitWhenIdleClosure()](
-                       media::VideoEncoder::EncoderStatusCB done_cb) {
+        .WillOnce(
+            WithArgs<4>([quit_closure = run_loop.QuitWhenIdleClosure()](
+                            media::VideoEncoder::EncoderStatusCB done_cb) {
               scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                   FROM_HERE, WTF::BindOnce(std::move(done_cb),
                                            media::EncoderStatus::Codes::kOk));
               scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                   FROM_HERE, std::move(quit_closure));
-            })));
+            }));
 
     encoder->configure(config, es);
     ASSERT_FALSE(es.HadException());
@@ -315,14 +316,15 @@ TEST_F(
   media::MockVideoEncoderMetricsProvider* mock_encoder_metrics_provider =
       encoder_metrics_provider.get();
   EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
-      .WillOnce(DoAll(Invoke([encoder = encoder]() {
-                        media::VideoEncoderInfo info;
-                        info.implementation_name = "MockEncoderName";
-                        info.is_hardware_accelerated = false;
-                        encoder->CallOnMediaEncoderInfoChanged(info);
-                      }),
-                      Return(ByMove(std::unique_ptr<media::VideoEncoder>(
-                          std::move(media_encoder))))));
+      .WillOnce(DoAll(
+          [encoder = encoder]() {
+            media::VideoEncoderInfo info;
+            info.implementation_name = "MockEncoderName";
+            info.is_hardware_accelerated = false;
+            encoder->CallOnMediaEncoderInfoChanged(info);
+          },
+          Return(ByMove(std::unique_ptr<media::VideoEncoder>(
+              std::move(media_encoder))))));
   EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
       .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
   EXPECT_CALL(
@@ -332,17 +334,17 @@ TEST_F(
   EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
       .WillOnce(DoAll(
           SaveArg<3>(&output_cb),
-          WithArgs<4>(Invoke([quit_closure = run_loop.QuitWhenIdleClosure()](
-                                 media::VideoEncoder::EncoderStatusCB done_cb) {
+          WithArgs<4>([quit_closure = run_loop.QuitWhenIdleClosure()](
+                          media::VideoEncoder::EncoderStatusCB done_cb) {
             scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                 FROM_HERE, WTF::BindOnce(std::move(done_cb),
                                          media::EncoderStatus::Codes::kOk));
-          }))));
+          })));
   encoder->configure(config, es);
   EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
       .WillOnce(
-          WithArgs<2>(Invoke([output_cb = &output_cb](
-                                 media::VideoEncoder::EncoderStatusCB done_cb) {
+          WithArgs<2>([output_cb = &output_cb](
+                          media::VideoEncoder::EncoderStatusCB done_cb) {
             scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                 FROM_HERE, WTF::BindOnce(std::move(done_cb),
                                          media::EncoderStatus::Codes::kOk));
@@ -352,7 +354,7 @@ TEST_F(
             scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                 FROM_HERE,
                 WTF::BindOnce(*output_cb, std::move(out), std::nullopt));
-          })));
+          }));
 
   EXPECT_CALL(*mock_encoder_metrics_provider, MockIncrementEncodedFrameCount())
       .WillOnce([quit_closure = run_loop.QuitWhenIdleClosure()] {
@@ -388,14 +390,15 @@ TEST_F(VideoEncoderTest,
   media::MockVideoEncoderMetricsProvider* mock_encoder_metrics_provider =
       encoder_metrics_provider.get();
   EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
-      .WillOnce(DoAll(Invoke([encoder = encoder]() {
-                        media::VideoEncoderInfo info;
-                        info.implementation_name = "MockEncoderName";
-                        info.is_hardware_accelerated = false;
-                        encoder->CallOnMediaEncoderInfoChanged(info);
-                      }),
-                      Return(ByMove(std::unique_ptr<media::VideoEncoder>(
-                          std::move(media_encoder))))));
+      .WillOnce(DoAll(
+          [encoder = encoder]() {
+            media::VideoEncoderInfo info;
+            info.implementation_name = "MockEncoderName";
+            info.is_hardware_accelerated = false;
+            encoder->CallOnMediaEncoderInfoChanged(info);
+          },
+          Return(ByMove(std::unique_ptr<media::VideoEncoder>(
+              std::move(media_encoder))))));
   EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
       .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
   EXPECT_CALL(
@@ -405,11 +408,11 @@ TEST_F(VideoEncoderTest,
   EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
       .WillOnce(DoAll(
           SaveArg<3>(&output_cb),
-          WithArgs<4>(Invoke([](media::VideoEncoder::EncoderStatusCB done_cb) {
+          WithArgs<4>([](media::VideoEncoder::EncoderStatusCB done_cb) {
             scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                 FROM_HERE, WTF::BindOnce(std::move(done_cb),
                                          media::EncoderStatus::Codes::kOk));
-          }))));
+          })));
   encoder->configure(config, es);
   EXPECT_CALL(*mock_media_encoder, Flush(_))
       .WillOnce([](media::VideoEncoder::EncoderStatusCB done_cb) {
@@ -423,14 +426,14 @@ TEST_F(VideoEncoderTest,
                      false, media::SVCScalabilityMode::kL1T1));
   EXPECT_CALL(*mock_media_encoder, ChangeOptions(_, _, _))
       .WillOnce(
-          WithArgs<2>(Invoke([quit_closure = run_loop.QuitWhenIdleClosure()](
-                                 media::VideoEncoder::EncoderStatusCB done_cb) {
+          WithArgs<2>([quit_closure = run_loop.QuitWhenIdleClosure()](
+                          media::VideoEncoder::EncoderStatusCB done_cb) {
             scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                 FROM_HERE, WTF::BindOnce(std::move(done_cb),
                                          media::EncoderStatus::Codes::kOk));
             scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                 FROM_HERE, std::move(quit_closure));
-          })));
+          }));
   encoder->configure(config, es);
   run_loop.Run();
 }
@@ -458,14 +461,15 @@ TEST_F(VideoEncoderTest,
   media::MockVideoEncoderMetricsProvider* mock_encoder_metrics_provider =
       encoder_metrics_provider.get();
   EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
-      .WillOnce(DoAll(Invoke([encoder = encoder]() {
-                        media::VideoEncoderInfo info;
-                        info.implementation_name = "MockEncoderName";
-                        info.is_hardware_accelerated = false;
-                        encoder->CallOnMediaEncoderInfoChanged(info);
-                      }),
-                      Return(ByMove(std::unique_ptr<media::VideoEncoder>(
-                          std::move(media_encoder))))));
+      .WillOnce(DoAll(
+          [encoder = encoder]() {
+            media::VideoEncoderInfo info;
+            info.implementation_name = "MockEncoderName";
+            info.is_hardware_accelerated = false;
+            encoder->CallOnMediaEncoderInfoChanged(info);
+          },
+          Return(ByMove(std::unique_ptr<media::VideoEncoder>(
+              std::move(media_encoder))))));
   EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
       .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
   EXPECT_CALL(
@@ -474,14 +478,14 @@ TEST_F(VideoEncoderTest,
                      false, media::SVCScalabilityMode::kL1T1));
   EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
       .WillOnce(
-          WithArgs<4>(Invoke([quit_closure = run_loop.QuitWhenIdleClosure()](
-                                 media::VideoEncoder::EncoderStatusCB done_cb) {
+          WithArgs<4>([quit_closure = run_loop.QuitWhenIdleClosure()](
+                          media::VideoEncoder::EncoderStatusCB done_cb) {
             scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                 FROM_HERE,
                 WTF::BindOnce(
                     std::move(done_cb),
                     media::EncoderStatus::Codes::kEncoderUnsupportedConfig));
-          })));
+          }));
   EXPECT_CALL(*mock_encoder_metrics_provider, MockSetError(_))
       .WillOnce(RunClosure(run_loop.QuitWhenIdleClosure()));
   encoder->configure(config, es);

@@ -27,7 +27,6 @@
 
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 
 using PeerConnectionInfoPtr = ::blink::mojom::blink::PeerConnectionInfoPtr;
 
@@ -158,10 +157,10 @@ class PeerConnectionTrackerTest : public ::testing::Test {
     PeerConnectionInfoPtr res;
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_host_, AddPeerConnection)
-        .WillOnce(Invoke([&res, &run_loop](PeerConnectionInfoPtr info) {
+        .WillOnce([&res, &run_loop](PeerConnectionInfoPtr info) {
           res = std::move(info);
           run_loop.Quit();
-        }));
+        });
     tracker_->RegisterPeerConnection(mock_handler_.get(), DefaultConfig(),
                                      nullptr);
     run_loop.Run();

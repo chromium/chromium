@@ -4381,19 +4381,19 @@ class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
              "}}; register(\"test-operation\", TestClass);"}));
 
     EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [&](Vector<
                 blink::mojom::blink::AggregatableReportHistogramContributionPtr>
                     contributions) {
               ASSERT_EQ(contributions.size(), 1u);
               EXPECT_EQ(contributions[0]->bucket, expected_bucket);
               EXPECT_EQ(contributions[0]->value, expected_value);
-            }));
+            });
     if (expected_debug_mode_details->is_enabled) {
       EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode)
-          .WillOnce(testing::Invoke([&](mojom::blink::DebugKeyPtr debug_key) {
+          .WillOnce([&](mojom::blink::DebugKeyPtr debug_key) {
             EXPECT_TRUE(debug_key == expected_debug_mode_details->debug_key);
-          }));
+          });
     }
 
     RunResult run_result = Run("test-operation", CreateSerializedUndefined(),
@@ -4694,7 +4694,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
       base::BarrierClosure(2, run_loop.QuitClosure());
 
   EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](Vector<
               blink::mojom::blink::AggregatableReportHistogramContributionPtr>
                   contributions) {
@@ -4706,18 +4706,16 @@ TEST_F(SharedStoragePrivateAggregationTest,
                 mock_private_aggregation_host_->receiver_set()
                     .current_receiver();
             closure.Run();
-          }));
+          });
   EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode)
-      .WillOnce(
-          testing::Invoke([&](blink::mojom::blink::DebugKeyPtr debug_key) {
-            ASSERT_FALSE(debug_key.is_null());
-            EXPECT_EQ(debug_key->value, 1234u);
+      .WillOnce([&](blink::mojom::blink::DebugKeyPtr debug_key) {
+        ASSERT_FALSE(debug_key.is_null());
+        EXPECT_EQ(debug_key->value, 1234u);
 
-            enable_debug_mode_pipe_id =
-                mock_private_aggregation_host_->receiver_set()
-                    .current_receiver();
-            closure.Run();
-          }));
+        enable_debug_mode_pipe_id =
+            mock_private_aggregation_host_->receiver_set().current_receiver();
+        closure.Run();
+      });
 
   RunResult run_result =
       Run("contribute-to-histogram", CreateSerializedUndefined());
@@ -4749,27 +4747,27 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleDebugModeRequests) {
   )");
 
   EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode)
-      .WillOnce(testing::Invoke([](mojom::blink::DebugKeyPtr debug_key) {
+      .WillOnce([](mojom::blink::DebugKeyPtr debug_key) {
         EXPECT_EQ(debug_key, mojom::blink::DebugKey::New(1234u));
-      }));
+      });
 
   EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](Vector<
               blink::mojom::blink::AggregatableReportHistogramContributionPtr>
                  contributions) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 1);
             EXPECT_EQ(contributions[0]->value, 2);
-          }))
-      .WillOnce(testing::Invoke(
+          })
+      .WillOnce(
           [](Vector<
               blink::mojom::blink::AggregatableReportHistogramContributionPtr>
                  contributions) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 3);
             EXPECT_EQ(contributions[0]->value, 4);
-          }));
+          });
 
   RunResult run_result = Run("test-operation", CreateSerializedUndefined());
   EXPECT_TRUE(run_result.success);
@@ -4795,7 +4793,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
 
   EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode).Times(0);
   EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](Vector<
               blink::mojom::blink::AggregatableReportHistogramContributionPtr>
                   contributions) {
@@ -4804,7 +4802,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
             EXPECT_EQ(contributions[0]->value, 2);
 
             run_loop.Quit();
-          }));
+          });
 
   shared_storage_worklet_service_->RunOperation(
       "test-operation", CreateSerializedUndefined(),

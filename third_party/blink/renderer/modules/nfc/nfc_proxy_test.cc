@@ -27,7 +27,6 @@ namespace blink {
 namespace {
 
 using ::testing::_;
-using ::testing::Invoke;
 
 static const char kFakeRecordId[] =
     "https://w3c.github.io/web-nfc/dummy-record-id";
@@ -220,10 +219,10 @@ TEST_F(NFCProxyTest, SuccessfulPath) {
                              String(kFakeNfcTagSerialNumber),
 #endif
                              MessageEquals(record_data)))
-        .WillOnce(Invoke([&](const String& serial_number,
-                             const device::mojom::blink::NDEFMessage& message) {
+        .WillOnce([&](const String& serial_number,
+                      const device::mojom::blink::NDEFMessage& message) {
           loop.Quit();
-        }));
+        });
 
     nfc_proxy->Push(std::move(message), /*options=*/nullptr,
                     base::BindLambdaForTesting(

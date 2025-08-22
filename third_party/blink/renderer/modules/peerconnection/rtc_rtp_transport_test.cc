@@ -14,7 +14,6 @@
 namespace blink {
 
 using testing::_;
-using testing::Invoke;
 
 class MockFeedbackProvider : public FeedbackProvider {
  public:
@@ -51,8 +50,9 @@ TEST_F(RTCRtpTransportTest, RegisterFeedbackProviderAfterCreateProcessor) {
 
   auto mock_feedback_provider = base::MakeRefCounted<MockFeedbackProvider>();
 
-  EXPECT_CALL(*mock_feedback_provider, SetProcessor(_, _))
-      .WillOnce(Invoke([&]() { loop.Quit(); }));
+  EXPECT_CALL(*mock_feedback_provider, SetProcessor(_, _)).WillOnce([&]() {
+    loop.Quit();
+  });
   transport->RegisterFeedbackProvider(mock_feedback_provider);
   loop.Run();
 }
@@ -69,8 +69,9 @@ TEST_F(RTCRtpTransportTest, RegisterFeedbackProviderBeforeCreateProcessor) {
                              scope_.GetExceptionState());
 
   base::RunLoop loop;
-  EXPECT_CALL(*mock_feedback_provider, SetProcessor(_, _))
-      .WillOnce(Invoke([&]() { loop.Quit(); }));
+  EXPECT_CALL(*mock_feedback_provider, SetProcessor(_, _)).WillOnce([&]() {
+    loop.Quit();
+  });
   const String source_code = R"JS(
     onrtcrtptransportprocessor = () => {};
   )JS";

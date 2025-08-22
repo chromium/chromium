@@ -901,18 +901,16 @@ void WebMediaPlayerMSTest::TestRequestFrameCallbackWithVideoFrameMetadata(
   player_->RequestVideoFrameCallback();
   player_->RequestVideoFrameCallback();
 
-  EXPECT_CALL(*this, OnRequestVideoFrameCallback())
-      .Times(1)
-      .WillOnce(testing::Invoke([&]() {
-        if (!algorithm_enabled && !enable_surface_layer_for_video_) {
-          metadata = player_->GetVideoFramePresentationMetadata();
-          // We use EXPECT_GE to compare the deadline_max value with the
-          // expected display time. This is because the deadline_max_ member
-          // gets updated in the RenderFrame() function which may get called
-          // multiple times before the OnRequestVideoFrameCallback() is invoked.
-          EXPECT_GE(deadline_max_, metadata->expected_display_time);
-        }
-      }));
+  EXPECT_CALL(*this, OnRequestVideoFrameCallback()).Times(1).WillOnce([&]() {
+    if (!algorithm_enabled && !enable_surface_layer_for_video_) {
+      metadata = player_->GetVideoFramePresentationMetadata();
+      // We use EXPECT_GE to compare the deadline_max value with the
+      // expected display time. This is because the deadline_max_ member
+      // gets updated in the RenderFrame() function which may get called
+      // multiple times before the OnRequestVideoFrameCallback() is invoked.
+      EXPECT_GE(deadline_max_, metadata->expected_display_time);
+    }
+  });
   message_loop_controller_.RunAndWaitForStatus(media::PIPELINE_OK);
   testing::Mock::VerifyAndClearExpectations(this);
 }

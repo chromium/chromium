@@ -19,7 +19,6 @@
 
 namespace blink {
 
-using ::testing::Invoke;
 using ::testing::WithArg;
 
 // This is a helper class which provides utility methods
@@ -65,10 +64,10 @@ TEST_F(ClipboardTest, ClipboardPromiseReadText) {
   // Async read clipboard API requires the clipboard read permission.
   EXPECT_CALL(permission_service_, RequestPermission)
       .WillOnce(WithArg<2>(
-          Invoke([](mojom::blink::PermissionService::RequestPermissionCallback
-                        callback) {
+          [](mojom::blink::PermissionService::RequestPermissionCallback
+                 callback) {
             std::move(callback).Run(mojom::blink::PermissionStatus::GRANTED);
-          })));
+          }));
   BindMockPermissionService(executionContext);
 
   // Async clipboard API requires a secure origin and page in focus to work.

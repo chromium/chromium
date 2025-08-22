@@ -20,7 +20,6 @@ namespace blink {
 
 using ::testing::AllOf;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Optional;
 
@@ -149,10 +148,10 @@ TEST_F(MediaStreamVideoWebRtcSinkTest,
   dependency_factory_ = dependency_factory2;
   MockVideoTrackSourceProxy* source_proxy = nullptr;
   EXPECT_CALL(*dependency_factory2, CreateVideoTrackSourceProxy)
-      .WillOnce(Invoke([&source_proxy](webrtc::VideoTrackSourceInterface*) {
+      .WillOnce([&source_proxy](webrtc::VideoTrackSourceInterface*) {
         source_proxy = new MockVideoTrackSourceProxy();
         return source_proxy;
-      }));
+      });
   SetVideoTrack();
   blink::MediaStreamVideoWebRtcSink sink(
       component_, dependency_factory_.Get(),

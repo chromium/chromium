@@ -67,7 +67,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::StrictMock;
 using ::testing::Truly;
@@ -788,10 +787,10 @@ TEST_F(WebTransportTest, SendDatagram) {
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   EXPECT_CALL(*mock_web_transport_, SendDatagram(ElementsAre('A'), _))
-      .WillOnce(Invoke([](base::span<const uint8_t>,
-                          MockWebTransport::SendDatagramCallback callback) {
+      .WillOnce([](base::span<const uint8_t>,
+                   MockWebTransport::SendDatagramCallback callback) {
         std::move(callback).Run(true);
-      }));
+      });
 
   auto* writable = web_transport->datagrams()->writable();
   auto* script_state = scope.GetScriptState();
@@ -815,11 +814,10 @@ TEST_F(WebTransportTest, BackpressureForOutgoingDatagrams) {
 
   EXPECT_CALL(*mock_web_transport_, SendDatagram(_, _))
       .Times(4)
-      .WillRepeatedly(
-          Invoke([](base::span<const uint8_t>,
-                    MockWebTransport::SendDatagramCallback callback) {
-            std::move(callback).Run(true);
-          }));
+      .WillRepeatedly([](base::span<const uint8_t>,
+                         MockWebTransport::SendDatagramCallback callback) {
+        std::move(callback).Run(true);
+      });
 
   web_transport->datagrams()->setOutgoingHighWaterMark(3);
   auto* writable = web_transport->datagrams()->writable();
@@ -891,15 +889,15 @@ TEST_F(WebTransportTest, SendDatagramBeforeConnect) {
 
   testing::Sequence s;
   EXPECT_CALL(*mock_web_transport_, SendDatagram(ElementsAre('A'), _))
-      .WillOnce(Invoke([](base::span<const uint8_t>,
-                          MockWebTransport::SendDatagramCallback callback) {
+      .WillOnce([](base::span<const uint8_t>,
+                   MockWebTransport::SendDatagramCallback callback) {
         std::move(callback).Run(true);
-      }));
+      });
   EXPECT_CALL(*mock_web_transport_, SendDatagram(ElementsAre('N'), _))
-      .WillOnce(Invoke([](base::span<const uint8_t>,
-                          MockWebTransport::SendDatagramCallback callback) {
+      .WillOnce([](base::span<const uint8_t>,
+                   MockWebTransport::SendDatagramCallback callback) {
         std::move(callback).Run(true);
-      }));
+      });
 
   test::RunPendingTasks();
   *chunk->Data() = 'N';

@@ -191,7 +191,7 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
               SubmitCompositorFrame_(_))
       .WillOnce(::testing::WithArg<0>(
-          ::testing::Invoke([context_alpha](const viz::CompositorFrame* frame) {
+          [context_alpha](const viz::CompositorFrame* frame) {
             ASSERT_EQ(frame->render_pass_list.size(), 1u);
 
             const auto& quad_list = frame->render_pass_list[0]->quad_list;
@@ -203,7 +203,7 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
             ASSERT_EQ(shared_quad_state_list.size(), 1u);
             EXPECT_NE(shared_quad_state_list.front()->are_contents_opaque,
                       context_alpha);
-          })));
+          }));
   context_->PreFinalizeFrame();
   context_->FinalizeFrame(FlushReason::kTesting);
   canvas_element().PostFinalizeFrame(FlushReason::kTesting);

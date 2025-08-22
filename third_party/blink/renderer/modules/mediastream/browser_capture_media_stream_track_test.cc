@@ -29,7 +29,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::Args;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Return;
 
@@ -145,12 +144,12 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
   EXPECT_CALL(*media_stream_video_source,
               ApplySubCaptureTarget(type_, GUIDToToken(valid_id), _, _))
       .Times(1)
-      .WillOnce(::testing::WithArg<3>(::testing::Invoke(
+      .WillOnce(::testing::WithArg<3>(
           [](base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
                  cb) {
             std::move(cb).Run(
                 media::mojom::ApplySubCaptureTargetResult::kSuccess);
-          })));
+          }));
 
   BrowserCaptureMediaStreamTrack* const track =
       MakeTrack(v8_scope, std::move(media_stream_video_source));
@@ -185,12 +184,12 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
   EXPECT_CALL(*media_stream_video_source,
               ApplySubCaptureTarget(type_, GUIDToToken(valid_id), _, _))
       .Times(1)
-      .WillOnce(::testing::WithArg<3>(::testing::Invoke(
+      .WillOnce(::testing::WithArg<3>(
           [](base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
                  cb) {
             std::move(cb).Run(
                 media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
-          })));
+          }));
 
   BrowserCaptureMediaStreamTrack* const track =
       MakeTrack(v8_scope, std::move(media_stream_video_source));

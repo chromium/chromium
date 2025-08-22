@@ -17,7 +17,6 @@
 
 using ::testing::_;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::WithArg;
 using ::testing::WithArgs;

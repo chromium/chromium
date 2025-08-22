@@ -36,8 +36,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace blink {
@@ -257,10 +257,10 @@ class VideoDecoderBrokerTest : public testing::Test {
             Return(media::GpuVideoAcceleratorFactories::Supported::kTrue));
     EXPECT_CALL(*gpu_factories_, GetChannelToken(_))
         .WillRepeatedly(
-            Invoke([](base::OnceCallback<void(const base::UnguessableToken&)>
-                          callback) {
+            [](base::OnceCallback<void(const base::UnguessableToken&)>
+                   callback) {
               std::move(callback).Run(base::UnguessableToken());
-            }));
+            });
   }
 
   void ConstructDecoder(ExecutionContext& execution_context) {
