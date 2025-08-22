@@ -1232,10 +1232,9 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
     TRACE_EVENT_INSTANT("latency", "EventCreation", track_id,
                         entryInfo->creation_time, flow_id);
     auto enqueued_to_main_thread_time = entryInfo->enqueued_to_main_thread_time;
-    if (!enqueued_to_main_thread_time.is_null()) {
-      TRACE_EVENT_INSTANT("latency", "EventEnqueuedToMainThread", track_id,
-                          enqueued_to_main_thread_time, flow_id);
-    }
+    CHECK(!enqueued_to_main_thread_time.is_null(), base::NotFatalUntil(143));
+    TRACE_EVENT_INSTANT("latency", "EventEnqueuedToMainThread", track_id,
+                        enqueued_to_main_thread_time, flow_id);
 
     // Add EventTimingMeasurementComplete trace event to report when Event
     // Timing was measured and reported to the Performance Timeline. This helps

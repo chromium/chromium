@@ -26,12 +26,10 @@ WebInputEventResult WidgetEventHandler::HandleInputEvent(
     DCHECK(document);
     if (LocalFrameView* view = document->View())
       view->GetLayoutShiftTracker().NotifyInput(event);
-    if (WebInputEvent::IsWebInteractionEvent(event.GetType())) {
-      WindowPerformance* performance =
-          DOMWindowPerformance::performance(*root->DomWindow());
-      performance->GetResponsivenessMetrics()
-          .SetCurrentInteractionEventQueuedTimestamp(event.QueuedTimeStamp());
-    }
+    WindowPerformance* performance =
+        DOMWindowPerformance::performance(*root->DomWindow());
+    performance->GetResponsivenessMetrics()
+        .SetCurrentInteractionEventQueuedTimestamp(event.QueuedTimeStamp());
   }
 
   if (event.GetModifiers() & WebInputEvent::kIsTouchAccessibility &&

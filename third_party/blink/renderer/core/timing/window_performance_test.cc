@@ -141,6 +141,9 @@ class WindowPerformanceTest : public testing::Test,
     init->setKeyCode(key_code);
     KeyboardEvent* keyboard_event =
         MakeGarbageCollected<KeyboardEvent>(type, init, start_time);
+    // use start_time to simulate enqueue time.
+    performance_->GetResponsivenessMetrics()
+          .SetCurrentInteractionEventQueuedTimestamp(start_time);
     performance_->EventTimingProcessingStart(*keyboard_event, processing_start,
                                              target);
     keyboard_event->SetTarget(target);
@@ -157,6 +160,9 @@ class WindowPerformanceTest : public testing::Test,
     PointerEventInit* init = PointerEventInit::Create();
     init->setPointerId(pointer_id);
     PointerEvent* pointer_event = PointerEvent::Create(type, init, start_time);
+    // use start_time to simulate enqueue time.
+    performance_->GetResponsivenessMetrics()
+          .SetCurrentInteractionEventQueuedTimestamp(start_time);
     performance_->EventTimingProcessingStart(*pointer_event, processing_start,
                                              target);
     pointer_event->SetTarget(target);
