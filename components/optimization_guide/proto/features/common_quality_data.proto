@@ -196,7 +196,7 @@ message PageContext {
 
 // The page content represented as a tree of semantic chunks and (in the
 // future) annotated with additional information about the page.
-// Next ID: 7
+// Next ID: 8
 message AnnotatedPageContent {
   // The version of the proto. Each time a backwards incompatible change is made
   // to the proto, the version should be incremented.
@@ -222,6 +222,10 @@ message AnnotatedPageContent {
   // The rect of the viewport for the tab. i.e., screenshot dimensions.
   // Dimensions are in captured pixels.
   BoundingRect viewport_geometry = 5 [features = { field_presence: EXPLICIT }];
+
+  // The id of the tab that the page content was extracted from. Guaranteed to
+  // be unique within the browsing session.
+  int32 tab_id = 7 [features = { field_presence: EXPLICIT }];
 }
 
 // The ContentNode tree is a sparse representation of the DOM tree for a web
@@ -625,11 +629,31 @@ message TableData {
 }
 
 message IframeData {
-  FrameData frame_data = 3 [features = { field_presence: EXPLICIT }];
+  oneof data {
+    FrameData frame_data = 3;
+
+    RedactedFrameMetadata redacted_frame_metadata = 4;
+  }
 
   // Indicates whether the iframe is likely to be an ad frame. This is set for
   // both the root ad frame and its descendants.
   bool likely_ad_frame = 2 [features = { field_presence: EXPLICIT }];
+
+  message RedactedFrameMetadata {
+    Reason reason = 1 [features = { field_presence: EXPLICIT }];
+
+    enum Reason {
+      REASON_UNSPECIFIED = 0;
+
+      // This iframe was redacted because it is not on the same eTLD+1 site as
+      // the top-level frame.
+      REASON_CROSS_SITE = 1;
+
+      // This iframe was redacted because it is not on the same origin as the
+      // top-level frame.
+      REASON_CROSS_ORIGIN = 2;
+    }
+  }
 
   reserved 1;
 }
@@ -707,8 +731,10 @@ message Selection {
 // Directs the action to a specific Document in a frame in Chrome.
 // Next ID: 3
 message DocumentIdentifier {
-  // A unique identifier for the frame that is not stable across APC
-  // calls/pages. Caller can map these to a client side frame id.
+  // A unique identifier for a Document loaded in the browser. This ID is
+  // guaranteed to be unique across all Documents for the browser's lifetime.
+  // The ID is also stable for the Document's lifetime. It can be used to
+  // identify the Document across APC calls.
   string serialized_token = 1 [features = { field_presence: EXPLICIT }];
 }
 
