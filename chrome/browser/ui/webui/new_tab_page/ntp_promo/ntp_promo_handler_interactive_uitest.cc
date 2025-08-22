@@ -48,6 +48,8 @@ const InteractiveBrowserTestApi::DeepQuery kPathToSetupList = {
 constexpr char kActionIconId[] = "#actionIcon";
 constexpr char kPromoTextId[] = "#bodyText";
 constexpr char kPromoIconId[] = "#bodyIcon";
+constexpr char kIconName[] = "account_circle";
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNtpElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestPromoShownEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestPromoClickedEvent);
@@ -92,7 +94,7 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
     registry->ClearPromosForTesting();
     user_education::NtpPromoSpecification spec(
         kTestPromoName,
-        user_education::NtpPromoContent("chrome-filled", IDS_NTP_SIGN_IN_PROMO,
+        user_education::NtpPromoContent(kIconName, IDS_NTP_SIGN_IN_PROMO,
                                         IDS_NTP_SIGN_IN_PROMO_ACTION_BUTTON),
         base::BindRepeating(&NtpPromoUiTest::GetTestPromoEligibility,
                             base::Unretained(this)),
@@ -149,7 +151,7 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
     MultiStep steps;
     switch (eligibility) {
       case Eligibility::kEligible:
-        steps += WaitForPromoIcon("ntp-promo:chrome-filled");
+        steps += WaitForPromoIcon(std::string("ntp-promo:") + kIconName);
         steps += WaitForElementVisible(kNtpElementId, GetActionButtonPath());
         break;
       case Eligibility::kCompleted:

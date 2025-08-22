@@ -142,7 +142,7 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
 
   registry.AddPromo(NtpPromoSpecification(
       kNtpSignInPromoId,
-      NtpPromoContent("chrome-filled",
+      NtpPromoContent("account_circle",
                       base::FeatureList::IsEnabled(
                           syncer::kReplaceSyncPromosWithSignInPromos)
                           ? IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS
