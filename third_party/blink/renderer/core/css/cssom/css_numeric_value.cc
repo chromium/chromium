@@ -154,10 +154,11 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
     return CSSMathSum::Create(std::move(values));
   }
 
-  // TODO(crbug.com/1376521): Implement Typed OM API for `anchor()`, and turn
-  // the CHECK below back into a DCHECK.
-
-  CHECK(root.IsOperation());
+  // TODO(crbug.com/40243221): Implement Typed OM API for `anchor()` and
+  // `sibling-index()`, and turn that if below into a DCHECK.
+  if (!root.IsOperation()) {
+    return nullptr;
+  }
 
   CSSNumericValueVector values;
 
@@ -174,11 +175,15 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
     if (node.OperatorType() == CSSMathOperator::kMax) {
       return CSSMathMax::Create(std::move(values));
     }
-    DCHECK_EQ(CSSMathOperator::kClamp, node.OperatorType());
-    auto& min = values[0];
-    auto& val = values[1];
-    auto& max = values[2];
-    return CSSMathClamp::Create(std::move(min), std::move(val), std::move(max));
+    if (node.OperatorType() == CSSMathOperator::kClamp) {
+      auto& min = values[0];
+      auto& val = values[1];
+      auto& max = values[2];
+      return CSSMathClamp::Create(std::move(min), std::move(val),
+                                  std::move(max));
+    }
+    // Other CSS math functions are not yet implemented.
+    return nullptr;
   }
 
   DCHECK_EQ(To<CSSMathExpressionOperation>(root).GetOperands().size(), 2u);
@@ -213,6 +218,9 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
     DCHECK(right_node);
 
     auto* const value = CalcToNumericValue(*right_node);
+    if (!value) {
+      return nullptr;
+    }
 
     // If the current node is a '-' or '/', it's really just a '+' or '*' with
     // the right child negated or inverted, respectively.
@@ -310,9 +318,12 @@ CSSNumericValue* CSSNumericValue::parse(
             CSSMathExpressionNode::ParseMathFunction(
                 CSSValueID::kCalc, stream,
                 *MakeGarbageCollected<CSSParserContext>(*execution_context),
-                Flags({AllowPercent}), kCSSAnchorQueryTypesNone);
-        if (expression) {
-          return CalcToNumericValue(*expression);
+                Flags({AllowPercent}), kCSSAnchorQueryTypesAll);
+        if (!expression) {
+          break;
+        }
+        if (CSSNumericValue* numeric_value = CalcToNumericValue(*expression)) {
+          return numeric_value;
         }
       }
       break;
