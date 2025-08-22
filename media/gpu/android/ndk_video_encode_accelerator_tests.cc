@@ -9,18 +9,24 @@
 #include <optional>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/test_helpers.h"
+#include "media/base/test_random.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_decoder.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_converter.h"
 #include "media/base/video_util.h"
@@ -29,6 +35,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
+#include "ui/gl/gl_implementation.h"
+#include "ui/gl/init/gl_factory.h"
+
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+#include "media/filters/ffmpeg_video_decoder.h"
+#endif
+
+#if BUILDFLAG(ENABLE_LIBVPX)
+#include "media/filters/vpx_video_decoder.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DAV1D_DECODER)
+#include "media/filters/dav1d_video_decoder.h"
+#endif
 
 using testing::Return;
 
@@ -37,6 +57,7 @@ namespace media {
 struct VideoParams {
   VideoCodecProfile profile;
   VideoPixelFormat pixel_format;
+  bool use_gl_surface;
 };
 
 // We're putting this *after* VideoParams, so that it can be used with
@@ -55,11 +76,27 @@ class NdkVideoEncoderAcceleratorTest
       GTEST_SKIP() << "Not supported Android version";
     }
 
+    auto args = GetParam();
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    feature_list_.InitAndEnableFeature(kPlatformHEVCEncoderSupport);
+    enabled_features.push_back(kPlatformHEVCEncoderSupport);
 #endif
 
-    auto args = GetParam();
+    if (args.use_gl_surface) {
+      if (__builtin_available(android 35, *)) {
+        ASSERT_TRUE(gl::init::InitializeGLOneOff(gl::GpuPreference::kDefault));
+      } else {
+        GTEST_SKIP() << "Not supported Android version. "
+                     << "Surface input needs Android 15 or newer.";
+      }
+      enabled_features.push_back(kEnableSurfaceInputForAndroidVEA);
+    } else {
+      disabled_features.push_back(kEnableSurfaceInputForAndroidVEA);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
     profile_ = args.profile;
     codec_ = VideoCodecProfileToVideoCodec(profile_);
     pixel_format_ = args.pixel_format;
@@ -74,7 +111,14 @@ class NdkVideoEncoderAcceleratorTest
     }
   }
 
-  void TearDown() override {}
+  void TearDown() override {
+    accelerator_.reset();
+    RunUntilIdle();
+    auto args = GetParam();
+    if (args.use_gl_surface) {
+      gl::init::ShutdownGL(nullptr, false);
+    }
+  }
 
   // Implementation for VEA::Client
   void RequireBitstreamBuffers(unsigned int input_count,
@@ -84,23 +128,26 @@ class NdkVideoEncoderAcceleratorTest
     input_buffer_size_ =
         VideoFrame::AllocationSize(PIXEL_FORMAT_I420, input_coded_size);
     SendNewBuffer();
-    if (!OnRequireBuffer())
+    if (!OnRequireBuffer()) {
       loop_.Quit();
+    }
   }
 
   void BitstreamBufferReady(int32_t bitstream_buffer_id,
                             const BitstreamBufferMetadata& metadata) override {
     outputs_.push_back({bitstream_buffer_id, metadata});
     SendNewBuffer();
-    if (!OnBufferReady())
+    if (!OnBufferReady()) {
       loop_.Quit();
+    }
   }
 
   void NotifyErrorStatus(const EncoderStatus& status) override {
     CHECK(!status.is_ok());
     error_status_ = status;
-    if (!OnError())
+    if (!OnError()) {
       loop_.Quit();
+    }
   }
 
   MOCK_METHOD(bool, OnRequireBuffer, ());
@@ -108,15 +155,16 @@ class NdkVideoEncoderAcceleratorTest
   MOCK_METHOD(bool, OnError, ());
 
  protected:
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
   void SendNewBuffer() {
     auto buffer = output_pool_->MaybeAllocateBuffer(output_buffer_size_);
     if (!buffer) {
       FAIL() << "Can't allocate memory buffer";
     }
-
     const base::UnsafeSharedMemoryRegion& region = buffer->GetRegion();
     auto mapping = region.Map();
-    UNSAFE_TODO(memset(mapping.memory(), 0, mapping.size()));
+    std::ranges::fill(mapping.begin(), mapping.end(), 0);
 
     auto id = ++last_buffer_id_;
     accelerator_->UseOutputBitstreamBuffer(
@@ -124,73 +172,18 @@ class NdkVideoEncoderAcceleratorTest
     id_to_buffer_[id] = std::move(buffer);
   }
 
-  scoped_refptr<VideoFrame> CreateI420Frame(gfx::Size size,
-                                            uint32_t color,
-                                            base::TimeDelta timestamp) {
-    auto frame = VideoFrame::CreateFrame(PIXEL_FORMAT_I420, size,
-                                         gfx::Rect(size), size, timestamp);
-    auto y = color & 0xFF;
-    auto u = (color >> 8) & 0xFF;
-    auto v = (color >> 16) & 0xFF;
-    libyuv::I420Rect(frame->writable_data(VideoFrame::Plane::kY),
-                     frame->stride(VideoFrame::Plane::kY),
-                     frame->writable_data(VideoFrame::Plane::kU),
-                     frame->stride(VideoFrame::Plane::kU),
-                     frame->writable_data(VideoFrame::Plane::kV),
-                     frame->stride(VideoFrame::Plane::kV),
-                     0,                               // left
-                     0,                               // top
-                     frame->visible_rect().width(),   // right
-                     frame->visible_rect().height(),  // bottom
-                     y,                               // Y color
-                     u,                               // U color
-                     v);                              // V color
-    return frame;
-  }
-
-  scoped_refptr<VideoFrame> CreateNV12Frame(gfx::Size size,
-                                            uint32_t color,
-                                            base::TimeDelta timestamp) {
-    auto i420_frame = CreateI420Frame(size, color, timestamp);
-    auto nv12_frame = VideoFrame::CreateFrame(PIXEL_FORMAT_NV12, size,
-                                              gfx::Rect(size), size, timestamp);
-    auto status = frame_converter_.ConvertAndScale(*i420_frame, *nv12_frame);
-    EXPECT_TRUE(status.is_ok());
-    return nv12_frame;
-  }
-
-  scoped_refptr<VideoFrame> CreateRGBFrame(gfx::Size size,
-                                           uint32_t color,
-                                           base::TimeDelta timestamp) {
-    auto frame = VideoFrame::CreateFrame(PIXEL_FORMAT_XRGB, size,
-                                         gfx::Rect(size), size, timestamp);
-
-    libyuv::ARGBRect(frame->writable_data(VideoFrame::Plane::kARGB),
-                     frame->stride(VideoFrame::Plane::kARGB),
-                     0,                               // left
-                     0,                               // top
-                     frame->visible_rect().width(),   // right
-                     frame->visible_rect().height(),  // bottom
-                     color);
-
-    return frame;
-  }
-
   scoped_refptr<VideoFrame> CreateFrame(gfx::Size size,
                                         VideoPixelFormat format,
                                         base::TimeDelta timestamp,
-                                        uint32_t color = 0x964050) {
-    switch (format) {
-      case PIXEL_FORMAT_I420:
-        return CreateI420Frame(size, color, timestamp);
-      case PIXEL_FORMAT_NV12:
-        return CreateNV12Frame(size, color, timestamp);
-      case PIXEL_FORMAT_XRGB:
-        return CreateRGBFrame(size, color, timestamp);
-      default:
-        EXPECT_TRUE(false) << "not supported pixel format";
-        return nullptr;
+                                        uint32_t color = 0) {
+    auto frame =
+        VideoFrame::CreateFrame(format, size, gfx::Rect(size), size, timestamp);
+    if (!frame) {
+      return nullptr;
     }
+    frame->set_color_space(gfx::ColorSpace::CreateREC601());
+    FillFourColors(*frame, color);
+    return frame;
   }
 
   VideoEncodeAccelerator::Config GetDefaultConfig() {
@@ -289,6 +282,7 @@ class NdkVideoEncoderAcceleratorTest
   VideoCodec codec_;
   VideoCodecProfile profile_;
   VideoPixelFormat pixel_format_;
+  bool use_gl_surface_ = false;
 
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
@@ -307,7 +301,69 @@ class NdkVideoEncoderAcceleratorTest
   std::optional<EncoderStatus> error_status_;
   size_t input_buffer_size_ = 0;
   int32_t last_buffer_id_ = 0;
-  VideoFrameConverter frame_converter_;
+  TestRandom random_color_{0};
+};
+
+class NdkVideoEncoderAcceleratorE2ETest
+    : public NdkVideoEncoderAcceleratorTest {
+ protected:
+  std::unique_ptr<VideoDecoder> PrepareDecoder(
+      gfx::Size size,
+      VideoDecoder::OutputCB output_cb,
+      std::vector<uint8_t> extra_data = std::vector<uint8_t>()) {
+    VideoDecoderConfig config(
+        codec_, profile_, VideoDecoderConfig::AlphaMode::kIsOpaque,
+        VideoColorSpace::REC601(), VideoTransformation(), size, gfx::Rect(size),
+        size, extra_data, EncryptionScheme::kUnencrypted);
+
+    std::unique_ptr<VideoDecoder> decoder;
+    if (codec_ == VideoCodec::kH264) {
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+      decoder = std::make_unique<FFmpegVideoDecoder>(&media_log_);
+#endif
+    } else if (codec_ == VideoCodec::kVP8 || codec_ == VideoCodec::kVP9) {
+#if BUILDFLAG(ENABLE_LIBVPX)
+      decoder = std::make_unique<VpxVideoDecoder>();
+#endif
+    } else if (codec_ == VideoCodec::kAV1) {
+#if BUILDFLAG(ENABLE_DAV1D_DECODER)
+      decoder = std::make_unique<Dav1dVideoDecoder>(media_log_.Clone());
+#endif
+    }
+
+    if (!decoder) {
+      return nullptr;
+    }
+
+    decoder->Initialize(config, false, nullptr, DecoderStatusCB(),
+                        std::move(output_cb), base::NullCallback());
+    RunUntilIdle();
+    return decoder;
+  }
+
+  VideoDecoder::DecodeCB DecoderStatusCB(base::Location loc = FROM_HERE) {
+    struct CallEnforcer {
+      bool called = false;
+      std::string location;
+      ~CallEnforcer() {
+        EXPECT_TRUE(called) << "Callback created: " << location;
+      }
+    };
+    auto enforcer = std::make_unique<CallEnforcer>();
+    enforcer->location = loc.ToString();
+    return base::BindLambdaForTesting(
+        [enforcer{std::move(enforcer)}](DecoderStatus s) {
+          EXPECT_TRUE(s.is_ok()) << " Callback created: " << enforcer->location
+                                 << " Code: " << static_cast<int>(s.code())
+                                 << " Error: " << s.message();
+          enforcer->called = true;
+        });
+  }
+
+  base::circular_deque<scoped_refptr<VideoFrame>> frames_to_encode_;
+  std::vector<uint8_t> concatenated_stream_;
+  int total_decoded_frames_ = 0;
+  NullMediaLog media_log_;
 };
 
 TEST_P(NdkVideoEncoderAcceleratorTest, InitializeAndDestroy) {
@@ -358,13 +414,12 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
   bool result = accelerator_->Initialize(config, this, NullLog()).is_ok();
   ASSERT_TRUE(result);
 
-  uint32_t color = 0x964050;
   auto duration = base::Milliseconds(16);
   for (auto frame_index = 0u; frame_index < total_frames_count; frame_index++) {
     auto timestamp = frame_index * duration;
+    uint32_t color = random_color_.Rand() & 0x00FFFFFF;
     auto frame =
         CreateFrame(config.input_visible_size, pixel_format_, timestamp, color);
-    color = (color << 1) + frame_index;
     bool key_frame = (frame_index == key_frame_index);
     accelerator_->Encode(frame, key_frame);
   }
@@ -389,9 +444,86 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
   ValidateStream(stream);
 }
 
+TEST_P(NdkVideoEncoderAcceleratorE2ETest, EncodeAndDecode) {
+  auto config = GetDefaultConfig();
+  const int total_frames_count = 10;
+  accelerator_ = MakeNdkAccelerator();
+
+  VideoDecoder::OutputCB decoder_output_cb =
+      base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> decoded_frame) {
+        ASSERT_FALSE(frames_to_encode_.empty());
+        auto original_frame = std::move(frames_to_encode_.front());
+        frames_to_encode_.pop_front();
+
+        EXPECT_EQ(decoded_frame->timestamp(), original_frame->timestamp());
+        EXPECT_EQ(decoded_frame->visible_rect().size(),
+                  original_frame->visible_rect().size());
+        if (decoded_frame->format() == original_frame->format()) {
+          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame, 10),
+                    original_frame->visible_rect().width() * 2);
+        }
+        ++total_decoded_frames_;
+        if (total_decoded_frames_ == total_frames_count) {
+          loop_.Quit();
+        }
+      });
+
+  auto decoder =
+      PrepareDecoder(config.input_visible_size, std::move(decoder_output_cb));
+  if (!decoder) {
+    GTEST_SKIP() << "Decoder could not be created.";
+  }
+
+  EXPECT_CALL(*this, OnRequireBuffer()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*this, OnBufferReady()).WillRepeatedly([this, &decoder]() {
+    auto& output = outputs_.back();
+    auto& mapping = id_to_buffer_[output.id]->GetMapping();
+    auto data =
+        mapping.GetMemoryAsSpan<uint8_t>().first(output.md.payload_size_bytes);
+    concatenated_stream_.insert(concatenated_stream_.end(), data.begin(),
+                                data.end());
+    auto buffer = DecoderBuffer::CopyFrom(data);
+    buffer->set_timestamp(output.md.timestamp);
+    buffer->set_is_key_frame(output.md.key_frame);
+    decoder->Decode(std::move(buffer), DecoderStatusCB());
+    if (outputs_.size() == total_frames_count) {
+      decoder->Decode(DecoderBuffer::CreateEOSBuffer(), DecoderStatusCB());
+    }
+    return true;
+  });
+
+  bool result = accelerator_->Initialize(config, this, NullLog()).is_ok();
+  ASSERT_TRUE(result);
+
+  auto duration = base::Milliseconds(16);
+  for (auto frame_index = 0u; frame_index < total_frames_count; frame_index++) {
+    auto timestamp = frame_index * duration;
+    auto frame = CreateFrame(config.input_visible_size, pixel_format_,
+                             timestamp, random_color_.Rand() & 0x00FFFFFF);
+    frames_to_encode_.push_back(frame);
+    accelerator_->Encode(frame, false);
+  }
+
+  Run();
+  EXPECT_FALSE(error_status_.has_value());
+  EXPECT_EQ(total_decoded_frames_, total_frames_count);
+  if (HasFailure()) {
+    std::string base64_stream = base::Base64Encode(concatenated_stream_);
+    LOG(INFO) << "Concatenated stream for failed test, size: "
+              << concatenated_stream_.size();
+    constexpr size_t kMaxLogcatLineSize = 1024;
+    for (size_t i = 0; i < base64_stream.length(); i += kMaxLogcatLineSize) {
+      LOG(INFO) << base64_stream.substr(i, kMaxLogcatLineSize);
+    }
+  }
+}
+
 std::string PrintTestParams(const testing::TestParamInfo<VideoParams>& info) {
   auto result = GetProfileName(info.param.profile) + "__" +
                 VideoPixelFormatToString(info.param.pixel_format);
+  if (info.param.use_gl_surface) {
+    result += "__Surface";
+  }
 
   // GTest doesn't like spaces, but profile names have spaces, so we need
   // to replace them with underscores.
@@ -399,7 +531,17 @@ std::string PrintTestParams(const testing::TestParamInfo<VideoParams>& info) {
   return result;
 }
 
-VideoParams kParams[] = {
+std::vector<VideoParams> GenerateSurfaceVariants(
+    base::span<const VideoParams> base_params) {
+  std::vector<VideoParams> all_params;
+  for (const auto& base : base_params) {
+    all_params.push_back({base.profile, base.pixel_format, false});
+    all_params.push_back({base.profile, base.pixel_format, true});
+  }
+  return all_params;
+}
+
+constexpr VideoParams kBaseParams[] = {
     {VP8PROFILE_MIN, PIXEL_FORMAT_I420},
     {VP8PROFILE_MIN, PIXEL_FORMAT_NV12},
     {VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
@@ -416,10 +558,27 @@ VideoParams kParams[] = {
 #endif
 };
 
-INSTANTIATE_TEST_SUITE_P(AllNdkEncoderTests,
-                         NdkVideoEncoderAcceleratorTest,
-                         ::testing::ValuesIn(kParams),
-                         PrintTestParams);
+INSTANTIATE_TEST_SUITE_P(
+    BaseNdkEncoderTests,
+    NdkVideoEncoderAcceleratorTest,
+    ::testing::ValuesIn(GenerateSurfaceVariants(kBaseParams)),
+    PrintTestParams);
+
+constexpr VideoParams kE2EParams[] = {
+    {H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
+    {H264PROFILE_BASELINE, PIXEL_FORMAT_NV12},
+    {H264PROFILE_MAIN, PIXEL_FORMAT_NV12},
+    {H264PROFILE_MAIN, PIXEL_FORMAT_I420},
+    {VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
+    {VP9PROFILE_PROFILE0, PIXEL_FORMAT_NV12},
+    {AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420},
+    {AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_NV12},
+};
+INSTANTIATE_TEST_SUITE_P(
+    E2ENdkEncoderTests,
+    NdkVideoEncoderAcceleratorE2ETest,
+    ::testing::ValuesIn(GenerateSurfaceVariants(kE2EParams)),
+    PrintTestParams);
 
 }  // namespace media
 #pragma clang attribute pop
