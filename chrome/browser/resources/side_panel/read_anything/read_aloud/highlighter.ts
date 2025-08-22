@@ -6,6 +6,8 @@ import {assert} from '//resources/js/assert.js';
 
 import {getCurrentSpeechRate, isRectVisible} from '../common.js';
 import {NodeStore} from '../node_store.js';
+import type {ReadAloudModelBrowserProxy} from '../read_aloud/read_aloud_model_browser_proxy.js';
+import {getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
 import {isEspeak} from '../voice_language_util.js';
 
 import {VoiceLanguageController} from './voice_language_controller.js';
@@ -32,6 +34,7 @@ export class ReadAloudHighlighter {
   private nodeStore_: NodeStore = NodeStore.getInstance();
   private allowAutoScroll_ = true;
   private voiceLanguageController_ = VoiceLanguageController.getInstance();
+  private readAloudModel_: ReadAloudModelBrowserProxy = getReadAloudModel();
 
   hasCurrentHighlights(): boolean {
     return this.previousHighlights_.some(
@@ -101,7 +104,7 @@ export class ReadAloudHighlighter {
     // sentence we are about to skip is still highlighted for previous
     // highlight formatting.
     this.highlightCurrentSentence_(
-        chrome.readingMode.getCurrentText(), /*scrollIntoView=*/ false,
+        this.readAloudModel_.getCurrentText(), /*scrollIntoView=*/ false,
         /* previousHighlightOnly=*/ true);
   }
 
@@ -110,7 +113,7 @@ export class ReadAloudHighlighter {
   removeCurrentHighlight() {
     // The most recent highlight could have been spread across multiple
     // segments so clear the formatting for all of the segments.
-    for (let i = 0; i < chrome.readingMode.getCurrentText().length; i++) {
+    for (let i = 0; i < this.readAloudModel_.getCurrentText().length; i++) {
       const lastElement = this.previousHighlights_.pop();
       if (lastElement) {
         lastElement.classList.remove(currentReadHighlightClass);
@@ -243,7 +246,7 @@ export class ReadAloudHighlighter {
     } = this.wordBoundaries_.state;
     const index = speechUtteranceStartIndex + previouslySpokenIndex;
     const highlightSegments =
-        chrome.readingMode.getHighlightForCurrentSegmentIndex(
+        this.readAloudModel_.getHighlightForCurrentSegmentIndex(
             index, highlightPhrases);
     let accumulatedHighlightLength = 0;
     let didApplyHighlight = false;
@@ -319,8 +322,8 @@ export class ReadAloudHighlighter {
     if (!element) {
       return undefined;
     }
-    const start = chrome.readingMode.getCurrentTextStartIndex(nodeId);
-    const end = chrome.readingMode.getCurrentTextEndIndex(nodeId);
+    const start = this.readAloudModel_.getCurrentTextStartIndex(nodeId);
+    const end = this.readAloudModel_.getCurrentTextEndIndex(nodeId);
     if ((start < 0) || (end < 0)) {
       // If the start or end index is invalid, don't use this node.
       return undefined;

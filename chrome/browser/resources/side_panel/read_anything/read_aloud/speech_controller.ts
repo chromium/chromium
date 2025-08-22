@@ -6,6 +6,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {getCurrentSpeechRate, getWordCount, playFromSelectionTimeout} from '../common.js';
 import {NodeStore} from '../node_store.js';
+import type {ReadAloudModelBrowserProxy} from '../read_aloud/read_aloud_model_browser_proxy.js';
+import {getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
 import {ReadAnythingLogger} from '../read_anything_logger.js';
 import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
@@ -38,6 +40,7 @@ export class SpeechController {
   private highlighter_: ReadAloudHighlighter =
       ReadAloudHighlighter.getInstance();
   private listeners_: SpeechListener[] = [];
+  private readAloudModel_: ReadAloudModelBrowserProxy = getReadAloudModel();
 
   constructor() {
     // Send over the initial state.
@@ -118,7 +121,7 @@ export class SpeechController {
   }
 
   isSpeechTreeInitialized(): boolean {
-    return chrome.readingMode.isSpeechTreeInitialized;
+    return this.readAloudModel_.isSpeechTreeInitialized();
   }
 
   isPausedFromButton(): boolean {
@@ -169,9 +172,9 @@ export class SpeechController {
       return;
     }
 
-    // TODO: crbug.com/40927698 - There should be a way to use AXPosition so
-    // that this step can be skipped.
-    chrome.readingMode.initAxPositionWithNode(firstTextNode);
+    // TODO: crbug.com/40927698 - This step should be skipped on migrating to
+    // a non-AXPosition-based text segmentation strategy.
+    this.readAloudModel_.onFirstTextNode(firstTextNode);
   }
 
   onSelectionChange() {
@@ -225,7 +228,7 @@ export class SpeechController {
 
     // Rehighlight the new granularity.
     if (newGranularity !== chrome.readingMode.noHighlighting) {
-      this.highlightCurrentGranularity_(chrome.readingMode.getCurrentText());
+      this.highlightCurrentGranularity_(this.readAloudModel_.getCurrentText());
     }
 
     this.logger_.logHighlightGranularity(newGranularity);
@@ -260,16 +263,16 @@ export class SpeechController {
   // that the highlighter is always informed of the change.
   private moveToNextGranularity_() {
     this.highlighter_.onWillMoveToNextGranularity();
-    chrome.readingMode.movePositionToNextGranularity();
+    this.readAloudModel_.moveSpeechForward();
   }
 
   onPreviousGranularityClick() {
     // This must be called BEFORE calling
-    // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
+    // moveSpeechBackwards so we can accurately
     // determine what's currently being highlighted.
     this.highlighter_.removeCurrentHighlight();
     this.onMovingGranularity_();
-    chrome.readingMode.movePositionToPreviousGranularity();
+    this.readAloudModel_.moveSpeechBackwards();
 
     if (!this.highlightAndPlayMessage_(
             /*isInterrupted=*/ false,
@@ -315,7 +318,7 @@ export class SpeechController {
     // updateContent, such as via a preference change, rehighlight the nodes
     // after a pause.
     if (!playedFromSelection) {
-      this.highlightCurrentGranularity_(chrome.readingMode.getCurrentText());
+      this.highlightCurrentGranularity_(this.readAloudModel_.getCurrentText());
     }
   }
 
@@ -390,7 +393,7 @@ export class SpeechController {
     // Iterate through the page from the beginning until we get to the
     // selection. This is so clicking previous works before the selection and
     // so the previous highlights are properly set.
-    chrome.readingMode.resetGranularityIndex();
+    this.readAloudModel_.resetSpeechToBeginning();
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.
     setTimeout(() => {
@@ -418,7 +421,7 @@ export class SpeechController {
       isMovingBackward: boolean = false): boolean {
     // getCurrentText gets the AX Node IDs of text that should be spoken and
     // highlighted.
-    const axNodeIds: number[] = chrome.readingMode.getCurrentText();
+    const axNodeIds: number[] = this.readAloudModel_.getCurrentText();
 
     // If there aren't any valid ax node ids returned by getCurrentText,
     // speech should stop.
@@ -468,7 +471,7 @@ export class SpeechController {
   private skipCurrentPosition_(
       isInterrupted: boolean, isMovingBackward: boolean): boolean {
     if (isMovingBackward) {
-      chrome.readingMode.movePositionToPreviousGranularity();
+      this.readAloudModel_.moveSpeechBackwards();
     } else {
       this.moveToNextGranularity_();
     }
@@ -597,8 +600,8 @@ export class SpeechController {
   private extractTextOf_(axNodeIds: number[]): string {
     let utteranceText: string = '';
     for (const nodeId of axNodeIds) {
-      const startIndex = chrome.readingMode.getCurrentTextStartIndex(nodeId);
-      const endIndex = chrome.readingMode.getCurrentTextEndIndex(nodeId);
+      const startIndex = this.readAloudModel_.getCurrentTextStartIndex(nodeId);
+      const endIndex = this.readAloudModel_.getCurrentTextEndIndex(nodeId);
       const element = this.nodeStore_.getDomNode(nodeId);
       if (!element || startIndex < 0 || endIndex < 0) {
         continue;
@@ -786,7 +789,7 @@ export class SpeechController {
 
   private onSpeechFinished_() {
     this.clearReadAloudState();
-    chrome.readingMode.resetGranularityIndex();
+    this.readAloudModel_.resetSpeechToBeginning();
 
     this.model_.setPauseSource(PauseActionSource.SPEECH_FINISHED);
     this.logger_.logSpeechStopSource(
@@ -846,7 +849,7 @@ export class SpeechController {
       // Since we're setting the reading position after a content update when
       // we're paused, redraw the highlight after moving the traversal state to
       // the right spot above.
-      this.highlightCurrentGranularity_(chrome.readingMode.getCurrentText());
+      this.highlightCurrentGranularity_(this.readAloudModel_.getCurrentText());
       return true;
     } else {
       this.model_.setLastPosition(null);
@@ -855,23 +858,23 @@ export class SpeechController {
   }
 
   private movePlaybackToNode_(nodeId: number, offset: number): void {
-    let currentTextIds = chrome.readingMode.getCurrentText();
+    let currentTextIds = this.readAloudModel_.getCurrentText();
     let hasCurrentText = currentTextIds.length > 0;
     // Since a node could spread across multiple granularities, we use the
     // offset to determine if the selected text is in this granularity or if
     // we have to move to the next one.
     let startOfSelectionIsInCurrentText = currentTextIds.includes(nodeId) &&
-        chrome.readingMode.getCurrentTextEndIndex(nodeId) > offset;
+        this.readAloudModel_.getCurrentTextEndIndex(nodeId) > offset;
     while (hasCurrentText && !startOfSelectionIsInCurrentText) {
       this.highlightCurrentGranularity_(
           currentTextIds, /*scrollIntoView=*/ false,
           /*shouldUpdateSentenceHighlight=*/ true,
           /*shouldSetLastReadingPos=*/ false);
       this.moveToNextGranularity_();
-      currentTextIds = chrome.readingMode.getCurrentText();
+      currentTextIds = this.readAloudModel_.getCurrentText();
       hasCurrentText = currentTextIds.length > 0;
       startOfSelectionIsInCurrentText = currentTextIds.includes(nodeId) &&
-          chrome.readingMode.getCurrentTextEndIndex(nodeId) > offset;
+          this.readAloudModel_.getCurrentTextEndIndex(nodeId) > offset;
     }
   }
 
@@ -883,7 +886,7 @@ export class SpeechController {
     if (shouldSetLastReadingPos && axNodeIds.length && axNodeIds[0]) {
       this.model_.setLastPosition({
         nodeId: axNodeIds[0],
-        offset: chrome.readingMode.getCurrentTextStartIndex(axNodeIds[0]),
+        offset: this.readAloudModel_.getCurrentTextStartIndex(axNodeIds[0]),
       });
     }
     this.highlighter_.highlightCurrentGranularity(
@@ -921,7 +924,7 @@ export class SpeechController {
     // word boundary, but if there's some type of punctuation (such as a comma),
     // it would be preferable to break on the punctuation so the pause in
     // speech sounds more natural.
-    return chrome.readingMode.getAccessibleBoundary(text, MAX_SPEECH_LENGTH);
+    return this.readAloudModel_.getAccessibleBoundary(text, MAX_SPEECH_LENGTH);
   }
 
   private isSpeechActiveChanged_(isSpeechActive: boolean) {
