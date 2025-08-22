@@ -25,64 +25,52 @@ base::Time DeserializeTime(int64_t proto_time) {
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_time));
 }
 
-sync_pb::SharedTabGroupAccountDataSpecifics
-CreatePersonalCollaborationSpecificsFromSavedTabGroupTab(
+void PopulatePersonalCollaborationSpecificsFromSavedTabGroupTab(
     const tab_groups::SavedTabGroup& group,
     const tab_groups::SavedTabGroupTab& tab,
-    const std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>&
-        old_specifics) {
+    sync_pb::SharedTabGroupAccountDataSpecifics* trimmed_specifics) {
   CHECK(group.is_shared_tab_group());
 
-  sync_pb::SharedTabGroupAccountDataSpecifics specifics;
-  if (old_specifics.has_value()) {
-    specifics = old_specifics.value();
-  }
-
-  specifics.set_guid(tab.saved_tab_guid().AsLowercaseString());
-  specifics.set_collaboration_id(group.collaboration_id()->value());
-  specifics.set_version(
+  trimmed_specifics->set_guid(tab.saved_tab_guid().AsLowercaseString());
+  trimmed_specifics->set_collaboration_id(group.collaboration_id()->value());
+  trimmed_specifics->set_version(
       tab_groups::kCurrentSharedTabGroupAccountDataSpecificsProtoVersion);
 
   sync_pb::SharedTabDetails* tab_details =
-      specifics.mutable_shared_tab_details();
+      trimmed_specifics->mutable_shared_tab_details();
   tab_details->set_shared_tab_group_guid(
       group.saved_guid().AsLowercaseString());
   tab_details->set_last_seen_timestamp_windows_epoch(
       SerializeTime(tab.last_seen_time().value()));
-
-  return specifics;
 }
 
-sync_pb::SharedTabGroupAccountDataSpecifics
-CreatePersonalCollaborationSpecificsFromSharedTabGroup(
+void PopulatePersonalCollaborationSpecificsFromSharedTabGroup(
     const tab_groups::SavedTabGroup& tab_group,
-    const std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>&
-        old_specifics) {
+    sync_pb::SharedTabGroupAccountDataSpecifics* trimmed_specifics) {
   CHECK(tab_group.is_shared_tab_group());
 
-  sync_pb::SharedTabGroupAccountDataSpecifics specifics;
-  if (old_specifics.has_value()) {
-    specifics = old_specifics.value();
-  }
-
-  specifics.set_guid(tab_group.saved_guid().AsLowercaseString());
-  specifics.set_collaboration_id(tab_group.collaboration_id()->value());
-  specifics.set_version(
+  trimmed_specifics->set_guid(tab_group.saved_guid().AsLowercaseString());
+  trimmed_specifics->set_collaboration_id(
+      tab_group.collaboration_id()->value());
+  trimmed_specifics->set_version(
       tab_groups::kCurrentSharedTabGroupAccountDataSpecificsProtoVersion);
 
   sync_pb::SharedTabGroupDetails* tab_group_details =
-      specifics.mutable_shared_tab_group_details();
+      trimmed_specifics->mutable_shared_tab_group_details();
   if (tab_group.position().has_value()) {
     tab_group_details->set_pinned_position(tab_group.position().value());
   }
-
-  return specifics;
 }
 
 std::string CreateClientTagForSharedTab(const SavedTabGroup& group,
                                         const SavedTabGroupTab& tab) {
   return tab.saved_tab_guid().AsLowercaseString() + "|" +
          group.collaboration_id().value().value();
+}
+
+std::string CreateClientTagForSharedTab(const CollaborationId& collaboration_id,
+                                        const base::Uuid& tab_guid) {
+  return tab_guid.AsLowercaseString() + "|" + collaboration_id.value();
 }
 
 std::string CreateClientTagForSharedGroup(const SavedTabGroup& group) {

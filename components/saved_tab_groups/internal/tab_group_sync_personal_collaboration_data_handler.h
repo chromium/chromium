@@ -59,7 +59,6 @@ class TabGroupSyncPersonalCollaborationDataHandler
 
   // SavedTabGroupModelObserver implementation.
   void SavedTabGroupReorderedLocally() override;
-  void SavedTabGroupReorderedFromSync() override;
   void SavedTabGroupAddedFromSync(const base::Uuid& guid) override;
   void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
   void SavedTabGroupUpdatedFromSync(
@@ -71,14 +70,9 @@ class TabGroupSyncPersonalCollaborationDataHandler
   void SavedTabGroupRemovedFromSync(
       const SavedTabGroup& removed_group) override;
   void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group) override;
-  void SavedTabGroupLocalIdChanged(const base::Uuid& saved_group_id) override;
   void SavedTabGroupTabLastSeenTimeUpdated(const base::Uuid& tab_id,
                                            TriggerSource source) override;
   void SavedTabGroupModelLoaded() override;
-  void OnSyncBridgeUpdateTypeChanged(
-      SyncBridgeUpdateType sync_bridge_update_type) override;
-  void TabGroupTransitioningToSavedRemovedFromSync(
-      const base::Uuid& saved_group_id) override;
 
  private:
   void ApplyPersonalCollaborationData();
@@ -86,6 +80,10 @@ class TabGroupSyncPersonalCollaborationDataHandler
       const sync_pb::SharedTabGroupAccountDataSpecifics* specifics);
   void UpdateTabGroupSpecifics(
       const sync_pb::SharedTabGroupAccountDataSpecifics* specifics);
+  void MaybeRemoveTabDetailsOnGroupUpdate(
+      const SavedTabGroup& group,
+      const std::optional<base::Uuid>& tab_guid);
+  void WriteTabGroupDetailToSyncIfPositionChanged(const SavedTabGroup& group);
 
   const raw_ptr<SavedTabGroupModel> saved_tab_group_model_;
   const raw_ptr<data_sharing::personal_collaboration_data::

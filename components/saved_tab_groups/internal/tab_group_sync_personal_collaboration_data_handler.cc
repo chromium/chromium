@@ -15,6 +15,13 @@
 
 namespace tab_groups {
 
+namespace {
+
+using SpecificsType = ::data_sharing::personal_collaboration_data::
+    PersonalCollaborationDataService::SpecificsType;
+
+}  // namespace
+
 TabGroupSyncPersonalCollaborationDataHandler::
     TabGroupSyncPersonalCollaborationDataHandler(
         SavedTabGroupModel* model,
@@ -39,7 +46,11 @@ void TabGroupSyncPersonalCollaborationDataHandler::OnSpecificsUpdated(
         PersonalCollaborationDataService::SpecificsType specifics_type,
     const std::string& storage_key,
     const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
-  // TODO(haileywang): Implement.
+  if (specifics_type == SpecificsType::kSharedTabGroupSpecifics) {
+    UpdateTabGroupSpecifics(&specifics);
+  } else if (specifics_type == SpecificsType::kSharedTabSpecifics) {
+    UpdateTabSpecifics(&specifics);
+  }
 }
 
 void TabGroupSyncPersonalCollaborationDataHandler::
@@ -49,72 +60,149 @@ void TabGroupSyncPersonalCollaborationDataHandler::
 
 void TabGroupSyncPersonalCollaborationDataHandler::
     SavedTabGroupReorderedLocally() {
-  // TODO(haileywang): Implement.
-}
-
-void TabGroupSyncPersonalCollaborationDataHandler::
-    SavedTabGroupReorderedFromSync() {
-  // TODO(haileywang): Implement.
+  for (const SavedTabGroup* group :
+       saved_tab_group_model_->GetSharedTabGroupsOnly()) {
+    WriteTabGroupDetailToSyncIfPositionChanged(*group);
+  }
 }
 
 void TabGroupSyncPersonalCollaborationDataHandler::SavedTabGroupAddedFromSync(
     const base::Uuid& guid) {
-  // TODO(haileywang): Implement.
+  const SavedTabGroup* group = saved_tab_group_model_->Get(guid);
+
+  if (!group || !group->is_shared_tab_group()) {
+    return;
+  }
+
+  std::string storage_key = CreateClientTagForSharedGroup(*group);
+  std::optional<sync_pb::SharedTabGroupAccountDataSpecifics> specifics =
+      personal_collaboration_data_service_->GetSpecifics(
+          SpecificsType::kSharedTabGroupSpecifics, storage_key);
+  if (specifics.has_value()) {
+    UpdateTabGroupSpecifics(&specifics.value());
+  }
 }
 
 void TabGroupSyncPersonalCollaborationDataHandler::SavedTabGroupAddedLocally(
     const base::Uuid& guid) {
-  // TODO(haileywang): Implement.
+  const SavedTabGroup* group = saved_tab_group_model_->Get(guid);
+
+  if (!group || !group->is_shared_tab_group()) {
+    return;
+  }
+
+  WriteTabGroupDetailToSyncIfPositionChanged(*group);
 }
 
 void TabGroupSyncPersonalCollaborationDataHandler::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
-  // TODO(haileywang): Implement.
+  const SavedTabGroup* group = saved_tab_group_model_->Get(group_guid);
+  CHECK(group);
+  if (!group->is_shared_tab_group()) {
+    return;
+  }
+
+  MaybeRemoveTabDetailsOnGroupUpdate(*group, tab_guid);
 }
 
 void TabGroupSyncPersonalCollaborationDataHandler::SavedTabGroupUpdatedLocally(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
-  // TODO(haileywang): Implement.
+  const SavedTabGroup* group = saved_tab_group_model_->Get(group_guid);
+  CHECK(group);
+  if (!group->is_shared_tab_group()) {
+    return;
+  }
+
+  if (tab_guid) {
+    MaybeRemoveTabDetailsOnGroupUpdate(*group, tab_guid);
+  } else {
+    // Handle shared tab group details.
+    WriteTabGroupDetailToSyncIfPositionChanged(*group);
+  }
 }
 
 void TabGroupSyncPersonalCollaborationDataHandler::SavedTabGroupRemovedFromSync(
     const SavedTabGroup& removed_group) {
-  // TODO(haileywang): Implement.
+  SavedTabGroupRemovedLocally(removed_group);
 }
 
 void TabGroupSyncPersonalCollaborationDataHandler::SavedTabGroupRemovedLocally(
     const SavedTabGroup& removed_group) {
-  // TODO(haileywang): Implement.
-}
+  // Remove all specifics.
+  if (!removed_group.is_shared_tab_group()) {
+    return;
+  }
 
-void TabGroupSyncPersonalCollaborationDataHandler::SavedTabGroupLocalIdChanged(
-    const base::Uuid& saved_group_id) {
-  // TODO(haileywang): Implement.
+  // Delete tab entities for all tabs in the group.
+  for (const SavedTabGroupTab& tab : removed_group.saved_tabs()) {
+    personal_collaboration_data_service_->DeleteSpecifics(
+        SpecificsType::kSharedTabSpecifics,
+        CreateClientTagForSharedTab(removed_group, tab));
+  }
+
+  // Remove tab group details entity.
+  personal_collaboration_data_service_->DeleteSpecifics(
+      SpecificsType::kSharedTabGroupSpecifics,
+      CreateClientTagForSharedGroup(removed_group));
 }
 
 void TabGroupSyncPersonalCollaborationDataHandler::
     SavedTabGroupTabLastSeenTimeUpdated(const base::Uuid& tab_id,
                                         TriggerSource source) {
-  // TODO(haileywang): Implement.
+  if (source != TriggerSource::LOCAL) {
+    return;
+  }
+
+  // Look through all tabs in this group and create entities for changes
+  // that are not synced.
+  const SavedTabGroup* group =
+      saved_tab_group_model_->GetGroupContainingTab(tab_id);
+  if (!group || !group->is_shared_tab_group()) {
+    return;
+  }
+
+  const SavedTabGroupTab* tab = group->GetTab(tab_id);
+  CHECK(tab);
+
+  const std::optional<base::Time>& model_last_seen = tab->last_seen_time();
+  if (!model_last_seen.has_value()) {
+    // This tab has not been seen by the user. Avoid syncing tabs
+    // without a timestamp by skipping this.
+    return;
+  }
+
+  const std::string storage_key = CreateClientTagForSharedTab(*group, *tab);
+  std::optional<sync_pb::SharedTabGroupAccountDataSpecifics> specifics =
+      personal_collaboration_data_service_->GetSpecifics(
+          SpecificsType::kSharedTabSpecifics, storage_key);
+
+  if (specifics.has_value()) {
+    const base::Time proto_last_seen =
+        DeserializeTime(specifics.value()
+                            .shared_tab_details()
+                            .last_seen_timestamp_windows_epoch());
+
+    if (proto_last_seen >= model_last_seen) {
+      // Ignore the value if sync and model are up-to-date. Technically, it
+      // should never be true that the model data is older than the value
+      // in sync since we update it elsewhere, but this is also ignored.
+      return;
+    }
+  }
+
+  // Write specifics to sync.
+  personal_collaboration_data_service_->CreateOrUpdateSpecifics(
+      SpecificsType::kSharedTabSpecifics, storage_key,
+      base::BindOnce(
+          &PopulatePersonalCollaborationSpecificsFromSavedTabGroupTab, *group,
+          *tab));
 }
 
 void TabGroupSyncPersonalCollaborationDataHandler::SavedTabGroupModelLoaded() {
   personal_collaboration_data_service_observation_.Observe(
       personal_collaboration_data_service_);
-}
-
-void TabGroupSyncPersonalCollaborationDataHandler::
-    OnSyncBridgeUpdateTypeChanged(
-        SyncBridgeUpdateType sync_bridge_update_type) {
-  // TODO(haileywang): Implement.
-}
-
-void TabGroupSyncPersonalCollaborationDataHandler::
-    TabGroupTransitioningToSavedRemovedFromSync(
-        const base::Uuid& saved_group_id) {
-  // TODO(haileywang): Implement.
 }
 
 void TabGroupSyncPersonalCollaborationDataHandler::
@@ -177,6 +265,59 @@ void TabGroupSyncPersonalCollaborationDataHandler::UpdateTabGroupSpecifics(
   }
   saved_tab_group_model_->UpdatePositionForSharedGroupFromSync(group_id,
                                                                position);
+}
+
+void TabGroupSyncPersonalCollaborationDataHandler::
+    MaybeRemoveTabDetailsOnGroupUpdate(
+        const SavedTabGroup& group,
+        const std::optional<base::Uuid>& tab_guid) {
+  if (!tab_guid) {
+    return;
+  }
+
+  const SavedTabGroupTab* tab = group.GetTab(tab_guid.value());
+  if (tab) {
+    return;
+  }
+
+  // This is an update for a shared tab deletion from local. Remove the
+  // corresponding entity from sync.
+  const std::string storage_key = CreateClientTagForSharedTab(
+      group.collaboration_id().value(), tab_guid.value());
+  personal_collaboration_data_service_->DeleteSpecifics(
+      SpecificsType::kSharedTabSpecifics, storage_key);
+}
+
+void TabGroupSyncPersonalCollaborationDataHandler::
+    WriteTabGroupDetailToSyncIfPositionChanged(const SavedTabGroup& group) {
+  std::string storage_key = CreateClientTagForSharedGroup(group);
+  std::optional<sync_pb::SharedTabGroupAccountDataSpecifics> specifics =
+      personal_collaboration_data_service_->GetSpecifics(
+          SpecificsType::kSharedTabGroupSpecifics, storage_key);
+
+  bool has_changed = false;
+  if (specifics.has_value()) {
+    std::optional<size_t> specifics_pinned_position;
+    if (specifics->has_shared_tab_group_details()) {
+      if (specifics->shared_tab_group_details().has_pinned_position()) {
+        specifics_pinned_position =
+            specifics->shared_tab_group_details().pinned_position();
+      }
+    }
+    if (group.position() != specifics_pinned_position) {
+      has_changed = true;
+    }
+  } else {
+    has_changed = true;
+  }
+
+  if (has_changed) {
+    // Write specifics to sync.
+    personal_collaboration_data_service_->CreateOrUpdateSpecifics(
+        SpecificsType::kSharedTabGroupSpecifics, storage_key,
+        base::BindOnce(
+            &PopulatePersonalCollaborationSpecificsFromSharedTabGroup, group));
+  }
 }
 
 }  // namespace tab_groups
