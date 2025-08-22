@@ -164,12 +164,15 @@ bool KernelSupportsPriorityInheritanceFutex() {
   // kernel and was backported to the 6.1.75 and 6.6.29 kernels. This change
   // hasn't been upstreamed yet.
 #if BUILDFLAG(IS_ANDROID)
-  auto kernel_version = SysInfo::KernelVersionNumber::Current();
-  return (kernel_version > SysInfo::KernelVersionNumber(6, 12, 13)) ||
-         ((kernel_version > SysInfo::KernelVersionNumber(6, 6, 29)) &&
-          (kernel_version < SysInfo::KernelVersionNumber(6, 6, INT32_MAX))) ||
-         ((kernel_version > SysInfo::KernelVersionNumber(6, 1, 75)) &&
-          (kernel_version < SysInfo::KernelVersionNumber(6, 1, INT32_MAX)));
+  static bool supports_pi_futex = [] {
+    auto kernel_version = SysInfo::KernelVersionNumber::Current();
+    return (kernel_version > SysInfo::KernelVersionNumber(6, 12, 13)) ||
+           ((kernel_version > SysInfo::KernelVersionNumber(6, 6, 29)) &&
+            (kernel_version < SysInfo::KernelVersionNumber(6, 6, INT32_MAX))) ||
+           ((kernel_version > SysInfo::KernelVersionNumber(6, 1, 75)) &&
+            (kernel_version < SysInfo::KernelVersionNumber(6, 1, INT32_MAX)));
+  }();
+  return supports_pi_futex;
 #else   // BUILDFLAG(IS_ANDROID)
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
