@@ -307,6 +307,9 @@
     <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_NAME_ON_CARD" desc="Error message to show when a user has input an invalid name on card.">
       Name on card is invalid
     </message>
+    <message name="IDS_AUTOFILL_SAVE_AND_FILL_PENDING_DIALOG_LOADING_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement to indicate that the Save and Fill dialog is in a pending state. It is displayed along with a loading spinner while attempting to show the server version of the dialog and after the user has accepted the dialog.">
+      Loading
+    </message>
   </if>
 
   <!-- Autofill error dialog related strings -->
