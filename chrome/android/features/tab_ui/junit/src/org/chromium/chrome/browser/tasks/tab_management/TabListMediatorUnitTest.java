@@ -5170,9 +5170,6 @@ public class TabListMediatorUnitTest {
         mMediator.setDefaultGridCardSize(new Size(100, 200));
         mMediator.resetWithListOfTabs(null, syncIds, false);
 
-        PropertyModel model = mock(PropertyModel.class);
-        when(model.get(CARD_TYPE)).thenReturn(TAB_GROUP);
-        when(model.get(TabProperties.TAB_GROUP_SYNC_ID)).thenReturn(SYNC_GROUP_ID1);
         assertEquals(1, mModelList.size());
 
         // Assert removing a tab type does nothing.

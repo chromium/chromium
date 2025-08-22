@@ -107,6 +107,7 @@ public class TouchToFillRenderTest {
     PasswordManagerResourceProvider mResourceProvider;
     private WebPageStation mPage;
 
+    @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 

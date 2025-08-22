@@ -77,7 +77,6 @@ public class AppLaunchDrawBlockerUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private Supplier<Boolean> mShouldIgnoreIntentSupplier;
     @Mock private Supplier<Boolean> mIsTabletSupplier;
-    @Mock private Supplier<Boolean> mShouldShowTabSwitcherOnStartSupplier;
 
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
@@ -108,7 +107,6 @@ public class AppLaunchDrawBlockerUnitTest {
 
         when(mShouldIgnoreIntentSupplier.get()).thenReturn(false);
         when(mIsTabletSupplier.get()).thenReturn(false);
-        when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(false);
         when(mIncognitoRestoreAppLaunchDrawBlockerFactoryMock.create(
                         eq(mIntentSupplier),
                         eq(mShouldIgnoreIntentSupplier),

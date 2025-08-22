@@ -66,7 +66,6 @@ public final class PlusAddressCreationMediatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private PlusAddressCreationBottomSheetContent mBottomSheetContent;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private TabModel mTabModel;

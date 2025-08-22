@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.UserData;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.Tab;
@@ -41,7 +40,6 @@ public class BottomSheetFocusHelperRoboelectricTest {
     @Mock private WebContentsAccessibility mWebContentsAccessibility;
     @Mock private Tab mTab;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private UserData mUserData;
 
     @Before
     public void setUp() throws InterruptedException {

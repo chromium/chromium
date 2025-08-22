@@ -111,7 +111,6 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private Tracker mTracker;
     @Mock private Runnable mAppendMessageRunnable;
     @Mock private TabListCoordinator mTabListCoordinator;
-    @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Supplier<PaneManager> mPaneManagerSupplier;
     @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;

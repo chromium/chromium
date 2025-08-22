@@ -27,7 +27,6 @@ import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
@@ -248,7 +247,6 @@ public class EdgeToEdgeControllerTest {
     @Captor private ArgumentCaptor<Rect> mSafeAreaRectCaptor;
 
     @Mock private View mViewMock;
-    @Mock private Resources mResources;
 
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private LayoutManager mLayoutManager;

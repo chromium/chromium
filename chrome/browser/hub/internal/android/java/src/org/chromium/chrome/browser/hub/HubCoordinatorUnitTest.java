@@ -81,7 +81,6 @@ public class HubCoordinatorUnitTest {
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Mock private Tab mTab;
-    @Mock private Tab mIncognitoTab;
     @Mock private HubLayoutController mHubLayoutController;
     @Mock private Pane mTabSwitcherPane;
     @Mock private Pane mIncognitoTabSwitcherPane;
@@ -145,8 +144,6 @@ public class HubCoordinatorUnitTest {
                 .thenReturn(mIncognitoHubSearchEnabledStateSupplier);
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mTab.isIncognito()).thenReturn(false);
-        when(mIncognitoTab.getId()).thenReturn(INCOGNITO_TAB_ID);
-        when(mIncognitoTab.isIncognito()).thenReturn(true);
         when(mHubLayoutController.getPreviousLayoutTypeSupplier())
                 .thenReturn(mPreviousLayoutTypeSupplier);
         when(mHubLayoutController.getIsAnimatingSupplier())

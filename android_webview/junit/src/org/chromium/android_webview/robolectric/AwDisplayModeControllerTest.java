@@ -50,7 +50,6 @@ public class AwDisplayModeControllerTest {
     @Mock private View mView;
     @Mock private View mAnotherView;
 
-    @Mock private ViewGroup mParentView;
     @Mock private ViewGroup mRootView;
 
     private View.OnApplyWindowInsetsListener mListener;

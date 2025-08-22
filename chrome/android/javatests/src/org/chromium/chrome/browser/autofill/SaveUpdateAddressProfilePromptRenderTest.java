@@ -60,6 +60,7 @@ import java.util.List;
 public class SaveUpdateAddressProfilePromptRenderTest {
     private static final long NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER = 100L;
 
+    @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 

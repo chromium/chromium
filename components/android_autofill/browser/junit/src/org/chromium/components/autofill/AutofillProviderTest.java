@@ -89,7 +89,6 @@ public class AutofillProviderTest {
     @Mock private AutofillProvider.Natives mNativeMock;
     @Mock private RenderCoordinatesImpl mRenderCoordinates;
     @Mock private AutofillManager mAutofillManager;
-    @Mock private AutofillManagerWrapper.InputUiObserver mMockInputUiObserver;
 
     /** AutofillManagerWrapper which keeps track of the virtual id of the field with focus. */
     private class TestAutofillManagerWrapper extends AutofillManagerWrapper {

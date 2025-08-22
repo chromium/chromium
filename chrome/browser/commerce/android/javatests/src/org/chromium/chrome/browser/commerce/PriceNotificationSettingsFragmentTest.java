@@ -47,9 +47,12 @@ import org.chromium.google_apis.gaia.GaiaId;
 @DoNotBatch(reason = "Layout and behavior are dependent on setup params for the activity.")
 public class PriceNotificationSettingsFragmentTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
     public final SettingsActivityTestRule<PriceNotificationSettingsFragment> mTestRule =
             new SettingsActivityTestRule<>(PriceNotificationSettingsFragment.class);
 
+    @Rule
     public final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 

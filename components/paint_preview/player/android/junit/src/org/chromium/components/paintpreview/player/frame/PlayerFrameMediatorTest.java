@@ -592,7 +592,6 @@ public class PlayerFrameMediatorTest {
         Bitmap bitmap00 = Mockito.mock(Bitmap.class);
         Bitmap bitmap10 = Mockito.mock(Bitmap.class);
         Bitmap bitmap20 = Mockito.mock(Bitmap.class);
-        Bitmap bitmap30 = Mockito.mock(Bitmap.class);
         Bitmap bitmap01 = Mockito.mock(Bitmap.class);
         Bitmap bitmap11 = Mockito.mock(Bitmap.class);
         Bitmap bitmap21 = Mockito.mock(Bitmap.class);

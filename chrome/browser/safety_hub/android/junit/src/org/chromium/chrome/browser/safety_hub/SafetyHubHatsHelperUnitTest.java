@@ -58,7 +58,6 @@ public class SafetyHubHatsHelperUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private SafetyHubHatsBridge.Natives mSafetyHubHatsBridgeNatives;
     @Mock private UserPrefs.Natives mUserPrefsNativeMock;
     @Mock private PrefService mPrefServiceMock;
     @Mock private SafetyHubFetchService mSafetyHubFetchService;

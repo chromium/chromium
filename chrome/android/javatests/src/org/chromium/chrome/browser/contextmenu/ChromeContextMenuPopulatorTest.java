@@ -30,7 +30,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.widget.ListView;
 
 import androidx.browser.customtabs.CustomContentAction;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -125,7 +124,6 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private Profile mProfile;
     @Mock private Profile.Natives mProfileNatives;
     @Mock private MenuModelBridge mMenuModelBridge;
-    @Mock private ListView mMockListView;
     @Mock private ChromeContextMenuPopulator.PendingIntentSender mMockPendingIntentSender;
 
     private ChromeContextMenuPopulator mPopulator;
@@ -2020,7 +2018,6 @@ public class ChromeContextMenuPopulatorTest {
         when(mMenuModelBridge.populateModelList()).thenReturn(modelList);
 
         ModelListAdapter adapter = new ModelListAdapter(modelList);
-        when(mMockListView.getAdapter()).thenReturn(adapter);
         assertEquals(1, adapter.getCount());
         ListItem menuItemWithSubmenu = (ListItem) adapter.getItem(0);
         assertNotNull("Should find the menu item with submenu", menuItemWithSubmenu);

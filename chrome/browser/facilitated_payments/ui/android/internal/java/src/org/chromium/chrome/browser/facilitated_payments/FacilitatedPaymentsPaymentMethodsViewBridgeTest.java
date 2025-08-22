@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.pm.ResolveInfo;
@@ -46,7 +45,6 @@ import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link FacilitatedPaymentsPaymentMethodsViewBridge}. */
@@ -110,7 +108,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private AutofillImageFetcher mAutofillImageFetcher;
     @Mock private Profile mProfile;
-    @Mock private WebContents mWebContents;
 
     private Context mApplicationContext;
     private FacilitatedPaymentsPaymentMethodsViewBridge mViewBridge;
@@ -169,7 +166,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Test
     @SmallTest
     public void requestShowContent_callsControllerRequestShowContent() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
         mViewBridge.requestShowContent(BANK_ACCOUNTS);
 
@@ -181,7 +177,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Test
     @SmallTest
     public void requestShowContent_bottomSheetContentImplIsStubbed() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
         mViewBridge.requestShowContent(BANK_ACCOUNTS);
 
@@ -209,7 +204,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @SmallTest
     @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void requestShowContentForPaymentLink_callsControllerRequestShowContent() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
         mViewBridge.requestShowContentForPaymentLink(EWALLETS, APPS);
 
@@ -222,7 +216,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @SmallTest
     @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void requestShowContentForPaymentLink_callsControllerRequestShowContent_nullAppArray() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
         mViewBridge.requestShowContentForPaymentLink(EWALLETS, null);
 
@@ -235,7 +228,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @SmallTest
     @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void requestShowContentForPaymentLink_bottomSheetContentImplIsStubbed() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
         mViewBridge.requestShowContentForPaymentLink(EWALLETS, APPS);
 
@@ -263,7 +255,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Test
     @SmallTest
     public void showPixAccountLinkingPrompt_callsControllerRequestShowContent() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
         mViewBridge.showPixAccountLinkingPrompt();
 

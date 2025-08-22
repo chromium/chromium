@@ -19,7 +19,6 @@ import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -43,7 +42,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -230,9 +228,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private Runnable mFinishRunnable;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
-    @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
-    @Mock private Menu mMenu;
     @Mock private MenuItem mMenuItem;
     @Mock private BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
@@ -303,7 +299,6 @@ public class BookmarkFolderPickerMediatorUnitTest {
                 .finishLoadingBookmarkModel(any());
 
         // Setup menu.
-        doReturn(mMenuItem).when(mMenu).add(anyInt());
         doReturn(mMenuItem).when(mMenuItem).setIcon(any());
         doReturn(mMenuItem).when(mMenuItem).setShowAsActionFlags(anyInt());
 

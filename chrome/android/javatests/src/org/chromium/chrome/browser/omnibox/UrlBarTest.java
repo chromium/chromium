@@ -69,8 +69,11 @@ import java.util.concurrent.atomic.AtomicReference;
 public class UrlBarTest {
     public static final String EXAMPLE_STRING = "example string";
     private UrlBar mUrlBar;
+
+    @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
             ChromeTransitTestRules.blankPageStartReusedActivityRule();
+
     private OmniboxTestUtils mOmnibox;
     private WebPageStation mStartingPage;
 

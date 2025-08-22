@@ -32,8 +32,6 @@ import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomShee
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_TITLE;
 
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.content.res.Resources;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -62,7 +60,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -93,12 +90,9 @@ public class PriceInsightsBottomSheetMediatorTest {
     @Mock private Profile mMockProfile;
     @Mock private TabModelSelector mMockTabModelSelector;
     @Mock private ShoppingService mMockShoppingService;
-    @Mock private Resources mMockResources;
-    @Mock private BookmarkId mMockBookmarkId;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
     @Mock private ObservableSupplier<Boolean> mMockPriceTrackingStateSupplier;
     @Mock private View mMockPriceHistoryChart;
-    @Mock private NotificationManager mMockNotificationManager;
 
     private static final String PRODUCT_TITLE = "Testing Sneaker";
     private static final String PRICE_TRACKING_DISABLED_BUTTON_TEXT = "Track";

@@ -33,7 +33,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -55,7 +54,6 @@ public class ListMenuUtilsUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Callback<Integer> mClickCallback;
     @Mock private OnClickListener mItemClickListener;
     @Mock private Runnable mDismissDialog;
     @Mock private ListView mListView;
@@ -282,7 +280,6 @@ public class ListMenuUtilsUnitTest {
     public void getItemList_withModelClickCallback_dismissAdded() {
         setupCallbacksRecursively(/* headerModelList= */ null, mModelList, mDismissDialog);
         mListItemWithModelClickCallback.model.get(CLICK_LISTENER).onClick(mListView);
-        verify(mClickCallback, never()).onResult(any());
         verify(mDismissDialog, times(1)).run();
     }
 

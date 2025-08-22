@@ -34,7 +34,6 @@ public class TabClosureParamsUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
-    @Mock private Tab mTab3;
     @Mock private Runnable mUndoRunnable;
 
     @Test

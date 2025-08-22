@@ -2555,7 +2555,6 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testGetAssertion_immediateTimesOut_notAllowedError() {
-        WebauthnBrowserBridge mockedBrowserBridge = Mockito.mock(WebauthnBrowserBridge.class);
         RunnableTimer timer = Mockito.mock(RunnableTimer.class);
         mRequest.setImmediateTimerForTesting(timer);
 
@@ -2586,8 +2585,6 @@ public class Fido2CredentialRequestTest {
         mCallback.blockUntilCalled();
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR), mCallback.getStatus());
-        Mockito.verify(mockedBrowserBridge, never())
-                .onCredentialsDetailsListReceived(any(), any(), anyInt(), any(), any(), any());
     }
 
     @Test

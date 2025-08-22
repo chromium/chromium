@@ -32,7 +32,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -52,7 +51,6 @@ public final class VoiceToolbarButtonControllerUnitTest {
     @Mock private Resources mResources;
     @Mock private Tab mTab;
     @Mock private GURL mUrl;
-    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private VoiceToolbarButtonController.VoiceSearchDelegate mVoiceSearchDelegate;
     @Mock private Drawable mDrawable;

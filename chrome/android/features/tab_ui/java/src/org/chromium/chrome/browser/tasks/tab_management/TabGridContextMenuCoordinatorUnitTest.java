@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
-import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
@@ -86,21 +85,17 @@ public class TabGridContextMenuCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private TabBookmarker mTabBookmarker;
-    @Mock private Supplier<TabModel> mTabModelSupplier;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
     @Mock private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private CollaborationService mCollaborationService;
-    @Mock private TabListEditorManager mTabListEditorManager;
-    @Mock private TabListEditorController mTabListEditorController;
     @Mock private TabModel mTabModel;
     @Mock private TabRemover mTabRemover;
     @Mock private Tab mTab;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Profile mProfile;
-    @Mock private Resources mResources;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private ShowTabListEditor mShowTabListEditor;
 
@@ -119,12 +114,9 @@ public class TabGridContextMenuCoordinatorUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
-        when(mTabModelSupplier.get()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
         when(mTab.getTabGroupId()).thenReturn(mTabGroupId);
-        when(mResources.getDimensionPixelSize(R.dimen.tab_strip_group_context_menu_max_width))
-                .thenReturn(MENU_WIDTH);
 
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
 
@@ -146,8 +138,6 @@ public class TabGridContextMenuCoordinatorUnitTest {
         when(mTabModel.getTabById(anyInt())).thenReturn(mTab);
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mBookmarkModel.hasBookmarkIdForTab(any())).thenReturn(false);
-        when(mTabListEditorManager.getControllerSupplier())
-                .thenReturn(new ObservableSupplierImpl<>(mTabListEditorController));
     }
 
     @Test

@@ -4,12 +4,9 @@
 
 package org.chromium.components.signin.base;
 
-import static org.mockito.Mockito.spy;
-
 import com.google.common.collect.Lists;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -22,7 +19,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.Tribool;
-import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,7 +30,6 @@ import java.util.Map;
 @ParameterAnnotations.UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
 @Config(manifest = Config.NONE)
 public final class AccountCapabilitiesTest {
-    private FakeAccountManagerDelegate mDelegate;
 
     /**
      * Returns the capability value for the specified capability name from the appropriate getter in
@@ -212,11 +207,6 @@ public final class AccountCapabilitiesTest {
         public Iterable<ParameterSet> getParameters() {
             return sCapabilties;
         }
-    }
-
-    @Before
-    public void setUp() {
-        mDelegate = spy(new FakeAccountManagerDelegate());
     }
 
     @Test

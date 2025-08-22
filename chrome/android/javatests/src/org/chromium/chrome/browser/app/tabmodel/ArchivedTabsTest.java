@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -75,8 +74,6 @@ public class ArchivedTabsTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-
-    @Mock private ArchivedTabModelOrchestrator.Observer mObserver;
 
     private Profile mProfile;
     private FakeDeferredStartupHandler mDeferredStartupHandler;

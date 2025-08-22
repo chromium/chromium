@@ -30,7 +30,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -43,7 +42,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 /** Unit tests for {@link TabListItemAnimator}. */
@@ -55,7 +53,6 @@ public class TabListItemAnimatorUnitTest {
     private ObservableSupplierImpl<Boolean> mIsAnimatorRunningSupplier =
             new ObservableSupplierImpl<>(false);
 
-    @Mock private SimpleRecyclerViewAdapter mAdapter;
     private TabListItemAnimator mItemAnimator;
 
     @Before

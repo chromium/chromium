@@ -50,7 +50,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -92,7 +91,6 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
     @Mock private Tab mTab3;
     @Mock private TabListFaviconProvider mTabListFaviconProvider;
     @Mock private TabContentManager mTabContentManager;
-    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Captor private ArgumentCaptor<Callback<Drawable>> mFaviconCallbackCaptor;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Mock private UiConfig mUiConfig;

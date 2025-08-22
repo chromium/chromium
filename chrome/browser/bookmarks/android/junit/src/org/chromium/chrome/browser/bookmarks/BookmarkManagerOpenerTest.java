@@ -23,7 +23,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
@@ -44,9 +43,6 @@ public class BookmarkManagerOpenerTest {
     @Mock private Tab mCurrentTab;
     @Mock private Profile mProfile;
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
-    @Mock private BookmarkFolderPickerActivity mBookmarkFolderPickerActivity;
-    @Mock private BookmarkFolderPickerActivity mBookmarkFolderPickerActivity2;
-    @Mock private Runnable mRunnable;
 
     private Activity mActivity;
     private final BookmarkManagerOpener mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();

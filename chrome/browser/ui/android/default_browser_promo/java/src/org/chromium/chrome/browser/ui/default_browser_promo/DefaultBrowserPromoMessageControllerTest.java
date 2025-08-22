@@ -41,8 +41,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
 public class DefaultBrowserPromoMessageControllerTest {
     @Mock private Tracker mTestTracker;
-    @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
-    @Mock private Runnable mOnDisplayChangedCallback;
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);

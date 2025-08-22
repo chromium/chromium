@@ -40,7 +40,6 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -113,7 +112,6 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Mock private ArchivedTabModelOrchestrator.Observer mObserver;
     @Mock private TabArchiverImpl.Clock mClock;
-    @Mock private ObservableSupplierImpl<Boolean> mSkipSaveTabListSupplier;
     @Mock private TabPersistentStore mArchivedTabPersistentStore;
     @Mock private TabPersistentStore mNormalTabPersistentStore;
     @Mock private TabModelSelectorBase mTabModelSelector;
@@ -158,7 +156,6 @@ public class ArchivedTabModelOrchestratorTest {
                                             .get();
                     mOrchestrator = ArchivedTabModelOrchestrator.getForProfile(mProfile);
                 });
-        doReturn(false).when(mSkipSaveTabListSupplier).get();
     }
 
     private void finishLoading() {

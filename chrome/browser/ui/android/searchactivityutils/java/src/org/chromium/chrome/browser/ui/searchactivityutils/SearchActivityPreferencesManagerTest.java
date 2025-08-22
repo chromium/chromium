@@ -37,7 +37,6 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -67,7 +66,6 @@ import java.util.function.Consumer;
 public class SearchActivityPreferencesManagerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TemplateUrlService mTemplateUrlServiceMock;
-    @Mock private LibraryLoader mLibraryLoaderMock;
     @Mock private TemplateUrl mTemplateUrlMock;
     @Mock private Profile mProfile;
 
@@ -379,7 +377,6 @@ public class SearchActivityPreferencesManagerTest {
         verifyNoMoreInteractions(mTemplateUrlServiceMock);
 
         // Signal the Manager that Native Libraries are ready.
-        doReturn(true).when(mLibraryLoaderMock).isInitialized();
         SearchActivityPreferencesManager.onNativeLibraryReady();
         verify(mTemplateUrlServiceMock, times(1)).registerLoadListener(any());
         verify(mTemplateUrlServiceMock, times(1)).addObserver(any());
@@ -423,7 +420,6 @@ public class SearchActivityPreferencesManagerTest {
                 .getDefaultSearchEngineTemplateUrl();
 
         // Signal the Manager that Native Libraries are ready.
-        doReturn(true).when(mLibraryLoaderMock).isInitialized();
         SearchActivityPreferencesManager.onNativeLibraryReady();
 
         // Simulate the event where we had everything readily available when TemplateUrlService is

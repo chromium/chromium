@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -53,7 +52,6 @@ public final class OptionalNewTabButtonControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Context mContext;
 
-    @Mock private Resources mResources;
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -75,7 +73,6 @@ public final class OptionalNewTabButtonControllerUnitTest {
         doReturn(mTab).when(mTabSupplier).get();
 
         mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP + WIDTH_DELTA;
-        doReturn(mConfiguration).when(mResources).getConfiguration();
 
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
 

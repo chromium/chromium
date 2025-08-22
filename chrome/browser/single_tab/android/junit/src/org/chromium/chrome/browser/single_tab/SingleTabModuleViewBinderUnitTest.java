@@ -46,8 +46,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -70,8 +68,6 @@ public class SingleTabModuleViewBinderUnitTest {
 
     @Mock private View.OnClickListener mClickListener;
     @Mock private Runnable mSeeMoreLinkClickListener;
-    @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabListFaviconProvider mTabListFaviconProvider;
 
     @Before
     public void setUp() throws Exception {

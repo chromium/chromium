@@ -122,8 +122,6 @@ public class PasswordManagerHelperTest {
     @Mock private LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
     private LoadingModalDialogCoordinator.Observer mLoadingDialogCoordinatorObserver;
 
-    @Mock private CustomTabIntentHelper mCustomTabIntentHelper;
-
     private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     private PasswordManagerHelper mPasswordManagerHelper;

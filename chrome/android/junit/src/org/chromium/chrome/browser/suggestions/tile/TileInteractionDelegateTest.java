@@ -88,8 +88,6 @@ public class TileInteractionDelegateTest {
     @Mock private TileGroup.Delegate mTileGroupDelegate;
     @Mock private TileDragDelegate mTileDragDelegate;
     @Mock private OfflinePageBridge mOfflinePageBridge;
-    @Mock private Runnable mSnapshotTileGridChangedRunnable;
-    @Mock private Runnable mTileCountChangedRunnable;
     @Mock private TileGroup.Observer mTileGroupObserver;
     @Mock private TileRenderer mTileRenderer;
     @Mock private AndroidPrerenderManager mAndroidPrerenderManager;

@@ -97,7 +97,6 @@ public final class StatusMediatorUnitTest {
     private @Mock Tab mTab;
 
     private @Mock WebContents mWebContents;
-    private @Mock StatusView mStatusView;
     @Mock UserPrefsJni mMockUserPrefsJni;
     @Mock private PrefService mPrefs;
     @Mock private Tracker mTracker;

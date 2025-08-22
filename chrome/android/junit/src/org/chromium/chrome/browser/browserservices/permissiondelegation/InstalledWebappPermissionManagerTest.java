@@ -12,13 +12,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -59,8 +57,6 @@ public class InstalledWebappPermissionManagerTest {
 
         PackageManager pm = RuntimeEnvironment.application.getPackageManager();
         mShadowPackageManager = shadowOf(pm);
-
-        Context context = mock(Context.class);
 
         when(mStore.getDelegatePackageName(eq(ORIGIN))).thenReturn(PACKAGE_NAME);
         WebappRegistry.getInstance().setPermissionStoreForTesting(mStore);

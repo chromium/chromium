@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions.tabgroup;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.ShapeDrawable;
 import android.text.style.ImageSpan;
 
@@ -63,7 +62,6 @@ public class TabGroupSuggestionProcessorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock SuggestionHost mSuggestionHost;
-    private @Mock Bitmap mBitmap;
     private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock UrlBarEditingTextStateProvider mTextProvider;
     private @Mock Supplier<Tab> mTabSupplier;

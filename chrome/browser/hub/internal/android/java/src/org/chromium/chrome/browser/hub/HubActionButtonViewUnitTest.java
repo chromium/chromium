@@ -74,7 +74,6 @@ public class HubActionButtonViewUnitTest {
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Mock Runnable mOnButton;
-    @Mock private Pane mPane;
 
     private Activity mActivity;
     private FrameLayout mActionButtonContainer;

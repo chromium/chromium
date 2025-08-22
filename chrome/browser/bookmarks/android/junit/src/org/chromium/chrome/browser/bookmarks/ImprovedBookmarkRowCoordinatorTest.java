@@ -73,12 +73,10 @@ public class ImprovedBookmarkRowCoordinatorTest {
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private Drawable mDrawable;
     @Mock private Drawable mFavicon;
-    @Mock private Runnable mClickListener;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
     @Mock private ShoppingService mShoppingService;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
-    @Mock private ImprovedBookmarkRow mImprovedBookmarkRow;
 
     private Activity mActivity;
     private PropertyModel mModel;

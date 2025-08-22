@@ -25,7 +25,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Intent;
-import android.net.Network;
 import android.os.Bundle;
 
 import org.junit.Before;
@@ -69,7 +68,6 @@ public class CustomTabActivityTabControllerUnitTest {
     private CustomTabActivityTabController mTabController;
 
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
-    @Mock private Network mNetwork;
     @Mock private UserPrefsJni mMockUserPrefsJni;
 
     @Mock private CookiesFetcher.Natives mCookiesFetcherJni;

@@ -83,7 +83,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.CustomButtonParamsImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -158,7 +157,6 @@ public class CustomTabToolbarUnitTest {
     @Mock AppMenuHandler mAppMenuHandler;
     private @Mock PageInfoIphController mPageInfoIphController;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
-    @Mock private CustomTabMinimizeDelegate mMinimizeDelegate;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Captor ArgumentCaptor<AppMenuObserver> mAppMenuObserverCaptor;

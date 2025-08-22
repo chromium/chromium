@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
@@ -33,7 +32,6 @@ import org.chromium.chrome.browser.tab.Tab;
 @Config(manifest = Config.NONE)
 public class LongScreenshotsEntryTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Context mContext;
 
     @Mock private Tab mTab;
 

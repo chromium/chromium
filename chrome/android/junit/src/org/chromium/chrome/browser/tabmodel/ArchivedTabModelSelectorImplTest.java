@@ -34,7 +34,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -62,15 +61,8 @@ public class ArchivedTabModelSelectorImplTest {
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
 
-    @Mock
-    private IncognitoTabModelObserver.IncognitoReauthDialogDelegate
-            mIncognitoReauthDialogDelegateMock;
-
-    @Mock private Callback<TabModel> mTabModelSupplierObserverMock;
     @Mock private Callback<Tab> mTabSupplierObserverMock;
     @Mock private Callback<Integer> mTabCountSupplierObserverMock;
-    @Mock private TabModelSelectorObserver mTabModelSelectorObserverMock;
-    @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
     @Mock private Context mContext;

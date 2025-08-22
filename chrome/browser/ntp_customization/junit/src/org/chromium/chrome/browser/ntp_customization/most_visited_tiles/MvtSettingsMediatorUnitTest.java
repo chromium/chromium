@@ -43,7 +43,6 @@ public class MvtSettingsMediatorUnitTest {
     @Mock private BottomSheetDelegate mDelegate;
     @Mock View mView;
     @Mock private PropertyModel mBottomSheetPropertyModel;
-    @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Captor private ArgumentCaptor<View.OnClickListener> mBackPressHandlerCaptor;
 
     private MvtSettingsMediator mMediator;

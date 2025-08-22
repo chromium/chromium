@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safety_hub.SafetyHubLocalPasswordsDataSource.ModuleType;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.TestActivity;
 
@@ -74,7 +73,6 @@ public class SafetyHubLocalPasswordsDataSourceTest {
     @Mock private SafetyHubModuleDelegate mModuleDelegateMock;
     @Mock private PrefService mPrefServiceMock;
     @Mock private SafetyHubFetchService mSafetyHubFetchServiceMock;
-    @Mock private SigninManager mSigninManagerMock;
     @Mock private PasswordStoreBridge mPasswordStoreBridge;
 
     @Before

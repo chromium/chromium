@@ -21,7 +21,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link PageZoomUtils}. */
@@ -52,8 +51,6 @@ public class PageZoomUtilsUnitTest {
 
     private static final String SHOULD_SHOW_ZOOM_MENU_ITEM_FAILURE_EXPECTED_FALSE =
             "Failure in should show zoom menu item method. Expected false but returned true.";
-
-    @Mock private WebContents mWebContentsMock;
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapMock;
 

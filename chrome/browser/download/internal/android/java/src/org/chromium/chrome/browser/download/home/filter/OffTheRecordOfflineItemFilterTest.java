@@ -36,8 +36,6 @@ public class OffTheRecordOfflineItemFilterTest {
 
     @Mock private OfflineItemFilterSource mSource;
 
-    @Mock private OfflineItemFilterObserver mObserver;
-
     @Mock private Profile mRegularProfile;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

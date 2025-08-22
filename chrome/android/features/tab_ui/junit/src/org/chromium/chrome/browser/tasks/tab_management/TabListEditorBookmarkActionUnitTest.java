@@ -30,7 +30,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -59,7 +58,6 @@ public class TabListEditorBookmarkActionUnitTest {
     @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
     @Mock private SnackbarManager mSnackbarManager;
-    @Mock private BookmarkModel mBookmarkModel;
     @Mock private Profile mProfile;
 
     @Mock

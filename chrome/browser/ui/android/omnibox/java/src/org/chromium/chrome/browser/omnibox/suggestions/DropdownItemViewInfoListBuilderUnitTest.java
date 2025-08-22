@@ -61,7 +61,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     private @Spy HeaderProcessor mMockHeaderProcessor = new HeaderProcessor(mContext);
 
-    private @Mock AutocompleteController mAutocompleteController;
     private @Mock SuggestionProcessor mMockSuggestionProcessor;
     private @Mock AutocompleteInput mInput;
 

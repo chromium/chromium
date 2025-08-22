@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -64,7 +63,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -97,7 +95,6 @@ public class TabArchiverTest {
 
     private @Mock Clock mClock;
     private @Mock TabModelSelector mSelector;
-    private @Mock TabWindowManager mTabWindowManager;
     private @Mock Tab mTab;
     private @Mock TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     private @Mock TabGroupModelFilter mTabGroupModelFilter;
@@ -137,7 +134,6 @@ public class TabArchiverTest {
         mRegularTabModel = mActivityTestRule.getActivity().getCurrentTabModel();
         mRegularTabCreator = mActivityTestRule.getActivity().getTabCreator(false);
 
-        doReturn(mSelector).when(mTabWindowManager).getTabModelSelectorById(anyInt());
         doReturn(mRegularTabModel).when(mSelector).getModel(anyBoolean());
         doReturn(true).when(mSelector).isTabStateInitialized();
         doReturn(mTabGroupModelFilterProvider).when(mSelector).getTabGroupModelFilterProvider();

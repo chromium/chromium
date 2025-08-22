@@ -12,7 +12,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import org.junit.After;
@@ -64,8 +63,6 @@ public class InputMethodManagerWrapperImplTest {
     @Mock private InputMethodManagerWrapper.Delegate mDelegate;
     @Mock private View mView;
     @Mock private InputMethodManager mInputMethodManager;
-    @Mock private WindowManager mContextWindowManager;
-    @Mock private WindowManager mActivityWindowManager;
 
     private int mContextDisplayId = -1; // uninitialized
     private int mActivityDisplayId = -1; // uninitialized

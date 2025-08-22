@@ -62,7 +62,6 @@ import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCre
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo_base.mojom.String16;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -96,7 +95,6 @@ public class CredManHelperRobolectricTest {
             Shadow.newInstanceOf(CredentialManager.class);
     @Mock private Context mContext;
     @Mock private RenderFrameHost mFrameHost;
-    @Mock private WebContents mWebContents;
     @Mock private CredManMetricsHelper mMetricsHelper;
     @Mock private WebauthnBrowserBridge mBrowserBridge;
     @Mock private CredManHelper.ErrorCallback mErrorCallback;

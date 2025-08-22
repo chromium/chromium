@@ -61,8 +61,6 @@ public class PriceTrackingActionProviderTest {
 
     @Mock private BookmarkModel mBookmarkModel;
 
-    @Mock private Profile mProfile;
-
     @Before
     public void setUp() {
         setBookmarkModelReady();

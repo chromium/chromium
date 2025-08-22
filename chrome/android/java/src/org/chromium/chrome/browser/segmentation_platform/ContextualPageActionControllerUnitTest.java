@@ -12,9 +12,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.res.Configuration;
-import android.content.res.Resources;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,7 +30,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;
@@ -54,9 +50,6 @@ public class ContextualPageActionControllerUnitTest {
 
     @Mock private Profile mMockProfile;
     @Mock private Tab mMockTab;
-    @Mock private ActivityLifecycleDispatcher mMockActivityLifecycleDispatcher;
-    @Mock private Resources mMockResources;
-    @Mock private Configuration mMockConfiguration;
     @Mock private AdaptiveToolbarButtonController mMockAdaptiveToolbarController;
     @Mock private ContextualPageActionController.Natives mMockControllerJni;
 
@@ -68,8 +61,6 @@ public class ContextualPageActionControllerUnitTest {
         mTabUserDataHost = new UserDataHost();
 
         ContextualPageActionControllerJni.setInstanceForTesting(mMockControllerJni);
-        when(mMockResources.getConfiguration()).thenReturn(mMockConfiguration);
-        when(mMockActivityLifecycleDispatcher.isNativeInitializationFinished()).thenReturn(true);
         when(mMockTab.getUserDataHost()).thenReturn(mTabUserDataHost);
     }
 
@@ -122,7 +113,6 @@ public class ContextualPageActionControllerUnitTest {
 
     @Test
     public void loadingTabsAreIgnored() {
-        mMockConfiguration.screenWidthDp = 450;
         setMockSegmentationResult(AdaptiveToolbarButtonVariant.PRICE_TRACKING);
 
         when(mMockTab.isLoading()).thenReturn(true);
@@ -136,7 +126,6 @@ public class ContextualPageActionControllerUnitTest {
 
     @Test
     public void incognitoTabsRevertToDefaultAction() {
-        mMockConfiguration.screenWidthDp = 450;
         setMockSegmentationResult(AdaptiveToolbarButtonVariant.PRICE_TRACKING);
 
         when(mMockTab.isIncognito()).thenReturn(true);

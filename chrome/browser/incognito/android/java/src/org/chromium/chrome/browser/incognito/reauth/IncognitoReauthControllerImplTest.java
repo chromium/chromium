@@ -58,13 +58,11 @@ public class IncognitoReauthControllerImplTest {
     @Mock private LayoutStateProvider mLayoutStateProviderMock;
     @Mock private TabModelSelector mTabModelSelectorMock;
     @Mock private TabModel mIncognitoTabModelMock;
-    @Mock private TabModel mRegularTabModelMock;
     @Mock private Profile mProfileMock;
     @Mock private IncognitoReauthCoordinatorFactory mIncognitoReauthCoordinatorFactoryMock;
     @Mock private IncognitoReauthCoordinator mIncognitoReauthCoordinatorMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefServiceMock;
-    @Mock private Runnable mBackPressInReauthFullScreenRunnableMock;
     @Mock private IncognitoReauthManager.IncognitoReauthCallback mIncognitoReauthCallbackMock;
     @Mock private TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
 
@@ -119,7 +117,6 @@ public class IncognitoReauthControllerImplTest {
                 .getModel(/* incognito= */ true);
         doReturn(0).when(mIncognitoTabModelMock).getCount();
         doReturn(true).when(mIncognitoTabModelMock).isIncognito();
-        doReturn(false).when(mRegularTabModelMock).isIncognito();
         doReturn(false).when(mLayoutStateProviderMock).isLayoutVisible(LayoutType.TAB_SWITCHER);
         doReturn(mIncognitoReauthCoordinatorMock)
                 .when(mIncognitoReauthCoordinatorFactoryMock)

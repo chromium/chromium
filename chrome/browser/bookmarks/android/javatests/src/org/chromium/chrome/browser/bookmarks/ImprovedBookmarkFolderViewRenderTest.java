@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -46,7 +45,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -77,8 +75,6 @@ public class ImprovedBookmarkFolderViewRenderTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .setRevision(3)
                     .build();
-
-    @Mock private CurrencyFormatter mFormatter;
 
     private BookmarkModel mBookmarkModel;
     private ImprovedBookmarkFolderView mView;

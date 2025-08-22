@@ -68,7 +68,6 @@ public class HistoryPaneUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private LargeIconBridge.Natives mLargeIconBridgeNatives;
     @Mock private SigninManager mSigninManager;
-    @Mock private IdentityServicesProvider.Natives mIdentityServicesProvider;
     @Mock private IdentityServicesProvider mIdentityService;
     @Mock private IdentityManager mIdentityManager;
     @Mock private SyncService mSyncService;

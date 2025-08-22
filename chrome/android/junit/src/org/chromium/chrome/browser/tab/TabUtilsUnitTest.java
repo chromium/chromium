@@ -17,8 +17,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Insets;
 import android.graphics.drawable.BitmapDrawable;
@@ -124,9 +122,6 @@ public class TabUtilsUnitTest {
     @Mock private NavigationController mNavigationController;
     @Mock private Profile mProfile;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private Resources mResources;
-    @Mock private Configuration mConfiguration;
-    @Mock private DisplayMetrics mDisplayMetrics;
 
     private boolean mRdsDefault;
     private @ContentSettingValues int mRdsException;

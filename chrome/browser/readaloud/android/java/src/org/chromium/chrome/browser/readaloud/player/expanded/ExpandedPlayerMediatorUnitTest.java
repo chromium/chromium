@@ -16,18 +16,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
-import org.chromium.chrome.modules.readaloud.Playback;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -36,9 +32,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @Config(manifest = Config.NONE)
 public class ExpandedPlayerMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private BottomSheetController mBottomSheetController;
-    @Mock private PlayerCoordinator.Delegate mDelegate;
-    @Mock private Playback mPlayback;
 
     private PropertyModel mModel;
     private ExpandedPlayerMediator mMediator;

@@ -28,7 +28,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -57,7 +56,6 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
     @Mock private PeriodicBackgroundSyncChromeWakeUpTask.Natives mNativeMock;
     @Mock private BackgroundTaskScheduler mTaskScheduler;
     @Mock private BackgroundTask.TaskFinishedCallback mTaskFinishedCallback;
-    @Mock private Callback<Boolean> mInternalBooleanCallback;
     @Captor private ArgumentCaptor<TaskInfo> mTaskInfo;
 
     @Before

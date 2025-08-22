@@ -39,7 +39,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
-import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
@@ -75,7 +74,6 @@ public class BookmarkImageFetcherTest {
     @Mock private Callback<Drawable> mDrawableCallback;
     @Mock private Callback<Pair<Drawable, Drawable>> mFolderDrawablesCallback;
     @Mock private Profile mProfile;
-    @Mock private ImageServiceBridgeJni mImageServiceBridgeJni;
     @Mock private ImageServiceBridge mImageServiceBridge;
     @Mock private FaviconHelper mFaviconHelper;
     @Mock private DefaultFaviconHelper mDefaultFaviconHelper;

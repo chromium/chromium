@@ -113,7 +113,6 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private Tab mCurrentTab;
     @Mock private Tab mNewTab;
-    @Mock private LayoutTab mLayoutTab;
     @Mock private ToggleTabStackButton mTabSwitcherButton;
     @Mock private View mToolbar;
     @Mock private NewTabPage mNtp;
@@ -178,7 +177,6 @@ public class NewTabAnimationLayoutUnitTest {
         when(mToolbarManager.getCustomTabCount()).thenReturn(mCustomTabCount);
         mCompositorViewHolderSupplier.set(mCompositorViewHolder);
         mScrimVisibilitySupplier.set(false);
-        when(mLayoutTab.isInitFromHostNeeded()).thenReturn(true);
         doAnswer(
                         invocation -> {
                             var args = invocation.getArguments();

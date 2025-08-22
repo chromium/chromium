@@ -41,10 +41,6 @@ public class ScreenshotBoundsManagerTest {
 
     @Mock private WebContentsImpl mWebContents;
 
-    @Mock private LongScreenshotsCompositor mCompositor;
-
-    @Mock private LongScreenshotsTabService mTabService;
-
     @Before
     public void setUp() {
         when(mTab.getWebContents()).thenReturn(mWebContents);

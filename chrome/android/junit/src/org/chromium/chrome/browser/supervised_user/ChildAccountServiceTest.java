@@ -30,7 +30,6 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.ui.base.WindowAndroid;
@@ -52,8 +51,6 @@ public class ChildAccountServiceTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(mFakeFacade);
-
-    @Mock private ChildAccountStatusListener mListenerMock;
 
     @Mock private ChildAccountService.Natives mNativeMock;
 

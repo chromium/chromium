@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -57,11 +56,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
-import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -162,13 +159,11 @@ public class FeedSurfaceCoordinatorTest {
 
     // Mocked Direct dependencies.
     @Mock private SnackbarManager mSnackbarManager;
-    @Mock private NativePageNavigationDelegate mPageNavigationDelegate;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private SnapScrollHelper mSnapHelper;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
-    @Mock private SectionHeaderView mSectionHeaderView;
     @Mock private FeedActionDelegate mFeedActionDelegate;
 
     // Mocked JNI.
@@ -193,7 +188,6 @@ public class FeedSurfaceCoordinatorTest {
     @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
     @Mock private PrefService mPrefService;
     @Mock private TemplateUrlService mUrlService;
-    @Mock private Resources mResources;
     @Mock private RecyclerView.Adapter mAdapter;
     @Mock private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
@@ -249,8 +243,6 @@ public class FeedSurfaceCoordinatorTest {
         when(mUserPrefsJniMock.get(any(Profile.class))).thenReturn(mPrefService);
 
         // Resources set up.
-        when(mSectionHeaderView.getResources()).thenReturn(mResources);
-        when(mResources.getString(anyInt())).thenReturn("Test");
 
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);

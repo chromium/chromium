@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -48,7 +47,6 @@ public class PriceInsightsButtonControllerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mMockTab;
-    @Mock private Supplier<TabBookmarker> mMockTabBookmarkerSupplier;
     @Mock private Supplier<Tab> mMockTabSupplier;
     @Mock private Supplier<TabModelSelector> mMockTabModelSelectorSupplier;
     @Mock private Supplier<ShoppingService> mMockShoppingServiceSupplier;

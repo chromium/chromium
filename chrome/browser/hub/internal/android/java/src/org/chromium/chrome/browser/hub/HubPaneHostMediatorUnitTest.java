@@ -46,8 +46,6 @@ public class HubPaneHostMediatorUnitTest {
 
     private @Mock Pane mPane;
     private @Mock Pane mIncognitoPane;
-    private @Mock PaneManager mPaneManager;
-    private @Mock FullButtonData mButtonData;
     private @Mock ViewGroup mRootView;
     private @Mock ViewGroup mSnackbarContainer;
     private @Mock HubColorMixer mColorMixer;
@@ -65,9 +63,6 @@ public class HubPaneHostMediatorUnitTest {
         mModel.addObserver(this::onPropertyChange);
 
         when(mPane.getRootView()).thenReturn(mRootView);
-
-        when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mPane);
-        when(mPaneManager.getPaneForId(PaneId.INCOGNITO_TAB_SWITCHER)).thenReturn(mIncognitoPane);
 
         when(mPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);

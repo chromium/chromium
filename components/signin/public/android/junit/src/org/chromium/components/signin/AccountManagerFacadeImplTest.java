@@ -105,8 +105,6 @@ public class AccountManagerFacadeImplTest {
 
     @Mock ExternalAuthUtils mExternalAuthUtilsMock;
 
-    @Mock private AccountsChangeObserver mObserverMock;
-
     @Mock private ChildAccountStatusListener mChildAccountStatusListenerMock;
 
     private final Context mContext = RuntimeEnvironment.application;

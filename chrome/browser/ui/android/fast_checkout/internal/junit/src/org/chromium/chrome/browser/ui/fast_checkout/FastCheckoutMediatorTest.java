@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.CreditCardItem
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.FooterItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
 import org.chromium.components.autofill.RecordType;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -109,7 +108,6 @@ public class FastCheckoutMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock RecyclerView mMockParentView;
     @Mock private FastCheckoutComponent.Delegate mMockDelegate;
-    @Mock private BottomSheetContent mMockBottomSheetContent;
     @Mock private BottomSheetController mMockBottomSheetController;
 
     private final FastCheckoutMediator mMediator = new FastCheckoutMediator();

@@ -128,7 +128,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.hub.HubContainerView;
@@ -216,7 +215,6 @@ public class TabGridDialogTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private HomepagePolicyManager mHomepagePolicyManager;
-    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     private WebPageStation mPage;
 
     @BeforeClass

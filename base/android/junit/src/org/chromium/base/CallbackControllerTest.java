@@ -128,7 +128,6 @@ public class CallbackControllerTest {
     public void testNestedDestroy() {
         // Destroying from within a callback should work fine.
         CallbackController callbackController = new CallbackController();
-        CallbackTarget target = Mockito.mock(CallbackTarget.class);
         Runnable wrapped = callbackController.makeCancelable(callbackController::destroy);
 
         wrapped.run();

@@ -164,7 +164,6 @@ public class TabSwitcherPaneUnitTest {
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private View mAnchorView;
     @Mock private TabGroupSyncService mTabGroupSyncService;
-    @Mock private Runnable mRunnable;
     @Mock private Tab mTab;
     @Mock private SavedTabGroup mSavedTabGroup;
     @Mock private TabGroupCreationUiDelegate mUiFlow;

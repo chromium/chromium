@@ -305,8 +305,6 @@ public class AdaptiveToolbarButtonControllerTest {
         mButtonData.setEnabled(true);
         mButtonData.setButtonSpec(makeButtonSpec(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
         when(mPriceTrackingButtonController.get(any())).thenReturn(mButtonData);
-        View view = mock(View.class);
-        when(view.getContext()).thenReturn(activity);
 
         adaptiveToolbarButtonController.showDynamicAction(
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING);

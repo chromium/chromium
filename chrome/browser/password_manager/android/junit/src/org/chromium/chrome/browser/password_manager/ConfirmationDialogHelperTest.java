@@ -12,7 +12,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 
 import androidx.test.filters.SmallTest;
 
@@ -44,7 +43,6 @@ public class ConfirmationDialogHelperTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private DialogInterface mDialogInterface;
     @Mock private Runnable mConfirmedCallback;
     @Mock private Runnable mDeclinedCallback;
 

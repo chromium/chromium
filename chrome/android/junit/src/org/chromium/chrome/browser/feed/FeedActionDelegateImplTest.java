@@ -54,8 +54,6 @@ public final class FeedActionDelegateImplTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
-    @Mock private SigninAndHistorySyncActivityLauncher mMockSigninLauncher;
-
     @Mock private SigninAndHistorySyncActivityLauncher mMockSigninAndHistorySyncActivityLauncher;
 
     @Mock private SnackbarManager mMockSnackbarManager;

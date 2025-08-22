@@ -24,7 +24,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -205,11 +204,6 @@ public class TabGroupUiMediatorUnitTest {
         Tab newTab = prepareTab(TAB4_ID, TAB4_ID);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(newTab));
         doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB4_ID);
-        TabModel incognitoTabModel = spy(TabModel.class);
-        doReturn(newTab).when(incognitoTabModel).getTabAt(POSITION1);
-        doReturn(true).when(incognitoTabModel).isIncognito();
-        doReturn(1).when(incognitoTabModel).getCount();
-        when(incognitoTabModel.iterator()).thenAnswer(inv -> List.of(newTab).iterator());
     }
 
     private void verifyNeverReset() {

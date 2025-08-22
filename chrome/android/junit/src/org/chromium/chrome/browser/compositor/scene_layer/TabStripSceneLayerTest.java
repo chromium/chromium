@@ -38,7 +38,6 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
-import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
@@ -68,7 +67,6 @@ public class TabStripSceneLayerTest {
     @Mock private StripLayoutViewOnClickHandler mOnClickHandler;
     @Mock private StripLayoutViewOnKeyboardFocusHandler mKeyboardFocusHandler;
     @Mock private TabLoadTrackerCallback mTabLoadTrackerCallback;
-    @Mock private LayoutRenderHost mLayoutRenderHost;
     @Mock private LayoutUpdateHost mLayoutUpdateHost;
     @Mock private TintedCompositorButton mCloseButton;
     @Mock private StripLayoutGroupTitle mStripGroupTitle;

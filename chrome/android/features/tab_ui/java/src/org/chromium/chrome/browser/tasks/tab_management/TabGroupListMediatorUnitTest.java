@@ -93,7 +93,6 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
@@ -138,9 +137,7 @@ public class TabGroupListMediatorUnitTest {
     @Mock private SyncService mSyncService;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
-    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private MessagingBackendService mMessagingBackendService;
-    @Mock private Runnable mFinishBlocking;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private PersistentVersioningMessageMediator mPersistentVersioningMessageMediator;
 

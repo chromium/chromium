@@ -40,7 +40,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -76,7 +75,6 @@ public class GeolocationHeaderUnitTest {
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock Profile mProfileMock;
-    @Mock private Tab mTab;
     @Mock WebContents mWebContentsMock;
     @Mock TemplateUrlService mTemplateUrlServiceMock;
     @Mock FusedLocationProviderClient mLocationProviderClient;
@@ -89,9 +87,6 @@ public class GeolocationHeaderUnitTest {
         WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
         GeolocationTracker.setLocationAgeForTesting(null);
         GeolocationHeader.setAppPermissionGrantedForTesting(true);
-        when(mTab.isIncognito()).thenReturn(false);
-        when(mTab.getProfile()).thenReturn(mProfileMock);
-        when(mTab.getWebContents()).thenReturn(mWebContentsMock);
         when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
                         any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
                         anyString(), anyString()))

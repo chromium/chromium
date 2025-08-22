@@ -8,12 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.view.ContextThemeWrapper;
 import android.view.MotionEvent;
 import android.view.View.MeasureSpec;
@@ -42,14 +39,12 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
 import org.chromium.chrome.browser.omnibox.test.R;
-import org.chromium.ui.base.WindowDelegate;
 
 /** Unit tests for {@link OmniboxSuggestionsContainer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 29)
 public class OmniboxSuggestionsContainerUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock WindowDelegate mWindowDelegate;
     private @Mock OmniboxSuggestionsDropdown mDropdown;
     private @Mock RecyclerView.RecycledViewPool mRecycledViewPool;
 
@@ -268,14 +263,6 @@ public class OmniboxSuggestionsContainerUnitTest {
     }
 
     private void layoutDropdown(int width, int height) {
-        doAnswer(
-                        (invocation) -> {
-                            Rect r = invocation.getArgument(0);
-                            r.set(0, 0, 0, height);
-                            return true;
-                        })
-                .when(mWindowDelegate)
-                .getWindowVisibleDisplayFrame(any(Rect.class));
         int widthSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST);
         int heightSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST);
         mContainer.measure(widthSpec, heightSpec);

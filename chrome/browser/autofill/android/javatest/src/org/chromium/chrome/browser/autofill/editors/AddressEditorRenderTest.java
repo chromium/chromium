@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -133,6 +132,7 @@ public class AddressEditorRenderTest {
                     .setCountryCode("US")
                     .build();
 
+    @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
@@ -156,7 +156,6 @@ public class AddressEditorRenderTest {
     @Mock private SyncService mSyncService;
     @Mock private PersonalDataManager mPersonalDataManager;
     @Mock private Profile mProfile;
-    @Mock private HelpAndFeedbackLauncher mLauncher;
     @Mock private Delegate mDelegate;
 
     private AddressEditorCoordinator mAddressEditor;

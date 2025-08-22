@@ -76,8 +76,10 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class OmniboxPedalsTest {
+    @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
             ChromeTransitTestRules.blankPageStartReusedActivityRule();
+
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock OmniboxActionJni mOmniboxActionJni;
 

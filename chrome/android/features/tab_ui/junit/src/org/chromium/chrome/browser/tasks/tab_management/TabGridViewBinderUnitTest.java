@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Matrix;
@@ -89,7 +88,6 @@ public final class TabGridViewBinderUnitTest {
     @Mock private ViewStub mTabCardLabelStub;
     @Mock private TabCardLabelView mTabCardLabelView;
     @Mock private ImageView mActionButton;
-    @Mock private TypedArray mTypedArray;
     @Mock private TabFavicon mTabFavicon;
     @Mock private PriceCardView mPriceCardView;
     @Mock private Drawable mDrawable;

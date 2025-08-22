@@ -54,8 +54,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.bookmarks.BookmarkItem;
-import org.chromium.components.prefs.PrefChangeRegistrar;
-import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -86,8 +84,6 @@ public class BookmarkBarUtilsTest {
     @Mock private Drawable mFavicon;
     @Mock private BookmarkImageFetcher mImageFetcher;
     @Mock private BookmarkItem mItem;
-    @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
-    @Mock private PrefObserver mPrefObserver;
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
     @Mock private ProfileProvider mProfileProvider;

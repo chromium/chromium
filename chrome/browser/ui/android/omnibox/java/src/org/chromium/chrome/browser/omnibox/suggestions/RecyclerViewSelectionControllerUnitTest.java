@@ -16,7 +16,6 @@ import static org.mockito.Mockito.when;
 
 import android.view.View;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.junit.Assert;
@@ -39,7 +38,6 @@ import java.util.OptionalInt;
 public class RecyclerViewSelectionControllerUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock RecyclerView mRecyclerView;
     private @Mock LayoutManager mLayoutManager;
     private @Mock View mChildView1;
     private @Mock View mChildView2;

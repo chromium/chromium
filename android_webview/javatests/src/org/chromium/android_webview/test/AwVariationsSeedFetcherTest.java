@@ -439,7 +439,6 @@ public class AwVariationsSeedFetcherTest {
     public void testFastFetchJitterPeriodSettings() throws IOException, TimeoutException {
         try {
             TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
-            final Date date = mock(Date.class);
             PersistableBundle bundle = new PersistableBundle();
             bundle.putBoolean(AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE, true);
 

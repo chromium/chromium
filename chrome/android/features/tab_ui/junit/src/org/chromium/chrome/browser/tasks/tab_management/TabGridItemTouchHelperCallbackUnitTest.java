@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
-import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
@@ -121,7 +120,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     @Mock private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     @Mock private TabGroupColorViewProvider mTabGroupColorViewProvider;
 
-    @Mock private OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
     @Mock private TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
 
     private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =

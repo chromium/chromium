@@ -121,7 +121,6 @@ public class TabGridDialogViewBinderTest {
     private GridLayoutManager mLayoutManager;
     private LinearLayoutManager mLinearLayoutManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private GradientDrawable mCardViewBackground;
     @Mock private View.OnClickListener mOnClickListener;
 
     @BeforeClass

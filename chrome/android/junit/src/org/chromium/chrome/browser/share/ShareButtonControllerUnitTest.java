@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -36,7 +35,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
@@ -61,14 +59,12 @@ public final class ShareButtonControllerUnitTest {
     private Context mContext;
 
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
-    @Mock private Resources mResources;
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
     @Mock private ActivityTabProvider mTabProvider;
     @Mock private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private GURL mMockGurl;
-    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Tracker mTracker;
 
@@ -83,7 +79,6 @@ public final class ShareButtonControllerUnitTest {
         doReturn(mTab).when(mTabProvider).get();
         doReturn(mContext).when(mTab).getContext();
         mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP + WIDTH_DELTA;
-        doReturn(mConfiguration).when(mResources).getConfiguration();
 
         doReturn(mock(WebContents.class)).when(mTab).getWebContents();
         doReturn("https").when(mMockGurl).getScheme();

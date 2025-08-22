@@ -68,6 +68,8 @@ public class DownloadLocationDialogTest {
     private static final String SECONDARY_STORAGE_PATH = "/android/Download";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
