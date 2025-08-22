@@ -1746,4 +1746,39 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion141ToCurrent) {
   }
 }
 
+TEST_F(WebDatabaseMigrationTest, MigrateVersion142ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_142.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(142, VersionFromConnection(&connection));
+    ASSERT_TRUE(connection.ExecuteScriptForTesting(R"(
+      INSERT INTO autofill_ai_entities
+      (guid, entity_type, nickname, date_modified, use_count, use_date)
+      VALUES
+      ('00000000-0000-0000-0000-000000000000', 'Passport', 'My Passport', 123, 123, 123);
+    )"));
+  }
+
+  DoMigration();
+
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    ASSERT_TRUE(connection.DoesTableExist("autofill_ai_entities"));
+    EXPECT_TRUE(connection.DoesColumnExist("autofill_ai_entities",
+                                           "attributes_read_only"));
+
+    sql::Statement s_entities(connection.GetUniqueStatement(
+        "SELECT guid, attributes_read_only from autofill_ai_entities"));
+    ASSERT_TRUE(s_entities.Step());
+    EXPECT_EQ(s_entities.ColumnString(0),
+              "00000000-0000-0000-0000-000000000000");
+    EXPECT_FALSE(s_entities.ColumnBool(1));
+    ASSERT_FALSE(s_entities.Step());
+  }
+}
+
 }  // anonymous namespace

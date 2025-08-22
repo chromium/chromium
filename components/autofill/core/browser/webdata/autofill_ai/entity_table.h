@@ -40,6 +40,9 @@ class AttributeInstance;
 //                          in time_t.
 //   record_type            Information about the original storage of the
 //                          entity (local/server).
+//   attributes_read_only   Boolean flag backed by an integer. If 1,
+//                          the attributes of the entity instance are not
+//                          editable by the user.
 // -----------------------------------------------------------------------------
 // attributes               Contains the attribute instances of the entity
 //                          instances from the `entities` table.
@@ -138,8 +141,8 @@ class EntityTable : public WebDatabaseTable {
       base::Time use_date,
       std::underlying_type_t<EntityInstance::RecordType>
           underlying_storage_type,
-      std::map<std::string, std::vector<AttributeRecord>> attribute_records)
-      const;
+      std::map<std::string, std::vector<AttributeRecord>> attribute_records,
+      EntityInstance::AreAttributesReadOnly are_attributes_read_only) const;
 
   friend class EntityTableTestApi;
 };
