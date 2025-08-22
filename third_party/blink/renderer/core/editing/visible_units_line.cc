@@ -394,8 +394,7 @@ static bool InSameLineAlgorithm(
   const LayoutBlockFlow* block2 =
       NGInlineFormattingContextOf(position2.GetPosition());
   if (block1 || block2) {
-    if (RuntimeEnabledFeatures::InlineBlockInSameLineEnabled() &&
-        (IsInlineBlock(block1) || IsInlineBlock(block2))) {
+    if (IsInlineBlock(block1) || IsInlineBlock(block2)) {
       const TextOffsetMapping::InlineContents inline_contents1 =
           TextOffsetMapping::FindForwardInlineContents(
               ToPositionInFlatTree(position1.GetPosition()));
