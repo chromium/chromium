@@ -406,8 +406,8 @@ inline constexpr char kPageInfoHelpCenterURL[] =
 #endif
 
 // Help center article URL for automated password change.
-inline constexpr char kPasswordChangeLearnMoreURL[] =
-    "https://support.google.com/chrome?p=automatedpasswordchange";
+inline constexpr char16_t kPasswordChangeLearnMoreURL[] =
+    u"https://support.google.com/chrome?p=automatedpasswordchange";
 
 // Help URL for the bulk password check.
 inline constexpr char kPasswordCheckLearnMoreURL[] =
