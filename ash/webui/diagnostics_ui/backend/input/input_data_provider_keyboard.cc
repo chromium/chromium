@@ -267,7 +267,11 @@ constexpr mojom::TopRowKey ConvertTopRowActionKeyToDiagnosticsTopRowKey(
 
 }  // namespace
 
-InputDataProviderKeyboard::InputDataProviderKeyboard() {}
+InputDataProviderKeyboard::InputDataProviderKeyboard() {
+  base::SysInfo::GetHardwareInfo(
+      base::BindOnce(&InputDataProviderKeyboard::OnGetHardwareInfo,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 InputDataProviderKeyboard::~InputDataProviderKeyboard() {}
 
 InputDataProviderKeyboard::AuxData::AuxData() = default;
@@ -345,16 +349,10 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
 
       // If the model contains a delete key in the top row, append it to the
       // last.
-      constexpr char kModelNameFileName[] = "/run/chromeos-config/v1/name";
-      std::string model_name;
-      if (base::ReadFileToString(base::FilePath(kModelNameFileName),
-                                 &model_name)) {
-        if (kModelsWithTopRowDelete.contains(model_name)) {
-          top_row_keys.push_back(mojom::TopRowKey::kDelete);
-          top_row_key_scancode_indexes[kScancodeDelete] = index++;
-        }
+      if (kModelsWithTopRowDelete.contains(hardware_info_.model)) {
+        top_row_keys.push_back(mojom::TopRowKey::kDelete);
+        top_row_key_scancode_indexes[kScancodeDelete] = index++;
       }
-
       break;
     }
 
@@ -521,6 +519,11 @@ mojom::KeyEventPtr InputDataProviderKeyboard::ConstructInputKeyEvent(
   }
 
   return event;
+}
+
+void InputDataProviderKeyboard::OnGetHardwareInfo(
+    base::SysInfo::HardwareInfo info) {
+  hardware_info_ = info;
 }
 
 }  // namespace diagnostics
