@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -83,6 +84,7 @@ public class BookmarkBarRenderTest {
 
     @Mock private LayoutManager mLayoutManager;
     @Mock private ResourceManager mResourceManager;
+    @Mock private FullscreenManager mFullscreenManager;
     @Mock private DynamicResourceLoader mDynamicResourceLoader;
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private Tab mCurrentTab;
@@ -119,6 +121,7 @@ public class BookmarkBarRenderTest {
                                     activity,
                                     mLayoutManager,
                                     /* requestUpdate= */ () -> {},
+                                    mFullscreenManager,
                                     mResourceManager,
                                     mBrowserControlsManager,
                                     /* heightChangeCallback= */ result -> {},

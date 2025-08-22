@@ -1822,6 +1822,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivity,
                             mLayoutManager,
                             mLayoutManager::requestUpdate,
+                            mFullscreenManager,
                             mCompositorViewHolderSupplier.get().getResourceManager(),
                             mBrowserControlsManager,
                             /* heightChangeCallback= */ result -> updateTopControlsHeight(),

@@ -40,6 +40,8 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -59,7 +61,8 @@ public class BookmarkBarCoordinator
         implements TopControlLayer,
                 BookmarkBarVisibilityObserver,
                 View.OnLayoutChangeListener,
-                BrowserControlsStateProvider.Observer {
+                BrowserControlsStateProvider.Observer,
+                FullscreenManager.Observer {
 
     private final SimpleRecyclerViewAdapter mItemsAdapter;
     private final BookmarkBarItemsLayoutManager mBookmarkBarItemsLayoutManager;
@@ -75,6 +78,7 @@ public class BookmarkBarCoordinator
     private final BookmarkBarSceneLayer mBookmarkBarSceneLayer;
     private final PropertyModel mBookmarkBarSceneLayerModel;
     private final CompositorModelChangeProcessor mChangeProcessor;
+    private final FullscreenManager mFullscreenManager;
     private boolean mIsResourceRegistered;
     private @Nullable OffsetTag mOffsetTag;
 
@@ -103,6 +107,7 @@ public class BookmarkBarCoordinator
             Activity activity,
             LayoutManager layoutManager,
             Runnable requestUpdate,
+            FullscreenManager fullscreenManager,
             ResourceManager resourceManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             Callback<@Nullable Void> heightChangeCallback,
@@ -114,6 +119,8 @@ public class BookmarkBarCoordinator
             TopControlsStacker topControlsStacker) {
         mRequestUpdate = requestUpdate;
         mResourceManager = resourceManager;
+        mFullscreenManager = fullscreenManager;
+        mFullscreenManager.addObserver(this);
 
         mView = (BookmarkBar) viewStub.inflate();
         mViewResourceFrameLayout = mView.findViewById(R.id.bookmark_bar_view_resource_frame_layout);
@@ -231,6 +238,7 @@ public class BookmarkBarCoordinator
         mChangeProcessor.destroy();
         mView.removeOnLayoutChangeListener(this);
         mBrowserControlsStateProvider.removeObserver(this);
+        mFullscreenManager.removeObserver(this);
         if (mIsResourceRegistered) unregisterResource();
         mBookmarkBarSceneLayer.setVisibility(false);
     }
@@ -448,6 +456,22 @@ public class BookmarkBarCoordinator
         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
             updateOffsetTag();
         }
+    }
+
+    // FullScreenManager.Observer implementation:
+
+    @Override
+    public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+        // When fullscreen mode is entered, we need to hide the scene layer.
+        mBookmarkBarSceneLayer.setVisibility(false);
+    }
+
+    @Override
+    public void onExitFullscreen(Tab tab) {
+        // When fullscreen mode is exited, we need to make the scene layer visible again, if needed.
+        // It is possible that the bookmarks bar was turned off while in fullscreen mode, so we
+        // don't force this to true, but use the current state instead.
+        mBookmarkBarSceneLayer.setVisibility(mShouldBookmarkBarBeShown);
     }
 
     // Private methods:
