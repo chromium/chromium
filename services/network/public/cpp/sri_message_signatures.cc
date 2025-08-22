@@ -49,6 +49,9 @@ ParameterType ParamNameToType(std::string_view name) {
   if (name == "sf") {
     return ParameterType::kStrictStructuredFieldSerialization;
   }
+  if (name == "bs") {
+    return ParameterType::kBinaryRepresentation;
+  }
   NOTREACHED();
 }
 
@@ -63,6 +66,13 @@ bool IsStrictlySerializedComponent(
     const mojom::SRIMessageSignatureComponentPtr& component) {
   return std::ranges::any_of(component->params, [](const auto& p) {
     return p->type == ParameterType::kStrictStructuredFieldSerialization;
+  });
+}
+
+bool IsBinaryWrappedComponent(
+    const mojom::SRIMessageSignatureComponentPtr& component) {
+  return std::ranges::any_of(component->params, [](const auto& p) {
+    return p->type == ParameterType::kBinaryRepresentation;
   });
 }
 
@@ -126,12 +136,10 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     return result;
   } else if (!name.starts_with('@') && net::HttpUtil::IsValidHeaderName(name) &&
              name == base::ToLowerASCII(name)) {
-    // All other headers may specify the `req` parameter:
-    //
-    // TODO(419441852): Perhaps we should support `bs` and `sf` as well?
+    // All other headers may specify the `req` and `bs` parameters.
     for (const auto& param : component.params) {
       if (param.second.is_boolean() && param.second.GetBoolean() &&
-          param.first == "req") {
+          (param.first == "req" || param.first == "bs")) {
         result->params.push_back(ComponentParameter::New(
             ParamNameToType(param.first), std::nullopt));
       } else {
@@ -202,6 +210,11 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
   }
 }
 
+std::optional<std::string> SerializeByteSequence(std::string_view input) {
+  return net::structured_headers::SerializeItem(net::structured_headers::Item(
+      std::string(input), net::structured_headers::Item::kByteSequenceType));
+}
+
 // net::StructuredHeaders doesn't expose the ability to serialize a parameter
 // list outside the context of a parameterized item. So, we'll do it ourselves
 // by serializing each individually as an Item.
@@ -241,6 +254,9 @@ std::string SerializeComponentParams(
         break;
       case ParameterType::kStrictStructuredFieldSerialization:
         param_list << "sf";
+        break;
+      case ParameterType::kBinaryRepresentation:
+        param_list << "bs";
         break;
     }
   }
@@ -714,9 +730,9 @@ std::optional<std::string> ConstructSignatureBase(
       }
 
       // Determine how to serialize the header:
-      //
-      // Is it specified as a strictly-serialized structured field?
-      if (IsStrictlySerializedComponent(component)) {
+      if (IsBinaryWrappedComponent(component)) {
+        component_value = SerializeByteSequence(header.value());
+      } else if (IsStrictlySerializedComponent(component)) {
         // Unfortunately, there doesn't seem to be a good way to decide how a
         // given structured field should be serialized (as a Dictionary? List?),
         // other than encoding a list of known headers and their types.

@@ -19,7 +19,8 @@ struct SRIMessageSignatureComponentParameter {
   enum Type {
     kName,                              // `name`
     kRequest,                           // `req`
-    kStrictStructuredFieldSerialization // `sf`
+    kStrictStructuredFieldSerialization, // `sf`
+    kBinaryRepresentation               // `bs`
   };
 
   Type type;

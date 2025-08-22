@@ -1398,6 +1398,35 @@ TEST_F(SRIMessageSignatureBaseTest, ArbitraryResponseHeaderComponent) {
   }
 }
 
+TEST_F(SRIMessageSignatureBaseTest, BinaryWrappedComponent) {
+  const char* kTestHeaderName = "arbitrary-header";
+  const char* kTestHeaderValue = "test-value";
+
+  std::string input_header = base::StrCat(
+      {"signature=(\"unencoded-digest\";sf \"arbitrary-header\";bs);",
+       "keyid=\"", kPublicKey, "\";tag=\"ed25519-integrity\""});
+
+  std::stringstream expected_base;
+  expected_base << "\"unencoded-digest\";sf: " << kValidDigestHeader << '\n'
+                << "\"arbitrary-header\";bs: :"
+                << base::Base64Encode(kTestHeaderValue) << ":\n"
+                << "\"@signature-params\": (\"unencoded-digest\";sf "
+                   "\"arbitrary-header\";bs);"
+                << "keyid=\"" << kPublicKey << "\";tag=\"ed25519-integrity\"";
+
+  auto headers = ValidHeadersPlusInput(input_header.c_str());
+  headers->AddHeader(kTestHeaderName, kTestHeaderValue);
+
+  auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
+  ASSERT_EQ(1u, parsed->signatures.size());
+  EXPECT_EQ(0u, parsed->issues.size());
+
+  std::optional<std::string> result =
+      ConstructSignatureBase(parsed->signatures[0], request(), *headers);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(expected_base.str(), result.value());
+}
+
 //
 // Validation Tests
 //
