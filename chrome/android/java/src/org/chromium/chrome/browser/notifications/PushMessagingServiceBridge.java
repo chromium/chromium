@@ -39,7 +39,8 @@ public class PushMessagingServiceBridge {
      * @param profileId Id of the profile that showed the notification.
      * @param appLevelNotificationsEnabled Whether Chrome has app-level Notifications permission.
      */
-    public void verify(String origin, String profileId, boolean appLevelNotificationsEnabled) {
+    public void verify(
+            String origin, @Nullable String profileId, boolean appLevelNotificationsEnabled) {
         PushMessagingServiceBridgeJni.get()
                 .verifyAndRevokeNotificationsPermission(
                         origin, profileId, appLevelNotificationsEnabled);
@@ -49,7 +50,7 @@ public class PushMessagingServiceBridge {
     interface Natives {
         void verifyAndRevokeNotificationsPermission(
                 @JniType("std::string") String origin,
-                @JniType("std::string") String profileId,
+                @JniType("std::string") @Nullable String profileId,
                 boolean appLevelNotificationsEnabled);
     }
 }

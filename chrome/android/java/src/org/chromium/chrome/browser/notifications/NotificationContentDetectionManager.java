@@ -13,11 +13,12 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy.StatusBarNotificationProxy;
@@ -36,6 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /** Helper utils for replacing suspicious notifications with warnings. */
+@NullMarked
 public class NotificationContentDetectionManager {
     @VisibleForTesting
     static final String SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME =
@@ -80,10 +82,10 @@ public class NotificationContentDetectionManager {
         private final int[] mVibrationPattern;
         private final long mTimestamp;
         private final boolean mSilent;
-        private final String mChannelId;
+        private final @Nullable String mChannelId;
         private final Notification mOriginalNotification;
         private final String mScopeUrl;
-        private final String mProfileId;
+        private final @Nullable String mProfileId;
         private final boolean mIncognito;
         private final String mWebApkPackage;
 
@@ -94,10 +96,10 @@ public class NotificationContentDetectionManager {
                 int[] vibrationPattern,
                 long timestamp,
                 boolean silent,
-                String channelId,
+                @Nullable String channelId,
                 Notification originalNotification,
                 String scopeUrl,
-                String profileId,
+                @Nullable String profileId,
                 boolean incognito,
                 String webApkPackage) {
             this.mNotificationId = notificationId;
@@ -406,10 +408,10 @@ public class NotificationContentDetectionManager {
             int[] vibrationPattern,
             long timestamp,
             boolean silent,
-            String channelId,
+            @Nullable String channelId,
             Notification originalNotification,
             String scopeUrl,
-            String profileId,
+            @Nullable String profileId,
             boolean incognito,
             String webApkPackage) {
         WarningNotificationWrapperAttributes warningNotificationAttributes =
@@ -459,10 +461,10 @@ public class NotificationContentDetectionManager {
             String notificationId,
             String origin,
             String scopeUrl,
-            String profileId,
+            @Nullable String profileId,
             boolean incognito,
             String webApkPackage,
-            String channelId) {
+            @Nullable String channelId) {
         // Record "Always allow" action.
         recordInteractionForUMAIfSuspicious(
                 origin, notificationId, SuspiciousNotificationWarningInteractions.ALWAYS_ALLOW);
@@ -482,9 +484,9 @@ public class NotificationContentDetectionManager {
                 (activeNotifications) -> {
                     for (StatusBarNotificationProxy proxy : activeNotifications) {
                         if (proxy.getId() != NotificationPlatformBridge.PLATFORM_ID
-                                || !NotificationPlatformBridge.getOriginFromNotificationTag(
-                                                proxy.getTag())
-                                        .equals(origin)) {
+                                || !origin.equals(
+                                        NotificationPlatformBridge.getOriginFromNotificationTag(
+                                                proxy.getTag()))) {
                             continue;
                         }
 
@@ -713,7 +715,8 @@ public class NotificationContentDetectionManager {
         return false;
     }
 
-    private static String getStringFromBackupBundle(Bundle notificationExtras, String extraType) {
+    private static @Nullable String getStringFromBackupBundle(
+            @Nullable Bundle notificationExtras, String extraType) {
         if (notificationExtras == null || !notificationExtras.containsKey(extraType)) {
             return "";
         }
@@ -722,7 +725,7 @@ public class NotificationContentDetectionManager {
     }
 
     private static boolean getBooleanFromBackupBundle(
-            Bundle notificationExtras, String extraType, boolean defaultValue) {
+            @Nullable Bundle notificationExtras, String extraType, boolean defaultValue) {
         if (notificationExtras == null || !notificationExtras.containsKey(extraType)) {
             return defaultValue;
         }
@@ -734,11 +737,11 @@ public class NotificationContentDetectionManager {
             Notification.Builder notificationBuilder,
             String id,
             String origin,
-            String scopeUrl,
-            String profileId,
+            @Nullable String scopeUrl,
+            @Nullable String profileId,
             boolean incognito,
-            String webApkPackage,
-            String channelId) {
+            @Nullable String webApkPackage,
+            @Nullable String channelId) {
         PendingIntentProvider unsubscribePendingIntentProvider =
                 makePendingIntentForButton(
                         id,
@@ -765,11 +768,11 @@ public class NotificationContentDetectionManager {
             Notification.Builder notificationBuilder,
             String id,
             String origin,
-            String scopeUrl,
-            String profileId,
+            @Nullable String scopeUrl,
+            @Nullable String profileId,
             boolean incognito,
-            String webApkPackage,
-            String channelId) {
+            @Nullable String webApkPackage,
+            @Nullable String channelId) {
         PendingIntentProvider alwaysAllowPendingIntentProvider =
                 makePendingIntentForButton(
                         id,
@@ -797,11 +800,11 @@ public class NotificationContentDetectionManager {
     private static PendingIntentProvider makePendingIntentForButton(
             String id,
             String origin,
-            String scopeUrl,
-            String profileId,
+            @Nullable String scopeUrl,
+            @Nullable String profileId,
             boolean incognito,
-            String webApkPackage,
-            String channelId,
+            @Nullable String webApkPackage,
+            @Nullable String channelId,
             String action) {
         Context context = ContextUtils.getApplicationContext();
         Uri intentData =
@@ -867,11 +870,11 @@ public class NotificationContentDetectionManager {
             Notification originalNotification,
             String notificationId,
             String notificationOrigin,
-            String scopeUrl,
-            String profileId,
+            @Nullable String scopeUrl,
+            @Nullable String profileId,
             boolean incognito,
-            String webApkPackage,
-            String channelId) {
+            @Nullable String webApkPackage,
+            @Nullable String channelId) {
         Context context = ContextUtils.getApplicationContext();
         Notification.Builder builder =
                 Notification.Builder.recoverBuilder(context, originalNotification);
