@@ -521,46 +521,25 @@ void SocketPosix::ReadCompleted() {
 }
 
 int SocketPosix::DoWrite(IOBuffer* buf, int buf_len) {
-  const char* data = buf->data();
-  const int flags = MSG_NOSIGNAL;
-
-  // TODO(crbug.com/40064248): Remove this once the crash is resolved.
-  char debug3[128];
-  snprintf(debug3, sizeof(debug3),
-           "socket_fd_=%d,data=%p,buf_len=%d,flags=0x%x", socket_fd_, data,
-           buf_len, flags);
-  base::debug::Alias(debug3);
-
 #if defined(WORK_AROUND_CRBUG_40064248)
-  ssize_t send_rv = HANDLE_EINTR(
-      SendAndDetectBogusReturnValue(socket_fd_, buf->data(), buf_len, flags));
+  ssize_t send_rv = HANDLE_EINTR(SendAndDetectBogusReturnValue(
+      socket_fd_, buf->data(), buf_len, MSG_NOSIGNAL));
   if (send_rv == kSendBogusReturnValueDetected) {
     // https://crbug.com/40064248 is known to occur as a result of certain
     // network configuration changes.
     return ERR_NETWORK_CHANGED;
   }
 #else   // WORK_AROUND_CRBUG_40064248
-  ssize_t send_rv = HANDLE_EINTR(send(socket_fd_, buf->data(), buf_len, flags));
+  ssize_t send_rv =
+      HANDLE_EINTR(send(socket_fd_, buf->data(), buf_len, MSG_NOSIGNAL));
 #endif  // WORK_AROUND_CRBUG_40064248
-  int send_errno = errno;
 
-  if (send_rv >= 0) {
-    if (send_rv > buf_len) {
-      // TODO(crbug.com/40064248): Remove this once the crash is resolved.
-      char debug4[64];
-      snprintf(debug4, sizeof(debug4), "send_rv=%zd,send_errno=%d", send_rv,
-               send_rv < 0 ? send_errno : 0);
-      base::debug::Alias(debug4);
-
-      // This duplicates the CHECK_LE below. Keep it here so that the aliased
-      // debug buffers are in scope when the process crashes.
-      CHECK_LE(send_rv, buf_len);
-    }
-
-    CHECK_LE(send_rv, buf_len);
+  if (send_rv < 0) {
+    return MapSystemError(errno);
   }
 
-  return send_rv >= 0 ? send_rv : MapSystemError(send_errno);
+  CHECK_LE(send_rv, buf_len);
+  return send_rv;
 }
 
 void SocketPosix::WriteCompleted() {
