@@ -463,7 +463,7 @@ const CGFloat kGenericButtonHeight = 32.0f;
 }
 
 - (void)micButtonTapped {
-  // TODO(crbug.com/40280872): Implement mic action.
+  [self.delegate aimPrototypeViewControllerDidTapMicButton:self];
 }
 
 - (void)sendButtonTapped {

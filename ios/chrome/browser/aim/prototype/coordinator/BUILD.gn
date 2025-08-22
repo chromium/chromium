@@ -19,11 +19,15 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/browser/variations/model/client",
     "//ios/chrome/common",
+    "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
+    "//ios/web/public",
     "//ui/base",
   ]
 }

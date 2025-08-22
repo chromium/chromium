@@ -18,6 +18,8 @@
     (AIMPrototypeViewController*)viewController;
 - (void)aimPrototypeViewControllerDidTapGalleryButton:
     (AIMPrototypeViewController*)viewController;
+- (void)aimPrototypeViewControllerDidTapMicButton:
+    (AIMPrototypeViewController*)viewController;
 - (void)aimPrototypeViewControllerDidTapCameraButton:
     (AIMPrototypeViewController*)viewController;
 - (void)aimPrototypeViewControllerMayShowGalleryPicker:

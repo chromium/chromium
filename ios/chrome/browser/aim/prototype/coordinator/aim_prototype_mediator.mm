@@ -142,6 +142,12 @@
   [self.consumer updateState:item.state forItemWithToken:item.fileToken];
 }
 
+#pragma mark - LoadQueryCommands
+
+- (void)loadQuery:(NSString*)query immediately:(BOOL)immediately {
+  [self sendText:query];
+}
+
 #pragma mark - Private
 
 // Handles the loaded preview `image` for the given `item`.
