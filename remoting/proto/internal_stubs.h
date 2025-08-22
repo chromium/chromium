@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "remoting/proto/logging_service.h"
+#include "remoting/proto/messaging_service.h"
 #include "remoting/proto/remote_support_service.h"
 #include "remoting/proto/session_authz_service.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -143,6 +144,35 @@ extern std::string_view GetCreateRemoteSupportHostRequestPath();
 extern std::unique_ptr<RemoteSupportHost> GetRemoteSupportHost(
     const RemoteSupportHostStruct& request_struct);
 extern std::string_view GetSupportId(const RemoteSupportHost&);
+
+// ===========================
+// MessagingService helpers
+// ===========================
+
+extern std::string_view GetSendHostMessagePath();
+extern std::string_view GetReceiveClientMessagesPath();
+
+using ReceiveClientMessagesRequest = DoNothingProto;
+extern std::unique_ptr<ReceiveClientMessagesRequest>
+GetReceiveClientMessagesRequest(const ReceiveClientMessagesRequestStruct&);
+
+using ReceiveClientMessagesResponse = DoNothingProto;
+extern std::unique_ptr<ReceiveClientMessagesResponseStruct>
+GetReceiveClientMessagesResponseStruct(const ReceiveClientMessagesResponse&);
+
+using SendHostMessageRequest = DoNothingProto;
+extern std::unique_ptr<SendHostMessageRequest> GetSendHostMessageRequest(
+    const SendHostMessageRequestStruct&);
+
+using SendHostMessageResponse = DoNothingProto;
+extern std::unique_ptr<SendHostMessageResponseStruct>
+GetSendHostMessageResponseStruct(const SendHostMessageResponse&);
+
+using SimpleMessage = DoNothingProto;
+extern std::unique_ptr<SimpleMessage> GetSimpleMessage(
+    const SimpleMessageStruct&);
+extern std::unique_ptr<SimpleMessageStruct> GetSimpleMessageStruct(
+    const SimpleMessage&);
 
 }  // namespace remoting::internal
 

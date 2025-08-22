@@ -34,12 +34,15 @@ proto_library("proto") {
 source_set("internal_structs") {
   public = [
     "logging_service.h",
+    "messaging_service.h",
     "remote_support_service.h",
     "session_authz_service.h",
   ]
   sources = [
     "logging_service.cc",
     "logging_service.h",
+    "messaging_service.cc",
+    "messaging_service.h",
     "remote_support_service.cc",
     "remote_support_service.h",
     "session_authz_service.cc",

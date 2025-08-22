@@ -213,4 +213,44 @@ std::string_view GetSupportId(const RemoteSupportHost&) {
   return {};
 }
 
+// ============================
+// MessagingService helpers
+// ============================
+
+std::string_view GetSendHostMessagePath() {
+  return {};
+}
+std::string_view GetReceiveClientMessagesPath() {
+  return {};
+}
+
+std::unique_ptr<ReceiveClientMessagesRequest> GetReceiveClientMessagesRequest(
+    const ReceiveClientMessagesRequestStruct&) {
+  return std::make_unique<ReceiveClientMessagesRequest>();
+}
+
+std::unique_ptr<ReceiveClientMessagesResponseStruct>
+GetReceiveClientMessagesResponseStruct(const ReceiveClientMessagesResponse&) {
+  return std::make_unique<ReceiveClientMessagesResponseStruct>();
+}
+
+std::unique_ptr<SendHostMessageRequest> GetSendHostMessageRequest(
+    const SendHostMessageRequestStruct&) {
+  return std::make_unique<SendHostMessageRequest>();
+}
+
+std::unique_ptr<SendHostMessageResponseStruct> GetSendHostMessageResponseStruct(
+    const SendHostMessageResponse&) {
+  return std::make_unique<SendHostMessageResponseStruct>();
+}
+
+std::unique_ptr<SimpleMessage> GetSimpleMessage(const SimpleMessageStruct&) {
+  return std::make_unique<SimpleMessage>();
+}
+
+std::unique_ptr<SimpleMessageStruct> GetSimpleMessageStruct(
+    const SimpleMessage&) {
+  return std::make_unique<SimpleMessageStruct>();
+}
+
 }  // namespace remoting::internal
