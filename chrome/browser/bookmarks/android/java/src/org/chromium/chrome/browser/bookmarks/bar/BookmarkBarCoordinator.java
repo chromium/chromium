@@ -228,7 +228,6 @@ public class BookmarkBarCoordinator
         mBrowserControlsStateProvider.removeObserver(this);
         if (mIsResourceRegistered) unregisterResource();
         mBookmarkBarSceneLayer.setVisibility(false);
-        handleBookmarkBarChange();
     }
 
     private void registerResource() {
