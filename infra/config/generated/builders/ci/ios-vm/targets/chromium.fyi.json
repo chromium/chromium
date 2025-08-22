@@ -9,7 +9,7 @@
           "--clones",
           "2",
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -23,7 +23,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "name": "ios_chrome_integration_eg2tests_module iPhone 14 26.0",
+        "name": "ios_chrome_integration_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -56,7 +56,7 @@
         },
         "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -111,7 +111,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -124,7 +124,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test:ios_chrome_unittests/",
-        "name": "ios_chrome_unittests iPhone 14 26.0",
+        "name": "ios_chrome_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -156,12 +156,12 @@
         },
         "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -175,7 +175,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "name": "ios_web_shell_eg2tests_module iPhone 14 26.0",
+        "name": "ios_web_shell_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -207,7 +207,7 @@
         },
         "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       }
     ]
   }

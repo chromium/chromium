@@ -57,7 +57,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -71,7 +71,7 @@
         },
         "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
         "module_scheme": "gtest",
-        "name": "absl_hardening_tests iPhone 14 26.0",
+        "name": "absl_hardening_tests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -102,7 +102,7 @@
         },
         "test": "absl_hardening_tests",
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -157,7 +157,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -171,7 +171,7 @@
         },
         "module_name": "//base:base_unittests/",
         "module_scheme": "gtest",
-        "name": "base_unittests iPhone 14 26.0",
+        "name": "base_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -202,7 +202,7 @@
         },
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -306,7 +306,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -319,7 +319,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/boringssl:boringssl_crypto_tests/",
-        "name": "boringssl_crypto_tests iPhone 14 26.0",
+        "name": "boringssl_crypto_tests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -350,7 +350,7 @@
         },
         "test": "boringssl_crypto_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -404,7 +404,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -417,7 +417,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/boringssl:boringssl_ssl_tests/",
-        "name": "boringssl_ssl_tests iPhone 14 26.0",
+        "name": "boringssl_ssl_tests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -448,7 +448,7 @@
         },
         "test": "boringssl_ssl_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -502,7 +502,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -515,7 +515,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//components:components_unittests/",
-        "name": "components_unittests iPhone 14 26.0",
+        "name": "components_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -546,7 +546,7 @@
         },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -649,7 +649,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -662,7 +662,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//crypto:crypto_unittests/",
-        "name": "crypto_unittests iPhone 14 26.0",
+        "name": "crypto_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -693,7 +693,7 @@
         },
         "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -747,7 +747,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -760,7 +760,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ui/gfx:gfx_unittests/",
-        "name": "gfx_unittests iPhone 14 26.0",
+        "name": "gfx_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -791,7 +791,7 @@
         },
         "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -894,7 +894,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -907,7 +907,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//google_apis:google_apis_unittests/",
-        "name": "google_apis_unittests iPhone 14 26.0",
+        "name": "google_apis_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -938,7 +938,7 @@
         },
         "test": "google_apis_unittests",
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -992,7 +992,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -1005,7 +1005,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//components/gwp_asan:gwp_asan_unittests/",
-        "name": "gwp_asan_unittests iPhone 14 26.0",
+        "name": "gwp_asan_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1036,7 +1036,7 @@
         },
         "test": "gwp_asan_unittests",
         "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1094,7 +1094,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -1110,7 +1110,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "name": "ios_chrome_bookmarks_eg2tests_module iPhone 14 26.0",
+        "name": "ios_chrome_bookmarks_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1142,7 +1142,7 @@
         },
         "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1204,7 +1204,7 @@
           "--clones",
           "2",
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -1220,7 +1220,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "name": "ios_chrome_integration_eg2tests_module iPhone 14 26.0",
+        "name": "ios_chrome_integration_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1252,7 +1252,7 @@
         },
         "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1314,7 +1314,7 @@
           "--clones",
           "2",
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -1330,7 +1330,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "name": "ios_chrome_settings_eg2tests_module iPhone 14 26.0",
+        "name": "ios_chrome_settings_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1362,7 +1362,7 @@
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1420,7 +1420,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -1436,7 +1436,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "name": "ios_chrome_signin_eg2tests_module iPhone 14 26.0",
+        "name": "ios_chrome_signin_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1468,7 +1468,7 @@
         },
         "test": "ios_chrome_signin_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1525,7 +1525,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -1541,7 +1541,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "name": "ios_chrome_smoke_eg2tests_module iPhone 14 26.0",
+        "name": "ios_chrome_smoke_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1572,7 +1572,7 @@
         },
         "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1634,7 +1634,7 @@
           "--clones",
           "2",
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -1650,7 +1650,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "name": "ios_chrome_ui_eg2tests_module iPhone 14 26.0",
+        "name": "ios_chrome_ui_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1682,7 +1682,7 @@
         },
         "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1736,7 +1736,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -1749,7 +1749,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test:ios_chrome_unittests/",
-        "name": "ios_chrome_unittests iPhone 14 26.0",
+        "name": "ios_chrome_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1780,7 +1780,7 @@
         },
         "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1887,7 +1887,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -1903,7 +1903,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "name": "ios_chrome_web_eg2tests_module iPhone 14 26.0",
+        "name": "ios_chrome_web_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1935,7 +1935,7 @@
         },
         "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1989,7 +1989,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -2002,7 +2002,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/components:ios_components_unittests/",
-        "name": "ios_components_unittests iPhone 14 26.0",
+        "name": "ios_components_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2033,7 +2033,7 @@
         },
         "test": "ios_components_unittests",
         "test_id_prefix": "ninja://ios/components:ios_components_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -2088,7 +2088,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -2102,7 +2102,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/crashpad/crashpad/test/ios:ios_crash_xcuitests_module/",
-        "name": "ios_crash_xcuitests_module iPhone 14 26.0",
+        "name": "ios_crash_xcuitests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2133,7 +2133,7 @@
         },
         "test": "ios_crash_xcuitests_module",
         "test_id_prefix": "ninja://third_party/crashpad/crashpad/test/ios:ios_crash_xcuitests_module/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -2188,7 +2188,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -2201,7 +2201,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/net:ios_net_unittests/",
-        "name": "ios_net_unittests iPhone 14 26.0",
+        "name": "ios_net_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2233,7 +2233,7 @@
         },
         "test": "ios_net_unittests",
         "test_id_prefix": "ninja://ios/net:ios_net_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -2287,7 +2287,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -2300,7 +2300,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/testing:ios_testing_unittests/",
-        "name": "ios_testing_unittests iPhone 14 26.0",
+        "name": "ios_testing_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2331,7 +2331,7 @@
         },
         "test": "ios_testing_unittests",
         "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -2385,7 +2385,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -2398,7 +2398,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/web:ios_web_inttests/",
-        "name": "ios_web_inttests iPhone 14 26.0",
+        "name": "ios_web_inttests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2429,7 +2429,7 @@
         },
         "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -2535,7 +2535,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -2551,7 +2551,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "name": "ios_web_shell_eg2tests_module iPhone 14 26.0",
+        "name": "ios_web_shell_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2582,7 +2582,7 @@
         },
         "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -2636,7 +2636,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -2649,7 +2649,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/web:ios_web_unittests/",
-        "name": "ios_web_unittests iPhone 14 26.0",
+        "name": "ios_web_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2680,7 +2680,7 @@
         },
         "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -2783,7 +2783,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -2796,7 +2796,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/web_view:ios_web_view_inttests/",
-        "name": "ios_web_view_inttests iPhone 14 26.0",
+        "name": "ios_web_view_inttests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2827,7 +2827,7 @@
         },
         "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -2930,7 +2930,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -2943,7 +2943,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/web_view:ios_web_view_unittests/",
-        "name": "ios_web_view_unittests iPhone 14 26.0",
+        "name": "ios_web_view_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2974,7 +2974,7 @@
         },
         "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -3077,7 +3077,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -3090,7 +3090,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//net:net_unittests/",
-        "name": "net_unittests iPhone 14 26.0",
+        "name": "net_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3121,7 +3121,7 @@
         },
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -3175,7 +3175,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -3188,7 +3188,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//services:services_unittests/",
-        "name": "services_unittests iPhone 14 26.0",
+        "name": "services_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3219,7 +3219,7 @@
         },
         "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -3273,7 +3273,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -3286,7 +3286,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//skia:skia_unittests/",
-        "name": "skia_unittests iPhone 14 26.0",
+        "name": "skia_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3317,7 +3317,7 @@
         },
         "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -3420,7 +3420,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -3433,7 +3433,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//sql:sql_unittests/",
-        "name": "sql_unittests iPhone 14 26.0",
+        "name": "sql_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3464,7 +3464,7 @@
         },
         "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -3518,7 +3518,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -3531,7 +3531,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ui/base:ui_base_unittests/",
-        "name": "ui_base_unittests iPhone 14 26.0",
+        "name": "ui_base_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3562,7 +3562,7 @@
         },
         "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -3665,7 +3665,7 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 16",
           "--version",
           "26.0",
           "--out-dir",
@@ -3678,7 +3678,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//url:url_unittests/",
-        "name": "url_unittests iPhone 14 26.0",
+        "name": "url_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3709,7 +3709,7 @@
         },
         "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/",
-        "variant_id": "iPhone 14 26.0"
+        "variant_id": "iPhone 16 26.0"
       }
     ]
   }
