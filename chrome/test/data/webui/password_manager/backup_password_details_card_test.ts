@@ -66,6 +66,7 @@ suite('BackupPasswordDetailsCardTest', function() {
                 'passwordDetailsCardBackupPasswordNoteDetails',
                 password.backupPassword!.creationDate,
                 card.i18n('localPasswordManager'))}`);
+    assertTrue(card.$.noteValue.alwaysExpanded);
     assertTrue(isVisible(card.$.showPasswordButton));
     assertTrue(isVisible(card.$.copyPasswordButton));
     assertTrue(isVisible(card.$.deleteButton));
