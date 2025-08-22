@@ -20,7 +20,6 @@
 
 using ::base::test::TestFuture;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -59,7 +58,7 @@ void AddNewReadingAndExpectReadingChangedEvent(
   base::RunLoop run_loop;
   EXPECT_CALL(*sensor_client,
               OnSensorReadingChanged(sensor_client->sensor()->GetType()))
-      .WillOnce(Invoke([&](SensorType) { run_loop.Quit(); }));
+      .WillOnce([&](SensorType) { run_loop.Quit(); });
   run_loop.Run();
 }
 
@@ -85,10 +84,9 @@ class PlatformSensorAndProviderTest : public testing::Test {
     // Override FakePlatformSensor's default StartSensor() expectation; we
     // do not want to do anything in StartSensor().
     ON_CALL(*fake_sensor, StartSensor(_))
-        .WillByDefault(
-            Invoke([&](const PlatformSensorConfiguration& configuration) {
-              return true;
-            }));
+        .WillByDefault([&](const PlatformSensorConfiguration& configuration) {
+          return true;
+        });
 
     return fake_sensor;
   }
@@ -106,11 +104,10 @@ TEST_F(PlatformSensorAndProviderTest, ResourcesAreFreed) {
       base::BindOnce([](scoped_refptr<PlatformSensor> s) { EXPECT_TRUE(s); }));
   // Failure.
   EXPECT_CALL(*provider_, CreateSensorInternal)
-      .WillOnce(
-          Invoke([](mojom::SensorType,
-                    PlatformSensorProvider::CreateSensorCallback callback) {
-            std::move(callback).Run(nullptr);
-          }));
+      .WillOnce([](mojom::SensorType,
+                   PlatformSensorProvider::CreateSensorCallback callback) {
+        std::move(callback).Run(nullptr);
+      });
 
   provider_->CreateSensor(
       mojom::SensorType::AMBIENT_LIGHT,
@@ -121,8 +118,8 @@ TEST_F(PlatformSensorAndProviderTest, ResourcesAreNotFreedOnPendingRequest) {
   EXPECT_CALL(*provider_, FreeResources()).Times(0);
   // Suspend.
   EXPECT_CALL(*provider_, CreateSensorInternal)
-      .WillOnce(Invoke([](mojom::SensorType,
-                          PlatformSensorProvider::CreateSensorCallback) {}));
+      .WillOnce([](mojom::SensorType,
+                   PlatformSensorProvider::CreateSensorCallback) {});
 
   TestFuture<scoped_refptr<PlatformSensor>> sensor_future;
   provider_->CreateSensor(mojom::SensorType::AMBIENT_LIGHT,

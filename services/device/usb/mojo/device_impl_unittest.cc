@@ -581,9 +581,9 @@ TEST_F(USBDeviceImplTest, OpenDelayedFailure) {
 
   UsbDevice::OpenCallback saved_callback;
   EXPECT_CALL(mock_device(), OpenInternal(_))
-      .WillOnce(Invoke([&saved_callback](UsbDevice::OpenCallback& callback) {
+      .WillOnce([&saved_callback](UsbDevice::OpenCallback& callback) {
         saved_callback = std::move(callback);
-      }));
+      });
   EXPECT_CALL(device_client, OnDeviceOpened()).Times(0);
   EXPECT_CALL(device_client, OnDeviceClosed()).Times(0);
 

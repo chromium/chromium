@@ -53,17 +53,17 @@ TEST(PlatformSensorProviderTestWinrt, SensorCreationReturnCheck) {
   // for ambient light to represent it as not present/supported.
   EXPECT_CALL(*mock_sensor_reader_factory.get(),
               CreateSensorReader(mojom::SensorType::AMBIENT_LIGHT))
-      .WillOnce(testing::Invoke([](mojom::SensorType) { return nullptr; }));
+      .WillOnce([](mojom::SensorType) { return nullptr; });
   EXPECT_CALL(*mock_sensor_reader_factory.get(),
               CreateSensorReader(mojom::SensorType::GYROSCOPE))
-      .WillOnce(testing::Invoke([](mojom::SensorType) {
+      .WillOnce([](mojom::SensorType) {
         return std::make_unique<testing::NiceMock<MockSensorReader>>();
-      }));
+      });
   EXPECT_CALL(*mock_sensor_reader_factory.get(),
               CreateSensorReader(mojom::SensorType::ACCELEROMETER))
-      .WillOnce(testing::Invoke([](mojom::SensorType) {
+      .WillOnce([](mojom::SensorType) {
         return std::make_unique<testing::NiceMock<MockSensorReader>>();
-      }));
+      });
 
   auto provider = std::make_unique<PlatformSensorProviderWinrt>();
 

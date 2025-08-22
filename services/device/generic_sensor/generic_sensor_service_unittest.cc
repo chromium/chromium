@@ -32,7 +32,6 @@
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 
 namespace device {
 

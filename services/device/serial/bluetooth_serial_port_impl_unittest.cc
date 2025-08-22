@@ -37,7 +37,6 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::WithArgs;
 
@@ -224,7 +223,7 @@ TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {
   EXPECT_EQ(result, MOJO_RESULT_OK);
 
   EXPECT_CALL(mock_socket(), Send)
-      .WillOnce(WithArgs<0, 1, 2>(Invoke(
+      .WillOnce(WithArgs<0, 1, 2>(
           [&](scoped_refptr<net::IOBuffer> buf, int buffer_size,
               MockBluetoothSocket::SendCompletionCallback success_callback) {
             ASSERT_EQ(buffer_size, static_cast<int>(bytes_read));
@@ -235,7 +234,7 @@ TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {
                   << "buffer comparison failed at index " << i;
             }
             std::move(success_callback).Run(buffer_size);
-          })));
+          }));
 
   EXPECT_CALL(mock_socket(), Disconnect(_)).WillOnce(RunOnceCallback<0>());
 
@@ -474,8 +473,8 @@ TEST_F(BluetoothSerialPortImplTest, FlushWriteAndWriteNewPipe) {
 
     EXPECT_CALL(mock_socket(), Send)
         .WillOnce(WithArgs<0, 1, 2>(
-            Invoke([&](scoped_refptr<net::IOBuffer> buf, int buffer_size,
-                       MockBluetoothSocket::SendCompletionCallback callback) {
+            [&](scoped_refptr<net::IOBuffer> buf, int buffer_size,
+                MockBluetoothSocket::SendCompletionCallback callback) {
               EXPECT_EQ(buffer_size, static_cast<int>(actually_written_bytes1));
               DCHECK(!pre_flush_send_callback);
               for (int i = 0; i < buffer_size; i++) {
@@ -483,7 +482,7 @@ TEST_F(BluetoothSerialPortImplTest, FlushWriteAndWriteNewPipe) {
                     << "buffer comparison failed at index " << i;
               }
               pre_flush_send_callback = std::move(callback);
-            })));
+            }));
 
     result = pre_flush_producer->WriteData(base::as_byte_span(pre_flush_data),
                                            MOJO_WRITE_DATA_FLAG_NONE,
@@ -535,8 +534,8 @@ TEST_F(BluetoothSerialPortImplTest, FlushWriteAndWriteNewPipe) {
 
   EXPECT_CALL(mock_socket(), Send)
       .WillOnce(WithArgs<0, 1, 2>(
-          Invoke([&](scoped_refptr<net::IOBuffer> buf, int buffer_size,
-                     MockBluetoothSocket::SendCompletionCallback callback) {
+          [&](scoped_refptr<net::IOBuffer> buf, int buffer_size,
+              MockBluetoothSocket::SendCompletionCallback callback) {
             EXPECT_EQ(buffer_size, static_cast<int>(actually_written_bytes1));
             DCHECK(!pre_flush_send_callback);
             for (int i = 0; i < buffer_size; i++) {
@@ -545,7 +544,7 @@ TEST_F(BluetoothSerialPortImplTest, FlushWriteAndWriteNewPipe) {
             }
             std::move(callback).Run(buffer_size);
             post_flush_send_run_loop.Quit();
-          })));
+          }));
 
   serial_port->StartWriting(std::move(post_flush_consumer));
   // Wait for StartWriting to start on the remote end before directly calling
