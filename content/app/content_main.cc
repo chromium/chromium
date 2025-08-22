@@ -103,8 +103,7 @@ void SetupSignalHandlers() {
   CHECK_EQ(0, sigemptyset(&empty_signal_set));
   CHECK_EQ(0, sigprocmask(SIG_SETMASK, &empty_signal_set, nullptr));
 
-  struct sigaction sigact;
-  UNSAFE_TODO(memset(&sigact, 0, sizeof(sigact)));
+  struct sigaction sigact = {};
   sigact.sa_handler = SIG_DFL;
   static const int signals_to_reset[] = {SIGHUP,  SIGINT,  SIGQUIT, SIGILL,
                                          SIGABRT, SIGFPE,  SIGSEGV, SIGALRM,

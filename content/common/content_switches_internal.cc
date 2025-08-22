@@ -109,8 +109,7 @@ void WaitForDebugger(const std::string& label) {
              << ") paused waiting for debugger to attach. "
              << "Send SIGUSR1 to unpause.";
   // Install a signal handler so that pause can be woken.
-  struct sigaction sa;
-  UNSAFE_TODO(memset(&sa, 0, sizeof(sa)));
+  struct sigaction sa = {};
   sa.sa_handler = SigUSR1Handler;
   sigaction(SIGUSR1, &sa, nullptr);
 
