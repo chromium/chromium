@@ -68,17 +68,8 @@ MaybeCreateTaskAttributionScope(ExecutionContext* context,
   auto* tracker =
       scheduler::TaskAttributionTracker::From(context->GetIsolate());
   CHECK(tracker);
-
-  // Don't create a new (nested) task scope if we're still in the parent task,
-  // otherwise we risk clobbering other propagated task state.
-  //
-  // TODO(crbug.com/1439971): Make this safe to do or move the logic into the
-  // task attribution implementation.
-  if (tracker->CurrentTaskState() == task_state) {
-    return std::nullopt;
-  }
-  return tracker->CreateTaskScope(
-      task_state, scheduler::TaskAttributionTracker::TaskScopeType::kMiscEvent);
+  return tracker->CreateTaskScopeIfTopLevel(task_state,
+                                            TaskScopeType::kMiscEvent);
 }
 
 }  // namespace

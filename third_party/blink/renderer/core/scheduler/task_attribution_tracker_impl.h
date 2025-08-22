@@ -52,6 +52,10 @@ class CORE_EXPORT TaskAttributionTrackerImpl : public TaskAttributionTracker {
   std::optional<TaskScope> MaybeCreateTaskScopeForCallback(
       TaskAttributionInfo* task_state) override;
 
+  std::optional<TaskScope> CreateTaskScopeIfTopLevel(
+      TaskAttributionInfo* task_state,
+      TaskScopeType type) override;
+
   std::optional<TaskAttributionId> AsyncSameDocumentNavigationStarted()
       override;
   TaskAttributionInfo* CommitSameDocumentNavigation(TaskAttributionId) override;

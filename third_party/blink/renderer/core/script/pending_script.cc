@@ -167,9 +167,8 @@ void PendingScript::ExecuteScriptBlock() {
       task_attribution_scope;
   if (auto* tracker =
           scheduler::TaskAttributionTracker::From(context->GetIsolate())) {
-    task_attribution_scope = tracker->CreateTaskScope(
-        task_state_,
-        scheduler::TaskAttributionTracker::TaskScopeType::kScriptExecution);
+    task_attribution_scope = tracker->CreateTaskScopeIfTopLevel(
+        task_state_, TaskScopeType::kScriptExecution);
   }
 
   Script* script = GetSource();

@@ -141,6 +141,18 @@ TaskAttributionTrackerImpl::MaybeCreateTaskScopeForCallback(
   return std::nullopt;
 }
 
+std::optional<TaskAttributionTracker::TaskScope>
+TaskAttributionTrackerImpl::CreateTaskScopeIfTopLevel(
+    TaskAttributionInfo* task_state,
+    TaskScopeType type) {
+  // Don't propagate `task_state` if JavaScript is running, e.g. if dispatching
+  // a synchronous event.
+  if (!task_state || isolate_->InContext()) {
+    return std::nullopt;
+  }
+  return CreateTaskScope(task_state, type);
+}
+
 void TaskAttributionTrackerImpl::OnTaskScopeDestroyed(
     const TaskScope& task_scope) {
   TaskAttributionTaskState::SetCurrent(isolate_,

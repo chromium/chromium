@@ -106,6 +106,17 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // initiating propagation for the context.
   virtual TaskScope CreateTaskScope(SoftNavigationContext*) = 0;
 
+  // Returns a new `TaskScope` initiating propagation of `task_state`, making it
+  // the current task state as long as that scope is the topmost on the stack,
+  // if `task_state` is non-null and JavaScript is not currently executing.
+  // Returns std::nullopt otherwise.
+  //
+  // Note: This returns std::nullopt if a v8::Context was entered before calling
+  // this, so care must be taken about ordering.
+  virtual std::optional<TaskScope> CreateTaskScopeIfTopLevel(
+      TaskAttributionInfo* task_state,
+      TaskScopeType type) = 0;
+
   // Initiates propagation of the given `WebSchedulingTaskState`, making it the
   // current task state as long as the `TaskScope` it returns is the topmost on
   // the stack.
@@ -113,6 +124,9 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // This should only be used for prioritized tasks associated with web
   // scheduling APIs (scheduler.postTask() and requestIdleCallback()), and this
   // is not allowed to be called with JavaScript on the stack.
+  //
+  // TODO(crbug.com/40265789): Remove this and use `CreateTaskScopeIfTopLevel()`
+  // everywhere.
   virtual TaskScope CreateTaskScope(WebSchedulingTaskState*,
                                     TaskScopeType type) = 0;
 

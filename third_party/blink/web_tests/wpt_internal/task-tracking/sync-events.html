@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/task-ids.js"></script>
+
+<script>
+'use strict'
+
+function generateTestPromise(t, testType) {
+  return new Promise((resolve, reject) => {
+    assert_in_array(testType, ['callback', 'continuation']);
+
+    // This overwrites all existing task state, so do this before scheduling the
+    // task.
+    const initialId = initializeTaskId();
+
+    scheduler.postTask(async () => {
+      // If 'continuation', run the whole test in a separate task's microtask
+      // checkpoint. This makes sure the sync dispatch logic works even when
+      // there isn't a TaskScope or ScriptState::Scope on the stack.
+      if (testType == 'continuation') {
+        await scheduler.yield();
+      }
+      assert_equals(scheduler.taskId, initialId);
+
+      const request = new XMLHttpRequest();
+      // This abort happens synchronously in the background task. Make sure
+      // dispatching the event doesn't overwrite the scheduling state used for
+      // scheduler.yield().
+      request.addEventListener('abort', t.step_func(async () => {
+        // Schedule a normal priority task to race with the yield() continuation
+        // below, to determine the continuation priority.
+        //
+        // Case 1: The continuation inherits background priority (expected). In
+        // this case, the continuation task has a strictly lower priority, so
+        // the normal priority task will run first.
+        //
+        // Case 2: The scheduling state gets cleared. In this case, there is
+        // nothing to inherit, so the continuation will be schedule at normal
+        // continuation priority, which is strictly higher than normal priority,
+        // and the continuation will run first.
+        //
+        // See also https://wicg.github.io/scheduling-apis/#scheduler-task-queue-effective-priority.
+        let didRun = false;
+        scheduler.postTask(t.step_func(() => {
+          // Also check the task state is propagated here.
+          assert_equals(scheduler.taskId, initialId);
+          didRun = true;
+        }));
+
+        await scheduler.yield();
+
+        try {
+          assert_true(didRun);
+        } catch (e) {
+          reject(e);
+        }
+
+        resolve();
+      }));
+      request.open("GET", "/resources/blank.html");
+      request.send();
+      request.abort();
+    }, {priority: 'background'});
+  });
+}
+
+promise_test(
+    t => generateTestPromise(t, 'callback'),
+    'Dispatching a synchronous event should not overwrite scheduling state in a callback');
+
+promise_test(
+    t => generateTestPromise(t, 'continuation'),
+    'Dispatching a synchronous event should not overwrite scheduling state in a continuation');
+</script>
