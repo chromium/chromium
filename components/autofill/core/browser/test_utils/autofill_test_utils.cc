@@ -973,7 +973,7 @@ EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
       std::string(options.nickname),
       base::Time::FromTimeT(options.date_modified.ToTimeT()), /*use_count=*/0,
       /*use_date=*/base::Time::FromTimeT(0),
-      EntityInstance::RecordType::kLocal);
+      EntityInstance::RecordType::kLocal, options.are_attributes_read_only);
 }
 
 EntityInstance GetKnownTravelerNumberInstance(
@@ -999,7 +999,7 @@ EntityInstance GetKnownTravelerNumberInstance(
       std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
       /*use_count=*/0,
       /*use_date=*/base::Time::FromTimeT(0),
-      EntityInstance::RecordType::kLocal);
+      EntityInstance::RecordType::kLocal, options.are_attributes_read_only);
 }
 
 EntityInstance GetRedressNumberEntityInstance(RedressNumberOptions options) {
@@ -1018,7 +1018,7 @@ EntityInstance GetRedressNumberEntityInstance(RedressNumberOptions options) {
       std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
       /*use_count=*/0,
       /*use_date=*/base::Time::FromTimeT(0),
-      EntityInstance::RecordType::kLocal);
+      EntityInstance::RecordType::kLocal, options.are_attributes_read_only);
 }
 
 EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
@@ -1073,7 +1073,7 @@ EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
       std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
       /*use_count=*/0,
       /*use_date=*/base::Time::FromTimeT(0),
-      EntityInstance::RecordType::kLocal);
+      EntityInstance::RecordType::kLocal, options.are_attributes_read_only);
 }
 
 EntityInstance GetNationalIdCardEntityInstance(NationalIdCardOptions options) {
@@ -1113,7 +1113,7 @@ EntityInstance GetNationalIdCardEntityInstance(NationalIdCardOptions options) {
       std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
       /*use_count=*/0,
       /*use_date=*/base::Time::FromTimeT(0),
-      EntityInstance::RecordType::kLocal);
+      EntityInstance::RecordType::kLocal, options.are_attributes_read_only);
 }
 
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
