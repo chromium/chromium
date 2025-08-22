@@ -941,7 +941,7 @@ libfuzzer_builder(
         "no_remoting",
     ],
     use_component_build = False,
-    xcode = xcode.xcode_default,
+    xcode = xcode.x16main,
 )
 
 libfuzzer_linux_asan_builder(

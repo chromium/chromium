@@ -19,6 +19,8 @@ xcode = struct(
     x14betabots = _xcode.for_ios("14e222b"),
     # Default Xcode 15 for chromium iOS
     x15main = _xcode.for_ios("15f31d"),
+    # Default Xcode 16.2 for chromium iOS
+    x16main = _xcode.for_ios("16c5032a"),
     # A newer Xcode 15 version used on beta bots.
     x15betabots = _xcode.for_ios("15f31d"),
     # Xcode 16 beta version used on beta bots.
