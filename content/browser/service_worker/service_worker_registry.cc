@@ -58,7 +58,7 @@ BASE_FEATURE(ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool ReduceCallingServiceWorkerRegisteredStorageKeysOnStartupEnabled() {
   static const bool enabled = base::FeatureList::IsEnabled(
