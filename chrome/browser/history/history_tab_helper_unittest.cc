@@ -17,6 +17,8 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/features.h"
@@ -52,6 +54,30 @@ class TestFeedApi : public feed::StubFeedApi {
   MOCK_METHOD1(WasUrlRecentlyNavigatedFromFeed, bool(const GURL&));
 };
 #endif  // BUILDFLAG(IS_ANDROID)
+
+class MockHistoryClustersTabHelper : public HistoryClustersTabHelper {
+ public:
+  explicit MockHistoryClustersTabHelper(content::WebContents* web_contents)
+      : HistoryClustersTabHelper(web_contents) {}
+  ~MockHistoryClustersTabHelper() override = default;
+
+  MOCK_METHOD(void,
+              OnUpdatedHistoryForNavigation,
+              (int64_t, base::Time, const GURL&),
+              (override));
+};
+
+class MockHistoryEmbeddingsTabHelper : public HistoryEmbeddingsTabHelper {
+ public:
+  explicit MockHistoryEmbeddingsTabHelper(content::WebContents* web_contents)
+      : HistoryEmbeddingsTabHelper(web_contents) {}
+  ~MockHistoryEmbeddingsTabHelper() override = default;
+
+  MOCK_METHOD(void,
+              OnUpdatedHistoryForNavigation,
+              (content::NavigationHandle*, base::Time, const GURL&),
+              (override));
+};
 
 }  // namespace
 
@@ -182,6 +208,38 @@ class HistoryTabHelperVisitedFilteringTest
                                               GetParam());
   }
 
+  void SetUp() override {
+    HistoryTabHelperTest::SetUp();
+
+    web_contents()->SetUserData(
+        HistoryClustersTabHelper::UserDataKey(),
+        std::make_unique<NiceMock<MockHistoryClustersTabHelper>>(
+            web_contents()));
+    mock_history_clusters_tab_helper_ =
+        static_cast<MockHistoryClustersTabHelper*>(
+            HistoryClustersTabHelper::FromWebContents(web_contents()));
+
+    web_contents()->SetUserData(
+        HistoryEmbeddingsTabHelper::UserDataKey(),
+        std::make_unique<NiceMock<MockHistoryEmbeddingsTabHelper>>(
+            web_contents()));
+    mock_history_embeddings_tab_helper_ =
+        static_cast<MockHistoryEmbeddingsTabHelper*>(
+            HistoryEmbeddingsTabHelper::FromWebContents(web_contents()));
+  }
+
+  void TearDown() override {
+    mock_history_clusters_tab_helper_ = nullptr;
+    mock_history_embeddings_tab_helper_ = nullptr;
+    HistoryTabHelperTest::TearDown();
+  }
+
+ protected:
+  raw_ptr<MockHistoryClustersTabHelper> mock_history_clusters_tab_helper_ =
+      nullptr;
+  raw_ptr<MockHistoryEmbeddingsTabHelper> mock_history_embeddings_tab_helper_ =
+      nullptr;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -221,6 +279,47 @@ TEST_P(HistoryTabHelperVisitedFilteringTest, ShouldConsiderForNtpMostVisited) {
   // If 404 error navigations are recorded in history, we should filter them out
   // when determining NTP most visited.
   EXPECT_EQ(args.consider_for_ntp_most_visited, !are_404s_eligible_for_history);
+}
+
+TEST_P(HistoryTabHelperVisitedFilteringTest, HistoryEmbeddingsHistoryClusters) {
+  // Navigate to a URL that returns a 404 with a body.
+  auto navigation_simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("http://someurl.com/custom404"), web_contents());
+  navigation_simulator->Start();
+  std::string raw_response_headers = "HTTP/1.1 404 Not Found\r\n\r\n";
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      net::HttpResponseHeaders::TryToCreate(raw_response_headers);
+  navigation_simulator->SetResponseHeaders(response_headers);
+  std::string response_body = "Not found, sorry";
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(response_body.size(), producer_handle,
+                                 consumer_handle));
+  navigation_simulator->SetResponseBody(std::move(consumer_handle));
+  size_t actually_written_bytes = 0;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            producer_handle->WriteData(base::as_byte_span(response_body),
+                                       MOJO_WRITE_DATA_FLAG_NONE,
+                                       actually_written_bytes));
+  EXPECT_EQ(actually_written_bytes, response_body.size());
+
+  // When calling HistoryTabHelper::DidFinishNavigation for a 404 navigation,
+  // don't call HistoryClustersTabHelper::OnUpdatedHistoryForNavigation() or
+  // HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation(). When
+  // `history::kVisitedLinksOn404` is disabled, this happens because
+  // `ShouldUpdateHistory()` will return false for 404s. When
+  // `history::kVisitedLinksOn404` is enabled, `ShouldUpdateHistory()` will
+  // return true for 404s, and we should explicitly skip notifying these tab
+  // helpers for 404s, as 404 navigations aren't relevant for them.
+  EXPECT_CALL(*mock_history_clusters_tab_helper_,
+              OnUpdatedHistoryForNavigation(testing::_, testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(*mock_history_embeddings_tab_helper_,
+              OnUpdatedHistoryForNavigation(testing::_, testing::_, testing::_))
+      .Times(0);
+  navigation_simulator->Commit();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

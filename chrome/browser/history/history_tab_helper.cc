@@ -523,6 +523,13 @@ void HistoryTabHelper::DidFinishNavigation(
 
   UpdateHistoryForNavigation(add_page_args);
 
+  if (add_page_args.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    // Don't notify `HistoryClusters` and `HistoryEmbeddings` for 404 visits,
+    // since 404s aren't relevant for those features.
+    return;
+  }
+
   if (HistoryClustersTabHelper* clusters_tab_helper =
           HistoryClustersTabHelper::FromWebContents(web_contents())) {
     clusters_tab_helper->OnUpdatedHistoryForNavigation(
