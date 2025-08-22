@@ -59,7 +59,7 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
                 super.onCreateRecyclerView(inflater, parent, savedInstanceState);
 
         if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            mItemBackgroundDecoration = new SettingsItemBackgroundDecoration(getContext());
+            mItemBackgroundDecoration = new SettingsItemBackgroundDecoration();
             recyclerView.addItemDecoration(mItemBackgroundDecoration);
         }
         return recyclerView;

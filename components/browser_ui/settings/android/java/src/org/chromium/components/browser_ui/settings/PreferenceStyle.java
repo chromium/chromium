@@ -4,7 +4,9 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_COLOR;
 import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_MARGIN;
+import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_RADIUS;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -16,31 +18,62 @@ public class PreferenceStyle {
     private final int mTopMargin;
     private final int mBottomMargin;
     private final int mHorizontalMargin;
+    private final int mBackgroundColor;
 
     /** A style with no background. */
-    public static final PreferenceStyle EMPTY =
-            new PreferenceStyle(0, 0, DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN);
+    public static final PreferenceStyle EMPTY = new Builder().build();
 
-    /**
-     * Constructor for PreferenceStyle.
-     *
-     * @param topRadius The top radius for the background.
-     * @param bottomRadius The bottom radius for the background.
-     * @param topMargin The top margin in pixels.
-     * @param bottomMargin The bottom margin in pixels.
-     * @param horizontalMargin The horizontal margin in pixels.
-     */
-    public PreferenceStyle(
-            float topRadius,
-            float bottomRadius,
-            int topMargin,
-            int bottomMargin,
-            int horizontalMargin) {
-        mTopRadius = topRadius;
-        mBottomRadius = bottomRadius;
-        mTopMargin = topMargin;
-        mBottomMargin = bottomMargin;
-        mHorizontalMargin = horizontalMargin;
+    private PreferenceStyle(Builder builder) {
+        mTopRadius = builder.mTopRadius;
+        mBottomRadius = builder.mBottomRadius;
+        mTopMargin = builder.mTopMargin;
+        mBottomMargin = builder.mBottomMargin;
+        mHorizontalMargin = builder.mHorizontalMargin;
+        mBackgroundColor = builder.mBackgroundColor;
+    }
+
+    /** Builder for creating a {@link PreferenceStyle}. */
+    public static class Builder {
+        private float mTopRadius = DEFAULT_RADIUS;
+        private float mBottomRadius = DEFAULT_RADIUS;
+        private int mTopMargin = DEFAULT_MARGIN;
+        private int mBottomMargin = DEFAULT_MARGIN;
+        private int mHorizontalMargin = DEFAULT_MARGIN;
+        private int mBackgroundColor = DEFAULT_COLOR;
+
+        public Builder setTopRadius(float topRadius) {
+            mTopRadius = topRadius;
+            return this;
+        }
+
+        public Builder setBottomRadius(float bottomRadius) {
+            mBottomRadius = bottomRadius;
+            return this;
+        }
+
+        public Builder setTopMargin(int topMargin) {
+            mTopMargin = topMargin;
+            return this;
+        }
+
+        public Builder setBottomMargin(int bottomMargin) {
+            mBottomMargin = bottomMargin;
+            return this;
+        }
+
+        public Builder setHorizontalMargin(int horizontalMargin) {
+            mHorizontalMargin = horizontalMargin;
+            return this;
+        }
+
+        public Builder setBackgroundColor(int backgroundColor) {
+            mBackgroundColor = backgroundColor;
+            return this;
+        }
+
+        public PreferenceStyle build() {
+            return new PreferenceStyle(this);
+        }
     }
 
     /**
@@ -76,5 +109,12 @@ public class PreferenceStyle {
      */
     public int getHorizontalMargin() {
         return mHorizontalMargin;
+    }
+
+    /**
+     * @return The background color for the preference.
+     */
+    public int getBackgroundColor() {
+        return mBackgroundColor;
     }
 }

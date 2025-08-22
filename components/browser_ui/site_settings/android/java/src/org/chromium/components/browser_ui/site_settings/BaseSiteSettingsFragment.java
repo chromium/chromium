@@ -66,7 +66,7 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
                 super.onCreateRecyclerView(inflater, parent, savedInstanceState);
 
         if (getSiteSettingsDelegate().isSettingsContainmentEnabled()) {
-            mItemBackgroundDecoration = new SettingsItemBackgroundDecoration(getContext());
+            mItemBackgroundDecoration = new SettingsItemBackgroundDecoration();
             recyclerView.addItemDecoration(mItemBackgroundDecoration);
         }
         return recyclerView;

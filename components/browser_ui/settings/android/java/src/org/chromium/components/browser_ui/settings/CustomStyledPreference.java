@@ -15,6 +15,8 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public interface CustomStyledPreference {
     int DEFAULT_MARGIN = -1;
+    int DEFAULT_COLOR = -1;
+    float DEFAULT_RADIUS = -1f;
 
     @IntDef({BackgroundStyle.NONE, BackgroundStyle.CARD})
     @Retention(RetentionPolicy.SOURCE)
@@ -49,5 +51,13 @@ public interface CustomStyledPreference {
      */
     default int getCustomHorizontalMargin() {
         return DEFAULT_MARGIN;
+    }
+
+    /**
+     * @return The custom background color for the preference. If DEFAULT_COLOR, the default color
+     *     will be used.
+     */
+    default int getCustomBackgroundColor() {
+        return DEFAULT_COLOR;
     }
 }

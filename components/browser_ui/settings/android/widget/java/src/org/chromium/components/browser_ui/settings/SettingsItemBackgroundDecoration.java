@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -16,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
 
@@ -26,7 +24,6 @@ import java.util.ArrayList;
  */
 @NullMarked
 public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoration {
-    private final Context mContext;
     private @Nullable ArrayList<PreferenceStyle> mPreferenceStyles;
 
     /**
@@ -36,13 +33,8 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
      */
     private boolean mUpdateBackgrounds;
 
-    /**
-     * Constructor for the item decoration.
-     *
-     * @param context The context for accessing resources.
-     */
-    public SettingsItemBackgroundDecoration(Context context) {
-        mContext = context;
+    /** Constructor for the item decoration. */
+    public SettingsItemBackgroundDecoration() {
         mUpdateBackgrounds = true;
     }
 
@@ -108,22 +100,22 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
             return;
         }
         view.setBackground(
-                createRoundedDrawable(mContext, style.getTopRadius(), style.getBottomRadius()));
+                createRoundedDrawable(
+                        style.getTopRadius(), style.getBottomRadius(), style.getBackgroundColor()));
     }
 
     /**
      * Creates a rounded drawable with the specified top and bottom radii.
      *
-     * @param context The context for accessing resources.
      * @param topRadius The radius for the top corners.
      * @param bottomRadius The radius for the bottom corners.
+     * @param color The background color of the drawable.
      * @return A new {@link Drawable} with the specified properties.
      */
-    private static Drawable createRoundedDrawable(
-            Context context, float topRadius, float bottomRadius) {
+    private static Drawable createRoundedDrawable(float topRadius, float bottomRadius, int color) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setShape(GradientDrawable.RECTANGLE);
-        drawable.setColor(SemanticColorUtils.getColorSurfaceContainerLowest(context));
+        drawable.setColor(color);
         drawable.setCornerRadii(
                 new float[] {
                     topRadius, topRadius,
