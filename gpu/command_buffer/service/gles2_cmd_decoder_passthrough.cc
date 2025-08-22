@@ -1370,6 +1370,8 @@ gpu::GLCapabilities GLES2DecoderPassthroughImpl::GetGLCapabilities() {
   GLCapabilities caps;
 
   PopulateGLCapabilities(&caps, feature_info_.get());
+  CHECK_EQ(caps.bind_generates_resource_chromium != GL_FALSE,
+           group_->bind_generates_resource());
   caps.occlusion_query_boolean =
       feature_info_->feature_flags().occlusion_query_boolean;
   caps.timer_queries = feature_info_->feature_flags().ext_disjoint_timer_query;

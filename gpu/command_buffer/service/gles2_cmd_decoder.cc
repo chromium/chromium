@@ -3408,6 +3408,8 @@ GLCapabilities GLES2DecoderImpl::GetGLCapabilities() {
                 &caps.num_compressed_texture_formats, 1);
   DoGetIntegerv(GL_NUM_SHADER_BINARY_FORMATS, &caps.num_shader_binary_formats,
                 1);
+  DoGetIntegerv(GL_BIND_GENERATES_RESOURCE_CHROMIUM,
+                &caps.bind_generates_resource_chromium, 1);
   if (feature_info_->IsWebGL2OrES3Context()) {
     // TODO(zmo): Note that some parameter values could be more than 32-bit,
     // but for now we clamp them to 32-bit max.

@@ -181,6 +181,8 @@ void PopulateGLCapabilities(GLCapabilities* caps,
   glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS,
                 &caps->num_compressed_texture_formats);
   glGetIntegerv(GL_NUM_SHADER_BINARY_FORMATS, &caps->num_shader_binary_formats);
+  glGetIntegerv(GL_BIND_GENERATES_RESOURCE_CHROMIUM,
+                &caps->bind_generates_resource_chromium);
   if (feature_info->IsWebGL2OrES3OrHigherContext()) {
     glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &caps->max_3d_texture_size);
     glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &caps->max_array_texture_layers);
