@@ -1887,6 +1887,10 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
   FPDFBitmap_FillRect(fpdf_bitmap.get(), /*left=*/0, /*top=*/0,
                       image_size.width(), image_size.height(), fill_color);
 
+  if (thumbnail.should_render_blank()) {
+    return thumbnail;
+  }
+
   // The combination of the `FPDF_REVERSE_BYTE_ORDER` rendering flag and the
   // `FPDFBitmap_BGRA` format when initializing `fpdf_bitmap` results in an RGBA
   // rendering, which is the format required by HTML <canvas>.

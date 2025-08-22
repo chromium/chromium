@@ -1276,8 +1276,7 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailWithNoOverlapCropBox) {
       *engine, /*page_index=*/0, /*device_pixel_ratio=*/1,
       /*expected_thumbnail_size=*/{140, 140});
   ASSERT_TRUE(image);
-  // TODO(crbug.com/438884266): Thumbnails should render blank.
-  EXPECT_FALSE(IsImageBlank(*image));
+  EXPECT_TRUE(IsImageBlank(*image));
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)

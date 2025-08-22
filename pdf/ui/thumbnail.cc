@@ -125,6 +125,7 @@ gfx::Size Thumbnail::CalculateImageSize(const gfx::SizeF& page_size,
 Thumbnail::Thumbnail(const gfx::SizeF& page_size, float device_pixel_ratio)
     : device_pixel_ratio_(ClampDevicePixelRatio(device_pixel_ratio)),
       image_size_(CalculateBestFitSize(page_size, device_pixel_ratio_)),
+      should_render_blank_(page_size.IsEmpty()),
       stride_(CalculateStride(image_size_.width())),
       image_data_(CalculateImageDataSize(stride(), image_size().height())) {
   DCHECK(!image_data_.empty());

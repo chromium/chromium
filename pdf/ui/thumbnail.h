@@ -36,6 +36,8 @@ class Thumbnail final {
 
   int stride() const { return stride_; }
 
+  bool should_render_blank() const { return should_render_blank_; }
+
   const gfx::Size& image_size() const { return image_size_; }
 
   // Note that <canvas> can only hold data in RGBA format. It is the
@@ -54,6 +56,7 @@ class Thumbnail final {
   float device_pixel_ratio_;
 
   gfx::Size image_size_;  // In pixels.
+  bool should_render_blank_;  // True when the page size is empty.
   int stride_;
   base::Value::BlobStorage image_data_;
 };
