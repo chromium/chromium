@@ -11,14 +11,13 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.PausedExecutorTestRule;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.io.FileNotFoundException;
@@ -32,8 +31,6 @@ import java.io.FileNotFoundException;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ChromeFileProviderTest {
-    @Rule public PausedExecutorTestRule mPausedExecutorTestRule = new PausedExecutorTestRule();
-
     private ParcelFileDescriptor openFileFromProvider(Uri uri) {
         ChromeFileProvider provider = new ChromeFileProvider();
         ParcelFileDescriptor file = null;
@@ -69,7 +66,7 @@ public class ChromeFileProviderTest {
                     }
                     ChromeFileProvider.notifyFileReady(uri, null);
                 });
-        mPausedExecutorTestRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         ParcelFileDescriptor file = openFileFromProvider(uri);
         // File should be null because the notify passes a null file uri.
         Assert.assertNull(file);
@@ -91,7 +88,7 @@ public class ChromeFileProviderTest {
                     }
                     ChromeFileProvider.notifyFileReady(uri2, fileUri2);
                 });
-        mPausedExecutorTestRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // This should not be blocked even without a notify since file was changed.
         Uri file1 = ChromeFileProvider.getFileUriWhenReady(uri1);
