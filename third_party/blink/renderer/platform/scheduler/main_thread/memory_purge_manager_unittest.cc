@@ -208,7 +208,7 @@ TEST_F(MemoryPurgeManagerTest, PurgeRendererMemoryWhenBackgroundedDisabled) {
 
 TEST_F(MemoryPurgeManagerTest,
        PurgeRendererMemoryWhenBackgroundedEnabledForegroundedBeforePurge) {
-  if (!MemoryPurgeManager::kPurgeEnabled) {
+  if (!MemoryPurgeManager::kPurgeOnBackgroundingEnabled) {
     GTEST_SKIP();
   }
 
