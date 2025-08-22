@@ -83,15 +83,12 @@ IN_PROC_BROWSER_TEST_F(SearchApiBrowserTest, InvalidTabId) {
                             "No tab with id: -1.");
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test for error if missing browser context.
-// TODO(crbug.com/434262354): Enable browsertest for desktop Android.
 IN_PROC_BROWSER_TEST_F(SearchApiBrowserTest, NoActiveBrowser) {
   auto result = api_test_utils::RunFunctionAndReturnError(
       function(), R"([{"text": "1"}])", nullptr);
 
   EXPECT_EQ("No active browser.", result);
 }
-#endif
 
 }  // namespace extensions

@@ -24,6 +24,10 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+using tabs::TabModel;
+#endif
+
 namespace extensions {
 
 namespace {
@@ -84,9 +88,10 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
 
   // If the extension didn't specify a tab, we need to find a browser to use.
   Browser* browser = nullptr;
+  TabModel* tab_model = nullptr;
   if (!web_contents) {
     // If the extension called the API from a tab, we can use that tab -
-    // find the associated browser.
+    // find the associated browser or tab model.
     web_contents = GetSenderWebContents();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     if (web_contents) {
@@ -104,16 +109,20 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
       web_contents = browser->tab_strip_model()->GetActiveWebContents();
     }
 #else
-    if (!web_contents) {
-      web_contents = GetActiveWebContents();
-      if (!web_contents) {
-        return RespondNow(Error("No active browser."));
-      }
+    if (web_contents) {
+      tab_model = TabModelList::GetTabModelForWebContents(web_contents);
     }
+    // Failed to find the tab model making the API call. fall back to the last
+    // active tab.
+    if (!tab_model) {
+      return RespondNow(Error("No active browser."));
+    }
+    web_contents = GetActiveWebContents();
 #endif
   }
 
-  DCHECK(browser || (web_contents && disposition == Disposition::kNone));
+  DCHECK(browser || tab_model ||
+         (web_contents && disposition == Disposition::kNone));
 
   // GURL for default search provider.
   TemplateURLService* url_service =
