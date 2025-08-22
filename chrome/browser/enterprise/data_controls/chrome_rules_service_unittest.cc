@@ -156,8 +156,7 @@ TEST_F(DataControlsRulesServiceTest, VerdictsForAllRestrictions) {
                          ->GetForBrowserContext(profile())
                          ->GetPasteVerdict(
                              /*source*/ google_url_endpoint(),
-                             /*destination*/ empty_endpoint(),
-                             /*metadata*/ {}));
+                             /*destination*/ empty_endpoint()));
   ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
                          ->GetForBrowserContext(profile())
                          ->GetCopyToOSClipboardVerdict(
@@ -179,8 +178,7 @@ TEST_F(DataControlsRulesServiceTest, NoRuleSet) {
                       ->GetForBrowserContext(profile())
                       ->GetPasteVerdict(
                           /*source*/ google_url_endpoint(),
-                          /*destination*/ empty_endpoint(),
-                          /*metadata*/ {}));
+                          /*destination*/ empty_endpoint()));
   ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                       ->GetForBrowserContext(profile())
                       ->GetCopyToOSClipboardVerdict(
@@ -215,14 +213,12 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ google_url_endpoint(),
-                               /*destination*/ empty_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ google_url_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ google_url_endpoint()));
     ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
                            ->GetForBrowserContext(profile())
                            ->GetCopyToOSClipboardVerdict(
@@ -256,14 +252,12 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                           ->GetForBrowserContext(profile())
                           ->GetPasteVerdict(
                               /*source*/ google_url_endpoint(),
-                              /*destination*/ empty_endpoint(),
-                              /*metadata*/ {}));
+                              /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ google_url_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ google_url_endpoint()));
     ExpectWarnVerdict(ChromeRulesServiceFactory::GetInstance()
                           ->GetForBrowserContext(profile())
                           ->GetCopyToOSClipboardVerdict(
@@ -312,14 +306,12 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ google_url_endpoint(),
-                               /*destination*/ empty_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ google_url_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ google_url_endpoint()));
     ExpectAllowVerdict(ChromeRulesServiceFactory::GetInstance()
                            ->GetForBrowserContext(profile())
                            ->GetCopyToOSClipboardVerdict(
@@ -351,14 +343,12 @@ TEST_F(DataControlsRulesServiceTest, DestinationURL) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ empty_endpoint(),
-                               /*destination*/ google_url_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ google_url_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ google_url_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -385,14 +375,12 @@ TEST_F(DataControlsRulesServiceTest, DestinationURL) {
                           ->GetForBrowserContext(profile())
                           ->GetPasteVerdict(
                               /*source*/ empty_endpoint(),
-                              /*destination*/ google_url_endpoint(),
-                              /*metadata*/ {}));
+                              /*destination*/ google_url_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ google_url_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -431,14 +419,12 @@ TEST_F(DataControlsRulesServiceTest, DestinationURL) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ empty_endpoint(),
-                               /*destination*/ google_url_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ google_url_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ google_url_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -467,14 +453,12 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ incognito_endpoint(),
-                               /*destination*/ empty_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ incognito_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ incognito_endpoint()));
     ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
                            ->GetForBrowserContext(incognito_profile())
                            ->GetCopyToOSClipboardVerdict(
@@ -515,14 +499,12 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                           ->GetForBrowserContext(profile())
                           ->GetPasteVerdict(
                               /*source*/ incognito_endpoint(),
-                              /*destination*/ empty_endpoint(),
-                              /*metadata*/ {}));
+                              /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ incognito_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ incognito_endpoint()));
     ExpectWarnVerdict(ChromeRulesServiceFactory::GetInstance()
                           ->GetForBrowserContext(incognito_profile())
                           ->GetCopyToOSClipboardVerdict(
@@ -577,14 +559,12 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ incognito_endpoint(),
-                               /*destination*/ empty_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ incognito_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ incognito_endpoint()));
     ExpectAllowVerdict(ChromeRulesServiceFactory::GetInstance()
                            ->GetForBrowserContext(incognito_profile())
                            ->GetCopyToOSClipboardVerdict(
@@ -626,14 +606,12 @@ TEST_F(DataControlsRulesServiceTest, DestinationIncognito) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ empty_endpoint(),
-                               /*destination*/ incognito_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ incognito_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ incognito_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -659,14 +637,12 @@ TEST_F(DataControlsRulesServiceTest, DestinationIncognito) {
                           ->GetForBrowserContext(profile())
                           ->GetPasteVerdict(
                               /*source*/ empty_endpoint(),
-                              /*destination*/ incognito_endpoint(),
-                              /*metadata*/ {}));
+                              /*destination*/ incognito_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ incognito_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -705,14 +681,12 @@ TEST_F(DataControlsRulesServiceTest, DestinationIncognito) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ empty_endpoint(),
-                               /*destination*/ incognito_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ incognito_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ incognito_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -740,14 +714,12 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardDestination) {
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ google_url_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ google_url_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ google_url_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
                            ->GetForBrowserContext(profile())
                            ->GetCopyToOSClipboardVerdict(
@@ -773,14 +745,12 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardDestination) {
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ google_url_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ google_url_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ google_url_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectWarnVerdict(ChromeRulesServiceFactory::GetInstance()
                           ->GetForBrowserContext(profile())
                           ->GetCopyToOSClipboardVerdict(
@@ -819,14 +789,12 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardDestination) {
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ google_url_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ google_url_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ google_url_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectAllowVerdict(ChromeRulesServiceFactory::GetInstance()
                            ->GetForBrowserContext(profile())
                            ->GetCopyToOSClipboardVerdict(
@@ -854,14 +822,12 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardDestination) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ empty_endpoint(),
-                               /*destination*/ google_url_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ google_url_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ google_url_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -887,14 +853,12 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardDestination) {
                           ->GetForBrowserContext(profile())
                           ->GetPasteVerdict(
                               /*source*/ empty_endpoint(),
-                              /*destination*/ google_url_endpoint(),
-                              /*metadata*/ {}));
+                              /*destination*/ google_url_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ google_url_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -933,14 +897,12 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardDestination) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ empty_endpoint(),
-                               /*destination*/ google_url_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ google_url_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ google_url_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -968,14 +930,12 @@ TEST_F(DataControlsRulesServiceTest, SourceOtherProfile) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ other_profile_endpoint(),
-                               /*destination*/ empty_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ other_profile_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ other_profile_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(incognito_profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -1009,14 +969,12 @@ TEST_F(DataControlsRulesServiceTest, SourceOtherProfile) {
                           ->GetForBrowserContext(profile())
                           ->GetPasteVerdict(
                               /*source*/ other_profile_endpoint(),
-                              /*destination*/ empty_endpoint(),
-                              /*metadata*/ {}));
+                              /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ other_profile_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ other_profile_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(incognito_profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -1063,14 +1021,12 @@ TEST_F(DataControlsRulesServiceTest, SourceOtherProfile) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ other_profile_endpoint(),
-                               /*destination*/ empty_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ other_profile_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ other_profile_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(incognito_profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -1106,14 +1062,12 @@ TEST_F(DataControlsRulesServiceTest, DestinationOtherProfile) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ empty_endpoint(),
-                               /*destination*/ other_profile_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ other_profile_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ other_profile_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -1139,14 +1093,12 @@ TEST_F(DataControlsRulesServiceTest, DestinationOtherProfile) {
                           ->GetForBrowserContext(profile())
                           ->GetPasteVerdict(
                               /*source*/ empty_endpoint(),
-                              /*destination*/ other_profile_endpoint(),
-                              /*metadata*/ {}));
+                              /*destination*/ other_profile_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ other_profile_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -1185,14 +1137,12 @@ TEST_F(DataControlsRulesServiceTest, DestinationOtherProfile) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ empty_endpoint(),
-                               /*destination*/ other_profile_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ other_profile_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ other_profile_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -1220,14 +1170,12 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardSource) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ empty_endpoint(),
-                               /*destination*/ google_url_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ google_url_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ google_url_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -1253,14 +1201,12 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardSource) {
                           ->GetForBrowserContext(profile())
                           ->GetPasteVerdict(
                               /*source*/ empty_endpoint(),
-                              /*destination*/ google_url_endpoint(),
-                              /*metadata*/ {}));
+                              /*destination*/ google_url_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ google_url_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -1299,14 +1245,12 @@ TEST_F(DataControlsRulesServiceTest, OSClipboardSource) {
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ empty_endpoint(),
-                               /*destination*/ google_url_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ google_url_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ google_url_endpoint(),
-                            /*destination*/ empty_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ empty_endpoint()));
     ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
@@ -1334,14 +1278,12 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardSource) {
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ google_url_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ google_url_endpoint()));
     ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ google_url_endpoint(),
-                               /*destination*/ empty_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ empty_endpoint()));
     ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
                            ->GetForBrowserContext(profile())
                            ->GetCopyToOSClipboardVerdict(
@@ -1367,14 +1309,12 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardSource) {
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ google_url_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ google_url_endpoint()));
     ExpectWarnVerdict(ChromeRulesServiceFactory::GetInstance()
                           ->GetForBrowserContext(profile())
                           ->GetPasteVerdict(
                               /*source*/ google_url_endpoint(),
-                              /*destination*/ empty_endpoint(),
-                              /*metadata*/ {}));
+                              /*destination*/ empty_endpoint()));
     ExpectWarnVerdict(ChromeRulesServiceFactory::GetInstance()
                           ->GetForBrowserContext(profile())
                           ->GetCopyToOSClipboardVerdict(
@@ -1413,14 +1353,12 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardSource) {
                         ->GetForBrowserContext(profile())
                         ->GetPasteVerdict(
                             /*source*/ empty_endpoint(),
-                            /*destination*/ google_url_endpoint(),
-                            /*metadata*/ {}));
+                            /*destination*/ google_url_endpoint()));
     ExpectAllowVerdict(ChromeRulesServiceFactory::GetInstance()
                            ->GetForBrowserContext(profile())
                            ->GetPasteVerdict(
                                /*source*/ google_url_endpoint(),
-                               /*destination*/ empty_endpoint(),
-                               /*metadata*/ {}));
+                               /*destination*/ empty_endpoint()));
     ExpectAllowVerdict(ChromeRulesServiceFactory::GetInstance()
                            ->GetForBrowserContext(profile())
                            ->GetCopyToOSClipboardVerdict(

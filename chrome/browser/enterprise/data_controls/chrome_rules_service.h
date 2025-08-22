@@ -32,8 +32,7 @@ class ChromeRulesService : public RulesServiceBase {
   // context on `source` represents data coming from the OS clipboard.
   // `destination` is always expected to have a valid browser context.
   Verdict GetPasteVerdict(const content::ClipboardEndpoint& source,
-                          const content::ClipboardEndpoint& destination,
-                          const ui::ClipboardMetadata& metadata) const;
+                          const content::ClipboardEndpoint& destination) const;
 
   // Returns true if rules indicate screenshots should be blocked. Only the
   // "block" level is supported, a "warn" screenshot rule will not make this

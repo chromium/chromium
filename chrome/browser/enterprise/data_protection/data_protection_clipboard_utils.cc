@@ -315,13 +315,13 @@ void PasteIfAllowedByDataControls(
 
   auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
                      ->GetForBrowserContext(destination.browser_context())
-                     ->GetPasteVerdict(source, destination, metadata);
+                     ->GetPasteVerdict(source, destination);
   if (source.browser_context() &&
       source.browser_context() != destination.browser_context()) {
     verdict = data_controls::Verdict::MergePasteVerdicts(
         data_controls::ChromeRulesServiceFactory::GetInstance()
             ->GetForBrowserContext(source.browser_context())
-            ->GetPasteVerdict(source, destination, metadata),
+            ->GetPasteVerdict(source, destination),
         std::move(verdict));
   }
 

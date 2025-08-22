@@ -32,8 +32,7 @@ Verdict ChromeRulesService::GetPrintVerdict(
 
 Verdict ChromeRulesService::GetPasteVerdict(
     const content::ClipboardEndpoint& source,
-    const content::ClipboardEndpoint& destination,
-    const ui::ClipboardMetadata& metadata) const {
+    const content::ClipboardEndpoint& destination) const {
   return GetVerdict(Rule::Restriction::kClipboard,
                     {
                         .source = GetAsActionSource(source),
