@@ -17,25 +17,26 @@
 
 namespace content {
 namespace {
-namespace FedCm = content::protocol::FedCm;
+namespace FedCm = protocol::FedCm;
 
-FedCm::DialogType ConvertDialogType(
-    content::FederatedAuthRequestImpl::DialogType type) {
+using DialogType = FederatedAuthRequestImpl::DialogType;
+
+FedCm::DialogType ConvertDialogType(DialogType type) {
   switch (type) {
-    case content::FederatedAuthRequestImpl::kNone:
+    case DialogType::kNone:
       NOTREACHED() << "This should only be called if there is a dialog";
-    case content::FederatedAuthRequestImpl::kLoginToIdpPopup:
-    case content::FederatedAuthRequestImpl::kContinueOnPopup:
-    case content::FederatedAuthRequestImpl::kErrorUrlPopup:
+    case DialogType::kLoginToIdpPopup:
+    case DialogType::kContinueOnPopup:
+    case DialogType::kErrorUrlPopup:
       NOTREACHED()
           << "These dialog types are not currently exposed to automation";
-    case content::FederatedAuthRequestImpl::kSelectAccount:
+    case DialogType::kSelectAccount:
       return FedCm::DialogTypeEnum::AccountChooser;
-    case content::FederatedAuthRequestImpl::kAutoReauth:
+    case DialogType::kAutoReauth:
       return FedCm::DialogTypeEnum::AutoReauthn;
-    case content::FederatedAuthRequestImpl::kConfirmIdpLogin:
+    case DialogType::kConfirmIdpLogin:
       return FedCm::DialogTypeEnum::ConfirmIdpLogin;
-    case content::FederatedAuthRequestImpl::kError:
+    case DialogType::kError:
       return FedCm::DialogTypeEnum::Error;
   }
 }
@@ -76,7 +77,7 @@ DispatchResponse FedCmHandler::Enable(
   // This could happen if FedCmHandler::Enable was called to enable/disable the
   // rejection delay.
   if (!was_enabled && auth_request &&
-      auth_request->GetDialogType() != FederatedAuthRequestImpl::kNone) {
+      auth_request->GetDialogType() != DialogType::kNone) {
     DidShowDialog();
   }
 
@@ -244,13 +245,13 @@ DispatchResponse FedCmHandler::ClickDialogButton(
         "clickDialogButton called while no FedCm dialog is shown");
   }
 
-  FederatedAuthRequestImpl::DialogType type = auth_request->GetDialogType();
+  DialogType type = auth_request->GetDialogType();
   if (in_dialogButton == FedCm::DialogButtonEnum::ConfirmIdpLoginContinue) {
     switch (type) {
-      case FederatedAuthRequestImpl::kConfirmIdpLogin:
+      case DialogType::kConfirmIdpLogin:
         auth_request->AcceptConfirmIdpLoginDialogForDevtools();
         return DispatchResponse::Success();
-      case FederatedAuthRequestImpl::kSelectAccount: {
+      case DialogType::kSelectAccount: {
         const auto* idp_data = GetIdentityProviderData(auth_request);
         CHECK(idp_data) << "kSelectAccount should always have IDP data";
         CHECK(!idp_data->empty());
@@ -271,7 +272,7 @@ DispatchResponse FedCmHandler::ClickDialogButton(
             "confirm IDP login dialog is shown");
     }
   } else if (in_dialogButton == FedCm::DialogButtonEnum::ErrorGotIt) {
-    if (type != FederatedAuthRequestImpl::kError) {
+    if (type != DialogType::kError) {
       return DispatchResponse::ServerError(
           "clickDialogButton called with ErrorGotIt while no error dialog is "
           "shown");
@@ -279,7 +280,7 @@ DispatchResponse FedCmHandler::ClickDialogButton(
     auth_request->ClickErrorDialogGotItForDevtools();
     return DispatchResponse::Success();
   } else if (in_dialogButton == FedCm::DialogButtonEnum::ErrorMoreDetails) {
-    if (type != FederatedAuthRequestImpl::kError) {
+    if (type != DialogType::kError) {
       return DispatchResponse::ServerError(
           "clickDialogButton called with ErrorMoreDetails while no error "
           "dialog is shown");
@@ -308,12 +309,12 @@ DispatchResponse FedCmHandler::DismissDialog(
         "dismissDialog called while no FedCm dialog is shown");
   }
 
-  FederatedAuthRequestImpl::DialogType type = auth_request->GetDialogType();
-  if (type == FederatedAuthRequestImpl::kConfirmIdpLogin) {
+  DialogType type = auth_request->GetDialogType();
+  if (type == DialogType::kConfirmIdpLogin) {
     auth_request->DismissConfirmIdpLoginDialogForDevtools();
     return DispatchResponse::Success();
   }
-  if (type == FederatedAuthRequestImpl::kError) {
+  if (type == DialogType::kError) {
     auth_request->DismissErrorDialogForDevtools();
     return DispatchResponse::Success();
   }

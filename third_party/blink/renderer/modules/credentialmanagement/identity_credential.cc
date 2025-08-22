@@ -24,12 +24,16 @@ constexpr char kIdentityCredentialType[] = "identity";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(FedCmCspStatus)
 enum class FedCmCspStatus {
   kSuccess = 0,
   kFailedPathButPassedOrigin = 1,
   kFailedOrigin = 2,
+
   kMaxValue = kFailedOrigin
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmCspStatus)
 
 void OnDisconnect(ScriptPromiseResolver<IDLUndefined>* resolver,
                   DisconnectStatus status) {

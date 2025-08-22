@@ -207,15 +207,18 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaIdentityProvidersList(
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(FedCmJavaObjectCreationOutcome)
+
 enum class FedCmJavaObjectCreationOutcome {
   kNewObjectCreated = 0,
   kObjectReused = 1,
   kObjectCreationFailed = 2,
   kNoNativeView = 3,
   kNoWindow = 4,
-
   kMaxValue = kNoWindow
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmJavaObjectCreationOutcome)
 
 void RecordJavaObjectCreationOutcome(
     std::optional<blink::mojom::RpMode> rp_mode,

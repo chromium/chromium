@@ -328,29 +328,32 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // This enum describes the outcome of the mismatch dialog and is used for
   // histograms. Do not remove or modify existing values, but you may add new
-  // values at the end. This enum should be kept in sync with
-  // FedCmMismatchDialogResult in tools/metrics/histograms/enums.xml.
+  // values at the end.
+  // LINT.IfChange(MismatchDialogResult)
+
   enum class MismatchDialogResult {
     kContinued = 0,
     kDismissedByCloseIcon = 1,
     kDismissedForOtherReasons = 2,
-
     kMaxValue = kDismissedForOtherReasons
   };
 
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmMismatchDialogResult)
+
   // This enum describes the outcome of the pop-up window and is used for
   // histograms. Do not remove or modify existing values, but you may add new
-  // values at the end. This enum should be kept in sync with
-  // FedCmPopupWindowResult in
-  // tools/metrics/histograms/metadata/blink/enums.xml.
+  // values at the end.
+  // LINT.IfChange(PopupWindowResult)
+
   enum class PopupWindowResult {
     kAccountsReceivedAndPopupClosedByIdp = 0,
     kAccountsReceivedAndPopupNotClosedByIdp = 1,
     kAccountsNotReceivedAndPopupClosedByIdp = 2,
     kAccountsNotReceivedAndPopupNotClosedByIdp = 3,
-
     kMaxValue = kAccountsNotReceivedAndPopupNotClosedByIdp
   };
+
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmPopupWindowResult)
 
   // Called when the tab's WebContents is discarded.
   void WillDiscardContents(tabs::TabInterface* tab,

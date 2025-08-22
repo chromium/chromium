@@ -92,7 +92,7 @@ void FedCmModalDialogView::ClosePopupWindow() {
   }
 
   std::string histogram_name =
-      active_mode_sheet_type_ == webid::SheetType::LOADING
+      active_mode_sheet_type_ == webid::SheetType::kLoading
           ? "Blink.FedCm.Button.LoadingStatePopupInteraction"
           : "Blink.FedCm.Button.UseOtherAccountPopupInteraction";
   PopupInteraction metric =
@@ -130,7 +130,7 @@ void FedCmModalDialogView::ResizeAndFocusPopupWindow() {
 
 void FedCmModalDialogView::WebContentsDestroyed() {
   std::string histogram_name =
-      active_mode_sheet_type_ == webid::SheetType::LOADING
+      active_mode_sheet_type_ == webid::SheetType::kLoading
           ? "Blink.FedCm.Button.LoadingStatePopupInteraction"
           : "Blink.FedCm.Button.UseOtherAccountPopupInteraction";
   // Closing the window causes the focus to be lost so `num_lost_focus_` is at

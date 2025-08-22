@@ -174,7 +174,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum DialogType {
+  // LINT.IfChange(DialogType)
+
+  enum class DialogType {
     kNone = 0,
     kSelectAccount = 1,
     kAutoReauth = 2,
@@ -186,9 +188,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     kLoginToIdpPopup = 5,
     kContinueOnPopup = 6,
     kErrorUrlPopup = 7,
-
     kMaxValue = kErrorUrlPopup
   };
+
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmDialogType)
 
   DialogType GetDialogType() const { return dialog_type_; }
 
@@ -570,7 +573,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // If dialog_type_ is kError, this is the token error.
   std::optional<TokenError> token_error_;
 
-  DialogType dialog_type_ = kNone;
+  DialogType dialog_type_ = DialogType::kNone;
   MediationRequirement mediation_requirement_;
   IdentitySelectionType identity_selection_type_ = kExplicit;
   RpMode rp_mode_{RpMode::kPassive};

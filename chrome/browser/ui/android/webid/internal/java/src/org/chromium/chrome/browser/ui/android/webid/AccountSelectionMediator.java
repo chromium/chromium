@@ -385,7 +385,9 @@ class AccountSelectionMediator {
                             "Blink.FedCm.CloseVerifySheet.Android",
                             mHeaderType == HeaderType.VERIFY);
                     RecordHistogram.recordEnumeratedHistogram(
-                            "Blink.FedCm.ClosedSheetType.Android", getSheetType(), SheetType.COUNT);
+                            "Blink.FedCm.ClosedSheetType.Android",
+                            getSheetType(),
+                            SheetType.MAX_VALUE);
                 };
 
         return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
@@ -488,7 +490,7 @@ class AccountSelectionMediator {
         if (mAccountChooserState == null) return;
 
         RecordHistogram.recordEnumeratedHistogram(
-                "Blink.FedCm.Button.AccountChooserResult", result, SheetType.COUNT);
+                "Blink.FedCm.Button.AccountChooserResult", result, SheetType.MAX_VALUE);
         if (mUkmRecorder != null) {
             mUkmRecorder.addMetric("Button.AccountChooserResult", result).record();
         }
@@ -510,7 +512,7 @@ class AccountSelectionMediator {
         if (mLoadingDialogState == null) return;
 
         RecordHistogram.recordEnumeratedHistogram(
-                "Blink.FedCm.Button.LoadingDialogResult", mLoadingDialogState, SheetType.COUNT);
+                "Blink.FedCm.Button.LoadingDialogResult", mLoadingDialogState, SheetType.MAX_VALUE);
         if (mUkmRecorder != null) {
             mUkmRecorder.addMetric("Button.LoadingDialogResult", mLoadingDialogState).record();
         }
@@ -533,7 +535,7 @@ class AccountSelectionMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 "Blink.FedCm.Button.DisclosureDialogResult",
                 mDisclosureDialogState,
-                SheetType.COUNT);
+                SheetType.MAX_VALUE);
         if (mUkmRecorder != null) {
             mUkmRecorder
                     .addMetric("Button.DisclosureDialogResult", mDisclosureDialogState)

@@ -648,7 +648,7 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
 
     // Record the sheet type that the user was closing.
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.ClosedSheetType.Desktop",
-                              GetSheetType(), webid::SheetType::COUNT);
+                              GetSheetType());
   }
 
   // Check that state_ at the time of closing is an account chooser, otherwise,
@@ -749,7 +749,7 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
   // hand, if the popup is from another flow, then closing the popup should also
   // exit out of the entire FedCM flow.
   bool user_close_cancels_flow =
-      GetSheetType() != webid::SheetType::ACCOUNT_SELECTION;
+      GetSheetType() != webid::SheetType::kAccountSelection;
   return popup_window_->ShowPopupWindow(url, user_close_cancels_flow);
 }
 
@@ -908,25 +908,25 @@ void FedCmAccountSelectionView::ShowVerifyingSheet(
 SheetType FedCmAccountSelectionView::GetSheetType() {
   switch (state_) {
     case State::IDP_SIGNIN_STATUS_MISMATCH:
-      return webid::SheetType::SIGN_IN_TO_IDP_STATIC;
+      return webid::SheetType::kSignInToIdpStatic;
 
     case State::SINGLE_ACCOUNT_PICKER:
     case State::MULTI_ACCOUNT_PICKER:
     case State::REQUEST_PERMISSION:
     case State::NEWLY_LOGGED_IN_ACCOUNT_PICKER:
-      return webid::SheetType::ACCOUNT_SELECTION;
+      return webid::SheetType::kAccountSelection;
 
     case State::VERIFYING:
-      return webid::SheetType::VERIFYING;
+      return webid::SheetType::kVerifying;
 
     case State::AUTO_REAUTHN:
-      return webid::SheetType::AUTO_REAUTHN;
+      return webid::SheetType::kAutoReauthn;
 
     case State::SIGN_IN_ERROR:
-      return webid::SheetType::SIGN_IN_ERROR;
+      return webid::SheetType::kSignInError;
 
     case State::LOADING:
-      return webid::SheetType::LOADING;
+      return webid::SheetType::kLoading;
   }
 }
 

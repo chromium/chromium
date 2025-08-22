@@ -28,6 +28,8 @@ using RpMode = blink::mojom::RpMode;
 // This enum describes the status of a request id token call to the FedCM API.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(RequestIdTokenStatus)
+
 enum class RequestIdTokenStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
@@ -84,29 +86,35 @@ enum class RequestIdTokenStatus {
   kConfigNotMatchingType = 50,
   kLoginPopupClosedWithoutSignin = 51,
   kSuppressedBySegmentationPlatform = 52,
-
   kMaxValue = kSuppressedBySegmentationPlatform
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmRequestIdTokenStatus)
 
 // This enum describes whether user sign-in states between IDP and browser
 // match.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SignInStateMatchStatus)
+
 enum class SignInStateMatchStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
   kMatch = 0,
   kIdpClaimedSignIn = 1,
   kBrowserObservedSignIn = 2,
-
   kMaxValue = kBrowserObservedSignIn
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmSignInStateMatchStatus)
 
 // This enum describes whether the browser's knowledge of whether the user is
 // signed into the IDP based on observing signin/signout HTTP headers matches
 // the information returned by the accounts endpoint.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(IdpSigninMatchStatus)
+
 enum class IdpSigninMatchStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
@@ -118,26 +126,32 @@ enum class IdpSigninMatchStatus {
   kMismatchWithNoContent = 5,
   kMismatchWithInvalidResponse = 6,
   kMismatchWithUnexpectedAccounts = 7,
-
   kMaxValue = kMismatchWithUnexpectedAccounts
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmIdpSigninMatchStatus)
 
 // This enum describes the type of frame that invokes a FedCM API.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(RequesterFrameType)
+
 enum class RequesterFrameType {
   // Do not change the meaning or order of these values since they are being
   // recorded in metrics and in sync with the counterpart in enums.xml.
   kMainFrame = 0,
   kSameSiteIframe = 1,
   kCrossSiteIframe = 2,
-
   kMaxValue = kCrossSiteIframe
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmRequesterFrameType)
 
 // This enum describes the status of a disconnect call to the FedCM API.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(DisconnectStatus)
+
 enum class DisconnectStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
@@ -161,23 +175,29 @@ enum class DisconnectStatus {
   kWellKnownInvalidContentType = 17,
   kConfigInvalidContentType = 18,
   kIdpNotPotentiallyTrustworthy = 19,
-
   kMaxValue = kIdpNotPotentiallyTrustworthy
 };
 
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmDisconnectStatus)
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SetLoginStatusIgnoredReason)
+
 enum class SetLoginStatusIgnoredReason {
   kFrameTreeLookupFailed = 0,
   kInFencedFrame = 1,
   kCrossOrigin = 2,
-
   kMaxValue = kCrossOrigin
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmSetLoginStatusIgnoredReason)
 
 // This enum describes the result of the error dialog.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(ErrorDialogResult)
+
 enum class ErrorDialogResult {
   kMoreDetails = 0,
   kGotItWithoutMoreDetails = 1,
@@ -188,37 +208,46 @@ enum class ErrorDialogResult {
   kSwipeWithMoreDetails = 6,
   kOtherWithoutMoreDetails = 7,
   kOtherWithMoreDetails = 8,
-
   kMaxValue = kOtherWithMoreDetails
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmErrorDialogResult)
 
 // Whether we were able to open the continue_on popup and the reason if not.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(ContinueOnPopupStatus)
+
 enum class ContinueOnPopupStatus {
   kPopupOpened = 0,
   kUrlNotSameOrigin = 1,
   kPopupNotAllowed = 2,
   kUrlNotSameOriginAndPopupNotAllowed = 3,
-
   kMaxValue = kUrlNotSameOriginAndPopupNotAllowed
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmContinueOnPopupStatus)
 
 // The result of the continue_on popup.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(ContinueOnPopupResult)
+
 enum class ContinueOnPopupResult {
   kTokenReceived = 0,
   kWindowClosed = 1,
   kClosedByIdentityProviderClose = 2,
-
   kMaxValue = kClosedByIdentityProviderClose
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmContinueOnPopupResult)
 
 // This enum is used when we fail a FedCM request due to a bad
 // lifecycle state.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(LifecycleStateFailureReason)
+
 enum class LifecycleStateFailureReason {
   kOther = 0,
   kSpeculative = 1,
@@ -227,47 +256,59 @@ enum class LifecycleStateFailureReason {
   kInBackForwardCache = 4,
   kRunningUnloadHandlers = 5,
   kReadyToBeDeleted = 6,
-
   kMaxValue = kReadyToBeDeleted
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmLifecycleStateFailureReason)
 
 // This enum is used when a token request is invoked while there's a pending
 // one. These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(MultipleRequestsRpMode)
+
 enum class MultipleRequestsRpMode {
   kPassiveThenPassive = 0,
   kPassiveThenActive = 1,
   kActiveThenPassive = 2,
   kActiveThenActive = 3,
-
   kMaxValue = kActiveThenActive
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmMultipleRequestsRpMode)
 
 // This enum tracks whether the RP requested additional scopes and/or
 // parameters. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused.
+// LINT.IfChange(RpParameters)
+
 enum class RpParameters {
   kHasParameters = 0,
   kHasNonDefaultScope = 1,
   kHasParametersAndNonDefaultScope = 2,
-
   kMaxValue = kHasParametersAndNonDefaultScope
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmRpParameters)
 
 // This enum tracks the user's result after using a different account. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused.
+// LINT.IfChange(UseOtherAccountResult)
+
 enum class UseOtherAccountResult {
   kUserSignsInWithNewAccount = 0,
   kUserSignsInWithExistingAccount = 1,
   kUserDoesNotSignIn = 2,
-
   kMaxValue = kUserDoesNotSignIn
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmUseOtherAccountResult)
 
 // This enum describes the outcome of the verifying dialog. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
+// LINT.IfChange(VerifyingDialogResult)
+
 enum class VerifyingDialogResult {
   kSuccessExplicit = 0,
   kSuccessAutoReauthn = 1,
@@ -275,24 +316,27 @@ enum class VerifyingDialogResult {
   kCancelAutoReauthn = 3,
   kDestroyExplicit = 4,
   kDestroyAutoReauthn = 5,
-
   kMaxValue = kDestroyAutoReauthn
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmVerifyingDialogResult)
 
 // This enum describes the third party cookies status. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
+// LINT.IfChange(ThirdPartyCookiesStatus)
+
 enum class ThirdPartyCookiesStatus {
   kEnabledInSettings = 0,
   kDisabledInSettings = 1,
-
   kMaxValue = kDisabledInSettings
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FedCmThirdPartyCookiesStatus)
 
 // This enum describes the fields that we received in the accounts. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused.
-//
 // LINT.IfChange(AccountFieldsType)
 enum class AccountFieldsType {
   kNameAndEmailAndNoOther = 0,
@@ -424,12 +468,16 @@ class CONTENT_EXPORT Metrics {
 
   // This enum is used in histograms. Do not remove or modify existing entries.
   // You may add entries at the end, and update |kMaxValue|.
+  // LINT.IfChange(NumAccounts)
+
   enum class NumAccounts {
     kZero = 0,
     kOne = 1,
     kMultiple = 2,
     kMaxValue = kMultiple
   };
+
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmNumAccounts)
 
   // Records several auto reauthn metrics using the given parameters.
   // |has_single_returning_account| is nullopt when we are recording the metrics
@@ -449,14 +497,18 @@ class CONTENT_EXPORT Metrics {
 
   // This enum is used in histograms. Do not remove or modify existing entries.
   // You may add entries at the end, and update |kMaxValue|.
+  // LINT.IfChange(MismatchDialogType)
+
   enum class MismatchDialogType {
-    kFirstWithoutHints,
-    kFirstWithHints,
-    kRepeatedWithoutHints,
-    kRepeatedWithHints,
+    kFirstWithoutHints = 0,
+    kFirstWithHints = 1,
+    kRepeatedWithoutHints = 2,
+    kRepeatedWithHints = 3,
 
     kMaxValue = kRepeatedWithHints
   };
+
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmMismatchDialogType)
 
   // Records a sample when a single IDP mismatch dialog is shown. Also records
   // whether this is a mismatch seen for the first time or a if there has

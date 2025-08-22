@@ -13,6 +13,8 @@
 
 namespace content {
 
+using DialogType = FederatedAuthRequestImpl::DialogType;
+
 WebTestFedCmManager::WebTestFedCmManager(RenderFrameHost* render_frame_host)
     : render_frame_host_(
           static_cast<RenderFrameHostImpl*>(render_frame_host)->GetWeakPtr()) {}
@@ -29,26 +31,26 @@ void WebTestFedCmManager::GetDialogType(
   }
   std::string type_string;
   switch (auth_request->GetDialogType()) {
-    case FederatedAuthRequestImpl::kNone:
+    case DialogType::kNone:
     // We do not expose these three types to browser automation currently.
-    case FederatedAuthRequestImpl::kLoginToIdpPopup:
-    case FederatedAuthRequestImpl::kContinueOnPopup:
-    case FederatedAuthRequestImpl::kErrorUrlPopup:
+    case DialogType::kLoginToIdpPopup:
+    case DialogType::kContinueOnPopup:
+    case DialogType::kErrorUrlPopup:
       std::move(callback).Run(std::nullopt);
       return;
-    case FederatedAuthRequestImpl::kSelectAccount:
+    case DialogType::kSelectAccount:
       type_string = "AccountChooser";
       break;
-    case FederatedAuthRequestImpl::kAutoReauth:
+    case DialogType::kAutoReauth:
       type_string = "AutoReauthn";
       break;
-    case FederatedAuthRequestImpl::kConfirmIdpLogin:
+    case DialogType::kConfirmIdpLogin:
       type_string = "ConfirmIdpLogin";
       break;
-    case FederatedAuthRequestImpl::kError:
+    case DialogType::kError:
       type_string = "Error";
       break;
-  };
+  }
   std::move(callback).Run(type_string);
 }
 
@@ -101,23 +103,23 @@ void WebTestFedCmManager::DismissFedCmDialog(
     return;
   }
   switch (auth_request->GetDialogType()) {
-    case FederatedAuthRequestImpl::kNone:
+    case DialogType::kNone:
     // We do not expose these three types to browser automation currently.
-    case FederatedAuthRequestImpl::kLoginToIdpPopup:
-    case FederatedAuthRequestImpl::kContinueOnPopup:
-    case FederatedAuthRequestImpl::kErrorUrlPopup:
+    case DialogType::kLoginToIdpPopup:
+    case DialogType::kContinueOnPopup:
+    case DialogType::kErrorUrlPopup:
       std::move(callback).Run(false);
       return;
-    case FederatedAuthRequestImpl::kSelectAccount:
-    case FederatedAuthRequestImpl::kAutoReauth:
+    case DialogType::kSelectAccount:
+    case DialogType::kAutoReauth:
       auth_request->DismissAccountsDialogForDevtools(false);
       std::move(callback).Run(true);
       return;
-    case FederatedAuthRequestImpl::kConfirmIdpLogin:
+    case DialogType::kConfirmIdpLogin:
       auth_request->DismissConfirmIdpLoginDialogForDevtools();
       std::move(callback).Run(true);
       return;
-    case FederatedAuthRequestImpl::kError:
+    case DialogType::kError:
       auth_request->DismissErrorDialogForDevtools();
       std::move(callback).Run(true);
       return;
@@ -135,11 +137,11 @@ void WebTestFedCmManager::ClickFedCmDialogButton(
   switch (button) {
     case blink::test::mojom::DialogButton::kConfirmIdpLoginContinue:
       switch (auth_request->GetDialogType()) {
-        case FederatedAuthRequestImpl::kConfirmIdpLogin:
+        case DialogType::kConfirmIdpLogin:
           auth_request->AcceptConfirmIdpLoginDialogForDevtools();
           std::move(callback).Run(true);
           return;
-        case FederatedAuthRequestImpl::kSelectAccount: {
+        case DialogType::kSelectAccount: {
           const auto& data = auth_request->GetSortedIdpData();
           if (data.size() != 1) {
             std::move(callback).Run(false);
@@ -152,9 +154,9 @@ void WebTestFedCmManager::ClickFedCmDialogButton(
         default:
           std::move(callback).Run(false);
           return;
-      };
+      }
     case blink::test::mojom::DialogButton::kErrorGotIt:
-      if (auth_request->GetDialogType() != FederatedAuthRequestImpl::kError) {
+      if (auth_request->GetDialogType() != DialogType::kError) {
         std::move(callback).Run(false);
         return;
       }
@@ -162,7 +164,7 @@ void WebTestFedCmManager::ClickFedCmDialogButton(
       std::move(callback).Run(true);
       return;
     case blink::test::mojom::DialogButton::kErrorMoreDetails:
-      if (auth_request->GetDialogType() != FederatedAuthRequestImpl::kError) {
+      if (auth_request->GetDialogType() != DialogType::kError) {
         std::move(callback).Run(false);
         return;
       }

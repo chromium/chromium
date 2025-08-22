@@ -6438,6 +6438,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="141" label="DigitalCredentialsCreate"/>
 </enum>
 
+<!-- LINT.IfChange(FedCmAccountChooserResult) -->
+
 <enum name="FedCmAccountChooserResult">
   <int value="0" label="Account row clicked"/>
   <int value="1" label="Cancel button clicked"/>
@@ -6447,6 +6449,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Bottom sheet swiped back on Android"/>
   <int value="6" label="Tap scrim on Android"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_ui_utils.h:AccountChooserResult) -->
 
 <!-- LINT.IfChange(FedCmAccountFieldsType) -->
 
@@ -6460,6 +6464,8 @@ Called by update_permissions_policy_enum.py.-->
 
 <!-- LINT.ThenChange(//content/browser/webid/metrics.h:AccountFieldsType) -->
 
+<!-- LINT.IfChange(FedCmAccountsResponseInvalidReason) -->
+
 <enum name="FedCmAccountsResponseInvalidReason">
   <int value="0" label="Response is not JSON or dict"/>
   <int value="1" label="No accounts key"/>
@@ -6468,6 +6474,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Account misses required field"/>
   <int value="5" label="Accounts share the same id"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/idp_network_request_manager.h:AccountsResponseInvalidReason) -->
 
 <!-- LINT.IfChange(FedCmCancelReason) -->
 
@@ -6485,16 +6493,26 @@ Called by update_permissions_policy_enum.py.-->
 
 <!-- LINT.ThenChange(//content/public/browser/webid/identity_request_dialog_controller.h:DismissReason) -->
 
+<!-- LINT.IfChange(FedCmClosePopupWindowReason) -->
+
 <enum name="FedCmClosePopupWindowReason">
   <int value="0" label="IDP initiated close"/>
   <int value="1" label="Pop-up window destroyed"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h:ClosePopupWindowReason) -->
+
+<!-- LINT.IfChange(FedCmContinueOnPopupResult) -->
 
 <enum name="FedCmContinueOnPopupResult">
   <int value="0" label="TokenReceived"/>
   <int value="1" label="WindowClosed"/>
   <int value="2" label="ClosedByIdentityProviderClose"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:ContinueOnPopupResult) -->
+
+<!-- LINT.IfChange(FedCmContinueOnPopupStatus) -->
 
 <enum name="FedCmContinueOnPopupStatus">
   <int value="0" label="PopupOpened"/>
@@ -6503,11 +6521,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="UrlNotSameOriginAndPopupNotAllowed"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:ContinueOnPopupStatus) -->
+
+<!-- LINT.IfChange(FedCmCspStatus) -->
+
 <enum name="FedCmCspStatus">
   <int value="0" label="Success"/>
   <int value="1" label="FailedPathButPassedOrigin"/>
   <int value="2" label="FailedOrigin"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/credentialmanagement/identity_credential.cc:FedCmCspStatus) -->
+
+<!-- LINT.IfChange(FedCmDialogType) -->
 
 <enum name="FedCmDialogType">
   <int value="0" label="None"/>
@@ -6520,6 +6546,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7" label="ErrorUrlPopup"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/federated_auth_request_impl.h:DialogType) -->
+
+<!-- LINT.IfChange(FedCmDisclosureDialogResult) -->
+
 <enum name="FedCmDisclosureDialogResult">
   <int value="0" label="Account row clicked"/>
   <int value="1" label="Cancel button clicked"/>
@@ -6529,6 +6559,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Bottom sheet swiped back on Android"/>
   <int value="6" label="Tap scrim on Android"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_ui_utils.h:DisclosureDialogResult) -->
+
+<!-- LINT.IfChange(FedCmDisconnectStatus) -->
 
 <enum name="FedCmDisconnectStatus">
   <int value="0" label="Success"/>
@@ -6553,6 +6587,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="19" label="IdpNotPotentiallyTrustworthy"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:DisconnectStatus) -->
+
+<!-- LINT.IfChange(FedCmErrorDialogResult) -->
+
 <enum name="FedCmErrorDialogResult">
   <int value="0" label="More details clicked"/>
   <int value="1" label="Got it clicked without more details available"/>
@@ -6564,6 +6602,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7" label="Other dismiss reason without more details available"/>
   <int value="8" label="Other dismiss reason with more details available"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:ErrorDialogResult) -->
+
+<!-- LINT.IfChange(FedCmErrorDialogType) -->
 
 <enum name="FedCmErrorDialogType">
   <int value="0" label="Generic empty string without URL"/>
@@ -6582,11 +6624,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="13" label="Server error with URL"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/idp_network_request_manager.h:FedCmErrorDialogType) -->
+
+<!-- LINT.IfChange(FedCmErrorUrlType) -->
+
 <enum name="FedCmErrorUrlType">
   <int value="0" label="Same-origin with config URL"/>
   <int value="1" label="Cross-origin same-site with config URL"/>
   <int value="2" label="Cross-site with config URL"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/idp_network_request_manager.h:FedCmErrorUrlType) -->
+
+<!-- LINT.IfChange(FedCmIdpSigninMatchStatus) -->
 
 <enum name="FedCmIdpSigninMatchStatus">
   <int value="0"
@@ -6615,6 +6665,10 @@ Called by update_permissions_policy_enum.py.-->
              accounts."/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:IdpSigninMatchStatus) -->
+
+<!-- LINT.IfChange(FedCmJavaObjectCreationOutcome) -->
+
 <enum name="FedCmJavaObjectCreationOutcome">
   <int value="0" label="New Java object created"/>
   <int value="1" label="Existing Java object reused"/>
@@ -6622,6 +6676,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="No native view"/>
   <int value="4" label="No window"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/webid/account_selection_view_android.cc:FedCmJavaObjectCreationOutcome) -->
+
+<!-- LINT.IfChange(FedCmLifecycleStateFailureReason) -->
 
 <enum name="FedCmLifecycleStateFailureReason">
   <int value="0" label="Other state"/>
@@ -6632,6 +6690,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Running Unload Handlers"/>
   <int value="6" label="Ready to be deleted"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:LifecycleStateFailureReason) -->
+
+<!-- LINT.IfChange(FedCmLoadingDialogResult) -->
 
 <enum name="FedCmLoadingDialogResult">
   <int value="0" label="Proceeds with existing accounts"/>
@@ -6644,11 +6706,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="Tap scrim on Android"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_ui_utils.h:LoadingDialogResult) -->
+
+<!-- LINT.IfChange(FedCmMismatchDialogResult) -->
+
 <enum name="FedCmMismatchDialogResult">
   <int value="0" label="Continue button clicked"/>
   <int value="1" label="Dismissed by user through clicking close icon"/>
   <int value="2" label="Dialog unhandled by user"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h:MismatchDialogResult) -->
+
+<!-- LINT.IfChange(FedCmMismatchDialogType) -->
 
 <enum name="FedCmMismatchDialogType">
   <int value="0" label="First mismatch of the request, without hints"/>
@@ -6656,6 +6726,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Repeated mismatch in a request, without hints"/>
   <int value="3" label="Repeated mismatch in a request, with hints"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:MismatchDialogType) -->
+
+<!-- LINT.IfChange(FedCmMultipleRequestsRpMode) -->
 
 <enum name="FedCmMultipleRequestsRpMode">
   <int value="0"
@@ -6668,11 +6742,19 @@ Called by update_permissions_policy_enum.py.-->
       label="An active flow is invoked while an active flow is pending"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:MultipleRequestsRpMode) -->
+
+<!-- LINT.IfChange(FedCmNumAccounts) -->
+
 <enum name="FedCmNumAccounts">
   <int value="0" label="Zero accounts"/>
   <int value="1" label="One account"/>
   <int value="2" label="Multiple accounts"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:NumAccounts) -->
+
+<!-- LINT.IfChange(FedCmPopupInteraction) -->
 
 <enum name="FedCmPopupInteraction">
   <int value="0" label="User loses focus of pop-up and pop-up closed by IDP"/>
@@ -6684,6 +6766,10 @@ Called by update_permissions_policy_enum.py.-->
       label="User never loses focus of pop-up and pop-up not closed by IDP"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h:PopupInteraction) -->
+
+<!-- LINT.IfChange(FedCmPopupWindowResult) -->
+
 <enum name="FedCmPopupWindowResult">
   <int value="0" label="Accounts received and pop-up closed by IDP"/>
   <int value="1" label="Accounts received but pop-up not closed by IDP"/>
@@ -6691,11 +6777,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Accounts not received and pop-up not closed by IDP"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h:PopupWindowResult) -->
+
+<!-- LINT.IfChange(FedCmRequesterFrameType) -->
+
 <enum name="FedCmRequesterFrameType">
   <int value="0" label="Main frame"/>
   <int value="1" label="Iframe which is same-site as main frame"/>
   <int value="2" label="Iframe which is cross-site as main frame"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:RequesterFrameType) -->
+
+<!-- LINT.IfChange(FedCmRequestIdTokenStatus) -->
 
 <enum name="FedCmRequestIdTokenStatus">
   <int value="0" label="SuccessUsingTokenInHttpResponse"/>
@@ -6753,6 +6847,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="52" label="SuppressedBySegmentationPlatform"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:RequestIdTokenStatus) -->
+
+<!-- LINT.IfChange(FedCmRpContext) -->
+
 <enum name="FedCmRpContext">
   <int value="0" label="Sign in"/>
   <int value="1" label="Sign up"/>
@@ -6760,10 +6858,18 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Continue"/>
 </enum>
 
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/webid/federated_auth_request.mojom:RpContext) -->
+
+<!-- LINT.IfChange(FedCmRpMode) -->
+
 <enum name="FedCmRpMode">
   <int value="0" label="Passive"/>
   <int value="1" label="Active"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/webid/federated_auth_request.mojom:RpMode) -->
+
+<!-- LINT.IfChange(FedCmRpParameters) -->
 
 <enum name="FedCmRpParameters">
   <int value="0" label="Has parameters"/>
@@ -6771,11 +6877,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Has parameters and non-default scope"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:RpParameters) -->
+
+<!-- LINT.IfChange(FedCmSetLoginStatusIgnoredReason) -->
+
 <enum name="FedCmSetLoginStatusIgnoredReason">
   <int value="0" label="Looking up the FrameTreeNode by ID failed"/>
   <int value="1" label="Request came from within a fenced frame tree"/>
   <int value="2" label="Request came from a cross-origin context"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:SetLoginStatusIgnoredReason) -->
+
+<!-- LINT.IfChange(FedCmSheetType) -->
 
 <enum name="FedCmSheetType">
   <int value="0" label="Account selection"/>
@@ -6783,7 +6897,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Auto re-authn"/>
   <int value="3" label="Sign in to IDP static"/>
   <int value="4" label="Sign in error"/>
+  <int value="5" label="Loading"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_ui_utils.h:SheetType) -->
+
+<!-- LINT.IfChange(FedCmShowPopupWindowResult) -->
 
 <enum name="FedCmShowPopupWindowResult">
   <int value="0" label="Successfully opened"/>
@@ -6791,11 +6910,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Failed for other reasons"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h:ShowPopupWindowResult) -->
+
+<!-- LINT.IfChange(FedCmSignInStateMatchStatus) -->
+
 <enum name="FedCmSignInStateMatchStatus">
   <int value="0" label="Success"/>
   <int value="1" label="IdpClaimedSignIn"/>
   <int value="2" label="BrowserObservedSignIn"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:SignInStateMatchStatus) -->
+
+<!-- LINT.IfChange(FedCmTokenResponseType) -->
 
 <enum name="FedCmTokenResponseType">
   <int value="0"
@@ -6820,11 +6947,19 @@ Called by update_permissions_policy_enum.py.-->
       label="Token not received and error received and continue_on received"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/webid/idp_network_request_manager.h:FedCmTokenResponseType) -->
+
+<!-- LINT.IfChange(FedCmUseOtherAccountResult) -->
+
 <enum name="FedCmUseOtherAccountResult">
   <int value="0" label="User signs in with a new account"/>
   <int value="1" label="User signs in with existing account"/>
   <int value="2" label="User does not sign in"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:UseOtherAccountResult) -->
+
+<!-- LINT.IfChange(FedCmUserAction) -->
 
 <enum name="FedCmUserAction">
   <int value="0" label="Deprecated: User signed in"/>
@@ -6832,6 +6967,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="User closed the UI"/>
   <int value="3" label="User signed in"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_dialog_controller.h:UserAction) -->
+
+<!-- LINT.IfChange(FedCmUserInfoStatus) -->
 
 <enum name="FedCmUserInfoStatus">
   <int value="0" label="Success"/>
@@ -6847,6 +6986,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="10" label="Request is destroyed"/>
 </enum>
 
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/devtools/inspector_issue.mojom:FederatedAuthUserInfoRequestResult) -->
+
+<!-- LINT.IfChange(FedCmVerifyingDialogResult) -->
+
 <enum name="FedCmVerifyingDialogResult">
   <int value="0" label="User waits for success/failure, explicit sign-in"/>
   <int value="1" label="User waits for success/failure, auto re-authn"/>
@@ -6858,6 +7001,8 @@ Called by update_permissions_policy_enum.py.-->
       label="Tab or window is closed or refreshed, explicit sign-in"/>
   <int value="5" label="Tab or window is closed or refreshed, auto re-authn"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:VerifyingDialogResult) -->
 
 <enum name="FencedFrameBeaconReportingResult">
   <int value="0" label="Unknown result"/>

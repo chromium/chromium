@@ -993,7 +993,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   bool auto_reauthn_enabled =
       mediation_requirement_ != MediationRequirement::kRequired;
 
-  dialog_type_ = auto_reauthn_enabled ? kAutoReauth : kSelectAccount;
+  dialog_type_ = auto_reauthn_enabled ? DialogType::kAutoReauth
+                                      : DialogType::kSelectAccount;
   bool is_auto_reauthn_setting_enabled = false;
   bool is_auto_reauthn_embargoed = false;
   std::optional<base::TimeDelta> time_from_embargo;
@@ -1024,18 +1025,18 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     // are signing in.
     has_single_returning_account =
         GetAccountForAutoReauthn(&auto_reauthn_idp, &auto_reauthn_account);
-    if (dialog_type_ == kAutoReauth &&
+    if (dialog_type_ == DialogType::kAutoReauth &&
         (requires_user_mediation || !is_auto_reauthn_setting_enabled ||
          is_auto_reauthn_embargoed || !has_single_returning_account)) {
-      dialog_type_ = kSelectAccount;
+      dialog_type_ = DialogType::kSelectAccount;
     }
     if (!has_single_returning_account &&
         mediation_requirement_ == MediationRequirement::kSilent) {
       fedcm_metrics_->RecordAutoReauthnMetrics(
           has_single_returning_account, auto_reauthn_account.get(),
-          dialog_type_ == kAutoReauth, !is_auto_reauthn_setting_enabled,
-          is_auto_reauthn_embargoed, time_from_embargo,
-          requires_user_mediation);
+          dialog_type_ == DialogType::kAutoReauth,
+          !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
+          time_from_embargo, requires_user_mediation);
 
       // By this moment we know that the user has granted permission in the past
       // for the RP/IdP. Because otherwise we have returned already in
@@ -1052,7 +1053,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       return;
     }
 
-    if (dialog_type_ == kAutoReauth) {
+    if (dialog_type_ == DialogType::kAutoReauth) {
       accounts_ = {auto_reauthn_account};
       idp_data_for_display_ = {auto_reauthn_idp};
       new_accounts_.clear();
@@ -1060,7 +1061,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     }
   }
 
-  if (dialog_type_ != kAutoReauth) {
+  if (dialog_type_ != DialogType::kAutoReauth) {
     identity_selection_type_ = kExplicit;
   } else if (rp_mode_ == blink::mojom::RpMode::kPassive) {
     identity_selection_type_ = kAutoPassive;
@@ -1071,8 +1072,9 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   if (auto_reauthn_enabled) {
     fedcm_metrics_->RecordAutoReauthnMetrics(
         has_single_returning_account, auto_reauthn_account.get(),
-        dialog_type_ == kAutoReauth, !is_auto_reauthn_setting_enabled,
-        is_auto_reauthn_embargoed, time_from_embargo, requires_user_mediation);
+        dialog_type_ == DialogType::kAutoReauth,
+        !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
+        time_from_embargo, requires_user_mediation);
   }
 
   // The RenderFrameHost may be alive but not visible in the following
@@ -1322,7 +1324,7 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
   // If IdP login status mismatch dialog is already visible, calling
   // ShowFailureDialog() a 2nd time should notify the user that login
   // failed.
-  dialog_type_ = kConfirmIdpLogin;
+  dialog_type_ = DialogType::kConfirmIdpLogin;
   config_url_ = idp_info->provider->config->config_url;
   login_url_ = idp_info->metadata.idp_login_url;
 
@@ -1514,7 +1516,7 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
             : webid::VerifyingDialogResult::kCancelAutoReauthn;
   }
 
-  if (dialog_type_ == kContinueOnPopup) {
+  if (dialog_type_ == DialogType::kContinueOnPopup) {
     fedcm_metrics_->RecordContinueOnPopupResult(
         webid::ContinueOnPopupResult::kWindowClosed);
     // Popups always get dismissed with reason kOther, so we never embargo.
@@ -1568,7 +1570,7 @@ void FederatedAuthRequestImpl::ShowModalDialog(DialogType dialog_type,
   // the popup window is open. When using the active flow the dialog may
   // still be up in some cases, but we do not expect that browser automation
   // needs to interact with the account chooser in this case.
-  if (dialog_type_ != kNone) {
+  if (dialog_type_ != DialogType::kNone) {
     // This call ensures that we send a dialogClosed event if an account
     // chooser or mismatch dialog is open.
     devtools_instrumentation::DidCloseFedCmDialog(render_frame_host());
@@ -1644,7 +1646,8 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
 
   fedcm_metrics_->RecordContinueOnPopupStatus(
       webid::ContinueOnPopupStatus::kPopupOpened);
-  ShowModalDialog(kContinueOnPopup, idp->config->config_url, continue_on);
+  ShowModalDialog(DialogType::kContinueOnPopup, idp->config->config_url,
+                  continue_on);
 }
 
 void FederatedAuthRequestImpl::ShowErrorDialog(
@@ -1653,7 +1656,7 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
     std::optional<TokenError> token_error) {
   CHECK(idp_infos_.find(idp_config_url) != idp_infos_.end());
 
-  dialog_type_ = kError;
+  dialog_type_ = DialogType::kError;
   config_url_ = idp_config_url;
   token_request_status_ = status;
   token_error_ = token_error;
@@ -1669,8 +1672,9 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
                          status),
           token_error && !token_error->url.is_empty()
               ? base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
-                               weak_ptr_factory_.GetWeakPtr(), kErrorUrlPopup,
-                               config_url_, token_error->url)
+                               weak_ptr_factory_.GetWeakPtr(),
+                               DialogType::kErrorUrlPopup, config_url_,
+                               token_error->url)
               : base::NullCallback())) {
     return;
   }
@@ -1989,7 +1993,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   login_url_ = GURL();
   config_url_ = GURL();
   token_error_ = std::nullopt;
-  dialog_type_ = kNone;
+  dialog_type_ = DialogType::kNone;
   identity_selection_type_ = kExplicit;
   had_transient_user_activation_ = false;
   rp_mode_ = RpMode::kPassive;
@@ -2106,7 +2110,7 @@ void FederatedAuthRequestImpl::OnClose() {
   if ((idps_user_tried_to_signin_to_.empty() ||
        (fetch_data_.pending_idps.empty() &&
         !fetch_data_.did_succeed_for_at_least_one_idp)) &&
-      dialog_type_ == kLoginToIdpPopup) {
+      dialog_type_ == DialogType::kLoginToIdpPopup) {
     CompleteRequestWithError(FederatedAuthRequestResult::kError,
                              TokenStatus::kLoginPopupClosedWithoutSignin,
                              /*should_delay_callback=*/false);
@@ -2115,7 +2119,7 @@ void FederatedAuthRequestImpl::OnClose() {
 
   // When IdentityProvider.close is called in the continuation popup, we
   // should abort the flow.
-  if (dialog_type_ == kContinueOnPopup) {
+  if (dialog_type_ == DialogType::kContinueOnPopup) {
     fedcm_metrics_->RecordContinueOnPopupResult(
         webid::ContinueOnPopupResult::kClosedByIdentityProviderClose);
     // Popups always get dismissed with reason kOther, so we never embargo.
@@ -2137,7 +2141,7 @@ bool FederatedAuthRequestImpl::OnResolve(
   }
 
   // IdentityProvider.resolve() is only allowed for continuation API.
-  if (dialog_type_ != kContinueOnPopup) {
+  if (dialog_type_ != DialogType::kContinueOnPopup) {
     return false;
   }
 
@@ -2239,8 +2243,9 @@ FederatedAuthRequestImpl::GetApiPermissionStatus() {
 
 bool FederatedAuthRequestImpl::ShouldNotifyDevtoolsForDialogType(
     DialogType type) {
-  return type != kNone && type != kLoginToIdpPopup &&
-         type != kContinueOnPopup && type != kErrorUrlPopup;
+  return type != DialogType::kNone && type != DialogType::kLoginToIdpPopup &&
+         type != DialogType::kContinueOnPopup &&
+         type != DialogType::kErrorUrlPopup;
 }
 
 void FederatedAuthRequestImpl::AcceptAccountsDialogForDevtools(
@@ -2297,7 +2302,7 @@ void FederatedAuthRequestImpl::ClickErrorDialogGotItForDevtools() {
 
 void FederatedAuthRequestImpl::ClickErrorDialogMoreDetailsForDevtools() {
   DCHECK(token_error_ && token_error_->url.is_valid());
-  ShowModalDialog(kErrorUrlPopup, config_url_, token_error_->url);
+  ShowModalDialog(DialogType::kErrorUrlPopup, config_url_, token_error_->url);
   OnDismissErrorDialog(
       config_url_, token_request_status_,
       IdentityRequestDialogController::DismissReason::kMoreDetailsButton);
@@ -2453,7 +2458,7 @@ void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
     }
   }
 
-  ShowModalDialog(kLoginToIdpPopup, idp_config_url, login_url);
+  ShowModalDialog(DialogType::kLoginToIdpPopup, idp_config_url, login_url);
 }
 
 void FederatedAuthRequestImpl::MaybeShowActiveModeModalDialog(

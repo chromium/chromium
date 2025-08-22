@@ -844,7 +844,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, CloseAutoReauthnSheetMetric) {
   controller->OnCloseButtonClicked(CreateMouseEvent());
   histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.ClosedSheetType.Desktop",
-      static_cast<int>(webid::SheetType::AUTO_REAUTHN), 1);
+      static_cast<int>(webid::SheetType::kAutoReauthn), 1);
 }
 
 // Tests that when the mismatch dialog is closed through the close icon, the

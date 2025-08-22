@@ -30,39 +30,45 @@ class FedCmModalDialogView : public content::WebContentsObserver {
 
   // This enum describes the outcome of attempting to open the pop-up window and
   // is used for histograms. Do not remove or modify existing values, but you
-  // may add new values at the end. This enum should be kept in sync with
-  // FedCmShowPopupWindowResult in tools/metrics/histograms/enums.xml.
-  enum class ShowPopupWindowResult {
-    kSuccess,
-    kFailedByInvalidUrl,
-    kFailedForOtherReasons,
+  // may add new values at the end.
+  // LINT.IfChange(ShowPopupWindowResult)
 
+  enum class ShowPopupWindowResult {
+    kSuccess = 0,
+    kFailedByInvalidUrl = 1,
+    kFailedForOtherReasons = 2,
     kMaxValue = kFailedForOtherReasons
   };
 
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmShowPopupWindowResult)
+
   // This enum describes the reason for closing the pop-up window and is used
   // for histograms. Do not remove or modify existing values, but you may add
-  // new values at the end. This enum should be kept in sync with
-  // FedCmClosePopupWindowReason in tools/metrics/histograms/enums.xml.
-  enum class ClosePopupWindowReason {
-    kIdpInitiatedClose,
-    kPopupWindowDestroyed,
+  // new values at the end.
+  // LINT.IfChange(ClosePopupWindowReason)
 
+  enum class ClosePopupWindowReason {
+    kIdpInitiatedClose = 0,
+    kPopupWindowDestroyed = 1,
     kMaxValue = kPopupWindowDestroyed
   };
 
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmClosePopupWindowReason)
+
   // This enum describes the reason for closing the pop-up window and is used
   // for histograms. Do not remove or modify existing values, but you may add
-  // new values at the end. This enum should be kept in sync with
-  // FedCmPopupInteraction in tools/metrics/histograms/enums.xml.
-  enum class PopupInteraction {
-    kLosesFocusAndIdpInitiatedClose,
-    kLosesFocusAndPopupWindowDestroyed,
-    kNeverLosesFocusAndIdpInitiatedClose,
-    kNeverLosesFocusAndPopupWindowDestroyed,
+  // new values at the end.
+  // LINT.IfChange(PopupInteraction)
 
+  enum class PopupInteraction {
+    kLosesFocusAndIdpInitiatedClose = 0,
+    kLosesFocusAndPopupWindowDestroyed = 1,
+    kNeverLosesFocusAndIdpInitiatedClose = 2,
+    kNeverLosesFocusAndPopupWindowDestroyed = 3,
     kMaxValue = kNeverLosesFocusAndPopupWindowDestroyed
   };
+
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmPopupInteraction)
 
   explicit FedCmModalDialogView(content::WebContents* web_contents,
                                 FedCmModalDialogView::Observer* observer);

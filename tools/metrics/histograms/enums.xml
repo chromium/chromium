@@ -4475,10 +4475,14 @@ shown properly on the user-facing crash UI.
 
 <!-- LINT.ThenChange(//ash/quick_pair/common/pair_failure.h:FastPairPairFailure) -->
 
+<!-- LINT.IfChange(FedCmThirdPartyCookiesStatus) -->
+
 <enum name="FedCmThirdPartyCookiesStatus">
   <int value="0" label="Enabled in settings"/>
   <int value="1" label="Disabled in settings"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/metrics.h:ThirdPartyCookiesStatus) -->
 
 <enum name="FeedbackAppContactUserConsentType">
   <int value="0" label="kNoEmail"/>
