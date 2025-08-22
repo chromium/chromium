@@ -4,17 +4,17 @@
 package org.chromium.chrome.browser.ntp_customization.theme.chrome_colors;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.R;
 
 import java.util.List;
@@ -24,12 +24,23 @@ import java.util.List;
 public class NtpChromeColorsAdapter
         extends RecyclerView.Adapter<NtpChromeColorsAdapter.ColorViewHolder> {
 
-    private final List<Integer> mColorResources;
+    private final List<NtpThemeColorInfo> mColorInfoList;
     private final Context mContext;
+    private final Callback<NtpThemeColorInfo> mOnClickCallback;
 
-    public NtpChromeColorsAdapter(Context context, List<Integer> colorResources) {
+    // Variable to hold the position of the selected item.
+    private int mSelectedPosition;
+    // The last selected ItemView.
+    private @Nullable View mSelectedItemView;
+
+    // TODO(https://crbug.com/440584354): Make NtpChromeColorsAdapter follow the MVC design patten.
+    public NtpChromeColorsAdapter(
+            Context context,
+            List<NtpThemeColorInfo> colorInfoList,
+            Callback<NtpThemeColorInfo> onClickCallback) {
         mContext = context;
-        mColorResources = colorResources;
+        mColorInfoList = colorInfoList;
+        mOnClickCallback = onClickCallback;
     }
 
     @NonNull
@@ -44,14 +55,48 @@ public class NtpChromeColorsAdapter
         return new ColorViewHolder(view);
     }
 
+    @SuppressWarnings("notifyDataSetChanged")
     @Override
     public void onBindViewHolder(@NonNull ColorViewHolder holder, int position) {
-        holder.bind(mColorResources.get(position));
+        NtpThemeColorInfo colorInfo = mColorInfoList.get(position);
+
+        if (mSelectedPosition == position) {
+            mSelectedItemView = holder.itemView;
+            holder.itemView.setActivated(true);
+        }
+
+        View.OnClickListener clickListener =
+                v -> {
+                    mOnClickCallback.onResult(colorInfo);
+                    int newPosition = holder.getBindingAdapterPosition();
+
+                    if (mSelectedPosition == newPosition) {
+                        return;
+                    }
+
+                    // De-select the previous selected item.
+                    if (mSelectedItemView != null) {
+                        mSelectedItemView.setActivated(false);
+                    }
+                    holder.itemView.setActivated(true);
+
+                    // Set the new selected position.
+                    mSelectedPosition = newPosition;
+                    mSelectedItemView = holder.itemView;
+
+                    notifyDataSetChanged();
+                };
+        holder.bind(colorInfo, clickListener);
+    }
+
+    @Override
+    public void onViewRecycled(ColorViewHolder holder) {
+        holder.itemView.setOnClickListener(null);
     }
 
     @Override
     public int getItemCount() {
-        return mColorResources.size();
+        return mColorInfoList.size();
     }
 
     /** ColorViewHolder that holds references to the views for a single color item. */
@@ -63,17 +108,12 @@ public class NtpChromeColorsAdapter
             mColorCircle = itemView.findViewById(R.id.color_circle);
         }
 
-        /**
-         * Binds a color to the view.
-         *
-         * @param colorResId The resource ID of the color to bind.
-         */
-        void bind(int colorResId) {
+        /** Binds a colorInfo and a click listener to the view. */
+        void bind(NtpThemeColorInfo colorInfo, View.OnClickListener onItemClickListener) {
             Context context = itemView.getContext();
-            if (mColorCircle.getBackground() instanceof GradientDrawable) {
-                GradientDrawable background = (GradientDrawable) mColorCircle.getBackground();
-                background.setColor(ContextCompat.getColor(context, colorResId));
-            }
+
+            mColorCircle.setForeground(context.getDrawable(colorInfo.iconResId));
+            itemView.setOnClickListener(onItemClickListener);
         }
     }
 }

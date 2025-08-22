@@ -172,7 +172,7 @@ public class NtpThemeMediator {
 
         mNtpCustomizationConfigManager.onBackgroundColorChanged(
                 mContext,
-                NtpCustomizationConfigManager.COLOR_NOT_SET,
+                /* colorInfo= */ null,
                 NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT);
     }
 

@@ -133,7 +133,7 @@ public class NtpThemeMediatorUnitTest {
         verify(mNtpCustomizationConfigManager)
                 .onBackgroundColorChanged(
                         eq(mActivity),
-                        eq(NtpCustomizationConfigManager.COLOR_NOT_SET),
+                        eq(null),
                         eq(NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT));
     }
 

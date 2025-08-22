@@ -24,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public class NtpChromeColorsCoordinator {
     private static final String LEARN_MORE_CLICK_URL =
             "https://support.google.com/chrome/?p=new_tab";
     private static final int MAX_NUMBER_OF_COLORS_PER_ROW = 7;
-    private final List<Integer> mChromeColorsList = new ArrayList<>();
+    private final List<NtpThemeColorInfo> mChromeColorsList = new ArrayList<>();
     private final View mBackButton;
     private final ImageView mLearnMoreButton;
     private final Context mContext;
@@ -81,7 +83,8 @@ public class NtpChromeColorsCoordinator {
         mChromeColorsRecyclerView.init(mItemWidth, mSpacing);
 
         initColorsList();
-        NtpChromeColorsAdapter adapter = new NtpChromeColorsAdapter(mContext, mChromeColorsList);
+        NtpChromeColorsAdapter adapter =
+                new NtpChromeColorsAdapter(mContext, mChromeColorsList, this::onItemClicked);
         mChromeColorsRecyclerView.setAdapter(adapter);
     }
 
@@ -102,13 +105,28 @@ public class NtpChromeColorsCoordinator {
 
     private void initColorsList() {
         if (!mChromeColorsList.isEmpty()) return;
-        // TODO(crbug.com/421436204): Adds colors
+
+        mChromeColorsList.addAll(NtpThemeColorUtils.getThemeColors(mContext));
+    }
+
+    /**
+     * Called when the item view is clicked.
+     *
+     * @param ntpThemeColorInfo The color instance that the user clicked.
+     */
+    private void onItemClicked(NtpThemeColorInfo ntpThemeColorInfo) {
+        NtpCustomizationConfigManager.getInstance()
+                .onBackgroundColorChanged(
+                        mContext,
+                        ntpThemeColorInfo,
+                        NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR);
     }
 
     /** Cleans up the resources used by this coordinator. */
     public void destroy() {
         mBackButton.setOnClickListener(null);
         mLearnMoreButton.setOnClickListener(null);
+        mChromeColorsList.clear();
     }
 
     /**

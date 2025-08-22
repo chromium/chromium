@@ -23,6 +23,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -181,17 +182,20 @@ public class NtpCustomizationConfigManager {
      * default color: delete the color key from the SharedPreference.
      *
      * @param context : The current Activity context.
-     * @param color : The new NTP's background color.
+     * @param colorInfo : The new NTP's background color.
      * @param backgroundImageType : The new background image type.
      */
     public void onBackgroundColorChanged(
-            Context context, @ColorInt int color, @NtpBackgroundImageType int backgroundImageType) {
+            Context context,
+            @Nullable NtpThemeColorInfo colorInfo,
+            @NtpBackgroundImageType int backgroundImageType) {
         mBackgroundImageType = backgroundImageType;
         NtpCustomizationUtils.setNtpBackgroundImageType(mBackgroundImageType);
 
         if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
-            notifyBackgroundColorChanged(color, /* fromInitialization= */ false);
-            NtpCustomizationUtils.setBackgroundColor(color);
+            notifyBackgroundColorChanged(
+                    assumeNonNull(colorInfo).backgroundColor, /* fromInitialization= */ false);
+            NtpCustomizationUtils.setBackgroundColor(colorInfo.backgroundColor);
         } else if (mBackgroundImageType == NtpBackgroundImageType.DEFAULT) {
             notifyBackgroundColorChanged(
                     getDefaultBackgroundColor(context), /* fromInitialization= */ false);

@@ -16,11 +16,12 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -39,6 +40,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -159,13 +161,21 @@ public class NtpCustomizationConfigManagerUnitTest {
         mNtpCustomizationConfigManager.addListener(mListener);
         clearInvocations(mListener);
 
-        @ColorInt int color = Color.RED;
+        @ColorRes int colorResId = R.color.default_red;
+        NtpThemeColorInfo colorInfo =
+                new NtpThemeColorInfo(
+                        mContext,
+                        NtpThemeColorInfo.NtpThemeColorId.BLUE,
+                        colorResId,
+                        R.color.default_bg_color_blue,
+                        R.drawable.chrome_color_theme_icon_blue);
+        @ColorInt int color = ContextCompat.getColor(mContext, colorResId);
         @ColorInt
         int defaultColor = mNtpCustomizationConfigManager.getDefaultBackgroundColor(mContext);
 
         // Test case for choosing a new customized color.
         mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, color, NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR);
+                mContext, colorInfo, NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR);
         assertEquals(color, mNtpCustomizationConfigManager.getBackgroundColor(mContext));
         assertEquals(color, NtpCustomizationUtils.getBackgroundColor(defaultColor));
         verify(mListener).onBackgroundColorChanged(eq(color), eq(false));
@@ -173,7 +183,9 @@ public class NtpCustomizationConfigManagerUnitTest {
         clearInvocations(mListener);
         // Test case for resetting to the default color.
         mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, color, NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT);
+                mContext,
+                /* colorInfo= */ null,
+                NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT);
         assertEquals(defaultColor, mNtpCustomizationConfigManager.getBackgroundColor(mContext));
 
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
