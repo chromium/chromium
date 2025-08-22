@@ -369,8 +369,11 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
     HideSaveCardPrompt();
     return;
   }
+  // This feedback is also used by Save and Fill flow where
+  // SaveCardBubbleControllerImpl is not created beforehand.
   if (SaveCardBubbleControllerImpl* controller =
-          SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
+          SaveCardBubbleControllerImpl::GetOrCreateForWebContents(
+              web_contents())) {
     // Only attempt to show the iOS payment promo if the card was successfully
     // uploaded and there is no VCN enroll flow callback, and still fallback to
     // normal confirmation bubble if showing the promo fails.
