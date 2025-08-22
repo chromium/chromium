@@ -162,6 +162,34 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   twin_layer_ = layer_impl;
   layer_impl->twin_layer_ = this;
 
+  if (layer_tree_impl()->settings().TreesInVizInClientProcess()) {
+    // Move tile updates over to the active layer so they get pushed to the
+    // display tree. Note that the active layer after this point can also
+    // accumulate their own tile updates into its |updated_tiles_|.
+    {
+      // Deep merge logic.
+      auto& dst = layer_impl->updated_tiles_;
+      auto& src = updated_tiles_;
+
+      for (auto& [scale, set_src] : src) {
+        auto it = dst.find(scale);
+        if (it == dst.end()) {
+          // New scale: move the whole set.
+          dst.emplace(scale, std::move(set_src));
+        } else {
+          // Existing scale: merge node-by-node (dedups naturally).
+          it->second.merge(set_src);
+        }
+      }
+      src.clear();
+    }
+
+    // Since the layer has been activated, all the active tree tile updates
+    // from this point must be batched until all the layer updates has been
+    // serialized and sent to viz via LayerTreeHostImpl::UpdateDisplayTree().
+    layer_impl->should_batch_updated_tiles_ = true;
+  }
+
   if (changed_other_props) {
     layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask_);
 
@@ -189,19 +217,6 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
     // since the pending tree tiles would have this handled. This is here to
     // ensure the state is consistent for future raster.
     layer_impl->lcd_text_disallowed_reason_ = lcd_text_disallowed_reason_;
-  }
-
-  if (layer_tree_impl()->settings().TreesInVizInClientProcess()) {
-    // Move tile updates over to the active layer so they get pushed to the
-    // display tree. Note that active layers never accumulate their own tile
-    // updates, so replacement is safe.
-    layer_impl->updated_tiles_ = std::move(updated_tiles_);
-    updated_tiles_.clear();
-
-    // Since the layer has been activated, all the active tree tile updates
-    // from this point must be batched until all the layer updates has been
-    // serialized and sent to viz via LayerTreeHostImpl::UpdateDisplayTree().
-    layer_impl->should_batch_updated_tiles_ = true;
   }
 
   layer_impl->SanityCheckTilingState();
