@@ -4,6 +4,7 @@
 
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer_reader.h"
 
+#include <atomic>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -58,8 +59,10 @@ bool SensorReadingSharedBufferReader::GetReading(
   int32_t version;
   do {
     version = buffer->seqlock.value().ReadBegin();
-    device::OneWriterSeqLock::AtomicReaderMemcpy(result, &buffer->reading,
-                                                 sizeof(SensorReading));
+    // TODO(https://github.com/llvm/llvm-project/issues/118378): Remove
+    // const_cast.
+    *result = std::atomic_ref(const_cast<SensorReading&>(buffer->reading))
+                  .load(std::memory_order_relaxed);
   } while (buffer->seqlock.value().ReadRetry(version) &&
            ++retries < kMaxReadAttemptsCount);
 

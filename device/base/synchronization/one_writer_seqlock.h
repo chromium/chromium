@@ -49,14 +49,6 @@ class OneWriterSeqLock {
   OneWriterSeqLock(const OneWriterSeqLock&) = delete;
   OneWriterSeqLock& operator=(const OneWriterSeqLock&) = delete;
 
-  // Copies data from src into dest using atomic stores. This should be used by
-  // writer of SeqLock. Data must be 4-byte aligned.
-  template <typename T>
-  static void AtomicWriterMemcpy(T* dest, const T* src, size_t size);
-  // Copies data from src into dest using atomic loads. This should be used by
-  // readers of SeqLock. Data must be 4-byte aligned.
-  template <typename T>
-  static void AtomicReaderMemcpy(T* dest, const T* src, size_t size);
   // ReadBegin returns |sequence_| when it is even, or when it has retried
   // |max_retries| times. Omitting |max_retries| results in ReadBegin not
   // returning until |sequence_| is even.
@@ -68,37 +60,6 @@ class OneWriterSeqLock {
  private:
   std::atomic<int32_t> sequence_;
 };
-
-// static
-template <typename T>
-void OneWriterSeqLock::AtomicReaderMemcpy(T* dest, const T* src, size_t size) {
-  static_assert(std::is_trivially_copyable<T>::value,
-                "AtomicReaderMemcpy requires a trivially copyable type");
-
-  DCHECK_EQ(reinterpret_cast<std::uintptr_t>(dest) % 4, 0U);
-  DCHECK_EQ(reinterpret_cast<std::uintptr_t>(src) % 4, 0U);
-  DCHECK_EQ(size % 4, 0U);
-  for (size_t i = 0; i < size / 4; ++i) {
-    reinterpret_cast<int32_t*>(dest)[i] =
-        reinterpret_cast<const std::atomic<int32_t>*>(src)[i].load(
-            std::memory_order_relaxed);
-  }
-}
-
-// static
-template <typename T>
-void OneWriterSeqLock::AtomicWriterMemcpy(T* dest, const T* src, size_t size) {
-  static_assert(std::is_trivially_copyable<T>::value,
-                "AtomicWriterMemcpy requires a trivially copyable type");
-
-  DCHECK_EQ(reinterpret_cast<std::uintptr_t>(dest) % 4, 0U);
-  DCHECK_EQ(reinterpret_cast<std::uintptr_t>(src) % 4, 0U);
-  DCHECK_EQ(size % 4, 0U);
-  for (size_t i = 0; i < size / 4; ++i) {
-    reinterpret_cast<std::atomic<int32_t>*>(dest)[i].store(
-        reinterpret_cast<const int32_t*>(src)[i], std::memory_order_relaxed);
-  }
-}
 
 }  // namespace device
 

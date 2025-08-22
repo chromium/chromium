@@ -49,8 +49,7 @@ class BasicSeqLockTestThread : public base::PlatformThread::Delegate {
       int32_t version;
       do {
         version = seqlock_->ReadBegin();
-        OneWriterSeqLock::AtomicReaderMemcpy(&copy, data_.get(),
-                                             sizeof(TestData));
+        copy = std::atomic_ref(*data_).load(std::memory_order_relaxed);
       } while (seqlock_->ReadRetry(version));
 
       for (unsigned j = 1; j < 32; ++j)
@@ -128,7 +127,7 @@ TEST(OneWriterSeqLockTest, MAYBE_ManyThreads) {
       new_data.buffer[i] = new_data.buffer[0] + new_data.buffer[i - 1];
     }
     seqlock.WriteBegin();
-    OneWriterSeqLock::AtomicWriterMemcpy(&data, &new_data, sizeof(TestData));
+    std::atomic_ref(data).store(new_data, std::memory_order_relaxed);
     seqlock.WriteEnd();
 
     if (counter == 1)
