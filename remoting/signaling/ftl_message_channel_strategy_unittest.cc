@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -24,6 +25,7 @@
 #include "remoting/base/scoped_protobuf_http_request.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/ftl_services_context.h"
+#include "remoting/signaling/message_channel.h"
 #include "remoting/signaling/signaling_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -121,7 +123,7 @@ base::OnceCallback<void(const HttpStatus&)> CheckStatusThenQuitRunLoopCallback(
 
 }  // namespace
 
-class FtlMessageReceptionChannelTest : public testing::Test {
+class FtlMessageChannelStrategyTest : public testing::Test {
  public:
   void SetUp() override;
   void TearDown() override;
@@ -132,35 +134,39 @@ class FtlMessageReceptionChannelTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<FtlMessageReceptionChannel> channel_;
-  base::MockCallback<FtlMessageReceptionChannel::StreamOpener>
+  std::unique_ptr<MessageChannel> channel_;
+  base::MockCallback<FtlMessageChannelStrategy::StreamOpener>
       mock_stream_opener_;
   base::MockCallback<base::RepeatingCallback<void(const ftl::InboxMessage&)>>
       mock_on_incoming_msg_;
   MockSignalingTracker mock_signaling_tracker_;
+  raw_ptr<FtlMessageChannelStrategy> raw_strategy_;
 };
 
-void FtlMessageReceptionChannelTest::SetUp() {
-  channel_ =
-      std::make_unique<FtlMessageReceptionChannel>(&mock_signaling_tracker_);
-  channel_->Initialize(mock_stream_opener_.Get(), mock_on_incoming_msg_.Get());
+void FtlMessageChannelStrategyTest::SetUp() {
+  auto strategy = std::make_unique<FtlMessageChannelStrategy>();
+  raw_strategy_ = strategy.get();
+  strategy->Initialize(mock_stream_opener_.Get(), mock_on_incoming_msg_.Get());
+  channel_ = std::make_unique<MessageChannel>(std::move(strategy),
+                                              &mock_signaling_tracker_);
 }
 
-void FtlMessageReceptionChannelTest::TearDown() {
+void FtlMessageChannelStrategyTest::TearDown() {
+  raw_strategy_ = nullptr;
   channel_.reset();
   task_environment_.FastForwardUntilNoTasksRemain();
 }
 
-base::TimeDelta FtlMessageReceptionChannelTest::GetTimeUntilRetry() const {
+base::TimeDelta FtlMessageChannelStrategyTest::GetTimeUntilRetry() const {
   return channel_->GetReconnectRetryBackoffEntryForTesting()
       .GetTimeUntilRelease();
 }
 
-int FtlMessageReceptionChannelTest::GetRetryFailureCount() const {
+int FtlMessageChannelStrategyTest::GetRetryFailureCount() const {
   return channel_->GetReconnectRetryBackoffEntryForTesting().failure_count();
 }
 
-TEST_F(FtlMessageReceptionChannelTest,
+TEST_F(FtlMessageChannelStrategyTest,
        TestStartReceivingMessages_StoppedImmediately) {
   base::RunLoop run_loop;
 
@@ -179,7 +185,7 @@ TEST_F(FtlMessageReceptionChannelTest,
   run_loop.Run();
 }
 
-TEST_F(FtlMessageReceptionChannelTest,
+TEST_F(FtlMessageChannelStrategyTest,
        TestStartReceivingMessages_NotAuthenticated) {
   base::RunLoop run_loop;
 
@@ -200,9 +206,11 @@ TEST_F(FtlMessageReceptionChannelTest,
   run_loop.Run();
 }
 
-TEST_F(FtlMessageReceptionChannelTest,
+TEST_F(FtlMessageChannelStrategyTest,
        TestStartReceivingMessages_StreamStarted) {
   base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_signaling_tracker_, OnSignalingActive()).WillOnce(Return());
 
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
       .WillOnce(StartStream(
@@ -218,9 +226,11 @@ TEST_F(FtlMessageReceptionChannelTest,
   run_loop.Run();
 }
 
-TEST_F(FtlMessageReceptionChannelTest,
+TEST_F(FtlMessageChannelStrategyTest,
        TestStartReceivingMessages_RecoverableStreamError) {
   base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_signaling_tracker_, OnSignalingActive()).WillOnce(Return());
 
   base::WeakPtr<FakeScopedProtobufHttpRequest> old_stream;
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
@@ -262,11 +272,13 @@ TEST_F(FtlMessageReceptionChannelTest,
   run_loop.Run();
 }
 
-TEST_F(FtlMessageReceptionChannelTest,
+TEST_F(FtlMessageChannelStrategyTest,
        TestStartReceivingMessages_MultipleCalls) {
   base::RunLoop run_loop;
 
   base::MockCallback<base::OnceClosure> stream_ready_callback;
+
+  EXPECT_CALL(mock_signaling_tracker_, OnSignalingActive()).WillOnce(Return());
 
   // Exits the run loop iff the callback is called three times with OK.
   EXPECT_CALL(stream_ready_callback, Run())
@@ -292,7 +304,7 @@ TEST_F(FtlMessageReceptionChannelTest,
   run_loop.Run();
 }
 
-TEST_F(FtlMessageReceptionChannelTest, StreamsTwoMessages) {
+TEST_F(FtlMessageChannelStrategyTest, StreamsTwoMessages) {
   base::RunLoop run_loop;
 
   constexpr char kMessage1Id[] = "msg_1";
@@ -302,6 +314,8 @@ TEST_F(FtlMessageReceptionChannelTest, StreamsTwoMessages) {
   message_1.set_message_id(kMessage1Id);
   ftl::InboxMessage message_2;
   message_2.set_message_id(kMessage2Id);
+
+  EXPECT_CALL(mock_signaling_tracker_, OnSignalingActive()).WillOnce(Return());
 
   EXPECT_CALL(mock_on_incoming_msg_,
               Run(Property(&ftl::InboxMessage::message_id, kMessage1Id)))
@@ -337,7 +351,7 @@ TEST_F(FtlMessageReceptionChannelTest, StreamsTwoMessages) {
   run_loop.Run();
 }
 
-TEST_F(FtlMessageReceptionChannelTest, ReceivedOnePong_OnSignalingActiveTwice) {
+TEST_F(FtlMessageChannelStrategyTest, ReceivedOnePong_OnSignalingActiveTwice) {
   base::RunLoop run_loop;
 
   base::MockCallback<base::OnceClosure> stream_ready_callback;
@@ -363,8 +377,12 @@ TEST_F(FtlMessageReceptionChannelTest, ReceivedOnePong_OnSignalingActiveTwice) {
   run_loop.Run();
 }
 
-TEST_F(FtlMessageReceptionChannelTest, NoPongWithinTimeout_ResetsStream) {
+TEST_F(FtlMessageChannelStrategyTest, NoPongWithinTimeout_ResetsStream) {
   base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_signaling_tracker_, OnSignalingActive())
+      .Times(2)
+      .WillOnce(Return());
 
   base::WeakPtr<FakeScopedProtobufHttpRequest> old_stream;
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
@@ -374,7 +392,7 @@ TEST_F(FtlMessageReceptionChannelTest, NoPongWithinTimeout_ResetsStream) {
               StatusCallback on_channel_closed) {
             std::move(on_channel_ready).Run();
             task_environment_.FastForwardBy(
-                FtlMessageReceptionChannel::kPongTimeout);
+                raw_strategy_->GetInactivityTimeout());
 
             ASSERT_EQ(1, GetRetryFailureCount());
             ASSERT_NEAR(FtlServicesContext::kBackoffInitialDelay.InSecondsF(),
@@ -404,8 +422,12 @@ TEST_F(FtlMessageReceptionChannelTest, NoPongWithinTimeout_ResetsStream) {
   run_loop.Run();
 }
 
-TEST_F(FtlMessageReceptionChannelTest, ServerClosesStream_ResetsStream) {
+TEST_F(FtlMessageChannelStrategyTest, ServerClosesStream_ResetsStream) {
   base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_signaling_tracker_, OnSignalingActive())
+      .Times(2)
+      .WillOnce(Return());
 
   base::WeakPtr<FakeScopedProtobufHttpRequest> old_stream;
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
@@ -437,8 +459,10 @@ TEST_F(FtlMessageReceptionChannelTest, ServerClosesStream_ResetsStream) {
   run_loop.Run();
 }
 
-TEST_F(FtlMessageReceptionChannelTest, TimeoutIncreasesToMaximum) {
+TEST_F(FtlMessageChannelStrategyTest, TimeoutIncreasesToMaximum) {
   base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_signaling_tracker_, OnSignalingActive()).WillOnce(Return());
 
   int failure_count = 0;
   int hitting_max_delay_count = 0;
@@ -484,9 +508,11 @@ TEST_F(FtlMessageReceptionChannelTest, TimeoutIncreasesToMaximum) {
   run_loop.Run();
 }
 
-TEST_F(FtlMessageReceptionChannelTest,
+TEST_F(FtlMessageChannelStrategyTest,
        StartStreamFailsWithUnRecoverableErrorAndRetry_TimeoutApplied) {
   base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_signaling_tracker_, OnSignalingActive()).WillOnce(Return());
 
   base::WeakPtr<FakeScopedProtobufHttpRequest> old_stream;
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
@@ -514,11 +540,8 @@ TEST_F(FtlMessageReceptionChannelTest,
 
             // Assert old stream closed.
             ASSERT_FALSE(old_stream);
-
             ASSERT_EQ(1, GetRetryFailureCount());
-
             std::move(on_channel_ready).Run();
-
             ASSERT_EQ(0, GetRetryFailureCount());
           }));
 

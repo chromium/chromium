@@ -9,6 +9,8 @@ static_library("signaling") {
     "ftl_device_id_provider.h",
     "ftl_host_device_id_provider.cc",
     "ftl_host_device_id_provider.h",
+    "ftl_message_channel_strategy.cc",
+    "ftl_message_channel_strategy.h",
     "ftl_message_reception_channel.cc",
     "ftl_message_reception_channel.h",
     "ftl_messaging_client.cc",
@@ -91,6 +93,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "ftl_message_channel_strategy_unittest.cc",
     "ftl_message_reception_channel_unittest.cc",
     "ftl_messaging_client_unittest.cc",
     "ftl_registration_manager_unittest.cc",
