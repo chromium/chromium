@@ -415,22 +415,22 @@ class IwaMgsCachingInstallerTest : public IwaInstallerBaseTest {
   void DestroyCacheDir() { cache_root_dir_override_.reset(); }
 
   base::FilePath GetBundleDirWithVersion(const SignedWebBundleId& bundle_id,
-                                         const base::Version& version) {
+                                         const IwaVersion& version) {
     auto session_cache_dir =
         IwaCacheClient::GetCacheBaseDirectoryForSessionType(
             IwaCacheClient::SessionType::kManagedGuestSession, CacheRootPath());
     return IwaCacheClient::GetCacheDirectoryForBundleWithVersion(
-        session_cache_dir, bundle_id, version);
+        session_cache_dir, bundle_id, version.version());
   }
 
   base::FilePath GetFullBundlePath(const SignedWebBundleId& bundle_id,
-                                   const base::Version& version) {
+                                   const IwaVersion& version) {
     return IwaCacheClient::GetBundleFullName(
         GetBundleDirWithVersion(bundle_id, version));
   }
 
   void CopyBundleToCache(const web_package::SignedWebBundleId& web_bundle_id,
-                         const base::Version& version,
+                         const IwaVersion& version,
                          const base::FilePath& bundle_to_copy) {
     ASSERT_TRUE(
         base::CreateDirectory(GetBundleDirWithVersion(web_bundle_id, version)));
@@ -478,8 +478,8 @@ TEST_F(IwaMgsCachingInstallerTest,
 
   AssertAppInstalledAtVersion(kBundleId, kVersion1);
   // Checks that bundle exists in cache after successful installation.
-  EXPECT_TRUE(
-      base::PathExists(GetFullBundlePath(kBundleId, base::Version(kVersion1))));
+  EXPECT_TRUE(base::PathExists(
+      GetFullBundlePath(kBundleId, *IwaVersion::Create(kVersion1))));
   ExpectSuccessCopyBundleMetric();
 }
 
@@ -493,8 +493,8 @@ TEST_F(IwaMgsCachingInstallerTest,
   EXPECT_EQ(RunInstallerAndWaitForResult(kBundleId),
             IwaInstallerResult::Type::kErrorUpdateManifestDownloadFailed);
 
-  EXPECT_FALSE(
-      base::PathExists(GetFullBundlePath(kBundleId, base::Version(kVersion1))));
+  EXPECT_FALSE(base::PathExists(
+      GetFullBundlePath(kBundleId, *IwaVersion::Create(kVersion1))));
   ExpectEmptyCopyBundleMetrics();
 }
 

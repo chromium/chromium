@@ -19,12 +19,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/traits_bag.h"
 #include "base/types/expected.h"
-#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
@@ -126,7 +126,7 @@ class ManifestBuilder {
 
   const std::string& start_url() const;
   const std::vector<IconMetadata>& icons() const;
-  base::Version version() const;
+  const IwaVersion& version() const;
 
   std::string ToJson() const;
   blink::mojom::ManifestPtr ToBlinkManifest(
@@ -134,7 +134,7 @@ class ManifestBuilder {
 
  private:
   std::string name_;
-  std::string version_;
+  IwaVersion version_;
   std::string start_url_;
   blink::mojom::DisplayMode display_mode_ =
       blink::mojom::DisplayMode::kStandalone;
@@ -347,7 +347,7 @@ class BundledIsolatedWebApp {
     return web_bundle_id_;
   }
 
-  base::Version version() const { return manifest_builder_.version(); }
+  const IwaVersion& version() const { return manifest_builder_.version(); }
 
   std::string GetBundleData() const;
 

@@ -199,7 +199,9 @@ ManifestBuilder::PermissionsPolicy::PermissionsPolicy(
 ManifestBuilder::PermissionsPolicy::~PermissionsPolicy() = default;
 
 ManifestBuilder::ManifestBuilder()
-    : name_("Test App"), version_("0.0.1"), start_url_("/") {
+    : name_("Test App"),
+      version_(*IwaVersion::Create("0.0.1")),
+      start_url_("/") {
   AddPermissionsPolicy(
       network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
       /*self=*/true, /*origins=*/{});
@@ -214,7 +216,7 @@ ManifestBuilder& ManifestBuilder::SetName(std::string_view name) {
 }
 
 ManifestBuilder& ManifestBuilder::SetVersion(std::string_view version) {
-  version_ = version;
+  version_ = *IwaVersion::Create(version);
   return *this;
 }
 
@@ -290,16 +292,14 @@ const std::vector<ManifestBuilder::IconMetadata>& ManifestBuilder::icons()
   return icons_;
 }
 
-base::Version ManifestBuilder::version() const {
-  base::Version version(version_);
-  CHECK(version.IsValid());
-  return version;
+const IwaVersion& ManifestBuilder::version() const {
+  return version_;
 }
 
 std::string ManifestBuilder::ToJson() const {
   auto json = base::Value::Dict()
                   .Set("name", name_)
-                  .Set("version", version_)
+                  .Set("version", version_.GetString())
                   .Set("id", "/")
                   .Set("scope", "/")
                   .Set("start_url", start_url_)
@@ -386,7 +386,7 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
   GURL base_url = app_origin.GetURL();
   auto manifest = blink::mojom::Manifest::New();
   manifest->name = base::UTF8ToUTF16(name_);
-  manifest->version = base::UTF8ToUTF16(version_);
+  manifest->version = base::UTF8ToUTF16(version_.GetString());
   manifest->id = base_url;
   manifest->scope = base_url;
   manifest->start_url = base_url.Resolve(start_url_);

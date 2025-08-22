@@ -125,7 +125,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
             IwaSourceBundleWithModeAndFileOp(
                 update_bundle.path(),
                 IwaSourceBundleModeAndFileOp::kProdModeMove),
-            update_bundle.version(), allow_downgrades),
+            update_bundle.version().version(), allow_downgrades),
         url_info, /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
 

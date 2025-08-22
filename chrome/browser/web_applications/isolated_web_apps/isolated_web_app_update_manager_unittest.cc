@@ -225,7 +225,7 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
 
     ASSERT_EQ(install_observer.Wait(), GetAppId(bundle_id));
 
-    AssertAppInstalledAtVersion(bundle_id, version);
+    AssertAppInstalledAtVersion(bundle_id, version.version());
   }
 
   std::unique_ptr<ScopedBundledIsolatedWebApp> CreateIwa1Bundle(
