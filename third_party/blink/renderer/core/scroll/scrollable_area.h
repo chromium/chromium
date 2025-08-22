@@ -254,6 +254,10 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // only on MacOS.
   MacScrollbarAnimator* GetMacScrollbarAnimator() const;
 
+  void SetMacScrollbarAnimatorForTesting(MacScrollbarAnimator*);
+
+  bool FadeInScrollbarIfExists();
+
   // This getter will create a ScrollAnimatorBase if it doesn't already exist.
   ScrollAnimatorBase& GetScrollAnimator() const;
 

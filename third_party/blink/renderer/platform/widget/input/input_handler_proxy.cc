@@ -1059,7 +1059,8 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
 
   gfx::PointF position_in_widget = wheel_event.PositionInWidget();
   if (input_handler_->HasBlockingWheelEventHandlerAt(
-          gfx::Point(position_in_widget.x(), position_in_widget.y()))) {
+          gfx::Point(position_in_widget.x(), position_in_widget.y())) ||
+      wheel_event.phase == WebMouseWheelEvent::kPhaseMayBegin) {
     result = DID_NOT_HANDLE;
   } else {
     cc::EventListenerProperties properties =

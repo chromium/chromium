@@ -152,6 +152,18 @@ MacScrollbarAnimator* ScrollableArea::GetMacScrollbarAnimator() const {
   return mac_scrollbar_animator_.Get();
 }
 
+void ScrollableArea::SetMacScrollbarAnimatorForTesting(
+    MacScrollbarAnimator* animator_for_testing) {
+  mac_scrollbar_animator_ = animator_for_testing;
+}
+
+bool ScrollableArea::FadeInScrollbarIfExists() {
+  if (GetMacScrollbarAnimator()) {
+    return GetMacScrollbarAnimator()->FadeInScrollbarIfExists();
+  }
+  return false;
+}
+
 ScrollAnimatorBase& ScrollableArea::GetScrollAnimator() const {
   if (!scroll_animator_) {
     scroll_animator_ =

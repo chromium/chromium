@@ -6,9 +6,11 @@
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/paint/record_paint_canvas.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
@@ -26,6 +28,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mock.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
@@ -169,6 +172,21 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
                         base::TimeTicks::Now());
     event.SetFrameScale(1);
     GetEventHandler().HandleMousePressEvent(event);
+  }
+
+  WebInputEventResult HandleWheelEvent(int x,
+                                       int y,
+                                       int delta_x,
+                                       int delta_y,
+                                       WebMouseWheelEvent::Phase phase) {
+    WebMouseWheelEvent event(
+        WebInputEvent::Type::kMouseWheel, blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    event.SetPositionInScreen(x, y);
+    event.delta_x = delta_x;
+    event.delta_y = delta_y;
+    event.phase = phase;
+    return GetEventHandler().HandleWheelEvent(event);
   }
 
   void HandleContextMenuEvent(int x, int y) {
@@ -3518,6 +3536,82 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   // Let injected scroll gestures run.
   GetWebFrameWidget().FlushInputHandlerTasks();
 }
+
+#if BUILDFLAG(IS_MAC)
+class MockMacScrollbarAnimator : public MacScrollbarAnimator {
+ public:
+  MockMacScrollbarAnimator() = default;
+  virtual ~MockMacScrollbarAnimator() = default;
+
+  void MouseEnteredScrollbar(Scrollbar&) const override {}
+  void MouseExitedScrollbar(Scrollbar&) const override {}
+
+  void DidAddVerticalScrollbar(Scrollbar&) override {}
+  void WillRemoveVerticalScrollbar(Scrollbar&) override {}
+  void DidAddHorizontalScrollbar(Scrollbar&) override {}
+  void WillRemoveHorizontalScrollbar(Scrollbar&) override {}
+
+  void DidChangeUserVisibleScrollOffset(const ScrollOffset&) override {}
+
+  void Dispose() override {}
+
+  MOCK_METHOD0(FadeInScrollbarIfExists, bool());
+};
+
+TEST_P(ScrollbarsTestWithVirtualTimer,
+       FadeInOverlayScrollbarWhenMouseWheelEventMayBeginPhase) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style> body { height: 3000px; } </style>)HTML");
+  Compositor().BeginFrame();
+
+  ScrollableArea* scrollable_area = GetDocument().View()->LayoutViewport();
+  DCHECK(scrollable_area);
+
+  HitTestResult hit_test_result = HitTest(100, 100);
+  EXPECT_EQ(hit_test_result.InnerElement(), GetDocument().body());
+  EXPECT_EQ(scrollable_area,
+            HitTestResult::GetScrollableArea(GetDocument().body()));
+
+  EXPECT_EQ(
+      WebInputEventResult::kNotHandled,
+      HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+
+  auto* scrollbar_animator = MakeGarbageCollected<MockMacScrollbarAnimator>();
+  scrollable_area->SetMacScrollbarAnimatorForTesting(scrollbar_animator);
+
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists).Times(0);
+  EXPECT_EQ(
+      WebInputEventResult::kNotHandled,
+      HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFadeInScrollbarWhenMouseWheelMayBegin);
+
+  bool did_fade_in = false;
+  auto fade_in_scrollbar = [&did_fade_in]() -> bool { return did_fade_in; };
+
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillOnce(fade_in_scrollbar);
+  EXPECT_EQ(
+      WebInputEventResult::kNotHandled,
+      HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+
+  did_fade_in = true;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillOnce(fade_in_scrollbar);
+  EXPECT_EQ(
+      WebInputEventResult::kHandledSystem,
+      HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 class ScrollbarTrackMarginsTest : public ScrollbarsTest {
  public:

@@ -548,7 +548,8 @@ RenderWidgetHostInputEventRouter::FindMouseWheelEventTarget(
     return {target, /*should_query_view=*/false, transformed_point};
   }
 
-  if (event.phase == blink::WebMouseWheelEvent::kPhaseBegan) {
+  if (event.phase == blink::WebMouseWheelEvent::kPhaseBegan ||
+      event.phase == blink::WebMouseWheelEvent::kPhaseMayBegin) {
     auto result =
         FindViewAtLocation(root_view, event.PositionInWidget(),
                            viz::EventSource::MOUSE, &transformed_point);
@@ -750,7 +751,8 @@ void RenderWidgetHostInputEventRouter::DispatchMouseWheelEvent(
               static_cast<void*>(target), "wheel_target_",
               static_cast<void*>(wheel_target_));
   if (!root_view->IsPointerLocked()) {
-    if (mouse_wheel_event.phase == blink::WebMouseWheelEvent::kPhaseBegan) {
+    if (mouse_wheel_event.phase == blink::WebMouseWheelEvent::kPhaseBegan ||
+        mouse_wheel_event.phase == blink::WebMouseWheelEvent::kPhaseMayBegin) {
       wheel_target_ = target;
     } else {
       if (wheel_target_) {

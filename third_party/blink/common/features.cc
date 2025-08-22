@@ -653,6 +653,10 @@ BASE_FEATURE_PARAM(int,
                    "changed_enough",
                    512);
 
+BASE_FEATURE(kFadeInScrollbarWhenMouseWheelMayBegin,
+             "FadeInScrollbarWhenMouseWheelMayBegin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable the <fencedframe> element; see crbug.com/1123606. Note that enabling
 // this feature does not automatically expose this element to the web, it only
 // allows the element to be enabled by the runtime enabled feature, for origin

@@ -49,6 +49,8 @@ class CORE_EXPORT MacScrollbarAnimator
   virtual void DidChangeUserVisibleScrollOffset(const ScrollOffset&) = 0;
 
   virtual void Dispose() = 0;
+
+  virtual bool FadeInScrollbarIfExists() = 0;
 };
 
 }  // namespace blink

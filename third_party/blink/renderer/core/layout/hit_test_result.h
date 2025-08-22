@@ -55,6 +55,7 @@ class MediaSourceHandle;
 class MediaStreamDescriptor;
 class Node;
 class PhysicalBoxFragment;
+class ScrollableArea;
 class Scrollbar;
 
 class CORE_EXPORT HitTestResult {
@@ -87,6 +88,7 @@ class CORE_EXPORT HitTestResult {
   Node* InnerPossiblyPseudoNode() const {
     return inner_possibly_pseudo_node_.Get();
   }
+  static ScrollableArea* GetScrollableArea(const Node*);
   CompositorElementId GetScrollableContainer() const;
   Element* InnerElement() const { return inner_element_.Get(); }
 

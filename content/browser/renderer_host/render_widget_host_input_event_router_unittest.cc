@@ -34,6 +34,7 @@
 #include "services/viz/public/mojom/hit_test/input_target_client.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 
@@ -329,6 +330,9 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
   }
   input::RenderWidgetHostViewInput* bubbling_gesture_scroll_target() {
     return rwhier()->bubbling_gesture_scroll_target_;
+  }
+  input::RenderWidgetHostViewInput* wheel_target() {
+    return rwhier()->wheel_target_;
   }
 
   void TestSendNewGestureWhileBubbling(
@@ -1268,6 +1272,28 @@ TEST_F(RenderWidgetHostInputEventRouterTest, QueryResultAfterChildViewDead) {
 
   // Wait for the callback.
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       RouteMouseWheelEventMayBeginPhase) {
+  ChildViewState child = MakeChildView(view_root_.get());
+  // Simulate the mouse wheel event in MayBegin phase
+
+  // We start the touch in the area for |child.view|.
+  view_root_->SetHittestResult(child.view.get(), false);
+
+  blink::WebMouseWheelEvent wheel_event(
+      blink::WebInputEvent::Type::kMouseWheel,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  wheel_event.SetPositionInWidget(gfx::PointF(20, 21));
+  wheel_event.delta_x = 0;
+  wheel_event.delta_y = 0;
+  wheel_event.phase = blink::WebMouseWheelEvent::kPhaseMayBegin;
+
+  rwhier()->RouteMouseWheelEvent(view_root_.get(), &wheel_event,
+                                 ui::LatencyInfo());
+  EXPECT_EQ(child.view.get(), wheel_target());
 }
 
 #if defined(USE_AURA)

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/input/mouse_wheel_event_manager.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
@@ -47,16 +48,10 @@ WebInputEventResult MouseWheelEventManager::HandleWheelEvent(
 
   const int kWheelEventPhaseEndedEventMask =
       WebMouseWheelEvent::kPhaseEnded | WebMouseWheelEvent::kPhaseCancelled;
-  const int kWheelEventPhaseNoEventMask =
-      kWheelEventPhaseEndedEventMask | WebMouseWheelEvent::kPhaseMayBegin;
 
   if ((event.phase & kWheelEventPhaseEndedEventMask) ||
       (event.momentum_phase & kWheelEventPhaseEndedEventMask)) {
     wheel_target_ = nullptr;
-  }
-
-  if ((event.phase & kWheelEventPhaseNoEventMask) ||
-      (event.momentum_phase & kWheelEventPhaseNoEventMask)) {
     return WebInputEventResult::kNotHandled;
   }
 
@@ -70,13 +65,27 @@ WebInputEventResult MouseWheelEventManager::HandleWheelEvent(
   if (pointer_locked_element) {
     wheel_target_ = pointer_locked_element;
   } else {
+    const int kWheelEventPhaseStartedEventMask =
+        WebMouseWheelEvent::kPhaseBegan | WebMouseWheelEvent::kPhaseMayBegin;
     // Find and save the wheel_target_, this target will be used for the rest
     // of the current scrolling sequence. In the absence of phase info, send the
     // event to the target under the cursor.
-    if (event.phase == WebMouseWheelEvent::kPhaseBegan || !wheel_target_ ||
+    if (event.phase & kWheelEventPhaseStartedEventMask || !wheel_target_ ||
         !has_phase_info) {
       wheel_target_ = FindTargetNode(event, doc, view);
     }
+  }
+
+  if (event.phase == WebMouseWheelEvent::kPhaseMayBegin) {
+    if (base::FeatureList::IsEnabled(
+            blink::features::kFadeInScrollbarWhenMouseWheelMayBegin)) {
+      if (auto* scrollable = HitTestResult::GetScrollableArea(wheel_target_)) {
+        return scrollable->FadeInScrollbarIfExists()
+                   ? WebInputEventResult::kHandledSystem
+                   : WebInputEventResult::kNotHandled;
+      }
+    }
+    return WebInputEventResult::kNotHandled;
   }
 
   LocalFrame* subframe =

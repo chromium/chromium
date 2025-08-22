@@ -596,6 +596,22 @@ TEST_P(InputHandlerProxyTest,
   VERIFY_AND_RESET_MOCKS();
 }
 
+TEST_P(InputHandlerProxyTest, MouseWheelEventMayBeginPhaseNoListener) {
+  EXPECT_CALL(mock_input_handler_, HasBlockingWheelEventHandlerAt(_))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(mock_input_handler_,
+              GetEventListenerProperties(cc::EventListenerClass::kMouseWheel))
+      .Times(0);
+  expected_disposition_ = InputHandlerProxy::DID_NOT_HANDLE;
+  WebMouseWheelEvent wheel(WebInputEvent::Type::kMouseWheel,
+                           WebInputEvent::kControlKey,
+                           WebInputEvent::GetStaticTimeStampForTests());
+  wheel.phase = WebMouseWheelEvent::kPhaseMayBegin;
+  EXPECT_EQ(expected_disposition_,
+            HandleInputEventWithLatencyInfo(input_handler_.get(), wheel));
+  VERIFY_AND_RESET_MOCKS();
+}
+
 // Tests that changing source devices when an animated scroll is in progress
 // ends the current scroll offset animation and ensures that a new one gets
 // created.
