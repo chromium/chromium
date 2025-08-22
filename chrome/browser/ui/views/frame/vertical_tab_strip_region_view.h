@@ -12,6 +12,8 @@
 #include "ui/views/controls/resize_area_delegate.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 
+class VerticalUnpinnedTabContainerView;
+
 namespace tabs {
 class VerticalTabStripStateController;
 }  // namespace tabs
@@ -44,7 +46,7 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   views::View* pinned_tabs_container_for_testing() {
     return pinned_tabs_container_;
   }
-  views::View* unpinned_tabs_container_for_testing() {
+  VerticalUnpinnedTabContainerView* unpinned_tabs_container_for_testing() {
     return unpinned_tabs_container_;
   }
 
@@ -63,7 +65,7 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   raw_ptr<views::Separator> top_button_separator_ = nullptr;
   raw_ptr<views::View> pinned_tabs_container_ = nullptr;
   raw_ptr<views::Separator> tabs_separator_ = nullptr;
-  raw_ptr<views::View> unpinned_tabs_container_ = nullptr;
+  raw_ptr<VerticalUnpinnedTabContainerView> unpinned_tabs_container_ = nullptr;
   raw_ptr<views::View> segmented_button_ = nullptr;
   raw_ptr<views::View> gemini_button_ = nullptr;
   raw_ptr<views::ResizeArea> resize_area_ = nullptr;

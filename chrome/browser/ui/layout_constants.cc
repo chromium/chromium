@@ -134,6 +134,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 20;
     case TOOLBAR_CORNER_RADIUS:
       return 8;
+    case VERTICAL_TAB_STRIP_HORIZONTAL_PADDING:
+      return 12;
     default:
       break;
   }

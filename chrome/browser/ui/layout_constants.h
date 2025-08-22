@@ -174,6 +174,10 @@ enum LayoutConstant {
   // corner radius on the top of the toolbar introduced in chrome refresh 2023
   TOOLBAR_CORNER_RADIUS,
 
+  // The horizontal padding between the sides of the vertical tab strip and its
+  // content.
+  VERTICAL_TAB_STRIP_HORIZONTAL_PADDING,
+
   // The size of the app menu button in a web app browser window.
   WEB_APP_MENU_BUTTON_SIZE,
 

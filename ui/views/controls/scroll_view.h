@@ -255,6 +255,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
     return horiz_sb_->is_scrolling() || vert_sb_->is_scrolling();
   }
 
+  void SetUseContentsPreferredSize(bool use_contents_preferred_size) {
+    use_contents_preferred_size_ = use_contents_preferred_size;
+  }
+
  private:
   friend class test::ScrollViewTestApi;
 
@@ -399,6 +403,11 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Whether the left/right/up/down arrow keys attempt to scroll the view.
   bool allow_keyboard_scrolling_ = true;
+
+  // Uses the contents' preferred size when laying out if one exists. This
+  // should eventually be true for all cases but using this bool in the interim
+  // to prevent breaking any existing ScrollView uses.
+  bool use_contents_preferred_size_ = false;
 
   // The layer type used for content view when scroll by layers is enabled.
   ui::LayerType layer_type_ = ui::LAYER_TEXTURED;
