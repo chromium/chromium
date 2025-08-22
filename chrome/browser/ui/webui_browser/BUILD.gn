@@ -12,6 +12,7 @@ source_set("feature_flag") {
 
 source_set("webui_browser") {
   sources = [
+    "browser_elements_webui_browser.h",
     "webui_browser_ui.h",
     "webui_browser_window.h",
     "webui_location_bar.h",
@@ -21,6 +22,7 @@ source_set("webui_browser") {
     ":feature_flag",
     "//base",
     "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/views/side_panel",
     "//components/guest_contents/common:mojom",
@@ -36,6 +38,7 @@ source_set("impl") {
   sources = [
     "bookmark_bar_page_handler.cc",
     "bookmark_bar_page_handler.h",
+    "browser_elements_webui_browser.cc",
     "webui_browser.cc",
     "webui_browser_client_view.cc",
     "webui_browser_client_view.h",
@@ -59,6 +62,7 @@ source_set("impl") {
     "//chrome/browser/resources/webui_browser:resources",
     "//chrome/browser/themes",
     "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/tabs/tab_strip_api",

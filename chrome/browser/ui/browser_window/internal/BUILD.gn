@@ -68,6 +68,7 @@ source_set("internal") {
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:launch_utils",
+      "//chrome/browser/ui/webui_browser",
       "//components/breadcrumbs/core:status",
       "//components/collaboration/public",
       "//components/commerce/core:feature_list",

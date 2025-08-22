@@ -97,6 +97,8 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/webui_browser/browser_elements_webui_browser.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/common/chrome_features.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/collaboration/public/collaboration_service.h"
@@ -162,8 +164,15 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   browser_actions_->InitializeBrowserActions();
 
-  browser_elements_ = GetUserDataFactory().CreateInstance<BrowserElementsViews>(
-      *browser, *browser);
+  if (webui_browser::IsWebUIBrowserEnabled()) {
+    browser_elements_ =
+        GetUserDataFactory().CreateInstance<BrowserElementsWebUiBrowser>(
+            *browser, *browser);
+  } else {
+    browser_elements_ =
+        GetUserDataFactory().CreateInstance<BrowserElementsViews>(*browser,
+                                                                  *browser);
+  }
 
   // Initialize bookmark bar controller for all browser types.
   bookmark_bar_controller_ =
@@ -489,6 +498,12 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
               browser_view);
     }
   }
+
+  if (auto* const provider =
+          browser_elements_->AsA<BrowserElementsWebUiBrowser>()) {
+    provider->Init(views::Widget::GetWidgetForNativeWindow(
+        browser->window()->GetNativeWindow()));
+  }
 }
 
 void BrowserWindowFeatures::InitPostBrowserViewConstruction(
@@ -702,6 +717,11 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   exclusive_access_manager_.reset();
 
   if (auto* const provider = browser_elements_->AsA<BrowserElementsViews>()) {
+    provider->TearDown();
+  }
+
+  if (auto* const provider =
+          browser_elements_->AsA<BrowserElementsWebUiBrowser>()) {
     provider->TearDown();
   }
 }

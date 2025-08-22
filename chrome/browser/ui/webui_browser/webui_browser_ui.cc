@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
@@ -106,21 +107,8 @@ void WebUIBrowserUI::BindInterface(
 void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
         receiver) {
-  // Make sure BrowserView and WebUIBrowserWindow use the same context.
-  // In this case, they both defer to ElementTrackerViews to compute contexts.
-  // This allows the following code to work in both Webium and BrowserView.
-  //
-  //   ui::ElementContext context(BrowserElements::From(browser)->GetContext());
-  //   ui::TrackedElement* element = ui::ElementTracker::GetElementTracker()
-  //       ->GetFirstMatchingElement(kToolbarAppMenuButtonElementId, context);
-  //   const gfx::Rect rect = element->GetVisibleBoundsInScreen();
-  //   ...
-  //
-  // TODO(webium): use BrowserElements::From(browser)->GetContext(). This
-  // requires adding a BrowserElementsWebUI.
   const ui::ElementContext context =
-      views::ElementTrackerViews::GetContextForWidget(
-          browser_window()->widget());
+      BrowserElements::From(browser_)->GetContext();
   tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
       web_ui()->GetWebContents(), std::move(receiver), context,
       GetKnownElementIdentifiers());

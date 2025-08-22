@@ -10,6 +10,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_client_view.h"
@@ -94,7 +95,11 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
   widget_->Show();
 }
 
-WebUIBrowserWindow::~WebUIBrowserWindow() = default;
+WebUIBrowserWindow::~WebUIBrowserWindow() {
+  browser_->GetFeatures().TearDownPreBrowserWindowDestruction();
+  web_view_ = nullptr;
+  widget_.reset();
+}
 
 // static
 WebUIBrowserWindow* WebUIBrowserWindow::FromWebShellWebContents(
@@ -842,8 +847,6 @@ bool WebUIBrowserWindow::CanUserExitFullscreen() const {
 }
 
 void WebUIBrowserWindow::DestroyBrowser() {
-  web_view_ = nullptr;
-  widget_.reset();
   // Defer destroy so that Browser and TabStripModel outlive WebContents.
   // During shutdown WebContents might need access to them.
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
