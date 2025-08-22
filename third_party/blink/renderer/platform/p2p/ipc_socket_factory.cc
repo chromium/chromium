@@ -130,7 +130,7 @@ class IpcPacketSocket : public webrtc::AsyncPacketSocket,
       uint16_t min_port,
       uint16_t max_port,
       const webrtc::SocketAddress& remote_address,
-      WTF::CrossThreadFunction<void(
+      CrossThreadFunction<void(
           base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>&
           devtools_token);
 
@@ -328,7 +328,7 @@ bool IpcPacketSocket::Init(
     uint16_t min_port,
     uint16_t max_port,
     const webrtc::SocketAddress& remote_address,
-    WTF::CrossThreadFunction<
+    CrossThreadFunction<
         void(base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>&
         devtools_token_getter) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -366,7 +366,7 @@ bool IpcPacketSocket::Init(
   network::P2PHostAndIPEndPoint remote_info(remote_address.hostname(),
                                             remote_endpoint);
 
-  devtools_token_getter.Run(base::BindPostTaskToCurrentDefault(WTF::BindOnce(
+  devtools_token_getter.Run(base::BindPostTaskToCurrentDefault(blink::BindOnce(
       &IpcPacketSocket::DoCreateSocket, type_,
       WrapCrossThreadPersistent(dispatcher), local_endpoint, min_port, max_port,
       remote_info, traffic_annotation, client_->CreatePendingRemote(),
@@ -732,8 +732,8 @@ void AsyncDnsAddressResolverImpl::Start(const webrtc::SocketAddress& addr,
 
   resolver_->Start(
       addr, /*address_family=*/std::nullopt,
-      WTF::BindOnce(&AsyncDnsAddressResolverImpl::OnAddressResolved,
-                    weak_factory_.GetWeakPtr()));
+      blink::BindOnce(&AsyncDnsAddressResolverImpl::OnAddressResolved,
+                      weak_factory_.GetWeakPtr()));
 }
 
 void AsyncDnsAddressResolverImpl::Start(const webrtc::SocketAddress& addr,
@@ -748,8 +748,8 @@ void AsyncDnsAddressResolverImpl::Start(const webrtc::SocketAddress& addr,
   callback_ = std::move(callback);
   resolver_->Start(
       addr, std::make_optional(address_family),
-      WTF::BindOnce(&AsyncDnsAddressResolverImpl::OnAddressResolved,
-                    weak_factory_.GetWeakPtr()));
+      blink::BindOnce(&AsyncDnsAddressResolverImpl::OnAddressResolved,
+                      weak_factory_.GetWeakPtr()));
 }
 
 bool AsyncDnsAddressResolverImpl::GetResolvedAddress(
@@ -789,7 +789,7 @@ void AsyncDnsAddressResolverImpl::OnAddressResolved(
 }  // namespace
 
 IpcPacketSocketFactory::IpcPacketSocketFactory(
-    WTF::CrossThreadFunction<
+    CrossThreadFunction<
         void(base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>
         devtools_token_getter,
     P2PSocketDispatcher* socket_dispatcher,

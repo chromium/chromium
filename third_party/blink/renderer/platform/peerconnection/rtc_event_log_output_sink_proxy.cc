@@ -25,7 +25,7 @@ bool RtcEventLogOutputSinkProxy::IsActive() const {
 }
 
 bool RtcEventLogOutputSinkProxy::Write(std::string_view output) {
-  WTF::Vector<uint8_t> converted_output;
+  Vector<uint8_t> converted_output;
   converted_output.AppendRange(output.begin(), output.end());
 
   sink_.Lock()->OnWebRtcEventLogWrite(converted_output);

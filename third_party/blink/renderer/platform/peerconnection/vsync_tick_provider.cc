@@ -106,7 +106,7 @@ void VSyncTickProvider::OnVSync() {
 
 void VSyncTickProvider::MaybeCalloutToClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  WTF::Vector<base::OnceClosure> tick_callbacks;
+  Vector<base::OnceClosure> tick_callbacks;
   tick_callbacks.swap(tick_callbacks_);
   for (auto& tick_callback : tick_callbacks) {
     std::move(tick_callback).Run();

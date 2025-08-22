@@ -76,8 +76,9 @@ void IpcNetworkManager::StartUpdating() {
   if (network_list_received_) {
     // Post a task to avoid reentrancy.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, WTF::BindOnce(&IpcNetworkManager::SendNetworksChangedSignal,
-                                 weak_factory_.GetWeakPtr()));
+        FROM_HERE,
+        blink::BindOnce(&IpcNetworkManager::SendNetworksChangedSignal,
+                        weak_factory_.GetWeakPtr()));
   } else {
     VLOG(1) << "IpcNetworkManager::StartUpdating called; still waiting for "
                "network list from browser process.";

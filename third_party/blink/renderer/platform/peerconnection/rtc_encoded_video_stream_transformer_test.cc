@@ -135,7 +135,7 @@ TEST_P(RTCEncodedVideoStreamTransformerTest,
   encoded_video_stream_transformer_.SetTransformerCallback(
       CrossThreadBindRepeating(
           &MockTransformerCallbackHolder::OnEncodedFrame,
-          WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
+          CrossThreadUnretained(&mock_transformer_callback_holder_)));
   EXPECT_TRUE(encoded_video_stream_transformer_.HasTransformerCallback());
 
   EXPECT_CALL(mock_transformer_callback_holder_, OnEncodedFrame);
@@ -192,7 +192,7 @@ TEST_P(RTCEncodedVideoStreamTransformerTest, WaitsForMetronomeTick) {
   encoded_video_stream_transformer_.SetTransformerCallback(
       CrossThreadBindRepeating(
           &MockTransformerCallbackHolder::OnEncodedFrame,
-          WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
+          CrossThreadUnretained(&mock_transformer_callback_holder_)));
   ASSERT_TRUE(encoded_video_stream_transformer_.HasTransformerCallback());
 
   // There should be no transform call initially.
@@ -285,7 +285,7 @@ TEST_P(RTCEncodedVideoStreamTransformerTest,
   encoded_video_stream_transformer_.SetTransformerCallback(
       CrossThreadBindRepeating(
           &MockTransformerCallbackHolder::OnEncodedFrame,
-          WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
+          CrossThreadUnretained(&mock_transformer_callback_holder_)));
 }
 
 }  // namespace blink

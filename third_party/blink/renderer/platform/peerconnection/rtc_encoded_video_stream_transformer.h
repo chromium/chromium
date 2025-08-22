@@ -35,7 +35,7 @@ namespace blink {
 
 class PLATFORM_EXPORT RTCEncodedVideoStreamTransformer {
  public:
-  using TransformerCallback = WTF::CrossThreadRepeatingFunction<void(
+  using TransformerCallback = CrossThreadRepeatingFunction<void(
       std::unique_ptr<webrtc::TransformableVideoFrameInterface>)>;
 
   // A RefCounted wrapper around the Transformer class which holds a

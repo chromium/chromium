@@ -56,14 +56,14 @@ void MdnsResponderAdapter::CreateNameForAddress(const webrtc::IPAddress& addr,
                                                 NameCreatedCallback callback) {
   shared_remote_client_->CreateNameForAddress(
       webrtc::RtcIPAddressToNetIPAddress(addr),
-      WTF::BindOnce(&OnNameCreatedForAddress, callback, addr));
+      BindOnce(&OnNameCreatedForAddress, callback, addr));
 }
 
 void MdnsResponderAdapter::RemoveNameForAddress(const webrtc::IPAddress& addr,
                                                 NameRemovedCallback callback) {
   shared_remote_client_->RemoveNameForAddress(
       webrtc::RtcIPAddressToNetIPAddress(addr),
-      WTF::BindOnce(&OnNameRemovedForAddress, callback));
+      BindOnce(&OnNameRemovedForAddress, callback));
 }
 
 }  // namespace blink

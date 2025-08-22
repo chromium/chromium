@@ -94,9 +94,9 @@ class PLATFORM_EXPORT P2PSocketClientImpl
   void SocketCreated(const net::IPEndPoint& local_address,
                      const net::IPEndPoint& remote_address) override;
   void SendComplete(const network::P2PSendPacketMetrics& send_metrics) override;
-  void SendBatchComplete(const WTF::Vector<::network::P2PSendPacketMetrics>&
+  void SendBatchComplete(const Vector<::network::P2PSendPacketMetrics>&
                              in_send_metrics_batch) override;
-  void DataReceived(WTF::Vector<P2PReceivedPacketPtr> packets) override;
+  void DataReceived(Vector<P2PReceivedPacketPtr> packets) override;
   void DoSendBatch();
 
   void OnConnectionError();
@@ -110,8 +110,8 @@ class PLATFORM_EXPORT P2PSocketClientImpl
   // Packets sent with webrtc::AsyncSocketPacketOptions::batchable being true
   // are collected here until a packet with
   // webrtc::AsyncSocketPacketOptions::last_packet_in_batch is signalled.
-  WTF::Vector<network::mojom::blink::P2PSendPacketPtr> batched_send_packets_;
-  WTF::Vector<WTF::Vector<uint8_t>> batched_packets_storage_;
+  Vector<network::mojom::blink::P2PSendPacketPtr> batched_send_packets_;
+  Vector<Vector<uint8_t>> batched_packets_storage_;
   // Attribute recording if we're currently awaiting OnSendWatchComplete.
   bool awaiting_batch_complete_ = false;
 

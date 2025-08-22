@@ -40,7 +40,7 @@ class MockSocketService : public network::mojom::blink::P2PSocket {
               (override));
   MOCK_METHOD(void,
               SendBatch,
-              (WTF::Vector<network::mojom::blink::P2PSendPacketPtr>),
+              (Vector<network::mojom::blink::P2PSendPacketPtr>),
               (override));
   MOCK_METHOD(void,
               SetOption,
@@ -108,10 +108,10 @@ TEST_P(SocketClientImplParametrizedTest, OnDataReceivedCalled) {
   using network::mojom::blink::P2PReceivedPacket;
   using network::mojom::blink::P2PReceivedPacketPtr;
   Open();
-  WTF::Vector<P2PReceivedPacketPtr> packets;
+  Vector<P2PReceivedPacketPtr> packets;
   auto first = base::TimeTicks() + base::Microseconds(1);
   auto second = base::TimeTicks() + base::Microseconds(2);
-  auto data = WTF::Vector<uint8_t>(1);
+  auto data = Vector<uint8_t>(1);
   auto ecn = webrtc::EcnMarking::kNotEct;
   packets.push_back(
       P2PReceivedPacket::New(data, net::IPEndPoint(), first, ecn));

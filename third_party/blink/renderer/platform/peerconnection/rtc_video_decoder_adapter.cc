@@ -204,7 +204,7 @@ std::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
 class RTCVideoDecoderAdapter::Impl {
  public:
   Impl(media::GpuVideoAcceleratorFactories* const gpu_factories,
-       WTF::CrossThreadRepeatingFunction<void(Status)> change_status_callback,
+       CrossThreadRepeatingFunction<void(Status)> change_status_callback,
        base::WeakPtr<Impl>& weak_this_for_client)
       : gpu_factories_(gpu_factories),
         frame_adapter_shared_resources_(
@@ -231,8 +231,8 @@ class RTCVideoDecoderAdapter::Impl {
               std::optional<RTCVideoDecoderAdapter::DecodeResult>* result);
   std::variant<DecodeResult, RTCVideoDecoderFallbackReason> EnqueueBuffer(
       scoped_refptr<media::DecoderBuffer> buffer);
-  void Flush(WTF::CrossThreadOnceClosure flush_success_cb,
-             WTF::CrossThreadOnceClosure flush_fail_cb);
+  void Flush(CrossThreadOnceClosure flush_success_cb,
+             CrossThreadOnceClosure flush_fail_cb);
   void RegisterDecodeCompleteCallback(webrtc::DecodedImageCallback* callback);
 
  private:
@@ -286,7 +286,7 @@ void RTCVideoDecoderAdapter::Impl::Initialize(
     media_log_ = std::make_unique<media::NullMediaLog>();
     start_time_ = start_time;
     video_decoder_ = gpu_factories_->CreateVideoDecoder(
-        media_log_.get(), WTF::BindRepeating(&OnRequestOverlayInfo));
+        media_log_.get(), blink::BindRepeating(&OnRequestOverlayInfo));
 
     if (!video_decoder_) {
       std::move(init_cb).Run(false);
@@ -414,14 +414,14 @@ void RTCVideoDecoderAdapter::Impl::DecodePendingBuffers() {
     outstanding_decode_requests_++;
     video_decoder_->Decode(
         std::move(buffer),
-        WTF::BindRepeating(&RTCVideoDecoderAdapter::Impl::OnDecodeDone,
-                           weak_decoder_this_));
+        blink::BindRepeating(&RTCVideoDecoderAdapter::Impl::OnDecodeDone,
+                             weak_decoder_this_));
   }
 }
 
 void RTCVideoDecoderAdapter::Impl::Flush(
-    WTF::CrossThreadOnceClosure flush_success_cb,
-    WTF::CrossThreadOnceClosure flush_fail_cb) {
+    CrossThreadOnceClosure flush_success_cb,
+    CrossThreadOnceClosure flush_fail_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   // Remove any pending tasks.
@@ -430,10 +430,9 @@ void RTCVideoDecoderAdapter::Impl::Flush(
   // Send EOS frame for flush.
   video_decoder_->Decode(
       media::DecoderBuffer::CreateEOSBuffer(),
-      WTF::BindOnce(
-          [](WTF::CrossThreadOnceClosure flush_success,
-             WTF::CrossThreadOnceClosure flush_fail,
-             media::DecoderStatus status) {
+      BindOnce(
+          [](CrossThreadOnceClosure flush_success,
+             CrossThreadOnceClosure flush_fail, media::DecoderStatus status) {
             if (status.is_ok())
               std::move(flush_success).Run();
             else
@@ -894,11 +893,11 @@ bool RTCVideoDecoderAdapter::ReinitializeSync(
   auto init_cb =
       CrossThreadBindOnce(&FinishWait, CrossThreadUnretained(&waiter),
                           CrossThreadUnretained(&result));
-  WTF::CrossThreadOnceClosure flush_success_cb = CrossThreadBindOnce(
+  CrossThreadOnceClosure flush_success_cb = CrossThreadBindOnce(
       &RTCVideoDecoderAdapter::Impl::Initialize, weak_impl_, config,
       std::move(init_cb),
       /*start_time=*/base::TimeTicks(), CrossThreadUnretained(&decoder_type_));
-  WTF::CrossThreadOnceClosure flush_fail_cb =
+  CrossThreadOnceClosure flush_fail_cb =
       CrossThreadBindOnce(&FinishWait, CrossThreadUnretained(&waiter),
                           CrossThreadUnretained(&result), false);
   if (PostCrossThreadTask(

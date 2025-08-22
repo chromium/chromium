@@ -82,7 +82,7 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   EncoderInfo GetEncoderInfo() const override;
 
   void SetErrorCallbackForTesting(
-      WTF::CrossThreadOnceClosure error_callback_for_testing) {
+      CrossThreadOnceClosure error_callback_for_testing) {
     error_callback_for_testing_ = std::move(error_callback_for_testing);
   }
 #if BUILDFLAG(RTC_USE_H265)
@@ -141,7 +141,7 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   bool has_error_ GUARDED_BY_CONTEXT(webrtc_sequence_checker_){false};
 
   // Execute in SetError(). This can be valid only in testing.
-  WTF::CrossThreadOnceClosure error_callback_for_testing_;
+  CrossThreadOnceClosure error_callback_for_testing_;
 
   // The RTCVideoEncoder::Impl that does all the work.
   std::unique_ptr<Impl> impl_;

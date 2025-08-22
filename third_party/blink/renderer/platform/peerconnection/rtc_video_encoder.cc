@@ -1028,7 +1028,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   // The spatial layer resolutions configured in VEA::Initialize(). This is set
   // only in CreateAndInitializeVEA().
-  WTF::Vector<gfx::Size> init_spatial_layer_resolutions_;
+  Vector<gfx::Size> init_spatial_layer_resolutions_;
 
   // The current active spatial layer range. This is set in
   // CreateAndInitializeVEA() and updated in RequestEncodingParametersChange().
@@ -2139,7 +2139,7 @@ RTCVideoEncoder::Impl::CreateI420SharedMemoryFrameByLibyuv(
   frame->BackWithSharedMemory(&region);
   input_buffers_free_.pop_back();
   frame->AddDestructionObserver(
-      base::BindPostTaskToCurrentDefault(WTF::BindOnce(
+      base::BindPostTaskToCurrentDefault(blink::BindOnce(
           &RTCVideoEncoder::Impl::InputBufferReleased, weak_this_, index)));
   return frame;
 }
@@ -2240,7 +2240,7 @@ RTCVideoEncoder::Impl::CreateNV12SharedImageFrame(
 
   input_buffers_free_.pop_back();
   frame->AddDestructionObserver(
-      base::BindPostTaskToCurrentDefault(WTF::BindOnce(
+      base::BindPostTaskToCurrentDefault(blink::BindOnce(
           &RTCVideoEncoder::Impl::InputBufferReleased, weak_this_, index)));
 
   return frame;

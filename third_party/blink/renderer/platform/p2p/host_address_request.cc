@@ -37,8 +37,8 @@ void P2PAsyncAddressResolver::Start(const webrtc::SocketAddress& host_name,
   done_callback_ = std::move(done_callback);
   bool enable_mdns = base::FeatureList::IsEnabled(
       blink::features::kWebRtcHideLocalIpsWithMdns);
-  auto callback = WTF::BindOnce(&P2PAsyncAddressResolver::OnResponse,
-                                scoped_refptr<P2PAsyncAddressResolver>(this));
+  auto callback = blink::BindOnce(&P2PAsyncAddressResolver::OnResponse,
+                                  scoped_refptr<P2PAsyncAddressResolver>(this));
 
   std::optional<net::AddressFamily> family = std::nullopt;
   if (address_family.has_value()) {

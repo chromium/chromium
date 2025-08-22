@@ -91,7 +91,7 @@ class PLATFORM_EXPORT VSyncTickProvider : public MetronomeSource::TickProvider {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The currently scheduled tick callback.
-  WTF::Vector<base::OnceClosure> tick_callbacks_
+  Vector<base::OnceClosure> tick_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The state of this tick provider.

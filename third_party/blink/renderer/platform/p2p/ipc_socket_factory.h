@@ -28,7 +28,7 @@ class P2PSocketDispatcher;
 class IpcPacketSocketFactory : public webrtc::PacketSocketFactory {
  public:
   PLATFORM_EXPORT explicit IpcPacketSocketFactory(
-      WTF::CrossThreadFunction<
+      CrossThreadFunction<
           void(base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>
           devtools_token_getter,
       P2PSocketDispatcher* socket_dispatcher,
@@ -55,7 +55,7 @@ class IpcPacketSocketFactory : public webrtc::PacketSocketFactory {
       override;
 
  private:
-  WTF::CrossThreadFunction<void(
+  CrossThreadFunction<void(
       base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>
       devtools_token_getter_;
   const bool batch_udp_packets_;

@@ -31,7 +31,7 @@ class TransformableAudioFrameInterface;
 
 namespace blink {
 
-using TransformerCallback = WTF::CrossThreadRepeatingFunction<void(
+using TransformerCallback = CrossThreadRepeatingFunction<void(
     std::unique_ptr<webrtc::TransformableAudioFrameInterface>)>;
 
 class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
