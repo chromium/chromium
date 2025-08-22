@@ -32,7 +32,7 @@ AimEligibilityServiceFactory::AimEligibilityServiceFactory()
     : ProfileKeyedServiceFactory(
           "AimEligibilityService",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
