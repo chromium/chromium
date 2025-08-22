@@ -179,6 +179,18 @@ group("make_platform_generated") {
   ]
 }
 
+rust_static_library("font_format_check") {
+  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+  crate_root = "fonts/opentype/format_check.rs"
+  sources = [ crate_root ]
+  cxx_bindings = [ crate_root ]
+  deps = [
+    "//third_party/rust/font_types/v0_9:lib",
+    "//third_party/rust/read_fonts/v0_32:lib",
+    "//third_party/rust/skrifa/v0_34:lib",
+  ]
+}
+
 import("//build/config/pch.gni")
 
 config("blink_platform_config") {
@@ -1787,6 +1799,7 @@ component("platform") {
     "//ui/native_theme/features",
   ]
   deps = [
+    ":font_format_check",
     "//base:base_static",
     "//base/allocator:buildflags",
     "//build:chromecast_buildflags",
