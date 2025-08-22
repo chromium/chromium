@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV4_ENCODER_H_
-#define COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV4_ENCODER_H_
+#ifndef COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV4_EXECUTOR_H_
+#define COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV4_EXECUTOR_H_
 
 #include <optional>
 #include <string>
@@ -21,30 +21,30 @@
 
 namespace permissions {
 
-struct PermissionsAiv4EncoderInput {
-  PermissionsAiv4EncoderInput(
+struct PermissionsAiv4ExecutorInput {
+  PermissionsAiv4ExecutorInput(
       SkBitmap snapshot,
       passage_embeddings::Embedding rendered_text_embedding);
-  ~PermissionsAiv4EncoderInput();
-  PermissionsAiv4EncoderInput(const PermissionsAiv4EncoderInput&);
-  PermissionsAiv4EncoderInput(PermissionsAiv4EncoderInput&&);
+  ~PermissionsAiv4ExecutorInput();
+  PermissionsAiv4ExecutorInput(const PermissionsAiv4ExecutorInput&);
+  PermissionsAiv4ExecutorInput(PermissionsAiv4ExecutorInput&&);
   SkBitmap snapshot;
   passage_embeddings::Embedding inner_text_embedding;
 };
 
 // The executor maps its inputs into TFLite's tensor format and converts the
 // model output's tensor representation back.
-class PermissionsAiv4Encoder
-    : public PermissionsAiEncoderBase<const PermissionsAiv4EncoderInput&> {
+class PermissionsAiv4Executor
+    : public PermissionsAiEncoderBase<const PermissionsAiv4ExecutorInput&> {
  public:
-  using ModelInput = PermissionsAiv4EncoderInput;
+  using ModelInput = PermissionsAiv4ExecutorInput;
   // This is the output size of the embeddings model we use to encode the
   // rendered_text input.
   static constexpr int kTextInputSize = 768;
 
-  explicit PermissionsAiv4Encoder(RequestType request_type)
+  explicit PermissionsAiv4Executor(RequestType request_type)
       : PermissionsAiEncoderBase(request_type) {}
-  ~PermissionsAiv4Encoder() override = default;
+  ~PermissionsAiv4Executor() override = default;
 
  protected:
   void SetThresholdValues();
@@ -55,4 +55,4 @@ class PermissionsAiv4Encoder
 };
 }  // namespace permissions
 
-#endif  // COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV4_ENCODER_H_
+#endif  // COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV4_EXECUTOR_H_

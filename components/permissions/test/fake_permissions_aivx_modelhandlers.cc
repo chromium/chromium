@@ -11,7 +11,7 @@
 namespace test {
 using permissions::PermissionsAiv3Encoder;
 using permissions::PermissionsAiv3Handler;
-using permissions::PermissionsAiv4Encoder;
+using permissions::PermissionsAiv4Executor;
 using permissions::PermissionsAiv4Handler;
 
 inline PermissionsAiv3HandlerFake::~PermissionsAiv3HandlerFake() = default;

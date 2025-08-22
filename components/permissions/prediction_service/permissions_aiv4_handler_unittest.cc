@@ -17,7 +17,7 @@
 #include "components/optimization_guide/core/inference/test_model_handler.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/permissions/prediction_service/permissions_ai_encoder_base.h"
-#include "components/permissions/prediction_service/permissions_aiv4_encoder.h"
+#include "components/permissions/prediction_service/permissions_aiv4_executor.h"
 #include "components/permissions/test/aivx_modelhandler_utils.h"
 #include "components/permissions/test/enums_to_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -43,9 +43,9 @@ constexpr std::string_view kOneReturnModel = "aiv4_ret_1.tflite";
 
 constexpr SkColor kDefaultColor = SkColorSetRGB(0x1E, 0x1C, 0x0F);
 
-auto kImageInputWidth = PermissionsAiv4Encoder::kImageInputWidth;
-auto kImageInputHeight = PermissionsAiv4Encoder::kImageInputHeight;
-auto kTextInputSize = PermissionsAiv4Encoder::kTextInputSize;
+auto kImageInputWidth = PermissionsAiv4Executor::kImageInputWidth;
+auto kImageInputHeight = PermissionsAiv4Executor::kImageInputHeight;
+auto kTextInputSize = PermissionsAiv4Executor::kTextInputSize;
 
 constexpr char kModelExecutionTimeoutHistogram[] =
     "Permissions.AIv4.ModelExecutionTimeout";
@@ -57,10 +57,10 @@ passage_embeddings::Embedding GetDummyEmbeddings(
       /*passage_word_count=*/42);
 }
 
-class PermissionsAiv4EncoderFake : public PermissionsAiv4Encoder {
+class PermissionsAiv4ExecutorFake : public PermissionsAiv4Executor {
  public:
-  explicit PermissionsAiv4EncoderFake(RequestType type)
-      : PermissionsAiv4Encoder(type) {}
+  explicit PermissionsAiv4ExecutorFake(RequestType type)
+      : PermissionsAiv4Executor(type) {}
 
   void set_preprocess_hook(
       base::OnceCallback<void(const std::vector<TfLiteTensor*>& input_tensors)>
@@ -84,20 +84,20 @@ class PermissionsAiv4EncoderFake : public PermissionsAiv4Encoder {
 
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   const ModelInput& input) override {
-    auto ret = PermissionsAiv4Encoder::Preprocess(input_tensors, input);
+    auto ret = PermissionsAiv4Executor::Preprocess(input_tensors, input);
     if (preprocess_hook_) {
       std::move(preprocess_hook_).Run(input_tensors);
     }
     return ret;
   }
 
-  std::optional<PermissionsAiv4Encoder::ModelOutput> Postprocess(
+  std::optional<PermissionsAiv4Executor::ModelOutput> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override {
     if (postprocess_hook_) {
       std::move(postprocess_hook_).Run(output_tensors);
     }
 
-    return PermissionsAiv4Encoder::Postprocess(output_tensors);
+    return PermissionsAiv4Executor::Postprocess(output_tensors);
   }
 };
 
@@ -107,7 +107,7 @@ class PermissionsAiv4HandlerMock : public PermissionsAiv4Handler {
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       optimization_guide::proto::OptimizationTarget optimization_target,
       RequestType request_type,
-      std::unique_ptr<PermissionsAiv4Encoder> model_executor)
+      std::unique_ptr<PermissionsAiv4Executor> model_executor)
       : PermissionsAiv4Handler(model_provider,
                                optimization_target,
                                request_type,
@@ -119,7 +119,7 @@ class PermissionsAiv4HandlerMock : public PermissionsAiv4Handler {
   // simulate the model execution being stuck (or simply too long).
   void ExecuteModelWithInput(
       ExecutionCallback callback,
-      const PermissionsAiv4Encoder::ModelInput& input) override {
+      const PermissionsAiv4Executor::ModelInput& input) override {
     callback_ = std::move(callback);
   }
 
@@ -141,19 +141,19 @@ class Aiv4HandlerTestBase : public testing::Test {
     model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
 
-    auto notification_encoder_mock =
-        std::make_unique<PermissionsAiv4EncoderFake>(
+    auto notification_executor_mock =
+        std::make_unique<PermissionsAiv4ExecutorFake>(
             RequestType::kNotifications);
-    notification_encoder_mock_ = notification_encoder_mock.get();
+    notification_executor_mock_ = notification_executor_mock.get();
     notification_model_handler_ = std::make_unique<PermissionsAiv4Handler>(
         model_provider_.get(),
         /*optimization_target=*/kOptTargetNotifications,
         /*request_type=*/RequestType::kNotifications,
-        std::move(notification_encoder_mock));
+        std::move(notification_executor_mock));
   }
 
   void TearDown() override {
-    notification_encoder_mock_ = nullptr;
+    notification_executor_mock_ = nullptr;
     notification_model_handler_.reset();
     model_provider_.reset();
     task_environment_.RunUntilIdle();
@@ -182,7 +182,7 @@ class Aiv4HandlerTestBase : public testing::Test {
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  protected:
-  raw_ptr<PermissionsAiv4EncoderFake> notification_encoder_mock_;
+  raw_ptr<PermissionsAiv4ExecutorFake> notification_executor_mock_;
   std::unique_ptr<PermissionsAiv4Handler> notification_model_handler_;
 
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
@@ -233,7 +233,7 @@ TEST_P(RelevanceAiv4HandlerTest,
   EXPECT_TRUE(aiv4_handler->ModelAvailable());
 
   bool flag = false;
-  notification_encoder_mock_->set_postprocess_hook(base::BindLambdaForTesting(
+  notification_executor_mock_->set_postprocess_hook(base::BindLambdaForTesting(
       [&flag](const std::vector<const TfLiteTensor*>& output_tensors) {
         std::vector<float> data;
         EXPECT_TRUE(
@@ -262,7 +262,7 @@ TEST_F(Aiv4HandlerTest, BitmapGetsCopiedToTensor) {
       test::BuildBitmap(kImageInputWidth, kImageInputHeight, kDefaultColor);
 
   bool flag = false;
-  notification_encoder_mock_->set_preprocess_hook(base::BindLambdaForTesting(
+  notification_executor_mock_->set_preprocess_hook(base::BindLambdaForTesting(
       [&flag](const std::vector<TfLiteTensor*>& input_tensors) {
         std::vector<float> data;
         ASSERT_TRUE(
@@ -294,14 +294,14 @@ TEST_F(Aiv4HandlerTest, BitmapGetsCopiedToTensor) {
 TEST_F(Aiv4HandlerTest, ModelHandlerTimeoutExecutions) {
   base::HistogramTester histograms;
 
-  auto geolocation_encoder_mock =
-      std::make_unique<PermissionsAiv4EncoderFake>(RequestType::kGeolocation);
+  auto geolocation_executor_mock =
+      std::make_unique<PermissionsAiv4ExecutorFake>(RequestType::kGeolocation);
   std::unique_ptr<PermissionsAiv4HandlerMock> model_handler_mock =
       std::make_unique<PermissionsAiv4HandlerMock>(
           GetModelProvider(),
           /*optimization_target=*/kOptTargetNotifications,
           /*request_type=*/RequestType::kNotifications,
-          std::move(geolocation_encoder_mock));
+          std::move(geolocation_executor_mock));
 
   // Because of `PermissionsAiv3EncoderFake` the first execution will be hold
   // until manually released. In this case we release the callback before we
@@ -362,7 +362,7 @@ TEST_F(Aiv4HandlerTest, TextEmbeddingGetsCopiedToTensor) {
       test::BuildBitmap(kImageInputWidth, kImageInputHeight, kDefaultColor);
 
   bool flag = false;
-  notification_encoder_mock_->set_preprocess_hook(base::BindLambdaForTesting(
+  notification_executor_mock_->set_preprocess_hook(base::BindLambdaForTesting(
       [&flag](const std::vector<TfLiteTensor*>& input_tensors) {
         std::vector<float> data;
         ASSERT_TRUE(

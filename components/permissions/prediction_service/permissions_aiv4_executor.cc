@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/permissions/prediction_service/permissions_aiv4_encoder.h"
+#include "components/permissions/prediction_service/permissions_aiv4_executor.h"
 
 #include <array>
 #include <vector>
@@ -13,22 +13,22 @@
 
 namespace permissions {
 
-using ModelInput = PermissionsAiv4Encoder::ModelInput;
-using ModelOutput = PermissionsAiv4Encoder::ModelOutput;
-constexpr int kTextInputSize = PermissionsAiv4Encoder::kTextInputSize;
+using ModelInput = PermissionsAiv4Executor::ModelInput;
+using ModelOutput = PermissionsAiv4Executor::ModelOutput;
+constexpr int kTextInputSize = PermissionsAiv4Executor::kTextInputSize;
 using ::passage_embeddings::Embedding;
 using ::tflite::task::core::PopulateTensor;
 
-PermissionsAiv4EncoderInput::PermissionsAiv4EncoderInput(
+PermissionsAiv4ExecutorInput::PermissionsAiv4ExecutorInput(
     SkBitmap snapshot,
     Embedding inner_text_embedding)
     : snapshot(snapshot), inner_text_embedding(inner_text_embedding) {}
 
-PermissionsAiv4EncoderInput::~PermissionsAiv4EncoderInput() = default;
-PermissionsAiv4EncoderInput::PermissionsAiv4EncoderInput(
-    const PermissionsAiv4EncoderInput&) = default;
-PermissionsAiv4EncoderInput::PermissionsAiv4EncoderInput(
-    PermissionsAiv4EncoderInput&&) = default;
+PermissionsAiv4ExecutorInput::~PermissionsAiv4ExecutorInput() = default;
+PermissionsAiv4ExecutorInput::PermissionsAiv4ExecutorInput(
+    const PermissionsAiv4ExecutorInput&) = default;
+PermissionsAiv4ExecutorInput::PermissionsAiv4ExecutorInput(
+    PermissionsAiv4ExecutorInput&&) = default;
 
 bool CopyPassageEmbeddingIntoInputTensor(TfLiteTensor* input_tensor,
                                          const Embedding& embedding) {
@@ -39,7 +39,7 @@ bool CopyPassageEmbeddingIntoInputTensor(TfLiteTensor* input_tensor,
     // model metadata. We should not use a constant here, but also provide the
     // expected input size of our model via a metadata object.
     VLOG(1)
-        << "[PermissionsAIv4Encoder]: Input Size does not match expectations: "
+        << "[PermissionsAiv4Executor]: Input Size does not match expectations: "
         << embedding.Dimensions() << " vs (expected) " << kTextInputSize;
     return false;
   }
@@ -48,28 +48,29 @@ bool CopyPassageEmbeddingIntoInputTensor(TfLiteTensor* input_tensor,
       .ok();
 }
 
-bool PermissionsAiv4Encoder::Preprocess(
+bool PermissionsAiv4Executor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const ModelInput& input) {
   DCHECK(input_tensors.size() == 2);
 
   if (!CopyPassageEmbeddingIntoInputTensor(input_tensors[0],
                                            input.inner_text_embedding)) {
-    VLOG(1) << "[PermissionsAIv4Encoder]: Failed to copy passage "
+    VLOG(1) << "[PermissionsAiv4Executor]: Failed to copy passage "
                "embedding.";
     return false;
   }
   if (!ConvertSkBitMapToTfliteTensor(input_tensors[1], input.snapshot)) {
-    VLOG(1) << "[PermissionsAIv4Encoder]: Failed to convert skbitmap to tflite "
-               "tensor data.";
+    VLOG(1)
+        << "[PermissionsAiv4Executor]: Failed to convert skbitmap to tflite "
+           "tensor data.";
     return false;
   }
-  VLOG(1) << "[PermissionsAIv4Encoder]: Successfully encoded input!";
+  VLOG(1) << "[PermissionsAiv4Executor]: Successfully encoded input!";
   SetThresholdValues();
   return true;
 }
 
-void PermissionsAiv4Encoder::SetThresholdValues() {
+void PermissionsAiv4Executor::SetThresholdValues() {
   DCHECK(request_type() == RequestType::kNotifications ||
          request_type() == RequestType::kGeolocation);
 

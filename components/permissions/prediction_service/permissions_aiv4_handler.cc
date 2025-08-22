@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
-#include "components/permissions/prediction_service/permissions_aiv4_encoder.h"
+#include "components/permissions/prediction_service/permissions_aiv4_executor.h"
 #include "components/version_info/version_info.h"
 
 namespace permissions {
@@ -25,7 +25,7 @@ PermissionsAiv4Handler::PermissionsAiv4Handler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     optimization_guide::proto::OptimizationTarget optimization_target,
     RequestType request_type,
-    std::unique_ptr<PermissionsAiv4Encoder> model_executor,
+    std::unique_ptr<PermissionsAiv4Executor> model_executor,
     scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
     scoped_refptr<base::SequencedTaskRunner> reply_task_runner)
     : ModelHandler<ModelOutput, const ModelInput&>(
@@ -46,7 +46,7 @@ PermissionsAiv4Handler::PermissionsAiv4Handler(
           optimization_target,
           request_type,
           /*model_executor=*/
-          std::make_unique<PermissionsAiv4Encoder>(request_type)) {}
+          std::make_unique<PermissionsAiv4Executor>(request_type)) {}
 
 PermissionsAiv4Handler::~PermissionsAiv4Handler() = default;
 

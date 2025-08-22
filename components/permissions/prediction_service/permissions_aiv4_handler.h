@@ -11,21 +11,21 @@
 #include "base/timer/timer.h"
 #include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/permissions/prediction_service/permissions_aiv4_encoder.h"
+#include "components/permissions/prediction_service/permissions_aiv4_executor.h"
 #include "components/permissions/prediction_service/prediction_model_metadata.pb.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 
 namespace permissions {
 
 class PermissionsAiv4Handler : public optimization_guide::ModelHandler<
-                                   PermissionsAiv4Encoder::ModelOutput,
-                                   const PermissionsAiv4Encoder::ModelInput&> {
+                                   PermissionsAiv4Executor::ModelOutput,
+                                   const PermissionsAiv4Executor::ModelInput&> {
  public:
   // The timeout for the model execution. If the model execution takes longer
   // than this timeout, the callback will be called with a nullopt result.
   static const int kModelExecutionTimeout = 2;
-  using ModelInput = PermissionsAiv4Encoder::ModelInput;
-  using ModelOutput = PermissionsAiv4Encoder::ModelOutput;
+  using ModelInput = PermissionsAiv4Executor::ModelInput;
+  using ModelOutput = PermissionsAiv4Executor::ModelOutput;
 
   PermissionsAiv4Handler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
@@ -35,7 +35,7 @@ class PermissionsAiv4Handler : public optimization_guide::ModelHandler<
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       optimization_guide::proto::OptimizationTarget optimization_target,
       RequestType request_type,
-      std::unique_ptr<PermissionsAiv4Encoder> model_executor,
+      std::unique_ptr<PermissionsAiv4Executor> model_executor,
       scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner =
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),

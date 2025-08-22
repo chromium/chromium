@@ -104,7 +104,7 @@ The key classes within `//components/permissions/prediction_service` that implem
 
 - **`PermissionsAiv3Encoder`**: The executor for the AIv3 model. Its `Preprocess` method prepares the snapshot input tensor. It can also parse model-specific thresholds from a `PermissionsAiv3ModelMetadata` protobuf.
 
-- **`PermissionsAiv4Encoder`**: The executor for the AIv4 model. Its `Preprocess` method prepares two input tensors: one for the snapshot and one for text embeddings (`passage_embeddings::Embedding`).
+- **`PermissionsAiv4Executor`**: The executor for the AIv4 model. Its `Preprocess` method prepares two input tensors: one for the snapshot and one for text embeddings (`passage_embeddings::Embedding`).
 
 #### Model Comparison
 
@@ -202,8 +202,8 @@ To get a complete picture of the prediction service, consider the following key 
 
 - `//components/permissions/prediction_service/permissions_aiv4_handler.h`
 - `//components/permissions/prediction_service/permissions_aiv4_handler.cc`
-- `//components/permissions/prediction_service/permissions_aiv4_encoder.h`
-- `//components/permissions/prediction_service/permissions_aiv4_encoder.cc`
+- `//components/permissions/prediction_service/permissions_aiv4_executor.h`
+- `//components/permissions/prediction_service/permissions_aiv4_executor.cc`
 
 ### Common AI Model Components
 
