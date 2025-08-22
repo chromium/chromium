@@ -116,12 +116,10 @@ apple_sysroot_module("TargetConditionals") {
 }
 
 builtin_module("_Builtin_float") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":_float" ]
 }
 
 builtin_module("_Builtin_intrinsics") {
-  modulemap = ":module_modulemap"
   public_deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
@@ -131,29 +129,23 @@ builtin_module("_Builtin_intrinsics") {
 }
 
 builtin_module("_Builtin_inttypes") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":_inttypes" ]
 }
 
 builtin_module("_Builtin_iso646") {
-  modulemap = ":module_modulemap"
 }
 
 builtin_module("_Builtin_limits") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":_limits" ]
 }
 
 builtin_module("_Builtin_stdalign") {
-  modulemap = ":module_modulemap"
 }
 
 builtin_module("_Builtin_stdarg") {
-  modulemap = ":module_modulemap"
 }
 
 builtin_module("_Builtin_stdatomic") {
-  modulemap = ":module_modulemap"
   public_deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
@@ -161,32 +153,25 @@ builtin_module("_Builtin_stdatomic") {
 }
 
 builtin_module("_Builtin_stdbool") {
-  modulemap = ":module_modulemap"
 }
 
 builtin_module("_Builtin_stdcountof") {
-  modulemap = ":module_modulemap"
 }
 
 builtin_module("_Builtin_stddef") {
-  modulemap = ":module_modulemap"
 }
 
 builtin_module("_Builtin_stddef_wint_t") {
-  modulemap = ":module_modulemap"
 }
 
 builtin_module("_Builtin_stdint") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":_stdint" ]
 }
 
 builtin_module("_Builtin_stdnoreturn") {
-  modulemap = ":module_modulemap"
 }
 
 builtin_module("_Builtin_unwind") {
-  modulemap = ":module_modulemap"
   public_deps = [
     ":_Builtin_stdint",
     ":unwind",
@@ -622,7 +607,6 @@ apple_sysroot_module("pthread") {
 }
 
 builtin_module("ptrauth") {
-  modulemap = ":module_modulemap"
 }
 
 apple_sysroot_module("runetype") {
@@ -644,7 +628,6 @@ apple_sysroot_module("signal_h") {
 }
 
 libcxx_module("std") {
-  modulemap = ":module_modulemap"
   public_deps = [
     ":_Builtin_limits",
     ":_Builtin_stdalign",
@@ -674,12 +657,10 @@ libcxx_module("std") {
 }
 
 libcxx_module("std_complex_h") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":std" ]
 }
 
 libcxx_module("std_core") {
-  modulemap = ":module_modulemap"
   public_deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
@@ -687,27 +668,22 @@ libcxx_module("std_core") {
 }
 
 libcxx_module("std_ctype_h") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":_ctype" ]
 }
 
 libcxx_module("std_errno_h") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":_errno" ]
 }
 
 libcxx_module("std_fenv_h") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":_fenv" ]
 }
 
 libcxx_module("std_float_h") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":_Builtin_float" ]
 }
 
 libcxx_module("std_inttypes_h") {
-  modulemap = ":module_modulemap"
   public_deps = [
     ":_Builtin_inttypes",
     ":_Builtin_stdint",
@@ -715,7 +691,6 @@ libcxx_module("std_inttypes_h") {
 }
 
 libcxx_module("std_math_h") {
-  modulemap = ":module_modulemap"
   public_deps = [
     ":_math",
     ":std_core",
@@ -723,27 +698,22 @@ libcxx_module("std_math_h") {
 }
 
 libcxx_module("std_private_mbstate_t") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":__wctype" ]
 }
 
 libcxx_module("std_stdatomic_h") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":_Builtin_stdatomic" ]
 }
 
 libcxx_module("std_string_h") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":_string" ]
 }
 
 libcxx_module("std_tgmath_h") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":std" ]
 }
 
 libcxx_module("std_uchar_h") {
-  modulemap = ":module_modulemap"
   public_deps = [
     ":_Builtin_stddef",
     ":std_private_mbstate_t",
@@ -751,7 +721,6 @@ libcxx_module("std_uchar_h") {
 }
 
 libcxx_module("std_wctype_h") {
-  modulemap = ":module_modulemap"
   public_deps = [ ":_wctype" ]
 }
 
