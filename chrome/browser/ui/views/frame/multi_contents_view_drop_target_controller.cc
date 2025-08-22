@@ -261,16 +261,25 @@ void MultiContentsViewDropTargetController::HandleDragUpdateForNudge(
   // Either hide or show the drop target if the drag is in the trigger area.
   if (point_ratio > nudge_ratio && point_ratio < 1.0f - nudge_ratio) {
     drop_target_view_->Hide();
-  } else if (point_ratio <= nudge_ratio) {
+    return;
+  }
+
+  MultiContentsDropTargetView::DropSide side;
+  if (point_ratio <= nudge_ratio) {
+    side = is_rtl ? MultiContentsDropTargetView::DropSide::END
+                  : MultiContentsDropTargetView::DropSide::START;
+
+  } else {
+    CHECK(point_ratio >= 1.0f - nudge_ratio);
+    side = is_rtl ? MultiContentsDropTargetView::DropSide::START
+                  : MultiContentsDropTargetView::DropSide::END;
+  }
+
+  // Avoid transitioning to the `kNudge` state if the drop target view is
+  // already visible on that side.
+  if (drop_target_view_->side() != side) {
     drop_target_view_->Show(
-        is_rtl ? MultiContentsDropTargetView::DropSide::END
-               : MultiContentsDropTargetView::DropSide::START,
-        MultiContentsDropTargetView::DropTargetState::kNudge);
-  } else if (point_ratio >= 1.0f - nudge_ratio) {
-    drop_target_view_->Show(
-        is_rtl ? MultiContentsDropTargetView::DropSide::START
-               : MultiContentsDropTargetView::DropSide::END,
-        MultiContentsDropTargetView::DropTargetState::kNudge);
+        side, MultiContentsDropTargetView::DropTargetState::kNudge);
   }
 }
 
