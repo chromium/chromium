@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Notification interface: attribute navigate
+  assert_true: The prototype object must have a property "navigate" expected true got false
+[FAIL] Notification interface: notification must inherit property "navigate" with the proper type
+  assert_inherits: property "navigate" not found in prototype chain
+Harness: the test ran to completion.
+

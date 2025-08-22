@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] :has(:focus) doesn't cause focusability to be lost
+  assert_equals: Focus can move to #second expected Element node <button id="second">B</button> but got Element node <body><div id="container">\n  <button id="first">A</button...
+Harness: the test ran to completion.
+

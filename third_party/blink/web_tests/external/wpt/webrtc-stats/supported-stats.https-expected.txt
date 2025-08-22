@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] inbound-rtp's framesRendered
   assert_true: Is framesRendered present expected true got false
 [PRECONDITION_FAILED] inbound-rtp's fecBytesReceived
@@ -44,8 +44,6 @@ Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: Is packetsReportedAsLostButRecovered present expected true got false
 [FAIL] remote-outbound-rtp's roundTripTime
   assert_true: Is roundTripTime present expected true got false
-[FAIL] remote-outbound-rtp's packetsSentWithEct1
-  assert_true: Is packetsSentWithEct1 present expected true got false
 [PRECONDITION_FAILED] media-source's echoReturnLoss
   media-source.echoReturnLoss marked as not testable.
 [PRECONDITION_FAILED] media-source's echoReturnLossEnhancement

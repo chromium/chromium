@@ -1,6 +1,24 @@
 This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] MLGraphBuilder interface: operation isNaN(MLOperand, optional MLOperatorOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "isNaN" missing
+[FAIL] MLGraphBuilder interface: operation isInfinite(MLOperand, optional MLOperatorOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "isInfinite" missing
+[FAIL] MLGraphBuilder interface: operation roundEven(MLOperand, optional MLOperatorOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "roundEven" missing
 [FAIL] MLGraphBuilder interface: operation softmax(MLOperand, unsigned long, optional MLOperatorOptions)
   assert_equals: property has wrong .length expected 2 but got 1
+[FAIL] MLGraphBuilder interface: builder must inherit property "isNaN(MLOperand, optional MLOperatorOptions)" with the proper type
+  assert_inherits: property "isNaN" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling isNaN(MLOperand, optional MLOperatorOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "isNaN" not found in prototype chain
+[FAIL] MLGraphBuilder interface: builder must inherit property "isInfinite(MLOperand, optional MLOperatorOptions)" with the proper type
+  assert_inherits: property "isInfinite" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling isInfinite(MLOperand, optional MLOperatorOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "isInfinite" not found in prototype chain
+[FAIL] MLGraphBuilder interface: builder must inherit property "roundEven(MLOperand, optional MLOperatorOptions)" with the proper type
+  assert_inherits: property "roundEven" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling roundEven(MLOperand, optional MLOperatorOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "roundEven" not found in prototype chain
 Harness: the test ran to completion.
 
