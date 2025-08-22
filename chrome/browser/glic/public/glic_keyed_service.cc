@@ -408,7 +408,9 @@ void GlicKeyedService::PerformActionsFinished(
   // any freed memory.
   auto result_callback = base::BindOnce(
       [](mojom::WebClientHandler::PerformActionsCallback callback,
-         std::unique_ptr<optimization_guide::proto::ActionsResult> result) {
+         std::unique_ptr<optimization_guide::proto::ActionsResult> result,
+         std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
+             journal_entry) {
         CHECK(result);
         std::move(callback).Run(mojo_base::ProtoWrapper(*result));
       },

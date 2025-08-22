@@ -462,6 +462,17 @@ class PageContextFetcher : public content::WebContentsObserver {
 
 }  // namespace
 
+std::string ToString(FetchPageContextError error) {
+  switch (error) {
+    case FetchPageContextError::kUnknown:
+      return "kUnknown";
+    case FetchPageContextError::kWebContentsChanged:
+      return "kWebContentsChanged";
+    case FetchPageContextError::kPageContextNotEligible:
+      return "kPageContextNotEligible";
+  }
+}
+
 BASE_FEATURE(kGlicTabScreenshotExperiment,
              "GlicTabScreenshotExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);

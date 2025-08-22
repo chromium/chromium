@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/types/expected.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
@@ -75,8 +76,10 @@ void BuildActionsResultWithObservations(
     std::vector<optimization_guide::proto::ScriptToolResult>
         script_tool_results,
     const ActorTask& task,
-    base::OnceCallback<void(
-        std::unique_ptr<optimization_guide::proto::ActionsResult>)> callback);
+    base::OnceCallback<
+        void(std::unique_ptr<optimization_guide::proto::ActionsResult>,
+             std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>)>
+        callback);
 
 optimization_guide::proto::ActionsResult BuildErrorActionsResult(
     mojom::ActionResultCode result_code,

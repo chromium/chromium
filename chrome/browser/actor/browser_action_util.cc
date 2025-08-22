@@ -17,6 +17,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
@@ -608,7 +609,9 @@ void FillInTabObservation(
 
 namespace {
 
-void FetchCallback(base::RepeatingClosure barrier,
+void FetchCallback(base::WeakPtr<Profile> profile,
+                   TaskId task_id,
+                   base::RepeatingClosure barrier,
                    apc::TabObservation* tab_observation,
                    std::vector<optimization_guide::proto::ScriptToolResult>
                        script_tool_results,
@@ -616,9 +619,17 @@ void FetchCallback(base::RepeatingClosure barrier,
   CHECK(tab_observation);
   base::ScopedClosureRunner run_barrier_at_return(barrier);
 
+  if (!profile) {
+    return;
+  }
+
   if (!result.has_value()) {
     // TODO(crbug.com/435210098): There should be some way to message failure to
-    // observe.
+    // observe in the returned result.
+    auto* actor_service = actor::ActorKeyedService::Get(profile.get());
+    actor_service->GetJournal().Log(
+        GURL(), task_id, actor::mojom::JournalTrack::kActor, result.error(),
+        absl::StrFormat("tabId[%d]", tab_observation->id()));
     return;
   }
 
@@ -646,7 +657,19 @@ void BuildActionsResultWithObservations(
     std::vector<optimization_guide::proto::ScriptToolResult>
         script_tool_results,
     const ActorTask& task,
-    base::OnceCallback<void(std::unique_ptr<apc::ActionsResult>)> callback) {
+    base::OnceCallback<
+        void(std::unique_ptr<apc::ActionsResult>,
+             std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>)>
+        callback) {
+  auto* profile = Profile::FromBrowserContext(&browser_context);
+  auto* actor_service = actor::ActorKeyedService::Get(profile);
+  CHECK(actor_service);
+
+  std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry =
+      actor_service->GetJournal().CreatePendingAsyncEntry(
+          GURL(), task.id(), actor::mojom::JournalTrack::kActor,
+          "BuildActionsResultWithObservations", "");
+
   auto response = std::make_unique<apc::ActionsResult>();
 
   response->set_action_result(static_cast<int32_t>(result_code));
@@ -654,8 +677,6 @@ void BuildActionsResultWithObservations(
     response->set_index_of_failed_action(*index_of_failed_action);
   }
   CopyScriptToolResults(*response, script_tool_results);
-
-  auto* profile = Profile::FromBrowserContext(&browser_context);
 
   std::vector<Browser*> browsers = chrome::FindAllTabbedBrowsersWithProfile(
       profile, /*ignore_closing_browsers=*/true);
@@ -690,6 +711,10 @@ void BuildActionsResultWithObservations(
       // now we leave the observation empty.
       apc::TabObservation* tab_observation = response->add_tabs();
       tab_observation->set_id(handle.raw_value());
+      actor_service->GetJournal().Log(
+          GURL(), task.id(), actor::mojom::JournalTrack::kActor,
+          "TabObservationFailed",
+          absl::StrFormat("TabWentAway tabId[%d]", handle.raw_value()));
     } else {
       tabs_to_fetch.insert(tab);
     }
@@ -698,10 +723,8 @@ void BuildActionsResultWithObservations(
   apc::ActionsResult* raw_response = response.get();
   base::RepeatingClosure barrier = base::BarrierClosure(
       tabs_to_fetch.size(),
-      base::BindOnce(std::move(callback), std::move(response)));
-
-  auto* actor_service = actor::ActorKeyedService::Get(profile);
-  CHECK(actor_service);
+      base::BindOnce(std::move(callback), std::move(response),
+                     std::move(journal_entry)));
 
   for (tabs::TabInterface* tab : tabs_to_fetch) {
     apc::TabObservation* tab_observation = raw_response->add_tabs();
@@ -711,7 +734,7 @@ void BuildActionsResultWithObservations(
     // the barrier which is ref-counted.
     actor_service->RequestTabObservation(
         *tab, task.id(),
-        base::BindOnce(FetchCallback, barrier,
+        base::BindOnce(FetchCallback, profile->GetWeakPtr(), task.id(), barrier,
                        base::Unretained(tab_observation), script_tool_results));
   }
 }

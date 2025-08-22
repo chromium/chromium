@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -129,7 +130,9 @@ class ExperimentalActorPerformActionsFunction
       std::vector<optimization_guide::proto::ScriptToolResult>
           script_tool_results);
   void OnObservationResult(
-      std::unique_ptr<optimization_guide::proto::ActionsResult> response);
+      std::unique_ptr<optimization_guide::proto::ActionsResult> response,
+      std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
+          journal_entry);
   DECLARE_EXTENSION_FUNCTION("experimentalActor.performActions",
                              EXPERIMENTALACTOR_PERFORMACTIONS)
 };

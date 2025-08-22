@@ -73,6 +73,10 @@ enum class FetchPageContextError {
   kPageContextNotEligible,
 };
 
+std::string ToString(FetchPageContextError error);
+
+// TODO(bokan): message is redundant with error_code. Replace usage with
+// ToString.
 struct FetchPageContextErrorDetails {
   FetchPageContextError error_code = FetchPageContextError::kUnknown;
   std::string message;

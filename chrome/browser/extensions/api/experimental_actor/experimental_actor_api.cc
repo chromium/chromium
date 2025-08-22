@@ -461,7 +461,9 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
 }
 
 void ExperimentalActorPerformActionsFunction::OnObservationResult(
-    std::unique_ptr<optimization_guide::proto::ActionsResult> response) {
+    std::unique_ptr<optimization_guide::proto::ActionsResult> response,
+    std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
+        journal_entry) {
   using optimization_guide::proto::TabObservation;
   using optimization_guide::proto::WindowObservation;
 
