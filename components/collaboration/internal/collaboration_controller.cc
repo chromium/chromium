@@ -1549,6 +1549,11 @@ void CollaborationController::CancelShareOrManageFlow(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (flow_.type == FlowType::kShareOrManage &&
       flow_.either_id() == either_id) {
+    if (current_state_->id() == StateId::kCleaningUpSharedTabGroup) {
+      // Cleanup will cause the TabGroupRemoved event to be observed. It is safe
+      // to ignore.
+      return;
+    }
     Cancel();
   }
 }
