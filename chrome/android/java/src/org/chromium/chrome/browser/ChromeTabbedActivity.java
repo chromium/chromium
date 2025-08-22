@@ -1808,7 +1808,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
                         tabIdToBringToFront,
                         intent);
-        if (IntentHandler.getPinnedState(intent)) {
+        boolean shouldPin = IntentHandler.getPinnedState(intent);
+        if (shouldPin && !tab.getIsPinned()) {
             getTabModelSelector().getModel(tab.isIncognito()).pinTab(tab.getId());
         }
         int destTabId = IntentHandler.getDestTabId(intent);

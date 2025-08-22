@@ -36,7 +36,11 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
             return TabList.INVALID_TAB_INDEX;
         }
 
-        if (newTab.getIsPinned()) {
+        // Skip for reparenting pinned tabs, because the parent tab is often null for a reparenting
+        // tab, and running this block would overwrite the user-selected drop index with
+        // TabList.INVALID_TAB_INDEX, which later resolves to the last pinned position. Skip it to
+        // preserve the chosen index.
+        if (newTab.getIsPinned() && type != TabLaunchType.FROM_REPARENTING) {
             TabModel tabModel = mTabModelSelector.getCurrentModel();
             @TabId int parentId = newTab.getParentId();
             @Nullable Tab parentTab = tabModel.getTabById(parentId);
