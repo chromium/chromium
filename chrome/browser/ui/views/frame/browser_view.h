@@ -20,7 +20,6 @@
 #include "base/timer/timer.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -30,7 +29,6 @@
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
-#include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
@@ -1296,10 +1294,6 @@ class BrowserView : public BrowserWindow,
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&BrowserView::TouchModeChanged,
                               base::Unretained(this)));
-
-  // The class that registers for keyboard shortcuts for extension commands.
-  std::unique_ptr<ExtensionKeybindingRegistryViews>
-      extension_keybinding_registry_;
 
   // If the Window Placement experiment is enabled and fullscreen is requested
   // on a particular display, this closure will be called after fullscreen is

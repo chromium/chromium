@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
+#include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_border_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -345,6 +346,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   }
 #endif
 
+  Profile* const profile = browser_->GetProfile();
+
   // Features that are only enabled for normal browser windows (e.g. a window
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
@@ -396,7 +399,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     }
 
     auto* experiment_manager =
-        extensions::ManifestV2ExperimentManager::Get(browser->profile());
+        extensions::ManifestV2ExperimentManager::Get(profile);
     if (experiment_manager) {
       extensions::MV2ExperimentStage experiment_stage =
           experiment_manager->GetCurrentExperimentStage();
@@ -422,8 +425,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     if (browser->GetTabStripModel()->SupportsTabGroups() &&
         tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
-        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-            browser->GetProfile())) {
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {
       if (browser_view) {
         shared_tab_group_feedback_controller_ =
             std::make_unique<tab_groups::SharedTabGroupFeedbackController>(
@@ -451,14 +453,13 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       std::make_unique<extensions::BrowserExtensionWindowController>(browser);
 
   profile_menu_coordinator_ =
-      std::make_unique<ProfileMenuCoordinator>(browser, browser->GetProfile());
+      std::make_unique<ProfileMenuCoordinator>(browser, profile);
 
   upgrade_notification_controller_ =
       std::make_unique<UpgradeNotificationController>(browser);
 
   incognito_clear_browsing_data_dialog_coordinator_ =
-      std::make_unique<IncognitoClearBrowsingDataDialogCoordinator>(
-          browser->GetProfile());
+      std::make_unique<IncognitoClearBrowsingDataDialogCoordinator>(profile);
 
   if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser)) {
     color_provider_browser_helper_ =
@@ -467,18 +468,26 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   }
 
   live_tab_context_ = std::make_unique<BrowserLiveTabContext>(
-      browser, browser->GetTabStripModel(), browser->GetProfile(),
-      browser->GetWindow(), browser->GetType(), browser->app_name(),
-      browser->GetSessionID());
+      browser, browser->GetTabStripModel(), profile, browser->GetWindow(),
+      browser->GetType(), browser->app_name(), browser->GetSessionID());
 
   if (browser->is_type_normal() || browser->is_type_app()) {
     toast_service_ = std::make_unique<ToastService>(browser);
   }
 
-  if (BrowserView* browser_view =
+  if (BrowserView* const browser_view =
           BrowserView::GetBrowserViewForBrowser(browser)) {
     contents_border_controller_ =
         std::make_unique<ContentsBorderController>(browser_view);
+
+    // Focus manager can be null in tests.
+    if (views::FocusManager* focus_manager = browser_view->GetFocusManager()) {
+      extension_keybinding_registry_ =
+          std::make_unique<ExtensionKeybindingRegistryViews>(
+              profile, focus_manager,
+              extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS,
+              browser_view);
+    }
   }
 }
 
@@ -606,6 +615,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
+  extension_keybinding_registry_.reset();
   contents_border_controller_.reset();
   live_tab_context_.reset();
   upgrade_notification_controller_.reset();

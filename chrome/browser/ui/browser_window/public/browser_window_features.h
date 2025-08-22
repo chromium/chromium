@@ -49,6 +49,7 @@ class CookieControlsBubbleCoordinator;
 class DataSharingBubbleController;
 class DesktopBrowserWindowCapabilities;
 class DevtoolsUIController;
+class ExtensionKeybindingRegistryViews;
 class ExclusiveAccessManager;
 class FindBarController;
 class FullscreenControlHost;
@@ -308,6 +309,10 @@ class BrowserWindowFeatures {
     return extension_side_panel_manager_.get();
   }
 
+  ExtensionKeybindingRegistryViews* extension_keybinding_registry() {
+    return extension_keybinding_registry_.get();
+  }
+
 #if !BUILDFLAG(IS_CHROMEOS)
   DownloadToolbarUIController* download_toolbar_ui_controller() {
     return download_toolbar_ui_controller_.get();
@@ -527,6 +532,10 @@ class BrowserWindowFeatures {
   // tab-scoped extension side-panel manager.
   std::unique_ptr<extensions::ExtensionSidePanelManager>
       extension_side_panel_manager_;
+
+  // The class that registers for keyboard shortcuts for extension commands.
+  std::unique_ptr<ExtensionKeybindingRegistryViews>
+      extension_keybinding_registry_;
 
   std::unique_ptr<media_router::CastBrowserController> cast_browser_controller_;
 

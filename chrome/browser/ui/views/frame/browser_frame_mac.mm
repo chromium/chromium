@@ -41,6 +41,7 @@
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_show_state.mojom.h"

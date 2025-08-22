@@ -1123,13 +1123,6 @@ BrowserView::~BrowserView() {
   // child views and it is an observer for avatar toolbar button if any.
   autofill_bubble_handler_.reset();
 
-  auto* global_registry =
-      extensions::ExtensionCommandsGlobalRegistry::Get(browser_->profile());
-  if (global_registry->registry_for_active_window() ==
-      extension_keybinding_registry_.get()) {
-    global_registry->set_registry_for_active_window(nullptr);
-  }
-
   // These are raw pointers to child views, so they need to be set to null
   // before `RemoveAllChildViews()` is called to avoid dangling.
   frame_ = nullptr;
@@ -4503,23 +4496,9 @@ void BrowserView::OnWidgetActivationChanged(views::Widget* widget,
     }
   }
 
-  if (!extension_keybinding_registry_ &&
-      GetFocusManager()) {  // focus manager can be null in tests.
-    extension_keybinding_registry_ =
-        std::make_unique<ExtensionKeybindingRegistryViews>(
-            browser_->profile(), GetFocusManager(),
-            extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS, this);
-  }
-
-  extensions::ExtensionCommandsGlobalRegistry* registry =
-      extensions::ExtensionCommandsGlobalRegistry::Get(browser_->profile());
-  if (active) {
-    registry->set_registry_for_active_window(
-        extension_keybinding_registry_.get());
-  } else if (registry->registry_for_active_window() ==
-             extension_keybinding_registry_.get()) {
-    registry->set_registry_for_active_window(nullptr);
-  }
+  browser_->GetFeatures()
+      .extension_keybinding_registry()
+      ->OnHostActivationChanged(active);
 }
 
 void BrowserView::OnWidgetBoundsChanged(views::Widget* widget,
