@@ -295,7 +295,6 @@ static const char* const kSwitchNames[] = {
     sandbox::policy::switches::kEnableSandboxLogging,
     sandbox::policy::switches::kDisableMetalShaderCache,
     switches::kShowMacOverlayBorders,
-    switches::kWebNNCoreMlDumpModel,
 #endif
 #if BUILDFLAG(IS_OZONE)
     switches::kOzonePlatform,
@@ -324,16 +323,6 @@ static const char* const kSwitchNames[] = {
 #endif
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     switches::kHardwareVideoDecodeFrameRate,
-#endif
-#if BUILDFLAG(WEBNN_USE_TFLITE)
-    switches::kWebNNTfliteDumpModel,
-#endif
-#if BUILDFLAG(IS_WIN)
-    switches::kWebNNOrtLoggingLevel,
-    switches::kWebNNOrtDumpModel,
-    switches::kWebNNOrtLibraryPathForTesting,
-    switches::kWebNNOrtEpLibraryPathForTesting,
-    switches::kWebNNOrtGraphOptimizationLevel,
 #endif
 };
 
@@ -1308,6 +1297,9 @@ bool GpuProcessHost::LaunchGpuProcess() {
   cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
   cmd_line->CopySwitchesFrom(browser_command_line,
                              switches::kGLSwitchesCopiedFromGpuProcessHost);
+  cmd_line->CopySwitchesFrom(
+      browser_command_line,
+      switches::GetWebNNSwitchesCopiedFromGpuProcessHost());
 
   if (browser_command_line.HasSwitch(switches::kDisableFrameRateLimit))
     cmd_line->AppendSwitch(switches::kDisableGpuVsync);

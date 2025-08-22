@@ -19,8 +19,14 @@ buildflag_header("buildflags") {
 }
 
 source_set("webnn_switches") {
-  sources = [ "webnn_switches.h" ]
-  deps = [ ":buildflags" ]
+  sources = [
+    "webnn_switches.cc",
+    "webnn_switches.h",
+  ]
+  deps = [
+    ":buildflags",
+    "//base",
+  ]
 }
 
 # Public WebNN native headers so they can be visible for dependencies

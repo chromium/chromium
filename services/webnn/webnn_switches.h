@@ -5,6 +5,7 @@
 #ifndef SERVICES_WEBNN_WEBNN_SWITCHES_H_
 #define SERVICES_WEBNN_WEBNN_SWITCHES_H_
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "services/webnn/buildflags.h"
 
@@ -57,6 +58,10 @@ inline constexpr char kWebNNOrtEpLibraryPathForTesting[] =
 inline constexpr char kWebNNOrtGraphOptimizationLevel[] =
     "webnn-ort-graph-optimization-level";
 #endif  // BUILDFLAG(IS_WIN)
+
+extern base::span<const char* const> GetWebNNSwitchesCopiedFromGpuProcessHost();
+// extern const base::span<const char* const>
+//     kWebNNSwitchesCopiedFromGpuProcessHost;
 
 }  // namespace switches
 
