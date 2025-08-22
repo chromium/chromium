@@ -6,7 +6,9 @@
 
 #include <optional>
 #include <ostream>
+#include <string_view>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "components/sync/base/data_type.h"
@@ -169,44 +171,24 @@ const char* GetUserSelectableTypeName(UserSelectableType type) {
 
 std::optional<UserSelectableType> GetUserSelectableTypeFromString(
     const std::string& type) {
-  if (type == kBookmarksTypeName) {
-    return UserSelectableType::kBookmarks;
-  }
-  if (type == kPreferencesTypeName) {
-    return UserSelectableType::kPreferences;
-  }
-  if (type == kPasswordsTypeName) {
-    return UserSelectableType::kPasswords;
-  }
-  if (type == kAutofillTypeName) {
-    return UserSelectableType::kAutofill;
-  }
-  if (type == kThemesTypeName) {
-    return UserSelectableType::kThemes;
-  }
-  if (type == kHistoryTypeName) {
-    return UserSelectableType::kHistory;
-  }
-  if (type == kExtensionsTypeName) {
-    return UserSelectableType::kExtensions;
-  }
-  if (type == kAppsTypeName) {
-    return UserSelectableType::kApps;
-  }
-  if (type == kReadingListTypeName) {
-    return UserSelectableType::kReadingList;
-  }
-  if (type == kTabsTypeName) {
-    return UserSelectableType::kTabs;
-  }
-  if (type == kSavedTabGroupsTypeName) {
-    return UserSelectableType::kSavedTabGroups;
-  }
-  if (type == kProductComparisonTypeName) {
-    return UserSelectableType::kProductComparison;
-  }
-  if (type == kCookiesTypeName) {
-    return UserSelectableType::kCookies;
+  constexpr auto kTypeMap =
+      base::MakeFixedFlatMap<std::string_view, UserSelectableType>({
+          {kBookmarksTypeName, UserSelectableType::kBookmarks},
+          {kPreferencesTypeName, UserSelectableType::kPreferences},
+          {kPasswordsTypeName, UserSelectableType::kPasswords},
+          {kAutofillTypeName, UserSelectableType::kAutofill},
+          {kThemesTypeName, UserSelectableType::kThemes},
+          {kHistoryTypeName, UserSelectableType::kHistory},
+          {kExtensionsTypeName, UserSelectableType::kExtensions},
+          {kAppsTypeName, UserSelectableType::kApps},
+          {kReadingListTypeName, UserSelectableType::kReadingList},
+          {kTabsTypeName, UserSelectableType::kTabs},
+          {kSavedTabGroupsTypeName, UserSelectableType::kSavedTabGroups},
+          {kProductComparisonTypeName, UserSelectableType::kProductComparison},
+          {kCookiesTypeName, UserSelectableType::kCookies},
+      });
+  if (auto it = kTypeMap.find(type); it != kTypeMap.end()) {
+    return it->second;
   }
   return std::nullopt;
 }
@@ -290,30 +272,25 @@ std::string UserSelectableOsTypeSetToString(UserSelectableOsTypeSet types) {
 
 std::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
     const std::string& type) {
-  if (type == kOsAppsTypeName) {
-    return UserSelectableOsType::kOsApps;
-  }
-  if (type == kOsPreferencesTypeName) {
-    return UserSelectableOsType::kOsPreferences;
-  }
-  if (type == kOsWifiConfigurationsTypeName) {
-    return UserSelectableOsType::kOsWifiConfigurations;
-  }
-
-  // Some pref types migrated from browser prefs to OS prefs. Map the browser
-  // type name to the OS type so that enterprise policy SyncTypesListDisabled
-  // still applies to the migrated names.
-  // TODO(crbug.com/40678410): Rename "osApps" to "apps" and
-  // "osWifiConfigurations" to "wifiConfigurations", and remove the mapping for
-  // "preferences".
-  if (type == kAppsTypeName) {
-    return UserSelectableOsType::kOsApps;
-  }
-  if (type == kWifiConfigurationsTypeName) {
-    return UserSelectableOsType::kOsWifiConfigurations;
-  }
-  if (type == kPreferencesTypeName) {
-    return UserSelectableOsType::kOsPreferences;
+  constexpr auto kTypeMap =
+      base::MakeFixedFlatMap<std::string_view, UserSelectableOsType>({
+          {kOsAppsTypeName, UserSelectableOsType::kOsApps},
+          {kOsPreferencesTypeName, UserSelectableOsType::kOsPreferences},
+          {kOsWifiConfigurationsTypeName,
+           UserSelectableOsType::kOsWifiConfigurations},
+          // Some pref types migrated from browser prefs to OS prefs. Map the
+          // browser type name to the OS type so that enterprise policy
+          // SyncTypesListDisabled still applies to the migrated names.
+          // TODO(crbug.com/40678410): Rename "osApps" to "apps" and
+          // "osWifiConfigurations" to "wifiConfigurations", and remove the
+          // mapping for "preferences".
+          {kAppsTypeName, UserSelectableOsType::kOsApps},
+          {kWifiConfigurationsTypeName,
+           UserSelectableOsType::kOsWifiConfigurations},
+          {kPreferencesTypeName, UserSelectableOsType::kOsPreferences},
+      });
+  if (auto it = kTypeMap.find(type); it != kTypeMap.end()) {
+    return it->second;
   }
   return std::nullopt;
 }
