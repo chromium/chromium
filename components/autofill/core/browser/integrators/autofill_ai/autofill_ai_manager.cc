@@ -271,8 +271,9 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
     return false;
   }
   std::vector<EntityInstance> entity_instances_from_form =
-      GetPossibleEntitiesFromSubmittedForm(form.fields(),
-                                           client_->GetAppLocale());
+      GetPossibleEntitiesFromSubmittedForm(
+          form.fields(), client_->GetAppLocale(),
+          client_->GetVariationConfigCountryCode());
   if (entity_instances_from_form.empty()) {
     return false;
   }

@@ -15,6 +15,7 @@
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
@@ -89,7 +90,8 @@ ValueAndFormatString GetValueAndFormatString(const AutofillField& field,
 
 std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     base::span<const std::unique_ptr<AutofillField>> fields,
-    const std::string& app_locale) {
+    const std::string& app_locale,
+    const GeoIpCountryCode& country_code) {
   std::map<Section,
            std::map<EntityType, std::map<AttributeType, AttributeInstance>>>
       section_to_entity_types_attributes;
@@ -98,8 +100,14 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
   // Section -> EntityType -> AttributeType
   // and to build section_to_entity_types_attributes we want a map
   // Section -> EntityType -> AttributeType -> AttributeInstance.
-  for (const auto& [section, entities_with_fields_and_types] :
+  for (auto& [section, entities_with_fields_and_types] :
        RationalizeAndDetermineAttributeTypes(fields)) {
+    base::EraseIf(
+        entities_with_fields_and_types,
+        [&country_code](
+            const std::pair<EntityType,
+                            std::vector<AutofillFieldWithAttributeType>>&
+                entry) { return !entry.first.enabled(country_code); });
     std::map<FieldGlobalId, size_t> num_occurrences;
     for (const auto& [entity, fields_with_types] :
          entities_with_fields_and_types) {
