@@ -110,7 +110,7 @@ class FormDataImporterTestApi {
   }
 
   std::optional<int64_t> fetched_card_instrument_id() {
-    return fdi_->fetched_card_instrument_id_;
+    return fdi_->fetched_payments_data_context_.fetched_card_instrument_id;
   }
 
   void ImportAndProcessFormData(const FormStructure& submitted_form,

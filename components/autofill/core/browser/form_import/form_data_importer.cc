@@ -280,8 +280,6 @@ void FormDataImporter::ImportAndProcessFormData(
         submitted_form, extracted_data.extracted_credit_card,
         credit_card_upload_enabled, ukm_source_id);
   }
-  fetched_card_instrument_id_.reset();
-  card_was_fetched_from_cache_.reset();
 
   bool iban_prompt_potentially_shown = false;
   if (extracted_data.extracted_iban.has_value() &&
@@ -289,6 +287,10 @@ void FormDataImporter::ImportAndProcessFormData(
     iban_prompt_potentially_shown =
         ProcessIbanImportCandidate(*extracted_data.extracted_iban);
   }
+
+  // Reset last fetch payments method metadata after all payments related form
+  // data processing logic is finished.
+  fetched_payments_data_context_ = FetchedPaymentsDataContext();
 
   // Record the prompt status iff at least one prompt could have been displayed.
   // Recording that status isn't pertinent otherwise. When there is a full
@@ -362,10 +364,6 @@ void FormDataImporter::RemoveInaccessibleProfileValues(
 void FormDataImporter::CacheFetchedVirtualCard(
     const std::u16string& last_four) {
   fetched_virtual_cards_.insert(last_four);
-}
-
-void FormDataImporter::SetFetchedCardInstrumentId(int64_t instrument_id) {
-  fetched_card_instrument_id_ = instrument_id;
 }
 
 FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
@@ -840,8 +838,9 @@ bool FormDataImporter::ProcessExtractedCreditCard(
       client_->GetPaymentsAutofillClient()->GetVirtualCardEnrollmentManager();
   if (virtual_card_enrollment_manager &&
       virtual_card_enrollment_manager->ShouldOfferVirtualCardEnrollment(
-          *extracted_credit_card, fetched_card_instrument_id_,
-          card_was_fetched_from_cache_)) {
+          *extracted_credit_card,
+          fetched_payments_data_context_.fetched_card_instrument_id,
+          fetched_payments_data_context_.card_was_fetched_from_cache)) {
     virtual_card_enrollment_manager->InitVirtualCardEnroll(
         *extracted_credit_card, VirtualCardEnrollmentSource::kDownstream,
         base::BindOnce(

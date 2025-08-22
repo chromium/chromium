@@ -3543,8 +3543,6 @@ TEST_F(BrowserAutofillManagerTest,
   manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                               form.fields().front().global_id(), &local_card,
                               AutofillTriggerSource::kPopup);
-  EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
-              testing::Optional(local_card.instrument_id()));
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -3560,8 +3558,6 @@ TEST_F(BrowserAutofillManagerTest,
   manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                               form.fields().front().global_id(), &server_card,
                               AutofillTriggerSource::kPopup);
-  EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
-              testing::Optional(server_card.instrument_id()));
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -3586,8 +3582,6 @@ TEST_F(BrowserAutofillManagerTest,
   manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                               form.fields().front().global_id(), &filled_card,
                               AutofillTriggerSource::kPopup);
-  EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
-              testing::Optional(filled_card.instrument_id()));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -3655,8 +3649,6 @@ TEST_F(BrowserAutofillManagerTest,
   manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                               form.fields().front().global_id(), &card,
                               AutofillTriggerSource::kPopup);
-  EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
-              testing::Optional(filled_card.instrument_id()));
 }
 
 // BNPL suggestion is limited to Windows, macOS, Linux, and ChromeOS.

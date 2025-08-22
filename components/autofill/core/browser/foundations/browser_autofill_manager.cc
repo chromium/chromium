@@ -2042,10 +2042,6 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       self->client().GetPaymentsAutofillClient()->OnCardDataAvailable(options);
     }
 
-    // After a server card is fetched, save its instrument id.
-    self->client().GetFormDataImporter()->SetFetchedCardInstrumentId(
-        credit_card.instrument_id());
-
     if (credit_card.record_type() == CreditCard::RecordType::kFullServerCard ||
         credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
       self->GetCreditCardAccessManager().CacheUnmaskedCardInfo(

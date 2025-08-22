@@ -3652,7 +3652,9 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
   test_api(form_data_importer())
       .set_credit_card_import_type(
           FormDataImporter::CreditCardImportType::kServerCard);
-  form_data_importer().SetFetchedCardInstrumentId(2222);
+  FormDataImporter::FetchedPaymentsDataContext context;
+  context.fetched_card_instrument_id = 2222;
+  form_data_importer().set_fetched_payments_data_context(context);
 
   EXPECT_CALL(virtual_card_enrollment_manager(),
               InitVirtualCardEnroll(_, VirtualCardEnrollmentSource::kDownstream,
@@ -3665,7 +3667,8 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
                                       /*is_credit_card_upstream_enabled=*/true,
                                       ukm_source_id()));
 
-  form_data_importer().SetFetchedCardInstrumentId(1111);
+  context.fetched_card_instrument_id = 1111;
+  form_data_importer().set_fetched_payments_data_context(context);
   EXPECT_CALL(virtual_card_enrollment_manager(),
               InitVirtualCardEnroll(_, VirtualCardEnrollmentSource::kDownstream,
                                     _, _, _, _));

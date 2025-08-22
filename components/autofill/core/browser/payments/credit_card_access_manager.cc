@@ -321,11 +321,13 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
 void CreditCardAccessManager::FetchCreditCard(
     const CreditCard* card,
     OnCreditCardFetchedCallback on_credit_card_fetched) {
+  auto* form_data_importer = autofill_client().GetFormDataImporter();
+  CHECK(form_data_importer);
+  form_data_importer->set_fetched_payments_data_context({});
   // Reset the variable in FormDataImporter that denotes if non-interactive
-  // authentication happened. This variable will be set to a value if a payments
-  // autofill non-interactive flow successfully completes.
-  autofill_client()
-      .GetFormDataImporter()
+  // authentication happened. This variable will be set to a value if a
+  // payments autofill non-interactive flow successfully completes.
+  form_data_importer
       ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
           std::nullopt);
 
@@ -1768,8 +1770,11 @@ void CreditCardAccessManager::OnVcn3dsAuthenticationComplete(
 void CreditCardAccessManager::OnCreditCardFetched(
     const CreditCard& card,
     bool card_was_fetched_from_cache) {
-  autofill_client().GetFormDataImporter()->set_card_was_fetched_from_cache(
-      card_was_fetched_from_cache);
+  auto* form_data_importer = autofill_client().GetFormDataImporter();
+  CHECK(form_data_importer);
+  form_data_importer->set_fetched_payments_data_context(
+      {.fetched_card_instrument_id = card.instrument_id(),
+       .card_was_fetched_from_cache = card_was_fetched_from_cache});
   std::move(on_credit_card_fetched_callback_).Run(card);
 }
 

@@ -60,6 +60,22 @@ class FormDataImporter : public AddressDataManager::Observer,
     kDuplicateLocalServerCard,
   };
 
+  // Context for most recently fetched payment method.
+  struct FetchedPaymentsDataContext {
+    // The instrument id of the card that has been most recently retrieved via
+    // Autofill Downstream (card retrieval from server). This can be used to
+    // decide whether the card submitted is the same card retrieved. This field
+    // is optional and is set when an Autofill credit card Downstream has
+    // happened.
+    std::optional<int64_t> fetched_card_instrument_id;
+
+    // Whether the last unmasked card (note: it may or may not be the extracted
+    // card) is fetched from the local cache (instead of going through a server
+    // retrieval process). This field is optional and is set when an Autofill
+    // credit card Downstream has happened.
+    std::optional<bool> card_was_fetched_from_cache;
+  };
+
   // The parameters should outlive the FormDataImporter.
   FormDataImporter(AutofillClient* client,
                    history::HistoryService* history_service);
@@ -109,15 +125,17 @@ class FormDataImporter : public AddressDataManager::Observer,
                                                     is_imported);
   }
 
-  // See comment for |fetched_card_instrument_id_|.
-  void SetFetchedCardInstrumentId(int64_t instrument_id);
-
   // AddressDataManager::Observer
   void OnAddressDataChanged() override;
 
   // history::HistoryServiceObserver
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
+
+  void set_fetched_payments_data_context(
+      const FetchedPaymentsDataContext& context) {
+    fetched_payments_data_context_ = context;
+  }
 
   // See `FormAssociator::GetFormAssociations()`.
   FormStructure::FormAssociations GetFormAssociations(
@@ -132,10 +150,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   void SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
       std::optional<NonInteractivePaymentMethodType>
           payment_method_type_if_non_interactive_authentication_flow_completed);
-
-  void set_card_was_fetched_from_cache(bool card_was_fetched_from_cache) {
-    card_was_fetched_from_cache_ = card_was_fetched_from_cache;
-  }
 
  private:
   // Defines an extracted address profile, which is a candidate for address
@@ -343,18 +357,9 @@ class FormDataImporter : public AddressDataManager::Observer,
   std::optional<NonInteractivePaymentMethodType>
       payment_method_type_if_non_interactive_authentication_flow_completed_;
 
-  // The instrument id of the card that has been most recently retrieved via
-  // Autofill Downstream (card retrieval from server). This can be used to
-  // decide whether the card submitted is the same card retrieved. This field is
-  // optional and is set when an Autofill Downstream has happened.
-  std::optional<int64_t> fetched_card_instrument_id_;
-
-  // TODO(crbug.com/403617982): Combine all last fetched card related
-  // information into a struct.
-  // Whether the last unmasked card (note: it may or may not be the extracted
-  // card) is fetched from the local cache (instead of going through a server
-  // retrieval process).
-  std::optional<bool> card_was_fetched_from_cache_;
+  // Struct to record contexts for the last payments data fetch. Should be reset
+  // when a new fetch starts.
+  FetchedPaymentsDataContext fetched_payments_data_context_;
 
   friend class FormDataImporterTestApi;
 };
