@@ -2171,6 +2171,11 @@ class GENnHandler(TypeHandler):
     %(name)sHelper(%(args)s);
     helper_->%(name)sImmediate(%(args)s);
     """
+    if not not_shared:
+      code += """\
+      if (share_group_->bind_generates_resource())
+      helper_->CommandBufferHelper::Flush();
+      """
     code += """\
     %(log_code)s
     CheckGLError();

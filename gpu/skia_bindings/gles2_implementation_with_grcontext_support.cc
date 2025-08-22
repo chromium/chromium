@@ -17,11 +17,13 @@ GLES2ImplementationWithGrContextSupport::
         gpu::gles2::GLES2CmdHelper* helper,
         scoped_refptr<gpu::gles2::ShareGroup> share_group,
         gpu::TransferBufferInterface* transfer_buffer,
+        bool bind_generates_resource,
         bool lose_context_when_out_of_memory,
         gpu::GpuControl* gpu_control)
     : GLES2Implementation(helper,
                           std::move(share_group),
                           transfer_buffer,
+                          bind_generates_resource,
                           lose_context_when_out_of_memory,
                           gpu_control) {}
 

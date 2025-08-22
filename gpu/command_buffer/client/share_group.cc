@@ -31,6 +31,88 @@ ShareGroupContextData::IdHandlerData::~IdHandlerData() = default;
 static_assert(gpu::kInvalidResource == 0,
               "GL expects kInvalidResource to be 0");
 
+// The standard id handler.
+class IdHandler : public IdHandlerInterface {
+ public:
+  IdHandler() = default;
+  ~IdHandler() override = default;
+
+  // Overridden from IdHandlerInterface.
+  void MakeIds(GLES2Implementation* /* gl_impl */,
+               GLuint id_offset,
+               GLsizei n,
+               GLuint* ids) override {
+    base::AutoLock auto_lock(lock_);
+    if (id_offset == 0) {
+      for (GLsizei ii = 0; ii < n; ++ii) {
+        ids[ii] = id_allocator_.AllocateID();
+      }
+    } else {
+      for (GLsizei ii = 0; ii < n; ++ii) {
+        ids[ii] = id_allocator_.AllocateIDAtOrAbove(id_offset);
+        id_offset = ids[ii] + 1;
+      }
+    }
+  }
+
+  // Overridden from IdHandlerInterface.
+  bool FreeIds(GLES2Implementation* gl_impl,
+               GLsizei n,
+               const GLuint* ids,
+               DeleteFn delete_fn) override {
+    base::AutoLock auto_lock(lock_);
+
+    for (GLsizei ii = 0; ii < n; ++ii) {
+      id_allocator_.FreeID(ids[ii]);
+    }
+
+    (gl_impl->*delete_fn)(n, ids);
+    // We need to ensure that the delete call is evaluated on the service side
+    // before any other contexts issue commands using these client ids.
+    gl_impl->helper()->CommandBufferHelper::OrderingBarrier();
+    return true;
+  }
+
+  // Overridden from IdHandlerInterface.
+  bool MarkAsUsedForBind(GLES2Implementation* gl_impl,
+                         GLenum target,
+                         GLuint id,
+                         BindFn bind_fn) override {
+    base::AutoLock auto_lock(lock_);
+    bool result = id ? id_allocator_.MarkAsUsed(id) : true;
+    (gl_impl->*bind_fn)(target, id);
+    return result;
+  }
+  bool MarkAsUsedForBind(GLES2Implementation* gl_impl,
+                         GLenum target,
+                         GLuint index,
+                         GLuint id,
+                         BindIndexedFn bind_fn) override {
+    base::AutoLock auto_lock(lock_);
+    bool result = id ? id_allocator_.MarkAsUsed(id) : true;
+    (gl_impl->*bind_fn)(target, index, id);
+    return result;
+  }
+  bool MarkAsUsedForBind(GLES2Implementation* gl_impl,
+                         GLenum target,
+                         GLuint index,
+                         GLuint id,
+                         GLintptr offset,
+                         GLsizeiptr size,
+                         BindIndexedRangeFn bind_fn) override {
+    base::AutoLock auto_lock(lock_);
+    bool result = id ? id_allocator_.MarkAsUsed(id) : true;
+    (gl_impl->*bind_fn)(target, index, id, offset, size);
+    return result;
+  }
+
+  void FreeContext(GLES2Implementation* gl_impl) override {}
+
+ private:
+  base::Lock lock_;
+  IdAllocator id_allocator_ GUARDED_BY(lock_);
+};
+
 // An id handler that requires Gen before Bind.
 class StrictIdHandler : public IdHandlerInterface {
  public:
@@ -119,8 +201,9 @@ class StrictIdHandler : public IdHandlerInterface {
       DCHECK(id_states_[id - 1] == kIdInUse);
     }
 #endif
-    // |bind_fn| will not use Flush() after helper->Bind*(), so it is OK to call
-    // |bind_fn| without holding the lock.
+    // StrictIdHandler is used if |bind_generates_resource| is false. In that
+    // case, |bind_fn| will not use Flush() after helper->Bind*(), so it is OK
+    // to call |bind_fn| without holding the lock.
     (gl_impl->*bind_fn)(target, id);
     return true;
   }
@@ -135,8 +218,9 @@ class StrictIdHandler : public IdHandlerInterface {
       DCHECK(id_states_[id - 1] == kIdInUse);
     }
 #endif
-    // |bind_fn| will not use Flush() after helper->Bind*(), so it is OK to call
-    // |bind_fn| without holding the lock.
+    // StrictIdHandler is used if |bind_generates_resource| is false. In that
+    // case, |bind_fn| will not use Flush() after helper->Bind*(), so it is OK
+    // to call |bind_fn| without holding the lock.
     (gl_impl->*bind_fn)(target, index, id);
     return true;
   }
@@ -153,8 +237,9 @@ class StrictIdHandler : public IdHandlerInterface {
       DCHECK(id_states_[id - 1] == kIdInUse);
     }
 #endif
-    // |bind_fn| will not use Flush() after helper->Bind*(), so it is OK to call
-    // |bind_fn| without holding the lock.
+    // StrictIdHandler is used if |bind_generates_resource| is false. In that
+    // case, |bind_fn| will not use Flush() after helper->Bind*(), so it is OK
+    // to call |bind_fn| without holding the lock.
     (gl_impl->*bind_fn)(target, index, id, offset, size);
     return true;
   }
@@ -283,16 +368,30 @@ class RangeIdHandler : public RangeIdHandlerInterface {
   IdAllocator id_allocator_ GUARDED_BY(lock_);
 };
 
-ShareGroup::ShareGroup(uint64_t tracing_guid) : tracing_guid_(tracing_guid) {
-  for (int i = 0;
-       i < static_cast<int>(SharedIdNamespaces::kNumSharedIdNamespaces); ++i) {
-    if (i == static_cast<int>(SharedIdNamespaces::kProgramsAndShaders)) {
-      id_handlers_[i] = std::make_unique<NonReusedIdHandler>();
-    } else {
-      id_handlers_[i] = std::make_unique<StrictIdHandler>(i);
+ShareGroup::ShareGroup(bool bind_generates_resource, uint64_t tracing_guid)
+    : bind_generates_resource_(bind_generates_resource),
+      tracing_guid_(tracing_guid) {
+  if (bind_generates_resource) {
+    for (int i = 0;
+         i < static_cast<int>(SharedIdNamespaces::kNumSharedIdNamespaces);
+         ++i) {
+      if (i == static_cast<int>(SharedIdNamespaces::kProgramsAndShaders)) {
+        id_handlers_[i] = std::make_unique<NonReusedIdHandler>();
+      } else {
+        id_handlers_[i] = std::make_unique<IdHandler>();
+      }
+    }
+  } else {
+    for (int i = 0;
+         i < static_cast<int>(SharedIdNamespaces::kNumSharedIdNamespaces);
+         ++i) {
+      if (i == static_cast<int>(SharedIdNamespaces::kProgramsAndShaders)) {
+        id_handlers_[i] = std::make_unique<NonReusedIdHandler>();
+      } else {
+        id_handlers_[i] = std::make_unique<StrictIdHandler>(i);
+      }
     }
   }
-
   program_info_manager_ = std::make_unique<ProgramInfoManager>();
   for (auto& range_id_handler : range_id_handlers_) {
     range_id_handler = std::make_unique<RangeIdHandler>();
