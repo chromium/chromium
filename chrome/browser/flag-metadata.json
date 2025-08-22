@@ -8640,7 +8640,7 @@
   {
     "name": "render-document",
     "owners": [ "rakina@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "renderer-side-content-decoding",
