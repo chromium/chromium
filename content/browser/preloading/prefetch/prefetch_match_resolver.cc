@@ -410,6 +410,11 @@ void PrefetchMatchResolver::UnblockForMatch(const PrefetchKey& prefetch_key) {
 void PrefetchMatchResolver::UnblockForNoCandidates() {
   TRACE_EVENT0("loading", "PrefetchMatchResolver::UnblockForNoCandidates");
   UnblockInternal({});
+  if (prefetch_service_ && expected_service_worker_state_ ==
+                               PrefetchServiceWorkerState::kDisallowed) {
+    prefetch_service_->AddRecentUnmatchedNavigatedKeysForMetrics(
+        navigated_key_);
+  }
 }
 
 void PrefetchMatchResolver::MaybeUnblockForUnmatch(

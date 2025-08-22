@@ -373,6 +373,7 @@ PrefetchContainer::~PrefetchContainer() {
   MaybeRecordPrefetchStatusToUMA(
       prefetch_status_.value_or(PrefetchStatus::kPrefetchNotStarted));
   RecordPrefetchDurationHistogram();
+  RecordPrefetchMatchMissedToPrefetchStartedHistogram();
   RecordPrefetchContainerServedCountHistogram();
 
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
@@ -589,6 +590,12 @@ void PrefetchContainer::SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
           preloading_trigger_outcome.value(), prefetch_status, RequestId());
     }
   }
+}
+
+void PrefetchContainer::SetPrefetchMatchMissedTimeForMetrics(
+    base::TimeTicks time) {
+  CHECK(!time_prefetch_match_missed_);
+  time_prefetch_match_missed_ = time;
 }
 
 void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
@@ -1939,6 +1946,19 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
                           }),
                           time_prefetch_completed_successfully_.value() -
                               time_prefetch_started_.value());
+}
+
+void PrefetchContainer::RecordPrefetchMatchMissedToPrefetchStartedHistogram() {
+  if (time_prefetch_started_.has_value() &&
+      time_prefetch_match_missed_.has_value()) {
+    base::UmaHistogramTimes(
+        base::StrCat({
+            "Prefetch.PrefetchContainer."
+            "PrefetchMatchMissedToPrefetchStarted.",
+            GetMetricsSuffix(),
+        }),
+        time_prefetch_started_.value() - time_prefetch_match_missed_.value());
+  }
 }
 
 void PrefetchContainer::RecordPrefetchMatchingBlockedNavigationHistogram(

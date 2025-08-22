@@ -1516,6 +1516,12 @@ void PrefetchService::OnCandidatesUpdated() {
   }
 }
 
+void PrefetchService::AddRecentUnmatchedNavigatedKeysForMetrics(
+    const PrefetchKey& navigated_key) {
+  recent_unmatched_navigated_keys_for_metrics_.Put(navigated_key,
+                                                   base::TimeTicks::Now());
+}
+
 void PrefetchService::EvictPrefetch(
     base::PassKey<PrefetchScheduler>,
     base::WeakPtr<PrefetchContainer> prefetch_container) {
@@ -1624,6 +1630,8 @@ bool PrefetchService::StartSinglePrefetch(
     SpareRenderProcessHostManager::Get().WarmupSpare(browser_context_);
   }
 
+  MaybeSetPrefetchMatchMissedTimeForMetrics(prefetch_container);
+
   return true;
 }
 
@@ -1669,6 +1677,24 @@ void PrefetchService::SendPrefetchRequest(
   prefetch_container->SetStreamingURLLoader(std::move(streaming_loader));
 
   DVLOG(1) << *prefetch_container << ": PrefetchStreamingURLLoader is created.";
+}
+
+void PrefetchService::MaybeSetPrefetchMatchMissedTimeForMetrics(
+    base::WeakPtr<PrefetchContainer> prefetch_container) const {
+  // Check if the prefetch could've been matched to a recently navigated URL.
+  // We will log the event to UMA in order to understand if a potential race
+  // condition has occurred.
+  // TODO(crbug.com/433478563): Introduce another variant of
+  // `no_vary_search::MatchUrl` that doesn't require a map.
+  std::map<PrefetchKey, base::WeakPtr<PrefetchContainer>> candidates{
+      {prefetch_container->key(), prefetch_container}};
+  for (auto& it : recent_unmatched_navigated_keys_for_metrics_) {
+    bool urls_match = !!no_vary_search::MatchUrl(it.first, candidates);
+    if (urls_match) {
+      prefetch_container->SetPrefetchMatchMissedTimeForMetrics(it.second);
+      break;
+    }
+  }
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

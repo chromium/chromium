@@ -242,6 +242,11 @@ class CONTENT_EXPORT PrefetchContainer {
     return weak_method_factory_.GetWeakPtr();
   }
 
+  // Sets the time that the latest earlier prefetch unmatch happened that this
+  // prefetch could've been served to. Please see
+  // `time_prefetch_match_missed_` for more details.
+  void SetPrefetchMatchMissedTimeForMetrics(base::TimeTicks time);
+
   // The status of the current prefetch. Note that |HasPrefetchStatus| will be
   // initially false until |SetPrefetchStatus| is called. |SetPrefetchStatus|
   // also sets |request().attempt()| PreloadingTriggeringOutcome and
@@ -652,6 +657,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // Records UMAs tracking some certain durations during prefetch addition to
   // prefetch completion (e.g. `Prefetch.PrefetchContainer.AddedTo*`).
   void RecordPrefetchDurationHistogram();
+  // Records `Prefetch.PrefetchContainer.PrefetchMatchMissedToPrefetchStarted.*`
+  // UMA.
+  void RecordPrefetchMatchMissedToPrefetchStartedHistogram();
   // Records `Prefetch.PrefetchMatchingBlockedNavigationWithPrefetch.*` UMAs.
   void RecordPrefetchMatchingBlockedNavigationHistogram(bool blocked_until_head,
                                                         bool is_nav_prerender);
@@ -815,6 +823,12 @@ class CONTENT_EXPORT PrefetchContainer {
   std::optional<base::TimeTicks> time_url_request_started_;
   std::optional<base::TimeTicks> time_header_determined_successfully_;
   std::optional<base::TimeTicks> time_prefetch_completed_successfully_;
+
+  // The time that the latest earlier prefetch unmatch happened that this
+  // prefetch could've been served to.
+  // Set via `SetPrefetchMatchMissedTimeForMetrics()` which can be called during
+  // prefetch start (`PrefetchService::StartSinglePrefetch()`).
+  std::optional<base::TimeTicks> time_prefetch_match_missed_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

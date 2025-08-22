@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 
+#include "base/containers/lru_cache.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -143,6 +144,12 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // Called by PrefetchDocumentManager when it finishes processing the latest
   // update of speculation candidates.
   void OnCandidatesUpdated();
+
+  // Records recent non-SW-controlled unmatched `PrefetchMatchResolver`'s
+  // `PrefetchKey`. Please see
+  // `recent_unmatched_navigated_keys_for_metrics_` for more details.
+  void AddRecentUnmatchedNavigatedKeysForMetrics(
+      const PrefetchKey& navigated_key);
 
   // Helper functions to control the behavior of the eligibility check when
   // testing.
@@ -423,6 +430,13 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   void RemoveFromSchedulerAndProgressAsync(
       PrefetchContainer& prefetch_container);
 
+  // If we have a recent unmatch stored in
+  // `recent_unmatched_navigated_keys_for_metrics_` that this given prefetch
+  // could've been served to, sets the time that the latest unmatch happened to
+  // this prefetch for metrics.
+  void MaybeSetPrefetchMatchMissedTimeForMetrics(
+      base::WeakPtr<PrefetchContainer> prefetch_container) const;
+
   // Returns `true` if the `prefetch_container` is stale. I.e.
   // the prefetch either is not or never will be servable to a
   // navigation.
@@ -490,6 +504,24 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // destroyed elsewhere even if it has a relevant `PrefetchService` (e.g. in
   // `PrefetchContainer::MigrateNewlyAdded()`).
   std::map<PrefetchKey, std::unique_ptr<PrefetchContainer>> owned_prefetches_;
+
+  // Stores recent `PrefetchKey` that non-SW-controlled `PrefetchMatchResolver`
+  // eventually judged that a `PrefetchContainer` candidate having that key was
+  // not matched to a navigation.
+  // Will be updated by `AddRecentUnmatchedNavigatedKeysForMetrics()` and will
+  // be used to log prefetches that occurred shortly after a navigation where
+  // the prefetch could've been served. This LRU size of 10 should be big enough
+  // to calculate this.
+  //
+  // Note that this is recorded per non-SW-controlled `PrefetchMatchResolver`
+  // right now, i.e.
+  // - If the navigation has redirects, this will be recorded per its redirect
+  // hops.
+  // - This won't catch the case where a SW-controlled `PrefetchMatchResolver`
+  //   misses prefetches, and non-SW-controlled `PrefetchMatchResolver` gets a
+  //   `PrefetchContainer` to be served.
+  base::LRUCache<PrefetchKey, base::TimeTicks>
+      recent_unmatched_navigated_keys_for_metrics_{10};
 
 // Protects against Prefetch() being called recursively.
 #if DCHECK_IS_ON()
