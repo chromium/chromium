@@ -740,8 +740,6 @@ source_set("browser") {
     "btm/btm_page_visit_observer.h",
     "btm/btm_service_impl.cc",
     "btm/btm_service_impl.h",
-    "btm/btm_short_visit_observer.cc",
-    "btm/btm_short_visit_observer.h",
     "btm/btm_state.cc",
     "btm/btm_state.h",
     "btm/btm_storage.cc",
