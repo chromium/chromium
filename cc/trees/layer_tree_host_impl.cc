@@ -2454,9 +2454,10 @@ void LayerTreeHostImpl::OnSurfaceEvicted(
 }
 
 void LayerTreeHostImpl::ReportEventLatency(
+    const viz::BeginFrameArgs& args,
     std::vector<EventLatencyTracker::LatencyData> latencies) {
   if (auto* recorder = CustomMetricRecorder::Get())
-    recorder->ReportEventLatency(std::move(latencies));
+    recorder->ReportEventLatency(args, std::move(latencies));
 }
 
 void LayerTreeHostImpl::OnCanDrawStateChangedForTree() {

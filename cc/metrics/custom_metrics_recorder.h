@@ -22,6 +22,7 @@ class CC_EXPORT CustomMetricRecorder {
 
   // Invoked to report event latencies.
   virtual void ReportEventLatency(
+      const viz::BeginFrameArgs& args,
       std::vector<EventLatencyTracker::LatencyData> latencies) = 0;
 
  protected:

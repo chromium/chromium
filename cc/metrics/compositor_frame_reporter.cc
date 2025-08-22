@@ -1243,7 +1243,7 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
   if (!latencies.empty()) {
     DCHECK(global_trackers_.event_latency_tracker);
     global_trackers_.event_latency_tracker->ReportEventLatency(
-        std::move(latencies));
+        args_, std::move(latencies));
   }
 }
 

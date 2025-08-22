@@ -582,6 +582,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   // EventLatencyTracker implementation.
   void ReportEventLatency(
+      const viz::BeginFrameArgs& args,
       std::vector<EventLatencyTracker::LatencyData> latencies) override;
 
   // Called from LayerTreeImpl.
