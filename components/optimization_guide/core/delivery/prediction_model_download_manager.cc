@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/delivery/prediction_model_download_manager.h"
 
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -39,6 +40,12 @@
 namespace optimization_guide {
 
 namespace {
+
+// Disables model downloads for benchmarking. This is to ensure that
+// benchmarking runs for CPU, battery, and memory are not affected by tens of
+// model downloads that happen on startup with a clean profile.
+const char kDisableModelDownloadsForBenchmarking[] =
+    "disable-optimization-guide-model-downloads-for-benchmarking";
 
 // The SHA256 hash of the public key for the Optimization Guide Server that
 // we require models to come from.
@@ -162,6 +169,10 @@ bool PredictionModelDownloadManager::IsAvailableForDownloads() const {
 }
 
 bool PredictionModelDownloadManager::ShouldFetchModels() const {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kDisableModelDownloadsForBenchmarking)) {
+    return false;
+  }
   return (switches::ShouldSkipGoogleApiKeyConfigurationCheck() ||
           google_apis::HasAPIKeyConfigured()) &&
          local_state_->GetBoolean(prefs::kComponentUpdatesEnabled);
