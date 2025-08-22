@@ -139,7 +139,9 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         mExitCallback = exitCallback;
 
         // Acquire lock to prevent IPH from being shown in a collaboration flow.
-        Tracker tracker = TrackerFactory.getTrackerForProfile(mDataSharingTabManager.getProfile());
+        Profile profile = mDataSharingTabManager.getProfile();
+        assert profile != null;
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         mFeatureEngagementLock = tracker.acquireDisplayLock();
 
         Runnable onTabSwitcherShownRunnable =

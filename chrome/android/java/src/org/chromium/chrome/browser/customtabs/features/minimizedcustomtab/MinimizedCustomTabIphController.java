@@ -68,9 +68,10 @@ public class MinimizedCustomTabIphController
 
     @Override
     public void notifyUserEngaged() {
-        if (!mProfileSupplier.hasValue()) return;
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
 
-        var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        var tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.addOnInitializedCallback(
                 success -> tracker.notifyEvent(EventConstants.CCT_MINIMIZE_BUTTON_CLICKED));
     }
@@ -92,7 +93,9 @@ public class MinimizedCustomTabIphController
     }
 
     private void showIph(View button) {
-        var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        Profile profile = mProfileSupplier.get();
+        assert profile != null;
+        var tracker = TrackerFactory.getTrackerForProfile(profile);
         if (!tracker.isInitialized()) return;
         if (!tracker.wouldTriggerHelpUi(FeatureConstants.CCT_MINIMIZED_FEATURE)) return;
         float startingRadiusPx =

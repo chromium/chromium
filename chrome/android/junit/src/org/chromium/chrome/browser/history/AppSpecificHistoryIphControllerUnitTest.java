@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -53,7 +52,7 @@ public class AppSpecificHistoryIphControllerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private UserEducationHelper mUserEducationHelper;
-    @Mock private Supplier<Profile> mProfileSupplier;
+    @Mock private Profile mMockProfile;
     @Mock private Tracker mTracker;
 
     @Mock private Activity mActivity;
@@ -65,8 +64,7 @@ public class AppSpecificHistoryIphControllerUnitTest {
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE))
                 .thenReturn(true);
         TrackerFactory.setTrackerForTests(mTracker);
-        when(mProfileSupplier.hasValue()).thenReturn(true);
-        mController = new AppSpecificHistoryIphController(mActivity, mProfileSupplier);
+        mController = new AppSpecificHistoryIphController(mActivity, () -> mMockProfile);
         mController.setUserEducationHelperForTesting(mUserEducationHelper);
     }
 

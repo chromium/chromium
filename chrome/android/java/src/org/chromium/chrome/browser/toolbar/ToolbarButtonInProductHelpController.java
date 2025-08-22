@@ -143,9 +143,9 @@ public class ToolbarButtonInProductHelpController
                                     return;
                                 }
 
-                                Tracker tracker =
-                                        TrackerFactory.getTrackerForProfile(
-                                                Profile.fromWebContents(tab.getWebContents()));
+                                Profile profile = Profile.fromWebContents(tab.getWebContents());
+                                assert profile != null;
+                                Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
                                 tracker.notifyEvent(EventConstants.USER_HAS_SEEN_DINO);
                             }
                         },

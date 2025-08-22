@@ -247,8 +247,9 @@ public class VoiceRecognitionHandler {
             RenderFrameHost renderFrameHost = webContents.getMainFrame();
             if (renderFrameHost == null) return;
 
-            if (!mProfileSupplier.hasValue()) return;
-            if (TemplateUrlServiceFactory.getForProfile(mProfileSupplier.get())
+            Profile profile = mProfileSupplier.get();
+            if (profile == null) return;
+            if (TemplateUrlServiceFactory.getForProfile(profile)
                     .isSearchResultsPageFromDefaultSearchProvider(url)) {
                 renderFrameHost.notifyUserActivation();
             }
@@ -346,9 +347,9 @@ public class VoiceRecognitionHandler {
                 }
             }
 
-            if (!mProfileSupplier.hasValue()) return;
-
             Profile profile = mProfileSupplier.get();
+            if (profile == null) return;
+
             AutocompleteMatch match = AutocompleteCoordinator.classify(profile, topResultQuery);
 
             String url;
@@ -387,8 +388,9 @@ public class VoiceRecognitionHandler {
             String culledString = strings.get(i).replaceAll(" ", "");
 
             AutocompleteMatch match = null;
-            if (mProfileSupplier.hasValue()) {
-                match = AutocompleteCoordinator.classify(mProfileSupplier.get(), culledString);
+            Profile profile = mProfileSupplier.get();
+            if (profile != null) {
+                match = AutocompleteCoordinator.classify(profile, culledString);
             }
 
             String urlOrSearchQuery;

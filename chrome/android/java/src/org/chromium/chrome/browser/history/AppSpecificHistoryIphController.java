@@ -41,9 +41,10 @@ public class AppSpecificHistoryIphController {
     }
 
     public void notifyUserEngaged() {
-        if (!mProfileSupplier.hasValue()) return;
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
 
-        var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        var tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.addOnInitializedCallback(
                 success ->
                         tracker.notifyEvent(
@@ -51,14 +52,20 @@ public class AppSpecificHistoryIphController {
     }
 
     void maybeShowIph() {
-        if (!shouldShowIph()) {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
+        if (!HistoryManager.isAppSpecificHistoryEnabled()) return;
+
+        var tracker = TrackerFactory.getTrackerForProfile(profile);
+        if (!tracker.isInitialized()
+                || !tracker.wouldTriggerHelpUi(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE)) {
             return;
         }
         View historyToolbarSearchMenuItem = mActivity.findViewById(R.id.search_menu_id);
         if (mUserEducationHelper == null) {
             mUserEducationHelper =
                     new UserEducationHelper(
-                            mActivity, mProfileSupplier, new Handler(Looper.getMainLooper()));
+                            mActivity, profile, new Handler(Looper.getMainLooper()));
         }
         mUserEducationHelper.requestShowIph(
                 new IphCommandBuilder(
@@ -69,14 +76,6 @@ public class AppSpecificHistoryIphController {
                         .setAnchorView(historyToolbarSearchMenuItem)
                         .setHighlightParams(new HighlightParams(HighlightShape.CIRCLE))
                         .build());
-    }
-
-    private boolean shouldShowIph() {
-        if (!HistoryManager.isAppSpecificHistoryEnabled()) return false;
-
-        var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
-        return (tracker.isInitialized()
-                && tracker.wouldTriggerHelpUi(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE));
     }
 
     void setUserEducationHelperForTesting(UserEducationHelper userEducationHelper) {

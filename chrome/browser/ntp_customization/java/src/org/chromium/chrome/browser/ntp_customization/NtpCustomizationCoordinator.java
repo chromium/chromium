@@ -215,9 +215,9 @@ public class NtpCustomizationCoordinator {
 
     private void showFeedBottomSheet() {
         if (mFeedSettingsCoordinator == null) {
+            Profile profile = assumeNonNull(mProfileSupplier.get());
             mFeedSettingsCoordinator =
-                    new FeedSettingsCoordinator(
-                            mContext, mDelegate, mProfileSupplier.get().getOriginalProfile());
+                    new FeedSettingsCoordinator(mContext, mDelegate, profile.getOriginalProfile());
         }
         mMediator.showBottomSheet(FEED);
     }
@@ -231,9 +231,9 @@ public class NtpCustomizationCoordinator {
 
     private void showThemeBottomSheet() {
         if (mNtpThemeCoordinator == null) {
+            Profile profile = assumeNonNull(mProfileSupplier.get());
             mNtpThemeCoordinator =
-                    new NtpThemeCoordinator(
-                            mContext, mDelegate, mProfileSupplier.get().getOriginalProfile());
+                    new NtpThemeCoordinator(mContext, mDelegate, profile.getOriginalProfile());
         }
         mMediator.showBottomSheet(THEME);
     }

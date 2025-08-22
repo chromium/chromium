@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
@@ -72,9 +74,10 @@ public class CustomTabHistoryIphController {
     }
 
     public void notifyUserEngaged() {
-        if (!mProfileSupplier.hasValue()) return;
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
 
-        var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        var tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.addOnInitializedCallback(
                 success -> tracker.notifyEvent(EventConstants.CCT_HISTORY_MENU_ITEM_CLICKED));
     }
@@ -104,9 +107,10 @@ public class CustomTabHistoryIphController {
     private boolean shouldShowIph() {
         if (!ChromeFeatureList.sAppSpecificHistory.isEnabled()) return false;
 
-        if (mProfileSupplier.get().isOffTheRecord()) return false;
+        Profile profile = assumeNonNull(mProfileSupplier.get());
+        if (profile.isOffTheRecord()) return false;
 
-        var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        var tracker = TrackerFactory.getTrackerForProfile(profile);
         return (tracker.isInitialized()
                 && tracker.wouldTriggerHelpUi(FeatureConstants.CCT_HISTORY_FEATURE));
     }

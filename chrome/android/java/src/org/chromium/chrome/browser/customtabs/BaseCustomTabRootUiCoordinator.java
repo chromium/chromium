@@ -346,11 +346,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             return null;
         }
 
-        if (!mProfileSupplier.hasValue()) {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) {
             return null;
         }
 
-        Profile profile = mProfileSupplier.get();
         // Exclude incognito and ephemeral sessions.
         if (profile.isOffTheRecord()) {
             MismatchNotificationController.recordMismatchNoticeSuppressedHistogram(
@@ -571,14 +571,16 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
                 && mActivityType == ActivityType.WEB_APK) {
 
+            Profile profile = mProfileSupplier.get();
+            assert profile != null;
             mTrackingProtectionSnackbarController =
                     new TrackingProtectionSnackbarController(
                             getPageInfoSnackbarOnAction(),
                             mSnackbarManagerSupplier,
                             mActivityTabProvider.get().getWebContents(),
-                            mProfileSupplier.get(),
+                            profile,
                             mActivityType,
-                            mProfileSupplier.get().isIncognitoBranded());
+                            profile.isIncognitoBranded());
         }
     }
 

@@ -136,7 +136,7 @@ public class IdentityDiscController
     }
 
     private void calculateButtonData() {
-        if (!isProfileInitialized()) {
+        if (mProfile == null) {
             assert !mButtonData.canShow();
             return;
         }
@@ -316,8 +316,8 @@ public class IdentityDiscController
     private void recordIdentityDiscUsed() {
         BrowserUiUtils.recordIdentityDiscClicked(mIsTabNtp);
 
-        assert isProfileInitialized();
-        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        assert mProfile != null;
+        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
         tracker.notifyEvent(EventConstants.IDENTITY_DISC_USED);
         RecordUserAction.record("MobileToolbarIdentityDiscTap");
     }
@@ -390,18 +390,14 @@ public class IdentityDiscController
                 userName);
     }
 
-    private boolean isProfileInitialized() {
-        return mProfileSupplier != null && mProfileSupplier.hasValue();
-    }
-
     @VisibleForTesting
     void onClick() {
-        if (!isProfileInitialized()) {
+        if (mProfile == null) {
             return;
         }
         recordIdentityDiscUsed();
 
-        Profile originalProfile = mProfileSupplier.get().getOriginalProfile();
+        Profile originalProfile = mProfile.getOriginalProfile();
         if (getSignedInAccountInfo() == null
                 && UserPrefs.get(originalProfile).getBoolean(Pref.SIGNIN_ALLOWED)) {
             AccountPickerBottomSheetStrings bottomSheetStrings =

@@ -101,8 +101,10 @@ public class HomeModulesMediator {
     /** Shows the magic stack with profile ready. */
     void showModules(Runnable onHomeModulesChangedCallback, ModuleDelegate moduleDelegate) {
         long segmentationServiceCallTimeMs = SystemClock.elapsedRealtime();
+        Profile profile = mProfileSupplier.get();
+        assert profile != null;
         HomeModulesRankingHelper.fetchModulesRank(
-                mProfileSupplier.get(),
+                profile,
                 mModuleRegistry.createInputContext(),
                 (orderedLabels) -> {
                     // It is possible that the result is received after the magic stack has been
@@ -121,8 +123,10 @@ public class HomeModulesMediator {
 
     /** Called to notify that a module view is created. */
     void onModuleViewCreated(@ModuleType int moduleType) {
+        Profile profile = mProfileSupplier.get();
+        assert profile != null;
         HomeModulesRankingHelper.notifyCardShown(
-                mProfileSupplier.get(), HomeModulesMetricsUtils.getModuleName(moduleType));
+                profile, HomeModulesMetricsUtils.getModuleName(moduleType));
 
         if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
             HomeModulesUtils.increaseImpressionCountBeforeInteraction(moduleType);
@@ -131,8 +135,10 @@ public class HomeModulesMediator {
 
     /** Called to notify that a module was clicked. */
     void onModuleClicked(@ModuleType int moduleType) {
+        Profile profile = mProfileSupplier.get();
+        assert profile != null;
         HomeModulesRankingHelper.notifyCardInteracted(
-                mProfileSupplier.get(), HomeModulesMetricsUtils.getModuleName(moduleType));
+                profile, HomeModulesMetricsUtils.getModuleName(moduleType));
 
         if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
             HomeModulesMetricsUtils.recordEducationalTipModuleImpressionCountBeforeInteraction(

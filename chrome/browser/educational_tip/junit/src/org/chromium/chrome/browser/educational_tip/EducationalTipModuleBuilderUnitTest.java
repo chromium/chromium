@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -59,7 +60,6 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private Callback<ModuleProvider> mBuildCallback;
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
-    @Mock private ObservableSupplier<Profile> mProfileSupplier;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
@@ -72,13 +72,13 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManagerMock;
 
+    private ObservableSupplier<Profile> mProfileSupplier;
     private EducationalTipModuleBuilder mModuleBuilder;
 
     @Before
     public void setUp() {
+        mProfileSupplier = new ObservableSupplierImpl(mProfile);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
-        when(mProfileSupplier.hasValue()).thenReturn(true);
-        when(mProfileSupplier.get()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
         TrackerFactory.setTrackerForTests(mTracker);

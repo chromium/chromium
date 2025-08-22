@@ -45,6 +45,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -52,6 +53,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -103,7 +105,7 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock private ApplicationInfo mApplicationInfo;
     @Mock private DisplayMetrics mDisplayMetrics;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
-    @Mock private ObservableSupplierImpl<Profile> mProfileSupplier;
+    @Spy private ObservableSupplierImpl<Profile> mProfileSupplier;
     @Mock private Profile mProfile;
     @Mock SegmentationPlatformService mSegmentationPlatformService;
     @Mock private ModuleRegistry mModuleRegistry;
@@ -329,9 +331,7 @@ public class HomeModulesCoordinatorUnitTest {
         mCoordinator.show(callback);
 
         verify(mProfileSupplier).addObserver(mProfileObserver.capture());
-        when(mProfileSupplier.hasValue()).thenReturn(true);
-        mProfileObserver.getValue().onResult(mProfile);
-
+        mProfileSupplier.set(mProfile);
         verify(mProfileSupplier).removeObserver(mProfileObserver.capture());
     }
 
@@ -356,11 +356,9 @@ public class HomeModulesCoordinatorUnitTest {
     @SmallTest
     public void testRecordMagicStackScroll_NotScrolled() {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
-        mCoordinator = createCoordinator(/* skipInitProfile= */ true);
-        Callback<Boolean> callback = Mockito.mock(Callback.class);
-        when(mProfileSupplier.hasValue()).thenReturn(true);
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
         mCoordinator.setMediatorForTesting(mMediator);
-        mCoordinator.show(callback);
+        mCoordinator.show(CallbackUtils.emptyCallback());
 
         mCoordinator.destroy();
 
@@ -373,7 +371,6 @@ public class HomeModulesCoordinatorUnitTest {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
         Callback<Boolean> onHomeModulesShownCallback = Mockito.mock(Callback.class);
-        when(mProfileSupplier.hasValue()).thenReturn(true);
         mCoordinator.setMediatorForTesting(mMediator);
         mCoordinator.setModelForTesting(mModel);
 
@@ -450,8 +447,7 @@ public class HomeModulesCoordinatorUnitTest {
 
     private HomeModulesCoordinator createCoordinator(boolean skipInitProfile) {
         if (!skipInitProfile) {
-            when(mProfileSupplier.hasValue()).thenReturn(true);
-            when(mProfileSupplier.get()).thenReturn(mProfile);
+            mProfileSupplier.set(mProfile);
         }
         HomeModulesCoordinator homeModulesCoordinator =
                 new HomeModulesCoordinator(

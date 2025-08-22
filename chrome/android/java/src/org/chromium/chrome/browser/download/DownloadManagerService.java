@@ -1033,6 +1033,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 profile =
                         profile.getOffTheRecordProfile(
                                 info.getOtrProfileId(), /* createIfNeeded= */ true);
+                assert profile != null;
             }
             Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
             tracker.notifyEvent(EventConstants.DOWNLOAD_COMPLETED);

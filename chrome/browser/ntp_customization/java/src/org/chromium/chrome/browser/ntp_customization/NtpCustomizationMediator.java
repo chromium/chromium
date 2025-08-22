@@ -250,11 +250,12 @@ public class NtpCustomizationMediator {
      */
     @VisibleForTesting
     List<Integer> buildListContent() {
-        if (!mProfileSupplier.hasValue()) {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) {
             return List.of(NTP_CARDS);
         }
 
-        mProfile = mProfileSupplier.get().getOriginalProfile();
+        mProfile = profile.getOriginalProfile();
         List<Integer> content = new ArrayList<>();
         if (ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled()) {
             content.add(MVT);

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.Handler;
@@ -173,10 +174,11 @@ public class ContextualPageActionController {
 
     @Nullable
     private GroupSuggestionsButtonController getGroupSuggestionsButtonController() {
-        if (!mProfileSupplier.hasValue() || mProfileSupplier.get().isOffTheRecord()) {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null || profile.isOffTheRecord()) {
             return null;
         }
-        return GroupSuggestionsButtonControllerFactory.getForProfile(mProfileSupplier.get());
+        return GroupSuggestionsButtonControllerFactory.getForProfile(profile);
     }
 
     /** Called on destroy. */
@@ -274,7 +276,7 @@ public class ContextualPageActionController {
 
         ContextualPageActionControllerJni.get()
                 .computeContextualPageAction(
-                        mProfileSupplier.get(),
+                        assertNonNull(mProfileSupplier.get()),
                         inputContext,
                         result -> {
                             if (tab.isDestroyed()) return;
@@ -297,9 +299,14 @@ public class ContextualPageActionController {
         mAdaptiveToolbarButtonController.showDynamicAction(action);
     }
 
-    /** @return The active regular tab. Null for incognito. */
+    /**
+     * @return The active regular tab. Null for incognito.
+     */
     private @Nullable Tab getValidActiveTab() {
-        if (mProfileSupplier == null || mProfileSupplier.get().isOffTheRecord()) return null;
+        Profile profile = mProfileSupplier.get();
+        if (profile == null || profile.isOffTheRecord()) {
+            return null;
+        }
         Tab tab = mTabSupplier.get();
         if (tab == null || tab.isIncognito() || tab.isDestroyed()) return null;
         return tab;

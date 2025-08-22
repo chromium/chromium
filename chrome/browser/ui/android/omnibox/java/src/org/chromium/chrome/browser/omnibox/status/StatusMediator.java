@@ -734,8 +734,9 @@ public class StatusMediator
     }
 
     private void startIph() {
-        if (!mProfileSupplier.hasValue()) return;
-        mPageInfoIphController.onPermissionDialogShown(mProfileSupplier.get(), getIphTimeout());
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
+        mPageInfoIphController.onPermissionDialogShown(profile, getIphTimeout());
     }
 
     void setStoreIconController() {
@@ -852,9 +853,9 @@ public class StatusMediator
 
     public void onUrlChanged(boolean isTabChanging) {
         var currentTab = mLocationBarDataProvider.getTab();
+        Profile profile = mProfileSupplier.get();
         if (mProfileSupplier.hasValue() && currentTab != null) {
             WebContents webContents = currentTab.getWebContents();
-            Profile profile = mProfileSupplier.get();
 
             if (webContents != null && profile != null) {
                 BrowserContextHandle originalBrowserContext =

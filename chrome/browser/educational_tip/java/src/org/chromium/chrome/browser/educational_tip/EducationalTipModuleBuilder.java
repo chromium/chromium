@@ -97,8 +97,9 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
             return mProfile;
         }
 
-        assert profileSupplier.hasValue();
-        mProfile = profileSupplier.get().getOriginalProfile();
+        Profile profile = profileSupplier.get();
+        assert profile != null;
+        mProfile = profile.getOriginalProfile();
         return mProfile;
     }
 }

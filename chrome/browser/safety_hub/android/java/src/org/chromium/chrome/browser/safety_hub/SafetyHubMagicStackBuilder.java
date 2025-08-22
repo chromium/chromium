@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -97,9 +99,8 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
     }
 
     private Profile getRegularProfile() {
-        assert mProfileSupplier.hasValue();
-
         Profile profile = mProfileSupplier.get();
+        assumeNonNull(profile);
         // It is possible that an incognito profile is provided by the supplier. See b/326619334.
         return profile.isOffTheRecord() ? profile.getOriginalProfile() : profile;
     }

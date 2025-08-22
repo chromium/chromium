@@ -898,8 +898,9 @@ public class RootUiCoordinator
     @Override
     @CallSuper
     public void onFinishNativeInitialization() {
-        if (mProfileSupplier.hasValue()) {
-            initProfileDependentFeatures(mProfileSupplier.get());
+        Profile profile = mProfileSupplier.get();
+        if (profile != null) {
+            initProfileDependentFeatures(profile);
         } else {
             new OneShotCallback<>(
                     mProfileSupplier,

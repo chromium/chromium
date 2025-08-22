@@ -73,20 +73,21 @@ public class MinimizedCustomTabIphControllerUnitTest {
 
     @Mock private ActivityTabProvider mTabProvider;
     @Mock private UserEducationHelper mUserEducationHelper;
-    @Mock private Supplier<Profile> mProfileSupplier;
+    @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private Tab mTab;
 
+    private Supplier<Profile> mProfileSupplier;
     private Activity mActivity;
     private MinimizedCustomTabIphController mController;
 
     @Before
     public void setUp() {
+        mProfileSupplier = () -> mProfile;
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         when(mTracker.isInitialized()).thenReturn(true);
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.CCT_MINIMIZED_FEATURE)).thenReturn(true);
         TrackerFactory.setTrackerForTests(mTracker);
-        when(mProfileSupplier.hasValue()).thenReturn(true);
         mController =
                 new MinimizedCustomTabIphController(
                         mActivity, mTabProvider, mUserEducationHelper, mProfileSupplier);

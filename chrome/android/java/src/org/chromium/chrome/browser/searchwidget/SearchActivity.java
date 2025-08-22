@@ -510,14 +510,15 @@ public class SearchActivity extends AsyncInitializationActivity
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
 
-        if (mProfileSupplier.hasValue()) {
-            finishNativeInitializationWithProfile(mProfileSupplier.get());
+        Profile profile = mProfileSupplier.get();
+        if (profile != null) {
+            finishNativeInitializationWithProfile(profile);
         } else {
             new OneShotCallback<>(
                     mProfileSupplier,
-                    (profile) -> {
+                    newProfile -> {
                         if (isDestroyed()) return;
-                        finishNativeInitializationWithProfile(profile);
+                        finishNativeInitializationWithProfile(newProfile);
                     });
         }
     }
