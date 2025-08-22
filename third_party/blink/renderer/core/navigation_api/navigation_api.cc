@@ -470,6 +470,10 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
                             "Invalid URL '" + completed_url.GetString() + "'.");
   }
 
+  if (completed_url.ProtocolIsJavaScript()) {
+    UseCounter::Count(window_, WebFeature::kNavigationNavigateJavaScriptURL);
+  }
+
   scoped_refptr<SerializedScriptValue> serialized_state = nullptr;
   {
     if (options->hasState()) {

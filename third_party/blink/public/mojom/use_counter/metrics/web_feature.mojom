@@ -4958,6 +4958,7 @@ enum WebFeature {
   kComputedBorderWidthWithNoneOrHiddenStyle = 5647,
   kComputedColumnRuleWidthWithNoneOrHiddenStyle = 5648,
   kComputedOutlineWidthWithNoneOrHiddenStyle = 5649,
+  kNavigationNavigateJavaScriptURL = 5650,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
