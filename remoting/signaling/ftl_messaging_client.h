@@ -29,8 +29,9 @@ class SharedURLLoaderFactory;
 
 namespace remoting {
 
+class FtlMessageChannelStrategy;
+class MessageChannel;
 class ProtobufHttpClient;
-class MessageReceptionChannel;
 class OAuthTokenGetter;
 class RegistrationManager;
 class ScopedProtobufHttpRequest;
@@ -69,7 +70,8 @@ class FtlMessagingClient final : public MessagingClient {
 
   FtlMessagingClient(std::unique_ptr<ProtobufHttpClient> client,
                      RegistrationManager* registration_manager,
-                     std::unique_ptr<MessageReceptionChannel> channel);
+                     SignalingTracker* signaling_tracker,
+                     std::unique_ptr<FtlMessageChannelStrategy> strategy);
 
   template <typename CallbackFunctor>
   void ExecuteRequest(const net::NetworkTrafficAnnotationTag& tag,
@@ -103,7 +105,7 @@ class FtlMessagingClient final : public MessagingClient {
 
   std::unique_ptr<ProtobufHttpClient> client_;
   raw_ptr<RegistrationManager> registration_manager_;
-  std::unique_ptr<MessageReceptionChannel> reception_channel_;
+  std::unique_ptr<MessageChannel> message_channel_;
   MessageCallbackList callback_list_;
   MessageTracker message_tracker_;
 };

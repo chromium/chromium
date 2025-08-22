@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -26,8 +27,8 @@
 #include "remoting/base/protobuf_http_test_responder.h"
 #include "remoting/base/scoped_protobuf_http_request.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
+#include "remoting/signaling/ftl_message_channel_strategy.h"
 #include "remoting/signaling/ftl_services_context.h"
-#include "remoting/signaling/message_reception_channel.h"
 #include "remoting/signaling/registration_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,36 +97,6 @@ std::string GetChromotingMessageText(const ftl::InboxMessage& message) {
   return chromoting_message.xmpp().stanza();
 }
 
-class MockMessageReceptionChannel : public MessageReceptionChannel {
- public:
-  MockMessageReceptionChannel() = default;
-
-  MockMessageReceptionChannel(const MockMessageReceptionChannel&) = delete;
-  MockMessageReceptionChannel& operator=(const MockMessageReceptionChannel&) =
-      delete;
-
-  ~MockMessageReceptionChannel() override = default;
-
-  // MessageReceptionChannel implementations.
-  void Initialize(const StreamOpener& stream_opener,
-                  const MessageCallback& on_incoming_msg) override {
-    stream_opener_ = stream_opener;
-    on_incoming_msg_ = on_incoming_msg;
-  }
-
-  MOCK_METHOD2(StartReceivingMessages, void(base::OnceClosure, DoneCallback));
-  MOCK_METHOD0(StopReceivingMessages, void());
-  MOCK_CONST_METHOD0(IsReceivingMessages, bool());
-
-  StreamOpener* stream_opener() { return &stream_opener_; }
-
-  MessageCallback* on_incoming_msg() { return &on_incoming_msg_; }
-
- private:
-  StreamOpener stream_opener_;
-  MessageCallback on_incoming_msg_;
-};
-
 class MockRegistrationManager : public RegistrationManager {
  public:
   MockRegistrationManager() = default;
@@ -156,7 +127,6 @@ class FtlMessagingClientTest : public testing::Test {
   FakeOAuthTokenGetter token_getter_{OAuthTokenGetter::Status::SUCCESS,
                                      OAuthTokenInfo()};
   std::unique_ptr<FtlMessagingClient> messaging_client_;
-  raw_ptr<MockMessageReceptionChannel> mock_message_reception_channel_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -166,17 +136,16 @@ class FtlMessagingClientTest : public testing::Test {
 void FtlMessagingClientTest::SetUp() {
   EXPECT_CALL(mock_registration_manager_, GetFtlAuthToken())
       .WillRepeatedly(Return("fake_auth_token"));
-  auto channel = std::make_unique<MockMessageReceptionChannel>();
-  mock_message_reception_channel_ = channel.get();
   messaging_client_ = std::unique_ptr<FtlMessagingClient>(
       new FtlMessagingClient(std::make_unique<ProtobufHttpClient>(
                                  kFakeServerEndpoint, &token_getter_,
                                  test_responder_.GetUrlLoaderFactory()),
-                             &mock_registration_manager_, std::move(channel)));
+                             &mock_registration_manager_,
+                             /*signaling_tracker=*/nullptr,
+                             std::make_unique<FtlMessageChannelStrategy>()));
 }
 
 void FtlMessagingClientTest::TearDown() {
-  mock_message_reception_channel_ = nullptr;
   messaging_client_.reset();
 }
 
@@ -233,65 +202,58 @@ TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithRegId) {
 TEST_F(FtlMessagingClientTest, TestStartReceivingMessages_CallbacksForwarded) {
   base::RunLoop run_loop;
 
-  EXPECT_CALL(*mock_message_reception_channel_, StartReceivingMessages(_, _))
-      .WillOnce(Invoke([&](base::OnceClosure on_ready,
-                           FtlMessagingClient::DoneCallback on_closed) {
-        std::move(on_ready).Run();
-        std::move(on_closed).Run(
-            HttpStatus(HttpStatus::Code::UNAUTHENTICATED, ""));
-      }));
-
   base::MockCallback<base::OnceClosure> mock_on_ready_closure;
   EXPECT_CALL(mock_on_ready_closure, Run()).WillOnce(Return());
 
   messaging_client_->StartReceivingMessages(
       mock_on_ready_closure.Get(),
-      base::BindLambdaForTesting([&](const HttpStatus& status) {
-        ASSERT_EQ(HttpStatus::Code::UNAUTHENTICATED, status.error_code());
-        run_loop.Quit();
-      }));
+      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::UNKNOWN,
+                                         &run_loop));
+
+  ftl::ReceiveMessagesResponse start_of_batch;
+  start_of_batch.mutable_start_of_batch();
+  // Using `UNKNOWN` because it is a non-retriable error.
+  test_responder_.AddStreamResponseToMostRecentRequestUrl(
+      {&start_of_batch}, HttpStatus(HttpStatus::Code::UNKNOWN, ""));
 
   run_loop.Run();
 }
 
-TEST_F(FtlMessagingClientTest, TestStopReceivingMessages_CallForwarded) {
-  EXPECT_CALL(*mock_message_reception_channel_, StopReceivingMessages())
-      .WillOnce(Return());
-  messaging_client_->StopReceivingMessages();
-}
-
 TEST_F(FtlMessagingClientTest,
-       TestStreamOpener_StreamsTwoMessagesThenCloseByServer) {
+       TestStreamOpener_StreamsTwoMessagesThenClosedByServer) {
   base::RunLoop run_loop;
 
-  std::unique_ptr<ScopedProtobufHttpRequest> scoped_stream;
-
-  ftl::ReceiveMessagesResponse response_1;
-  response_1.mutable_inbox_message()->set_message_id(kMessage1Id);
-  ftl::ReceiveMessagesResponse response_2;
-  response_2.mutable_pong();
-
-  base::MockCallback<base::RepeatingCallback<void(
-      std::unique_ptr<ftl::ReceiveMessagesResponse>)>>
-      mock_on_incoming_msg;
-  EXPECT_CALL(mock_on_incoming_msg, Run(_))
-      .WillOnce([&](std::unique_ptr<ftl::ReceiveMessagesResponse> response) {
-        ASSERT_EQ(kMessage1Id, response->inbox_message().message_id());
+  base::MockCallback<FtlMessagingClient::MessageCallback> mock_on_incoming_msg;
+  EXPECT_CALL(mock_on_incoming_msg, Run(_, _, _))
+      .WillOnce([&](const ftl::Id&, const std::string&,
+                    const ftl::ChromotingMessage& message) {
+        EXPECT_EQ(kMessage1Text, message.xmpp().stanza());
       })
-      .WillOnce([&](std::unique_ptr<ftl::ReceiveMessagesResponse> response) {
-        ASSERT_TRUE(response->has_pong());
+      .WillOnce([&](const ftl::Id&, const std::string&,
+                    const ftl::ChromotingMessage& message) {
+        EXPECT_EQ(kMessage2Text, message.xmpp().stanza());
+        run_loop.Quit();
       });
 
-  base::MockCallback<base::OnceClosure> on_channel_ready;
-  EXPECT_CALL(on_channel_ready, Run()).Times(1);
+  base::CallbackListSubscription subscription =
+      messaging_client_->RegisterMessageCallback(mock_on_incoming_msg.Get());
+  messaging_client_->StartReceivingMessages(base::DoNothing(),
+                                            base::DoNothing());
 
-  scoped_stream = mock_message_reception_channel_->stream_opener()->Run(
-      on_channel_ready.Get(), mock_on_incoming_msg.Get(),
-      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
-                                         &run_loop));
+  ftl::ReceiveMessagesResponse start_of_batch;
+  start_of_batch.mutable_start_of_batch();
+
+  ftl::ReceiveMessagesResponse inbox_message_1;
+  *inbox_message_1.mutable_inbox_message() =
+      CreateInboxMessage(kMessage1Id, kMessage1Text);
+
+  ftl::ReceiveMessagesResponse inbox_message_2;
+  *inbox_message_2.mutable_inbox_message() =
+      CreateInboxMessage(kMessage2Id, kMessage2Text);
 
   test_responder_.AddStreamResponseToMostRecentRequestUrl(
-      {&response_1, &response_2}, HttpStatus::OK());
+      {&start_of_batch, &inbox_message_1, &inbox_message_2},
+      HttpStatus(HttpStatus::Code::OK, ""));
 
   run_loop.Run();
 }
@@ -299,23 +261,39 @@ TEST_F(FtlMessagingClientTest,
 TEST_F(FtlMessagingClientTest,
        TestOnMessageReceived_MessagePassedToSubscriberAndAcked) {
   base::RunLoop run_loop;
+
   base::MockCallback<FtlMessagingClient::MessageCallback> mock_on_incoming_msg;
   EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId,
                                         StanzaTextMatches(kMessage1Text)))
-      .WillOnce([&](const ftl::Id&, const std::string&,
-                    const ftl::ChromotingMessage&) { run_loop.Quit(); });
+      .WillOnce(Return());
 
-  auto subscription =
+  base::CallbackListSubscription subscription =
       messaging_client_->RegisterMessageCallback(mock_on_incoming_msg.Get());
-  ftl::InboxMessage message = CreateInboxMessage(kMessage1Id, kMessage1Text);
-  mock_message_reception_channel_->on_incoming_msg()->Run(message);
+  messaging_client_->StartReceivingMessages(base::DoNothing(),
+                                            base::DoNothing());
 
-  ftl::BatchAckMessagesRequest request;
-  ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(1, request.message_ids_size());
-  EXPECT_EQ(kMessage1Id, request.message_ids(0));
-  test_responder_.AddResponseToMostRecentRequestUrl(
-      ftl::BatchAckMessagesResponse());
+  ftl::ReceiveMessagesResponse start_of_batch;
+  start_of_batch.mutable_start_of_batch();
+
+  ftl::ReceiveMessagesResponse inbox_message;
+  *inbox_message.mutable_inbox_message() =
+      CreateInboxMessage(kMessage1Id, kMessage1Text);
+
+  test_responder_.AddStreamResponseToMostRecentRequestUrl(
+      {&start_of_batch, &inbox_message}, HttpStatus(HttpStatus::Code::OK, ""));
+
+  EXPECT_CALL(test_responder_.GetMockInterceptor(), Run(_))
+      .WillRepeatedly([&](const network::ResourceRequest& request) {
+        ftl::BatchAckMessagesRequest message;
+        ProtobufHttpTestResponder::ParseRequestMessage(request, &message);
+        if (message.message_ids_size() < 1) {
+          // Ignore non-batch messages.
+          return;
+        }
+        EXPECT_EQ(message.message_ids_size(), 1);
+        EXPECT_EQ(message.message_ids(0), kMessage1Id);
+        run_loop.Quit();
+      });
 
   run_loop.Run();
 }
@@ -334,37 +312,51 @@ TEST_F(FtlMessagingClientTest, ReceivedDuplicatedMessage_AckAndDrop) {
         EXPECT_EQ(kMessage2Text, message.xmpp().stanza());
       });
 
+  int ack_count = 0;
   EXPECT_CALL(test_responder_.GetMockInterceptor(), Run(_))
-      .WillOnce([](const network::ResourceRequest& request) {
+      .WillRepeatedly([&](const network::ResourceRequest& request) {
         ftl::BatchAckMessagesRequest message;
         ProtobufHttpTestResponder::ParseRequestMessage(request, &message);
+        if (message.message_ids_size() < 1) {
+          // Ignore non-batch messages.
+          return;
+        }
+        ack_count++;
         EXPECT_EQ(1, message.message_ids_size());
-        EXPECT_EQ(kMessage1Id, message.message_ids(0));
-      })
-      .WillOnce([](const network::ResourceRequest& request) {
-        ftl::BatchAckMessagesRequest message;
-        ProtobufHttpTestResponder::ParseRequestMessage(request, &message);
-        EXPECT_EQ(1, message.message_ids_size());
-        EXPECT_EQ(kMessage1Id, message.message_ids(0));
-      })
-      .WillOnce([&](const network::ResourceRequest& request) {
-        ftl::BatchAckMessagesRequest message;
-        ProtobufHttpTestResponder::ParseRequestMessage(request, &message);
-        EXPECT_EQ(1, message.message_ids_size());
-        EXPECT_EQ(kMessage2Id, message.message_ids(0));
-        run_loop.Quit();
+        if (ack_count == 1) {
+          EXPECT_EQ(kMessage1Id, message.message_ids(0));
+        } else if (ack_count == 2) {
+          EXPECT_EQ(kMessage1Id, message.message_ids(0));
+        } else if (ack_count == 3) {
+          EXPECT_EQ(kMessage2Id, message.message_ids(0));
+          run_loop.Quit();
+        }
       });
 
-  auto subscription =
+  base::CallbackListSubscription subscription =
       messaging_client_->RegisterMessageCallback(mock_on_incoming_msg.Get());
-  ftl::InboxMessage message_1 = CreateInboxMessage(kMessage1Id, kMessage1Text);
-  mock_message_reception_channel_->on_incoming_msg()->Run(message_1);
+  messaging_client_->StartReceivingMessages(base::DoNothing(),
+                                            base::DoNothing());
 
-  ftl::InboxMessage message_2 = CreateInboxMessage(kMessage1Id, kMessage1Text);
-  mock_message_reception_channel_->on_incoming_msg()->Run(message_2);
+  ftl::ReceiveMessagesResponse start_of_batch;
+  start_of_batch.mutable_start_of_batch();
 
-  ftl::InboxMessage message_3 = CreateInboxMessage(kMessage2Id, kMessage2Text);
-  mock_message_reception_channel_->on_incoming_msg()->Run(message_3);
+  ftl::ReceiveMessagesResponse inbox_message_1;
+  *inbox_message_1.mutable_inbox_message() =
+      CreateInboxMessage(kMessage1Id, kMessage1Text);
+
+  ftl::ReceiveMessagesResponse inbox_message_1_resend;
+  *inbox_message_1_resend.mutable_inbox_message() =
+      CreateInboxMessage(kMessage1Id, kMessage1Text);
+
+  ftl::ReceiveMessagesResponse inbox_message_2;
+  *inbox_message_2.mutable_inbox_message() =
+      CreateInboxMessage(kMessage2Id, kMessage2Text);
+
+  test_responder_.AddStreamResponseToMostRecentRequestUrl(
+      {&start_of_batch, &inbox_message_1, &inbox_message_1_resend,
+       &inbox_message_2},
+      HttpStatus(HttpStatus::Code::OK, ""));
 
   run_loop.Run();
 }

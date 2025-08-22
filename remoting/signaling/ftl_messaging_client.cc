@@ -17,8 +17,9 @@
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/protobuf_http_stream_request.h"
-#include "remoting/signaling/ftl_message_reception_channel.h"
+#include "remoting/signaling/ftl_message_channel_strategy.h"
 #include "remoting/signaling/ftl_services_context.h"
+#include "remoting/signaling/message_channel.h"
 #include "remoting/signaling/registration_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -175,31 +176,28 @@ FtlMessagingClient::FtlMessagingClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     RegistrationManager* registration_manager,
     SignalingTracker* signaling_tracker)
-    : FtlMessagingClient(
-          std::make_unique<ProtobufHttpClient>(
-              FtlServicesContext::GetServerEndpoint(),
-              token_getter,
-              url_loader_factory),
-          registration_manager,
-          std::make_unique<FtlMessageReceptionChannel>(signaling_tracker)) {}
+    : FtlMessagingClient(std::make_unique<ProtobufHttpClient>(
+                             FtlServicesContext::GetServerEndpoint(),
+                             token_getter,
+                             url_loader_factory),
+                         registration_manager,
+                         signaling_tracker,
+                         std::make_unique<FtlMessageChannelStrategy>()) {}
 
 FtlMessagingClient::FtlMessagingClient(
     std::unique_ptr<ProtobufHttpClient> client,
     RegistrationManager* registration_manager,
-    std::unique_ptr<MessageReceptionChannel> channel) {
-  DCHECK(client);
-  DCHECK(registration_manager);
-  DCHECK(channel);
-  client_ = std::move(client);
-  registration_manager_ = registration_manager;
-  reception_channel_ = std::move(channel);
-  reception_channel_->Initialize(
+    SignalingTracker* signaling_tracker,
+    std::unique_ptr<FtlMessageChannelStrategy> channel_strategy)
+    : client_(std::move(client)), registration_manager_(registration_manager) {
+  channel_strategy->Initialize(
       base::BindRepeating(&FtlMessagingClient::OpenReceiveMessagesStream,
                           base::Unretained(this)),
       base::BindRepeating(&FtlMessagingClient::OnMessageReceived,
                           base::Unretained(this)));
+  message_channel_ = std::make_unique<MessageChannel>(
+      std::move(channel_strategy), signaling_tracker);
 }
-
 FtlMessagingClient::~FtlMessagingClient() = default;
 
 base::CallbackListSubscription FtlMessagingClient::RegisterMessageCallback(
@@ -244,16 +242,16 @@ void FtlMessagingClient::SendMessage(
 
 void FtlMessagingClient::StartReceivingMessages(base::OnceClosure on_ready,
                                                 DoneCallback on_closed) {
-  reception_channel_->StartReceivingMessages(std::move(on_ready),
-                                             std::move(on_closed));
+  message_channel_->StartReceivingMessages(std::move(on_ready),
+                                           std::move(on_closed));
 }
 
 void FtlMessagingClient::StopReceivingMessages() {
-  reception_channel_->StopReceivingMessages();
+  message_channel_->StopReceivingMessages();
 }
 
 bool FtlMessagingClient::IsReceivingMessages() const {
-  return reception_channel_->IsReceivingMessages();
+  return message_channel_->IsReceivingMessages();
 }
 
 template <typename CallbackFunctor>
