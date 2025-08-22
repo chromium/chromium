@@ -97,9 +97,9 @@ found in the LICENSE file.
     <dimen name="location_bar_icon_end_padding_focused_incognito">4dp</dimen>
     <dimen name="location_bar_verbose_start_padding_verbose_text">4dp</dimen>
     <dimen name="location_bar_status_extra_padding">4dp</dimen>
-    <dimen name="location_bar_url_action_offset">-8dp</dimen>
-    <dimen name="location_bar_url_action_offset_ntp">-4dp</dimen>
-    <dimen name="location_bar_url_action_padding">8dp</dimen>
+    <dimen name="location_bar_url_action_offset">8dp</dimen>
+    <dimen name="location_bar_url_action_offset_ntp">4dp</dimen>
+    <dimen name="location_bar_url_action_padding">0dp</dimen>
     <dimen name="location_bar_status_view_left_space_width_bigger">12dp</dimen>
     <dimen name="tablet_toolbar_start_padding">4dp</dimen>
     <dimen name="incognito_indicator_lateral_margin">8dp</dimen>

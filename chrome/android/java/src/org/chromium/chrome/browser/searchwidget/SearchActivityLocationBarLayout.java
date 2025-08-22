@@ -215,10 +215,10 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     @Override
-    public int getVoiceRecogintionSource() {
+    public int getVoiceRecognitionSource() {
         return mInteractionFromWidget
                 ? VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET
-                : super.getVoiceRecogintionSource();
+                : super.getVoiceRecognitionSource();
     }
 
     @Override

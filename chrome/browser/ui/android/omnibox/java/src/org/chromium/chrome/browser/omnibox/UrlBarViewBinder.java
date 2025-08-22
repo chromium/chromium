@@ -12,6 +12,8 @@ import android.text.TextUtils;
 import android.view.ActionMode;
 
 import androidx.annotation.ColorInt;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -98,6 +100,10 @@ class UrlBarViewBinder {
                     view.getPaddingStart(), verticalPadding, view.getPaddingEnd(), verticalPadding);
             view.setUseSmallTextHeight(useSmallText);
             view.setHint(getHintForTextSize(model));
+            ConstraintLayout.LayoutParams layoutParams =
+                    (ConstraintLayout.LayoutParams) view.getLayoutParams();
+            layoutParams.width =
+                    useSmallText ? LayoutParams.WRAP_CONTENT : LayoutParams.MATCH_CONSTRAINT;
         } else if (UrlBarProperties.HINT_TEXT_COLOR.equals(propertyKey)) {
             view.setHintTextColor(model.get(UrlBarProperties.HINT_TEXT_COLOR));
         } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {

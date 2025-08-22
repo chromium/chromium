@@ -20,6 +20,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.View.OnLongClickListener;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -57,6 +59,7 @@ public class UrlBarViewBinderUnitTest {
     PropertyModel mModel;
     UrlBarMediator mMediator;
     UrlBar mUrlBar;
+    ConstraintLayout.LayoutParams mUrlBarLayoutParams = new LayoutParams(0, 100);
 
     @Implements(OmniboxResourceProvider.class)
     static class ShadowOmniboxResourceProvider {
@@ -83,6 +86,7 @@ public class UrlBarViewBinderUnitTest {
                 new UrlBarMediator(
                         ContextUtils.getApplicationContext(), mModel, mFocusChangeCallback);
         mUrlBar = new UrlBarApi26(mActivity, null);
+        mUrlBar.setLayoutParams(mUrlBarLayoutParams);
         PropertyModelChangeProcessor.create(mModel, mUrlBar, UrlBarViewBinder::bind);
     }
 
@@ -219,12 +223,14 @@ public class UrlBarViewBinderUnitTest {
         int smallPadding = 0;
 
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, true);
+        Assert.assertEquals(LayoutParams.WRAP_CONTENT, mUrlBarLayoutParams.width);
         Assert.assertEquals(smallPadding, mUrlBar.getPaddingBottom());
         Assert.assertEquals(smallPadding, mUrlBar.getPaddingTop());
         Assert.assertEquals(13, mUrlBar.getPaddingStart());
         Assert.assertEquals(17, mUrlBar.getPaddingEnd());
 
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, false);
+        Assert.assertEquals(LayoutParams.MATCH_CONSTRAINT, mUrlBarLayoutParams.width);
         Assert.assertEquals(normalPadding, mUrlBar.getPaddingBottom());
         Assert.assertEquals(normalPadding, mUrlBar.getPaddingTop());
         Assert.assertEquals(13, mUrlBar.getPaddingStart());

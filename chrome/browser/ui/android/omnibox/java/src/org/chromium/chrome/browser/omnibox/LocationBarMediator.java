@@ -19,7 +19,6 @@ import android.text.TextUtils;
 import android.util.FloatProperty;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.View.OnKeyListener;
 import android.widget.TextView;
 
@@ -750,7 +749,7 @@ class LocationBarMediator
 
         RecordUserAction.record("MobileOmniboxVoiceSearch");
         mVoiceRecognitionHandler.startVoiceRecognition(
-                mLocationBarLayout.getVoiceRecogintionSource());
+                mLocationBarLayout.getVoiceRecognitionSource());
     }
 
     /** package */
@@ -861,9 +860,6 @@ class LocationBarMediator
             float urlFocusChangeFraction = showExpandedState ? 1.0f : 0.0f;
             mLocationBarLayout.setUrlFocusChangePercent(
                     urlFocusChangeFraction, urlFocusChangeFraction, false);
-            mLocationBarLayout.updateLayoutParams(
-                    MeasureSpec.makeMeasureSpec(
-                            mLocationBarLayout.getMeasuredWidth(), MeasureSpec.EXACTLY));
         }
         // Reset to the default values.
         mUrlCoordinator.setSelectAllOnFocus(false);

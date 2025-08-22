@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -24,7 +23,6 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageButton;
 
-import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -45,20 +43,15 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -80,27 +73,10 @@ public class LocationBarLayoutTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock AndroidPermissionDelegate mAndroidPermissionDelegate;
-    private WebPageStation mStartingPage;
-
-    private OmniboxTestUtils mOmnibox;
-
-    public static final LocationBarModel.OfflineStatus OFFLINE_STATUS =
-            new LocationBarModel.OfflineStatus() {
-                @Override
-                public boolean isShowingTrustedOfflinePage(Tab tab) {
-                    return false;
-                }
-
-                @Override
-                public boolean isOfflinePage(Tab tab) {
-                    return false;
-                }
-            };
 
     @Before
     public void setUp() throws InterruptedException {
-        mStartingPage = mActivityTestRule.startOnBlankPage();
-        mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
+        WebPageStation startingPage = mActivityTestRule.startOnBlankPage();
 
         doReturn(true).when(mAndroidPermissionDelegate).hasPermission(anyString());
         mActivityTestRule
@@ -130,10 +106,6 @@ public class LocationBarLayoutTest {
 
     private ImageButton getDeleteButton() {
         return mActivityTestRule.getActivity().findViewById(R.id.delete_button);
-    }
-
-    private View getStatusIconView() {
-        return mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon);
     }
 
     private void setUrlBarTextAndFocus(String text) {
@@ -242,47 +214,6 @@ public class LocationBarLayoutTest {
 
     @Test
     @MediumTest
-    public void testUpdateLayoutParams() {
-        LocationBarLayout locationBar = (LocationBarLayout) getLocationBar();
-        View statusIcon = getStatusIconView();
-        View urlContainer = getUrlBar();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    getUrlBar().requestFocus();
-
-                    MarginLayoutParams urlLayoutParams =
-                            (MarginLayoutParams) urlContainer.getLayoutParams();
-                    MarginLayoutParamsCompat.setMarginEnd(
-                            urlLayoutParams, /* very random, and only used to fail a check */
-                            13047);
-                    urlContainer.setLayoutParams(urlLayoutParams);
-
-                    statusIcon.setVisibility(GONE);
-                    locationBar.updateLayoutParams(
-                            MeasureSpec.makeMeasureSpec(1000, MeasureSpec.EXACTLY));
-                    urlLayoutParams = (MarginLayoutParams) urlContainer.getLayoutParams();
-                    int endMarginNoIcon = MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams);
-
-                    MarginLayoutParamsCompat.setMarginEnd(
-                            urlLayoutParams, /* very random, and only used to fail a check */
-                            13047);
-                    urlContainer.setLayoutParams(urlLayoutParams);
-
-                    statusIcon.setVisibility(VISIBLE);
-                    locationBar.updateLayoutParams(
-                            MeasureSpec.makeMeasureSpec(1000, MeasureSpec.EXACTLY));
-                    urlLayoutParams = (MarginLayoutParams) urlContainer.getLayoutParams();
-                    int endMarginWithIcon = MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams);
-
-                    Assert.assertEquals(
-                            endMarginNoIcon + locationBar.getEndPaddingPixelSizeOnFocusDelta(),
-                            endMarginWithIcon);
-                });
-    }
-
-    @Test
-    @MediumTest
     @DisabledTest(message = "flaky, see crbug.com/359597342")
     public void testEnforceMinimumUrlBarWidth() {
         setUrlBarTextAndFocus("");
@@ -342,18 +273,13 @@ public class LocationBarLayoutTest {
                     View urlBar = getUrlBar();
 
                     urlBar.requestFocus();
-                    int marginStart =
-                            ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart();
-                    locationBar.updateLayoutParams(
-                            MeasureSpec.makeMeasureSpec(
-                                    locationBar.getMeasuredWidth(), MeasureSpec.EXACTLY));
                     locationBar.setUrlFocusChangePercent(
                             /* ntpSearchBoxScrollFraction= */ 0,
                             /* urlFocusChangeFraction= */ MathUtils.EPSILON,
                             /* isUrlFocusChangeInProgress= */ true);
 
                     Assert.assertEquals(
-                            marginStart + locationBar.getFocusedStatusViewSpacingDelta(),
+                            locationBar.getFocusedStatusViewSpacingDelta(),
                             ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart());
                     Assert.assertEquals(
                             locationBar.getFocusedStatusViewSpacingDelta()
@@ -380,29 +306,6 @@ public class LocationBarLayoutTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.AVOID_RELAYOUT_DURING_FOCUS_ANIMATION)
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testTabletUrlBarTranslation_revampEnabled_avoidRelayoutDisabled() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    LocationBarLayout locationBar = getLocationBar();
-                    View urlBar = getUrlBar();
-
-                    urlBar.requestFocus();
-                    // Setting focus percent shouldn't crash.
-                    locationBar.setUrlFocusChangePercent(
-                            /* ntpSearchBoxScrollFraction= */ 0,
-                            /* urlFocusChangeFraction= */ MathUtils.EPSILON,
-                            /* isUrlFocusChangeInProgress= */ true);
-                    locationBar.setUrlFocusChangePercent(
-                            /* ntpSearchBoxScrollFraction= */ 0.5f,
-                            /* urlFocusChangeFraction= */ 0.5f,
-                            /* isUrlFocusChangeInProgress= */ false);
-                });
-    }
-
-    @Test
-    @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
     public void testPhoneUrlBarAndStatusViewTranslation() {
         ThreadUtils.runOnUiThreadBlocking(
@@ -416,9 +319,6 @@ public class LocationBarLayoutTest {
                     View statusView = locationBar.findViewById(R.id.location_bar_status);
 
                     urlBar.requestFocus();
-                    locationBar.updateLayoutParams(
-                            MeasureSpec.makeMeasureSpec(
-                                    locationBar.getMeasuredWidth(), MeasureSpec.EXACTLY));
                     locationBar.setUrlFocusChangePercent(
                             /* ntpSearchBoxScrollFraction= */ 1,
                             /* urlFocusChangeFraction= */ MathUtils.EPSILON,

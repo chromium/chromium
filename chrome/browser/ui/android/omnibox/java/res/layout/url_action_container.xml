@@ -14,8 +14,12 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="@dimen/location_bar_height"
         android:layout_gravity="end|center_vertical"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingStart="@dimen/location_bar_url_action_padding"
+        app:layout_constraintStart_toEndOf="@id/url_bar"
+        app:layout_constraintEnd_toEndOf="@+id/margin_spacer"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintHorizontal_weight="0"
         android:orientation="horizontal">
 
         <org.chromium.ui.widget.ChromeImageButton
@@ -65,5 +69,10 @@ found in the LICENSE file.
             android:tooltipText="@string/accessibility_menu_bookmark"/>
 
     </LinearLayout>
+    <Space
+        android:id="@+id/margin_spacer"
+        android:layout_width="@dimen/location_bar_url_action_offset"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toEndOf="parent"/>
 
 </merge>
