@@ -1313,6 +1313,10 @@ bool PaymentsDataManager::IsPaymentCvcStorageEnabled() {
          prefs::IsPaymentCvcStorageEnabled(pref_service_);
 }
 
+void PaymentsDataManager::SetPaymentsCvcStorageEnabled(bool enabled) {
+  prefs::SetPaymentCvcStorage(pref_service_, enabled);
+}
+
 base::span<const VirtualCardUsageData>
 PaymentsDataManager::GetVirtualCardUsageData() const {
   if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {

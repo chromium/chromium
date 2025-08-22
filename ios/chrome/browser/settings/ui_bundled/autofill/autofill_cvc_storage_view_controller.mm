@@ -5,21 +5,67 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_cvc_storage_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
+#import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
 
-@implementation AutofillCvcStorageViewController
+namespace {
 
-- (instancetype)init {
-  return [self initWithStyle:ChromeTableViewStyle()];
+typedef NS_ENUM(NSInteger, SectionIdentifier) {
+  SectionIdentifierSaveSecurityCodesSwitch = kSectionIdentifierEnumZero,
+  SectionIdentifierDeleteSavedSecurityCodes
+};
+
+typedef NS_ENUM(NSInteger, ItemType) {
+  ItemTypeSaveSecurityCodesSwitch = kItemTypeEnumZero,
+  ItemTypeSaveSecurityCodesSwitchSubtitle,
+  ItemTypeDeleteSavedSecurityCodesButton,
+  ItemTypeDeleteSavedSecurityCodesButtonSubtitle,
+};
+
+}  // namespace
+
+@implementation AutofillCvcStorageViewController {
+  // Coordinator for displaying an action sheet.
+  ActionSheetCoordinator* _actionSheetCoordinator;
 }
 
-- (instancetype)initWithStyle:(UITableViewStyle)style {
-  self = [super initWithStyle:style];
+@synthesize cvcStorageSwitchIsOn = _cvcStorageSwitchIsOn;
+@synthesize hasSavedCvcs = _hasSavedCvcs;
+
+- (void)setCvcStorageSwitchIsOn:(BOOL)cvcStorageSwitchIsOn {
+  if (_cvcStorageSwitchIsOn == cvcStorageSwitchIsOn) {
+    return;
+  }
+  _cvcStorageSwitchIsOn = cvcStorageSwitchIsOn;
+  if (self.isViewLoaded) {
+    [self loadModel];
+    [self.tableView reloadData];
+  }
+}
+
+- (void)setHasSavedCvcs:(BOOL)hasSavedCvcs {
+  if (_hasSavedCvcs == hasSavedCvcs) {
+    return;
+  }
+  _hasSavedCvcs = hasSavedCvcs;
+  if (self.isViewLoaded) {
+    [self loadModel];
+    [self.tableView reloadData];
+  }
+}
+
+- (instancetype)init {
+  self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(
         IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_LABEL);
@@ -40,12 +86,122 @@
 
 - (void)loadModel {
   [super loadModel];
+
+  TableViewModel* model = self.tableViewModel;
+
+  [model addSectionWithIdentifier:SectionIdentifierSaveSecurityCodesSwitch];
+  [model addItem:[self securityCodesSwitchItem]
+      toSectionWithIdentifier:SectionIdentifierSaveSecurityCodesSwitch];
+
+  [model setFooter:[self securityCodesSwitchFooter]
+      forSectionWithIdentifier:SectionIdentifierSaveSecurityCodesSwitch];
+
+  if (self.hasSavedCvcs) {
+    [model addSectionWithIdentifier:SectionIdentifierDeleteSavedSecurityCodes];
+    [model addItem:[self deleteSecurityCvcsItem]
+        toSectionWithIdentifier:SectionIdentifierDeleteSavedSecurityCodes];
+    [model setFooter:[self deleteSecurityCvcsFooter]
+        forSectionWithIdentifier:SectionIdentifierDeleteSavedSecurityCodes];
+  }
+}
+
+#pragma mark - LoadModel Helpers
+
+- (TableViewItem*)securityCodesSwitchItem {
+  TableViewSwitchItem* switchItem = [[TableViewSwitchItem alloc]
+      initWithType:ItemTypeSaveSecurityCodesSwitch];
+  switchItem.text = l10n_util::GetNSString(
+      IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_LABEL);
+  switchItem.on = self.cvcStorageSwitchIsOn;
+  switchItem.accessibilityIdentifier = kAutofillSaveSecurityCodesSwitchViewId;
+  return switchItem;
+}
+
+- (TableViewHeaderFooterItem*)securityCodesSwitchFooter {
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:ItemTypeSaveSecurityCodesSwitchSubtitle];
+  footer.text = l10n_util::GetNSString(
+      IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_SUBLABEL);
+  return footer;
+}
+
+- (TableViewItem*)deleteSecurityCvcsItem {
+  TableViewTextItem* deleteSecurityCvcItem = [[TableViewTextItem alloc]
+      initWithType:ItemTypeDeleteSavedSecurityCodesButton];
+  deleteSecurityCvcItem.text =
+      l10n_util::GetNSString(IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_LABEL);
+  deleteSecurityCvcItem.accessibilityIdentifier =
+      kAutofillDeleteSecurityCodesButtonId;
+  deleteSecurityCvcItem.accessibilityTraits = UIAccessibilityTraitButton;
+  deleteSecurityCvcItem.textColor = [UIColor colorNamed:kRedColor];
+  return deleteSecurityCvcItem;
+}
+
+- (TableViewHeaderFooterItem*)deleteSecurityCvcsFooter {
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:ItemTypeDeleteSavedSecurityCodesButtonSubtitle];
+  footer.text = l10n_util::GetNSString(
+      IDS_AUTOFILL_SETTINGS_PAGE_DELETE_CVC_STORAGE_LABEL);
+  return footer;
 }
 
 #pragma mark - SettingsRootTableViewController
 
 - (BOOL)shouldShowEditButton {
   return NO;
+}
+
+#pragma mark - UITableViewDataSource
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+
+  ItemType itemType = static_cast<ItemType>(
+      [self.tableViewModel itemTypeForIndexPath:indexPath]);
+
+  if (itemType == ItemTypeSaveSecurityCodesSwitch) {
+    TableViewSwitchCell* switchCell =
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
+    [switchCell.switchView addTarget:self
+                              action:@selector(cvcStorageSwitchChanged:)
+                    forControlEvents:UIControlEventValueChanged];
+  }
+  return cell;
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+  TableViewModel* model = self.tableViewModel;
+  NSInteger type = [model itemTypeForIndexPath:indexPath];
+
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+  if (type == ItemTypeDeleteSavedSecurityCodesButton) {
+    [self showDeleteConfirmation];
+  }
+}
+
+#pragma mark - Switch Callbacks
+
+- (void)cvcStorageSwitchChanged:(UISwitch*)switchView {
+  [self.delegate viewController:self
+      didChangeCvcStorageSwitchTo:[switchView isOn]];
+}
+
+#pragma mark - Private
+
+- (void)showDeleteConfirmation {
+  // TODO(crbug.com/437908820): Add delete confirmation dialog
+}
+
+- (void)dismissActionSheetCoordinator {
+  [_actionSheetCoordinator stop];
+  _actionSheetCoordinator = nil;
 }
 
 @end

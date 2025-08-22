@@ -694,6 +694,13 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
       .SetPaymentMethodsMandatoryReauthEnabled(enabled);
 }
 
++ (void)setPaymentCvcStorageEnabled:(BOOL)enabled {
+  autofill::PersonalDataManager* personalDataManager =
+      [self personalDataManager];
+  personalDataManager->payments_data_manager().SetPaymentsCvcStorageEnabled(
+      enabled);
+}
+
 + (BOOL)isKeyboardAccessoryUpgradeEnabled {
   return IsKeyboardAccessoryUpgradeEnabled();
 }

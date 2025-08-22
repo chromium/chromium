@@ -154,6 +154,9 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Configs the mandatory reauth preference.
 + (void)setMandatoryReauthEnabled:(BOOL)enabled;
 
+// Sets the CVC storage preference.
++ (void)setPaymentCvcStorageEnabled:(BOOL)enabled;
+
 // Returns true if the Keyboard Accessory Upgrade feature is enabled.
 + (BOOL)isKeyboardAccessoryUpgradeEnabled;
 

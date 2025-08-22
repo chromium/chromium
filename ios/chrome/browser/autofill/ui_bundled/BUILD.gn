@@ -51,6 +51,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/plus_addresses/model",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",

@@ -455,6 +455,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Returns true if the user pref to store CVC is enabled.
   virtual bool IsPaymentCvcStorageEnabled();
+  // Config the user pref to enable CVC storage.
+  void SetPaymentsCvcStorageEnabled(bool enabled);
 
   // TODO(crbug.com/322170538): Remove.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
