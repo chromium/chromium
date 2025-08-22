@@ -20755,17 +20755,7 @@
                     },
                     "enable_features": [
                         "RenderDocument",
-                        "WebViewRenderDocument"
-                    ]
-                },
-                {
-                    "name": "EnabledSubframe",
-                    "params": {
-                        "level": "subframe",
-                        "queueing_level": "full"
-                    },
-                    "enable_features": [
-                        "RenderDocument",
+                        "WebViewAsyncDrawOnly",
                         "WebViewRenderDocument"
                     ]
                 }
@@ -27396,21 +27386,6 @@
                     },
                     "enable_features": [
                         "WebUITabStrip"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebViewAsyncDrawOnly": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewAsyncDrawOnly"
                     ]
                 }
             ]
