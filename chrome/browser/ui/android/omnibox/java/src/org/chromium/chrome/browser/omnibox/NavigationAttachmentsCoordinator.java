@@ -13,14 +13,17 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Coordinator for the Navigation Attachments component. */
 @NullMarked
 public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener {
     private final @Nullable NavigationAttachmentsMediator mMediator;
     private final @Nullable NavigationAttachmentsViewHolder mViewHolder;
+    private final @Nullable SimpleRecyclerViewAdapter mAdapter;
 
     public NavigationAttachmentsCoordinator(
             Context context, WindowAndroid windowAndroid, ViewGroup parent) {
@@ -28,6 +31,7 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
                 || parent.findViewById(R.id.location_bar_navigation_toolbar) == null) {
             mMediator = null;
             mViewHolder = null;
+            mAdapter = null;
             return;
         }
 
@@ -35,6 +39,8 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
                 new NavigationAttachmentsPopup(
                         context, parent.findViewById(R.id.location_bar_attachments_add));
         mViewHolder = new NavigationAttachmentsViewHolder(parent, popup);
+        mAdapter = new NavigationAttachmentsRecyclerViewAdapter(new ModelList());
+        mViewHolder.attachmentsView.setAdapter(mAdapter);
 
         PropertyModel model =
                 new PropertyModel.Builder(NavigationAttachmentsProperties.ALL_KEYS)

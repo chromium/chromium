@@ -33,6 +33,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/NavigationAttachmentsMediator.java",
     "java/src/org/chromium/chrome/browser/omnibox/NavigationAttachmentsPopup.java",
     "java/src/org/chromium/chrome/browser/omnibox/NavigationAttachmentsProperties.java",
+    "java/src/org/chromium/chrome/browser/omnibox/NavigationAttachmentsRecyclerView.java",
+    "java/src/org/chromium/chrome/browser/omnibox/NavigationAttachmentsRecyclerViewAdapter.java",
     "java/src/org/chromium/chrome/browser/omnibox/NavigationAttachmentsViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/NavigationAttachmentsViewHolder.java",
     "java/src/org/chromium/chrome/browser/omnibox/NewTabPageDelegate.java",
