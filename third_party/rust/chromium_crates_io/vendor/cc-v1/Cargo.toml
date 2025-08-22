@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `cc-1.2.32` crate.
+# `cc-1.2.33` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "cc"
-version = "1.2.32"
+version = "1.2.33"
 
 [package.metadata.gnrt]
 is_placeholder = true
