@@ -566,6 +566,27 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("composeboxCloseByClickOutside",
                      composebox_config.close_by_click_outside());
 
+  // User education browser promos.
+  int browser_promo_limit = 0;
+  int browser_completed_promo_limit = 0;
+  switch (user_education::features::GetNtpBrowserPromoType()) {
+    case user_education::features::NtpBrowserPromoType::kSimple:
+      browser_promo_limit =
+          user_education::features::GetNtpBrowserPromoIndividualPromoLimit();
+      break;
+    case user_education::features::NtpBrowserPromoType::kSetupList:
+      browser_promo_limit =
+          user_education::features::GetNtpBrowserPromoSetupListPromoLimit();
+      browser_completed_promo_limit = user_education::features::
+          GetNtpBrowserPromoSetupListCompletedPromoLimit();
+      break;
+    case user_education::features::NtpBrowserPromoType::kNone:
+      break;
+  }
+  source->AddInteger("browserPromoLimit", browser_promo_limit);
+  source->AddInteger("browserPromoCompletedLimit",
+                     browser_completed_promo_limit);
+
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,
       /*enable_voice_search=*/true,
@@ -1084,6 +1105,7 @@ void NewTabPageUI::OnLoad() {
   std::string ntp_promo_type;
   if (!modules_enabled && ntp_promo_controller &&
       ntp_promo_controller->HasShowablePromos(profile_)) {
+    // Note that other promom parameters are set elsewhere with NTP properties.
     switch (user_education::features::GetNtpBrowserPromoType()) {
       case user_education::features::NtpBrowserPromoType::kSimple:
         ntp_promo_type = "simple";

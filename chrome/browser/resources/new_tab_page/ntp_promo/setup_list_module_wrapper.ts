@@ -56,8 +56,14 @@ export class SetupListModuleWrapperElement extends CrLitElement {
 
       /** Data about the most recent un-doable action. */
       undoData_: {type: Object},
+
+      maxPromos: {type: Number, attribute: true, useDefault: true},
+      maxCompletedPromos: {type: Number, attribute: true, useDefault: true},
     };
   }
+
+  accessor maxPromos: number = 0;
+  accessor maxCompletedPromos: number = 0;
 
   protected accessor moduleHidden_: boolean = false;
   protected accessor moduleReady_: boolean = false;

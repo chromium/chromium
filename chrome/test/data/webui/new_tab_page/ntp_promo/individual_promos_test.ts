@@ -69,6 +69,7 @@ suite('IndividualPromosTest', () => {
 
     individualPromos = document.createElement('individual-promos');
     individualPromos.id = 'individualPromos';
+    individualPromos.maxPromos = 1;
     document.querySelector<HTMLElement>('#container')!.insertBefore(
         individualPromos, document.querySelector<HTMLElement>('#bodyText'));
 

@@ -8,7 +8,8 @@
     @disable-module="${this.onHideModule_}"
     @dismiss-module-instance="${this.onHideModule_}">
   <div id="moduleElement">
-    <setup-list id="setupList"></setup-list>
+    <setup-list id="setupList" maxPromos=${this.maxPromos}
+        maxCompletedPromos=${this.maxCompletedPromos}></setup-list>
   </div>
 </div>
 <cr-toast id="undoToast" duration="10000">
