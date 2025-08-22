@@ -1209,6 +1209,38 @@ TEST_F(HistoryBackendTest, KeywordGenerated) {
   ASSERT_EQ(0, backend_->db()->GetRowForURL(url, &row));
 }
 
+TEST_F(HistoryBackendTest, AddPage404) {
+  // Enable `history::kVisitedLinksOn404` to make 404s eligible for History.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
+
+  ASSERT_TRUE(backend_.get());
+
+  // Call `AddPage()` with a 404 visit.
+  GURL url("http://www.google.com/404");
+  const ContextID context_id = 1;
+  const int nav_entry_id = 1;
+  HistoryAddPageArgs request(
+      url, base::Time::Now(), context_id, nav_entry_id,
+      /*local_navigation_id=*/std::nullopt, GURL(), RedirectList(),
+      ui::PAGE_TRANSITION_TYPED, /*hidden=*/false, SOURCE_BROWSED,
+      history::VisitResponseCodeCategory::k404, /*did_replace_entry=*/false,
+      /*consider_for_ntp_most_visited=*/false);
+  backend_->AddPage(request);
+
+  // The visit should have been added to the database...
+  URLRow url_row;
+  ASSERT_TRUE(backend_->GetURL(url, &url_row));
+  VisitVector visits;
+  ASSERT_TRUE(backend_->GetVisitsForURL(
+      backend_->db()->GetRowForURL(url, nullptr), &visits));
+  ASSERT_EQ(1u, visits.size());
+
+  // ...but it should not be tracked by `VisitTracker`.
+  EXPECT_EQ(
+      0, backend_->visit_tracker().GetLastVisit(context_id, nav_entry_id, url));
+}
+
 TEST_F(HistoryBackendTest, OpenerWithRedirect) {
   ASSERT_TRUE(backend_.get());
 

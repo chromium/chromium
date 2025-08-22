@@ -1211,14 +1211,24 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
   // real navigation, and are added to ensure autocompletion in the omnibox
   // works. As they are artificial they shouldn't be tracked for referral
   // chains.
+  // TODO: crbug.com/439886906 - Stop excluding 404s from `VisitTracker`. 404
+  // visits are temporarily excluded until `history::kVisitedLinksOn404` is
+  // enabled by default, to avoid making a feature change to `VisitTracker` at
+  // the same time as making 404s eligible for History (404 visits were not
+  // eligible for History prior to `history::kVisitedLinksOn404` and were
+  // skipped upstream of this code).
   // TODO(evanm): Due to http://b/1194536 we lose the referrers of a subframe
   // navigation anyway, so last_visit_id is always zero for them.  But adding
   // them here confuses main frame history, so we skip them for now.
-  if (!ui::PageTransitionCoreTypeIs(request_transition,
-                                    ui::PAGE_TRANSITION_AUTO_SUBFRAME) &&
-      !ui::PageTransitionCoreTypeIs(request_transition,
-                                    ui::PAGE_TRANSITION_MANUAL_SUBFRAME) &&
-      !is_keyword_generated && current_visit_was_successfully_added) {
+  bool is_subframe_navigation =
+      ui::PageTransitionCoreTypeIs(request_transition,
+                                   ui::PAGE_TRANSITION_AUTO_SUBFRAME) ||
+      ui::PageTransitionCoreTypeIs(request_transition,
+                                   ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
+  if (!is_subframe_navigation && !is_keyword_generated &&
+      request.response_code_category !=
+          history::VisitResponseCodeCategory::k404 &&
+      current_visit_was_successfully_added) {
     tracker_.AddVisit(request.context_id, request.nav_entry_id, request.url,
                       last_visit_id);
   }
