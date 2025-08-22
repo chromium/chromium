@@ -1361,6 +1361,14 @@ EVENT_TYPE(HTTP_STREAM_JOB_INIT_CONNECTION)
 //   }
 EVENT_TYPE(HTTP_STREAM_REQUEST_BOUND_TO_JOB)
 
+// This event indicates that while an HttpStreamFactory::Job was trying to
+// establish a connection, a matching H2 became available, likely created
+// by another HttpStreamFactory::Job(). The event parameters are:
+//   {
+//     "source_dependency": <The session id>,
+//   }
+EVENT_TYPE(HTTP_STREAM_JOB_HTTP2_SESSION_AVAILABLE)
+
 // Identifies the NetLogSource() for the Request that the Job was attached to.
 // Event is logged to both the Request and the JobController.
 // The event parameters are:
