@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox;
+package org.chromium.chrome.browser.omnibox.navattach;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 

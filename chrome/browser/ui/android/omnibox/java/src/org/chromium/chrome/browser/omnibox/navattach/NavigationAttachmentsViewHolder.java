@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox;
+package org.chromium.chrome.browser.omnibox.navattach;
 
 import android.view.ViewGroup;
 
@@ -11,6 +11,7 @@ import androidx.constraintlayout.widget.Group;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /** A ViewHolder for the NavigationAttachments component. */

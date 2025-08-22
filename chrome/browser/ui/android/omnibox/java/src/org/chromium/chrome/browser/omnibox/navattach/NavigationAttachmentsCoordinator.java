@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox;
+package org.chromium.chrome.browser.omnibox.navattach;
 
 import android.content.Context;
 import android.view.ViewGroup;
@@ -11,6 +11,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
