@@ -65,10 +65,7 @@ void FilledCardInformationBubbleControllerImpl::SetupAndShowBubble(
     HideBubble();
   }
 
-  DCHECK(options.IsValid());
-  options_ = options;
-  is_user_gesture_ = false;
-  should_icon_be_visible_ = true;
+  SetupBubbleState(options);
 
   // Delay the showing of the filled card information bubble so that the form
   // filling and the filled card information bubble appearance do not happen at
@@ -78,6 +75,14 @@ void FilledCardInformationBubbleControllerImpl::SetupAndShowBubble(
       base::BindOnce(&FilledCardInformationBubbleControllerImpl::ShowBubble,
                      weak_ptr_factory_.GetWeakPtr()),
       kFilledCardInformationBubbleDelay);
+}
+
+void FilledCardInformationBubbleControllerImpl::SetupBubbleState(
+    FilledCardInformationBubbleOptions options) {
+  DCHECK(options.IsValid());
+  options_ = std::move(options);
+  is_user_gesture_ = false;
+  should_icon_be_visible_ = true;
 }
 
 void FilledCardInformationBubbleControllerImpl::ReshowBubble() {

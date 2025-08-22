@@ -180,6 +180,25 @@ class SaveCardBubbleControllerImpl
   friend class SaveCardBubbleControllerImplTest;
   friend class SaveCardBubbleViewsFullFormBrowserTest;
 
+  // Prepares the controller to offer a local credit card save. This sets all
+  // the necessary state for the bubble, including the card details and the
+  // callback to execute on completion.
+  void SetupLocalSave(
+      CreditCard card,
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+          save_card_prompt_callback);
+
+  // Prepares the controller to offer saving a credit card to the user's Google
+  // account. This configures the state, including card data, legal messages,
+  // and the callback for the upload flow.
+  void SetupUploadSave(
+      CreditCard card,
+      LegalMessageLines legal_message_lines,
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+          save_card_prompt_callback);
+
   // Displays both the offer-to-save bubble and is associated omnibox icon.
   void SetupAndShowBubble();
 

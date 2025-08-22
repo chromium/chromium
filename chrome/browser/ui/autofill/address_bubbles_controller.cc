@@ -269,6 +269,21 @@ void AddressBubblesController::SetUpAndShowBubble(
         .Run(AutofillClient::AddressPromptUserDecision::kIgnored, std::nullopt);
   }
 
+  SetUpBubble(std::move(show_bubble_view_callback),
+              std::move(page_action_icon_tootip), is_migration_to_account,
+              user_has_any_profile_saved,
+              std::move(address_profile_save_prompt_callback));
+
+  ShowBubble();
+}
+
+void AddressBubblesController::SetUpBubble(
+    ShowBubbleViewCallback show_bubble_view_callback,
+    std::u16string page_action_icon_tootip,
+    bool is_migration_to_account,
+    bool user_has_any_profile_saved,
+    AutofillClient::AddressProfileSavePromptCallback
+        address_profile_save_prompt_callback) {
   show_bubble_view_callback_ = std::move(show_bubble_view_callback);
   page_action_icon_tootip_ = std::move(page_action_icon_tootip);
   address_profile_save_prompt_callback_ =
@@ -276,8 +291,6 @@ void AddressBubblesController::SetUpAndShowBubble(
   shown_by_user_gesture_ = false;
   is_migration_to_account_ = is_migration_to_account;
   user_has_any_profile_saved_ = user_has_any_profile_saved;
-
-  ShowBubble();
 }
 
 void AddressBubblesController::MaybeShowIOSDektopAddressPromo() {

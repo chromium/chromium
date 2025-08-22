@@ -99,11 +99,25 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
     return;
   }
 
+  SetupLocalSave(card, options, std::move(save_card_prompt_callback));
+
+  if (options.show_prompt) {
+    SetupAndShowBubble();
+  } else {
+    ShowIconOnly();
+  }
+}
+
+void SaveCardBubbleControllerImpl::SetupLocalSave(
+    CreditCard card,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+        save_card_prompt_callback) {
   is_upload_save_ = false;
   is_reshow_ = false;
   is_triggered_by_user_gesture_ = false;
   options_ = options;
-  card_ = card;
+  card_ = std::move(card);
   local_save_card_prompt_callback_ = std::move(save_card_prompt_callback);
   legal_message_lines_.clear();
   current_bubble_type_ =
@@ -111,12 +125,6 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
               payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly
           ? PaymentsBubbleType::kLocalCvcSave
           : PaymentsBubbleType::kLocalSave;
-
-  if (options.show_prompt) {
-    SetupAndShowBubble();
-  } else {
-    ShowIconOnly();
-  }
 }
 
 void SaveCardBubbleControllerImpl::OfferUploadSave(
@@ -136,11 +144,27 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
     return;
   }
 
+  SetupUploadSave(card, legal_message_lines, options,
+                  std::move(save_card_prompt_callback));
+
+  if (options_.show_prompt) {
+    SetupAndShowBubble();
+  } else {
+    ShowIconOnly();
+  }
+}
+
+void SaveCardBubbleControllerImpl::SetupUploadSave(
+    CreditCard card,
+    LegalMessageLines legal_message_lines,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+        save_card_prompt_callback) {
   is_upload_save_ = true;
   is_reshow_ = false;
   is_triggered_by_user_gesture_ = false;
   options_ = options;
-  card_ = card;
+  card_ = std::move(card);
   upload_save_card_prompt_callback_ = std::move(save_card_prompt_callback);
   current_bubble_type_ =
       options.card_save_type ==
@@ -155,13 +179,7 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
   if (current_bubble_type_ == PaymentsBubbleType::kUploadCvcSave) {
     legal_message_lines_.clear();
   } else {
-    legal_message_lines_ = legal_message_lines;
-  }
-
-  if (options_.show_prompt) {
-    SetupAndShowBubble();
-  } else {
-    ShowIconOnly();
+    legal_message_lines_ = std::move(legal_message_lines);
   }
 }
 

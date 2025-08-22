@@ -142,25 +142,30 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     return;
   }
 
-  offer_ = offer;
-
   // Hides the old bubble. Sets bubble_state_ to show icon here since we are
   // going to show another bubble anyway.
   HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
 
-  DCHECK(IsIconVisible());
-
-  if (card) {
-    card_ = *card;
-  }
-
-  is_user_gesture_ = false;
+  SetupOfferNotification(offer, card);
 
   if (options.show_notification_automatically) {
     ShowBubble();
   } else {
     HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
   }
+}
+
+void OfferNotificationBubbleControllerImpl::SetupOfferNotification(
+    AutofillOfferData offer,
+    const CreditCard* card) {
+  offer_ = std::move(offer);
+
+  DCHECK(IsIconVisible());
+
+  if (card) {
+    card_ = *card;
+  }
+  is_user_gesture_ = false;
 }
 
 void OfferNotificationBubbleControllerImpl::ReshowBubble() {

@@ -73,6 +73,15 @@ class SaveOrUpdateAutofillAiDataControllerImpl
       SaveOrUpdateAutofillAiDataControllerImpl>;
   friend class SaveOrUpdateAutofillAiDataControllerImplTest;
 
+  // Configures the controller's state for the Autofill AI data save/update
+  // prompt. `new_entity` is the data detected on the page, `old_entity` is the
+  // existing data to be updated (if any), and `save_prompt_acceptance_callback`
+  // is the callback to run upon user decision.
+  void SetupPrompt(EntityInstance new_entity,
+                   std::optional<EntityInstance> old_entity,
+                   AutofillClient::EntitySaveOrUpdatePromptResultCallback
+                       save_prompt_acceptance_callback);
+
   // The browser's locale when the object was instantiated.
   const std::string app_locale_;
 

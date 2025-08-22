@@ -123,6 +123,17 @@ class IbanBubbleControllerImpl
 
   Profile* GetProfile();
 
+  // Sets up the controller's state for a local IBAN save prompt.
+  void SetupLocalSave(Iban iban,
+                      payments::PaymentsAutofillClient::SaveIbanPromptCallback
+                          save_iban_prompt_callback);
+
+  // Sets up the controller's state for an upload-to-server IBAN save prompt.
+  void SetupUploadSave(Iban iban,
+                       LegalMessageLines legal_message_lines,
+                       payments::PaymentsAutofillClient::SaveIbanPromptCallback
+                           save_iban_prompt_callback);
+
   // Displays omnibox icon only.
   void ShowIconOnly();
 

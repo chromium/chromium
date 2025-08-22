@@ -53,15 +53,7 @@ void IbanBubbleControllerImpl::OfferLocalSave(
     return;
   }
 
-  iban_ = iban;
-  is_reshow_ = false;
-  is_upload_save_ = false;
-  legal_message_lines_.clear();
-  save_iban_prompt_callback_ = std::move(save_iban_prompt_callback);
-  current_bubble_type_ = IbanBubbleType::kLocalSave;
-  // Save callback should not be null for IBAN save.
-  CHECK(!save_iban_prompt_callback_.is_null());
-
+  SetupLocalSave(iban, std::move(save_iban_prompt_callback));
   if (should_show_prompt) {
     ShowBubble();
   } else {
@@ -80,7 +72,35 @@ void IbanBubbleControllerImpl::OfferUploadSave(
     return;
   }
 
-  iban_ = iban;
+  SetupUploadSave(iban, std::move(legal_message_lines),
+                  std::move(save_iban_prompt_callback));
+  if (should_show_prompt) {
+    ShowBubble();
+  } else {
+    ShowIconOnly();
+  }
+}
+
+void IbanBubbleControllerImpl::SetupLocalSave(
+    Iban iban,
+    payments::PaymentsAutofillClient::SaveIbanPromptCallback
+        save_iban_prompt_callback) {
+  iban_ = std::move(iban);
+  is_reshow_ = false;
+  is_upload_save_ = false;
+  legal_message_lines_.clear();
+  save_iban_prompt_callback_ = std::move(save_iban_prompt_callback);
+  current_bubble_type_ = IbanBubbleType::kLocalSave;
+  // Save callback should not be null for IBAN save.
+  CHECK(!save_iban_prompt_callback_.is_null());
+}
+
+void IbanBubbleControllerImpl::SetupUploadSave(
+    Iban iban,
+    LegalMessageLines legal_message_lines,
+    payments::PaymentsAutofillClient::SaveIbanPromptCallback
+        save_iban_prompt_callback) {
+  iban_ = std::move(iban);
   is_reshow_ = false;
   is_upload_save_ = true;
   legal_message_lines_ = std::move(legal_message_lines);
@@ -88,11 +108,6 @@ void IbanBubbleControllerImpl::OfferUploadSave(
   current_bubble_type_ = IbanBubbleType::kUploadSave;
   // Save callback should not be null for IBAN save.
   CHECK(!save_iban_prompt_callback_.is_null());
-  if (should_show_prompt) {
-    ShowBubble();
-  } else {
-    ShowIconOnly();
-  }
 }
 
 void IbanBubbleControllerImpl::ReshowBubble() {

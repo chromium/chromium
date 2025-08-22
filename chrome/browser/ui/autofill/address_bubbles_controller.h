@@ -98,6 +98,14 @@ class AddressBubblesController
                           AutofillClient::AddressProfileSavePromptCallback
                               address_profile_save_prompt_callback);
 
+  // Sets up the controller's state for showing a save/update address bubble.
+  void SetUpBubble(ShowBubbleViewCallback show_bubble_view_callback,
+                   std::u16string page_action_icon_tootip,
+                   bool is_migration_to_account,
+                   bool user_has_any_profile_saved,
+                   AutofillClient::AddressProfileSavePromptCallback
+                       address_profile_save_prompt_callback);
+
   // Maybe shows the iOS bubble promo after the user accepts to save their
   // address information.
   void MaybeShowIOSDektopAddressPromo();

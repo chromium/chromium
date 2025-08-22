@@ -53,6 +53,19 @@ void MandatoryReauthBubbleControllerImpl::SetupAndShowBubble(
     return;
   }
 
+  SetupBubble(std::move(accept_mandatory_reauth_callback),
+              std::move(cancel_mandatory_reauth_callback),
+              std::move(close_mandatory_reauth_callback));
+  autofill_metrics::LogMandatoryReauthOptInBubbleOffer(
+      autofill_metrics::MandatoryReauthOptInBubbleOffer::kShown,
+      /*is_reshow=*/false);
+  ShowBubble();
+}
+
+void MandatoryReauthBubbleControllerImpl::SetupBubble(
+    base::OnceClosure accept_mandatory_reauth_callback,
+    base::OnceClosure cancel_mandatory_reauth_callback,
+    base::RepeatingClosure close_mandatory_reauth_callback) {
   is_reshow_ = false;
   accept_mandatory_reauth_callback_ =
       std::move(accept_mandatory_reauth_callback);
@@ -60,11 +73,6 @@ void MandatoryReauthBubbleControllerImpl::SetupAndShowBubble(
       std::move(cancel_mandatory_reauth_callback);
   close_mandatory_reauth_callback_ = std::move(close_mandatory_reauth_callback);
   current_bubble_type_ = MandatoryReauthBubbleType::kOptIn;
-  autofill_metrics::LogMandatoryReauthOptInBubbleOffer(
-      autofill_metrics::MandatoryReauthOptInBubbleOffer::kShown,
-      /*is_reshow=*/false);
-
-  ShowBubble();
 }
 
 void MandatoryReauthBubbleControllerImpl::ReshowBubble() {

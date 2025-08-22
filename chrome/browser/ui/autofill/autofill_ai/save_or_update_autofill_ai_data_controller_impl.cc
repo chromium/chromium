@@ -122,10 +122,20 @@ void SaveOrUpdateAutofillAiDataControllerImpl::ShowPrompt(
   if (bubble_view()) {
     return;
   }
+
+  SetupPrompt(std::move(new_entity), std::move(old_entity),
+              std::move(save_prompt_acceptance_callback));
+  DoShowBubble();
+}
+
+void SaveOrUpdateAutofillAiDataControllerImpl::SetupPrompt(
+    EntityInstance new_entity,
+    std::optional<EntityInstance> old_entity,
+    AutofillClient::EntitySaveOrUpdatePromptResultCallback
+        save_prompt_acceptance_callback) {
   new_entity_ = std::move(new_entity);
   old_entity_ = std::move(old_entity);
   save_prompt_acceptance_callback_ = std::move(save_prompt_acceptance_callback);
-  DoShowBubble();
 }
 
 void SaveOrUpdateAutofillAiDataControllerImpl::OnSaveButtonClicked() {
