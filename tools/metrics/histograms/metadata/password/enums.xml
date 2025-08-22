@@ -111,6 +111,34 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Ignored"/>
 </enum>
 
+<!-- LINT.IfChange(ActorLoginAttemptLoginResult) -->
+
+<enum name="ActorLoginAttemptLoginResult">
+  <int value="0" label="ErrorUnknown"/>
+  <int value="1" label="SuccessUsernameFilled"/>
+  <int value="2" label="SuccessPasswordFilled"/>
+  <int value="3" label="SuccessUsernameAndPasswordFilled"/>
+  <int value="4" label="ErrorNoSigninForm"/>
+  <int value="5" label="ErrorInvalidCredential"/>
+  <int value="6" label="ErrorNoFillableFields"/>
+  <int value="7" label="ErrorFillingNotAllowed"/>
+  <int value="8" label="ErrorServiceBusy"/>
+  <int value="9" label="ErrorInvalidTabInterface"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h:AttemptLoginResult) -->
+
+<!-- LINT.IfChange(ActorLoginGetCredentialsResult) -->
+
+<enum name="ActorLoginGetCredentialsResult">
+  <int value="0" label="ErrorUnknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="ErrorServiceBusy"/>
+  <int value="3" label="ErrorInvalidTabInterface"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h:GetCredentialsResult) -->
+
 <enum name="AddCredentialFromSettingsUserInteractions">
   <int value="0" label="Add Credential Dialog is opened"/>
   <int value="1" label="Add Credential Dialog is closed"/>

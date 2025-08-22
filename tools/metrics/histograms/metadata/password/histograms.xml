@@ -641,6 +641,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ActorLogin.AttemptLogin.Result"
+    enum="ActorLoginAttemptLoginResult" expires_after="2026-03-01">
+  <owner>milicau@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the result of invoking the
+    actor_login::ActorLoginService::AttemptLogin API. Recorded for each call.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ActorLogin.GetCredentials.Result"
+    enum="ActorLoginGetCredentialsResult" expires_after="2026-03-01">
+  <owner>milicau@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the result of invoking the
+    actor_login::ActorLoginService::GetCredentials API. Recorded for each call.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.AddCredentialFromSettings.UserAction2"
     enum="AddCredentialFromSettingsUserInteractions" expires_after="2026-01-25">
   <owner>vidhanj@google.com</owner>

@@ -7,9 +7,12 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_delegate.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -23,6 +26,7 @@ namespace actor_login {
 
 namespace {
 
+using base::test::RunOnceCallback;
 using testing::_;
 using testing::Eq;
 using testing::Return;
@@ -34,6 +38,12 @@ Credential CreateTestCredential() {
   credential.type = CredentialType::kPassword;
   return credential;
 }
+
+struct AttemptLoginTestCase {
+  LoginStatusResult result;
+  AttemptLoginResult metric;
+  std::string test_case_name;
+};
 
 }  // namespace
 
@@ -57,6 +67,7 @@ class ActorLoginServiceImplTest : public testing::Test {
 };
 
 TEST_F(ActorLoginServiceImplTest, GetCredentialsInvalidTabInterface) {
+  base::HistogramTester histogram_tester;
   tabs::MockTabInterface mock_tab;
   EXPECT_CALL(mock_tab, GetContents()).WillOnce(Return(nullptr));
 
@@ -66,6 +77,10 @@ TEST_F(ActorLoginServiceImplTest, GetCredentialsInvalidTabInterface) {
 
   ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), ActorLoginError::kInvalidTabInterface);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ActorLogin.GetCredentials.Result",
+      GetCredentialsResult::kErrorInvalidTabInterface, 1);
 }
 
 TEST_F(ActorLoginServiceImplTest, GetCredentialsDelegatesToActorLoginDelegate) {
@@ -78,7 +93,52 @@ TEST_F(ActorLoginServiceImplTest, GetCredentialsDelegatesToActorLoginDelegate) {
   service_->GetCredentials(&mock_tab, base::DoNothing());
 }
 
+TEST_F(ActorLoginServiceImplTest, GetCredentials_Success) {
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      test_web_contents_factory_.CreateWebContents(&profile_);
+  tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetContents()).WillRepeatedly(Return(web_contents));
+
+  std::vector<Credential> credentials;
+  credentials.push_back(CreateTestCredential());
+
+  base::test::TestFuture<CredentialsOrError> future;
+  EXPECT_CALL(mock_delegate_, GetCredentials)
+      .WillOnce(RunOnceCallback<0>(credentials));
+  service_->GetCredentials(&mock_tab, future.GetCallback());
+
+  ASSERT_TRUE(future.Get().has_value());
+  ASSERT_EQ(future.Get().value().size(), 1u);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ActorLogin.GetCredentials.Result",
+      GetCredentialsResult::kSuccess, 1);
+}
+
+TEST_F(ActorLoginServiceImplTest, GetCredentials_ServiceBusy) {
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      test_web_contents_factory_.CreateWebContents(&profile_);
+  tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetContents()).WillRepeatedly(Return(web_contents));
+
+  base::test::TestFuture<CredentialsOrError> future;
+  EXPECT_CALL(mock_delegate_, GetCredentials)
+      .WillOnce(
+          RunOnceCallback<0>(base::unexpected(ActorLoginError::kServiceBusy)));
+  service_->GetCredentials(&mock_tab, future.GetCallback());
+
+  ASSERT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error(), ActorLoginError::kServiceBusy);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ActorLogin.GetCredentials.Result",
+      GetCredentialsResult::kErrorServiceBusy, 1);
+}
+
 TEST_F(ActorLoginServiceImplTest, AttemptLoginInvalidTabInterface) {
+  base::HistogramTester histogram_tester;
   tabs::MockTabInterface mock_tab;
   EXPECT_CALL(mock_tab, GetContents()).WillOnce(Return(nullptr));
 
@@ -89,6 +149,10 @@ TEST_F(ActorLoginServiceImplTest, AttemptLoginInvalidTabInterface) {
 
   ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), ActorLoginError::kInvalidTabInterface);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ActorLogin.AttemptLogin.Result",
+      AttemptLoginResult::kErrorInvalidTabInterface, 1);
 }
 
 TEST_F(ActorLoginServiceImplTest, AttemptLoginDelegatesToActorLoginDelegate) {
@@ -101,5 +165,82 @@ TEST_F(ActorLoginServiceImplTest, AttemptLoginDelegatesToActorLoginDelegate) {
   EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _));
   service_->AttemptLogin(&mock_tab, credential, base::DoNothing());
 }
+
+TEST_F(ActorLoginServiceImplTest, AttemptLogin_ServiceBusy) {
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      test_web_contents_factory_.CreateWebContents(&profile_);
+  tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetContents()).WillRepeatedly(Return(web_contents));
+  Credential credential = CreateTestCredential();
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _))
+      .WillOnce(
+          RunOnceCallback<1>(base::unexpected(ActorLoginError::kServiceBusy)));
+  service_->AttemptLogin(&mock_tab, credential, future.GetCallback());
+
+  ASSERT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error(), ActorLoginError::kServiceBusy);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ActorLogin.AttemptLogin.Result",
+      AttemptLoginResult::kErrorServiceBusy, 1);
+}
+
+class ActorLoginServiceImplAttemptLoginTest
+    : public ActorLoginServiceImplTest,
+      public testing::WithParamInterface<AttemptLoginTestCase> {};
+
+TEST_P(ActorLoginServiceImplAttemptLoginTest, AttemptLoginResults) {
+  const AttemptLoginTestCase& test_case = GetParam();
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      test_web_contents_factory_.CreateWebContents(&profile_);
+  tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetContents()).WillRepeatedly(Return(web_contents));
+  Credential credential = CreateTestCredential();
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _))
+      .WillOnce(RunOnceCallback<1>(test_case.result));
+  service_->AttemptLogin(&mock_tab, credential, future.GetCallback());
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get().value(), test_case.result);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ActorLogin.AttemptLogin.Result", test_case.metric, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ActorLoginServiceImplAttemptLoginTest,
+    testing::Values(
+        AttemptLoginTestCase{LoginStatusResult::kErrorNoSigninForm,
+                             AttemptLoginResult::kErrorNoSigninForm,
+                             "ErrorNoSigninForm"},
+        AttemptLoginTestCase{LoginStatusResult::kErrorInvalidCredential,
+                             AttemptLoginResult::kErrorInvalidCredential,
+                             "ErrorInvalidCredential"},
+        AttemptLoginTestCase{
+            LoginStatusResult::kSuccessUsernameAndPasswordFilled,
+            AttemptLoginResult::kSuccessUsernameAndPasswordFilled,
+            "SuccessUsernameAndPasswordFilled"},
+        AttemptLoginTestCase{LoginStatusResult::kSuccessUsernameFilled,
+                             AttemptLoginResult::kSuccessUsernameFilled,
+                             "SuccessUsernameFilled"},
+        AttemptLoginTestCase{LoginStatusResult::kSuccessPasswordFilled,
+                             AttemptLoginResult::kSuccessPasswordFilled,
+                             "SuccessPasswordFilled"},
+        AttemptLoginTestCase{LoginStatusResult::kErrorNoFillableFields,
+                             AttemptLoginResult::kErrorNoFillableFields,
+                             "ErrorNoFillableFields"},
+        AttemptLoginTestCase{LoginStatusResult::kErrorFillingNotAllowed,
+                             AttemptLoginResult::kErrorFillingNotAllowed,
+                             "ErrorFillingNotAllowed"}),
+    [](const testing::TestParamInfo<AttemptLoginTestCase>& info) {
+      return info.param.test_case_name;
+    });
 
 }  // namespace actor_login
