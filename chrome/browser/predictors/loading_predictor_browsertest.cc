@@ -1485,7 +1485,8 @@ class LCPPAutoPreconnectTest : public InProcessBrowserTest,
   std::unique_ptr<TestPreconnectManagerObserver> preconnect_manager_observer_;
 };
 
-IN_PROC_BROWSER_TEST_P(LCPPAutoPreconnectTest, EnabledAllOrigins) {
+// https://crbug.com/440185653: Test is flaky.
+IN_PROC_BROWSER_TEST_P(LCPPAutoPreconnectTest, DISABLED_EnabledAllOrigins) {
   const bool kEnabledAllOrigins = GetParam();
 
   const GURL kUrl = embedded_test_server()->GetURL(
