@@ -640,6 +640,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillSupportLastNamePrefix,
       features::kAutofillEnableLoyaltyCardsFilling,
       features::kAutofillEnableEmailOrLoyaltyCardsFilling,
+      features::kAutofillSupportSplitZipCode,
       // Other improvements.
       features::kAutofillEnableCacheForRegexMatching,
       features::kAutofillEnableSupportForParsingWithSharedLabels,
