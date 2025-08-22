@@ -258,7 +258,6 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     // gpu::ContextSupport interface.
     auto gles2_impl = std::make_unique<gpu::gles2::GLES2Implementation>(
         gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer.get(),
-        /*bind_generates_resource=*/false,
         attributes_.lose_context_when_out_of_memory, command_buffer_.get());
     bind_result_ = gles2_impl->Initialize(memory_limits_);
     if (bind_result_ != gpu::ContextResult::kSuccess) {

@@ -83,14 +83,11 @@ ContextResult GLInProcessContext::Initialize(
   // Create a transfer buffer.
   transfer_buffer_ = std::make_unique<TransferBuffer>(gles2_helper_.get());
 
-  const bool bind_generates_resource = false;
-
   // Create the object exposing the OpenGL API.
   gles2_implementation_ =
       std::make_unique<skia_bindings::GLES2ImplementationWithGrContextSupport>(
           gles2_helper_.get(), /*share_group=*/nullptr, transfer_buffer_.get(),
-          bind_generates_resource, attribs.lose_context_when_out_of_memory,
-          command_buffer_.get());
+          attribs.lose_context_when_out_of_memory, command_buffer_.get());
 
   result = gles2_implementation_->Initialize(mem_limits);
   return result;

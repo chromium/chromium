@@ -129,14 +129,10 @@ class RangeIdHandlerInterface {
 class GLES2_IMPL_EXPORT ShareGroup
     : public gpu::RefCountedThreadSafe<ShareGroup> {
  public:
-  ShareGroup(bool bind_generates_resource, uint64_t tracing_guid);
+  explicit ShareGroup(uint64_t tracing_guid);
 
   ShareGroup(const ShareGroup&) = delete;
   ShareGroup& operator=(const ShareGroup&) = delete;
-
-  bool bind_generates_resource() const {
-    return bind_generates_resource_;
-  }
 
   IdHandlerInterface* GetIdHandler(SharedIdNamespaces namespace_id) const {
     return id_handlers_[static_cast<int>(namespace_id)].get();
@@ -191,7 +187,6 @@ class GLES2_IMPL_EXPORT ShareGroup
   std::unique_ptr<ProgramInfoManager> program_info_manager_;
   ClientDiscardableTextureManager discardable_texture_manager_;
 
-  bool bind_generates_resource_;
   uint64_t tracing_guid_;
 
   mutable base::Lock lost_lock_;

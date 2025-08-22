@@ -191,8 +191,6 @@ class GLES2ImplementationTest : public testing::Test {
     TestContext() : commands_(nullptr), token_(0) {}
 
     bool Initialize(ShareGroup* share_group,
-                    bool bind_generates_resource_client,
-                    bool bind_generates_resource_service,
                     bool lose_context_when_out_of_memory,
                     bool transfer_buffer_initialize_fail,
                     bool sync_query,
@@ -243,8 +241,6 @@ class GLES2ImplementationTest : public testing::Test {
       gl_capabilities_.max_transform_feedback_separate_attribs =
           kMaxTransformFeedbackSeparateAttribs;
       gl_capabilities_.max_uniform_buffer_bindings = kMaxUniformBufferBindings;
-      gl_capabilities_.bind_generates_resource_chromium =
-          bind_generates_resource_service ? 1 : 0;
       capabilities_.sync_query = sync_query;
       gl_capabilities_.sync_query = sync_query;
       gl_capabilities_.occlusion_query_boolean = occlusion_query_boolean;
@@ -259,12 +255,9 @@ class GLES2ImplementationTest : public testing::Test {
       {
         InSequence sequence;
 
-        gl_.reset(new GLES2Implementation(helper_.get(),
-                                          share_group,
-                                          transfer_buffer_.get(),
-                                          bind_generates_resource_client,
-                                          lose_context_when_out_of_memory,
-                                          gpu_control_.get()));
+        gl_ = std::make_unique<GLES2Implementation>(
+            helper_.get(), share_group, transfer_buffer_.get(),
+            lose_context_when_out_of_memory, gpu_control_.get());
       }
 
       // The client should be set to something non-null.
@@ -340,43 +333,25 @@ class GLES2ImplementationTest : public testing::Test {
     return gl_->query_tracker_->GetQuery(id);
   }
 
-  QueryTracker* GetQueryTracker() {
-    return gl_->query_tracker_.get();
-  }
+  QueryTracker* GetQueryTracker() { return gl_->query_tracker_.get(); }
 
   struct ContextInitOptions {
-    ContextInitOptions()
-        : bind_generates_resource_client(true),
-          bind_generates_resource_service(true),
-          lose_context_when_out_of_memory(false),
-          transfer_buffer_initialize_fail(false),
-          sync_query(true),
-          occlusion_query_boolean(true),
-          timer_queries(true),
-          major_version(2),
-          minor_version(0) {}
-
-    bool bind_generates_resource_client;
-    bool bind_generates_resource_service;
-    bool lose_context_when_out_of_memory;
-    bool transfer_buffer_initialize_fail;
-    bool sync_query;
-    bool occlusion_query_boolean;
-    bool timer_queries;
-    int major_version;
-    int minor_version;
+    bool lose_context_when_out_of_memory = false;
+    bool transfer_buffer_initialize_fail = false;
+    bool sync_query = true;
+    bool occlusion_query_boolean = true;
+    bool timer_queries = true;
+    int major_version = 2;
+    int minor_version = 0;
   };
 
   bool Initialize(const ContextInitOptions& init_options) {
     bool success = true;
-    share_group_ = new ShareGroup(init_options.bind_generates_resource_client,
-                                  0 /* tracing_id */);
+    share_group_ = base::MakeRefCounted<ShareGroup>(/*tracing_id=*/0);
 
     for (int i = 0; i < kNumTestContexts; i++) {
       if (!test_contexts_[i].Initialize(
               share_group_.get(),
-              init_options.bind_generates_resource_client,
-              init_options.bind_generates_resource_service,
               init_options.lose_context_when_out_of_memory,
               init_options.transfer_buffer_initialize_fail,
               init_options.sync_query,
@@ -618,8 +593,6 @@ class GLES2ImplementationStrictSharedTest : public GLES2ImplementationTest {
 
 void GLES2ImplementationStrictSharedTest::SetUp() {
   ContextInitOptions init_options;
-  init_options.bind_generates_resource_client = false;
-  init_options.bind_generates_resource_service = false;
   ASSERT_TRUE(Initialize(init_options));
 }
 
@@ -3675,15 +3648,16 @@ TEST_F(GLES2ImplementationTest, DeleteBuffersUnmapsDataStore) {
       .WillOnce(SetMemory(result.ptr, uint32_t(1)))
       .RetiresOnSaturation();
 
-  const GLuint kBufferId = 123;
-  gl_->BindBuffer(GL_ARRAY_BUFFER, kBufferId);
+  GLuint buffer_id = 0;
+  gl_->GenBuffers(1, &buffer_id);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer_id);
 
   void* mem = gl_->MapBufferRange(GL_ARRAY_BUFFER, 10, 64, GL_MAP_WRITE_BIT);
   EXPECT_TRUE(mem != nullptr);
 
   std::vector<uint8_t> data(16);
   // DeleteBuffers unmaps the data store.
-  gl_->DeleteBuffers(1, &kBufferId);
+  gl_->DeleteBuffers(1, &buffer_id);
 
   EXPECT_FALSE(gl_->UnmapBuffer(GL_ARRAY_BUFFER));
   EXPECT_EQ(GL_INVALID_OPERATION, CheckError());
@@ -3817,63 +3791,10 @@ TEST_F(GLES2ImplementationTest, ReportLossReentrant) {
   EXPECT_EQ(0, lost_count);
 }
 
-TEST_F(GLES2ImplementationManualInitTest, FailInitOnBGRMismatch1) {
-  ContextInitOptions init_options;
-  init_options.bind_generates_resource_client = false;
-  init_options.bind_generates_resource_service = true;
-  EXPECT_FALSE(Initialize(init_options));
-}
-
-TEST_F(GLES2ImplementationManualInitTest, FailInitOnBGRMismatch2) {
-  ContextInitOptions init_options;
-  init_options.bind_generates_resource_client = true;
-  init_options.bind_generates_resource_service = false;
-  EXPECT_FALSE(Initialize(init_options));
-}
-
 TEST_F(GLES2ImplementationManualInitTest, FailInitOnTransferBufferFail) {
   ContextInitOptions init_options;
   init_options.transfer_buffer_initialize_fail = true;
   EXPECT_FALSE(Initialize(init_options));
-}
-
-TEST_F(GLES2ImplementationTest, DiscardableMemoryDelete) {
-  const GLuint texture_id = 1;
-  EXPECT_FALSE(
-      share_group_->discardable_texture_manager()->TextureIsValid(texture_id));
-  gl_->InitializeDiscardableTextureCHROMIUM(texture_id);
-  EXPECT_TRUE(
-      share_group_->discardable_texture_manager()->TextureIsValid(texture_id));
-
-  // Deleting a texture should clear its discardable entry.
-  gl_->DeleteTextures(1, &texture_id);
-  EXPECT_FALSE(
-      share_group_->discardable_texture_manager()->TextureIsValid(texture_id));
-}
-
-TEST_F(GLES2ImplementationTest, DiscardableTextureLockFail) {
-  const GLuint texture_id = 1;
-  gl_->InitializeDiscardableTextureCHROMIUM(texture_id);
-  EXPECT_TRUE(
-      share_group_->discardable_texture_manager()->TextureIsValid(texture_id));
-
-  // Unlock the handle on the client side.
-  gl_->UnlockDiscardableTextureCHROMIUM(texture_id);
-
-  // Unlock and delete the handle on the service side.
-  ClientDiscardableHandle client_handle =
-      share_group_->discardable_texture_manager()->GetHandleForTesting(
-          texture_id);
-  ServiceDiscardableHandle service_handle(client_handle.BufferForTesting(),
-                                          client_handle.byte_offset(),
-                                          client_handle.shm_id());
-  service_handle.Unlock();
-  EXPECT_TRUE(service_handle.Delete());
-
-  // Trying to re-lock the texture via GL should fail and delete the entry.
-  EXPECT_FALSE(gl_->LockDiscardableTextureCHROMIUM(texture_id));
-  EXPECT_FALSE(
-      share_group_->discardable_texture_manager()->TextureIsValid(texture_id));
 }
 
 TEST_F(GLES2ImplementationTest, DiscardableTextureDoubleInitError) {
