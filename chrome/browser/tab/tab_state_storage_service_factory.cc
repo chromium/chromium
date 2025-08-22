@@ -19,7 +19,7 @@ JNI_TabStateStorageServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
   TabStateStorageService* service =
       TabStateStorageServiceFactory::GetForProfile(profile);
   CHECK(service);
-  return service->GetJavaObject();
+  return service->GetJavaObject(service);
 }
 
 // static

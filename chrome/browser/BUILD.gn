@@ -3332,6 +3332,8 @@ static_library("browser") {
       "tab/tab_state_storage_database.h",
       "tab/tab_state_storage_service.cc",
       "tab/tab_state_storage_service.h",
+      "tab/tab_state_storage_service_android.cc",
+      "tab/tab_state_storage_service_android.h",
       "tab/tab_state_storage_service_factory.cc",
       "tab/tab_state_storage_service_factory.h",
       "tab/web_contents_state.cc",

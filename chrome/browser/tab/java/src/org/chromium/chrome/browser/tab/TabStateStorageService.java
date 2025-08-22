@@ -134,7 +134,7 @@ public class TabStateStorageService {
     @NativeMethods
     interface Natives {
         void saveTab(
-                long nativeTabStateStorageService,
+                long nativeTabStateStorageServiceAndroid,
                 int id,
                 int parentCollectionId,
                 @JniType("std::string") String position,
@@ -151,6 +151,6 @@ public class TabStateStorageService {
                 boolean tabHasSensitiveContent,
                 boolean isPinned);
 
-        void loadAllTabs(long nativeTabStateStorageService, Callback<TabState[]> callback);
+        void loadAllTabs(long nativeTabStateStorageServiceAndroid, Callback<TabState[]> callback);
     }
 }
