@@ -32,9 +32,9 @@ bool StartupInformation::InitializeProcThreadAttributeList(
     return false;
   }
 
-  auto attribute_list = std::make_unique<char[]>(size);
+  auto attribute_list = base::HeapArray<char>::Uninit(size);
   auto* attribute_list_ptr =
-      reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(attribute_list.get());
+      reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(attribute_list.data());
   if (!::InitializeProcThreadAttributeList(attribute_list_ptr, attribute_count,
                                            0, &size)) {
     return false;
