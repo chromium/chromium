@@ -20,6 +20,7 @@ void JNI_PageContentProtoProviderBridge_GetAiPageContent(
     const jni_zero::JavaParamRef<jobject>& j_callback) {
   blink::mojom::AIPageContentOptionsPtr extraction_options =
       optimization_guide::DefaultAIPageContentOptions();
+  extraction_options->on_critical_path = true;
   optimization_guide::GetAIPageContent(
       web_contents, std::move(extraction_options),
       base::BindOnce(
@@ -29,6 +30,7 @@ void JNI_PageContentProtoProviderBridge_GetAiPageContent(
             if (!result) {
               base::android::RunByteArrayCallbackAndroid(
                   j_callback, std::vector<uint8_t>());
+              return;
             }
             std::string serialized_data;
             optimization_guide::proto::AnnotatedPageContent proto =
