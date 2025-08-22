@@ -1290,7 +1290,7 @@ suite('NewTabPageAppTest', () => {
                   'NewTabPage.ComposeEntrypoint.Click.UserTextPresent', true));
         });
 
-    test('Propogate composebox text when closed', async () => {
+    test('Propagate composebox text when closed', async () => {
       composeboxHandler.reset();
       $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
       await microtasksFinished();
