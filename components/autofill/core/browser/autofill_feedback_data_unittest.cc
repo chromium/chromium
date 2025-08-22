@@ -92,7 +92,7 @@ constexpr char kExpectedFeedbackDataJSON[] = R"({
          "rankInHostForm": "2",
          "rankInHostFormSignatureGroup": "0",
          "rankInSignatureGroup": "0",
-         "section": "email_0_13",
+         "section": "firstnameoncard_0_11",
          "serverType": "NO_SERVER_DATA",
          "serverTypeIsOverride": false
       } ]
