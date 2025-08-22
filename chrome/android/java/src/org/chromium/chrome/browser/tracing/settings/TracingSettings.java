@@ -13,6 +13,7 @@ import androidx.preference.Preference;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Settings fragment that shows options for recording a performance trace. */
+@NullMarked
 public class TracingSettings extends ChromeBaseSettingsFragment
         implements EmbeddableSettingsPage, TracingController.Observer {
     static final String NON_DEFAULT_CATEGORY_PREFIX = "disabled-by-default-";

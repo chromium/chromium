@@ -14,6 +14,7 @@ import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.tracing.TracingController;
@@ -30,6 +31,7 @@ import java.util.Set;
  * Settings fragment that configures chrome tracing categories of a specific type. The type is
  * passed to the fragment via an extra (EXTRA_CATEGORY_TYPE).
  */
+@NullMarked
 public class TracingCategoriesSettings extends ChromeBaseSettingsFragment
         implements EmbeddableSettingsPage, Preference.OnPreferenceChangeListener {
     public static final String EXTRA_CATEGORY_TYPE = "type";

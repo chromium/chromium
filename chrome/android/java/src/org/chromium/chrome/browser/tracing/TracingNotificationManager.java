@@ -10,6 +10,8 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -22,11 +24,12 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperBuild
 import org.chromium.ui.accessibility.AccessibilityState;
 
 /** Manages notifications displayed while tracing and once tracing is complete. */
+@NullMarked
 public class TracingNotificationManager {
     private static final String TRACING_NOTIFICATION_TAG = "tracing_status";
     private static final int TRACING_NOTIFICATION_ID = 100;
 
-    private static NotificationWrapperBuilder sTracingActiveNotificationBuilder;
+    private static @Nullable NotificationWrapperBuilder sTracingActiveNotificationBuilder;
     private static int sTracingActiveNotificationBufferPercentage;
 
     // Non-translated strings:
