@@ -3115,7 +3115,7 @@ bool HttpCache::Transaction::MaybeRejectBasedOnEntryInMemoryData(
     uint8_t in_memory_info) {
   HttpCacheEntryRejectionStatus status =
       GetHttpCacheEntryRejectionStatus(in_memory_info);
-  base::UmaHistogramEnumeration("HttpCache.EntryRejectionStatus", status);
+  UMA_HISTOGRAM_ENUMERATION("HttpCache.EntryRejectionStatus", status);
 
   return status == HttpCacheEntryRejectionStatus::kRejection;
 }
