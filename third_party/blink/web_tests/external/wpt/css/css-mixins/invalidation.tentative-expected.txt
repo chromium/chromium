@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] invalidation of @mixin from same stylesheet
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] invalidation of @mixin from different stylesheet
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] invalidation on adding @apply rule
+  Failed to execute 'insertRule' on 'CSSStyleRule': Only conditional nested group rules, style rules, @scope rules,and nested declaration rules may be nested.
+Harness: the test ran to completion.
+
