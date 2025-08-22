@@ -77,7 +77,7 @@ def never_ending_command():
     because all instances will be killed.
     """
     if sys.platform == 'win32':
-        return ['wmic']
+        return ['cmd', '/C', 'more']
     return ['yes']
 
 
