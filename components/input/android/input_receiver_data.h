@@ -73,8 +73,7 @@ class COMPONENT_EXPORT(INPUT) InputReceiverData
   ScopedInputReceiver receiver_;
   ScopedInputTransferToken viz_input_token_;
   bool pending_destruction_ = false;
-  int last_motion_event_action_ = -1;
-  base::TimeTicks last_motion_event_ts_;
+  bool has_seen_events_ = false;
   base::WeakPtrFactory<InputReceiverData> weak_ptr_factory_{this};
 };
 
