@@ -774,4 +774,23 @@ void WithPrefetchRearchParam::InitRearchFeatures() {
   }
 }
 
+PrefetchServiceInjectedEligibilityCheckFuture::
+    PrefetchServiceInjectedEligibilityCheckFuture(
+        PrefetchService& prefetch_service)
+    : prefetch_service_(prefetch_service) {
+  prefetch_service_->SetInjectedEligibilityCheckForTesting(base::BindRepeating(
+      [](TestFutureType* result_callback_future,
+         PrefetchService::InjectedEligibilityCheckResultCallbackForTesting
+             callback) {
+        result_callback_future->SetValue(std::move(callback));
+      },
+      base::Unretained(&result_callback_future_)));
+}
+
+PrefetchServiceInjectedEligibilityCheckFuture::
+    ~PrefetchServiceInjectedEligibilityCheckFuture() {
+  prefetch_service_->SetInjectedEligibilityCheckForTesting(
+      base::NullCallback());
+}
+
 }  // namespace content

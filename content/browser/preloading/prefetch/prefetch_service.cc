@@ -79,17 +79,11 @@ static network::SharedURLLoaderFactory* g_url_loader_factory_for_testing =
 static network::mojom::NetworkContext*
     g_network_context_for_proxy_lookup_for_testing = nullptr;
 
-PrefetchService::DelayEligibilityCheckForTesting&
-GetDelayEligibilityCheckForTesting() {
-  static base::NoDestructor<PrefetchService::DelayEligibilityCheckForTesting>
-      prefetch_delay_eligibility_check_for_testing;
-  return *prefetch_delay_eligibility_check_for_testing;
-}
-
-std::optional<PreloadingEligibility>& GetForceIneligibilityForTesting() {
-  static std::optional<PreloadingEligibility>
-      prefetch_force_ineligibility_for_testing;
-  return prefetch_force_ineligibility_for_testing;
+PrefetchService::InjectedEligibilityCheckForTesting&
+GetInjectedEligibilityCheckForTesting() {
+  static base::NoDestructor<PrefetchService::InjectedEligibilityCheckForTesting>
+      prefetch_injected_eligibility_check_for_testing;
+  return *prefetch_injected_eligibility_check_for_testing;
 }
 
 bool ShouldConsiderDecoyRequestForStatus(PreloadingEligibility eligibility) {
@@ -720,35 +714,41 @@ void PrefetchService::PrefetchUrl(
     }
   }
 
-  if (GetDelayEligibilityCheckForTesting()) {
-    GetDelayEligibilityCheckForTesting().Run(  // IN-TEST
-        base::BindOnce(&PrefetchService::CheckEligibilityOfPrefetch,
-                       weak_method_factory_.GetWeakPtr(), std::move(params)));
+  if (GetInjectedEligibilityCheckForTesting()) {
+    GetInjectedEligibilityCheckForTesting().Run(  // IN-TEST
+        base::BindOnce(
+            &PrefetchService::InjectedEligibilityCheckCompletedForTesting,
+            weak_method_factory_.GetWeakPtr(), std::move(params)));
     return;
   }
 
   CheckEligibilityOfPrefetch(std::move(params));
 }
 
-void PrefetchService::CheckEligibilityOfPrefetch(
-    CheckEligibilityParams params) {
-  const auto prefetch_container = params.prefetch_container;
-  if (!prefetch_container) {
-    // Test-only where the eligibility check is paused and resumed via
-    // `GetDelayEligibilityCheckForTesting()`.
+void PrefetchService::InjectedEligibilityCheckCompletedForTesting(
+    CheckEligibilityParams params,
+    PreloadingEligibility eligibility) {
+  if (!params.prefetch_container) {
+    // The eligibility check can be paused and resumed via
+    // `GetInjectedEligibilityCheckForTesting()`, so `prefetch_container` might
+    // be already gone.
     std::move(params).Finish(PreloadingEligibility::kEligible);
     return;
   }
+
+  if (eligibility != PreloadingEligibility::kEligible) {
+    std::move(params).Finish(eligibility);
+    return;
+  }
+  CheckEligibilityOfPrefetch(std::move(params));
+}
+
+void PrefetchService::CheckEligibilityOfPrefetch(
+    CheckEligibilityParams params) {
+  const auto prefetch_container = params.prefetch_container;
   CHECK(prefetch_container);
   TRACE_EVENT_BEGIN("loading", "PrefetchService::CheckEligibility",
                     perfetto::Track::FromPointer(this));
-
-  // Inject failure in tests.
-  if (GetForceIneligibilityForTesting().has_value()) {
-    std::move(params).Finish(
-        GetForceIneligibilityForTesting().value());  // IN-TEST
-    return;
-  }
 
   // TODO(crbug.com/40215782): Clean up the following checks by: 1)
   // moving each check to a separate function, and 2) requiring that failed
@@ -1799,10 +1799,11 @@ void PrefetchService::OnPrefetchRedirect(
                                   weak_method_factory_.GetWeakPtr(),
                                   redirect_info, std::move(redirect_head))});
 
-  if (GetDelayEligibilityCheckForTesting()) {
-    GetDelayEligibilityCheckForTesting().Run(  // IN-TEST
-        base::BindOnce(&PrefetchService::CheckEligibilityOfPrefetch,
-                       weak_method_factory_.GetWeakPtr(), std::move(params)));
+  if (GetInjectedEligibilityCheckForTesting()) {
+    GetInjectedEligibilityCheckForTesting().Run(  // IN-TEST
+        base::BindOnce(
+            &PrefetchService::InjectedEligibilityCheckCompletedForTesting,
+            weak_method_factory_.GetWeakPtr(), std::move(params)));
     return;
   }
 
@@ -2029,17 +2030,10 @@ void PrefetchService::SetNetworkContextForProxyLookupForTesting(
 }
 
 // static
-void PrefetchService::SetDelayEligibilityCheckForTesting(
-    DelayEligibilityCheckForTesting callback) {
-  GetDelayEligibilityCheckForTesting() =  // IN-TEST
+void PrefetchService::SetInjectedEligibilityCheckForTesting(
+    InjectedEligibilityCheckForTesting callback) {
+  GetInjectedEligibilityCheckForTesting() =  // IN-TEST
       std::move(callback);
-}
-
-// static
-void PrefetchService::SetForceIneligibilityForTesting(
-    PreloadingEligibility eligibility) {
-  GetForceIneligibilityForTesting() =  // IN-TEST
-      eligibility;
 }
 
 base::WeakPtr<PrefetchService> PrefetchService::GetWeakPtr() {

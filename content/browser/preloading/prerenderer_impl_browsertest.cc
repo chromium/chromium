@@ -10,6 +10,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/preloading_decider.h"
@@ -442,8 +443,14 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
 
 IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchNotEligiblePrerenderFailure) {
-  PrefetchService::SetForceIneligibilityForTesting(
-      PreloadingEligibility::kHostIsNonUnique);
+  // Make eligibility check fail with `kHostIsNonUnique`.
+  auto& prefetch_service = *PrefetchService::GetFromFrameTreeNodeId(
+      web_contents().GetPrimaryMainFrame()->GetFrameTreeNodeId());
+  prefetch_service.SetInjectedEligibilityCheckForTesting(base::BindRepeating(
+      [](PrefetchService::InjectedEligibilityCheckResultCallbackForTesting
+             callback) {
+        std::move(callback).Run(PreloadingEligibility::kHostIsNonUnique);
+      }));
 
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -461,6 +468,8 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
   // tries to get `PrerenderHost`, which has been already destructed.
 
   ASSERT_TRUE(NavigateToURL(shell(), prerender_url));
+
+  prefetch_service.SetInjectedEligibilityCheckForTesting(base::NullCallback());
 
   histogram_tester().ExpectUniqueSample(
       "Preloading.Prefetch.Attempt.SpeculationRules.TriggeringOutcome",
@@ -521,16 +530,10 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchNotEligibleNonHttpsPrerenderSuccessWithDelay) {
   ASSERT_TRUE(NavigateToURL(shell(), GetUrlHttp("/empty.html")));
 
-  base::test::TestFuture<base::OnceClosure> eligibility_check_callback_future;
-  auto& prefetch_service = *PrefetchService::GetFromFrameTreeNodeId(
-      web_contents().GetPrimaryMainFrame()->GetFrameTreeNodeId());
-  prefetch_service.SetDelayEligibilityCheckForTesting(base::BindRepeating(
-      [](base::test::TestFuture<base::OnceClosure>*
-             eligibility_check_callback_future,
-         base::OnceClosure callback) {
-        eligibility_check_callback_future->SetValue(std::move(callback));
-      },
-      base::Unretained(&eligibility_check_callback_future)));
+  PrefetchServiceInjectedEligibilityCheckFuture
+      eligibility_check_callback_future(
+          *PrefetchService::GetFromFrameTreeNodeId(
+              web_contents().GetPrimaryMainFrame()->GetFrameTreeNodeId()));
 
   const GURL prerender_url = GetUrlHttp("/title1.html");
   blink::mojom::SpeculationCandidatePtr candidate =
@@ -543,7 +546,8 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
   base::PlatformThread::Sleep(base::Milliseconds(101));
 
   // Proceed to the eligibility check.
-  eligibility_check_callback_future.Take().Run();
+  eligibility_check_callback_future->Take().Run(
+      PreloadingEligibility::kEligible);
 
   prerender_helper().WaitForPrerenderLoadCompletion(prerender_url);
 
@@ -646,16 +650,10 @@ IN_PROC_BROWSER_TEST_P(
   )";
   EXPECT_TRUE(ExecJs(web_contents().GetPrimaryMainFrame(), script));
 
-  base::test::TestFuture<base::OnceClosure> eligibility_check_callback_future;
-  auto& prefetch_service = *PrefetchService::GetFromFrameTreeNodeId(
-      web_contents().GetPrimaryMainFrame()->GetFrameTreeNodeId());
-  prefetch_service.SetDelayEligibilityCheckForTesting(base::BindRepeating(
-      [](base::test::TestFuture<base::OnceClosure>*
-             eligibility_check_callback_future,
-         base::OnceClosure callback) {
-        eligibility_check_callback_future->SetValue(std::move(callback));
-      },
-      base::Unretained(&eligibility_check_callback_future)));
+  PrefetchServiceInjectedEligibilityCheckFuture
+      eligibility_check_callback_future(
+          *PrefetchService::GetFromFrameTreeNodeId(
+              web_contents().GetPrimaryMainFrame()->GetFrameTreeNodeId()));
 
   const GURL prerender_url = GetUrl("/prerender/empty.html?2");
   blink::mojom::SpeculationCandidatePtr candidate =
@@ -668,7 +666,8 @@ IN_PROC_BROWSER_TEST_P(
   base::PlatformThread::Sleep(base::Milliseconds(101));
 
   // Proceed to the eligibility check.
-  eligibility_check_callback_future.Take().Run();
+  eligibility_check_callback_future->Take().Run(
+      PreloadingEligibility::kEligible);
 
   prerender_helper().WaitForPrerenderLoadCompletion(prerender_url);
 
@@ -936,19 +935,10 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
 // - Navigation is started. No preloads are used.
 IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchMigratedPrefetchNotEligiblePrerenderFailure) {
-  PrefetchService::SetForceIneligibilityForTesting(
-      PreloadingEligibility::kHostIsNonUnique);
-
-  base::test::TestFuture<base::OnceClosure> eligibility_check_callback_future;
-  auto& prefetch_service = *PrefetchService::GetFromFrameTreeNodeId(
-      web_contents().GetPrimaryMainFrame()->GetFrameTreeNodeId());
-  prefetch_service.SetDelayEligibilityCheckForTesting(base::BindRepeating(
-      [](base::test::TestFuture<base::OnceClosure>*
-             eligibility_check_callback_future,
-         base::OnceClosure callback) {
-        eligibility_check_callback_future->SetValue(std::move(callback));
-      },
-      base::Unretained(&eligibility_check_callback_future)));
+  PrefetchServiceInjectedEligibilityCheckFuture
+      eligibility_check_callback_future(
+          *PrefetchService::GetFromFrameTreeNodeId(
+              web_contents().GetPrimaryMainFrame()->GetFrameTreeNodeId()));
 
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -968,8 +958,10 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                                         PreloadingConfidence{100});
   }
 
-  // Proceed to the eligibility check of the first prefetch.
-  eligibility_check_callback_future.Take().Run();
+  // Resume the eligibility check of the first prefetch and make it fail with
+  // `kHostIsNonUnique`.
+  eligibility_check_callback_future->Take().Run(
+      PreloadingEligibility::kHostIsNonUnique);
 
   // Here we shouldn't call
   // `prerender_helper().WaitForPrerenderLoadCompletion(prerender_url)` since

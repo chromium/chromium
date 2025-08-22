@@ -349,6 +349,25 @@ class WithPrefetchRearchParam {
   base::test::ScopedFeatureList feature_list_prefetch_scheduler_;
 };
 
+// A wrapper for `PrefetchService::SetInjectedEligibilityCheckForTesting`.
+// - Provide `TestFuture`-based interface.
+// - Cleanup `SetInjectedEligibilityCheckForTesting()` on dtor.
+class PrefetchServiceInjectedEligibilityCheckFuture final {
+ public:
+  explicit PrefetchServiceInjectedEligibilityCheckFuture(
+      PrefetchService& prefetch_service);
+  ~PrefetchServiceInjectedEligibilityCheckFuture();
+
+  using TestFutureType = base::test::TestFuture<
+      PrefetchService::InjectedEligibilityCheckResultCallbackForTesting>;
+
+  TestFutureType* operator->() { return &result_callback_future_; }
+
+ private:
+  raw_ref<PrefetchService> prefetch_service_;
+  TestFutureType result_callback_future_;
+};
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TEST_UTIL_INTERNAL_H_

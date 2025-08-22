@@ -5651,14 +5651,8 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionDuringEligiblityCheck) {
           /*num_on_prefetch_likely_calls=*/1));
 
   // Pause the elibility check.
-  base::test::TestFuture<base::OnceClosure> eligibility_check_callback_future;
-  prefetch_service().SetDelayEligibilityCheckForTesting(base::BindRepeating(
-      [](base::test::TestFuture<base::OnceClosure>*
-             eligibility_check_callback_future,
-         base::OnceClosure callback) {
-        eligibility_check_callback_future->SetValue(std::move(callback));
-      },
-      base::Unretained(&eligibility_check_callback_future)));
+  PrefetchServiceInjectedEligibilityCheckFuture
+      eligibility_check_callback_future(prefetch_service());
 
   const auto url_1 = GURL("https://example.com/one");
   auto candidate_1 = blink::mojom::SpeculationCandidate::New();
@@ -5715,9 +5709,8 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionDuringEligiblityCheck) {
   // Resume the elibility check (currently this is just to satisfy the preferred
   // invariant that `PrefetchService::OnGotEligibility*()` is always called for
   // each eligibility check.
-  eligibility_check_callback_future.Take().Run();
-
-  prefetch_service().SetDelayEligibilityCheckForTesting(base::NullCallback());
+  eligibility_check_callback_future->Take().Run(
+      PreloadingEligibility::kEligible);
 }
 
 // Tests that the prefetch eviction for heldback triggers causes no crash. This
@@ -6921,17 +6914,8 @@ TEST_P(
 
   // Set a handler so that the eligibility check sequences invocked after
   // `PrefetchService::OnPrefetchRedirect` will be paused.
-  base::test::TestFuture<base::OnceClosure>
-      redirect_eligibility_check_callback_future;
-  prefetch_service().SetDelayEligibilityCheckForTesting(base::BindRepeating(
-      [](base::test::TestFuture<base::OnceClosure>*
-             redirect_eligibility_check_callback_future,
-         base::OnceClosure callback) {
-        redirect_eligibility_check_callback_future->SetValue(
-            std::move(callback));
-      },
-      base::Unretained(&redirect_eligibility_check_callback_future)));
-
+  PrefetchServiceInjectedEligibilityCheckFuture
+      redirect_eligibility_check_callback_future(prefetch_service());
   MakeSingleRedirectAndWait(GURL("https://redirect.com"));
 
   // Now the redirect handling is paused right before
@@ -6950,7 +6934,8 @@ TEST_P(
   ASSERT_TRUE(disconnect_future.Wait());
 
   // Resume the eligibility check.
-  redirect_eligibility_check_callback_future.Take().Run();
+  redirect_eligibility_check_callback_future->Take().Run(
+      PreloadingEligibility::kEligible);
   task_environment()->RunUntilIdle();
 
   // Now `PrefetchServableState` should be `kNotServable` since we don't
@@ -6965,8 +6950,6 @@ TEST_P(
                                /*is_nav_prerender=*/true);
   ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
   EXPECT_FALSE(navigation_result->serving_handle_future.Take());
-
-  prefetch_service().SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 // Tests that the `PrefetchStreamingURLLoader` disconnection during
@@ -7001,17 +6984,8 @@ TEST_P(
 
   // Set a handler so that the eligibility check sequences invocked after
   // `PrefetchService::OnPrefetchRedirect` will be paused.
-  base::test::TestFuture<base::OnceClosure>
-      redirect_eligibility_check_callback_future;
-  prefetch_service().SetDelayEligibilityCheckForTesting(base::BindRepeating(
-      [](base::test::TestFuture<base::OnceClosure>*
-             redirect_eligibility_check_callback_future,
-         base::OnceClosure callback) {
-        redirect_eligibility_check_callback_future->SetValue(
-            std::move(callback));
-      },
-      base::Unretained(&redirect_eligibility_check_callback_future)));
-
+  PrefetchServiceInjectedEligibilityCheckFuture
+      redirect_eligibility_check_callback_future(prefetch_service());
   // Start redirecting.
   MakeSingleRedirectAndWait(GURL("https://redirect.com"));
 
@@ -7036,12 +7010,11 @@ TEST_P(
   // redirect), so it should be unblocked for unmatched.
   // TODO(crbug.com/396133768): Explicitly check more detailed Servable/Load
   // states.
-  redirect_eligibility_check_callback_future.Take().Run();
+  redirect_eligibility_check_callback_future->Take().Run(
+      PreloadingEligibility::kEligible);
   task_environment()->RunUntilIdle();
   // The prefetch should not be served.
   EXPECT_FALSE(navigation_result->serving_handle_future.Take());
-
-  prefetch_service().SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 // Test that multiple concurrent navigations are handled correctly.
@@ -7348,14 +7321,8 @@ TEST_P(PrefetchServiceTest,
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  base::test::TestFuture<base::OnceClosure> eligibility_check_callback_future;
-  prefetch_service().SetDelayEligibilityCheckForTesting(base::BindRepeating(
-      [](base::test::TestFuture<base::OnceClosure>*
-             eligibility_check_callback_future,
-         base::OnceClosure callback) {
-        eligibility_check_callback_future->SetValue(std::move(callback));
-      },
-      base::Unretained(&eligibility_check_callback_future)));
+  PrefetchServiceInjectedEligibilityCheckFuture
+      eligibility_check_callback_future(prefetch_service());
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
@@ -7376,7 +7343,8 @@ TEST_P(PrefetchServiceTest,
   ASSERT_FALSE(nav_res->serving_handle_future.IsReady());
 
   // Proceed to the eligibility check.
-  eligibility_check_callback_future.Take().Run();
+  eligibility_check_callback_future->Take().Run(
+      PreloadingEligibility::kEligible);
 
   VerifyCommonRequestState(
       GURL("https://example.com"),
@@ -7413,8 +7381,6 @@ TEST_P(PrefetchServiceTest,
       "SpeculationRule_"
       "Immediate2",
       true, 1);
-
-  prefetch_service().SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 // Scenario:
@@ -7436,14 +7402,8 @@ TEST_P(PrefetchServiceTest,
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  base::test::TestFuture<base::OnceClosure> eligibility_check_callback_future;
-  prefetch_service().SetDelayEligibilityCheckForTesting(base::BindRepeating(
-      [](base::test::TestFuture<base::OnceClosure>*
-             eligibility_check_callback_future,
-         base::OnceClosure callback) {
-        eligibility_check_callback_future->SetValue(std::move(callback));
-      },
-      base::Unretained(&eligibility_check_callback_future)));
+  PrefetchServiceInjectedEligibilityCheckFuture
+      eligibility_check_callback_future(prefetch_service());
 
   MakePrefetchOnMainFrame(
       GURL("http://example.com"),
@@ -7464,7 +7424,8 @@ TEST_P(PrefetchServiceTest,
   ASSERT_FALSE(nav_res->serving_handle_future.IsReady());
 
   // Proceed to the eligibility check.
-  eligibility_check_callback_future.Take().Run();
+  eligibility_check_callback_future->Take().Run(
+      PreloadingEligibility::kEligible);
 
   ASSERT_FALSE(nav_res->serving_handle_future.Take());
 
@@ -7476,8 +7437,6 @@ TEST_P(PrefetchServiceTest,
   // Note that serving metrics is not recorded for the prefetch because
   // `HasPrefetchStatus()` doesn't hold in
   // `PrefetchContainer::UpdateServingPageMetrics()`.
-
-  prefetch_service().SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 TEST_P(PrefetchServiceTest,

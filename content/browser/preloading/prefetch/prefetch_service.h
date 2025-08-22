@@ -170,18 +170,25 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   static void SetNetworkContextForProxyLookupForTesting(
       network::mojom::NetworkContext* network_context);
 
-  // Set a callback for injecting delay for eligibility check in tests.
+  // Injects a callback for eligibility check in tests.
+  // This can be used for injecting delays and making the eligibility check
+  // fail. During each eligiblity check, the
+  // `InjectedEligibilityCheckForTesting` callback will receive a callback to be
+  // called (either sync or async) with a `PreloadingEligibility`. If the given
+  // `PreloadingEligibility` is `kEligible`, then the remaining eligibility
+  // check will continue. Otherwise, the eligibility check fails with the
+  // provided ineligible `PreloadingEligibility`.
   //
   // Make sure to call
-  // `SetDelayEligibilityCheckForTesting(base::NullCallback())` at the end of an
-  // unit test that used this method, as this sets a global variable and it is
-  // shared in unit tests.
-  using DelayEligibilityCheckForTesting =
-      base::RepeatingCallback<void(base::OnceClosure)>;
-  static void SetDelayEligibilityCheckForTesting(
-      DelayEligibilityCheckForTesting callback);
-  // Set an ineligibility to make eligibility check always fail in tests.
-  static void SetForceIneligibilityForTesting(PreloadingEligibility);
+  // `SetInjectedEligibilityCheckForTesting(base::NullCallback())` at the end of
+  // an unit test that used this method, as this sets a global variable and it
+  // is shared in unit tests.
+  using InjectedEligibilityCheckResultCallbackForTesting =
+      base::OnceCallback<void(PreloadingEligibility)>;
+  using InjectedEligibilityCheckForTesting = base::RepeatingCallback<void(
+      InjectedEligibilityCheckResultCallbackForTesting)>;
+  static void SetInjectedEligibilityCheckForTesting(
+      InjectedEligibilityCheckForTesting callback);
 
   base::WeakPtr<PrefetchContainer> MatchUrl(const PrefetchKey& key) const;
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
@@ -227,6 +234,10 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   friend class PrefetchURLLoaderInterceptorTestBase;
 
   struct CheckEligibilityParams;
+
+  void InjectedEligibilityCheckCompletedForTesting(
+      CheckEligibilityParams params,
+      PreloadingEligibility eligibility);
 
   // Checks whether the given |prefetch_container| is eligible for prefetch.
   // Once the eligibility is determined then |OnGotEligibility()| will be
