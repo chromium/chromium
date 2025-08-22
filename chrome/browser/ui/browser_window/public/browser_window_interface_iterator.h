@@ -27,7 +27,26 @@ std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces();
 std::vector<BrowserWindowInterface*>
 GetBrowserWindowInterfacesOrderedByActivation();
 
+// For these 2 functions, we chose not to simply return
+// std::vector<BrowserWindowInterface*> because doing so would open up the
+// possibility that a browser could be created or destroyed during iteration,
+// resulting in potential use-after-frees (example: crbug.com/405910169).
+//
+// Example usage:
+//
+//   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+//       [](BrowserWindowInterface* browser_window) {
+//         // do something with |browser_window|
+//       });
+//
+// These functions are not thread-safe and only guarantee correctness if there
+// is no other thread modifying the browser windows in the background.
+//
+// Care should be taken not to cause the |browser_window| parameter in the
+// lambda to be deleted before being used.
 void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+    base::FunctionRef<void(BrowserWindowInterface*)> on_browser);
+void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
     base::FunctionRef<void(BrowserWindowInterface*)> on_browser);
 
 // Returns the last active browser window interface. This can be nullptr if

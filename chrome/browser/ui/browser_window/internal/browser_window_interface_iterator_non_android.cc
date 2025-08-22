@@ -34,6 +34,17 @@ void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
   }
 }
 
+void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
+    base::FunctionRef<void(BrowserWindowInterface*)> on_browser) {
+  // Make a copy of the BrowserList to simplify the case where we need to
+  // add or remove a Browser during the loop.
+  constexpr bool kEnumerateNewBrowser = true;
+  BrowserListEnumerator browser_list_copy(kEnumerateNewBrowser);
+  while (!browser_list_copy.empty()) {
+    on_browser(browser_list_copy.Next());
+  }
+}
+
 BrowserWindowInterface* GetLastActiveBrowserWindowInterfaceWithAnyProfile() {
   // TODO(crbug.com/431671448): This is implemented in terms of BrowserList to
   // ensure it stays in sync with other BrowserList APIs during migration. It
