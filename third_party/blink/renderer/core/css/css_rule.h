@@ -72,7 +72,9 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     // Values for internal use, not web-exposed:
     kFirstInternalRule = 16,
     // go/keep-sorted start
-    kContainerRule = kFirstInternalRule,
+    kApplyMixinRule = kFirstInternalRule,
+    kContainerRule,
+    kContentsMixinRule,
     kCustomMediaRule,
     kFontFeatureRule,
     kFontPaletteValuesRule,
@@ -80,6 +82,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kFunctionRule,
     kLayerBlockRule,
     kLayerStatementRule,
+    kMixinRule,
     kNestedDeclarationsRule,
     kPositionTryRule,
     kPropertyRule,

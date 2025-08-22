@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] serialization of @mixin with @contents
+  assert_equals: expected "@mixin --m2(@contents) {\\n  @contents;\\n}" but got "@mixin --m2() {\\n  @contents;\\n}"
+Harness: the test ran to completion.
+

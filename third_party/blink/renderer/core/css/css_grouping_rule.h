@@ -134,12 +134,15 @@ struct DowncastTraits<CSSGroupingRule> {
       // CSSGroupingRule:
       case CSSRule::kFunctionRule:
       case CSSRule::kLayerBlockRule:
+      case CSSRule::kMixinRule:
       case CSSRule::kPageRule:
       case CSSRule::kScopeRule:
       case CSSRule::kStartingStyleRule:
         return true;
       // go/keep-sorted start
+      case CSSRule::kApplyMixinRule:
       case CSSRule::kCharsetRule:
+      case CSSRule::kContentsMixinRule:
       case CSSRule::kCounterStyleRule:
       case CSSRule::kCustomMediaRule:
       case CSSRule::kFontFaceRule:
