@@ -162,6 +162,86 @@ bool IsManagementWork(Profile* profile) {
          enterprise_util::ManagementEnvironment::kWork;
 }
 
+// Helper function to get the correct annotation based on the policy name.
+net::NetworkTrafficAnnotationTag GetTrafficAnnotationForPolicy(
+    EnterpriseLogoUrlScope url_scope) {
+  switch (url_scope) {
+    case EnterpriseLogoUrlScope::kBrowser: {
+      return net::DefineNetworkTrafficAnnotation("enterprise_logo_fetcher_for_browser",
+                                                 R"(
+        semantics {
+          sender: "Browser Management Service"
+          description:
+            "Retrieves an image set by the admin as the enterprise logo. This "
+            "is used to show the user which organization manages their browser "
+            "in the new tab page footer."
+          trigger:
+            "When the user launches the browser and the "
+            "EnterpriseLogoUrlForBrowser policy is set."
+          data:
+            "An admin-controlled URL for an image in the managed browser "
+            "footer."
+          destination: OTHER
+          internal {
+            contacts {
+              email: "cec-growth@google.com"
+            }
+          }
+          user_data {
+            type: SENSITIVE_URL
+          }
+          last_reviewed: "2025-08-22"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "There is no setting. This fetch is enabled for any managed browser "
+            "with the EnterpriseLogoUrlForBrowser policy set."
+          chrome_policy {
+            EnterpriseLogoUrlForBrowser {
+              EnterpriseLogoUrlForBrowser: ""
+            }
+          }
+        })");
+    }
+    case EnterpriseLogoUrlScope::kProfile:
+      return net::DefineNetworkTrafficAnnotation("enterprise_logo_fetcher",
+                                                 R"(
+        semantics {
+          sender: "Browser Management Service"
+          description:
+            "Retrieves an image set by the admin as the enterprise logo. This "
+            "is used to show the user which organization manages their browser "
+            "in the profile menu."
+          trigger:
+            "When the user launches the browser and the EnterpriseLogoUrl "
+            "policy is set."
+          data:
+            "An admin-controlled URL for an image on the profile menu."
+          destination: OTHER
+          internal {
+            contacts {
+              email: "cec-growth@google.com"
+            }
+          }
+          user_data {
+            type: SENSITIVE_URL
+          }
+          last_reviewed: "2025-08-22"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "There is no setting. This fetch is enabled for any managed user "
+            "with the EnterpriseLogoUrl policy set."
+          chrome_policy {
+            EnterpriseLogoUrl {
+              EnterpriseLogoUrl: ""
+            }
+          }
+        })");
+  }
+}
 }  // namespace
 
 bool IsBrowserManaged(Profile* profile) {
@@ -471,43 +551,10 @@ jboolean JNI_ManagedBrowserUtils_IsEnterpriseRealTimeUrlCheckModeEnabled(
 
 void GetManagementIcon(const GURL& url,
                        Profile* profile,
+                       EnterpriseLogoUrlScope url_scope,
                        base::OnceCallback<void(const gfx::Image&)> callback) {
-  constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-      net::DefineNetworkTrafficAnnotation("enterprise_logo_fetcher",
-                                          R"(
-        semantics {
-          sender: "Chrome Profiles"
-          description:
-            "Retrieves an image set by the admin as the enterprise logo. This "
-            "is used to show the user which organization manages their browser "
-            "in the profile menu."
-          trigger:
-            "When the user launches the browser and the EnterpriseLogoUrl "
-            "policy is set."
-          data:
-            "An admin-controlled URL for an image on the profile menu."
-          destination: OTHER
-          internal {
-            contacts {
-              email: "cbe-magic@google.com"
-            }
-          }
-          user_data {
-            type: SENSITIVE_URL
-          }
-          last_reviewed: "2024-07-22"
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "There is no setting. This fetch is enabled for any managed user "
-            "with the EnterpriseLogoUrl policy set."
-          chrome_policy {
-            EnterpriseLogoUrl {
-              EnterpriseLogoUrl: ""
-            }
-          }
-        })");
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      GetTrafficAnnotationForPolicy(url_scope);
 
   if (!url.is_valid()) {
     std::move(callback).Run(gfx::Image());
@@ -519,7 +566,7 @@ void GetManagementIcon(const GURL& url,
   fetcher->FetchImage(
       url, base::BindOnce(&OnManagementIconReceived, std::move(callback)),
       image_fetcher::ImageFetcherParams(
-          kTrafficAnnotation,
+          traffic_annotation,
           /*uma_client_name=*/"BrowserManagementMetadata"));
 }
 
