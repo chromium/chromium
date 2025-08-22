@@ -17416,8 +17416,7 @@
                     "enable_features": [
                         "PartitionAllocSchedulerLoopQuarantine",
                         "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread",
-                        "PartitionAllocWithAdvancedChecks",
-                        "PartitionAllocZappingByFreeFlags"
+                        "PartitionAllocWithAdvancedChecks"
                     ]
                 }
             ]
