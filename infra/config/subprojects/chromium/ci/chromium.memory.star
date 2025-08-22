@@ -698,7 +698,7 @@ linux_memory_builder(
             ),
             "interactive_ui_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 10,
+                    shards = 12,
                 ),
             ),
             "services_unittests": targets.remove(
