@@ -13,4 +13,7 @@ namespace device {
 OpenXRSceneUnderstandingManager::OpenXRSceneUnderstandingManager() = default;
 OpenXRSceneUnderstandingManager::~OpenXRSceneUnderstandingManager() = default;
 
+void OpenXRSceneUnderstandingManager::OnDiscoveryRecommended(
+    const XrEventDataSpatialDiscoveryRecommendedEXT* event_data) {}
+
 }  // namespace device

@@ -25,6 +25,12 @@ class OpenXRSceneUnderstandingManager {
   OpenXRSceneUnderstandingManager();
   virtual ~OpenXRSceneUnderstandingManager();
 
+  // Called by the OpenXrApiWrapper when an event comes through that recommends
+  // the scene understanding manager run it's "discovery" code. Note that at
+  // present, this is really only meaningful for the spatial entities framework.
+  virtual void OnDiscoveryRecommended(
+      const XrEventDataSpatialDiscoveryRecommendedEXT* event_data);
+
   virtual OpenXrPlaneManager* GetPlaneManager() = 0;
   virtual OpenXrAnchorManager* GetAnchorManager() = 0;
   virtual OpenXrHitTestManager* GetHitTestManager() = 0;

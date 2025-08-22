@@ -1534,6 +1534,13 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
           reinterpret_cast<XrEventDataInteractionProfileChanged*>(&event_data);
       DCHECK_EQ(interaction_profile_changed->session, session_);
       xr_result = input_helper_->OnInteractionProfileChanged();
+    } else if (event_data.type ==
+               XR_TYPE_EVENT_DATA_SPATIAL_DISCOVERY_RECOMMENDED_EXT) {
+      if (scene_understanding_manager_) {
+        scene_understanding_manager_->OnDiscoveryRecommended(
+            reinterpret_cast<const XrEventDataSpatialDiscoveryRecommendedEXT*>(
+                &event_data));
+      }
     } else {
       DVLOG(1) << __func__ << " Unhandled event type: " << event_data.type;
       TRACE_EVENT_INSTANT1("xr", "UnandledXrEvent", TRACE_EVENT_SCOPE_THREAD,

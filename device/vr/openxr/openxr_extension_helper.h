@@ -61,6 +61,16 @@ struct OpenXrExtensionMethods {
   OPENXR_DECLARE_FN(xrLocateSceneComponentsMSFT);
   OPENXR_DECLARE_FN(xrGetSceneMeshBuffersMSFT);
 
+  // Spatial Entities
+  OPENXR_DECLARE_FN(xrCreateSpatialContextAsyncEXT);
+  OPENXR_DECLARE_FN(xrCreateSpatialContextCompleteEXT);
+  OPENXR_DECLARE_FN(xrCreateSpatialDiscoverySnapshotAsyncEXT);
+  OPENXR_DECLARE_FN(xrCreateSpatialDiscoverySnapshotCompleteEXT);
+  OPENXR_DECLARE_FN(xrDestroySpatialContextEXT);
+  OPENXR_DECLARE_FN(xrDestroySpatialSnapshotEXT);
+  OPENXR_DECLARE_FN(xrEnumerateSpatialCapabilitiesEXT);
+  OPENXR_DECLARE_FN(xrEnumerateSpatialCapabilityComponentTypesEXT);
+
 #if BUILDFLAG(IS_WIN)
   // Time
   OPENXR_DECLARE_FN(xrConvertWin32PerformanceCounterToTimeKHR);

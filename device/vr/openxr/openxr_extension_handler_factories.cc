@@ -13,6 +13,7 @@
 #include "device/vr/openxr/msft/openxr_scene_understanding_manager_msft.h"
 #include "device/vr/openxr/msft/openxr_unbounded_space_provider_msft.h"
 #include "device/vr/openxr/openxr_hand_tracker.h"
+#include "device/vr/openxr/openxr_spatial_framework_manager.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider_basic.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -27,6 +28,8 @@ const std::vector<OpenXrExtensionHandlerFactory*>&
 GetExtensionHandlerFactories() {
   static base::NoDestructor<std::vector<OpenXrExtensionHandlerFactory*>>
       kFactories{std::vector<OpenXrExtensionHandlerFactory*>{
+          new OpenXrSpatialFrameworkManagerFactory(),
+
   // List platform-specific extensions first as they should generally be
   // preferred on the platforms that they are supported for.
 #if BUILDFLAG(IS_ANDROID)
