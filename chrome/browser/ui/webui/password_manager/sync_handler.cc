@@ -136,6 +136,8 @@ base::Value::Dict SyncHandler::GetSyncInfo() const {
   syncer::UserSelectableTypeSet types =
       sync_service->GetUserSettings()->GetSelectedTypes();
 
+  // TODO(crbug.com/40066949): Clean this up once Sync-the-feature users are
+  // migrated to ConsentLevel::kSignin.
   dict.Set("isSyncingPasswords",
            (sync_service->IsSyncFeatureEnabled() &&
             types.Has(syncer::UserSelectableType::kPasswords)));
