@@ -1237,6 +1237,7 @@ targets.binaries.generated_script(
     label = "//ios/chrome/test:ios_chrome_unittests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "gtest",
 )
 
 targets.binaries.generated_script(
@@ -1244,6 +1245,7 @@ targets.binaries.generated_script(
     label = "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "xctest",
 )
 
 targets.binaries.generated_script(
@@ -1251,6 +1253,7 @@ targets.binaries.generated_script(
     label = "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "xctest",
 )
 
 targets.binaries.generated_script(
@@ -1258,6 +1261,7 @@ targets.binaries.generated_script(
     label = "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "xctest",
 )
 
 targets.binaries.generated_script(
@@ -1265,6 +1269,7 @@ targets.binaries.generated_script(
     label = "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "xctest",
 )
 
 targets.binaries.generated_script(
@@ -1272,6 +1277,7 @@ targets.binaries.generated_script(
     label = "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "xctest",
 )
 
 targets.binaries.generated_script(
@@ -1279,6 +1285,7 @@ targets.binaries.generated_script(
     label = "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "xctest",
 )
 
 targets.binaries.generated_script(
@@ -1286,6 +1293,7 @@ targets.binaries.generated_script(
     label = "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "xctest",
 )
 
 targets.binaries.generated_script(
@@ -1293,6 +1301,7 @@ targets.binaries.generated_script(
     label = "//third_party/crashpad/crashpad/test/ios:ios_crash_xcuitests_module",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "xctest",
 )
 
 targets.binaries.generated_script(
@@ -1300,6 +1309,7 @@ targets.binaries.generated_script(
     label = "//ios/components:ios_components_unittests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "gtest",
 )
 
 targets.binaries.generated_script(
@@ -1307,6 +1317,7 @@ targets.binaries.generated_script(
     label = "//ios/net:ios_net_unittests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "gtest",
 )
 
 targets.binaries.generated_script(
@@ -1314,6 +1325,7 @@ targets.binaries.generated_script(
     label = "//ios/testing:ios_testing_unittests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "gtest",
 )
 
 targets.binaries.generated_script(
@@ -1321,6 +1333,7 @@ targets.binaries.generated_script(
     label = "//ios/web:ios_web_inttests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "gtest",
 )
 
 targets.binaries.generated_script(
@@ -1328,6 +1341,7 @@ targets.binaries.generated_script(
     label = "//ios/web/shell/test:ios_web_shell_eg2tests_module",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "xctest",
 )
 
 targets.binaries.generated_script(
@@ -1335,6 +1349,7 @@ targets.binaries.generated_script(
     label = "//ios/web:ios_web_unittests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "gtest",
 )
 
 targets.binaries.generated_script(
@@ -1342,6 +1357,7 @@ targets.binaries.generated_script(
     label = "//ios/web_view:ios_web_view_inttests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "gtest",
 )
 
 targets.binaries.generated_script(
@@ -1349,6 +1365,7 @@ targets.binaries.generated_script(
     label = "//ios/web_view:ios_web_view_unittests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "gtest",
 )
 
 targets.binaries.console_test_launcher(

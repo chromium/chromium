@@ -19,6 +19,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_bookmarks_eg2tests_module iPad Air (5th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -72,6 +73,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_bookmarks_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -127,6 +129,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_integration_eg2tests_module iPad Air (5th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -182,6 +185,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_integration_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -237,6 +241,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_settings_eg2tests_module iPad Air (5th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -292,6 +297,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_settings_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -345,6 +351,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_signin_eg2tests_module iPad Air (5th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -398,6 +405,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_signin_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -451,6 +459,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_smoke_eg2tests_module iPad Air (5th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -503,6 +512,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_smoke_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -557,6 +567,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_ui_eg2tests_module iPad Air (5th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -612,6 +623,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_ui_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -665,6 +677,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_web_eg2tests_module iPad Air (5th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -718,6 +731,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_chrome_web_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -771,6 +785,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_web_shell_eg2tests_module iPad Air (5th generation) 17.5",
         "resultdb": {
           "enable": true,
@@ -823,6 +838,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
+        "module_scheme": "xctest",
         "name": "ios_web_shell_eg2tests_module iPhone 14 17.5",
         "resultdb": {
           "enable": true,
