@@ -244,6 +244,7 @@
   </message>
 
   <!-- Multi-Page -->
+  <if expr="not use_titlecase">
   <message name="IDS_TAB_CXMENU_GLIC_START_SHARE" desc="The label of the tab context menu submenu for starting sharing the given tab or tabs with Gemini. [ICU syntax]" translateable="false">
     {NUM_TABS, plural,
       =1 {Share tab with Gemini}
@@ -259,6 +260,24 @@
       =1 {Sharing selected tab would exceed the sharing limit}
     other {Sharing # tabs would exceed the sharing limit}}
   </message>
+  </if>
+  <if expr="use_titlecase">
+  <message name="IDS_TAB_CXMENU_GLIC_START_SHARE" desc="The label of the tab context menu submenu for starting sharing the given tab or tabs with Gemini. [ICU syntax]" translateable="false">
+    {NUM_TABS, plural,
+      =1 {Share Tab with Gemini}
+    other {Share # Tabs with Gemini}}
+  </message>
+  <message name="IDS_TAB_CXMENU_GLIC_STOP_SHARE" desc="The label of the tab context menu submenu for stopping sharing the given tab or tabs with Gemini. [ICU syntax]" translateable="false">
+    {NUM_TABS, plural,
+      =1 {Stop Sharing Tab with Gemini}
+    other {Stop Sharing # Tabs with Gemini}}
+  </message>
+  <message name="IDS_TAB_CXMENU_GLIC_SHARE_LIMIT" desc="The label of the tab context menu submenu when the number of tabs is beyond the supported limit. [ICU syntax]" translateable="false">
+    {NUM_TABS, plural,
+      =1 {Sharing Selected Tab Would Exceed the Sharing Limit}
+    other {Sharing # Tabs Would Exceed the Sharing Limit}}
+  </message>
+  </if>
 
   <!-- Glic button context menu. -->
   <message name="IDS_GLIC_BUTTON_CXMENU_UNPIN" desc="Name of the Glic button context menu item for unpinning Glic.">
