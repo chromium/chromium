@@ -144,6 +144,7 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   // submitted in a CompositorFrame.
   void SetNeedsDraw();
   bool NeedsDraw() const;
+  void FlushBeginFrameResults();
   bool NeedsBeginFrames() const;
   void GenerateCompositorFrame(
       const viz::BeginFrameArgs& args,
@@ -210,6 +211,10 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   // TODO(boliu): Move this logic to DelayedScheduler.
   uint32_t num_begin_frames_with_no_draw_ =
       num_unneeded_begin_frame_before_stop_;
+
+  int begin_frame_not_needed_count_ = 0;
+  int begin_frame_processed_count_ = 0;
+  int begin_frame_produced_count_ = 0;
 
   gfx::Rect device_viewport_rect_;
   float device_scale_factor_ = 1.0f;

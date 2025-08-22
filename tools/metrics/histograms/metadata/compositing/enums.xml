@@ -235,6 +235,12 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="SlimBeginFrameResult">
+  <int value="0" label="EarlyOutNoDraw"/>
+  <int value="1" label="EarlyOutProcessed"/>
+  <int value="2" label="EarlyOutFrameProduced"/>
+</enum>
+
 <enum name="ToggleFrameRateCase">
   <int value="0" label="No video"/>
   <int value="1" label="Frame rate toggling supported by the platfrom"/>

@@ -1357,6 +1357,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-01-04">
   <owner>acondor@chromium.org</owner>
   <owner>clank-performance-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the duration of CompositorView::UpdateLayerTreeHost on Android,
     which updates the layer tree when a frame is requested. Subsampled to 1/100.
