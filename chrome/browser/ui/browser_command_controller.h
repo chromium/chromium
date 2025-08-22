@@ -12,6 +12,7 @@
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -84,6 +85,7 @@ class BrowserCommandController : public CommandUpdater,
   // Helper method to show the customize chrome sidepanel and optionally scroll
   // to a specific section.
   void ShowCustomizeChromeSidePanel(
+      SidePanelOpenTrigger trigger,
       std::optional<CustomizeChromeSection> section = std::nullopt);
 
   // Overriden from CommandUpdater:

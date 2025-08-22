@@ -987,6 +987,7 @@ void BrowserActions::InitializeBrowserActions() {
                  actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 browser_command_controller->ShowCustomizeChromeSidePanel(
+                    SidePanelOpenTrigger::kNewTabFooter,
                     CustomizeChromeSection::kFooter);
               },
               bwi->GetFeatures().browser_command_controller()))

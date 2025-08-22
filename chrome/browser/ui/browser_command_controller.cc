@@ -68,7 +68,6 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -466,6 +465,7 @@ void BrowserCommandController::WebContentsFocusChanged() {
 }
 
 void BrowserCommandController::ShowCustomizeChromeSidePanel(
+    SidePanelOpenTrigger trigger,
     std::optional<CustomizeChromeSection> section) {
   tabs::TabInterface* tab = browser_->tab_strip_model()->GetActiveTab();
   if (!tab || !tab->GetTabFeatures() ||
@@ -481,7 +481,7 @@ void BrowserCommandController::ShowCustomizeChromeSidePanel(
     return;
   }
 
-  side_panel_controller->OpenSidePanel(SidePanelOpenTrigger::kAppMenu, section);
+  side_panel_controller->OpenSidePanel(trigger, section);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1196,12 +1196,14 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     }
 
     case IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL: {
-      ShowCustomizeChromeSidePanel(CustomizeChromeSection::kAppearance);
+      ShowCustomizeChromeSidePanel(SidePanelOpenTrigger::kAppMenu,
+                                   CustomizeChromeSection::kAppearance);
       break;
     }
 
     case IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR: {
-      ShowCustomizeChromeSidePanel(CustomizeChromeSection::kToolbar);
+      ShowCustomizeChromeSidePanel(SidePanelOpenTrigger::kAppMenu,
+                                   CustomizeChromeSection::kToolbar);
       break;
     }
 
