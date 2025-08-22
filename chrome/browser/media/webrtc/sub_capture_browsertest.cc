@@ -599,7 +599,13 @@ IN_PROC_BROWSER_TEST_P(SubCaptureBrowserTest,
       tab.ApplySubCaptureTarget(target, type_, Frame::kTopLevelDocument));
 }
 
-IN_PROC_BROWSER_TEST_P(SubCaptureBrowserTest, MaxIdsInTopLevelDocument) {
+// TODO(crbug.com/431852186): Re-enable after flakes are resolved.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MaxIdsInTopLevelDocument DISABLED_MaxIdsInTopLevelDocument
+#else
+#define MAYBE_MaxIdsInTopLevelDocument MaxIdsInTopLevelDocument
+#endif
+IN_PROC_BROWSER_TEST_P(SubCaptureBrowserTest, MAYBE_MaxIdsInTopLevelDocument) {
   SetUpTest(Frame::kNone, /*self_capture=*/false);
   TabInfo& tab = tabs_[kMainTab];
 
@@ -647,7 +653,15 @@ IN_PROC_BROWSER_TEST_P(SubCaptureBrowserTest, MAYBE_MaxIdsInEmbeddedFrame) {
       base::StringPrintf("embedded-produce-%s-error", ToString(type_)));
 }
 
-IN_PROC_BROWSER_TEST_P(SubCaptureBrowserTest, MaxIdsSharedBetweenFramesInTab) {
+// TODO(crbug.com/431852186): Re-enable after flakes are resolved.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MaxIdsSharedBetweenFramesInTab \
+  DISABLED_MaxIdsSharedBetweenFramesInTab
+#else
+#define MAYBE_MaxIdsSharedBetweenFramesInTab MaxIdsSharedBetweenFramesInTab
+#endif
+IN_PROC_BROWSER_TEST_P(SubCaptureBrowserTest,
+                       MAYBE_MaxIdsSharedBetweenFramesInTab) {
   SetUpTest(Frame::kNone, /*self_capture=*/false);
   TabInfo& tab = tabs_[kMainTab];
 
