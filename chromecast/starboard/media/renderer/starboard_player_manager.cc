@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/starboard/media/media/drm_util.h"
 #include "chromecast/starboard/media/renderer/chromium_starboard_conversions.h"
 
@@ -130,7 +131,21 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
     LOG(ERROR) << "Could not create SbPlayer";
     return nullptr;
   }
+
+  base::RepeatingCallback<base::TimeDelta()> get_media_time =
+      base::BindRepeating(
+          [](StarboardApiWrapper* starboard, void* sb_player) {
+            StarboardPlayerInfo player_info = {};
+            starboard->GetPlayerInfo(sb_player, &player_info);
+            return base::Microseconds(
+                player_info.current_media_timestamp_micros);
+          },
+          starboard, sb_player);
+
   starboard_player_manager->player_ = sb_player;
+  starboard_player_manager->buffering_tracker_.emplace(
+      std::move(get_media_time), cast_metrics_helper);
+
   return starboard_player_manager;
 }
 
@@ -196,6 +211,7 @@ void StarboardPlayerManager::PushBuffer(
       << "Attempted to insert a buffer that already exists, at address: "
       << sample_info.buffer;
 
+  buffering_tracker_->OnBufferPush();
   UpdateStats(sample_info);
 }
 
@@ -227,6 +243,7 @@ void StarboardPlayerManager::StartPlayingFrom(base::TimeDelta time) {
   // after a flush, ensure that we have the correct rate set before seeking.
   starboard_->SetPlaybackRate(player_, playback_rate_);
   starboard_->SeekTo(player_, time.InMicroseconds(), ++seek_ticket_);
+  buffering_tracker_->SetPlaybackRate(playback_rate_);
 }
 
 void StarboardPlayerManager::Flush() {
@@ -234,8 +251,10 @@ void StarboardPlayerManager::Flush() {
   CHECK(player_);
   LOG(INFO) << "StarboardPlayerManager::Flush";
   flushing_ = true;
+
   // Setting the playback rate to 0 pauses playback.
   starboard_->SetPlaybackRate(player_, 0.0);
+  buffering_tracker_->SetPlaybackRate(0.0);
 
   StarboardPlayerInfo player_info = {};
   starboard_->GetPlayerInfo(player_, &player_info);
@@ -251,6 +270,7 @@ void StarboardPlayerManager::SetPlaybackRate(double playback_rate) {
   LOG(INFO) << "SetPlaybackRate: " << playback_rate;
   playback_rate_ = playback_rate;
   starboard_->SetPlaybackRate(player_, playback_rate);
+  buffering_tracker_->SetPlaybackRate(playback_rate);
 }
 
 void StarboardPlayerManager::SetVolume(float volume) {
@@ -327,13 +347,23 @@ void StarboardPlayerManager::OnPlayerStatus(
 
   DCHECK_EQ(player, player_);
   LOG(INFO) << "Received SbPlayer state: " << state;
-  if (state == StarboardPlayerState::kStarboardPlayerStateEndOfStream) {
-    client_->OnEnded();
-  } else if (state == StarboardPlayerState::kStarboardPlayerStatePresenting) {
-    client_->OnBufferingStateChange(
-        ::media::BufferingState::BUFFERING_HAVE_ENOUGH,
-        ::media::BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+  switch (state) {
+    case StarboardPlayerState::kStarboardPlayerStateEndOfStream: {
+      client_->OnEnded();
+      break;
+    }
+    case StarboardPlayerState::kStarboardPlayerStatePresenting: {
+      client_->OnBufferingStateChange(
+          ::media::BufferingState::BUFFERING_HAVE_ENOUGH,
+          ::media::BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+      break;
+    }
+    default: {
+      break;
+    }
   }
+
+  buffering_tracker_->OnPlayerStatus(state);
 }
 
 void StarboardPlayerManager::OnPlayerError(
