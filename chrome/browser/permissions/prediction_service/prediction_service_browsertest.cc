@@ -190,6 +190,10 @@ constexpr char kAiv4PassageEmbeddingsComputationTimeoutHistogram[] =
     "Permissions.AIv4.PassageEmbeddingsComputationTimeout";
 constexpr char kAiv4EmbedderMetadataValidHistogram[] =
     "Permissions.AIv4.EmbedderMetadataValid";
+constexpr char kAiv4NotificationsPermissionRequestRelevanceHistogram[] =
+    "Permissions.AIv4.Notifications.PermissionRequestRelevance";
+constexpr char kAiv4GeolocationPermissionRequestRelevanceHistogram[] =
+    "Permissions.AIv4.Geolocation.PermissionRequestRelevance";
 // A CPSSv1 model that returns a constant value of 0.5;
 // its meaning is defined by the max_likely threshold we use in the
 // signature_model_executor to differentiate between
@@ -1392,6 +1396,10 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelFailureBrowserTest,
       /*expected_prediction_likelihood=*/kLikelihoodVeryUnlikely,
       /*translate_source_language=*/GetParam().page_language);
 
+  histogram_tester().ExpectTotalCount(
+      kAiv4NotificationsPermissionRequestRelevanceHistogram,
+      /*expected_count=*/0);
+
   // Avoid dangling raw_ptr warning:
   model_handler_provider()->set_passage_embedder_for_testing(nullptr);
 }
@@ -1615,6 +1623,13 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
       kAiv4PassageEmbeddingsComputationTimeoutHistogram,
       /*sample=*/0,
       /*expected_count=*/1);
+
+  histogram_tester().ExpectUniqueSample(
+      request_type() == RequestType::kNotifications
+          ? kAiv4NotificationsPermissionRequestRelevanceHistogram
+          : kAiv4GeolocationPermissionRequestRelevanceHistogram,
+      /*sample=*/test_case.expected_relevance,
+      /*expected_bucket_count=*/test_case.success_count_model_execution);
 
   histogram_tester().ExpectBucketCount(
       kAiv4ComputeEmbeddingsStatusHistogram,
