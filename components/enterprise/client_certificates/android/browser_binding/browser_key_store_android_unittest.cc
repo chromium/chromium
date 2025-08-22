@@ -46,7 +46,7 @@ TEST_F(BrowserKeyStoreAndroidTest, ConvertsBrowserKeyNullJavaRefToNullPtr) {
 }
 
 TEST_F(BrowserKeyStoreAndroidTest, GetsPublicKeyWhenSupportsStrongBox) {
-  scoped_refptr<BrowserKeyStore> bk_store = GetBrowserKeyStoreInstance();
+  scoped_refptr<BrowserKeyStore> bk_store = CreateBrowserKeyStoreInstance();
   ASSERT_TRUE(bk_store);
   if (!bk_store->GetDeviceSupportsHardwareKeys()) {
     // StrongBox is required for this test.
@@ -69,7 +69,7 @@ TEST_F(BrowserKeyStoreAndroidTest, GetsPublicKeyWhenSupportsStrongBox) {
 }
 
 TEST_F(BrowserKeyStoreAndroidTest, DoesNotGetbkWhenNoStrongBoxSupport) {
-  scoped_refptr<BrowserKeyStore> bk_store = GetBrowserKeyStoreInstance();
+  scoped_refptr<BrowserKeyStore> bk_store = CreateBrowserKeyStoreInstance();
   ASSERT_TRUE(bk_store);
   if (bk_store->GetDeviceSupportsHardwareKeys()) {
     // This test does not run with StrongBox.

@@ -114,6 +114,23 @@ source_set("core") {
     sources += [ "win/windows_software_private_key_factory.cc" ]
   }
 
+  if (is_android) {
+    public += [
+      "android_private_key.h",
+      "android_private_key_factory.h",
+    ]
+
+    sources += [
+      "android_private_key.cc",
+      "android_private_key_factory.cc",
+    ]
+
+    deps += [
+      "//base/android:jni_zero",
+      "//components/enterprise/client_certificates/android:browser_binding",
+    ]
+  }
+
   public_deps = [
     "//base",
     "//components/enterprise/client_certificates/proto:db_client_certs",
@@ -177,6 +194,12 @@ source_set("test_support") {
     "//testing/gmock",
     "//third_party/boringssl",
   ]
+
+  if (is_android) {
+    deps += [
+      "//components/enterprise/client_certificates/android:browser_binding",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -199,6 +222,13 @@ source_set("unit_tests") {
 
   if (is_win) {
     sources += [ "win/windows_software_private_key_factory_unittest.cc" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "android_private_key_factory_unittest.cc",
+      "android_private_key_unittest.cc",
+    ]
   }
 
   deps = [

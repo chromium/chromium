@@ -19,7 +19,8 @@ class BrowserKeyStore;
 
 // Get a platform specific instance of the BrowserKeyStore. This function
 // has per-platform implementations.
-scoped_refptr<BrowserKeyStore> GetBrowserKeyStoreInstance();
+// TODO(crbug.com/432304139) Investigate if this can return a unique_ptr.
+scoped_refptr<BrowserKeyStore> CreateBrowserKeyStoreInstance();
 
 // An interface for creating storing and retrieving browser keys.
 class BrowserKeyStore : public base::RefCounted<BrowserKeyStore> {

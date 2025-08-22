@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_CONSTANTS_H_
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_CONSTANTS_H_
 
+#include <cstdint>
+#include <vector>
+
 namespace client_certificates {
 
 // Name of the identity representing a managed Profile. This value also
@@ -20,6 +23,10 @@ extern const char kManagedBrowserIdentityName[];
 // Name of the temporary storage location of an identity during key pair
 // rotation.
 extern const char kTemporaryManagedProfileIdentityName[];
+
+// The Alias of the Android KeyStore identity used for managed Profiles. This
+// identity is used to store the private key for managed Profiles.
+extern const uint8_t kManagedProfileAndroidKeyStoreIdentity[];
 
 // Name of the temporary storage location of an identity during key pair
 // rotation for a managed browser.

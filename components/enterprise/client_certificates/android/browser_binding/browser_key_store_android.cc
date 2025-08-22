@@ -34,7 +34,7 @@ ConvertToListOfPublicKeyCredentialParameters(
 }
 }  // namespace
 
-scoped_refptr<BrowserKeyStore> GetBrowserKeyStoreInstance() {
+scoped_refptr<BrowserKeyStore> CreateBrowserKeyStoreInstance() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   return base::MakeRefCounted<BrowserKeyStoreAndroid>(
       Java_BrowserKeyStore_getInstance(env));

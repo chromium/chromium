@@ -26,7 +26,10 @@ enum class PrivateKeySource {
   // Key created by the operating system that is not hardware-backed.
   kOsSoftwareKey = 2,
 
-  kMaxValue = kOsSoftwareKey
+  // Key created by the Android StrongBox service.
+  kAndroidKey = 3,
+
+  kMaxValue = kAndroidKey
 };
 
 // Converts a `proto_key_source` from the proto values to the C++ enum values.

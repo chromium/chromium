@@ -24,4 +24,7 @@ const char kKeyDetails[] = "KeyDetails";
 
 const char kCertificate[] = "Certificate";
 
+// TODO(crbug.com/432304139): Make this key more complex and unique.
+const uint8_t kManagedProfileAndroidKeyStoreIdentity[] = {1, 5, 3, 4, 5, 6};
+
 }  // namespace client_certificates
