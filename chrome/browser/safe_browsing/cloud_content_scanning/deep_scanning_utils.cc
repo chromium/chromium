@@ -203,7 +203,8 @@ void MaybeReportDeepScanningVerdict(
           source, destination, file_name, download_digest_sha256, mime_type,
           trigger, response.request_token(), content_transfer_method,
           source_email, content_analysis_info->GetContentAreaAccountEmail(),
-          response_result, content_size, referrer_chain, event_result);
+          response_result, content_size, referrer_chain,
+          content_analysis_info->frame_url_chain(), event_result);
     }
   }
 }
@@ -241,6 +242,7 @@ void ReportAnalysisConnectorWarningBypass(
         trigger, response.request_token(), content_transfer_method,
         /*source_email=*/"", content_analysis_info.GetContentAreaAccountEmail(),
         user_justification, result, content_size, referrer_chain,
+        content_analysis_info.frame_url_chain(),
         enterprise_connectors::EventResult::BYPASSED);
   }
 }

@@ -258,6 +258,10 @@ TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
 
+  FrameUrlChain frame_url_chain;
+  *frame_url_chain.Add() = "https://frame1.com/";
+  *frame_url_chain.Add() = "https://frame2.com/";
+
   ContentAnalysisResponse response;
   response.set_request_token("123");
   auto* result = response.add_results();
@@ -286,6 +290,7 @@ TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {
       /*content_size=*/-1,
       /*result=*/*result,
       /*referrer_chain=*/referrer_chain,
+      /*frame_url_chain=*/frame_url_chain,
       /*event_result=*/EventResult::BLOCKED);
 
   ASSERT_EQ(event.url(), "https://google.com/");
@@ -326,11 +331,19 @@ TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {
   } else {
     ASSERT_EQ(event.referrers_size(), 0);
   }
+
+  ASSERT_EQ(event.iframe_urls_size(), 2);
+  ASSERT_EQ(event.iframe_urls()[0], "https://frame1.com/");
+  ASSERT_EQ(event.iframe_urls()[1], "https://frame2.com/");
 }
 
 TEST(ReportingUtilsTest, GetDangerousDownloadEvent) {
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
+
+  FrameUrlChain frame_url_chain;
+  *frame_url_chain.Add() = "https://frame1.com/";
+  *frame_url_chain.Add() = "https://frame2.com/";
 
   auto event = GetDangerousDownloadEvent(
       /*url=*/GURL("https://google.com/"), /*tab_url=*/GURL("about:blank"),
@@ -344,6 +357,7 @@ TEST(ReportingUtilsTest, GetDangerousDownloadEvent) {
       /*profile_identifier=*/"identifier",
       /*profile_username=*/"profile_username", /*content_size=*/-1,
       /*referrer_chain=*/referrer_chain,
+      /*frame_url_chain=*/frame_url_chain,
       /*event_result=*/EventResult::BLOCKED);
 
   ASSERT_EQ(event.url(), "https://google.com/");
@@ -376,6 +390,10 @@ TEST(ReportingUtilsTest, GetDangerousDownloadEvent) {
   } else {
     ASSERT_EQ(event.referrers_size(), 0);
   }
+
+  ASSERT_EQ(event.iframe_urls_size(), 2);
+  ASSERT_EQ(event.iframe_urls()[0], "https://frame1.com/");
+  ASSERT_EQ(event.iframe_urls()[1], "https://frame2.com/");
 }
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
@@ -478,6 +496,21 @@ TEST(ReportingUtilsTest, TestEmptyReferrerChainAdded) {
   EXPECT_EQ(event.size(), 1u);
   EXPECT_TRUE(event.contains(kKeyReferrers));
   EXPECT_TRUE(event.FindList(kKeyReferrers)->empty());
+}
+
+TEST(ReportingUtilsTest, TestAddFrameUrlChainToEvent) {
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain;
+  *frame_url_chain.Add() = "https://frame1.com/";
+  *frame_url_chain.Add() = "https://frame2.com/";
+
+  base::Value::Dict event;
+  AddFrameUrlChainToEvent(frame_url_chain, event);
+
+  const base::Value::List* iframe_urls = event.FindList(kKeyIframeUrls);
+  ASSERT_TRUE(iframe_urls);
+  ASSERT_EQ(iframe_urls->size(), 2u);
+  EXPECT_EQ((*iframe_urls)[0].GetString(), "https://frame1.com/");
+  EXPECT_EQ((*iframe_urls)[1].GetString(), "https://frame2.com/");
 }
 
 }  // namespace enterprise_connectors

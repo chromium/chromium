@@ -100,6 +100,8 @@ class DownloadContentAreaUserProvider : public ContentAnalysisInfo {
   content::WebContents* web_contents() const override;
   google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
   referrer_chain() const override;
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
+      const override;
 
  private:
   // ContentAnalysisInfo:
@@ -109,14 +111,13 @@ class DownloadContentAreaUserProvider : public ContentAnalysisInfo {
   std::string user_action_id() const override;
   std::string email() const override;
   ContentAnalysisRequest::Reason reason() const override;
-  google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
-      const override;
 
   GURL url_;
   GURL tab_url_;
   raw_ptr<signin::IdentityManager> im_;
   google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
       referrer_chain_;
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain_;
   base::WeakPtr<content::WebContents> web_contents_;
 };
 

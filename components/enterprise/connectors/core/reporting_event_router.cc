@@ -531,6 +531,7 @@ void ReportingEventRouter::OnSensitiveDataEvent(
     const ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
+    const FrameUrlChain& frame_url_chain,
     EventResult event_result) {
   if (!IsEventEnabled(kKeySensitiveDataEvent)) {
     return;
@@ -551,7 +552,7 @@ void ReportingEventRouter::OnSensitiveDataEvent(
         content_transfer_method, source_email, content_area_account_email,
         reporting_client_->GetProfileIdentifier(),
         reporting_client_->GetProfileUserName(), user_justification,
-        content_size, result, referrer_chain, event_result);
+        content_size, result, referrer_chain, frame_url_chain, event_result);
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
@@ -594,6 +595,8 @@ void ReportingEventRouter::OnSensitiveDataEvent(
       event.Set(kKeyUserJustification, user_justification.value());
     }
 
+    AddFrameUrlChainToEvent(frame_url_chain, event);
+
     AddAnalysisConnectorVerdictToEvent(result, event);
 
     reporting_client_->ReportEventWithTimestampDeprecated(
@@ -614,13 +617,14 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
     const std::string& scan_id,
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
+    const FrameUrlChain& frame_url_chain,
     EventResult event_result) {
   OnDangerousDownloadEvent(url, tab_url, /*source=*/"", /*destination=*/"",
                            file_name, download_digest_sha256,
                            DangerTypeToThreatType(danger_type), mime_type,
                            trigger, scan_id,
                            /*content_transfer_method*/ "", content_size,
-                           referrer_chain, event_result);
+                           referrer_chain, frame_url_chain, event_result);
 }
 
 void ReportingEventRouter::OnDangerousDownloadEvent(
@@ -637,6 +641,7 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
     const std::string& content_transfer_method,
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
+    const FrameUrlChain& frame_url_chain,
     EventResult event_result) {
   if (!IsEventEnabled(kKeyDangerousDownloadEvent)) {
     return;
@@ -656,7 +661,7 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
         download_digest_sha256, threat_type, mime_type, trigger, scan_id,
         content_transfer_method, reporting_client_->GetProfileIdentifier(),
         reporting_client_->GetProfileUserName(), content_size, referrer_chain,
-        event_result);
+        frame_url_chain, event_result);
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
@@ -690,6 +695,8 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
       event.Set(kKeyContentTransferMethod, content_transfer_method);
     }
 
+    AddFrameUrlChainToEvent(frame_url_chain, event);
+
     reporting_client_->ReportEventWithTimestampDeprecated(
         kKeyDangerousDownloadEvent, std::move(settings.value()),
         std::move(event), base::Time::Now(),
@@ -713,6 +720,7 @@ void ReportingEventRouter::OnAnalysisConnectorResult(
     const ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
+    const FrameUrlChain& frame_url_chain,
     EventResult event_result) {
   if (result.tag() == "malware") {
     DCHECK_EQ(1, result.triggered_rules().size());
@@ -720,13 +728,13 @@ void ReportingEventRouter::OnAnalysisConnectorResult(
         url, tab_url, source, destination, file_name, download_digest_sha256,
         MalwareRuleToThreatType(result.triggered_rules(0).rule_name()),
         mime_type, trigger, scan_id, content_transfer_method, content_size,
-        referrer_chain, event_result);
+        referrer_chain, frame_url_chain, event_result);
   } else if (result.tag() == "dlp") {
     OnSensitiveDataEvent(
         url, tab_url, source, destination, file_name, download_digest_sha256,
         mime_type, trigger, scan_id, content_transfer_method, source_email,
         content_area_account_email, /*user_justification=*/std::nullopt, result,
-        content_size, referrer_chain, event_result);
+        content_size, referrer_chain, frame_url_chain, event_result);
   }
 }
 

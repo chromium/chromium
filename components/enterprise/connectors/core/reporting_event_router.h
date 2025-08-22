@@ -27,6 +27,7 @@ namespace enterprise_connectors {
 class ReportingEventRouter : public KeyedService {
   using ReferrerChain =
       google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
+  using FrameUrlChain = google::protobuf::RepeatedPtrField<std::string>;
 
  public:
   explicit ReportingEventRouter(RealtimeReportingClientBase* reporting_client);
@@ -115,6 +116,7 @@ class ReportingEventRouter : public KeyedService {
                             const ContentAnalysisResponse::Result& result,
                             const int64_t content_size,
                             const ReferrerChain& referrer_chain,
+                            const FrameUrlChain& frame_url_chain,
                             EventResult event_result);
 
   // Notifies listeners that safe browsing detected a dangerous download
@@ -132,6 +134,7 @@ class ReportingEventRouter : public KeyedService {
                                 const std::string& scan_id,
                                 const int64_t content_size,
                                 const ReferrerChain& referrer_chain,
+                                const FrameUrlChain& frame_url_chain,
                                 EventResult event_result);
 
   // Notifies listeners that deep scanning detected a dangerous download.
@@ -152,6 +155,7 @@ class ReportingEventRouter : public KeyedService {
                                 const std::string& content_transfer_method,
                                 const int64_t content_size,
                                 const ReferrerChain& referrer_chain,
+                                const FrameUrlChain& frame_url_chain,
                                 EventResult event_result);
 
   // Notifies listeners that the analysis connector detected a violation.
@@ -170,6 +174,7 @@ class ReportingEventRouter : public KeyedService {
                                  const ContentAnalysisResponse::Result& result,
                                  const int64_t content_size,
                                  const ReferrerChain& referrer_chain,
+                                 const FrameUrlChain& frame_url_chain,
                                  EventResult event_result);
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   // Converts `source` into a `CopiedTextSource`. `CopiedTextSource::context` is

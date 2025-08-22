@@ -729,6 +729,11 @@ void EventReportValidator::ExpectSourceActiveUser(const std::string& user) {
   source_active_content_area_user_ = user;
 }
 
+void EventReportValidator::ExpectFrameUrlChain(
+    const std::vector<std::string>& frame_urls) {
+  frame_urls_ = frame_urls;
+}
+
 void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   DCHECK(report);
 
@@ -784,6 +789,7 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ValidateDataMaskingAttributes(event);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  ValidateFrameUrlChain(event);
 }
 
 void EventReportValidator::ValidateFederatedOrigin(
@@ -981,6 +987,23 @@ void EventReportValidator::ValidateDataMaskingAttributes(
   }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+void EventReportValidator::ValidateFrameUrlChain(
+    const base::Value::Dict* value) {
+  const base::Value::List* frame_urls = value->FindList(kKeyIframeUrls);
+  if (!frame_urls_.has_value()) {
+    EXPECT_TRUE(!frame_urls || frame_urls->empty());
+    return;
+  }
+
+  ASSERT_NE(nullptr, frame_urls);
+  std::vector<std::string> actual_urls;
+  for (const auto& url_value : *frame_urls) {
+    actual_urls.push_back(url_value.GetString());
+  }
+
+  EXPECT_THAT(actual_urls, testing::ElementsAreArray(frame_urls_.value()));
+}
 
 EventReportValidatorHelper::EventReportValidatorHelper(Profile* profile,
                                                        bool browser_test)

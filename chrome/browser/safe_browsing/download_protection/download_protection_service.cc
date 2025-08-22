@@ -504,7 +504,8 @@ void DownloadProtectionService::ReportSensitiveFileBypassEnterpriseEvent(
     const enterprise_connectors::FileMetadata& metadata,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
-        referrer_chain) {
+        referrer_chain,
+    const google::protobuf::RepeatedPtrField<std::string>& frame_urls) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   auto* reporting_event_router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
@@ -523,7 +524,7 @@ void DownloadProtectionService::ReportSensitiveFileBypassEnterpriseEvent(
       /*content_transfer_method=*/"", /*source_email=*/"",
       info.GetContentAreaAccountEmail(),
       /*user_justification=*/std::nullopt, result, metadata.size,
-      referrer_chain, enterprise_connectors::EventResult::BYPASSED);
+      referrer_chain, frame_urls, enterprise_connectors::EventResult::BYPASSED);
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
@@ -532,7 +533,8 @@ void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
     Profile* profile,
     const enterprise_connectors::FileMetadata& metadata,
     const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
-        referrer_chain) {
+        referrer_chain,
+    const google::protobuf::RepeatedPtrField<std::string>& frame_urls) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   enterprise_connectors::ReportingEventRouter* reporting_event_router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
@@ -546,7 +548,7 @@ void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
       item->GetDangerType(), metadata.mime_type,
       enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       metadata.scan_response.request_token(), metadata.size, referrer_chain,
-      enterprise_connectors::EventResult::BYPASSED);
+      frame_urls, enterprise_connectors::EventResult::BYPASSED);
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
@@ -554,7 +556,8 @@ void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
     download::DownloadItem* item,
     Profile* profile,
     const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
-        referrer_chain) {
+        referrer_chain,
+    const google::protobuf::RepeatedPtrField<std::string>& frame_urls) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   enterprise_connectors::ReportingEventRouter* reporting_event_router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
@@ -569,7 +572,7 @@ void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
       base::HexEncode(item->GetHash()), item->GetDangerType(),
       item->GetMimeType(),
       enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-      /*scan_id*/ "", item->GetTotalBytes(), referrer_chain,
+      /*scan_id*/ "", item->GetTotalBytes(), referrer_chain, frame_urls,
       enterprise_connectors::EventResult::BYPASSED);
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
@@ -621,6 +624,10 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
     referrer_chain = GetOrIdentifyReferrerChainForEnterprise(*item);
   }
 
+  google::protobuf::RepeatedPtrField<std::string> frame_urls =
+      CollectFrameUrls(content::DownloadItemUtils::GetWebContents(item),
+                       enterprise_connectors::DeepScanAccessPoint::DOWNLOAD);
+
   // A download with a verdict of "sensitive data warning" can be opened and
   // |item->IsDangerous()| will return |true| for it but the reported event
   // should be a "sensitive file bypass" event rather than a "dangerous file
@@ -635,8 +642,8 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
           continue;
         }
 
-        ReportSensitiveFileBypassEnterpriseEvent(item, profile, metadata,
-                                                 result, referrer_chain);
+        ReportSensitiveFileBypassEnterpriseEvent(
+            item, profile, metadata, result, referrer_chain, frame_urls);
 
         // There won't be multiple DLP verdicts in the same response, so no need
         // to keep iterating.
@@ -646,11 +653,12 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
   } else if (scan_result) {
     for (const auto& metadata : scan_result->file_metadata) {
       ReportDangerousDownloadOpenedEnterpriseEvent(item, profile, metadata,
-                                                   referrer_chain);
+                                                   referrer_chain, frame_urls);
       ReportDangerousDownloadOpenedSafeBrowsingEvent(item, profile, metadata);
     }
   } else {
-    ReportDangerousDownloadOpenedEnterpriseEvent(item, profile, referrer_chain);
+    ReportDangerousDownloadOpenedEnterpriseEvent(item, profile, referrer_chain,
+                                                 frame_urls);
     ReportDangerousDownloadOpenedSafeBrowsingEvent(item, profile);
   }
 }

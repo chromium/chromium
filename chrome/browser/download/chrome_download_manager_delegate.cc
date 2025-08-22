@@ -489,6 +489,9 @@ void MaybeReportDangerousDownloadBlocked(
         enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*scan_id=*/"", /*content_transfer_method=*/"",
         download->GetTotalBytes(), referrer_chain,
+        enterprise_connectors::CollectFrameUrls(
+            content::DownloadItemUtils::GetWebContents(download),
+            enterprise_connectors::DeepScanAccessPoint::DOWNLOAD),
         enterprise_connectors::EventResult::BLOCKED);
   }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)

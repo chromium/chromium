@@ -45,6 +45,20 @@ const std::set<std::string>* ZipMimeType() {
   static std::set<std::string> set = {"application/zip"};
   return &set;
 }
+
+const std::vector<std::string>& GetFakeFrameUrlChain() {
+  static const std::vector<std::string> kFrameUrls = {"https://frame1.com/",
+                                                      "https://frame2.com/"};
+  return kFrameUrls;
+}
+
+google::protobuf::RepeatedPtrField<std::string> CreateFakeFrameUrlChainProto() {
+  google::protobuf::RepeatedPtrField<std::string> chain;
+  for (const auto& url : GetFakeFrameUrlChain()) {
+    *chain.Add() = url;
+  }
+  return chain;
+}
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 }  // namespace
@@ -960,6 +974,7 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
     expected_event.set_source_web_app_signed_in_account("test@gmail.com");
 
     *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+    *expected_event.mutable_iframe_urls() = CreateFakeFrameUrlChainProto();
 
     expected_event.set_profile_identifier(GetProfileIdentifier());
     expected_event.set_profile_user_name(profile_->GetProfileUserName());
@@ -986,6 +1001,7 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
         /*user_justification*/ std::nullopt);
     validator.ExpectActiveUser("gaia@gmail.com");
     validator.ExpectSourceActiveUser("test@gmail.com");
+    validator.ExpectFrameUrlChain(GetFakeFrameUrlChain());
   }
 
   ReferrerChain referrer_chain;
@@ -996,7 +1012,8 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
       "application/zip", "FILE_UPLOAD", "123",
       "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", "test@gmail.com",
       "gaia@gmail.com", /*user_justification=*/std::nullopt, *result, 200,
-      referrer_chain, EventResult::ALLOWED);
+      referrer_chain, CreateFakeFrameUrlChainProto(),
+      EventResult::ALLOWED);
   run_loop.Run();
 }
 
@@ -1050,6 +1067,7 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
 
     *expected_event.add_triggered_rule_info() = triggered_rule;
     *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+    *expected_event.mutable_iframe_urls() = CreateFakeFrameUrlChainProto();
 
     expected_event.set_profile_identifier(GetProfileIdentifier());
     expected_event.set_profile_user_name(profile_->GetProfileUserName());
@@ -1076,6 +1094,7 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
         /*user_justification*/ std::nullopt);
     validator.ExpectActiveUser("gaia@gmail.com");
     validator.ExpectSourceActiveUser("test@gmail.com");
+    validator.ExpectFrameUrlChain(GetFakeFrameUrlChain());
   }
 
   ReferrerChain referrer_chain;
@@ -1085,7 +1104,8 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
       "exampleDestination", "encrypted.zip", "sha256_of_data",
       "application/zip", "FILE_DOWNLOAD", "123", "", "test@gmail.com",
       "gaia@gmail.com", /*user_justification=*/std::nullopt, *result, 200,
-      referrer_chain, EventResult::BLOCKED);
+      referrer_chain, CreateFakeFrameUrlChainProto(),
+      EventResult::BLOCKED);
   run_loop.Run();
 }
 
@@ -1123,6 +1143,7 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Warned) {
     expected_event.set_clicked_through(false);
 
     *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+    *expected_event.mutable_iframe_urls() = CreateFakeFrameUrlChainProto();
 
     expected_event.set_profile_identifier(GetProfileIdentifier());
     expected_event.set_profile_user_name(profile_->GetProfileUserName());
@@ -1144,6 +1165,7 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Warned) {
         /*username*/ profile_->GetProfileUserName(),
         /*profile_identifier*/ GetProfileIdentifier(),
         /*scan_id*/ "123");
+    validator.ExpectFrameUrlChain(GetFakeFrameUrlChain());
   }
 
   ReferrerChain referrer_chain;
@@ -1153,7 +1175,7 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Warned) {
       "exampleSource", "exampleDestination", "encrypted.zip", "sha256_of_data",
       "POTENTIALLY_UNWANTED", "application/zip", "FILE_DOWNLOAD", "123",
       /*content_transfer_method=*/"", 12345, std::move(referrer_chain),
-      EventResult::WARNED);
+      CreateFakeFrameUrlChainProto(), EventResult::WARNED);
   run_loop.Run();
 }
 
@@ -1191,6 +1213,7 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Blocked) {
     expected_event.set_clicked_through(false);
 
     *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+    *expected_event.mutable_iframe_urls() = CreateFakeFrameUrlChainProto();
 
     expected_event.set_profile_identifier(GetProfileIdentifier());
     expected_event.set_profile_user_name(profile_->GetProfileUserName());
@@ -1212,6 +1235,7 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Blocked) {
         /*username*/ profile_->GetProfileUserName(),
         /*profile_identifier*/ GetProfileIdentifier(),
         /*scan_id*/ "123");
+    validator.ExpectFrameUrlChain(GetFakeFrameUrlChain());
   }
 
   ReferrerChain referrer_chain;
@@ -1221,7 +1245,7 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Blocked) {
       "exampleSource", "exampleDestination", "encrypted.zip", "sha256_of_data",
       "DANGEROUS", "application/zip", "FILE_DOWNLOAD", "123",
       /*content_transfer_method=*/"", 12345, std::move(referrer_chain),
-      EventResult::BLOCKED);
+      CreateFakeFrameUrlChainProto(), EventResult::BLOCKED);
   run_loop.Run();
 }
 
@@ -1259,6 +1283,7 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Bypassed) {
     expected_event.set_clicked_through(true);
 
     *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+    *expected_event.mutable_iframe_urls() = CreateFakeFrameUrlChainProto();
 
     expected_event.set_profile_identifier(GetProfileIdentifier());
     expected_event.set_profile_user_name(profile_->GetProfileUserName());
@@ -1280,6 +1305,7 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Bypassed) {
         /*username*/ profile_->GetProfileUserName(),
         /*profile_identifier*/ GetProfileIdentifier(),
         /*scan_id*/ "123");
+    validator.ExpectFrameUrlChain(GetFakeFrameUrlChain());
   }
 
   ReferrerChain referrer_chain;
@@ -1289,7 +1315,7 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Bypassed) {
       "encrypted.zip", "sha256_of_data",
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT, "application/zip",
       "FILE_DOWNLOAD", "123", 12345, std::move(referrer_chain),
-      EventResult::BYPASSED);
+      CreateFakeFrameUrlChainProto(), EventResult::BYPASSED);
   run_loop.Run();
 }
 
@@ -1327,6 +1353,7 @@ TEST_P(ReportingEventRouterTest,
     expected_event.set_clicked_through(false);
 
     *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+    *expected_event.mutable_iframe_urls() = CreateFakeFrameUrlChainProto();
 
     expected_event.set_profile_identifier(GetProfileIdentifier());
     expected_event.set_profile_user_name(profile_->GetProfileUserName());
@@ -1348,6 +1375,7 @@ TEST_P(ReportingEventRouterTest,
         /*username*/ profile_->GetProfileUserName(),
         /*profile_identifier*/ GetProfileIdentifier(),
         /*scan_id*/ std::nullopt);
+    validator.ExpectFrameUrlChain(GetFakeFrameUrlChain());
   }
 
   ReferrerChain referrer_chain;
@@ -1357,7 +1385,7 @@ TEST_P(ReportingEventRouterTest,
       "encrypted.zip", "sha256_of_data",
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT, "application/zip",
       "FILE_DOWNLOAD", "", 12345, std::move(referrer_chain),
-      EventResult::WARNED);
+      CreateFakeFrameUrlChainProto(), EventResult::WARNED);
   run_loop.Run();
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

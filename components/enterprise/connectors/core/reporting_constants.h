@@ -211,6 +211,7 @@ inline constexpr char kKeyReason[] = "reason";
 inline constexpr char kKeyScanId[] = "scanId";
 inline constexpr char kKeyNetErrorCode[] = "netErrorCode";
 inline constexpr char kKeyUserName[] = "userName";
+inline constexpr char kKeyIframeUrls[] = "iframeUrls";
 inline constexpr char kKeyIsPhishingUrl[] = "isPhishingUrl";
 inline constexpr char kKeyReferrers[] = "referrers";
 inline constexpr char kKeySourceWebAppSignedInAccount[] =

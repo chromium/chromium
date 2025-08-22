@@ -208,6 +208,9 @@ DownloadContentAreaUserProvider::DownloadContentAreaUserProvider(
   if (referrer_chain_data && referrer_chain_data->GetReferrerChain()) {
     referrer_chain_ = *referrer_chain_data->GetReferrerChain();
   }
+  frame_url_chain_ = enterprise_connectors::CollectFrameUrls(
+      web_contents_.get(),
+      enterprise_connectors::DeepScanAccessPoint::DOWNLOAD);
 }
 
 DownloadContentAreaUserProvider::~DownloadContentAreaUserProvider() = default;
@@ -262,7 +265,7 @@ DownloadContentAreaUserProvider::referrer_chain() const {
 
 google::protobuf::RepeatedPtrField<std::string>
 DownloadContentAreaUserProvider::frame_url_chain() const {
-  NOTREACHED();
+  return frame_url_chain_;
 }
 
 }  // namespace enterprise_connectors

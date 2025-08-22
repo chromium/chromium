@@ -83,6 +83,9 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
       download->GetMimeType(),
       enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       /*scan_id=*/"", download->GetTotalBytes(), referrer_chain,
+      enterprise_connectors::CollectFrameUrls(
+          content::DownloadItemUtils::GetWebContents(download),
+          enterprise_connectors::DeepScanAccessPoint::DOWNLOAD),
       enterprise_connectors::EventResult::WARNED);
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
@@ -105,6 +108,11 @@ void ReportDangerousDownloadWarningBypassed(
     referrer_chain = GetOrIdentifyReferrerChainForEnterprise(*download);
   }
 
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain =
+      enterprise_connectors::CollectFrameUrls(
+          content::DownloadItemUtils::GetWebContents(download),
+          enterprise_connectors::DeepScanAccessPoint::DOWNLOAD);
+
   enterprise_connectors::ScanResult* stored_result =
       static_cast<enterprise_connectors::ScanResult*>(
           download->GetUserData(enterprise_connectors::ScanResult::kKey));
@@ -115,7 +123,7 @@ void ReportDangerousDownloadWarningBypassed(
           metadata.sha256, original_danger_type, metadata.mime_type,
           enterprise_connectors::kFileDownloadDataTransferEventTrigger,
           metadata.scan_response.request_token(), metadata.size, referrer_chain,
-          enterprise_connectors::EventResult::BYPASSED);
+          frame_url_chain, enterprise_connectors::EventResult::BYPASSED);
     }
   } else {
     router->OnDangerousDownloadEvent(
@@ -125,7 +133,7 @@ void ReportDangerousDownloadWarningBypassed(
         download->GetMimeType(),
         enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*scan_id*/ "", download->GetTotalBytes(), referrer_chain,
-        enterprise_connectors::EventResult::BYPASSED);
+        frame_url_chain, enterprise_connectors::EventResult::BYPASSED);
   }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }

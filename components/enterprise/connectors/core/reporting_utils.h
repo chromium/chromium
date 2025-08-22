@@ -29,6 +29,8 @@ inline constexpr int kReferrerUserGestureLimit = 5;
 using ReferrerChain =
     google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
 
+using FrameUrlChain = google::protobuf::RepeatedPtrField<std::string>;
+
 // Helper functions that compiles information into event protos. The
 // logic is shared across platforms to ensure event consistency.
 //
@@ -149,6 +151,7 @@ chrome::cros::reporting::proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(
     const int64_t content_size,
     const ContentAnalysisResponse::Result& result,
     const ReferrerChain& referrer_chain,
+    const FrameUrlChain& frame_url_chain,
     EventResult event_result);
 
 chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
@@ -167,6 +170,7 @@ GetDangerousDownloadEvent(const GURL& url,
                           const std::string& profile_username,
                           const int64_t content_size,
                           const ReferrerChain& referrer_chain,
+                          const FrameUrlChain& frame_url_chain,
                           EventResult event_result);
 
 chrome::cros::reporting::proto::BrowserCrashEvent GetBrowserCrashEvent(
@@ -198,6 +202,10 @@ std::vector<std::string> GetLocalIpAddresses();
 
 void AddReferrerChainToEvent(const ReferrerChain& referrer_chain,
                              base::Value::Dict& event);
+
+void AddFrameUrlChainToEvent(
+    const google::protobuf::RepeatedPtrField<std::string>& frame_url_chain,
+    base::Value::Dict& event);
 
 }  // namespace enterprise_connectors
 

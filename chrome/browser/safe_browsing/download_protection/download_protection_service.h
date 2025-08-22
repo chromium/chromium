@@ -361,7 +361,8 @@ class DownloadProtectionService {
       const enterprise_connectors::FileMetadata& metadata,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
-          referrer_chain);
+          referrer_chain,
+      const google::protobuf::RepeatedPtrField<std::string>& frame_urls);
 
   // Sends dangerous download opened event via `ReportingEventRouter`.
   void ReportDangerousDownloadOpenedEnterpriseEvent(
@@ -369,12 +370,14 @@ class DownloadProtectionService {
       Profile* profile,
       const enterprise_connectors::FileMetadata& metadata,
       const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
-          referrer_chain);
+          referrer_chain,
+      const google::protobuf::RepeatedPtrField<std::string>& frame_urls);
   void ReportDangerousDownloadOpenedEnterpriseEvent(
       download::DownloadItem* item,
       Profile* profile,
       const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
-          referrer_chain);
+          referrer_chain,
+      const google::protobuf::RepeatedPtrField<std::string>& frame_urls);
 
   // Sends dangerous download opened event via `SafeBrowsingPrivateEventRouter`.
   void ReportDangerousDownloadOpenedSafeBrowsingEvent(
