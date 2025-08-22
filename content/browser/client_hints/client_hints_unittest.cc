@@ -20,6 +20,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 
@@ -379,6 +380,125 @@ TEST_F(ClientHintsTest, GetEnabledClientHintsSubframe) {
   // We do not care the order of contents.
   EXPECT_THAT(actual_hints.hints,
               testing::UnorderedElementsAreArray(expected_types));
+}
+
+TEST_F(ClientHintsTest, AddPrefetchNavigationRequestClientHintsHeaders) {
+  GURL url = GURL(ClientHintsTest::kOriginUrl);
+  url::Origin origin = url::Origin::Create(url);
+
+  blink::UserAgentMetadata ua_metadata;
+  ua_metadata.architecture = "x86";
+  MockClientHintsControllerDelegate delegate(ua_metadata);
+
+  // Enable a variety of hints.
+  delegate.SetAdditionalClientHints(
+      {WebClientHintsType::kDeviceMemory, WebClientHintsType::kDpr,
+       WebClientHintsType::kUAArch, WebClientHintsType::kPrefersColorScheme});
+
+  net::HttpRequestHeaders headers;
+  AddPrefetchNavigationRequestClientHintsHeaders(origin, &headers,
+                                                 browser_context(), &delegate,
+                                                 /*is_ua_override_on=*/false);
+
+  // Low-entropy UA hints are sent by default.
+  EXPECT_TRUE(headers.HasHeader("sec-ch-ua"));
+  EXPECT_TRUE(headers.HasHeader("sec-ch-ua-mobile"));
+
+  // High-entropy hints that were enabled.
+  std::optional<std::string> header_value = headers.GetHeader("sec-ch-ua-arch");
+  EXPECT_TRUE(header_value.has_value());
+  EXPECT_EQ("\"x86\"", header_value.value());
+
+  EXPECT_TRUE(headers.HasHeader("sec-ch-device-memory"));
+  EXPECT_TRUE(headers.HasHeader("sec-ch-dpr"));
+
+  // Prefers-color-scheme depends on a frame, which is null for prefetch.
+  EXPECT_FALSE(headers.HasHeader("sec-ch-prefers-color-scheme"));
+
+  // Verify hints not in the requested list.
+  EXPECT_FALSE(headers.HasHeader("sec-ch-ua-bitness"));
+}
+
+TEST_F(ClientHintsTest, AddNavigationRequestClientHintsHeaders_MainFrame) {
+  GURL main_url(kOriginUrl);
+  contents()->NavigateAndCommit(main_url);
+  url::Origin origin = url::Origin::Create(main_url);
+  FrameTreeNode* main_frame_node = contents()->GetPrimaryFrameTree().root();
+
+  blink::UserAgentMetadata ua_metadata;
+  ua_metadata.architecture = "x86";
+  MockClientHintsControllerDelegate delegate(ua_metadata);
+
+  // Enable a variety of hints.
+  delegate.SetAdditionalClientHints(
+      {WebClientHintsType::kDeviceMemory, WebClientHintsType::kDpr,
+       WebClientHintsType::kUAArch, WebClientHintsType::kPrefersColorScheme});
+
+  net::HttpRequestHeaders headers;
+  AddNavigationRequestClientHintsHeaders(
+      origin, &headers, browser_context(), &delegate,
+      /*is_ua_override_on=*/false, main_frame_node,
+      /*container_policy=*/{});
+
+  // Low-entropy UA hints are sent by default.
+  EXPECT_TRUE(headers.HasHeader("sec-ch-ua"));
+  EXPECT_TRUE(headers.HasHeader("sec-ch-ua-mobile"));
+
+  // High-entropy hints that were enabled.
+  std::optional<std::string> header_value = headers.GetHeader("sec-ch-ua-arch");
+  EXPECT_TRUE(header_value.has_value());
+  EXPECT_EQ("\"x86\"", header_value.value());
+
+  EXPECT_TRUE(headers.HasHeader("sec-ch-device-memory"));
+  EXPECT_TRUE(headers.HasHeader("sec-ch-dpr"));
+
+  // Prefers-color-scheme should have value for navigation request.
+  EXPECT_TRUE(headers.HasHeader("sec-ch-prefers-color-scheme"));
+
+  // Verify hints not in the requested list.
+  EXPECT_FALSE(headers.HasHeader("sec-ch-ua-bitness"));
+}
+
+TEST_F(ClientHintsTest, AddNavigationRequestClientHintsHeaders_Subframe) {
+  GURL url = GURL(ClientHintsTest::kOriginUrl);
+  contents()->NavigateAndCommit(url);
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* main_frame_node = frame_tree.root();
+  AddOneChildNode();
+  FrameTreeNode* sub_frame_node = main_frame_node->child_at(0);
+
+  GURL subframe_url("https://sub.example.com");
+  url::Origin subframe_origin = url::Origin::Create(subframe_url);
+
+  blink::UserAgentMetadata ua_metadata;
+  MockClientHintsControllerDelegate delegate(ua_metadata);
+
+  // Enable a hint that requires delegation.
+  delegate.SetAdditionalClientHints({WebClientHintsType::kDeviceMemory});
+
+  net::HttpRequestHeaders headers;
+  // Case 1: No delegation policy. Hint should not be added.
+  AddNavigationRequestClientHintsHeaders(
+      subframe_origin, &headers, browser_context(), &delegate,
+      /*is_ua_override_on=*/false, sub_frame_node,
+      /*container_policy=*/{});
+  EXPECT_FALSE(headers.HasHeader("sec-ch-device-memory"));
+
+  // Case 2: With delegation policy. Hint should be added.
+  headers.Clear();
+  network::ParsedPermissionsPolicy container_policy;
+  network::ParsedPermissionsPolicyDeclaration decl(
+      network::mojom::PermissionsPolicyFeature::kClientHintDeviceMemory,
+      {*network::OriginWithPossibleWildcards::FromOrigin(subframe_origin)},
+      /*self_if_matches=*/std::nullopt,
+      /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
+  container_policy.push_back(std::move(decl));
+
+  AddNavigationRequestClientHintsHeaders(
+      subframe_origin, &headers, browser_context(), &delegate,
+      /*is_ua_override_on=*/false, sub_frame_node, container_policy);
+
+  EXPECT_TRUE(headers.HasHeader("sec-ch-device-memory"));
 }
 
 }  // namespace content
