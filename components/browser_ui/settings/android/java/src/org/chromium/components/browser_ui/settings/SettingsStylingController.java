@@ -4,7 +4,7 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT;
+import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_MARGIN;
 
 import android.content.Context;
 
@@ -26,6 +26,9 @@ public class SettingsStylingController {
     private final PreferenceScreen mPreferenceScreen;
     private final float mOuterRadius;
     private final float mInnerRadius;
+    private final int mDefaultVerticalMargin;
+    private final int mDefaultHorizontalMargin;
+    private final int mSectionBottomAdditionalMargin;
 
     /**
      * Constructor for the styling controller.
@@ -42,6 +45,14 @@ public class SettingsStylingController {
         mInnerRadius =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.settings_item_rounded_corner_radius_inner);
+        mDefaultVerticalMargin =
+                context.getResources().getDimensionPixelSize(R.dimen.settings_item_vertical_margin);
+        mDefaultHorizontalMargin =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.settings_item_horizontal_margin);
+        mSectionBottomAdditionalMargin =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.settings_section_bottom_margin);
     }
 
     /**
@@ -120,27 +131,58 @@ public class SettingsStylingController {
         boolean isBottom = (prefBelow == null) || hasCustomStyling(prefBelow);
 
         if (isTop && isBottom) {
-            return new PreferenceStyle(mOuterRadius, mOuterRadius, DEFAULT, DEFAULT);
+            // Standalone items have an additional bottom margin
+            return new PreferenceStyle(
+                    /* topRadius= */ mOuterRadius,
+                    /* bottomRadius= */ mOuterRadius,
+                    /* topMargin= */ mDefaultVerticalMargin,
+                    /* bottomMargin= */ mSectionBottomAdditionalMargin + mDefaultVerticalMargin,
+                    /* horizontalMargin= */ mDefaultHorizontalMargin);
         } else if (isTop) {
-            return new PreferenceStyle(mOuterRadius, mInnerRadius, DEFAULT, DEFAULT);
+            return new PreferenceStyle(
+                    /* topRadius= */ mOuterRadius,
+                    /* bottomRadius= */ mInnerRadius,
+                    /* topMargin= */ mDefaultVerticalMargin,
+                    /* bottomMargin= */ mDefaultVerticalMargin,
+                    /* horizontalMargin= */ mDefaultHorizontalMargin);
         } else if (isBottom) {
-            return new PreferenceStyle(mInnerRadius, mOuterRadius, DEFAULT, DEFAULT);
+            // Items at the end of a section have an additional bottom margin
+            return new PreferenceStyle(
+                    /* topRadius= */ mInnerRadius,
+                    /* bottomRadius= */ mOuterRadius,
+                    /* topMargin= */ mDefaultVerticalMargin,
+                    /* bottomMargin= */ mSectionBottomAdditionalMargin + mDefaultVerticalMargin,
+                    /* horizontalMargin= */ mDefaultHorizontalMargin);
         } else {
-            return new PreferenceStyle(mInnerRadius, mInnerRadius, DEFAULT, DEFAULT);
+            return new PreferenceStyle(
+                    /* topRadius= */ mInnerRadius,
+                    /* bottomRadius= */ mInnerRadius,
+                    /* topMargin= */ mDefaultVerticalMargin,
+                    /* bottomMargin= */ mDefaultVerticalMargin,
+                    /* horizontalMargin= */ mDefaultHorizontalMargin);
         }
     }
 
     private PreferenceStyle getPreferenceStyleForCustomPreference(Preference preference) {
         if (preference instanceof PreferenceCategory) {
             return PreferenceStyle.EMPTY;
-        }
-        if (preference instanceof CustomStyledPreference customStyledPreference) {
+        } else if (preference instanceof CustomStyledPreference customStyledPreference) {
             if (customStyledPreference.getCustomBackgroundStyle() == BackgroundStyle.CARD) {
+                int topMargin = customStyledPreference.getCustomTopMargin();
+                int bottomMargin = customStyledPreference.getCustomBottomMargin();
+                int horizontalMargin = customStyledPreference.getCustomHorizontalMargin();
                 return new PreferenceStyle(
-                        mOuterRadius,
-                        mOuterRadius,
-                        customStyledPreference.getCustomTopMargin(),
-                        customStyledPreference.getCustomBottomMargin());
+                        /* topRadius= */ mOuterRadius,
+                        /* bottomRadius= */ mOuterRadius,
+                        /* topMargin= */ topMargin != DEFAULT_MARGIN
+                                ? topMargin
+                                : mDefaultVerticalMargin,
+                        /* bottomMargin= */ bottomMargin != DEFAULT_MARGIN
+                                ? bottomMargin
+                                : mDefaultVerticalMargin + mSectionBottomAdditionalMargin,
+                        /* horizontalMargin= */ horizontalMargin != DEFAULT_MARGIN
+                                ? horizontalMargin
+                                : mDefaultHorizontalMargin);
             }
         }
 

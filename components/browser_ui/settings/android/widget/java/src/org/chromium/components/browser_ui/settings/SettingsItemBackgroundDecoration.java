@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -28,8 +26,6 @@ import java.util.ArrayList;
  */
 @NullMarked
 public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoration {
-    private final int mHorizontalMargin;
-    private final int mVerticalMargin;
     private final Context mContext;
     private @Nullable ArrayList<PreferenceStyle> mPreferenceStyles;
 
@@ -48,12 +44,6 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
     public SettingsItemBackgroundDecoration(Context context) {
         mContext = context;
         mUpdateBackgrounds = true;
-        mHorizontalMargin =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.settings_item_horizontal_margin);
-        mVerticalMargin =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.settings_item_vertical_margin);
     }
 
     /**
@@ -64,16 +54,6 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
     public void updatePreferenceStyles(ArrayList<PreferenceStyle> preferenceStyles) {
         mPreferenceStyles = preferenceStyles;
         mUpdateBackgrounds = true;
-    }
-
-    /** Returns the horizontal margin for the settings items. */
-    public int getHorizontalMargin() {
-        return mHorizontalMargin;
-    }
-
-    /** Returns the vertical margin for the settings items. */
-    public int getVerticalMargin() {
-        return mVerticalMargin;
     }
 
     @Override
@@ -93,11 +73,10 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
         }
 
         PreferenceStyle style = mPreferenceStyles.get(position);
-        outRect.top = style.getTopMargin() != DEFAULT ? style.getTopMargin() : getVerticalMargin();
-        outRect.bottom =
-                style.getBottomMargin() != DEFAULT ? style.getBottomMargin() : getVerticalMargin();
-        outRect.left = getHorizontalMargin();
-        outRect.right = getHorizontalMargin();
+        outRect.top = style.getTopMargin();
+        outRect.bottom = style.getBottomMargin();
+        outRect.left = style.getHorizontalMargin();
+        outRect.right = style.getHorizontalMargin();
     }
 
     @Override
