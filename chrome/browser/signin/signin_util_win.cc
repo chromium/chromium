@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
@@ -35,11 +36,13 @@
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/about_signin_internals.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace signin_util {
@@ -48,6 +51,13 @@ namespace {
 
 constexpr signin_metrics::AccessPoint kCredentialsProviderAccessPointWin =
     signin_metrics::AccessPoint::kMachineLogon;
+
+signin::ConsentLevel GetConsentLevel() {
+  return base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos)
+             ? signin::ConsentLevel::kSignin
+             : signin::ConsentLevel::kSync;
+}
 
 std::unique_ptr<TurnSyncOnHelper::Delegate>*
 GetTurnSyncOnHelperDelegateForTestingStorage() {
@@ -313,10 +323,8 @@ void SigninWithCredentialProviderIfPossible(Profile* profile) {
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   GaiaId gaia_id;
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    gaia_id =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-            .gaia;
+  if (identity_manager->HasPrimaryAccount(GetConsentLevel())) {
+    gaia_id = identity_manager->GetPrimaryAccountInfo(GetConsentLevel()).gaia;
   }
 
   TrySigninWithCredentialProvider(profile, gaia_id, gaia_id.empty());
@@ -331,15 +339,14 @@ bool ReauthWithCredentialProviderIfPossible(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (!(profile->GetPrefs()->GetBoolean(
             prefs::kSignedInWithCredentialProvider) &&
-        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+        identity_manager->HasPrimaryAccount(GetConsentLevel()) &&
         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-            identity_manager->GetPrimaryAccountId(
-                signin::ConsentLevel::kSync)))) {
+            identity_manager->GetPrimaryAccountId(GetConsentLevel())))) {
     return false;
   }
 
   const GaiaId gaia_id =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync).gaia;
+      identity_manager->GetPrimaryAccountInfo(GetConsentLevel()).gaia;
   return TrySigninWithCredentialProvider(profile, gaia_id, false);
 }
 

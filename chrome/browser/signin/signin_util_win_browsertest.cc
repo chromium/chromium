@@ -45,6 +45,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 
@@ -237,6 +238,9 @@ class SigninUtilWinBrowserTestBase : public BrowserTestHelper,
   registry_util::RegistryOverrideManager registry_override_;
 
   SigninUtilWinBrowserTestParams params_;
+
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
 // `GetTestParam()` and `GetParam()` are equivalent in this test suite.
@@ -325,7 +329,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTestWithParams, FixReauth) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     signin::UpdatePersistentErrorOfRefreshTokenForAccount(
         identity_manager,
-        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
             GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                 CREDENTIALS_REJECTED_BY_SERVER));
@@ -563,6 +567,9 @@ class ExistingWinBrowserSigninUtilTest
 
  private:
   registry_util::RegistryOverrideManager registry_override_;
+
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
 IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest,
@@ -579,10 +586,10 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest,
 
     signin::MakePrimaryAccountAvailable(
         identity_manager, base::WideToUTF8(GetParam().existing_email),
-        signin::ConsentLevel::kSync);
+        signin::ConsentLevel::kSignin);
 
     ASSERT_TRUE(
-        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   }
 }
 
@@ -698,7 +705,8 @@ class ExistingWinBrowserProfilesSigninUtilTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
   registry_util::RegistryOverrideManager registry_override_;
 };
 
@@ -720,17 +728,17 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_PRE_Run) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   ASSERT_TRUE(identity_manager);
   ASSERT_TRUE(
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) ==
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ==
       GetParam().cred_provider_used_other_profile);
 
   if (!GetParam().cred_provider_used_other_profile &&
       !GetParam().email_in_other_profile.empty()) {
     signin::MakePrimaryAccountAvailable(
         identity_manager, base::WideToUTF8(GetParam().email_in_other_profile),
-        signin::ConsentLevel::kSync);
+        signin::ConsentLevel::kSignin);
 
     ASSERT_TRUE(
-        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   }
 
   CreateAndSwitchToProfile(base::WideToUTF8(GetParam().current_profile));
@@ -748,15 +756,15 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_Run) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   ASSERT_TRUE(identity_manager);
   ASSERT_FALSE(
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   if (!GetParam().email_in_current_profile.empty()) {
     signin::MakePrimaryAccountAvailable(
         identity_manager, base::WideToUTF8(GetParam().email_in_current_profile),
-        signin::ConsentLevel::kSync);
+        signin::ConsentLevel::kSignin);
 
     ASSERT_TRUE(
-        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   }
 }
 
