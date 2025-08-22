@@ -190,9 +190,6 @@ void FrameSinkManagerImpl::RegisterFrameSinkId(const FrameSinkId& frame_sink_id,
 
   if (video_detector_)
     video_detector_->OnFrameSinkIdRegistered(frame_sink_id);
-
-  for (auto& observer : observer_list_)
-    observer.OnRegisteredFrameSinkId(frame_sink_id);
 }
 
 void FrameSinkManagerImpl::InvalidateFrameSinkId(
@@ -212,9 +209,6 @@ void FrameSinkManagerImpl::InvalidateFrameSinkId(
   root_sink_map_.erase(frame_sink_id);
 
   frame_sink_data_.erase(frame_sink_id);
-
-  for (auto& observer : observer_list_)
-    observer.OnInvalidatedFrameSinkId(frame_sink_id);
 }
 
 void FrameSinkManagerImpl::SetFrameSinkDebugLabel(
@@ -622,9 +616,6 @@ void FrameSinkManagerImpl::RegisterCompositorFrameSinkSupport(
   auto it = frame_sink_source_map_.find(frame_sink_id);
   if (it != frame_sink_source_map_.end() && it->second.source)
     support->SetBeginFrameSource(it->second.source);
-
-  for (auto& observer : observer_list_)
-    observer.OnCreatedCompositorFrameSink(frame_sink_id, support->is_root());
 
   if (global_throttle_interval_) {
     UpdateThrottlingRecursively(frame_sink_id,

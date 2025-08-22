@@ -16,16 +16,6 @@ class FrameSinkObserver {
  public:
   virtual ~FrameSinkObserver() = default;
 
-  // Called when FrameSinkId is registered
-  virtual void OnRegisteredFrameSinkId(const FrameSinkId& frame_sink_id) {}
-
-  // Called when FrameSinkId is being invalidated
-  virtual void OnInvalidatedFrameSinkId(const FrameSinkId& frame_sink_id) {}
-
-  // Called when CompositorFrameSink is created
-  virtual void OnCreatedCompositorFrameSink(const FrameSinkId& frame_sink_id,
-                                            bool is_root) {}
-
   // Called when CompositorFrameSink is about to be destroyed
   virtual void OnDestroyedCompositorFrameSink(
       const FrameSinkId& frame_sink_id) {}
