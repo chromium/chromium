@@ -14,52 +14,70 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
-#include "remoting/signaling/message_reception_channel.h"
-#include "remoting/signaling/signaling_tracker.h"
+
+namespace google::protobuf {
+class MessageLite;
+}  // namespace google::protobuf
 
 namespace remoting {
 
-// Handles the lifetime and validity of the messaging stream used for FTL.
-class FtlMessageReceptionChannel final : public MessageReceptionChannel {
+class HttpStatus;
+class MessageChannelStrategy;
+class ScopedProtobufHttpRequest;
+class SignalingTracker;
+
+// Handles the lifetime and validity of a server-side stream.
+// Use-case specific logic is provided by the MessageChannelStrategy passed into
+// the c'tor. An optional |signaling_tracker| can be provided for zombie state
+// detection.
+class MessageChannel final {
  public:
-  static constexpr base::TimeDelta kPongTimeout = base::Seconds(15);
+  using DoneCallback = base::OnceCallback<void(const HttpStatus& status)>;
 
   // |signaling_tracker| is nullable.
-  explicit FtlMessageReceptionChannel(SignalingTracker* signaling_tracker);
+  MessageChannel(std::unique_ptr<MessageChannelStrategy> strategy,
+                 SignalingTracker* signaling_tracker);
 
-  FtlMessageReceptionChannel(const FtlMessageReceptionChannel&) = delete;
-  FtlMessageReceptionChannel& operator=(const FtlMessageReceptionChannel&) =
-      delete;
+  MessageChannel(const MessageChannel&) = delete;
+  MessageChannel& operator=(const MessageChannel&) = delete;
 
-  ~FtlMessageReceptionChannel() override;
+  ~MessageChannel();
 
-  // MessageReceptionChannel implementations.
-  void Initialize(const StreamOpener& stream_opener,
-                  const MessageCallback& on_incoming_msg) override;
+  // Opens a server streaming channel to receive messages.
+  // |on_ready| is called once the stream is successfully started.
+  // |on_closed| is called if the stream fails to start, in which case
+  // |on_ready| will not be called, or when the stream is closed or dropped,
+  // in which case it is called after |on_ready| is called.
   void StartReceivingMessages(base::OnceClosure on_ready,
-                              DoneCallback on_closed) override;
-  void StopReceivingMessages() override;
-  bool IsReceivingMessages() const override;
+                              DoneCallback on_closed);
+
+  // Closes the streaming channel. |on_closed| callback will not be run.
+  void StopReceivingMessages();
+
+  // Returns true if the streaming channel is open.
+  bool IsReceivingMessages() const;
 
   const net::BackoffEntry& GetReconnectRetryBackoffEntryForTesting() const;
 
  private:
   enum class State {
-    // TODO(yuweih): Evaluate if this class needs to be reusable.
+    // The stream is not active.
     STOPPED,
 
-    // StartReceivingMessages() is called but the channel hasn't received a
-    // signal from the server yet.
+    // StartReceivingMessages() was called but the channel hasn't received a
+    // message from the server yet.
     STARTING,
 
-    // Stream is started, or is dropped but being retried.
+    // Stream has been started. This value represents both active connection as
+    // well as when a connection is being re-established.
     STARTED,
   };
 
   void OnReceiveMessagesStreamReady();
   void OnReceiveMessagesStreamClosed(const HttpStatus& status);
-  void OnMessageReceived(
-      std::unique_ptr<ftl::ReceiveMessagesResponse> response);
+  void OnProtobufMessageReceived(
+      std::unique_ptr<google::protobuf::MessageLite> response);
+  void OnChannelActive();
 
   void RunStreamReadyCallbacks();
   void RunStreamClosedCallbacks(const HttpStatus& status);
@@ -69,20 +87,19 @@ class FtlMessageReceptionChannel final : public MessageReceptionChannel {
   void StopReceivingMessagesInternal();
 
   void BeginStreamTimers();
-  void OnPongTimeout();
+  void OnInactivityTimeout();
 
-  StreamOpener stream_opener_;
-  MessageCallback on_incoming_msg_;
+  std::unique_ptr<MessageChannelStrategy> strategy_;
   std::unique_ptr<ScopedProtobufHttpRequest> receive_messages_stream_;
   std::list<base::OnceClosure> stream_ready_callbacks_;
   std::list<DoneCallback> stream_closed_callbacks_;
   State state_ = State::STOPPED;
   net::BackoffEntry reconnect_retry_backoff_;
   base::OneShotTimer reconnect_retry_timer_;
-  std::unique_ptr<base::DelayTimer> stream_pong_timer_;
-  raw_ptr<SignalingTracker> signaling_tracker_;  // nullable.
+  std::unique_ptr<base::DelayTimer> stream_inactivity_timer_;
+  raw_ptr<SignalingTracker> signaling_tracker_;
 
-  base::WeakPtrFactory<FtlMessageReceptionChannel> weak_factory_{this};
+  base::WeakPtrFactory<MessageChannel> weak_factory_{this};
 };
 
 }  // namespace remoting
