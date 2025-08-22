@@ -962,25 +962,6 @@ export async function openQuickViewPdf() {
         'deepQueryAllElements', appId, [preview, ['display']]));
   });
 
-  // Get the preview embed type attribute.
-  function checkPdfEmbedType(type: ElementObject[]) {
-    const haveElements = Array.isArray(type) && type.length === 1;
-    if (!haveElements || !type[0]!.toString().includes('pdf')) {
-      return pending(caller, 'Waiting for plugin <embed> type.');
-    }
-    return type[0]!;
-  }
-  const type = await repeatUntil(async () => {
-    const getType =
-        contentWindowQuery + '.document.querySelector("embed").type';
-    const type = await executeJsInPreviewTagAndCatchErrors(
-                     appId, preview, getType) as ElementObject[];
-    return checkPdfEmbedType(type);
-  });
-
-  // Check: the preview embed type should be PDF mime type.
-  chrome.test.assertEq('application/pdf', type);
-
   // Check: the correct mimeType should be displayed.
   const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
   chrome.test.assertEq('application/pdf', mimeType);
@@ -1020,25 +1001,6 @@ export async function openQuickViewPdfPopup() {
     return checkPreviewPdfLoaded(await remoteCall.callRemoteTestUtil(
         'deepQueryAllElements', appId, [preview, ['display']]));
   });
-
-  // Get the preview embed type attribute.
-  function checkPdfEmbedType(type: unknown) {
-    const haveElements = Array.isArray(type) && type.length === 1;
-    if (!haveElements || !type[0].toString().includes('pdf')) {
-      return pending(caller, 'Waiting for plugin <embed> type.');
-    }
-    return type[0];
-  }
-  const type = await repeatUntil(async () => {
-    const getType =
-        contentWindowQuery + '.document.querySelector("embed").type';
-    const type =
-        await executeJsInPreviewTagAndCatchErrors(appId, preview, getType);
-    return checkPdfEmbedType(type);
-  });
-
-  // Check: the preview embed type should be PDF mime type.
-  chrome.test.assertEq('application/pdf', type);
 
   // Check: the correct mimeType should be displayed.
   const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');

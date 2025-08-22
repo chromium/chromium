@@ -2748,17 +2748,6 @@ void FileManagerBrowserTestBase::StartTest() {
   const std::string full_test_name = GetFullTestCaseName();
   LOG(INFO) << "FileManagerBrowserTest::StartTest " << full_test_name;
 
-#if BUILDFLAG(ENABLE_PDF)
-  // TODO(crbug.com/326487542): Remove this once the tests pass for OOPIF PDF.
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
-    static const std::vector<std::string> kSkipTests = {
-        "openQuickViewPdf_OopifPdf", "openQuickViewPdfPopup_OopifPdf"};
-    if (base::Contains(kSkipTests, full_test_name)) {
-      GTEST_SKIP();
-    }
-  }
-#endif  // BUILDFLAG(ENABLE_PDF)
-
   static const base::FilePath test_extension_dir = base::FilePath(
       FILE_PATH_LITERAL("ui/file_manager/integration_tests/tsc"));
   LaunchExtension(base::DIR_GEN_TEST_DATA_ROOT, test_extension_dir,
