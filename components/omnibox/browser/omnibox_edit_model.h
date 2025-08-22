@@ -127,6 +127,8 @@ class OmniboxEditModel {
 
   bool user_input_in_progress() const { return user_input_in_progress_; }
 
+  std::u16string user_text() const { return user_text_; }
+
   // Encapsulates all the varied conditions for whether to override the
   // permanent page icon (associated with the currently displayed page),
   // with a temporary icon (associated with the current match or user text).
@@ -371,8 +373,6 @@ class OmniboxEditModel {
 
   // Called when the current match has changed in the OmniboxController.
   void OnCurrentMatchChanged();
-
-  std::u16string GetUserTextForTesting() const { return user_text_; }
 
   AutocompleteInput GetInputForTesting() const { return input_; }
 

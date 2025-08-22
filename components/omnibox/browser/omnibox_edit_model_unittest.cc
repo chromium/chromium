@@ -474,7 +474,7 @@ TEST_F(OmniboxEditModelTest, KeywordModePreservesInlineAutocompleteText) {
   // user text, and select all.
   model()->EnterKeywordModeForDefaultSearchProvider(
       OmniboxEventProto::KEYBOARD_SHORTCUT);
-  EXPECT_EQ(u"user text", model()->GetUserTextForTesting());
+  EXPECT_EQ(u"user text", model()->user_text());
   EXPECT_EQ(u"user text", view()->GetText());
   EXPECT_TRUE(view()->IsSelectAll());
 
@@ -482,7 +482,7 @@ TEST_F(OmniboxEditModelTest, KeywordModePreservesInlineAutocompleteText) {
   view()->SetUserText(std::u16string());
   {
     EXPECT_TRUE(view()->GetText().empty());
-    EXPECT_TRUE(model()->GetUserTextForTesting().empty());
+    EXPECT_TRUE(model()->user_text().empty());
     size_t start = 0, end = 0;
     view()->GetSelectionBounds(&start, &end);
     EXPECT_EQ(0U, start);
@@ -505,7 +505,7 @@ TEST_F(OmniboxEditModelTest, KeywordModePreservesTemporaryText) {
   // text, and select all.
   model()->EnterKeywordModeForDefaultSearchProvider(
       OmniboxEventProto::KEYBOARD_SHORTCUT);
-  EXPECT_EQ(u"match text", model()->GetUserTextForTesting());
+  EXPECT_EQ(u"match text", model()->user_text());
   EXPECT_EQ(u"match text", view()->GetText());
   EXPECT_TRUE(view()->IsSelectAll());
 }
