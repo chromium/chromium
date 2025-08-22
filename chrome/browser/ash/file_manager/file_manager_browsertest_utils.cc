@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_utils.h"
 
+#include "pdf/buildflags.h"
+
 namespace file_manager {
 namespace test {
 
@@ -209,6 +211,13 @@ TestCase& TestCase::EnableSkyVault() {
   return *this;
 }
 
+#if BUILDFLAG(ENABLE_PDF)
+TestCase& TestCase::SetEnableOopifPdf(bool enable) {
+  options.enable_oopif_pdf = enable;
+  return *this;
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 std::string TestCase::GetFullName() const {
   std::string full_name = name;
 
@@ -300,6 +309,12 @@ std::string TestCase::GetFullName() const {
   if (options.enable_cros_components) {
     full_name += "_CrosComponents";
   }
+
+#if BUILDFLAG(ENABLE_PDF)
+  if (options.enable_oopif_pdf) {
+    full_name += "_OopifPdf";
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   switch (options.device_mode) {
     case kDeviceModeNotSet:

@@ -239,6 +239,10 @@
 #include "url/url_canon.h"
 #include "url/url_util.h"
 
+#if BUILDFLAG(ENABLE_PDF)
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 namespace ash {
 namespace smb_client {
 class SmbUrl;
@@ -2486,6 +2490,14 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(features::kSkyVaultV3);
   }
 
+#if BUILDFLAG(ENABLE_PDF)
+  if (options.enable_oopif_pdf) {
+    enabled_features.push_back(chrome_pdf::features::kPdfOopif);
+  } else {
+    disabled_features.push_back(chrome_pdf::features::kPdfOopif);
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
   // This is destroyed in |TearDown()|. We cannot initialize this in the
   // constructor due to this feature values' above dependence on virtual
   // method calls, but by convention subclasses of this fixture may initialize
@@ -2740,7 +2752,7 @@ void FileManagerBrowserTestBase::StartTest() {
   // TODO(crbug.com/326487542): Remove this once the tests pass for OOPIF PDF.
   if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
     static const std::vector<std::string> kSkipTests = {
-        "openQuickViewPdf", "openQuickViewPdfPopup"};
+        "openQuickViewPdf_OopifPdf", "openQuickViewPdfPopup_OopifPdf"};
     if (base::Contains(kSkipTests, full_test_name)) {
       GTEST_SKIP();
     }

@@ -34,6 +34,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
+#include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 class NotificationDisplayServiceTester;
@@ -223,6 +224,11 @@ class FileManagerBrowserTestBase
 
     // Whether test should enable the SkyVault feature.
     bool enable_skyvault = false;
+
+#if BUILDFLAG(ENABLE_PDF)
+    // Whether tests should enable OOPIF PDF or not.
+    bool enable_oopif_pdf = false;
+#endif  // BUILDFLAG(ENABLE_PDF)
 
     // Feature IDs associated for mapping test cases and features.
     std::vector<std::string> feature_ids;
