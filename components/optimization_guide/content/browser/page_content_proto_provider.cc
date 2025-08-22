@@ -296,6 +296,8 @@ void RecordPageContentExtractionMetrics(
       metrics.word_count, 1, kMaxWordLimit, 50);
 
   ukm::builders::OptimizationGuide_AnnotatedPageContent(source_id)
+      .SetMode(static_cast<int64_t>(mode))
+      .SetOnCriticalPath(on_critical_path)
       .SetTotalSize(ukm::GetExponentialBucketMinForBytes(total_size))
       .SetExtractionLatency(ukm::GetExponentialBucketMinForUserTiming(
           total_latency.InMilliseconds()))

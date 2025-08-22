@@ -26,6 +26,11 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AIPageContentMode">
+  <int value="0" label="Default"/>
+  <int value="1" label="ActionableElements"/>
+</enum>
+
 <enum name="BooleanAnnotated">
   <int value="0" label="Not Annotated"/>
   <int value="1" label="Annotated"/>

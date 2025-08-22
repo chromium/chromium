@@ -17367,9 +17367,19 @@ be describing additional metrics about the same event.
       frames in the page.
     </summary>
   </metric>
+  <metric name="Mode" enum="AIPageContentMode">
+    <summary>
+      The mode used for page content extraction.
+    </summary>
+  </metric>
   <metric name="NodeCount">
     <summary>
       Number of nodes in the page content.
+    </summary>
+  </metric>
+  <metric name="OnCriticalPath" enum="Boolean">
+    <summary>
+      Whether the page content extraction was on the critical path.
     </summary>
   </metric>
   <metric name="TotalSize">
