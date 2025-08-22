@@ -26,6 +26,7 @@ class BubbleManagerImpl : public BubbleManager {
   void RequestShowController(BubbleControllerBase& controller_to_show) override;
   void OnBubbleHiddenByController(
       BubbleControllerBase& controller_to_hide) override;
+  bool HasPendingBubble(const BubbleControllerBase& controller) override;
 
  private:
   struct PendingRequest {

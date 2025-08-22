@@ -79,6 +79,12 @@ class BubbleManager {
   // Called by the controller when its HideBubble() method is invoked.
   virtual void OnBubbleHiddenByController(
       BubbleControllerBase& controller_to_hide) = 0;
+
+  // Returns true if there is a pending bubble in the queue for this
+  // `controller`. If the bubble has timed out, it will remove the bubble
+  // from the queue and return false.
+  [[nodiscard]] virtual bool HasPendingBubble(
+      const BubbleControllerBase& controller) = 0;
 };
 
 }  // namespace autofill

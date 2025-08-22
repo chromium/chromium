@@ -214,4 +214,32 @@ void BubbleManagerImpl::OnBubbleHiddenByController(
   }
 }
 
+bool BubbleManagerImpl::HasPendingBubble(
+    const BubbleControllerBase& controller) {
+  const BubbleType bubble_type = controller.GetBubbleType();
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  auto it = std::ranges::find_if(
+      pending_bubbles_queue_, [bubble_type](const PendingRequest& request) {
+        // Check if the controller is still valid and if its type
+        // matches.
+        return request.controller &&
+               request.controller->GetBubbleType() == bubble_type;
+      });
+
+  // If no bubble of the specified type is found in the queue.
+  if (it == pending_bubbles_queue_.end()) {
+    return false;
+  }
+
+  if ((now - it->time_added) > kPendingRequestTimeout) {
+    // A bubble of the given type was found and has timed out, remove it from
+    // the queue.
+    pending_bubbles_queue_.erase(it);
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace autofill
