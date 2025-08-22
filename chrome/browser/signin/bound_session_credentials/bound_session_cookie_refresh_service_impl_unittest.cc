@@ -1869,6 +1869,21 @@ TEST_P(BoundSessionCookieRefreshServiceImplFeatureDisabledTest,
   }
 }
 
+TEST_P(BoundSessionCookieRefreshServiceImplFeatureDisabledTest,
+       RegisterNewBoundSession) {
+  BoundSessionCookieRefreshServiceImpl* service =
+      GetOrCreateCookieRefreshServiceImpl();
+
+  ASSERT_NE(service, nullptr);
+  service->RegisterNewBoundSession(CreateBoundSessionParams(
+      kTestGoogleURL, kTestSessionId, {k1PSIDTSCookieName, k3PSIDTSCookieName},
+      /*is_wsbeta=*/false));
+
+  // New sessions shouldn't be registered if `is_wsbeta` is `false`, no matter
+  // the extra feature state.
+  VerifyBoundSessions({});
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     BoundSessionCookieRefreshServiceImplFeatureDisabledTest,

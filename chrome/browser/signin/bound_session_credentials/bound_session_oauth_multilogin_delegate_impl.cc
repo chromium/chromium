@@ -62,17 +62,31 @@ BoundSessionOAuthMultiLoginDelegateImpl::
 
 void BoundSessionOAuthMultiLoginDelegateImpl::BeforeSetCookies(
     const OAuthMultiloginResult& result) {
-  if (result.status() != OAuthMultiloginResponseStatus::kOk) {
+  CHECK_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
+  if (!bound_session_cookie_refresh_service_) {
+    bound_sessions_params_.emplace();
     return;
   }
   std::vector<bound_session_credentials::BoundSessionParams>
       bound_sessions_params = CreateBoundSessionsParams(result);
-  // TODO(https://crbug.com/312719798): Pause the cookies rotations until the
-  // cookies are set.
+  for (const auto& params : bound_sessions_params) {
+    bound_session_cookie_refresh_service_->StopCookieRotation(
+        bound_session_credentials::GetBoundSessionKey(params));
+  }
+  bound_sessions_params_ = std::move(bound_sessions_params);
 }
 
 void BoundSessionOAuthMultiLoginDelegateImpl::OnCookiesSet() {
-  // TODO(msalama): Start/Override Google DBSC session if needed.
+  // `BeforeSetCookies` must have been called.
+  CHECK(bound_sessions_params_.has_value());
+  if (!bound_session_cookie_refresh_service_) {
+    bound_sessions_params_.reset();
+    return;
+  }
+  for (const auto& params : *bound_sessions_params_) {
+    bound_session_cookie_refresh_service_->RegisterNewBoundSession(params);
+  }
+  bound_sessions_params_.reset();
 }
 
 std::vector<bound_session_credentials::BoundSessionParams>

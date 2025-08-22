@@ -57,6 +57,8 @@ class BoundSessionCookieRefreshService
 
   // Registers a new bound session and starts tracking it immediately. The
   // session persists across browser startups.
+  //
+  // This method is a no-op if the new session registration is not enabled.
   virtual void RegisterNewBoundSession(
       const bound_session_credentials::BoundSessionParams& params) = 0;
 

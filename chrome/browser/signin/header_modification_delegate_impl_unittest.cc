@@ -21,9 +21,8 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_debug_info.h"
+#include "chrome/browser/signin/bound_session_credentials/mock_bound_session_cookie_refresh_service.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 namespace {
@@ -31,63 +30,6 @@ namespace {
 using testing::_;
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-class MockBoundSessionCookieRefreshService
-    : public BoundSessionCookieRefreshService {
- public:
-  static std::unique_ptr<KeyedService> Build() {
-    return std::make_unique<MockBoundSessionCookieRefreshService>();
-  }
-
-  MOCK_METHOD(void,
-              MaybeTerminateSession,
-              (const GURL& response_url,
-               const net::HttpResponseHeaders* headers),
-              (override));
-  MOCK_METHOD(void,
-              CreateRegistrationRequest,
-              (BoundSessionRegistrationFetcherParam registration_params),
-              (override));
-
-  MOCK_METHOD(void,
-              StopCookieRotation,
-              (const BoundSessionKey& key),
-              (override));
-
-  MOCK_METHOD(void, Initialize, (), (override));
-  MOCK_METHOD(void,
-              RegisterNewBoundSession,
-              (const bound_session_credentials::BoundSessionParams& params),
-              (override));
-  MOCK_METHOD(std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>,
-              GetBoundSessionThrottlerParams,
-              (),
-              (const, override));
-  MOCK_METHOD(
-      void,
-      SetRendererBoundSessionThrottlerParamsUpdaterDelegate,
-      (RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater),
-      (override));
-  MOCK_METHOD(void,
-              SetBoundSessionParamsUpdatedCallbackForTesting,
-              (base::RepeatingClosure updated_callback),
-              (override));
-  MOCK_METHOD(void,
-              HandleRequestBlockedOnCookie,
-              (const GURL&,
-               HandleRequestBlockedOnCookieCallback resume_blocked_request),
-              (override));
-  MOCK_METHOD(base::WeakPtr<BoundSessionCookieRefreshService>,
-              GetWeakPtr,
-              (),
-              (override));
-  MOCK_METHOD(void, AddObserver, (Observer* observer), (override));
-  MOCK_METHOD(void, RemoveObserver, (Observer* observer), (override));
-  MOCK_METHOD((std::vector<BoundSessionDebugInfo>),
-              GetBoundSessionDebugInfo,
-              (),
-              (const, override));
-};
-
 class TestResponseAdapter : public signin::ResponseAdapter {
  public:
   explicit TestResponseAdapter(const GURL& url)

@@ -7702,7 +7702,10 @@ test("unit_tests") {
     ]
 
     if (enable_dice_support) {
-      sources += [ "../browser/signin/bound_session_credentials/dice_bound_session_cookie_service_unittest.cc" ]
+      sources += [
+        "../browser/signin/bound_session_credentials/bound_session_oauth_multilogin_delegate_impl_unittest.cc",
+        "../browser/signin/bound_session_credentials/dice_bound_session_cookie_service_unittest.cc",
+      ]
     }
   }
 
@@ -10729,6 +10732,8 @@ static_library("test_support_unit") {
       "../browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h",
       "../browser/signin/bound_session_credentials/fake_keyed_unexportable_key_service.cc",
       "../browser/signin/bound_session_credentials/fake_keyed_unexportable_key_service.h",
+      "../browser/signin/bound_session_credentials/mock_bound_session_cookie_refresh_service.cc",
+      "../browser/signin/bound_session_credentials/mock_bound_session_cookie_refresh_service.h",
     ]
     public_deps += [ "//components/unexportable_keys" ]
   }

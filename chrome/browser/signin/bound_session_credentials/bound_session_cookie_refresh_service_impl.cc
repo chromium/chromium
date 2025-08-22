@@ -229,7 +229,9 @@ void BoundSessionCookieRefreshServiceImpl::Initialize() {
 
 void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     const bound_session_credentials::BoundSessionParams& params) {
-  CHECK(IsNewSessionRegistrationEnabled(profile_prefs_, params.is_wsbeta()));
+  if (!IsNewSessionRegistrationEnabled(profile_prefs_, params.is_wsbeta())) {
+    return;
+  }
 
   if (!session_params_storage_->SaveParams(params)) {
     DVLOG(1) << "Invalid session params or failed to serialize session params.";

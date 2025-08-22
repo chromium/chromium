@@ -37,6 +37,11 @@ class BoundSessionOAuthMultiLoginDelegateImpl
   std::vector<bound_session_credentials::BoundSessionParams>
   CreateBoundSessionsParams(const OAuthMultiloginResult& result);
 
+  // The bound sessions params to be registered. `std::nullopt` indicates that
+  // `BeforeSetCookies` was not called.
+  std::optional<std::vector<bound_session_credentials::BoundSessionParams>>
+      bound_sessions_params_;
+
   const base::WeakPtr<BoundSessionCookieRefreshService>
       bound_session_cookie_refresh_service_;
 
