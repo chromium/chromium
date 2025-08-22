@@ -176,6 +176,8 @@ TEST_F(DemuxerStreamReaderTest, ReadsVideoBufferAndCallsBufferCb) {
   // Simulate the DemuxerStream providing a buffer.
   ASSERT_FALSE(read_cb.is_null());
   std::move(read_cb).Run(DemuxerStream::Status::kOk, {buffer});
+
+  RunPendingTasks();
 }
 
 TEST_F(DemuxerStreamReaderTest, ReadsVideoBufferAndCallsEosCb) {
@@ -205,6 +207,8 @@ TEST_F(DemuxerStreamReaderTest, ReadsVideoBufferAndCallsEosCb) {
   ASSERT_FALSE(read_cb.is_null());
   std::move(read_cb).Run(DemuxerStream::Status::kOk,
                          {DecoderBuffer::CreateEOSBuffer()});
+
+  RunPendingTasks();
 }
 
 TEST_F(DemuxerStreamReaderTest, ReportsVideoResolutionMetrics) {
@@ -306,6 +310,8 @@ TEST_F(DemuxerStreamReaderTest, ReadsAudioBufferAndCallsBufferCb) {
   // Simulate the DemuxerStream providing a buffer.
   ASSERT_FALSE(read_cb.is_null());
   std::move(read_cb).Run(DemuxerStream::Status::kOk, {buffer});
+
+  RunPendingTasks();
 }
 
 TEST_F(DemuxerStreamReaderTest, ReadsAudioBufferAndCallsEosCb) {
@@ -335,6 +341,8 @@ TEST_F(DemuxerStreamReaderTest, ReadsAudioBufferAndCallsEosCb) {
   ASSERT_FALSE(read_cb.is_null());
   std::move(read_cb).Run(DemuxerStream::Status::kOk,
                          {DecoderBuffer::CreateEOSBuffer()});
+
+  RunPendingTasks();
 }
 
 TEST_F(DemuxerStreamReaderTest, ReadsAudioBufferAndConvertsPcmToS16) {
@@ -389,6 +397,9 @@ TEST_F(DemuxerStreamReaderTest, ReadsAudioBufferAndConvertsPcmToS16) {
   // Simulate the DemuxerStream providing a buffer.
   ASSERT_FALSE(read_cb.is_null());
   std::move(read_cb).Run(DemuxerStream::Status::kOk, {buffer});
+
+  // The read callback is posted to a task runner, so we need to run the task.
+  RunPendingTasks();
 
   ASSERT_THAT(captured_buffer, NotNull());
 
@@ -448,6 +459,8 @@ TEST_F(DemuxerStreamReaderTest,
   // Simulate the DemuxerStream providing a buffer.
   ASSERT_FALSE(read_cb.is_null());
   std::move(read_cb).Run(DemuxerStream::Status::kOk, {buffer});
+
+  RunPendingTasks();
 }
 
 TEST_F(DemuxerStreamReaderTest,
@@ -506,12 +519,85 @@ TEST_F(DemuxerStreamReaderTest,
   StarboardDrmKeyTracker::GetInstance().AddKey(std::string(kIdentifier),
                                                "some_session");
 
-  // Use a run loop here, since the DRM key callback may be posted to a separate
-  // task.
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  RunPendingTasks();
+}
+
+TEST_F(DemuxerStreamReaderTest,
+       ReadsAudioBufferAndIgnoresReadsUntilPendingReadFinishes) {
+  // This is a regression test for crbug.com/438570862
+  //
+  // Here we try reading four buffers. We try reading buffers 2 and 3 before the
+  // first buffer has been read; these calls should be ignored. After buffer 1
+  // has been read we read buffer 4; that read should result in a buffer being
+  // sent to the read callback.
+  constexpr int kSeekTicket = 7;
+  scoped_refptr<DecoderBuffer> buffer_1 =
+      DecoderBuffer::CopyFrom({1, 2, 3, 4, 5, 6, 7, 8});
+  scoped_refptr<DecoderBuffer> buffer_2 =
+      DecoderBuffer::CopyFrom({10, 9, 8, 7, 6, 5, 4, 3, 2, 1});
+
+  StarboardSampleInfo expected_info_1 = CreateAudioSample(*buffer_1);
+  StarboardSampleInfo expected_info_2 = CreateAudioSample(*buffer_2);
+
+  EXPECT_CALL(handle_eos_cb_, Call).Times(0);
+  EXPECT_CALL(handle_buffer_cb_,
+              Call(kSeekTicket, MatchesStarboardSampleInfo(expected_info_1),
+                   Pointee(DecoderBufferMatches(std::cref(*buffer_1)))))
+      .Times(1);
+  EXPECT_CALL(handle_buffer_cb_,
+              Call(kSeekTicket, MatchesStarboardSampleInfo(expected_info_2),
+                   Pointee(DecoderBufferMatches(std::cref(*buffer_2)))))
+      .Times(1);
+
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb_1;
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb_2;
+  EXPECT_CALL(audio_stream_, OnRead)
+      .WillOnce(SaveArgByMove<0>(&read_cb_1))
+      .WillOnce(SaveArgByMove<0>(&read_cb_2));
+
+  DemuxerStreamReader stream_reader(
+      &audio_stream_, /*video_stream=*/nullptr,
+      expected_info_1.audio_sample_info,
+      /*video_sample_info=*/std::nullopt,
+      base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
+      base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
+      &renderer_client_, &metrics_helper_);
+
+  // Make 3 reads for audio data. The second and third should be ignored. Run
+  // tasks between each call, to ensure that this behavior is not dependent on
+  // timing.
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeAudio);
+  RunPendingTasks();
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeAudio);
+  RunPendingTasks();
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeAudio);
+  RunPendingTasks();
+
+  // Simulate the DemuxerStream providing the first buffer.
+  ASSERT_FALSE(read_cb_1.is_null());
+  EXPECT_TRUE(read_cb_2.is_null());
+  std::move(read_cb_1).Run(DemuxerStream::Status::kOk, {buffer_1});
+  RunPendingTasks();
+
+  // Make the fourth read for audio data. This should result in data being read
+  // from audio_stream_, and read_cb_2 being populated.
+  //
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeAudio);
+  RunPendingTasks();
+
+  ASSERT_FALSE(read_cb_2.is_null());
+  std::move(read_cb_2).Run(DemuxerStream::Status::kOk, {buffer_2});
+  RunPendingTasks();
 }
 
 }  // namespace

@@ -91,7 +91,8 @@ DemuxerStreamReader::DemuxerStreamReader(
     HandleEosCb handle_eos_cb,
     ::media::RendererClient* client,
     chromecast::metrics::CastMetricsHelper* cast_metrics_helper)
-    : cast_metrics_helper_(cast_metrics_helper),
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      cast_metrics_helper_(cast_metrics_helper),
       handle_buffer_cb_(std::move(handle_buffer_cb)),
       handle_eos_cb_(std::move(handle_eos_cb)),
       client_(client),
@@ -134,7 +135,7 @@ DemuxerStreamReader::DemuxerStreamReader(
 }
 
 DemuxerStreamReader::~DemuxerStreamReader() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   for (const auto& [token, unused] : token_to_drm_key_cb_) {
     StarboardDrmKeyTracker::GetInstance().UnregisterCallback(token);
@@ -142,22 +143,35 @@ DemuxerStreamReader::~DemuxerStreamReader() {
 }
 
 void DemuxerStreamReader::ReadBuffer(int seek_ticket, StarboardMediaType type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
+  if (pending_read_[type]) {
+    LOG(ERROR) << "Starboard requested "
+               << (type == StarboardMediaType::kStarboardMediaTypeAudio
+                       ? "an audio "
+                       : "a video ")
+               << "buffer while the corresponding demuxer read was still "
+                  "pending. Ignoring.";
+    return;
+  }
+
+  pending_read_[type] = true;
   ::media::DemuxerStream* stream =
       type == StarboardMediaType::kStarboardMediaTypeAudio ? audio_stream_
                                                            : video_stream_;
   CHECK(stream);
-  stream->Read(1,
-               base::BindOnce(&DemuxerStreamReader::OnReadBuffer,
-                              weak_factory_.GetWeakPtr(), type, seek_ticket));
+  stream->Read(
+      1, base::BindPostTask(
+             task_runner_,
+             base::BindOnce(&DemuxerStreamReader::OnReadBuffer,
+                            weak_factory_.GetWeakPtr(), type, seek_ticket)));
 }
 
 void DemuxerStreamReader::HandleNonOkDemuxerStatus(
     ::media::DemuxerStream::Status status,
     StarboardMediaType type,
     int seek_ticket) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   switch (status) {
     case ::media::DemuxerStream::Status::kAborted: {
@@ -173,23 +187,19 @@ void DemuxerStreamReader::HandleNonOkDemuxerStatus(
           client_->OnError(::media::DECODER_ERROR_NOT_SUPPORTED);
           return;
         }
-
-        // Keep reading more data.
-        audio_stream_->Read(
-            1, base::BindOnce(&DemuxerStreamReader::OnReadBuffer,
-                              weak_factory_.GetWeakPtr(), type, seek_ticket));
       } else {
         CHECK_EQ(type, StarboardMediaType::kStarboardMediaTypeVideo);
         if (!UpdateVideoConfig()) {
           client_->OnError(::media::DECODER_ERROR_NOT_SUPPORTED);
           return;
         }
-
-        // Keep reading more data.
-        video_stream_->Read(
-            1, base::BindOnce(&DemuxerStreamReader::OnReadBuffer,
-                              weak_factory_.GetWeakPtr(), type, seek_ticket));
       }
+      // Keep reading more data. Post the task, so that the current read
+      // finishes first.
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&DemuxerStreamReader::ReadBuffer,
+                         weak_factory_.GetWeakPtr(), seek_ticket, type));
       return;
     }
     case ::media::DemuxerStream::Status::kError:
@@ -211,7 +221,8 @@ void DemuxerStreamReader::OnReadBuffer(
     int seek_ticket,
     ::media::DemuxerStream::Status status,
     std::vector<scoped_refptr<DecoderBuffer>> buffers) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  pending_read_[type] = false;
 
   if (status != ::media::DemuxerStream::Status::kOk) {
     DCHECK(buffers.empty());
@@ -288,7 +299,7 @@ void DemuxerStreamReader::WaitForKey(DrmInfoWrapper drm_info,
                                      StarboardSampleInfo sample_info,
                                      scoped_refptr<DecoderBuffer> buffer,
                                      int seek_ticket) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   StarboardDrmSampleInfo* const drm_sample_info = drm_info.GetDrmSampleInfo();
   const std::string drm_key(
@@ -329,7 +340,7 @@ void DemuxerStreamReader::WaitForKey(DrmInfoWrapper drm_info,
 }
 
 void DemuxerStreamReader::RunPendingDrmKeyCallback(int64_t token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (auto it = token_to_drm_key_cb_.find(token);
       it != token_to_drm_key_cb_.end()) {
@@ -339,7 +350,7 @@ void DemuxerStreamReader::RunPendingDrmKeyCallback(int64_t token) {
 }
 
 bool DemuxerStreamReader::UpdateAudioConfig() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   CHECK(audio_stream_);
   chromium_audio_config_ = audio_stream_->audio_decoder_config();
@@ -376,7 +387,7 @@ bool DemuxerStreamReader::UpdateAudioConfig() {
 }
 
 bool DemuxerStreamReader::UpdateVideoConfig() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   DCHECK(video_stream_);
   const ::media::VideoDecoderConfig video_config =

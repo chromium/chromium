@@ -7,6 +7,7 @@
 #include <array>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -556,6 +557,8 @@ TEST_F(StarboardPlayerManagerTest,
       &sb_player_, callbacks->context,
       StarboardMediaType::kStarboardMediaTypeAudio,
       StarboardDecoderState::kStarboardDecoderStateNeedsData, seek_ticket);
+
+  RunPendingTasks();
 }
 
 TEST_F(StarboardPlayerManagerTest,
@@ -631,6 +634,8 @@ TEST_F(StarboardPlayerManagerTest,
       &sb_player_, callbacks->context,
       StarboardMediaType::kStarboardMediaTypeVideo,
       StarboardDecoderState::kStarboardDecoderStateNeedsData, seek_ticket);
+
+  RunPendingTasks();
 }
 
 TEST_F(StarboardPlayerManagerTest,
@@ -709,6 +714,8 @@ TEST_F(StarboardPlayerManagerTest,
       &sb_player_, callbacks->context,
       StarboardMediaType::kStarboardMediaTypeAudio,
       StarboardDecoderState::kStarboardDecoderStateNeedsData, seek_ticket);
+
+  RunPendingTasks();
 }
 
 TEST_F(StarboardPlayerManagerTest,
