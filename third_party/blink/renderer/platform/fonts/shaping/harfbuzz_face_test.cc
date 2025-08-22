@@ -91,12 +91,24 @@ hb_codepoint_t GetGlyphForCJKVSFromFontWithVS() {
                                               variation_selector);
 }
 
+// HarfBuzzFace::SetVariationSelectorMode sets a thread local.
+// HarfBuzzShaper::Shape expects that it will be kUseSpecifiedVariationSelector.
+// If the value is not reset, later tests that run on this thread may DCHECK.
+struct SetVariationSelectorModeScoped {
+  explicit SetVariationSelectorModeScoped(VariationSelectorMode mode) {
+    HarfBuzzFace::SetVariationSelectorMode(mode);
+  }
+  ~SetVariationSelectorModeScoped() {
+    HarfBuzzFace::SetVariationSelectorMode(kUseSpecifiedVariationSelector);
+  }
+};
+
 }  // namespace
 
 class HarfBuzzFaceTest : public FontTestBase {};
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithVS) {
-  HarfBuzzFace::SetVariationSelectorMode(kUseSpecifiedVariationSelector);
+  SetVariationSelectorModeScoped scopedMode(kUseSpecifiedVariationSelector);
 
   hb_codepoint_t glyph = GetGlyphForCJKVSFromFontWithVS();
   EXPECT_TRUE(glyph);
@@ -104,7 +116,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithVS) {
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithVS_IgnoreVS) {
-  HarfBuzzFace::SetVariationSelectorMode(kIgnoreVariationSelector);
+  SetVariationSelectorModeScoped scopedMode(kIgnoreVariationSelector);
 
   hb_codepoint_t glyph = GetGlyphForCJKVSFromFontWithVS();
   EXPECT_TRUE(glyph);
@@ -112,7 +124,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithVS_IgnoreVS) {
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithBaseCharOnly) {
-  HarfBuzzFace::SetVariationSelectorMode(kUseSpecifiedVariationSelector);
+  SetVariationSelectorModeScoped scopedMode(kUseSpecifiedVariationSelector);
 
   EXPECT_EQ(GetGlyphForStandardizedVSFromFontWithBaseCharOnly(),
             kUnmatchedVSGlyphId);
@@ -120,14 +132,14 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithBaseCharOnly) {
 
 TEST(HarfBuzzFaceTest,
      HarfBuzzGetNominalGlyph_TestFontWithBaseCharOnly_IgnoreVS) {
-  HarfBuzzFace::SetVariationSelectorMode(kIgnoreVariationSelector);
+  SetVariationSelectorModeScoped scopedMode(kIgnoreVariationSelector);
 
   hb_codepoint_t glyph = GetGlyphForStandardizedVSFromFontWithBaseCharOnly();
   EXPECT_FALSE(glyph);
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithoutBaseChar) {
-  HarfBuzzFace::SetVariationSelectorMode(kUseSpecifiedVariationSelector);
+  SetVariationSelectorModeScoped scopedMode(kUseSpecifiedVariationSelector);
 
   UChar32 character = uchar::kFullwidthExclamationMark;
   UChar32 variation_selector = uchar::kVariationSelector2;
@@ -138,7 +150,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithoutBaseChar) {
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiEmoji) {
-  HarfBuzzFace::SetVariationSelectorMode(kForceVariationSelector16);
+  SetVariationSelectorModeScoped scopedMode(kForceVariationSelector16);
 
   UChar32 character = uchar::kShakingFaceEmoji;
   UChar32 variation_selector = 0;
@@ -161,7 +173,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiEmoji) {
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiText) {
-  HarfBuzzFace::SetVariationSelectorMode(kForceVariationSelector15);
+  SetVariationSelectorModeScoped scopedMode(kForceVariationSelector15);
 
   UChar32 character = uchar::kShakingFaceEmoji;
   UChar32 variation_selector = 0;
@@ -184,7 +196,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiText) {
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiUnicode) {
-  HarfBuzzFace::SetVariationSelectorMode(kUseUnicodeDefaultPresentation);
+  SetVariationSelectorModeScoped scopedMode(kUseUnicodeDefaultPresentation);
 
   UChar32 character = uchar::kShakingFaceEmoji;
   UChar32 variation_selector = 0;
@@ -207,7 +219,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiUnicode) {
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVSOverrideVariantEmoji) {
-  HarfBuzzFace::SetVariationSelectorMode(kForceVariationSelector16);
+  SetVariationSelectorModeScoped scopedMode(kForceVariationSelector16);
 
   UChar32 character = uchar::kShakingFaceEmoji;
   UChar32 variation_selector = uchar::kVariationSelector15;
@@ -236,7 +248,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestSystemFallbackEmojiVS) {
   ScopedSystemFallbackEmojiVSSupportForTest scoped_system_emoji_vs_feature(
       true);
 
-  HarfBuzzFace::SetVariationSelectorMode(kUseSpecifiedVariationSelector);
+  SetVariationSelectorModeScoped scopedMode(kUseSpecifiedVariationSelector);
 
   UChar32 character = uchar::kShakingFaceEmoji;
 
