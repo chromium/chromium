@@ -1,6 +1,6 @@
 [package]
 name = "winapi-util"
-version = "0.1.9"  #:version
+version = "0.1.10"  #:version
 authors = ["Andrew Gallant <jamslam@gmail.com>"]
 description = "A dumping ground for high level safe wrappers over windows-sys."
 documentation = "https://docs.rs/winapi-util"
@@ -13,7 +13,7 @@ categories = ["os::windows-apis", "external-ffi-bindings"]
 edition = "2021"
 
 [target.'cfg(windows)'.dependencies.windows-sys]
-version = ">=0.48.0, <=0.59.*"
+version = ">=0.48.0, <=0.60.*"
 features = [
   "Win32_Foundation",
   "Win32_Storage_FileSystem",
