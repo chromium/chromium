@@ -4182,8 +4182,12 @@
   },
   {
     "name": "enable-pixel-canvas-recording",
-    "owners": [ "malaykeshav@chromium.org", "oshima@chromium.org" ],
-    "expiry_milestone": 116
+    "owners": [
+      "oshima@chromium.org",
+      "mwoj@google.com",
+      "cros-ui-foundations@google.com"
+    ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-preferences-account-storage",
