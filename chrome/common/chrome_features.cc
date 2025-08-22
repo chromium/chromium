@@ -311,7 +311,7 @@ const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityLocalTimeout{
 
 // The overall observation timeout when waiting on a renderer tool to complete.
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{
-    &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(1)};
+    &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(4)};
 
 // An artificial delay before signalling the tools that the page has become
 // stable.
