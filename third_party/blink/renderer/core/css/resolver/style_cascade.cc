@@ -2083,6 +2083,13 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
   if (!attribute_value.IsNull() && attr_type->IsSyntax()) {
     TokenSequence substituted_attribute_token_sequence;
     CSSParserTokenStream attribute_value_stream(attribute_value);
+    // Since attributes are not parsed by CSSVariableParser, we first need to
+    // parse substituted value, not to run into DCHECKs while resolving
+    // substitutions.
+    if (!CSSVariableParser::ParseDeclarationValue(attribute_value, false,
+                                                  context)) {
+      return false;
+    }
     if (!ResolveTokensInto(attribute_value_stream, tree_scope, resolver,
                            context, function_context,
                            /* stop_type */ kEOFToken,
