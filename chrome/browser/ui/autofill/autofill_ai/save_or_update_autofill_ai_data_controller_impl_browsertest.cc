@@ -9,11 +9,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,9 +39,14 @@ std::pair<EntityInstance, EntityInstance> GetUpdateEntities() {
   return std::make_pair(new_entity, old_entity);
 }
 }  // namespace
-class SaveOrUpdateAutofillAiDataControllerImplTest : public DialogBrowserTest {
+class SaveOrUpdateAutofillAiDataControllerImplTest
+    : public DialogBrowserTest,
+      public base::test::WithFeatureOverride {
  public:
-  SaveOrUpdateAutofillAiDataControllerImplTest() = default;
+  SaveOrUpdateAutofillAiDataControllerImplTest()
+      : base::test::WithFeatureOverride(
+            features::kAutofillShowBubblesBasedOnPriorities) {}
+
   SaveOrUpdateAutofillAiDataControllerImplTest(
       const SaveOrUpdateAutofillAiDataControllerImplTest&) = delete;
   SaveOrUpdateAutofillAiDataControllerImplTest& operator=(
@@ -74,13 +81,16 @@ class SaveOrUpdateAutofillAiDataControllerImplTest : public DialogBrowserTest {
     DialogBrowserTest::TearDownOnMainThread();
   }
 
+  bool IsBubbleManagerEnabled() const { return GetParam(); }
+
   SaveOrUpdateAutofillAiDataControllerImpl* controller() { return controller_; }
 
  private:
+  base::test::ScopedFeatureList scoped_features_;
   raw_ptr<SaveOrUpdateAutofillAiDataControllerImpl> controller_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(SaveOrUpdateAutofillAiDataControllerImplTest,
+IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataControllerImplTest,
                        UpdatedAttributesDetails_UpdateEntity) {
   ShowUi("UpdateEntity");
   std::vector<
@@ -111,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(SaveOrUpdateAutofillAiDataControllerImplTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(SaveOrUpdateAutofillAiDataControllerImplTest,
+IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataControllerImplTest,
                        UpdatedAttributesDetails_SaveNewEntity) {
   ShowUi("SaveNewEntity");
   std::vector<
@@ -138,4 +148,8 @@ IN_PROC_BROWSER_TEST_F(SaveOrUpdateAutofillAiDataControllerImplTest,
           kAccepted,
       1);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    SaveOrUpdateAutofillAiDataControllerImplTest);
+
 }  // namespace autofill
