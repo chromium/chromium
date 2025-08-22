@@ -45,7 +45,6 @@
 
 using testing::_;
 using testing::AnyNumber;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
@@ -1166,8 +1165,7 @@ TEST_F(VideoFrameSubmitterTest, ProcessTimingDetails) {
   EXPECT_CALL(*video_frame_provider_, UpdateCurrentFrame)
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*video_frame_provider_, PutCurrentFrame).Times(AnyNumber());
-  EXPECT_CALL(*sink_, DoSubmitCompositorFrame)
-      .WillRepeatedly(Invoke(sink_submit));
+  EXPECT_CALL(*sink_, DoSubmitCompositorFrame).WillRepeatedly(sink_submit);
   EXPECT_CALL(*resource_provider_, AppendQuads).Times(AnyNumber());
   EXPECT_CALL(*resource_provider_, PrepareSendToParent).Times(AnyNumber());
   EXPECT_CALL(*resource_provider_, ReleaseFrameResources).Times(AnyNumber());

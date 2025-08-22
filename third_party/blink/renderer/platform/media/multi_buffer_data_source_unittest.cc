@@ -37,7 +37,6 @@ namespace blink {
 
 using ::testing::_;
 using ::testing::Assign;
-using ::testing::Invoke;
 using ::testing::InSequence;
 using ::testing::NiceMock;
 using ::testing::StrictMock;
@@ -245,9 +244,9 @@ class MultiBufferDataSourceTest : public testing::Test {
  public:
   MultiBufferDataSourceTest() : preload_(MultiBufferDataSource::AUTO) {
     ON_CALL(fetch_context_, CreateUrlLoader(_))
-        .WillByDefault(Invoke([](const WebAssociatedURLLoaderOptions&) {
+        .WillByDefault([](const WebAssociatedURLLoaderOptions&) {
           return std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
-        }));
+        });
   }
 
   MultiBufferDataSourceTest(const MultiBufferDataSourceTest&) = delete;

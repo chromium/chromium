@@ -1030,21 +1030,20 @@ TEST_P(InputHandlerProxyTest, HitTestTouchEventNonNullTouchAction) {
   EXPECT_CALL(mock_input_handler_,
               EventListenerTypeForTouchStartOrMoveAt(
                   testing::Property(&gfx::Point::x, testing::Eq(0)), _))
-      .WillOnce(testing::Invoke([](const gfx::Point&,
-                                   cc::TouchAction* touch_action) {
+      .WillOnce([](const gfx::Point&, cc::TouchAction* touch_action) {
         *touch_action = cc::TouchAction::kMax;
         return cc::InputHandler::TouchStartOrMoveEventListenerType::kNoHandler;
-      }));
+      });
 
   EXPECT_CALL(mock_input_handler_,
               EventListenerTypeForTouchStartOrMoveAt(
                   testing::Property(&gfx::Point::x, testing::Gt(0)), _))
       .WillOnce(
-          testing::Invoke([](const gfx::Point&, cc::TouchAction* touch_action) {
+          [](const gfx::Point&, cc::TouchAction* touch_action) {
             *touch_action = cc::TouchAction::kPanUp;
             return cc::InputHandler::TouchStartOrMoveEventListenerType::
                 kHandlerOnScrollingLayer;
-          }));
+          });
   // Since the second touch point hits a touch-region, there should be no
   // hit-testing for the third touch point.
 
@@ -1338,11 +1337,10 @@ TEST_P(InputHandlerProxyTest, MultiTouchPointHitTestNegative) {
       .WillOnce(testing::Return(cc::EventListenerProperties::kNone));
   EXPECT_CALL(mock_input_handler_, EventListenerTypeForTouchStartOrMoveAt(_, _))
       .Times(2)
-      .WillRepeatedly(testing::Invoke([](const gfx::Point&,
-                                         cc::TouchAction* touch_action) {
+      .WillRepeatedly([](const gfx::Point&, cc::TouchAction* touch_action) {
         *touch_action = cc::TouchAction::kPanUp;
         return cc::InputHandler::TouchStartOrMoveEventListenerType::kNoHandler;
-      }));
+      });
   EXPECT_CALL(mock_client_, SetAllowedTouchAction(cc::TouchAction::kPanUp))
       .WillOnce(testing::Return());
 
@@ -1374,20 +1372,19 @@ TEST_P(InputHandlerProxyTest, MultiTouchPointHitTestPositive) {
   EXPECT_CALL(mock_input_handler_,
               EventListenerTypeForTouchStartOrMoveAt(
                   testing::Property(&gfx::Point::x, testing::Eq(0)), _))
-      .WillOnce(testing::Invoke([](const gfx::Point&,
-                                   cc::TouchAction* touch_action) {
+      .WillOnce([](const gfx::Point&, cc::TouchAction* touch_action) {
         *touch_action = cc::TouchAction::kAuto;
         return cc::InputHandler::TouchStartOrMoveEventListenerType::kNoHandler;
-      }));
+      });
   EXPECT_CALL(mock_input_handler_,
               EventListenerTypeForTouchStartOrMoveAt(
                   testing::Property(&gfx::Point::x, testing::Gt(0)), _))
       .WillOnce(
-          testing::Invoke([](const gfx::Point&, cc::TouchAction* touch_action) {
+          [](const gfx::Point&, cc::TouchAction* touch_action) {
             *touch_action = cc::TouchAction::kPanY;
             return cc::InputHandler::TouchStartOrMoveEventListenerType::
                 kHandlerOnScrollingLayer;
-          }));
+          });
   EXPECT_CALL(mock_client_, SetAllowedTouchAction(cc::TouchAction::kPanY))
       .WillOnce(testing::Return());
   EXPECT_CALL(mock_input_handler_, SetIsHandlingTouchSequence(true));
@@ -1425,16 +1422,14 @@ TEST_P(InputHandlerProxyTest, MultiTouchPointHitTestPassivePositive) {
       .WillRepeatedly(testing::Return(cc::EventListenerProperties::kPassive));
   EXPECT_CALL(mock_input_handler_, EventListenerTypeForTouchStartOrMoveAt(_, _))
       .Times(3)
-      .WillOnce(testing::Invoke([](const gfx::Point&,
-                                   cc::TouchAction* touch_action) {
+      .WillOnce([](const gfx::Point&, cc::TouchAction* touch_action) {
         *touch_action = cc::TouchAction::kPanRight;
         return cc::InputHandler::TouchStartOrMoveEventListenerType::kNoHandler;
-      }))
-      .WillRepeatedly(testing::Invoke([](const gfx::Point&,
-                                         cc::TouchAction* touch_action) {
+      })
+      .WillRepeatedly([](const gfx::Point&, cc::TouchAction* touch_action) {
         *touch_action = cc::TouchAction::kPanX;
         return cc::InputHandler::TouchStartOrMoveEventListenerType::kNoHandler;
-      }));
+      });
   EXPECT_CALL(mock_client_, SetAllowedTouchAction(cc::TouchAction::kPanRight))
       .WillOnce(testing::Return());
   EXPECT_CALL(mock_input_handler_, SetIsHandlingTouchSequence(true));
@@ -1470,11 +1465,10 @@ TEST_P(InputHandlerProxyTest, TouchTrackingEndsOnCancel) {
       .WillRepeatedly(testing::Return(cc::EventListenerProperties::kPassive));
   EXPECT_CALL(mock_input_handler_, EventListenerTypeForTouchStartOrMoveAt(_, _))
       .Times(1)
-      .WillOnce(testing::Invoke([](const gfx::Point&,
-                                   cc::TouchAction* touch_action) {
+      .WillOnce([](const gfx::Point&, cc::TouchAction* touch_action) {
         *touch_action = cc::TouchAction::kPanRight;
         return cc::InputHandler::TouchStartOrMoveEventListenerType::kNoHandler;
-      }));
+      });
   EXPECT_CALL(mock_client_, SetAllowedTouchAction(cc::TouchAction::kPanRight))
       .WillOnce(testing::Return());
   EXPECT_CALL(mock_input_handler_, SetIsHandlingTouchSequence(true));
@@ -1535,11 +1529,10 @@ TEST_P(InputHandlerProxyTest, TouchStartPassiveAndTouchEndBlocking) {
       GetEventListenerProperties(cc::EventListenerClass::kTouchEndOrCancel))
       .WillOnce(testing::Return(cc::EventListenerProperties::kBlocking));
   EXPECT_CALL(mock_input_handler_, EventListenerTypeForTouchStartOrMoveAt(_, _))
-      .WillOnce(testing::Invoke([](const gfx::Point&,
-                                   cc::TouchAction* touch_action) {
+      .WillOnce([](const gfx::Point&, cc::TouchAction* touch_action) {
         *touch_action = cc::TouchAction::kNone;
         return cc::InputHandler::TouchStartOrMoveEventListenerType::kNoHandler;
-      }));
+      });
   EXPECT_CALL(mock_client_, SetAllowedTouchAction(cc::TouchAction::kNone))
       .WillOnce(testing::Return());
   EXPECT_CALL(mock_input_handler_, SetIsHandlingTouchSequence(true));
@@ -3386,11 +3379,10 @@ TEST_P(InputHandlerProxyTouchScrollbarTest,
   EXPECT_CALL(mock_input_handler_,
               EventListenerTypeForTouchStartOrMoveAt(
                   testing::Property(&gfx::Point::x, testing::Eq(10)), _))
-      .WillOnce(testing::Invoke([](const gfx::Point&,
-                                   cc::TouchAction* touch_action) {
+      .WillOnce([](const gfx::Point&, cc::TouchAction* touch_action) {
         *touch_action = cc::TouchAction::kAuto;
         return cc::InputHandler::TouchStartOrMoveEventListenerType::kNoHandler;
-      }));
+      });
   EXPECT_CALL(
       mock_input_handler_,
       GetEventListenerProperties(cc::EventListenerClass::kTouchStartOrMove))

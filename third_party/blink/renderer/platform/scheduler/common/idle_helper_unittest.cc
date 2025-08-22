@@ -36,7 +36,6 @@ using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
 using testing::Exactly;
-using testing::Invoke;
 using testing::Return;
 
 namespace blink {
@@ -480,15 +479,15 @@ TEST_F(IdleHelperTest, TestLongIdlePeriodWhenNotCanEnterLongIdlePeriod) {
   int run_count = 0;
 
   ON_CALL(*idle_helper_, CanEnterLongIdlePeriod(_, _))
-      .WillByDefault(
-          Invoke([delay, delay_over](
-                     base::TimeTicks now,
-                     base::TimeDelta* next_long_idle_period_delay_out) {
-            if (now >= delay_over)
-              return true;
-            *next_long_idle_period_delay_out = delay;
-            return false;
-          }));
+      .WillByDefault([delay, delay_over](
+                         base::TimeTicks now,
+                         base::TimeDelta* next_long_idle_period_delay_out) {
+        if (now >= delay_over) {
+          return true;
+        }
+        *next_long_idle_period_delay_out = delay;
+        return false;
+      });
 
   EXPECT_CALL(*idle_helper_, CanEnterLongIdlePeriod(_, _)).Times(2);
 

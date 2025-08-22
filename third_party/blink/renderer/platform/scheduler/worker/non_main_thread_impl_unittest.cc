@@ -19,7 +19,6 @@
 using testing::_;
 using testing::AnyOf;
 using testing::ElementsAre;
-using testing::Invoke;
 
 namespace blink {
 namespace scheduler {
@@ -118,9 +117,7 @@ TEST_F(NonMainThreadImplTest, TestDefaultTask) {
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   EXPECT_CALL(task, Run());
-  ON_CALL(task, Run()).WillByDefault(Invoke([&completion]() {
-    completion.Signal();
-  }));
+  ON_CALL(task, Run()).WillByDefault([&completion]() { completion.Signal(); });
 
   PostCrossThreadTask(
       *thread_->GetTaskRunner(), FROM_HERE,

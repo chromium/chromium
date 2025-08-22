@@ -26,8 +26,9 @@ TestingPlatformSupportForGpuMemoryBuffer::
   media_thread_.Start();
   ON_CALL(*gpu_factories_, GetTaskRunner())
       .WillByDefault(Return(media_thread_.task_runner()));
-  ON_CALL(*gpu_factories_, ContextCapabilities())
-      .WillByDefault(testing::Invoke([&]() { return capabilities_; }));
+  ON_CALL(*gpu_factories_, ContextCapabilities()).WillByDefault([&]() {
+    return capabilities_;
+  });
 }
 
 TestingPlatformSupportForGpuMemoryBuffer::

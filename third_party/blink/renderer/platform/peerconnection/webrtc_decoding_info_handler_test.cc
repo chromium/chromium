@@ -89,14 +89,13 @@ class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
         blink::CreateWebrtcAudioDecoderFactory();
     if (sdp_video_format) {
       ON_CALL(*video_decoder_factory, QueryCodecSupport)
-          .WillByDefault(
-              testing::Invoke([sdp_video_format, video_spatial_scalability,
-                               support](const webrtc::SdpVideoFormat& format,
-                                        bool spatial_scalability) {
-                EXPECT_TRUE(format.IsSameCodec(*sdp_video_format));
-                EXPECT_EQ(spatial_scalability, video_spatial_scalability);
-                return support;
-              }));
+          .WillByDefault([sdp_video_format, video_spatial_scalability, support](
+                             const webrtc::SdpVideoFormat& format,
+                             bool spatial_scalability) {
+            EXPECT_TRUE(format.IsSameCodec(*sdp_video_format));
+            EXPECT_EQ(spatial_scalability, video_spatial_scalability);
+            return support;
+          });
       EXPECT_CALL(*video_decoder_factory, QueryCodecSupport)
           .Times(::testing::AtMost(1));
     }
