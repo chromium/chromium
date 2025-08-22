@@ -5217,12 +5217,7 @@ void BrowserView::AddedToWidget() {
   using_native_frame_ = frame_->ShouldUseNativeFrame();
 
   MaybeInitializeWebUITabStrip();
-
-  // Show this promo at startup, but on the next frame when all initialization
-  // is done. Delayed as a workaround for https://crbug.com/439739546.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&BrowserView::MaybeShowTabStripToolbarButtonIPH,
-                                GetAsWeakPtr()));
+  MaybeShowTabStripToolbarButtonIPH();
 
   // Want to show this promo, but not right at startup.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

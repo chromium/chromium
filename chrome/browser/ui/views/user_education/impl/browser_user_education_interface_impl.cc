@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
 
 #include "base/check_is_test.h"
+#include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/user_education_storage_service.h"
 
 BrowserUserEducationInterfaceImpl::BrowserUserEducationInterfaceImpl(
@@ -25,13 +28,26 @@ BrowserUserEducationInterfaceImpl::~BrowserUserEducationInterfaceImpl() {
 
 void BrowserUserEducationInterfaceImpl::Init(BrowserView* browser_view) {
   CHECK_EQ(State::kUninitialized, state_);
-  state_ = State::kInitialized;
+  state_ = State::kInitializationPending;
 
   // Create the context.
   if (auto* const interface = GetUserEducationService()) {
     user_education_context_ = base::MakeRefCounted<BrowserUserEducationContext>(
         *browser_view, interface->user_education_storage_service());
   }
+
+  // Need to wait for all of browser setup to complete before attempting to
+  // launch startup promos. Since this method is called during feature/service
+  // creation and before the browser view finishes attaching to the widget, it's
+  // best to delay a minimum of one frame before attempting to queue promos.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BrowserUserEducationInterfaceImpl::CompleteInitialization,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BrowserUserEducationInterfaceImpl::CompleteInitialization() {
+  state_ = State::kInitialized;
 
   auto* const controller = GetFeaturePromoController();
   if (!controller) {
@@ -121,11 +137,22 @@ void BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(
   // failure to retrieve accelerators, which can cause issues for screen reader
   // users.
   if (state_ != State::kInitialized) {
+    std::string_view state_desc;
+    switch (state_) {
+      case State::kUninitialized:
+        state_desc = " before browser initialization";
+        break;
+      case State::kInitializationPending:
+        state_desc = " before browser initialization complete";
+        break;
+      case State::kTornDown:
+        state_desc = " after browser shutdown";
+        break;
+      case State::kInitialized:
+        NOTREACHED();
+    }
     LOG(ERROR) << "Attempting to show IPH " << params.feature->name
-               << (state_ == State::kUninitialized
-                       ? " before browser initialization"
-                       : " after browser shutdown")
-               << "; IPH will not be shown.";
+               << state_desc << "; IPH will not be shown.";
     user_education::FeaturePromoController::PostShowPromoResult(
         std::move(params.show_promo_result_callback),
         user_education::FeaturePromoResult::kError);
@@ -144,7 +171,8 @@ void BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(
 
 void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromo(
     user_education::FeaturePromoParams params) {
-  if (state_ == State::kUninitialized) {
+  if (state_ == State::kUninitialized ||
+      state_ == State::kInitializationPending) {
     queued_params_.push_back(std::move(params));
     return;
   }
