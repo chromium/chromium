@@ -397,6 +397,10 @@ The bitwise negation (`!`) of the bits in a flags value, truncating the result.
 
 ----
 
+The complement is the only operation that explicitly truncates its result, because it doesn't accept a second flags value as input and so is likely to set unknown bits.
+
+----
+
 The following are examples of the complement of a flags value:
 
 ```rust
@@ -407,12 +411,12 @@ The following are examples of the complement of a flags value:
 
 #### Difference
 
-The bitwise union (`|`) of the bits in one flags value and the bitwise negation (`!`) of the bits in another.
+The bitwise intersection (`&`) of the bits in one flags value and the bitwise negation (`!`) of the bits in another.
 
 ----
 
 This operation is not equivalent to the intersection of one flags value with the complement of another (`&!`).
-The former will truncate the result, where difference will not.
+The former will truncate the result in the complement, where difference will not.
 
 ----
 

@@ -1,3 +1,13 @@
+# 2.9.2
+
+## What's Changed
+* Fix difference in the spec by @KodrAus in https://github.com/bitflags/bitflags/pull/446
+* Fix up inaccurate docs on bitflags_match by @KodrAus in https://github.com/bitflags/bitflags/pull/453
+* Remove rustc internal crate feature by @KodrAus in https://github.com/bitflags/bitflags/pull/454
+
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.9.1...2.9.2
+
 # 2.9.1
 
 ## What's Changed

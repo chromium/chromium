@@ -17,7 +17,7 @@ Add `bitflags` to your `Cargo.toml`:
 
 ```toml
 [dependencies.bitflags]
-version = "2.9.1"
+version = "2.9.2"
 ```
 
 ## Crate features
@@ -837,19 +837,26 @@ macro_rules! __impl_bitflags {
 ///
 /// let flags = Flags::A | Flags::B;
 ///
+/// // Prints `the value is A and B`
 /// bitflags_match!(flags, {
-///     Flags::A | Flags::B => println!("A and/or B are set"),
-///     _ => println!("neither A nor B are set"),
-/// })
+///     Flags::A | Flags::B => println!("the value is A and B"),
+///     _ => println!("the value is not A and B"),
+/// });
+///
+/// // Prints `the value is not A`
+/// bitflags_match!(flags, {
+///     Flags::A => println!("the value is A"),
+///     _ => println!("the value is not A"),
+/// });
 /// ```
 ///
 /// # How it works
 ///
-/// The macro expands to a series of `if` statements, checking equality between the input expression
+/// The macro expands to a series of `if` statements, **checking equality** between the input expression
 /// and each pattern. This allows for correct matching of bitflag combinations, which is not possible
 /// with a regular match expression due to the way bitflags are implemented.
 ///
-/// Patterns are evaluated in order.
+/// Patterns are evaluated in the order they appear in the macro.
 #[macro_export]
 macro_rules! bitflags_match {
     ($operation:expr, {

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56.0"
 name = "bitflags"
-version = "2.9.1"
+version = "2.9.2"
 authors = ["The Rust Project Developers"]
 build = false
 exclude = [
@@ -46,10 +46,6 @@ features = ["example_generated"]
 
 [features]
 example_generated = []
-rustc-dep-of-std = [
-    "core",
-    "compiler_builtins",
-]
 std = []
 
 [lib]
@@ -87,15 +83,6 @@ optional = true
 [dependencies.bytemuck]
 version = "1.12"
 optional = true
-
-[dependencies.compiler_builtins]
-version = "0.1.2"
-optional = true
-
-[dependencies.core]
-version = "1.0.0"
-optional = true
-package = "rustc-std-workspace-core"
 
 [dependencies.serde]
 version = "1.0.103"
