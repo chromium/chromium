@@ -238,6 +238,11 @@ void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
 
   PrefService* pref_service = actor_service_->GetProfile()->GetPrefs();
   int toast_shown_count = pref_service->GetInteger(kToastShown);
+
+  DCHECK(toast_shown_count <= kToastShownMax)
+      << "Toast shown count (" << toast_shown_count
+      << ") is greater than the max allowed (" << kToastShownMax << ").";
+
   if (toast_shown_count >= kToastShownMax) {
     return;
   }
