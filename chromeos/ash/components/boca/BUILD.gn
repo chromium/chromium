@@ -24,6 +24,7 @@ static_library("boca") {
   ]
   deps = [
     # TODO(crbug.com/376673450):Clean up unused and unwanted dependencies.
+    ":invalidation_delegate",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
@@ -64,6 +65,11 @@ static_library("invalidations") {
     "//google_apis/common",
     "//net",
   ]
+}
+
+source_set("invalidation_delegate") {
+  sources = [ "invalidations/invalidation_service_delegate.h" ]
+  deps = [ "//base" ]
 }
 
 static_library("spotlight_notification_constants") {

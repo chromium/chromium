@@ -20,6 +20,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/soda_installer.h"
+#include "chromeos/ash/components/boca/invalidations/invalidation_service_delegate.h"
 #include "chromeos/ash/components/boca/notifications/boca_notification_handler.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
@@ -58,7 +59,8 @@ class BocaSessionManager
       public signin::IdentityManager::Observer,
       public user_manager::UserManager::UserSessionStateObserver,
       public session_manager::SessionManagerObserver,
-      public remoting::ClientStatusObserver {
+      public remoting::ClientStatusObserver,
+      public InvalidationServiceDelegate {
  public:
   using SessionCaptionInitializer =
       base::RepeatingCallback<void(base::OnceCallback<void(bool)>)>;
@@ -242,6 +244,12 @@ class BocaSessionManager
 
   virtual std::string GetDeviceRobotEmail();
 
+  // InvalidationServiceDelegate:
+  void UploadToken(
+      const std::string& fcm_token,
+      base::OnceCallback<void(bool)> on_token_uploaded_cb) override;
+  void OnInvalidationReceived(const std::string& payload) override;
+
   base::ObserverList<Observer>& observers() { return observers_; }
 
   AccountId& account_id() { return account_id_; }
@@ -293,6 +301,10 @@ class BocaSessionManager
   void NotifySodaStatusListeners(SodaStatus status);
 
   void CloseAllCaptions();
+
+  void OnTokenUploadResult(
+      base::OnceCallback<void(bool)> on_token_uploaded_cb,
+      base::expected<bool, google_apis::ApiErrorCode> result);
 
   const bool is_producer_;
   base::OnceClosure end_session_callback_for_testing_;

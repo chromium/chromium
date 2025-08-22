@@ -32,6 +32,7 @@
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/student_heartbeat_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
+#include "chromeos/ash/components/boca/session_api/upload_token_request.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_frame_consumer.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
@@ -415,6 +416,30 @@ void BocaSessionManager::EndSpotlightSession() {
 std::string BocaSessionManager::GetDeviceRobotEmail() {
   CHECK(ash::features::IsBocaSpotlightRobotRequesterEnabled());
   return remoting_client_manager_->GetDeviceRobotEmail();
+}
+
+void BocaSessionManager::UploadToken(
+    const std::string& fcm_token,
+    base::OnceCallback<void(bool)> on_token_uploaded_cb) {
+  auto request = std::make_unique<UploadTokenRequest>(
+      session_client_impl_->sender(),
+      BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(),
+      account_id_.GetGaiaId(), fcm_token,
+      base::BindOnce(&BocaSessionManager::OnTokenUploadResult,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(on_token_uploaded_cb)));
+  session_client_impl_->UploadToken(std::move(request));
+}
+
+void BocaSessionManager::OnInvalidationReceived(const std::string& payload) {
+  // TODO(crbug.com/354769102): Potentially validate FCM payload before
+  // dispatching. And implement a thread-safe approach to skip loading when
+  // there is already active loading in progress.
+
+  // FCM message will be delivered even user not logged in. But
+  // LoadCurrentSession has a validation to skip load if the current active user
+  // doesn't match the profile user.
+  LoadCurrentSession(/*from_polling=*/false);
 }
 
 void BocaSessionManager::LoadInitialNetworkState() {
@@ -805,6 +830,15 @@ void BocaSessionManager::CloseAllCaptions() {
     }
     observer.OnLocalCaptionClosed();
   }
+}
+
+void BocaSessionManager::OnTokenUploadResult(
+    base::OnceCallback<void(bool)> on_token_uploaded_cb,
+    base::expected<bool, google_apis::ApiErrorCode> result) {
+  if (!result.has_value()) {
+    boca::RecordUploadTokenErrorCode(result.error());
+  }
+  std::move(on_token_uploaded_cb).Run(result.has_value());
 }
 
 }  // namespace ash::boca
