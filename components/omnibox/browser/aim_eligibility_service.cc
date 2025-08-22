@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
+#include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -114,14 +115,10 @@ AimEligibilityService::AimEligibilityService(
     : pref_service_(pref_service),
       template_url_service_(template_url_service),
       url_loader_factory_(url_loader_factory) {
-  // TODO(crbug.com/436898763): Call `StartServerEligibilityRequest()` to
-  // refresh the server response when service is constructed and when user state
-  // changes. E.g. user signs in/out, starts/stops syncing, switches profiles.
-  // Some of those actions may create a new service; if so, we don't need to
-  // listen to those events and start StartServerEligibilityRequest manually,
-  // because it'll be called in the constructor anyways. Switching profiles
-  // probably creates a new service.
   ReadFromPref();
+  // TODO(crbug.com/436898763): Call `StartServerEligibilityRequest()` to
+  // refresh the server response when user sign-in state changes.
+  StartServerEligibilityRequest();
 }
 
 AimEligibilityService::~AimEligibilityService() = default;
@@ -203,6 +200,14 @@ bool AimEligibilityService::ParseResponseString(
 
 void AimEligibilityService::WriteToPref(
     const std::string& response_string) const {
+  // Nothing should be written to the prefs if AIM is disabled.
+  CHECK(base::FeatureList::IsEnabled(kAimEnabled));
+
+  // Do not write to the prefs if server eligibility checking is not enabled.
+  if (!IsServerEligibilityEnabled()) {
+    return;
+  }
+
   pref_service_->SetString(kResponsePrefName,
                            base::Base64Encode(response_string));
 }
@@ -216,9 +221,13 @@ void AimEligibilityService::ReadFromPref() {
 }
 
 void AimEligibilityService::StartServerEligibilityRequest() {
-  // Don't make server requests if AIM or server requests are disabled.
-  if (!base::FeatureList::IsEnabled(kAimEnabled) ||
-      !IsServerEligibilityEnabled()) {
+  // Don't make server requests if AIM is disabled.
+  if (!base::FeatureList::IsEnabled(kAimEnabled)) {
+    return;
+  }
+
+  // URLLoaderFactory may be null in tests.
+  if (!url_loader_factory_) {
     return;
   }
 
@@ -226,6 +235,9 @@ void AimEligibilityService::StartServerEligibilityRequest() {
       std::make_unique<network::ResourceRequest>();
   request->url = GURL{kRequestEndpoint};
   request->credentials_mode = network::mojom::CredentialsMode::kInclude;
+  request->load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
+  // Set the SiteForCookies to the request URL's site to avoid cookie blocking.
+  request->site_for_cookies = net::SiteForCookies::FromUrl(request->url);
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request),
                                        kRequestTrafficAnnotation);
@@ -257,9 +269,12 @@ void AimEligibilityService::OnServerEligibilityResponse(
   }
   base::UmaHistogramEnumeration(kUmaServerRequestStatusHistogramName,
                                 ServerRequestStatus::kSuccess);
+
   base::UmaHistogramBoolean(
       base::StrCat({kUmaServerEligibilityHistogramPrefix, "is_eligible"}),
       most_recent_response_.is_eligible());
+
   WriteToPref(*response_string);
+
   NotifyObservers();
 }
