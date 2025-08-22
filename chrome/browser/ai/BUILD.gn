@@ -122,6 +122,8 @@ source_set("ai_model_download_progress_manager") {
     "ai_crx_component.h",
     "ai_model_download_progress_manager.cc",
     "ai_model_download_progress_manager.h",
+    "ai_never_load_component.cc",
+    "ai_never_load_component.h",
   ]
   public_deps = [
     "//base",

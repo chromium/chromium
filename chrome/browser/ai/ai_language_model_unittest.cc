@@ -1093,8 +1093,6 @@ TEST_F(AILanguageModelTest, ModelDownload) {
       update_client::ComponentState::kDownloading, kTestModelDownloadSize));
 
   mock_monitor.ExpectReceivedNormalizedUpdate(0, kTestModelDownloadSize);
-  mock_monitor.ExpectReceivedNormalizedUpdate(kTestModelDownloadSize,
-                                              kTestModelDownloadSize);
 }
 
 TEST_F(AILanguageModelTest, MeasureInputUsage) {

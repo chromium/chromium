@@ -27,6 +27,7 @@
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_crx_component.h"
 #include "chrome/browser/ai/ai_language_model.h"
+#include "chrome/browser/ai/ai_never_load_component.h"
 #include "chrome/browser/ai/ai_proofreader.h"
 #include "chrome/browser/ai/ai_rewriter.h"
 #include "chrome/browser/ai/ai_summarizer.h"
@@ -958,12 +959,22 @@ void AIManager::OnModelPathValidationComplete(const base::FilePath& model_path,
 void AIManager::AddModelDownloadProgressObserver(
     mojo::PendingRemote<blink ::mojom::ModelDownloadProgressObserver>
         observer_remote) {
-  model_download_progress_manager_.AddObserver(
-      std::move(observer_remote),
-      on_device_ai::AICrxComponent::FromComponentIds(
-          &component_update_service_.get(),
-          {component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
-               GetOnDeviceModelExtensionId()}));
+  auto components = on_device_ai::AICrxComponent::FromComponentIds(
+      &component_update_service_.get(),
+      {component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
+           GetOnDeviceModelExtensionId()});
+
+  // Have some portion of the loading bar occupied until the renderer sends the
+  // 100% download progress on creation. This is to indicate that there is still
+  // work going on between when the model is downloaded and the actual API
+  // instance is created.
+  if (base::FeatureList::IsEnabled(features::kAIModelUnloadableProgress)) {
+    components.insert(std::make_unique<on_device_ai::AINeverLoadComponent>(
+        features::kAIModelUnloadableProgressBytes.Get()));
+  }
+
+  model_download_progress_manager_.AddObserver(std::move(observer_remote),
+                                               std::move(components));
 }
 
 void AIManager::RenderWidgetHostVisibilityChanged(
