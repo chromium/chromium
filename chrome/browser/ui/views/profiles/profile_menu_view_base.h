@@ -40,7 +40,6 @@ class Button;
 
 namespace ui {
 class ColorProvider;
-class TrackedElement;
 }  // namespace ui
 
 // This class provides the UI for different menus that are created by user
@@ -144,7 +143,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   static constexpr int kOtherProfileImageSize = 16;
 
   // `browser` must not be nullptr.
-  ProfileMenuViewBase(ui::TrackedElement* anchor_element, Browser* browser);
+  ProfileMenuViewBase(views::Button* anchor_button, Browser* browser);
   ~ProfileMenuViewBase() override;
 
   ProfileMenuViewBase(const ProfileMenuViewBase&) = delete;
@@ -233,9 +232,9 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   const raw_ref<Profile> profile_;
 
-  // `anchor_view_` usually lives in a separate Views hierarchy than the menu
+  // `anchor_button_` usually lives in a separate Views hierarchy than the menu
   // view. Use a ViewTracker to avoid potential UAF crashes.
-  views::ViewTracker anchor_view_;
+  views::ViewTracker anchor_button_;
 
   // Component containers.
   raw_ptr<views::View> identity_info_container_ = nullptr;

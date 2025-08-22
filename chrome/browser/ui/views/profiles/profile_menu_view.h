@@ -30,10 +30,6 @@ namespace signin_metrics {
 enum class AccessPoint;
 }
 
-namespace ui {
-class TrackedElement;
-}  // namespace ui
-
 namespace views {
 class Button;
 }
@@ -53,7 +49,7 @@ class Browser;
 class ProfileMenuView : public ProfileMenuViewBase {
  public:
   // `browser` must not be nullptr.
-  ProfileMenuView(ui::TrackedElement* anchor_element,
+  ProfileMenuView(views::Button* anchor_button,
                   Browser* browser,
                   std::optional<signin_metrics::AccessPoint>
                       explicit_signin_access_point = std::nullopt);
