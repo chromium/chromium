@@ -4058,7 +4058,7 @@
     },
     {
       name: "RestrictOwnAudio",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "RestrictTabFocusForHiddenSVGElements",
