@@ -98,6 +98,15 @@ public class CastWebContentsActivity extends Activity {
         createdAndNotTestingState.subscribe(
                 Observer.onOpen(
                         x -> {
+                            // Abort if the browser process has not been initialized. This can
+                            // happen in exotic race conditions where CastBrowserService kills the
+                            // process before the teardown timer in CastWebContentsSurfaceHelper
+                            // fires.
+                            if (!CastBrowserHelper.isBrowserInitialized()) {
+                                finishAndRemoveTask();
+                                return;
+                            }
+
                             setContentView(R.layout.cast_web_contents_activity);
 
                             mSurfaceHelperState.set(

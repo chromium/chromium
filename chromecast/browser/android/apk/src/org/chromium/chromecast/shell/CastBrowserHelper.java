@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.content_public.browser.BrowserStartupController;
@@ -20,7 +21,13 @@ public class CastBrowserHelper {
 
     private static boolean sIsBrowserInitialized;
 
+    public static boolean isBrowserInitialized() {
+        ThreadUtils.checkUiThread();
+        return sIsBrowserInitialized;
+    }
+
     public static void initializeBrowserAsync(Context context, Intent intent) {
+        ThreadUtils.checkUiThread();
         if (sIsBrowserInitialized) {
             return;
         }
