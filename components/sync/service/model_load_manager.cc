@@ -165,7 +165,7 @@ void ModelLoadManager::LoadDesiredTypes() {
   const DataTypeSet types = preferred_types_without_errors_;
 
   // Start timer to measure time for loading to complete.
-  load_models_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
+  load_models_elapsed_timer_.emplace();
 
   for (DataType type : types) {
     auto dtc_iter = controllers_->find(type);

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/cancelable_callback.h"
@@ -229,8 +230,8 @@ class SyncSchedulerImpl : public SyncScheduler {
   // The mode of operation.
   Mode mode_ = CONFIGURATION_MODE;
 
-  // Current wait state.  Null if we're not in backoff and not throttled.
-  std::unique_ptr<WaitInterval> wait_interval_;
+  // Current wait state. `Nullopt` if we're not in backoff and not throttled.
+  std::optional<WaitInterval> wait_interval_;
 
   std::unique_ptr<BackoffDelayProvider> delay_provider_;
 

@@ -318,7 +318,7 @@ void DataTypeTracker::FillGetUpdatesTriggersMessage(
 }
 
 bool DataTypeTracker::IsBlocked() const {
-  return wait_interval_.get() &&
+  return wait_interval_ &&
          (wait_interval_->mode == WaitInterval::BlockingMode::kThrottled ||
           wait_interval_->mode ==
               WaitInterval::BlockingMode::kExponentialBackoff);
@@ -340,20 +340,18 @@ base::TimeDelta DataTypeTracker::GetLastBackoffInterval() const {
 void DataTypeTracker::ThrottleType(base::TimeDelta duration,
                                    base::TimeTicks now) {
   unblock_time_ = std::max(unblock_time_, now + duration);
-  wait_interval_ = std::make_unique<WaitInterval>(
-      WaitInterval::BlockingMode::kThrottled, duration);
+  wait_interval_.emplace(WaitInterval::BlockingMode::kThrottled, duration);
 }
 
 void DataTypeTracker::BackOffType(base::TimeDelta duration,
                                   base::TimeTicks now) {
   unblock_time_ = std::max(unblock_time_, now + duration);
-  wait_interval_ = std::make_unique<WaitInterval>(
-      WaitInterval::BlockingMode::kExponentialBackoff, duration);
+  wait_interval_.emplace(WaitInterval::BlockingMode::kExponentialBackoff, duration);
 }
 
 void DataTypeTracker::UpdateThrottleOrBackoffState() {
   if (base::TimeTicks::Now() >= unblock_time_) {
-    if (wait_interval_.get() &&
+    if (wait_interval_ &&
         (wait_interval_->mode ==
              WaitInterval::BlockingMode::kExponentialBackoff ||
          wait_interval_->mode ==
