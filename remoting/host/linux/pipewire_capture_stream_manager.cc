@@ -294,10 +294,12 @@ void PipewireCaptureStreamManager::OnGnomeDisplayConfigReceived(
       HOST_LOG << "Adding stream after initial display config is loaded.";
       MaybeAddStreamForCurrentRequest();
     }
+    SetUseDamageRegion();
     return;
   }
   if (!pending_stream_) {
     last_seen_display_config_ = std::move(config);
+    SetUseDamageRegion();
     return;
   }
 
@@ -339,7 +341,28 @@ void PipewireCaptureStreamManager::AssociatePendingStream(
   auto weak_ptr = pending_stream_->GetWeakPtr();
   streams_[screen_id] = std::move(pending_stream_);
 
+  SetUseDamageRegion();
   RunCurrentAddStreamCallback(base::ok(weak_ptr));
+}
+
+void PipewireCaptureStreamManager::SetUseDamageRegion() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (auto& [screen_id, stream] : streams_) {
+    const auto monitor_it = last_seen_display_config_->FindMonitor(screen_id);
+    if (monitor_it == last_seen_display_config_->monitors.end()) {
+      LOG(ERROR) << "Cannot find monitor for screen ID " << screen_id;
+      continue;
+    }
+    // Given mutter's bug with the reported damage region, it is only safe to
+    // enable damage region if the monitor is at the top-left corner with
+    // 100% scaling.
+    // See: https://gitlab.gnome.org/GNOME/mutter/-/issues/4269
+    bool use_damage_region = monitor_it->second.x == 0 &&
+                             monitor_it->second.y == 0 &&
+                             monitor_it->second.scale == 1.0;
+    stream->SetUseDamageRegion(use_damage_region);
+  }
 }
 
 }  // namespace remoting

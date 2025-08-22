@@ -19,30 +19,20 @@
 #include "base/time/time.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 
 namespace remoting {
 
 PipewireCaptureStream::CallbackProxy::CallbackProxy() = default;
+
 PipewireCaptureStream::CallbackProxy::~CallbackProxy() = default;
 
 void PipewireCaptureStream::CallbackProxy::Initialize(
-    scoped_refptr<base::SequencedTaskRunner> callback_sequence,
-    base::WeakPtr<webrtc::DesktopCapturer::Callback> callback,
-    std::unique_ptr<webrtc::DesktopFrame> initial_frame) {
+    base::WeakPtr<PipewireCaptureStream> parent) {
   base::AutoLock lock(lock_);
-  callback_sequence_ = callback_sequence;
-  callback_ = callback;
-  if (initial_frame) {
-    callback_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&webrtc::DesktopCapturer::Callback::OnFrameCaptureStart,
-                       callback_)
-            .Then(base::BindOnce(
-                &webrtc::DesktopCapturer::Callback::OnCaptureResult, callback_,
-                webrtc::DesktopCapturer::Result::SUCCESS,
-                std::move(initial_frame))));
-  }
+  callback_sequence_ = base::SequencedTaskRunner::GetCurrentDefault();
+  parent_ = parent;
 }
 
 void PipewireCaptureStream::CallbackProxy::OnFrameCaptureStart() {
@@ -53,8 +43,7 @@ void PipewireCaptureStream::CallbackProxy::OnFrameCaptureStart() {
   }
   callback_sequence_->PostTask(
       FROM_HERE,
-      base::BindOnce(&webrtc::DesktopCapturer::Callback::OnFrameCaptureStart,
-                     callback_));
+      base::BindOnce(&PipewireCaptureStream::OnFrameCaptureStart, parent_));
 }
 
 void PipewireCaptureStream::CallbackProxy::OnCaptureResult(
@@ -66,9 +55,8 @@ void PipewireCaptureStream::CallbackProxy::OnCaptureResult(
     return;
   }
   callback_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&webrtc::DesktopCapturer::Callback::OnCaptureResult,
-                     callback_, result, std::move(frame)));
+      FROM_HERE, base::BindOnce(&PipewireCaptureStream::OnCaptureResult,
+                                parent_, result, std::move(frame)));
 }
 
 PipewireCaptureStream::PipewireCaptureStream() = default;
@@ -97,11 +85,27 @@ void PipewireCaptureStream::StartVideoCapture() {
 }
 
 void PipewireCaptureStream::SetCallback(
-    scoped_refptr<base::SequencedTaskRunner> callback_sequence,
     base::WeakPtr<webrtc::DesktopCapturer::Callback> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  callback_proxy_.Initialize(callback_sequence, callback,
-                             stream_->CaptureFrame());
+  callback_ = callback;
+  auto self = weak_ptr_factory_.GetWeakPtr();
+  // RecaptureLatestFrameAsDirty() must be called before
+  // callback_proxy_.Initialize(), since calling the latter will immediately
+  // start pumping frames to `PipewireCaptureStream` and can potentially cause
+  // race conditions.
+  RecaptureLatestFrameAsDirty();
+  // While unlikely, RecaptureLatestFrameAsDirty() runs `callback_` in the
+  // current stack frame and could potentially delete `this`, so we should only
+  // access class members if the weak pointer remains valid.
+  if (self) {
+    callback_proxy_.Initialize(self);
+  }
+}
+
+void PipewireCaptureStream::SetUseDamageRegion(bool use_damage_region) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  stream_->SetUseDamageRegion(use_damage_region);
+  RecaptureLatestFrameAsDirty();
 }
 
 void PipewireCaptureStream::SetResolution(
@@ -141,6 +145,82 @@ std::string_view PipewireCaptureStream::mapping_id() {
 base::WeakPtr<PipewireCaptureStream> PipewireCaptureStream::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void PipewireCaptureStream::RecaptureLatestFrameAsDirty() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_capturing_frame_) {
+    should_mark_current_frame_dirty_ = true;
+    return;
+  }
+  auto self = weak_ptr_factory_.GetWeakPtr();
+  OnFrameCaptureStart();
+  // While unlikely, OnFrameCaptureStart() runs `callback_` in the current stack
+  // frame and could potentially delete `this`, so we should only access class
+  // members if the weak pointer remains valid.
+  if (!self) {
+    return;
+  }
+  // Note: CaptureFrame() does not really capture a new frame. It just returns
+  // the latest available frame, or null if it's unavailable.
+  auto frame = stream_->CaptureFrame();
+  if (frame) {
+    // Mark the entire frame as dirty.
+    frame->mutable_updated_region()->SetRect(
+        webrtc::DesktopRect::MakeSize(frame->size()));
+    OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS, std::move(frame));
+  } else {
+    OnCaptureResult(webrtc::DesktopCapturer::Result::ERROR_TEMPORARY, nullptr);
+  }
+}
+
+void PipewireCaptureStream::OnFrameCaptureStart() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_capturing_frame_ = true;
+  if (callback_) {
+    callback_->OnFrameCaptureStart();
+  }
+}
+
+void PipewireCaptureStream::OnCaptureResult(
+    webrtc::DesktopCapturer::Result result,
+    std::unique_ptr<webrtc::DesktopFrame> frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_capturing_frame_ = false;
+
+  if (frame) {
+    if (!should_mark_current_frame_dirty_) {
+      // Check to see if the updated region is invalid, which may happen if the
+      // frame with an invalid updated region is received before
+      // SetUseDamageRegion(false) is called. If this happens, we mark the
+      // entire frame dirty. Note that the updated region could still be invalid
+      // even if the check passes, e.g., the monitor offset changes slightly so
+      // the updated rectangles still remain in the desktop rectangle.
+      // SetUseDamageRegion() will call RecaptureLatestFrameAsDirty() to cover
+      // that.
+      auto updated_region_it =
+          webrtc::DesktopRegion::Iterator(frame->updated_region());
+      while (!updated_region_it.IsAtEnd()) {
+        if (updated_region_it.rect().left() < 0 ||
+            updated_region_it.rect().top() < 0 ||
+            updated_region_it.rect().right() > frame->size().width() ||
+            updated_region_it.rect().bottom() > frame->size().height()) {
+          should_mark_current_frame_dirty_ = true;
+          break;
+        }
+        updated_region_it.Advance();
+      }
+    }
+    if (should_mark_current_frame_dirty_) {
+      frame->mutable_updated_region()->SetRect(
+          webrtc::DesktopRect::MakeSize(frame->size()));
+    }
+  }
+
+  should_mark_current_frame_dirty_ = false;
+  if (callback_) {
+    callback_->OnCaptureResult(result, std::move(frame));
+  }
 }
 
 }  // namespace remoting

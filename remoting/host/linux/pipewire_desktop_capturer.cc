@@ -36,8 +36,7 @@ void PipewireDesktopCapturer::Start(Callback* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_ = callback;
   if (stream_) {
-    stream_->SetCallback(base::SequencedTaskRunner::GetCurrentDefault(),
-                         weak_factory_.GetWeakPtr());
+    stream_->SetCallback(weak_factory_.GetWeakPtr());
   }
 }
 

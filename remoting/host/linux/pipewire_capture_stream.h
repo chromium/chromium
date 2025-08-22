@@ -61,8 +61,13 @@ class PipewireCaptureStream {
   // immediately posted to `callback_sequence` to run the callback with the
   // last available frame. `callback` will no longer be called once
   // StopVideoCapture() is called.
-  void SetCallback(scoped_refptr<base::SequencedTaskRunner> callback_sequence,
-                   base::WeakPtr<webrtc::DesktopCapturer::Callback> callback);
+  void SetCallback(base::WeakPtr<webrtc::DesktopCapturer::Callback> callback);
+
+  // Sets whether damage region should be used. Mutter may return invalid damage
+  // regions in some cases, where disabling damage region makes sense.
+  // Damage region is enabled by default.
+  // See: https://gitlab.gnome.org/GNOME/mutter/-/issues/4269
+  void SetUseDamageRegion(bool use_damage_region);
 
   // Negotiates a new video resolution with PipeWire. If capturing from a
   // virtual monitor, it will be resized to match.
@@ -108,15 +113,13 @@ class PipewireCaptureStream {
  private:
   // SharedScreenCastStream runs the pipewire loop, and invokes frame callbacks,
   // on a separate thread. This class is responsible for bouncing them back to
-  // `callback_sequence`.
+  // the corresponding methods of `parent_` on `callback_sequence`.
   class CallbackProxy : public webrtc::DesktopCapturer::Callback {
    public:
     CallbackProxy();
     ~CallbackProxy() override;
 
-    void Initialize(scoped_refptr<base::SequencedTaskRunner> callback_sequence,
-                    base::WeakPtr<webrtc::DesktopCapturer::Callback> callback,
-                    std::unique_ptr<webrtc::DesktopFrame> initial_frame);
+    void Initialize(base::WeakPtr<PipewireCaptureStream> parent);
 
     // Callback interface
     void OnFrameCaptureStart() override;
@@ -130,9 +133,23 @@ class PipewireCaptureStream {
     base::Lock lock_;
     scoped_refptr<base::SequencedTaskRunner> callback_sequence_
         GUARDED_BY(lock_);
-    base::WeakPtr<webrtc::DesktopCapturer::Callback> callback_
-        GUARDED_BY(lock_);
+    base::WeakPtr<PipewireCaptureStream> parent_ GUARDED_BY(lock_);
   };
+
+  // Recaptures (i.e. invokes `callback_` again with) the latest available frame
+  // in the current call stack, with the entire frame marked as dirty, if no
+  // frame is currently being captured. If capturing is in progress, a flag will
+  // be set to mark the next captured frame as dirty.
+  // This is useful to supply the first frame when `callback_` is set, or when
+  // the `use_damage_region` flag has changed.
+  // Note: Do not access class members after this method is called, since `this`
+  // may potentially be deleted at that point.
+  void RecaptureLatestFrameAsDirty();
+
+  // Called by the callback proxy.
+  void OnFrameCaptureStart();
+  void OnCaptureResult(webrtc::DesktopCapturer::Result result,
+                       std::unique_ptr<webrtc::DesktopFrame> frame);
 
   int pipewire_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::uint32_t pipewire_node_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -140,10 +157,15 @@ class PipewireCaptureStream {
   webrtc::DesktopSize resolution_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string mapping_id_ GUARDED_BY_CONTEXT(sequence_checker_);
   webrtc::ScreenId screen_id_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::WeakPtr<webrtc::DesktopCapturer::Callback> callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   webrtc::scoped_refptr<webrtc::SharedScreenCastStream> stream_
       GUARDED_BY_CONTEXT(sequence_checker_) =
           webrtc::SharedScreenCastStream::CreateDefault();
   CallbackProxy callback_proxy_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool is_capturing_frame_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool should_mark_current_frame_dirty_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

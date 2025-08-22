@@ -141,6 +141,10 @@ class PipewireCaptureStreamManager final {
   // RunCurrentAddStreamCallback() with the screen ID.
   void AssociatePendingStream(webrtc::ScreenId screen_id);
 
+  // Sets whether damage region should be used for each active stream based on
+  // the desktop geometry.
+  void SetUseDamageRegion();
+
   raw_ptr<GDBusConnectionRef> connection_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client_
       GUARDED_BY_CONTEXT(sequence_checker_);
