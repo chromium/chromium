@@ -21,6 +21,11 @@ namespace net {
 
 namespace {
 
+// Multi-proxy chains can only be created outside of Ip Protection in debug
+// builds.
+constexpr bool kAreNonIppMultiProxyChainsValid =
+    BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS);
+
 TEST(ProxyChainTest, DefaultConstructor) {
   ProxyChain proxy_chain;
   EXPECT_FALSE(proxy_chain.IsValid());
@@ -88,14 +93,13 @@ TEST(ProxyChainTest, ToDebugString) {
   ProxyChain invalid_proxy_chain = ProxyChain();
   EXPECT_EQ(invalid_proxy_chain.ToDebugString(), "INVALID PROXY CHAIN");
 
-// Multi-proxy chains can only be created outside of Ip Protection in debug
-// builds.
-#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
-  ProxyChain proxy_chain2 =
-      ProxyChain({ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS),
-                  ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS)});
-  EXPECT_EQ(proxy_chain2.ToDebugString(), "[https://foo:444, https://foo:555]");
-#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+  if (kAreNonIppMultiProxyChainsValid) {
+    ProxyChain proxy_chain2 = ProxyChain(
+        {ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS),
+         ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS)});
+    EXPECT_EQ(proxy_chain2.ToDebugString(),
+              "[https://foo:444, https://foo:555]");
+  }
 
   ProxyChain proxy_chain_with_opaque_data = ProxyChain::WithOpaqueData(
       {ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS)},
@@ -247,12 +251,11 @@ TEST(ProxyChainTest, SplitLast) {
   EXPECT_EQ(chain1.SplitLast(),
             std::make_pair(ProxyChain::Direct(), proxy_server1));
 
-#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
-  // Multi-proxy chains (not for Ip Protection) are only valid in debug builds.
-  auto chain2 = ProxyChain({proxy_server1, proxy_server2});
-  EXPECT_EQ(chain2.SplitLast(),
-            std::make_pair(ProxyChain({proxy_server1}), proxy_server2));
-#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+  if (kAreNonIppMultiProxyChainsValid) {
+    auto chain2 = ProxyChain({proxy_server1, proxy_server2});
+    EXPECT_EQ(chain2.SplitLast(),
+              std::make_pair(ProxyChain({proxy_server1}), proxy_server2));
+  }
 }
 
 TEST(ProxyChainTest, Prefix) {
@@ -262,17 +265,41 @@ TEST(ProxyChainTest, Prefix) {
       ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
   auto proxy_server3 =
       ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS);
-  auto chain = ProxyChain::ForIpProtection(
-      {proxy_server1, proxy_server2, proxy_server3}, /*chain_id=*/2);
-  EXPECT_EQ(chain.Prefix(0), ProxyChain::ForIpProtection({}, /*chain_id=*/2));
-  EXPECT_EQ(chain.Prefix(1),
-            ProxyChain::ForIpProtection({proxy_server1}, /*chain_id=*/2));
-  EXPECT_EQ(chain.Prefix(2),
-            ProxyChain::ForIpProtection({proxy_server1, proxy_server2},
-                                        /*chain_id=*/2));
-  EXPECT_EQ(chain.Prefix(3),
-            ProxyChain::ForIpProtection(
-                {proxy_server1, proxy_server2, proxy_server3}, /*chain_id=*/2));
+
+  for (bool for_ip_protection : {false, true}) {
+    SCOPED_TRACE(for_ip_protection);
+
+    const auto create_chain = [&](std::vector<ProxyServer> proxies) {
+      if (for_ip_protection) {
+        return ProxyChain::ForIpProtection(std::move(proxies));
+      }
+      return ProxyChain(std::move(proxies));
+    };
+
+    const auto empty_proxy_chain = create_chain({});
+    EXPECT_EQ(empty_proxy_chain.Prefix(0), empty_proxy_chain);
+
+    const auto single_proxy_chain = create_chain({proxy_server1});
+    EXPECT_EQ(single_proxy_chain.Prefix(0), empty_proxy_chain);
+    EXPECT_EQ(single_proxy_chain.Prefix(1), single_proxy_chain);
+
+    if (!for_ip_protection && !kAreNonIppMultiProxyChainsValid) {
+      continue;
+    }
+
+    const auto double_proxy_chain =
+        create_chain({proxy_server1, proxy_server2});
+    EXPECT_EQ(double_proxy_chain.Prefix(0), empty_proxy_chain);
+    EXPECT_EQ(double_proxy_chain.Prefix(1), single_proxy_chain);
+    EXPECT_EQ(double_proxy_chain.Prefix(2), double_proxy_chain);
+
+    auto triple_proxy_chain =
+        create_chain({proxy_server1, proxy_server2, proxy_server3});
+    EXPECT_EQ(triple_proxy_chain.Prefix(0), empty_proxy_chain);
+    EXPECT_EQ(triple_proxy_chain.Prefix(1), single_proxy_chain);
+    EXPECT_EQ(triple_proxy_chain.Prefix(2), double_proxy_chain);
+    EXPECT_EQ(triple_proxy_chain.Prefix(3), triple_proxy_chain);
+  }
 }
 
 TEST(ProxyChainTest, First) {
@@ -282,14 +309,13 @@ TEST(ProxyChainTest, First) {
   auto chain = ProxyChain({proxy_server1});
   EXPECT_EQ(chain.First(), proxy_server1);
 
-#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
-  // Multi-proxy chains (not for Ip Protection) are only valid in debug builds.
-  auto proxy_server2 =
-      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
+  if (kAreNonIppMultiProxyChainsValid) {
+    auto proxy_server2 =
+        ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
 
-  chain = ProxyChain({proxy_server1, proxy_server2});
-  EXPECT_EQ(chain.First(), proxy_server1);
-#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+    chain = ProxyChain({proxy_server1, proxy_server2});
+    EXPECT_EQ(chain.First(), proxy_server1);
+  }
 }
 
 TEST(ProxyChainTest, Last) {
@@ -299,14 +325,13 @@ TEST(ProxyChainTest, Last) {
   auto chain = ProxyChain({proxy_server1});
   EXPECT_EQ(chain.Last(), proxy_server1);
 
-#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
-  // Multi-proxy chains (not for Ip Protection) are only valid in debug builds.
-  auto proxy_server2 =
-      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
+  if (kAreNonIppMultiProxyChainsValid) {
+    auto proxy_server2 =
+        ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
 
-  chain = ProxyChain({proxy_server1, proxy_server2});
-  EXPECT_EQ(chain.Last(), proxy_server2);
-#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+    chain = ProxyChain({proxy_server1, proxy_server2});
+    EXPECT_EQ(chain.Last(), proxy_server2);
+  }
 }
 
 TEST(ProxyChainTest, IsForIpProtection) {
@@ -660,18 +685,24 @@ TEST(ProxyChainTest, UnpickleInvalidProxyIpProtection) {
   EXPECT_TRUE(iter.ReachedEnd());
 }
 
-#if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Multi-proxy chains that are not for Ip Protection are not allowed in release
 // builds. If created, it should be considered invalid.
 TEST(ProxyChainTest, MultiProxyChainNotForIpProtectionInvalidProxyChain) {
+  if (kAreNonIppMultiProxyChainsValid) {
+    GTEST_SKIP()
+        << "Only relevant when non-ipp multi-proxy chains are invalid.";
+  }
   ProxyChain invalid_chain =
       ProxyChain({ProxyUriToProxyServer("foo:11", ProxyServer::SCHEME_HTTPS),
                   ProxyUriToProxyServer("hoo:11", ProxyServer::SCHEME_HTTPS)});
 
   EXPECT_FALSE(invalid_chain.IsValid());
 }
-#else  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 TEST(ProxyChainTest, MultiProxyChain) {
+  if (!kAreNonIppMultiProxyChainsValid) {
+    GTEST_SKIP() << "Only relevant when non-ipp multi-proxy chains are valid.";
+  }
+
   auto proxy_server1 =
       ProxyUriToProxyServer("foo:333", ProxyServer::SCHEME_HTTPS);
   auto proxy_server2 =
@@ -702,6 +733,10 @@ TEST(ProxyChainTest, MultiProxyChain) {
 }
 
 TEST(ProxyChainTest, MultiProxyChainsCanBeConvertedToForIpProtection) {
+  if (!kAreNonIppMultiProxyChainsValid) {
+    GTEST_SKIP() << "Only relevant when non-ipp multi-proxy chains are valid.";
+  }
+
   ProxyChain proxy_chain =
       ProxyChain({ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
                   ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)});
@@ -730,6 +765,10 @@ TEST(ProxyChainTest, MultiProxyChainsCanBeConvertedToForIpProtection) {
 }
 
 TEST(ProxyChainTest, PickleTwoProxies) {
+  if (!kAreNonIppMultiProxyChainsValid) {
+    GTEST_SKIP() << "Only relevant when non-ipp multi-proxy chains are valid.";
+  }
+
   ProxyChain proxy_chain =
       ProxyChain({ProxyUriToProxyServer("foo:11", ProxyServer::SCHEME_HTTPS),
                   ProxyUriToProxyServer("foo:22", ProxyServer::SCHEME_HTTPS)});
@@ -741,7 +780,6 @@ TEST(ProxyChainTest, PickleTwoProxies) {
   ASSERT_TRUE(proxy_chain_from_pickle);
   EXPECT_EQ(proxy_chain, *proxy_chain_from_pickle);
 }
-#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 TEST(ProxyChainTest, UnpickleTwoProxiesIpProtection) {
   ProxyChain proxy_chain = ProxyChain::ForIpProtection(
