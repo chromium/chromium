@@ -31,6 +31,7 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -386,6 +387,20 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             var lp = (MarginLayoutParams) mToolbarHairline.getLayoutParams();
             lp.topMargin = mToolbar.getTabStripHeight() + mToolbarLayoutHeight;
             mToolbarHairline.setLayoutParams(lp);
+        }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (changed) {
+            // The size of the container has changed, so the texture capture of
+            // the toolbar must be redone.
+            // TODO(crbug.com/435771941): using surface sync to improve efficiency
+            mToolbarContainer.invalidate();
+            if (LibraryLoader.getInstance().isInitialized()) {
+                mToolbarContainer.getResourceAdapter().onResourceRequested();
+            }
         }
     }
 
