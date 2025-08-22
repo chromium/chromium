@@ -6,9 +6,12 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
+#import "base/time/time_override.h"
 #import "ios/chrome/browser/default_browser/model/install_attribution/gmo_sko_acceptance_data.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
 
 namespace install_attribution {
@@ -41,9 +44,19 @@ class InstallAttributionHelperTest : public PlatformTest {
     EXPECT_TRUE(value == nil);
   }
 
+  static base::Time NowOverride() { return now_override_; }
+
+  static void SetNowOverride(base::Time now_override) {
+    now_override_ = now_override;
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  static base::Time now_override_;
 };
+
+base::Time InstallAttributionHelperTest::now_override_;
 
 // The helper should not crash nor record an attributable install if there is no
 // acceptance data.
@@ -53,6 +66,10 @@ TEST_F(InstallAttributionHelperTest, NoAcceptanceData) {
   LogInstallAttribution();
 
   histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
   VerifyAcceptanceDataCleared();
 }
 
@@ -69,6 +86,10 @@ TEST_F(InstallAttributionHelperTest, UnrecognizedAcceptanceData) {
   LogInstallAttribution();
 
   histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
   VerifyAcceptanceDataCleared();
 }
 
@@ -96,6 +117,10 @@ TEST_F(InstallAttributionHelperTest, AttributableInstallShortWindow) {
   histogram_tester.ExpectBucketCount("IOS.GMOSKOInstallAttribution",
                                      InstallAttributionType::Within24Hours, 1);
   histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
   VerifyAcceptanceDataCleared();
 }
 
@@ -123,6 +148,10 @@ TEST_F(InstallAttributionHelperTest, AttributableInstallLongWindow) {
   histogram_tester.ExpectBucketCount("IOS.GMOSKOInstallAttribution",
                                      InstallAttributionType::Within15Days, 1);
   histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
   VerifyAcceptanceDataCleared();
 }
 
@@ -147,6 +176,336 @@ TEST_F(InstallAttributionHelperTest, ExpiredAcceptanceData) {
   LogInstallAttribution();
 
   histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
+  VerifyAcceptanceDataCleared();
+}
+
+// Validates placement ID for "short attribution" installs is only recorded in
+// appropriate time buckets and not before.
+// TODO(crbug.com/440421600): base::Time::FromUTCExploded is not working on device builders.
+// Figure out a fix and re-enable the test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_RecordPlacementIDForShortAttributionMidYear \
+  RecordPlacementIDForShortAttributionMidYear
+#else
+#define MAYBE_RecordPlacementIDForShortAttributionMidYear \
+  DISABLED_RecordPlacementIDForShortAttributionMidYear
+#endif
+TEST_F(InstallAttributionHelperTest,
+       MAYBE_RecordPlacementIDForShortAttributionMidYear) {
+  base::HistogramTester histogram_tester;
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &InstallAttributionHelperTest::NowOverride, nullptr, nullptr);
+  base::Time acceptance_timestamp;
+  base::Time now_override;
+
+  // First, ensure the placement ID is not initially recorded when detecting an
+  // attributable install.
+  EXPECT_TRUE(
+      base::Time::FromUTCString("2025-06-15 10:00:00", &acceptance_timestamp));
+  EXPECT_TRUE(base::Time::FromUTCString("2025-06-15 22:00:00", &now_override));
+  SetNowOverride(now_override);
+
+  NSDate* timestamp = acceptance_timestamp.ToNSDate();
+  GMOSKOAcceptanceData* acceptanceData =
+      [[GMOSKOAcceptanceData alloc] initWithPlacementID:@(kFakePlacementID)
+                                              timestamp:timestamp];
+  NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
+  NSError* archiveError = nil;
+  NSData* archivedData =
+      [NSKeyedArchiver archivedDataWithRootObject:acceptanceData
+                            requiringSecureCoding:YES
+                                            error:&archiveError];
+  [sharedDefaults setObject:archivedData
+                     forKey:app_group::kGMOSKOInstallAttribution];
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectBucketCount("IOS.GMOSKOInstallAttribution",
+                                     InstallAttributionType::Within24Hours, 1);
+  histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
+  VerifyAcceptanceDataCleared();
+
+  // Second, ensure there is still no placement ID recorded 2 weeks later.
+  EXPECT_TRUE(base::Time::FromUTCString("2025-06-27", &now_override));
+  SetNowOverride(now_override);
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
+  VerifyAcceptanceDataCleared();
+
+  // Finally, ensure placement ID is recorded after entering the next time
+  // bucket.
+  EXPECT_TRUE(base::Time::FromUTCString("2025-07-05", &now_override));
+  SetNowOverride(now_override);
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectBucketCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow",
+      kFakePlacementID, 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow",
+      kFakePlacementID, 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 1);
+  histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
+  VerifyAcceptanceDataCleared();
+}
+
+// Validates placement ID for "short attribution" installs is only recorded in
+// appropriate time buckets and not before, and tests the edge case of the last
+// month of the calendar year.
+// TODO(crbug.com/440421600): base::Time::FromUTCExploded is not working on device builders.
+// Figure out a fix and re-enable the test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_RecordPlacementIDForShortAttributionYearEnd \
+  RecordPlacementIDForShortAttributionYearEnd
+#else
+#define MAYBE_RecordPlacementIDForShortAttributionYearEnd \
+  DISABLED_RecordPlacementIDForShortAttributionYearEnd
+#endif
+TEST_F(InstallAttributionHelperTest,
+       MAYBE_RecordPlacementIDForShortAttributionYearEnd) {
+  base::HistogramTester histogram_tester;
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &InstallAttributionHelperTest::NowOverride, nullptr, nullptr);
+  base::Time acceptance_timestamp;
+  base::Time now_override;
+
+  // First, ensure the placement ID is not initially recorded when detecting an
+  // attributable install.
+  EXPECT_TRUE(
+      base::Time::FromUTCString("2025-12-15 10:00:00", &acceptance_timestamp));
+  EXPECT_TRUE(base::Time::FromUTCString("2025-12-15 22:00:00", &now_override));
+  SetNowOverride(now_override);
+
+  NSDate* timestamp = acceptance_timestamp.ToNSDate();
+  GMOSKOAcceptanceData* acceptanceData =
+      [[GMOSKOAcceptanceData alloc] initWithPlacementID:@(kFakePlacementID)
+                                              timestamp:timestamp];
+  NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
+  NSError* archiveError = nil;
+  NSData* archivedData =
+      [NSKeyedArchiver archivedDataWithRootObject:acceptanceData
+                            requiringSecureCoding:YES
+                                            error:&archiveError];
+  [sharedDefaults setObject:archivedData
+                     forKey:app_group::kGMOSKOInstallAttribution];
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectBucketCount("IOS.GMOSKOInstallAttribution",
+                                     InstallAttributionType::Within24Hours, 1);
+  histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
+  VerifyAcceptanceDataCleared();
+
+  // Second, ensure there is still no placement ID recorded 2 weeks later.
+  EXPECT_TRUE(base::Time::FromUTCString("2025-12-28", &now_override));
+  SetNowOverride(now_override);
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
+  VerifyAcceptanceDataCleared();
+
+  // Finally, ensure placement ID is recorded after entering the next time
+  // bucket.
+  EXPECT_TRUE(base::Time::FromUTCString("2026-01-10", &now_override));
+  SetNowOverride(now_override);
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectBucketCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow",
+      kFakePlacementID, 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow",
+      kFakePlacementID, 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 1);
+  histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
+  VerifyAcceptanceDataCleared();
+}
+
+// Validates placement ID for "long attribution" installs is only recorded in
+// appropriate time buckets and not before.
+// TODO(crbug.com/440421600): base::Time::FromUTCExploded is not working on device builders.
+// Figure out a fix and re-enable the test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_RecordPlacementIDForLongAttributionMidYear \
+  RecordPlacementIDForLongAttributionMidYear
+#else
+#define MAYBE_RecordPlacementIDForLongAttributionMidYear \
+  DISABLED_RecordPlacementIDForLongAttributionMidYear
+#endif
+TEST_F(InstallAttributionHelperTest,
+       MAYBE_RecordPlacementIDForLongAttributionMidYear) {
+  base::HistogramTester histogram_tester;
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &InstallAttributionHelperTest::NowOverride, nullptr, nullptr);
+  base::Time acceptance_timestamp;
+  base::Time now_override;
+
+  // First, ensure the placement ID is not initially recorded when detecting an
+  // attributable install.
+  EXPECT_TRUE(base::Time::FromUTCString("2025-06-05", &acceptance_timestamp));
+  EXPECT_TRUE(base::Time::FromUTCString("2025-06-15", &now_override));
+  SetNowOverride(now_override);
+
+  NSDate* timestamp = acceptance_timestamp.ToNSDate();
+  GMOSKOAcceptanceData* acceptanceData =
+      [[GMOSKOAcceptanceData alloc] initWithPlacementID:@(kFakePlacementID)
+                                              timestamp:timestamp];
+  NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
+  NSError* archiveError = nil;
+  NSData* archivedData =
+      [NSKeyedArchiver archivedDataWithRootObject:acceptanceData
+                            requiringSecureCoding:YES
+                                            error:&archiveError];
+  [sharedDefaults setObject:archivedData
+                     forKey:app_group::kGMOSKOInstallAttribution];
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectBucketCount("IOS.GMOSKOInstallAttribution",
+                                     InstallAttributionType::Within15Days, 1);
+  histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
+  VerifyAcceptanceDataCleared();
+
+  // Second, ensure there is still no placement ID recorded 2 weeks later.
+  EXPECT_TRUE(base::Time::FromUTCString("2025-06-27", &now_override));
+  SetNowOverride(now_override);
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
+  VerifyAcceptanceDataCleared();
+
+  // Finally, ensure placement ID is recorded after entering the next time
+  // bucket.
+  EXPECT_TRUE(base::Time::FromUTCString("2025-07-05", &now_override));
+  SetNowOverride(now_override);
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectBucketCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow",
+      kFakePlacementID, 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 1);
+  histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
+  VerifyAcceptanceDataCleared();
+}
+
+// Validates placement ID for "long attribution" installs is only recorded in
+// appropriate time buckets and not before, and tests the edge case of the last
+// month of the calendar year.
+// TODO(crbug.com/440421600): base::Time::FromUTCExploded is not working on device builders.
+// Figure out a fix and re-enable the test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_RecordPlacementIDForLongAttributionYearEnd \
+  RecordPlacementIDForLongAttributionYearEnd
+#else
+#define MAYBE_RecordPlacementIDForLongAttributionYearEnd \
+  DISABLED_RecordPlacementIDForLongAttributionYearEnd
+#endif
+TEST_F(InstallAttributionHelperTest,
+       MAYBE_RecordPlacementIDForLongAttributionYearEnd) {
+  base::HistogramTester histogram_tester;
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &InstallAttributionHelperTest::NowOverride, nullptr, nullptr);
+  base::Time acceptance_timestamp;
+  base::Time now_override;
+
+  // First, ensure the placement ID is not initially recorded when detecting an
+  // attributable install.
+  EXPECT_TRUE(base::Time::FromUTCString("2025-12-05", &acceptance_timestamp));
+  EXPECT_TRUE(base::Time::FromUTCString("2025-12-15", &now_override));
+  SetNowOverride(now_override);
+
+  NSDate* timestamp = acceptance_timestamp.ToNSDate();
+  GMOSKOAcceptanceData* acceptanceData =
+      [[GMOSKOAcceptanceData alloc] initWithPlacementID:@(kFakePlacementID)
+                                              timestamp:timestamp];
+  NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
+  NSError* archiveError = nil;
+  NSData* archivedData =
+      [NSKeyedArchiver archivedDataWithRootObject:acceptanceData
+                            requiringSecureCoding:YES
+                                            error:&archiveError];
+  [sharedDefaults setObject:archivedData
+                     forKey:app_group::kGMOSKOInstallAttribution];
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectBucketCount("IOS.GMOSKOInstallAttribution",
+                                     InstallAttributionType::Within15Days, 1);
+  histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
+  VerifyAcceptanceDataCleared();
+
+  // Second, ensure there is still no placement ID recorded 2 weeks later.
+  EXPECT_TRUE(base::Time::FromUTCString("2025-12-28", &now_override));
+  SetNowOverride(now_override);
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 0);
+  VerifyAcceptanceDataCleared();
+
+  // Finally, ensure placement ID is recorded after entering the next time
+  // bucket.
+  EXPECT_TRUE(base::Time::FromUTCString("2026-01-10", &now_override));
+  SetNowOverride(now_override);
+
+  LogInstallAttribution();
+
+  histogram_tester.ExpectBucketCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow",
+      kFakePlacementID, 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.GMOSKOAttributionPlacementID.LongAttributionWindow", 1);
+  histogram_tester.ExpectTotalCount("IOS.GMOSKOInstallAttribution", 1);
   VerifyAcceptanceDataCleared();
 }
 
