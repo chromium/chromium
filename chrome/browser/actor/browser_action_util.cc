@@ -462,11 +462,22 @@ std::unique_ptr<ToolRequest> CreateScriptToolRequest(
     return nullptr;
   }
 
+  // TODO(khushalsagar): Remove once the callers are setting up this ID
+  // correctly.
+  std::string document_identifier;
+  if (action.has_document_identifier()) {
+    document_identifier = action.document_identifier().serialized_token();
+  } else {
+    auto* main_rfh = tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
+    document_identifier = DocumentIdentifierUserData::GetDocumentIdentifier(
+                              main_rfh->GetGlobalFrameToken())
+                              .value_or("");
+  }
+
   return std::make_unique<ScriptToolRequest>(
       tab_handle,
       PageTarget(DomNode{.node_id = kRootElementDomNodeId,
-                         .document_identifier =
-                             action.document_identifier().serialized_token()}),
+                         .document_identifier = document_identifier}),
       action.tool_name(), action.input_arguments());
 }
 
