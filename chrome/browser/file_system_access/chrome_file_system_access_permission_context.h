@@ -267,6 +267,8 @@ class ChromeFileSystemAccessPermissionContext
   void NotifyEntryMoved(const url::Origin& origin,
                         const content::PathInfo& old_path,
                         const content::PathInfo& new_path) override;
+  void NotifyEntryRemoved(const url::Origin& origin,
+                          const content::PathInfo& path) override;
   void OnFileCreatedFromShowSaveFilePicker(
       const GURL& file_picker_binding_context,
       const storage::FileSystemURL& url) override;
@@ -411,6 +413,9 @@ class ChromeFileSystemAccessPermissionContext
   BlockPathRulesStatus GetBlockPathRulesStatusForTesting() {
     return block_path_rules_status_;
   }
+
+  bool IsPathInDowngradedReadPathsForTesting(const url::Origin& origin,
+                                             const base::FilePath& path);
 
  protected:
   SEQUENCE_CHECKER(sequence_checker_);

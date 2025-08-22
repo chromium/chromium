@@ -30,6 +30,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-forward.h"
 
 namespace content {
@@ -653,21 +654,35 @@ void FileSystemAccessHandleBase::DidTakeRemoveLock(
 
   // Bind the `lock` to the Remove callback to guarantee the lock is held until
   // the operation completes.
-  auto wrapped_callback = base::BindOnce(
-      [](scoped_refptr<LockHandle> lock,
-         base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
-             callback,
-         base::File::Error result) {
-        // Destroy lock so it is released by the time the callback runs.
-        lock.reset();
-        std::move(callback).Run(
-            file_system_access_error::FromFileError(result));
-      },
-      std::move(lock), std::move(callback));
+  auto wrapped_callback =
+      base::BindOnce(&FileSystemAccessHandleBase::DidRemove, AsWeakPtr(), url,
+                     std::move(lock), std::move(callback));
 
   manager()->DoFileSystemOperation(FROM_HERE,
                                    &storage::FileSystemOperationRunner::Remove,
                                    std::move(wrapped_callback), url, recurse);
+}
+
+void FileSystemAccessHandleBase::DidRemove(
+    const storage::FileSystemURL& url,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+    base::File::Error result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Update permission grants appropriately after removing the entry.
+  // See crbug.com/421690393.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFileSystemAccessRevokeReadOnRemove) &&
+      result == base::File::FILE_OK && manager()->permission_context() &&
+      ShouldTrackUsage(url_)) {
+    manager()->permission_context()->NotifyEntryRemoved(
+        context_.storage_key.origin(), PathInfo(url.path()));
+  }
+
+  // Destroy lock so it is released by the time the callback runs.
+  lock.reset();
+  std::move(callback).Run(file_system_access_error::FromFileError(result));
 }
 
 void FileSystemAccessHandleBase::DoGetCloudIdentifiers(

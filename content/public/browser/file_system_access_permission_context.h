@@ -234,6 +234,11 @@ class FileSystemAccessPermissionContext {
                                 const PathInfo& old_path,
                                 const PathInfo& new_path) = 0;
 
+  // Notifies that the underlying file or directory has been removed and updates
+  // permission grants accordingly.
+  virtual void NotifyEntryRemoved(const url::Origin& origin,
+                                  const PathInfo& path) = 0;
+
   // Invoked on file creation events originating from
   // `window.showSaveFilePicker()`.
   //

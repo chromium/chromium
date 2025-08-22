@@ -188,6 +188,10 @@ void AwFileSystemAccessPermissionContext::NotifyEntryMoved(
     const content::PathInfo& old_path,
     const content::PathInfo& new_path) {}
 
+void AwFileSystemAccessPermissionContext::NotifyEntryRemoved(
+    const url::Origin& origin,
+    const content::PathInfo& path) {}
+
 void AwFileSystemAccessPermissionContext::OnFileCreatedFromShowSaveFilePicker(
     const GURL& file_picker_binding_context,
     const storage::FileSystemURL& url) {}

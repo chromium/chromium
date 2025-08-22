@@ -48,6 +48,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
@@ -3203,6 +3204,136 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(file_grant->GetPath(), new_path.path);
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, new_path, HandleType::kFile, GrantType::kWrite));
+}
+
+// Tests that removing a file revokes the read permission grant for that file.
+TEST_F(ChromeFileSystemAccessPermissionContextTest, NotifyEntryRemoved_File) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFileSystemAccessRevokeReadOnRemove);
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+  // Sets up a file path to be the test target.
+  const auto file_path_info =
+      PathInfo(kTestPathInfo.path.AppendASCII("test_file.txt"));
+
+  // Grant read and write permission to the file path.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info,
+                                         HandleType::kFile, UserAction::kSave)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  EXPECT_EQ(permission_context()
+                ->GetWritePermissionGrant(kTestOrigin, file_path_info,
+                                          HandleType::kFile, UserAction::kSave)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  // Verify the origin has read & write extended permissions to the file path.
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kRead));
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kWrite));
+
+  // Calls the method under test.
+  permission_context()->NotifyEntryRemoved(kTestOrigin, file_path_info);
+
+  // Verify the read permission to the file path is revoked; while the write
+  // permission is still granted.
+  auto updated_file_read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, file_path_info, HandleType::kFile, UserAction::kNone);
+  EXPECT_EQ(updated_file_read_grant->GetStatus(), PermissionStatus::ASK);
+  auto updated_file_write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, file_path_info, HandleType::kFile, UserAction::kNone);
+  EXPECT_EQ(updated_file_write_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Verify the origin no longer has read extended permission to the file path.
+  EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kRead));
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kWrite));
+
+  // Verify the path is added to downgraded_read_paths.
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+}
+
+// Tests that removing a file within a directory that has a read-write
+// permission grant does not revoke the grants for the directory.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryRemoved_FileInReadWriteDirectory) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFileSystemAccessRevokeReadOnRemove);
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+
+  // Grant write permission to a directory.
+  auto dir_write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kDirectory, UserAction::kOpen);
+  base::test::TestFuture<PermissionRequestOutcome> write_future;
+  dir_write_grant->RequestPermission(frame_id(),
+                                     UserActivationState::kNotRequired,
+                                     write_future.GetCallback());
+  EXPECT_EQ(write_future.Get(), PermissionRequestOutcome::kUserGranted);
+  EXPECT_EQ(dir_write_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Grant read permission to the same directory.
+  auto dir_read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kDirectory, UserAction::kOpen);
+  base::test::TestFuture<PermissionRequestOutcome> read_future;
+  dir_read_grant->RequestPermission(
+      frame_id(), UserActivationState::kNotRequired, read_future.GetCallback());
+  EXPECT_EQ(read_future.Get(), PermissionRequestOutcome::kUserGranted);
+  EXPECT_EQ(dir_read_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Sets up a file path to be the test target.
+  const auto file_path_info =
+      PathInfo(kTestPathInfo.path.AppendASCII("test_file.txt"));
+
+  // The child file should inherit read/write permission from its parent.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info,
+                                         HandleType::kFile, UserAction::kOpen)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  EXPECT_EQ(permission_context()
+                ->GetWritePermissionGrant(kTestOrigin, file_path_info,
+                                          HandleType::kFile, UserAction::kOpen)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  // Verify the origin has read & write extended permissions to the child file.
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kRead));
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kWrite));
+
+  // Removing a file within a directory with read-write access should be a
+  // no-op in terms of permissions.
+  permission_context()->NotifyEntryRemoved(kTestOrigin, file_path_info);
+
+  // Permissions for the parent directory should be unchanged.
+  EXPECT_EQ(dir_write_grant->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_EQ(dir_read_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Permissions for the file path should also be unchanged, as they are
+  // inherited. A new file can be created at the same path.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info,
+                                         HandleType::kFile, UserAction::kNone)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  EXPECT_EQ(permission_context()
+                ->GetWritePermissionGrant(kTestOrigin, file_path_info,
+                                          HandleType::kFile, UserAction::kNone)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  // Verify the origin still has extended permissions to the child file.
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kRead));
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, file_path_info, HandleType::kFile, GrantType::kWrite));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

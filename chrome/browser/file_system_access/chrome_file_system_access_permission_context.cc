@@ -66,6 +66,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -1004,6 +1005,9 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     return value;
   }
 
+  // Updates the permission grant for the `new_path` in the `grants` map using
+  // the same grant from the `old_path`, and removes the grant entry for the
+  // `old_path`.
   static void UpdateGrantPath(
       std::map<base::FilePath, raw_ptr<PermissionGrantImpl, CtnExperimental>>&
           grants,
@@ -1033,6 +1037,43 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     // Update the permission grant's key in the map of active permissions.
     grants.erase(entry_it);
     grants.emplace(new_path.path, grant_impl);
+  }
+
+  // Downgrades the in-memory read permission grant for the `path` if it exist
+  //  in `grants`. This is different from
+  // ChromeFileSystemAccessPermissionContext::RevokeGrant in that this method
+  // does not reset the persisted permission state.
+  static void DowngradeReadGrantInMemory(
+      std::map<base::FilePath, raw_ptr<PermissionGrantImpl, CtnExperimental>>&
+          grants,
+      const content::PathInfo& path) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    auto entry_it = std::ranges::find_if(grants, [&path](const auto& entry) {
+      return entry.first == path.path;
+    });
+    if (entry_it == grants.end()) {
+      return;
+    }
+
+    DCHECK_EQ(entry_it->second->GetActivePermissionStatus(),
+              PermissionStatus::GRANTED);
+    auto* const grant_impl = entry_it->second.get();
+    // Updates the in-memory status of the grant synchronously. This ensures
+    // that any existing handle instances that hold a `scoped_refptr` to this
+    // grant will immediately see the updated permission status.
+    //
+    // The status is set to `DENIED` instead of `ASK`. This is critical to
+    // prevent a race condition. The race may occur in
+    // `PermissionGrantImpl::GetStatus()`, which checks
+    // `CanAutoGrantViaPersistentPermission()` if the in-memory status is
+    // `ASK`. Because the on-disk persisted permission is updated
+    // asynchronously after a `remove()`, a subsequent query for a new handle
+    // (e.g., from IndexedDB) could read the stale on-disk state and
+    // incorrectly return `GRANTED`.
+    grant_impl->SetStatus(
+        PermissionStatus::DENIED,
+        PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
   }
 
  protected:
@@ -1258,6 +1299,10 @@ struct ChromeFileSystemAccessPermissionContext::OriginState {
       read_grants;
   std::map<base::FilePath, raw_ptr<PermissionGrantImpl, CtnExperimental>>
       write_grants;
+
+  // Stores paths whose read grants have been downgraded to ASK after a
+  // remove() call and are eligible for restoration.
+  std::set<base::FilePath> downgraded_read_paths;
 
   PersistedGrantStatus persisted_grant_status = PersistedGrantStatus::kLoaded;
 
@@ -2353,6 +2398,49 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
   }
 }
 
+void ChromeFileSystemAccessPermissionContext::NotifyEntryRemoved(
+    const url::Origin& origin,
+    const content::PathInfo& path) {
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kFileSystemAccessRevokeReadOnRemove));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (AncestorHasActivePermission(origin, path.path, GrantType::kRead)) {
+    // If `path` has an active read grant inherited from its ancestor, don't
+    // downgrade its permission, as it will still get ancestor grant by default.
+    return;
+  }
+
+  bool updated = false;
+  auto it = active_permissions_map_.find(origin);
+  if (it != active_permissions_map_.end()) {
+    PermissionGrantImpl::DowngradeReadGrantInMemory(it->second.read_grants,
+                                                    path);
+    // Marks the path as downgraded so that it can be restored later.
+    it->second.downgraded_read_paths.insert(path.path);
+    updated = true;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
+    // Active grants are a subset of persisted grants, so we also need to update
+    // persisted grants, which is not covered by
+    // `PermissionGrantImpl::DowngradeReadGrantInMemory()` above.
+    const std::unique_ptr<Object> object =
+        GetGrantedObject(origin, PathAsPermissionKey(path.path));
+    if (object) {
+      base::Value::Dict new_object = object->value.Clone();
+      new_object.Set(GetGrantKeyFromGrantType(GrantType::kRead), false);
+      UpdateObjectPermission(origin, object->value, std::move(new_object));
+      updated = true;
+    }
+  }
+
+  if (updated) {
+    ScheduleUsageIconUpdate();
+  }
+}
+
 void ChromeFileSystemAccessPermissionContext::
     OnFileCreatedFromShowSaveFilePicker(const GURL& file_picker_binding_context,
                                         const storage::FileSystemURL& url) {
@@ -3386,5 +3474,15 @@ void ChromeFileSystemAccessPermissionContext::UpdatePageAction(
     FileSystemAccessPageActionController* controller) {
   CHECK(controller);
   controller->UpdateVisibility();
+}
+
+bool ChromeFileSystemAccessPermissionContext::
+    IsPathInDowngradedReadPathsForTesting(const url::Origin& origin,
+                                          const base::FilePath& path) {
+  auto it = active_permissions_map_.find(origin);
+  if (it == active_permissions_map_.end()) {
+    return false;
+  }
+  return it->second.downgraded_read_paths.count(path) > 0;
 }
 #endif

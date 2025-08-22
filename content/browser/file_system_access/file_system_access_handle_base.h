@@ -203,6 +203,12 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
       blink::mojom::FileSystemAccessErrorPtr result);
 
+  void DidRemove(
+      const storage::FileSystemURL& url,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+      base::File::Error result);
+
   bool ShouldTrackUsage(const storage::FileSystemURL& url) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return url.type() != storage::kFileSystemTypeTemporary &&

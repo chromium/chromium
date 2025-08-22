@@ -2221,6 +2221,19 @@
       status: "stable",
     },
     {
+      // When enabled, calling remove() on a FileSystemAccessHandle will also
+      // update the permission grants for the associated path. Restored after
+      // next write to the path.
+      // See crbug.com/421690393.
+      name: "FileSystemAccessRevokeReadOnRemove",
+      depends_on: ["FileSystemAccessWriteMode"],
+      status: "test",
+    },
+    {
+      // Controls the internal write-only mode for various FileSystemAccess API.
+      // This covers mostly content layer and does not expose any write mode to
+      // user visible APIs.
+      // This flag is part of crbug.com/421690393 and crbug.com/328458680.
       name: "FileSystemAccessWriteMode",
       status: "test",
     },
