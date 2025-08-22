@@ -588,10 +588,10 @@ void RecordReadyToCommitMetrics(
   {
     ProcessLock process_lock = new_rfh->GetProcess()->GetProcessLock();
     UMA_HISTOGRAM_BOOLEAN("Navigation.IsLockedProcess",
-                          process_lock.is_locked_to_site());
+                          process_lock.IsLockedToSite());
     if (common_params.url.SchemeIsHTTPOrHTTPS()) {
       UMA_HISTOGRAM_BOOLEAN("Navigation.IsLockedProcess.HTTPOrHTTPS",
-                            process_lock.is_locked_to_site());
+                            process_lock.IsLockedToSite());
     }
   }
 
@@ -4105,9 +4105,12 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
 
   // Filter out URLs with origins that are considered invalid for being
   // isolated. Note that the origin we'll eventually attempt to isolate should
-  // be based on process_lock_url(), so that we apply isolation to the actual
+  // be based on agent_cluster_key(), so that we apply isolation to the actual
   // site rather than the effective URL in the case of hosted apps.
-  url::Origin origin(url::Origin::Create(site_info_.process_lock_url()));
+  url::Origin origin =
+      site_info_.agent_cluster_key().IsOriginKeyed()
+          ? site_info_.agent_cluster_key().GetOrigin()
+          : url::Origin::Create(site_info_.agent_cluster_key().GetSite());
   if (!IsolatedOriginUtil::IsValidIsolatedOrigin(origin))
     return false;
 

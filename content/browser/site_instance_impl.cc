@@ -660,7 +660,6 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
     // BrowsingInstance, even if its opt-in status changes later.
     ChildProcessSecurityPolicyImpl* policy =
         ChildProcessSecurityPolicyImpl::GetInstance();
-    url::Origin origin(url::Origin::Create(site_info_.process_lock_url()));
     // This is one of two places that origins can be marked as opted-in, the
     // other is
     // NavigationRequest::AddSameProcessOriginAgentClusterStateIfNecessary().
@@ -668,7 +667,8 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
     // In future, when SiteInstance Groups are complete, this may revert to
     // being the only call site.
     policy->AddOriginAgentClusterStateForBrowsingInstance(
-        browsing_instance_->isolation_context(), origin,
+        browsing_instance_->isolation_context(),
+        site_info_.agent_cluster_key().GetOrigin(),
         OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
             true /* had_oac_request */,
             true /* requires_origin_keyed_process */));
@@ -683,7 +683,10 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
     // origins, by default), but this isn't always the case.  For example, this
     // SiteInstance could be isolated with the origin granularity due to
     // Origin-Agent-Cluster (see site_info_.oac_status() above).
-    url::Origin origin(url::Origin::Create(site_info_.process_lock_url()));
+    url::Origin origin =
+        site_info_.agent_cluster_key().IsOriginKeyed()
+            ? site_info_.agent_cluster_key().GetOrigin()
+            : url::Origin::Create(site_info_.agent_cluster_key().GetSite());
     GURL site(SiteInfo::GetSiteForOrigin(origin));
     ChildProcessSecurityPolicyImpl* policy =
         ChildProcessSecurityPolicyImpl::GetInstance();
@@ -1494,7 +1497,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
   StoragePartitionImpl* storage_partition =
       static_cast<StoragePartitionImpl*>(process->GetStoragePartition());
   if (!has_site_) {
-    CHECK(!process_lock.is_locked_to_site())
+    CHECK(!process_lock.IsLockedToSite())
         << "A process that's already locked to " << process_lock.ToString()
         << " cannot be updated to a more permissive lock";
     // Update the process lock state to signal that the process has been
@@ -1512,7 +1515,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
           /*cross_origin_isolation_key=*/std::nullopt);
       process->SetProcessLock(GetIsolationContext(), new_process_lock);
     } else {
-      CHECK(process_lock.allows_any_site())
+      CHECK(process_lock.AllowsAnySite())
           << "Unexpected process lock " << process_lock.ToString();
       policy->IncludeIsolationContext(process->GetDeprecatedID(),
                                       GetIsolationContext());
@@ -1526,7 +1529,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
 
   if (site_info_.ShouldLockProcessToSite(GetIsolationContext())) {
     ProcessLock lock_to_set = ProcessLock::FromSiteInfo(GetSiteInfo());
-    if (!process_lock.is_locked_to_site()) {
+    if (!process_lock.IsLockedToSite()) {
       // TODO(nick): When all sites are isolated, this operation provides
       // strong protection. If only some sites are isolated, we need
       // additional logic to prevent the non-isolated sites from requesting
@@ -1550,7 +1553,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       // happen for commits to |site_info_| after the first one.
     }
   } else {
-    if (process_lock.is_locked_to_site()) {
+    if (process_lock.IsLockedToSite()) {
       // The site that we're committing doesn't require a dedicated
       // process, but it has been put in a process for a site that does.
       base::debug::SetCrashKeyString(bad_message::GetRequestedSiteInfoKey(),
@@ -1569,7 +1572,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
           /*cross_origin_isolation_key=*/std::nullopt);
       process->SetProcessLock(GetIsolationContext(), new_process_lock);
     } else {
-      CHECK(process_lock.allows_any_site())
+      CHECK(process_lock.AllowsAnySite())
           << "Unexpected process lock " << process_lock.ToString();
     }
   }

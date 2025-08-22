@@ -575,7 +575,7 @@ ProcessLock MockRenderProcessHost::GetProcessLock() const {
 }
 
 bool MockRenderProcessHost::IsProcessLockedToSiteForTesting() {
-  return GetProcessLock().is_locked_to_site();
+  return GetProcessLock().IsLockedToSite();
 }
 
 void MockRenderProcessHost::BindCacheStorage(

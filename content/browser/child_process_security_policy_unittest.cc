@@ -2859,8 +2859,8 @@ TEST_P(ChildProcessSecurityPolicyTest, ProcessLockMatching) {
   // from the IO thread. This means the site_url fields will differ.
   EXPECT_NE(ui_app_url_siteinfo, io_app_url_siteinfo);
   EXPECT_NE(ui_app_url_siteinfo.site_url(), io_app_url_siteinfo.site_url());
-  EXPECT_EQ(ui_app_url_siteinfo.process_lock_url(),
-            io_app_url_siteinfo.process_lock_url());
+  EXPECT_EQ(ui_app_url_siteinfo.GetProcessLockURL(),
+            io_app_url_siteinfo.GetProcessLockURL());
   EXPECT_EQ(ui_app_url_lock, io_app_url_lock);
 
   SetBrowserClientForTesting(original_client);
@@ -3154,10 +3154,10 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
     p->AddCommittedOrigin(kRendererID, foo);
 
-    EXPECT_TRUE(p->GetProcessLock(kRendererID).is_locked_to_site());
+    EXPECT_TRUE(p->GetProcessLock(kRendererID).IsLockedToSite());
     EXPECT_TRUE(
         p->GetProcessLock(kRendererID).agent_cluster_key().IsOriginKeyed());
-    EXPECT_EQ(foo.GetURL(), p->GetProcessLock(kRendererID).lock_url());
+    EXPECT_EQ(foo.GetURL(), p->GetProcessLock(kRendererID).GetProcessLockURL());
 
     EXPECT_TRUE(ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo())
                     .agent_cluster_key()
@@ -3218,13 +3218,13 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
     p->AddCommittedOrigin(kRendererID, sub_foo_origin);
 
-    EXPECT_TRUE(p->GetProcessLock(kRendererID).is_locked_to_site());
+    EXPECT_TRUE(p->GetProcessLock(kRendererID).IsLockedToSite());
     // Note: This might become true in the future if we convert legacy isolated
     // origins to create origin-keyed AgentClusterKeys instead of site-keyed.
     EXPECT_FALSE(
         p->GetProcessLock(kRendererID).agent_cluster_key().IsOriginKeyed());
     EXPECT_EQ(SiteInfo::GetSiteForOrigin(sub_foo_origin),
-              p->GetProcessLock(kRendererID).lock_url());
+              p->GetProcessLock(kRendererID).agent_cluster_key().GetSite());
 
     EXPECT_FALSE(ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo())
                      .agent_cluster_key()
@@ -3324,7 +3324,7 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
   EXPECT_EQ(static_cast<size_t>(0),
             p->BrowsingInstanceIdCountForTesting(kRendererID));
 
-  EXPECT_FALSE(p->GetProcessLock(kRendererID).is_locked_to_site());
+  EXPECT_FALSE(p->GetProcessLock(kRendererID).IsLockedToSite());
   // Ensure that we don't allow the process to keep accessing data for foo after
   // all of the BrowsingInstances are gone, since that would require checking
   // whether foo itself requires a dedicated process.
@@ -3353,8 +3353,8 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
                      StoragePartitionConfig::CreateDefault(&context),
                      WebExposedIsolationInfo::CreateNonIsolated(),
                      /*cross_origin_isolation_key=*/std::nullopt));
-  EXPECT_TRUE(p->GetProcessLock(kRendererID).allows_any_site());
-  EXPECT_FALSE(p->GetProcessLock(kRendererID).is_locked_to_site());
+  EXPECT_TRUE(p->GetProcessLock(kRendererID).AllowsAnySite());
+  EXPECT_FALSE(p->GetProcessLock(kRendererID).IsLockedToSite());
 
   // If the process is then considered used (e.g., by loading content), it
   // should not be possible to lock it to another site.

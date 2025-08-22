@@ -1080,8 +1080,9 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTestSiteIsolationDisabled,
 
   RenderProcessHost* rph =
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
-  EXPECT_TRUE(rph->GetProcessLock().is_locked_to_site());
-  EXPECT_EQ(test_url.GetWithEmptyPath(), rph->GetProcessLock().lock_url());
+  EXPECT_TRUE(rph->GetProcessLock().IsLockedToSite());
+  EXPECT_EQ(test_url.GetWithEmptyPath(),
+            rph->GetProcessLock().agent_cluster_key().GetSite());
 }
 
 }  // namespace content

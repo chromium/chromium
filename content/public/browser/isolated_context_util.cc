@@ -19,7 +19,7 @@ bool IsIsolatedContextAllowedByEmbedder(RenderProcessHost* process) {
   const ProcessLock& process_lock = process->GetProcessLock();
   return !process_lock.is_sandboxed() &&
          GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
-             process->GetBrowserContext(), process_lock.lock_url());
+             process->GetBrowserContext(), process_lock.GetProcessLockURL());
 }
 
 }  // namespace

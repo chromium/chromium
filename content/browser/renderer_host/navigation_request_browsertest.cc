@@ -4110,10 +4110,10 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   EXPECT_FALSE(rfh->GetProcess()->IsUnused());
   if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ("http://a.com/", rfh->GetSiteInstance()->GetSiteURL());
-    EXPECT_TRUE(rfh->GetProcess()->GetProcessLock().is_locked_to_site());
+    EXPECT_TRUE(rfh->GetProcess()->GetProcessLock().IsLockedToSite());
     EXPECT_EQ("http://a.com/", rfh->GetProcess()->GetProcessLock().site_url());
   } else {
-    EXPECT_TRUE(rfh->GetProcess()->GetProcessLock().allows_any_site());
+    EXPECT_TRUE(rfh->GetProcess()->GetProcessLock().AllowsAnySite());
   }
 }
 

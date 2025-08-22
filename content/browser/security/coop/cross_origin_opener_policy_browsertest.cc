@@ -4085,7 +4085,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
   int rph_id_1 = current_frame_host()->GetProcess()->GetDeprecatedID();
   bool rph_1_is_locked =
-      current_frame_host()->GetProcess()->GetProcessLock().is_locked_to_site();
+      current_frame_host()->GetProcess()->GetProcessLock().IsLockedToSite();
 
   // Start a navigation to a page on a.test that will have COOP headers.
   TestNavigationManager navigation(web_contents(), url_2);
@@ -4142,10 +4142,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   if (SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled()) {
     EXPECT_NE(rph_id_2, rph_id_3);
     EXPECT_FALSE(rph_1_is_locked);
-    EXPECT_TRUE(current_frame_host()
-                    ->GetProcess()
-                    ->GetProcessLock()
-                    .is_locked_to_site());
+    EXPECT_TRUE(
+        current_frame_host()->GetProcess()->GetProcessLock().IsLockedToSite());
 
     // The metric for why we failed to reuse the process will be reported
     // differently depending on whether default SiteInstanceGroups are enabled.

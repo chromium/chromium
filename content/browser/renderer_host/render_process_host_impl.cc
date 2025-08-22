@@ -826,7 +826,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
       RenderProcessHost* host = GetAllHosts().Lookup(host_info.first);
       DCHECK(host);
 
-      bool is_locked_to_site = host->GetProcessLock().is_locked_to_site();
+      bool is_locked_to_site = host->GetProcessLock().IsLockedToSite();
       output += base::StringPrintf("\tProcess Host ID %d (PID %s, %s):\n",
                                    host_info.first.GetUnsafeValue(),
                                    GetRendererPidAsString(host).c_str(),
@@ -1499,7 +1499,7 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
 
   if (site_instance &&
       GetContentClient()->browser()->DisallowV8FeatureFlagOverridesForSite(
-          site_instance->GetSiteInfo().process_lock_url())) {
+          site_instance->GetSiteInfo().GetProcessLockURL())) {
     flags |= RenderProcessFlags::kDisallowV8FeatureFlagOverrides;
   }
 
@@ -3241,7 +3241,7 @@ void RenderProcessHostImpl::SetProcessLock(
 }
 
 bool RenderProcessHostImpl::IsProcessLockedToSiteForTesting() {
-  return GetProcessLock().is_locked_to_site();
+  return GetProcessLock().IsLockedToSite();
 }
 
 void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
@@ -3269,7 +3269,7 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
           switches::kDisableWebSecurity));
 
   if (GetContentClient()->browser()->IsWebUIBundledCodeCachingEnabled(
-          process_lock.lock_url())) {
+          process_lock.GetProcessLockURL())) {
     auto url_to_code_cache_map =
         GetContentClient()->browser()->GetWebUIResourceUrlToCodeCacheMap();
     if (!url_to_code_cache_map.empty()) {
@@ -3279,7 +3279,7 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
   }
 
   if (process_lock.IsASiteOrOrigin()) {
-    CHECK(process_lock.is_locked_to_site());
+    CHECK(process_lock.IsLockedToSite());
     GetRendererInterface()->SetIsLockedToSite();
   }
 
@@ -4547,7 +4547,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // can't be reused.
   if (host->DisallowV8FeatureFlagOverrides() !=
       GetContentClient()->browser()->DisallowV8FeatureFlagOverridesForSite(
-          site_info.process_lock_url())) {
+          site_info.GetProcessLockURL())) {
     return false;
   }
 
@@ -4598,7 +4598,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
       return false;
     }
 
-    if (process_lock.is_locked_to_site()) {
+    if (process_lock.IsLockedToSite()) {
       // If this process is locked to a site, it cannot be reused for a
       // destination that doesn't require a dedicated process, even for the
       // same site. This can happen with dynamic isolated origins (see
@@ -4614,7 +4614,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
       // Even when this process is not locked to a site, it is still associated
       // with a particular isolation configuration.  Ensure that it cannot be
       // reused for destinations with incompatible isolation requirements.
-      if (process_lock.allows_any_site() &&
+      if (process_lock.AllowsAnySite() &&
           !process_lock.IsCompatibleWithWebExposedIsolation(site_info)) {
         return false;
       }

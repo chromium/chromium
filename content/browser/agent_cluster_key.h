@@ -105,6 +105,12 @@ class CONTENT_EXPORT AgentClusterKey {
   const GURL& GetSite() const;
   const url::Origin& GetOrigin() const;
 
+  // This will return a URL based on the site URL or the origin of the
+  // AgentClusterKey depending on whether the AgentClusterKey is site-keyed or
+  // origin-keyed. Prefer comparing the Site URL or the Origin directly when
+  // possible.
+  GURL GetURL() const;
+
   // Returns nullopt if the AgentClusterKey is not cross-origin isolated.
   // Otherwise, returns the CrossOriginIsolationKey associated to the
   // AgentClusterKey.

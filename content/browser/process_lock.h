@@ -81,29 +81,28 @@ class CONTENT_EXPORT ProcessLock {
   // specific site. Any site is allowed to commit in the process as long as
   // the request's COOP/COEP information matches the info provided when
   // the lock was created.
-  bool allows_any_site() const {
-    return site_info_.has_value() && site_info_->process_lock_url().is_empty();
-  }
+  bool AllowsAnySite() const;
 
   // Returns true if the lock is restricted to a specific site and requires
   // the request's COOP/COEP information to match the values provided when
   // the lock was created.
-  bool is_locked_to_site() const {
-    return site_info_.has_value() && !site_info_->process_lock_url().is_empty();
-  }
+  bool IsLockedToSite() const;
 
   // Returns the url that corresponds to the SiteInfo the lock is used with. It
   // will always be the same as the site URL, except in cases where effective
   // urls are in use. Always empty if the SiteInfo uses the default site url.
-  // TODO(wjmaclean): Delete this accessor once we get to the point where we can
-  // safely just compare ProcessLocks directly.
-  const GURL lock_url() const {
-    return site_info_.has_value() ? site_info_->process_lock_url() : GURL();
-  }
+  // Note: this is derived from the AgentClusterKey. It's possible for two
+  // ProcessLocks to have the same process lock URL but different
+  // AgentClusterKeys when one of the AgentClusterKey is site keyed and the
+  // other is origin keyed, or when the two process locks have different
+  // cross-origin isolation status. This means that two ProcessLocks with the
+  // same process lock URL might not be considered equal. Therefore, compare
+  // ProcessLocks directly as much as possible.
+  GURL GetProcessLockURL() const;
 
   // Returns the site URL of the SiteInfo with which the lock was constructed.
-  // Prefer comparing ProcessLocks directly or using lock_url(), unless you
-  // care about effective URLs.
+  // Prefer comparing ProcessLocks directly or using agent_cluster_key(), unless
+  // you care about effective URLs.
   const GURL site_url() const {
     return site_info_.has_value() ? site_info_->site_url() : GURL();
   }
@@ -182,9 +181,7 @@ class CONTENT_EXPORT ProcessLock {
   // not if the lock is empty or applies to an entire scheme (e.g., file://).
   bool IsASiteOrOrigin() const;
 
-  bool matches_scheme(const std::string& scheme) const {
-    return scheme == lock_url().scheme();
-  }
+  bool MatchesScheme(const std::string& scheme) const;
 
   // Returns true if lock_url() has an opaque origin.
   bool HasOpaqueOrigin() const;

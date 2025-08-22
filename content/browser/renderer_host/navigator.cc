@@ -403,8 +403,9 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
 
     // Check whether the process must be locked and if so that the process lock
     // is indeed in place.
-    if (should_lock_process && !process_lock.is_locked_to_site())
+    if (should_lock_process && !process_lock.IsLockedToSite()) {
       return false;
+    }
 
     // There must be a WebUI on the frame.
     if (!render_frame_host->web_ui())

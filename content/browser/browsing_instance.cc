@@ -308,7 +308,7 @@ int BrowsingInstance::EstimateOriginAgentClusterOverhead() {
   // it is difficult in practice to account for, so we don't try to.
   for (auto& entry : site_instance_map_) {
     const SiteInfo& site_info = entry.first;
-    GURL process_lock_url = site_info.process_lock_url();
+    GURL process_lock_url = site_info.GetProcessLockURL();
     if (!process_lock_url.SchemeIs(url::kHttpsScheme)) {
       continue;
     }

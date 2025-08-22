@@ -1331,9 +1331,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   // Because the subframe is a data: URL, the process should be locked to the
   // initiator origin's site, which is the parent in this case. Unlike the
   // parent, the data: subframe process should be sandboxed.
-  EXPECT_EQ(
-      child->current_frame_host()->GetProcess()->GetProcessLock().lock_url(),
-      root->current_frame_host()->GetLastCommittedOrigin().GetURL());
+  EXPECT_EQ(child->current_frame_host()
+                ->GetProcess()
+                ->GetProcessLock()
+                .GetProcessLockURL(),
+            root->current_frame_host()->GetLastCommittedOrigin().GetURL());
   EXPECT_TRUE(child->current_frame_host()
                   ->GetSiteInstance()
                   ->GetSiteInfo()
@@ -1502,9 +1504,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                   .is_sandboxed());
 
   // The child process should be in a process of its initiator origin.
-  EXPECT_EQ(
-      child->current_frame_host()->GetProcess()->GetProcessLock().lock_url(),
-      b_origin.GetTupleOrPrecursorTupleIfOpaque().GetURL());
+  EXPECT_EQ(child->current_frame_host()
+                ->GetProcess()
+                ->GetProcessLock()
+                .agent_cluster_key()
+                .GetSite(),
+            b_origin.GetTupleOrPrecursorTupleIfOpaque().GetURL());
 
   // Go back and ensure the data: URL remains sandboxed, and committed in a
   // different SiteInstance from the original navigation. From the spec:

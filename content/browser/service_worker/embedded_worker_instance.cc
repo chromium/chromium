@@ -395,7 +395,7 @@ void EmbeddedWorkerInstance::Start(
   //
   // WebUI schemes are process isolated already. To isolate other sites, the
   // embedder can override ContentBrowserClient::ShouldLockProcessToSite().
-  if (rph->GetProcessLock().is_locked_to_site()) {
+  if (rph->GetProcessLock().IsLockedToSite()) {
     GetContentClient()
         ->browser()
         ->UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
@@ -403,7 +403,7 @@ void EmbeddedWorkerInstance::Start(
             params->forced_enabled_runtime_features);
   }
   CHECK(params->forced_enabled_runtime_features.empty() ||
-        rph->GetProcessLock().is_locked_to_site());
+        rph->GetProcessLock().IsLockedToSite());
 
   // TODO(crbug.com/40584626): Support changes to blink::RendererPreferences
   // while the worker is running.

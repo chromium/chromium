@@ -65,6 +65,13 @@ const url::Origin& AgentClusterKey::GetOrigin() const {
   return std::get<url::Origin>(key_);
 }
 
+GURL AgentClusterKey::GetURL() const {
+  if (IsSiteKeyed()) {
+    return GetSite();
+  }
+  return GetOrigin().GetURL();
+}
+
 const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
 AgentClusterKey::GetCrossOriginIsolationKey() const {
   return isolation_key_;

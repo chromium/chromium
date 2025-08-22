@@ -241,11 +241,12 @@ bool AllowProcessLockMismatchForNTP(const ProcessLock& expected_lock,
   // does not require its process to be locked.  This should only be the case
   // for sites used to load most visited tiles.
   const auto& webui_schemes = URLDataManagerBackend::GetWebUISchemes();
-  if (!base::Contains(webui_schemes, expected_lock.lock_url().scheme())) {
+  if (!base::Contains(webui_schemes,
+                      expected_lock.GetProcessLockURL().scheme())) {
     return false;
   }
   if (GetContentClient()->browser()->DoesWebUIUrlRequireProcessLock(
-          expected_lock.lock_url())) {
+          expected_lock.GetProcessLockURL())) {
     return false;
   }
 
@@ -256,7 +257,7 @@ bool AllowProcessLockMismatchForNTP(const ProcessLock& expected_lock,
   // mismatch to just NTP processes, disallowing most visited tiles from being
   // embedded on sites in other processes.
   return GetContentClient()->browser()->ShouldStayInParentProcessForNTP(
-      expected_lock.lock_url(), actual_lock.site_url());
+      expected_lock.GetProcessLockURL(), actual_lock.site_url());
 }
 
 base::WeakPtr<ResourceContext> GetResourceContext(
@@ -656,28 +657,29 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
                       const IsolationContext& context,
                       bool is_process_used) {
     CHECK(!lock_to_set.is_invalid());
-    CHECK(!process_lock_.is_locked_to_site());
-    CHECK_NE(SiteInstanceImpl::GetDefaultSiteURL(), lock_to_set.lock_url());
+    CHECK(!process_lock_.IsLockedToSite());
+    CHECK_NE(SiteInstanceImpl::GetDefaultSiteURL(),
+             lock_to_set.GetProcessLockURL());
 
     if (process_lock_.is_invalid()) {
       DCHECK(browsing_instance_default_isolation_states_.empty());
-      CHECK(lock_to_set.allows_any_site() || lock_to_set.is_locked_to_site());
+      CHECK(lock_to_set.AllowsAnySite() || lock_to_set.IsLockedToSite());
     } else {
       // Verify that we are not trying to update the lock with different
       // COOP/COEP information.
       CHECK_EQ(process_lock_.GetWebExposedIsolationInfo(),
                lock_to_set.GetWebExposedIsolationInfo());
 
-      if (process_lock_.allows_any_site()) {
+      if (process_lock_.AllowsAnySite()) {
         // TODO(acolwell): Remove ability to lock to an allows_any_site
         // lock multiple times. Legacy behavior allows the old "lock to site"
         // path to generate an "allow_any_site" lock if an empty URL is passed
         // to SiteInstanceImpl::SetSite().
-        CHECK(lock_to_set.allows_any_site() || lock_to_set.is_locked_to_site());
+        CHECK(lock_to_set.AllowsAnySite() || lock_to_set.IsLockedToSite());
 
         // Do not allow a lock to become more strict if the process has already
         // been used to render any pages.
-        if (lock_to_set.is_locked_to_site()) {
+        if (lock_to_set.IsLockedToSite()) {
           CHECK(!is_process_used)
               << "Cannot lock an already used process to " << lock_to_set;
         }
@@ -1452,7 +1454,7 @@ bool ChildProcessSecurityPolicyImpl::CanRequestURL(int child_id,
         GetContentClient()->browser()->DoesWebUIUrlRequireProcessLock(url);
     if (should_be_locked) {
       const ProcessLock lock = GetProcessLock(child_id);
-      if (!lock.is_locked_to_site() || !lock.matches_scheme(url.scheme())) {
+      if (!lock.IsLockedToSite() || !lock.MatchesScheme(url.scheme())) {
         return false;
       }
     }
@@ -2100,10 +2102,12 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
     url::Origin origin(url::Origin::Create(url));
     bool matches_origin_keyed_process =
         actual_process_lock.agent_cluster_key().IsOriginKeyed() &&
-        actual_process_lock.lock_url() == origin.GetURL();
+        actual_process_lock.agent_cluster_key().GetOrigin().IsSameOriginWith(
+            origin);
     bool matches_site_keyed_process =
         actual_process_lock.agent_cluster_key().IsSiteKeyed() &&
-        actual_process_lock.lock_url() == SiteInfo::GetSiteForOrigin(origin);
+        actual_process_lock.agent_cluster_key().GetSite() ==
+            SiteInfo::GetSiteForOrigin(origin);
     // ProcessLocks with is_pdf() = true actually means that the process is not
     // supposed to access certain resources from the lock's site/origin, so it's
     // safest here to fall through in that case. See discussion of
@@ -2112,7 +2116,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
       // If the ProcessLock isn't locked to a site, we should fall through since
       // we have no way of knowing if the requested url was expecting to be in a
       // locked process.
-      if (actual_process_lock.is_locked_to_site()) {
+      if (actual_process_lock.IsLockedToSite()) {
         if (matches_origin_keyed_process || matches_site_keyed_process) {
           return true;
         } else {
@@ -2198,7 +2202,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
                     actual_process_lock.agent_cluster_key()
                         .GetCrossOriginIsolationKey())));
 
-    if (actual_process_lock.is_locked_to_site()) {
+    if (actual_process_lock.IsLockedToSite()) {
       // Jail-style enforcement - a process with a lock can only access data
       // from origins that require exactly the same lock.
       if (actual_process_lock == out_expected_process_lock) {
@@ -2208,7 +2212,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
       // TODO(acolwell, nasko): https://crbug.com/1029092: Ensure the precursor
       // of opaque origins matches the renderer's origin lock.
       if (url_is_precursor_of_opaque_origin) {
-        const GURL& lock_url = actual_process_lock.lock_url();
+        const GURL& lock_url = actual_process_lock.GetProcessLockURL();
         // SitePerProcessBrowserTest.TwoBlobURLsWithNullOriginDontShareProcess.
         if (lock_url.SchemeIsBlob() &&
             base::StartsWith(lock_url.path_piece(), "null/")) {
@@ -2216,7 +2220,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
         }
 
         // DeclarativeApiTest.PersistRules.
-        if (actual_process_lock.matches_scheme(url::kDataScheme)) {
+        if (actual_process_lock.MatchesScheme(url::kDataScheme)) {
           return true;
         }
       }
@@ -2232,23 +2236,30 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
 
       // TODO(wjmaclean): We should update the ProcessLock comparison API to
       // return a reason why two locks differ.
-      if (actual_process_lock.lock_url() !=
-          out_expected_process_lock.lock_url()) {
-        out_failure_reason += "lock_mismatch:url ";
-        // If the actual lock is same-site to the expected lock, then this is an
-        // isolated origins mismatch; in that case we add text to
-        // |failure_reason| to make this case easy to search for. Note: We don't
-        // compare ports, since the mismatch might be between isolated and
-        // non-isolated.
-        url::Origin actual_origin =
-            url::Origin::Create(actual_process_lock.lock_url());
-        url::Origin expected_origin =
-            url::Origin::Create(out_expected_process_lock.lock_url());
-        if (actual_process_lock.lock_url() ==
-                SiteInfo::GetSiteForOrigin(expected_origin) ||
-            out_expected_process_lock.lock_url() ==
-                SiteInfo::GetSiteForOrigin(actual_origin)) {
-          out_failure_reason += "[origin vs site mismatch] ";
+      if (actual_process_lock.agent_cluster_key() !=
+          out_expected_process_lock.agent_cluster_key()) {
+        out_failure_reason += "lock_mismatch:agent_cluster_key ";
+        if (actual_process_lock.agent_cluster_key().IsSiteKeyed() !=
+            out_expected_process_lock.agent_cluster_key().IsSiteKeyed()) {
+          out_failure_reason += "[origin-keyed vs site-keyed mismatch] ";
+        } else if (actual_process_lock.agent_cluster_key().IsSiteKeyed() &&
+                   out_expected_process_lock.agent_cluster_key()
+                       .IsSiteKeyed()) {
+          // If the actual lock is same-site to the expected lock, then this is
+          // an isolated origins mismatch; in that case we add text to
+          // |failure_reason| to make this case easy to search for. Note: We
+          // don't compare ports, since the mismatch might be between isolated
+          // and non-isolated.
+          url::Origin actual_origin = url::Origin::Create(
+              actual_process_lock.agent_cluster_key().GetSite());
+          url::Origin expected_origin = url::Origin::Create(
+              out_expected_process_lock.agent_cluster_key().GetSite());
+          if (actual_process_lock.agent_cluster_key().GetSite() ==
+                  SiteInfo::GetSiteForOrigin(expected_origin) ||
+              out_expected_process_lock.agent_cluster_key().GetSite() ==
+                  SiteInfo::GetSiteForOrigin(actual_origin)) {
+            out_failure_reason += "[origin vs site mismatch] ";
+          }
         }
       } else {
         // TODO(wjmaclean,alexmos): Apparently this might not be true anymore,

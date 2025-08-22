@@ -51,13 +51,13 @@ bool CheckSecurityForAccessingCodeCacheData(
   // suspicious activity.
   if (resource_url.SchemeIs(content::kChromeUIScheme) ||
       resource_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
-    if (!process_lock.is_locked_to_site()) {
+    if (!process_lock.IsLockedToSite()) {
       // We can't tell for certain whether this renderer is doing something
       // malicious, but we don't trust it enough to store data.
       return false;
     }
-    if (process_lock.matches_scheme(url::kHttpScheme) ||
-        process_lock.matches_scheme(url::kHttpsScheme)) {
+    if (process_lock.MatchesScheme(url::kHttpScheme) ||
+        process_lock.MatchesScheme(url::kHttpsScheme)) {
       if (operation == CodeCacheHostImpl::Operation::kWrite) {
         mojo::ReportBadMessage("HTTP(S) pages cannot cache WebUI code");
       }
@@ -66,13 +66,13 @@ bool CheckSecurityForAccessingCodeCacheData(
     // Other schemes which might successfully load chrome or chrome-untrusted
     // scripts, such as the PDF viewer, are unsupported but not considered
     // dangerous.
-    return process_lock.matches_scheme(content::kChromeUIScheme) ||
-           process_lock.matches_scheme(content::kChromeUIUntrustedScheme);
+    return process_lock.MatchesScheme(content::kChromeUIScheme) ||
+           process_lock.MatchesScheme(content::kChromeUIUntrustedScheme);
   }
   if (resource_url.SchemeIsHTTPOrHTTPS() ||
       blink::CommonSchemeRegistry::IsExtensionScheme(resource_url.scheme())) {
-    if (process_lock.matches_scheme(content::kChromeUIScheme) ||
-        process_lock.matches_scheme(content::kChromeUIUntrustedScheme)) {
+    if (process_lock.MatchesScheme(content::kChromeUIScheme) ||
+        process_lock.MatchesScheme(content::kChromeUIUntrustedScheme)) {
       // It is possible for WebUI pages to include open-web content, but such
       // usage is rare and we've decided that reasoning about security is easier
       // if the WebUI code cache includes only WebUI scripts.
@@ -330,8 +330,8 @@ GeneratedCodeCache* CodeCacheHostImpl::GetCodeCache(
   // To minimize the chance of any cache bug resulting in privilege escalation
   // from an ordinary web page to trusted WebUI, we use a completely separate
   // GeneratedCodeCache instance for WebUI pages.
-  if (process_lock.matches_scheme(content::kChromeUIScheme) ||
-      process_lock.matches_scheme(content::kChromeUIUntrustedScheme)) {
+  if (process_lock.MatchesScheme(content::kChromeUIScheme) ||
+      process_lock.MatchesScheme(content::kChromeUIUntrustedScheme)) {
     if (cache_type == blink::mojom::CodeCacheType::kJavascript) {
       return generated_code_cache_context_->generated_webui_js_code_cache();
     }
@@ -407,7 +407,7 @@ std::optional<GURL> CodeCacheHostImpl::GetSecondaryKeyForCodeCache(
   // Case 1: If process is not locked to a site, it is safe to just use the
   // |resource_url| of the requested resource as the key. Return an empty GURL
   // as the second key.
-  if (!process_lock.is_locked_to_site()) {
+  if (!process_lock.IsLockedToSite()) {
     return GURL();
   }
 
@@ -429,13 +429,13 @@ std::optional<GURL> CodeCacheHostImpl::GetSecondaryKeyForCodeCache(
   // cache across all file:// URLs. That would likely be ok for security, but
   // since this case is not performance sensitive we will keep things simple and
   // limit the cache to http/https/chrome/chrome-untrusted processes.
-  if (process_lock.matches_scheme(url::kHttpScheme) ||
-      process_lock.matches_scheme(url::kHttpsScheme) ||
-      process_lock.matches_scheme(content::kChromeUIScheme) ||
-      process_lock.matches_scheme(content::kChromeUIUntrustedScheme) ||
+  if (process_lock.MatchesScheme(url::kHttpScheme) ||
+      process_lock.MatchesScheme(url::kHttpsScheme) ||
+      process_lock.MatchesScheme(content::kChromeUIScheme) ||
+      process_lock.MatchesScheme(content::kChromeUIUntrustedScheme) ||
       blink::CommonSchemeRegistry::IsExtensionScheme(
-          process_lock.lock_url().scheme())) {
-    return process_lock.lock_url();
+          process_lock.GetProcessLockURL().scheme())) {
+    return process_lock.GetProcessLockURL();
   }
 
   return std::nullopt;
