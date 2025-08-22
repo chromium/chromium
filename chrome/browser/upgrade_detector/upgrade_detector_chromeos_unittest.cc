@@ -9,8 +9,8 @@
 #include <string>
 #include <utility>
 
-#include "base/environment.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_libc_timezone_override.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -92,8 +92,7 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
 
  protected:
   UpgradeDetectorChromeosTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        env_(base::Environment::Create()) {
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         url_loader_factory_.GetSafeWeakWrapper());
     // Disable the detector's check to see if autoupdates are inabled.
@@ -111,20 +110,13 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     // Fast forward to set current time to local 2am . This is done to align the
     // relaunch deadline within the default relaunch window of 2am to 4am so
     // that it is not adjusted in tests.
-    original_tz_ = env_->GetVar("TZ");
-    env_->SetVar("TZ", "UTC");
-    tzset();
+    libc_timezone_override_.emplace("UTC");
     FastForwardBy(base::Hours(2));
   }
 
   ~UpgradeDetectorChromeosTest() override {
     // Revert back to the original timezone.
-    if (original_tz_) {
-      env_->SetVar("TZ", original_tz_.value());
-    } else {
-      env_->UnSetVar("TZ");
-    }
-    tzset();
+    libc_timezone_override_.reset();
 
     ash::UpdateEngineClient::Shutdown();
   }
@@ -246,8 +238,7 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory url_loader_factory_;
-  std::unique_ptr<base::Environment> env_;
-  std::optional<std::string> original_tz_;
+  std::optional<base::test::ScopedLibcTimezoneOverride> libc_timezone_override_;
 
   raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged>
       fake_update_engine_client_;  // Not owned.

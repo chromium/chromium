@@ -4,8 +4,8 @@
 
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
 
-#include "base/environment.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_libc_timezone_override.h"
 #include "base/time/time_override.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,28 +34,13 @@ base::Time StaticOverrideTime::override_time;
 class ScopedMockTimezone {
  public:
   explicit ScopedMockTimezone(const std::string& timezone)
-      : icu_timezone_(timezone.c_str()) {
-    auto env = base::Environment::Create();
-    old_timezone_ = env->GetVar(kTZ);
-    CHECK(env->SetVar(kTZ, timezone));
-    tzset();
-  }
-
-  ~ScopedMockTimezone() {
-    auto env = base::Environment::Create();
-    if (old_timezone_.has_value()) {
-      CHECK(env->SetVar(kTZ, old_timezone_.value()));
-    } else {
-      CHECK(env->UnSetVar(kTZ));
-    }
-  }
-
+      : libc_timezone_(timezone), icu_timezone_(timezone.c_str()) {}
   ScopedMockTimezone(const ScopedMockTimezone& other) = delete;
   ScopedMockTimezone& operator=(const ScopedMockTimezone& other) = delete;
+  ~ScopedMockTimezone() = default;
 
  private:
-  static constexpr char kTZ[] = "TZ";
-
+  base::test::ScopedLibcTimezoneOverride libc_timezone_;
   base::test::ScopedRestoreDefaultTimezone icu_timezone_;
   std::optional<std::string> old_timezone_;
 };

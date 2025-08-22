@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/environment.h"
+#include "base/test/scoped_libc_timezone_override.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -58,31 +58,10 @@ class UpgradeDetectorTest : public ::testing::Test {
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  ~UpgradeDetectorTest() override {
-    if (!tz_overridden_)
-      return;
-
-    // Revert back to the original timezone.
-    DCHECK(env_);
-    if (original_tz_) {
-      env_->SetVar("TZ", original_tz_.value());
-    } else {
-      env_->UnSetVar("TZ");
-    }
-    tzset();
-  }
-
   void OverrideTimezone(const std::string& tz) {
-    if (!tz_overridden_) {
-      env_ = base::Environment::Create();
-      // Store the original timezone of the device so that it can be restored in
-      // the destructor at the end of the test.
-      original_tz_ = env_->GetVar("TZ");
-      tz_overridden_ = true;
-    }
-    DCHECK(env_);
-    env_->SetVar("TZ", tz);
-    tzset();
+    // If there already is the override, reset it first.
+    libc_timezone_override_.reset();
+    libc_timezone_override_.emplace(tz);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -116,9 +95,7 @@ class UpgradeDetectorTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<base::Environment> env_;
-  std::optional<std::string> original_tz_;
-  bool tz_overridden_ = false;
+  std::optional<base::test::ScopedLibcTimezoneOverride> libc_timezone_override_;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 };
 
