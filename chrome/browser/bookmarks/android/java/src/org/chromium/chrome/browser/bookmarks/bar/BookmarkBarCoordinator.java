@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -122,6 +123,10 @@ public class BookmarkBarCoordinator
         mBookmarkBarSceneLayer =
                 new BookmarkBarSceneLayer(mViewResourceFrameLayout.getId(), mResourceManager);
         mBookmarkBarSceneLayer.setVisibility(true);
+
+        // Update view background color to match current theme.
+        mView.setBackgroundColor(
+                SurfaceColorUpdateUtils.getDefaultThemeColor(activity, /* isIncognito= */ false));
 
         mHeightChangeCallback = heightChangeCallback;
         mView.addOnLayoutChangeListener(this);
