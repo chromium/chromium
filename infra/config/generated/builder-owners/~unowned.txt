@@ -142,7 +142,6 @@ try/chromeos-arm64-generic-rel
 try/chromeos-js-code-coverage
 try/chromeos-js-coverage-rel
 try/chromium_presubmit
-try/fuchsia-angle-try
 try/fuchsia-arm64-cast-receiver-rel
 try/fuchsia-binary-size
 try/fuchsia-clang-tidy-rel
@@ -170,7 +169,6 @@ try/ios26-beta-simulator
 try/ios26-sdk-simulator
 try/leak_detection_linux
 try/linux-afl-asan-rel
-try/linux-angle-chromium-try
 try/linux-annotator-rel
 try/linux-asan-dbg
 try/linux-asan-media-rel
@@ -236,7 +234,6 @@ try/linux_chromium_tsan_rel_ng
 try/linux_chromium_tsan_rel_ng-compilator
 try/linux_upload_clang
 try/linux_upload_rust
-try/mac-angle-chromium-try
 try/mac-arm64-clobber-rel
 try/mac-arm64-on-arm64-rel
 try/mac-asan-media-rel
@@ -276,8 +273,6 @@ try/targets-config-verifier
 try/tricium-clang-tidy
 try/tricium-metrics-analysis
 try/tricium-oilpan-analysis
-try/win-angle-chromium-x64-try
-try/win-angle-chromium-x86-try
 try/win-annotator-rel
 try/win-asan
 try/win-asan-media-rel
