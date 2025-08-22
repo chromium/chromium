@@ -33,12 +33,15 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/devtools/aida_service_handler.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
+#include "chrome/browser/devtools/devtools_http_service_registry.h"
 #include "chrome/browser/devtools/devtools_select_file_dialog.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/url_constants.h"
@@ -765,7 +768,8 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       file_helper_(profile_, this, &file_storage_),
       devices_updates_enabled_(false),
       frontend_loaded_(false),
-      settings_(profile_) {
+      settings_(profile_),
+      http_service_registry_(std::make_unique<DevToolsHttpServiceRegistry>()) {
   DevToolsUIBindings::GetDevToolsUIBindings().push_back(this);
   frontend_contents_observer_ =
       std::make_unique<FrontendWebContentsObserver>(this);
@@ -780,6 +784,7 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       ->AddObserver(this);
 #endif
   can_access_aida_ = IsAnyAidaPoweredFeatureEnabled();
+
   MaybeStartLogging();
 }
 
@@ -938,46 +943,6 @@ void DevToolsUIBindings::SetIsDocked(DispatchCallback callback,
   std::move(callback).Run(nullptr);
 }
 
-namespace {
-constexpr net::NetworkTrafficAnnotationTag kAidaTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("devtools_cdp_console_insights", R"(
-        semantics {
-          sender: "Developer Tools via CDP"
-          description:
-            "In Chrome DevTools, the user can ask for additional insights "
-            "regarding an error message. A prompt message for AIDA containing "
-            "the error message and sometimes more context such as stack trace, "
-            "surrounding code, or network headers is sent to the Chrome "
-            "backend via DevTools UI bindings, which in turn queries an AIDA "
-            "endpoint."
-          trigger: "User asks for more insights on a DevTools error message."
-          data: "Prompt for AIDA endpoint, containing instructions, error and "
-            "sometimes some additional context information."
-          destination: GOOGLE_OWNED_SERVICE
-          internal {
-            contacts {
-              email: "chrome-devtools@google.com"
-            }
-          }
-          user_data {
-            type: WEB_CONTENT
-          }
-          last_reviewed: "2023-11-09"
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting:
-            "It's not possible to disable this feature from settings."
-          chrome_policy {
-            DeveloperToolsAvailability {
-              policy_options {mode: MANDATORY}
-              DeveloperToolsAvailability: 2
-            }
-          }
-        })");
-}  // namespace
-
 void DevToolsUIBindings::HandleAidaRequestError(
     DispatchCallback callback,
     std::variant<network::ResourceRequest, std::string>
@@ -1016,9 +981,9 @@ void DevToolsUIBindings::OnAidaConversationRequest(
                      base::Unretained(this), std::move(callback), stream_id,
                      request, delay, resource_request, base::TimeTicks::Now());
   NetworkResourceLoader::Create(
-      stream_id, this, resource_request, kAidaTrafficAnnotation,
-      std::move(url_loader_factory), std::move(response_handler_callback),
-      delay, std::move(request), timeout);
+      stream_id, this, resource_request,
+      AidaServiceHandler::TrafficAnnotation(), std::move(url_loader_factory),
+      std::move(response_handler_callback), delay, std::move(request), timeout);
 }
 
 void DevToolsUIBindings::OnAidaRequest(
@@ -1039,7 +1004,7 @@ void DevToolsUIBindings::OnAidaRequest(
       std::get<network::ResourceRequest>(resource_request_or_error));
   resource_request->url = url;
   auto simple_url_loader = network::SimpleURLLoader::Create(
-      std::move(resource_request), kAidaTrafficAnnotation);
+      std::move(resource_request), AidaServiceHandler::TrafficAnnotation());
   simple_url_loader->AttachStringForUpload(request);
 
   network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
@@ -1108,6 +1073,54 @@ void DevToolsUIBindings::OnAidaResponse(
   response_dict.Set("response", response_body.value_or(""));
   auto response = base::Value(std::move(response_dict));
   base::UmaHistogramTimes(histogram_name, base::TimeTicks::Now() - start_time);
+  std::move(callback).Run(&response);
+}
+
+void DevToolsUIBindings::DispatchHttpRequest(
+    DispatchCallback callback,
+    const std::string& service,
+    const std::string& path,
+    const std::string& method,
+    const std::optional<std::string>& body) {
+  http_service_registry_->Request(
+      profile_, service, path, method, body,
+      base::BindOnce(&DevToolsUIBindings::OnHttpRequestPerformed,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DevToolsUIBindings::OnHttpRequestPerformed(
+    DispatchCallback callback,
+    std::unique_ptr<DevToolsHttpServiceHandler::Result> result) {
+  base::Value::Dict response_dict;
+  using Error = DevToolsHttpServiceHandler::Result::Error;
+  switch (result->error) {
+    case Error::kNone:
+      response_dict.Set("response", result->response_body.value_or(""));
+      response_dict.Set("statusCode", result->http_status);
+      break;
+    case Error::kServiceNotFound:
+      response_dict.Set("error", "Service not found");
+      break;
+    case Error::kAccessDenied:
+      response_dict.Set("error", "Disallowed path or method");
+      break;
+    case Error::kValidationFailed:
+      response_dict.Set("error", "Request validation failed");
+      break;
+    case Error::kTokenFetchFailed:
+      response_dict.Set("error", "Token fetch error");
+      response_dict.Set("detail", result->error_detail);
+      break;
+    case Error::kNetworkError:
+    case Error::kHttpError:
+      response_dict.Set("error", "Request failed");
+      response_dict.Set("detail", result->response_body.value_or(""));
+      response_dict.Set("netError", result->net_error);
+      response_dict.Set("netErrorName", net::ErrorToString(result->net_error));
+      response_dict.Set("statusCode", result->http_status);
+      break;
+  }
+  auto response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
 
@@ -1978,6 +1991,11 @@ void DevToolsUIBindings::DispatchProtocolMessageFromDevToolsFrontend(
     return;
   }
   agent_host_->DispatchProtocolMessage(this, base::as_byte_span(message));
+}
+
+void DevToolsUIBindings::SetHttpServiceRegistryForTesting(
+    std::unique_ptr<DevToolsHttpServiceRegistry> service_registry) {
+  http_service_registry_ = std::move(service_registry);
 }
 
 void DevToolsUIBindings::RecordCountHistogram(const std::string& name,

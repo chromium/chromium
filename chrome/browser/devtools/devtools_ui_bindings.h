@@ -20,6 +20,7 @@
 #include "chrome/browser/devtools/devtools_file_helper.h"
 #include "chrome/browser/devtools/devtools_file_storage.h"
 #include "chrome/browser/devtools/devtools_file_system_indexer.h"
+#include "chrome/browser/devtools/devtools_http_service_handler.h"
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/devtools/devtools_settings.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
@@ -38,15 +39,23 @@
 
 class PortForwardingStatusSerializer;
 class Profile;
+class DevToolsHttpServiceHandler;
+class DevToolsHttpServiceRegistry;
 
 namespace content {
 class NavigationHandle;
 class WebContents;
+}  // namespace content
+
+namespace network {
+class SimpleURLLoader;
 }
 
 namespace infobars {
 class ContentInfoBarManager;
 }
+
+class DevToolsUIBindingsDispatchHttpRequestTest;
 
 // Base implementation of DevTools bindings around front-end.
 class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
@@ -56,6 +65,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                            public ThemeServiceObserver,
 #endif
                            public DevToolsFileHelper::Delegate {
+  friend class DevToolsUIBindingsDispatchHttpRequestTest;
+
  public:
   class Delegate {
    public:
@@ -127,6 +138,9 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   // ThemeServiceObserver implementation
   void OnThemeChanged() override;
 #endif
+
+  void SetHttpServiceRegistryForTesting(
+      std::unique_ptr<DevToolsHttpServiceRegistry> service_registry);
 
   static base::Value::Dict GetSyncInformationForProfile(Profile* profile);
 
@@ -251,6 +265,46 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RegisterAidaClientEvent(DispatchCallback callback,
                                const std::string& request) override;
 
+  // Dispatches a generic HTTP request to a backend service.
+  // This is a centralized entry point for DevTools frontend to make network
+  // requests to a allow-listed set of backend services.
+  //
+  // Contract with the DevTools frontend:
+  //
+  // Parameters:
+  // - `service`: A string identifier for the target service (e.g.,
+  //   `aidaService`).
+  // - `path`: The specific API path (e.g., `/v1/aida:codeComplete`).
+  // - `method`: The HTTP method (e.g., `POST`).
+  // - `body`: The request payload (or empty string).
+  //
+  // Successful Response:
+  // The callback will be invoked with a dictionary containing:
+  // - `response` (string): The response body from the server.
+  // - `statusCode` (int): The HTTP status code.
+  //
+  // Error Responses:
+  // In case of an error, the callback is invoked with a dictionary
+  // containing an `error` key. The value is a string describing the error.
+  // Additional details may be provided.
+  //
+  // Possible error scenarios:
+  // 1. Service not found: `{"error": "Service not found"}`
+  // 2. Disallowed path or method: `{"error": "Disallowed path or method"}`
+  // 3. Pre-request validation failed: `{"error": "Request validation
+  // failed"}`
+  // 4. Token fetch failure: `{"error": "Token fetch error", "detail":
+  // "<error_details>"}`
+  // 5. Network request failure (including non-2xx responses):
+  //    `{"error": "Request failed", "detail": "<response_body>", "netError":
+  //    net::OK, "netErrorName": "net::ERR_FAILED", "statusCode":
+  //    <http_status>}`
+  void DispatchHttpRequest(DispatchCallback callback,
+                           const std::string& service,
+                           const std::string& path,
+                           const std::string& method,
+                           const std::optional<std::string>& body) override;
+
   void EnableRemoteDeviceCounter(bool enable);
 
   void SendMessageAck(int request_id,
@@ -341,6 +395,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
       base::TimeTicks start_time,
       std::optional<std::string> response_body);
 
+  void OnHttpRequestPerformed(
+      DispatchCallback callback,
+      std::unique_ptr<DevToolsHttpServiceHandler::Result> result);
+
   // Extensions support.
   void AddDevToolsExtensionsToClient();
 
@@ -385,6 +443,9 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   std::unique_ptr<AidaClient> aida_client_;
   bool can_access_aida_ = false;
+
+  std::unique_ptr<DevToolsHttpServiceRegistry> http_service_registry_;
+
   base::UnguessableToken session_id_for_logging_;
   base::WeakPtrFactory<DevToolsUIBindings> weak_factory_{this};
 };

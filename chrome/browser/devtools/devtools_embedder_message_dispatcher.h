@@ -147,6 +147,12 @@ class DevToolsEmbedderMessageDispatcher {
                                     const std::string& request) = 0;
     virtual void RegisterAidaClientEvent(DispatchCallback callback,
                                          const std::string& request) = 0;
+    virtual void DispatchHttpRequest(
+        DispatchCallback callback,
+        const std::string& service,
+        const std::string& path,
+        const std::string& method,
+        const std::optional<std::string>& body) = 0;
   };
 
   using DispatchCallback = Delegate::DispatchCallback;

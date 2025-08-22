@@ -284,6 +284,21 @@ bool GetValue(const base::Value& value, FunctionCallEvent* event) {
   return true;
 }
 
+bool GetValue(const base::Value& value,
+              std::optional<std::string>* string_value) {
+  if (value.is_string()) {
+    *string_value = value.GetString();
+    return true;
+  }
+
+  if (value.is_none()) {
+    string_value->reset();
+    return true;
+  }
+
+  return false;
+}
+
 template <typename T>
 struct StorageTraits {
   using StorageType = T;
@@ -516,5 +531,7 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
                                  &Delegate::AidaCodeComplete, delegate);
   d->RegisterHandlerWithCallback("registerAidaClientEvent",
                                  &Delegate::RegisterAidaClientEvent, delegate);
+  d->RegisterHandlerWithCallback("dispatchHttpRequest",
+                                 &Delegate::DispatchHttpRequest, delegate);
   return d;
 }
