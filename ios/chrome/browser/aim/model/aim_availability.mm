@@ -31,6 +31,12 @@ bool IsAIMAvailable(ProfileIOS* profile) {
     return service->IsAimEligible();
   }
 
-  // Returns local eligibility.
-  return service->IsAimLocallyEligible();
+  // Check feature, DSE and Policy.
+  if (!service->IsAimLocallyEligible()) {
+    return false;
+  }
+
+  // Check locale availability, this will be handled by IsAimEligible once
+  // IsServerEligibilityEnabled launches.
+  return service->IsCountry("us") && service->IsLanguage("en");
 }
