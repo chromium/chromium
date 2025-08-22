@@ -19,7 +19,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/paint_preview/browser/paint_preview_client.h"
 #include "components/paint_preview/common/file_stream.h"
-#include "components/paint_preview/common/mock_paint_preview_recorder.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-shared.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/recording_map.h"
@@ -41,7 +40,7 @@
 
 namespace paint_preview {
 
-class NoOpPaintPreviewRecorder : public MockPaintPreviewRecorder {
+class NoOpPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
  public:
   NoOpPaintPreviewRecorder() = default;
   ~NoOpPaintPreviewRecorder() override = default;
@@ -49,11 +48,27 @@ class NoOpPaintPreviewRecorder : public MockPaintPreviewRecorder {
   NoOpPaintPreviewRecorder(const NoOpPaintPreviewRecorder&) = delete;
   NoOpPaintPreviewRecorder& operator=(const NoOpPaintPreviewRecorder&) = delete;
 
- protected:
-  void CheckParams(const mojom::PaintPreviewCaptureParamsPtr& params) override {
+  void SetRequestedClosure(base::OnceClosure requested) {
+    requested_ = std::move(requested);
+  }
+
+  void CapturePaintPreview(
+      mojom::PaintPreviewCaptureParamsPtr params,
+      mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback)
+      override {
+    callback_ = std::move(callback);
+    std::move(requested_).Run();
+  }
+
+  void BindRequest(mojo::ScopedInterfaceEndpointHandle handle) {
+    binding_.Bind(mojo::PendingAssociatedReceiver<mojom::PaintPreviewRecorder>(
+        std::move(handle)));
   }
 
  private:
+  base::OnceClosure requested_;
+  mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback_;
+  mojo::AssociatedReceiver<mojom::PaintPreviewRecorder> binding_{this};
 };
 
 // Test harness for a integration test of paint previews. In this test:
@@ -334,7 +349,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
   // Override remote interfaces of the fenced frame with a no-op.
   base::RunLoop started_loop;
   NoOpPaintPreviewRecorder noop_recorder;
-  noop_recorder.SetReceivedRequestClosure(started_loop.QuitClosure());
+  noop_recorder.SetRequestedClosure(started_loop.QuitClosure());
 
   OverrideInterface(&noop_recorder, fenced_rfh_wrapper.get());
 
@@ -505,7 +520,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
   // Override remote interfaces with a no-op.
   base::RunLoop started_loop;
   NoOpPaintPreviewRecorder noop_recorder;
-  noop_recorder.SetReceivedRequestClosure(started_loop.QuitClosure());
+  noop_recorder.SetRequestedClosure(started_loop.QuitClosure());
   OverrideInterface(&noop_recorder, GetWebContents()->GetPrimaryMainFrame());
 
   CreateClient();

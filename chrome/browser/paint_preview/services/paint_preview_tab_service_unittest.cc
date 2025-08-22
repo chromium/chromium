@@ -15,7 +15,6 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/paint_preview/services/paint_preview_tab_service_file_mixin.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/paint_preview/common/mock_paint_preview_recorder.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -30,15 +29,32 @@ namespace {
 
 constexpr char kFeatureName[] = "tab_service_test";
 
-class LaxMockPaintPreviewRecorder : public MockPaintPreviewRecorder {
+class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
  public:
-  LaxMockPaintPreviewRecorder() = default;
-  ~LaxMockPaintPreviewRecorder() override = default;
+  MockPaintPreviewRecorder() = default;
+  ~MockPaintPreviewRecorder() override = default;
 
-  void CheckParams(const mojom::PaintPreviewCaptureParamsPtr& params) override {
+  MockPaintPreviewRecorder(const MockPaintPreviewRecorder&) = delete;
+  MockPaintPreviewRecorder& operator=(const MockPaintPreviewRecorder&) = delete;
+
+  void CapturePaintPreview(
+      mojom::PaintPreviewCaptureParamsPtr params,
+      mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback)
+      override {
+    std::move(callback).Run(status_, mojom::PaintPreviewCaptureResponse::New());
+  }
+
+  void SetResponse(mojom::PaintPreviewStatus status) { status_ = status; }
+
+  void BindRequest(mojo::ScopedInterfaceEndpointHandle handle) {
+    binding_.reset();
+    binding_.Bind(mojo::PendingAssociatedReceiver<mojom::PaintPreviewRecorder>(
+        std::move(handle)));
   }
 
  private:
+  mojom::PaintPreviewStatus status_;
+  mojo::AssociatedReceiver<mojom::PaintPreviewRecorder> binding_{this};
 };
 
 std::vector<base::FilePath> ListDir(const base::FilePath& path) {
@@ -87,12 +103,12 @@ class PaintPreviewTabServiceTest : public ChromeRenderViewHostTestHarness {
 
   PaintPreviewTabService* GetService() { return service_.get(); }
 
-  void OverrideInterface(LaxMockPaintPreviewRecorder* recorder) {
+  void OverrideInterface(MockPaintPreviewRecorder* recorder) {
     blink::AssociatedInterfaceProvider* remote_interfaces =
         web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
     remote_interfaces->OverrideBinderForTesting(
         mojom::PaintPreviewRecorder::Name_,
-        base::BindRepeating(&LaxMockPaintPreviewRecorder::BindRequest,
+        base::BindRepeating(&MockPaintPreviewRecorder::BindRequest,
                             base::Unretained(recorder)));
   }
 
@@ -125,7 +141,7 @@ class PaintPreviewTabServiceTest : public ChromeRenderViewHostTestHarness {
 TEST_F(PaintPreviewTabServiceTest, CaptureTab) {
   const int kTabId = 1U;
 
-  LaxMockPaintPreviewRecorder recorder;
+  MockPaintPreviewRecorder recorder;
   recorder.SetResponse(mojom::PaintPreviewStatus::kOk);
   OverrideInterface(&recorder);
 
@@ -159,7 +175,7 @@ TEST_F(PaintPreviewTabServiceTest, CaptureTab) {
 TEST_F(PaintPreviewTabServiceTest, CaptureTabFailed) {
   const int kTabId = 1U;
 
-  LaxMockPaintPreviewRecorder recorder;
+  MockPaintPreviewRecorder recorder;
   recorder.SetResponse(mojom::PaintPreviewStatus::kFailed);
   OverrideInterface(&recorder);
 
@@ -193,7 +209,7 @@ TEST_F(PaintPreviewTabServiceTest, CaptureTabFailed) {
 TEST_F(PaintPreviewTabServiceTest, CaptureTabTwice) {
   const int kTabId = 1U;
 
-  LaxMockPaintPreviewRecorder recorder;
+  MockPaintPreviewRecorder recorder;
   recorder.SetResponse(mojom::PaintPreviewStatus::kOk);
   OverrideInterface(&recorder);
 
@@ -379,7 +395,7 @@ TEST_F(PaintPreviewTabServiceTest, EarlyAudit) {
 TEST_F(PaintPreviewTabServiceTest, EarlyCapture) {
   const int kTabId = 1U;
 
-  LaxMockPaintPreviewRecorder recorder;
+  MockPaintPreviewRecorder recorder;
   recorder.SetResponse(mojom::PaintPreviewStatus::kOk);
   OverrideInterface(&recorder);
 
@@ -413,7 +429,7 @@ TEST_F(PaintPreviewTabServiceTest, EarlyCapture) {
 TEST_F(PaintPreviewTabServiceTest, CaptureTabAndCleanup) {
   const int kTabId = 1U;
 
-  LaxMockPaintPreviewRecorder recorder;
+  MockPaintPreviewRecorder recorder;
   recorder.SetResponse(mojom::PaintPreviewStatus::kOk);
   OverrideInterface(&recorder);
 

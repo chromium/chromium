@@ -17,7 +17,6 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/capture_result.h"
-#include "components/paint_preview/common/mock_paint_preview_recorder.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/serialized_recording.h"
@@ -48,6 +47,75 @@ using CaptureResultFuture =
                            std::unique_ptr<CaptureResult>>;
 
 namespace {
+
+class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
+ public:
+  MockPaintPreviewRecorder() = default;
+
+  MockPaintPreviewRecorder(const MockPaintPreviewRecorder&) = delete;
+  MockPaintPreviewRecorder& operator=(const MockPaintPreviewRecorder&) = delete;
+
+  ~MockPaintPreviewRecorder() override = default;
+
+  void CapturePaintPreview(
+      mojom::PaintPreviewCaptureParamsPtr params,
+      mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback)
+      override {
+    CheckParams(params);
+
+    if (received_request_closure_) {
+      send_response_callback_ = std::move(callback);
+      std::move(received_request_closure_).Run();
+    } else {
+      std::move(callback).Run(status_, std::move(response_));
+    }
+  }
+
+  void SetExpectedParams(mojom::PaintPreviewCaptureParamsPtr params) {
+    expected_params_ = std::move(params);
+  }
+
+  void SetResponse(mojom::PaintPreviewStatus status,
+                   mojom::PaintPreviewCaptureResponsePtr response) {
+    status_ = status;
+    response_ = std::move(response);
+  }
+
+  void SetReceivedRequestClosure(base::OnceClosure closure) {
+    ASSERT_FALSE(received_request_closure_);
+    received_request_closure_ = std::move(closure);
+  }
+
+  void SendResponse() {
+    ASSERT_TRUE(send_response_callback_);
+    std::move(send_response_callback_).Run(status_, std::move(response_));
+  }
+
+  void BindRequest(mojo::ScopedInterfaceEndpointHandle handle) {
+    binding_.Bind(mojo::PendingAssociatedReceiver<mojom::PaintPreviewRecorder>(
+        std::move(handle)));
+  }
+
+ private:
+  void CheckParams(const mojom::PaintPreviewCaptureParamsPtr& input_params) {
+    EXPECT_EQ(input_params->guid, expected_params_->guid);
+    EXPECT_EQ(input_params->clip_rect, expected_params_->clip_rect);
+    EXPECT_EQ(input_params->is_main_frame, expected_params_->is_main_frame);
+    if (expected_params_->is_main_frame) {
+      EXPECT_FALSE(input_params->clip_rect_is_hint);
+    }
+  }
+
+  // If non-null, this is invoked when the recorder receives a paint preview
+  // request.
+  base::OnceClosure received_request_closure_;
+  mojom::PaintPreviewRecorder::CapturePaintPreviewCallback
+      send_response_callback_;
+  mojom::PaintPreviewCaptureParamsPtr expected_params_;
+  mojom::PaintPreviewStatus status_;
+  mojom::PaintPreviewCaptureResponsePtr response_;
+  mojo::AssociatedReceiver<mojom::PaintPreviewRecorder> binding_{this};
+};
 
 // Convert |params| to the mojo::PaintPreviewServiceParams format. NOTE: this
 // does not set the file parameter as the file is created in the client

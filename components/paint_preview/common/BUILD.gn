@@ -52,8 +52,6 @@ source_set("test_utils") {
   testonly = true
 
   sources = [
-    "mock_paint_preview_recorder.cc",
-    "mock_paint_preview_recorder.h",
     "test_utils.cc",
     "test_utils.h",
   ]
