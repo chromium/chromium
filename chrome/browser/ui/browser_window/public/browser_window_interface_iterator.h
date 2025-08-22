@@ -32,11 +32,15 @@ GetBrowserWindowInterfacesOrderedByActivation();
 // possibility that a browser could be created or destroyed during iteration,
 // resulting in potential use-after-frees (example: crbug.com/405910169).
 //
+// The return value in the passed-in function indicates whether or not we should
+// continue iterating - true means continue, false means terminate.
+//
 // Example usage:
 //
 //   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
 //       [](BrowserWindowInterface* browser_window) {
 //         // do something with |browser_window|
+//         return true;
 //       });
 //
 // These functions are not thread-safe and only guarantee correctness if there
@@ -45,9 +49,9 @@ GetBrowserWindowInterfacesOrderedByActivation();
 // Care should be taken not to cause the |browser_window| parameter in the
 // lambda to be deleted before being used.
 void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-    base::FunctionRef<void(BrowserWindowInterface*)> on_browser);
+    base::FunctionRef<bool(BrowserWindowInterface*)> on_browser);
 void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
-    base::FunctionRef<void(BrowserWindowInterface*)> on_browser);
+    base::FunctionRef<bool(BrowserWindowInterface*)> on_browser);
 
 // Returns the last active browser window interface. This can be nullptr if
 // there are no browser windows.

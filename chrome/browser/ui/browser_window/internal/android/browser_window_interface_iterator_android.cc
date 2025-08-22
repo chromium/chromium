@@ -44,24 +44,28 @@ GetBrowserWindowInterfacesOrderedByActivation() {
 }
 
 void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-    base::FunctionRef<void(BrowserWindowInterface*)> on_browser) {
+    base::FunctionRef<bool(BrowserWindowInterface*)> on_browser) {
   // Make a copy of the BrowserWindows from Java to simplify the case where we
   // need to add or remove a Browser during the loop.
   constexpr bool kEnumerateNewBrowser = false;
   AndroidBrowserWindowEnumerator browser_windows_copy(kEnumerateNewBrowser);
   while (!browser_windows_copy.empty()) {
-    on_browser(browser_windows_copy.Next());
+    if (!on_browser(browser_windows_copy.Next())) {
+      break;
+    }
   }
 }
 
 void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
-    base::FunctionRef<void(BrowserWindowInterface*)> on_browser) {
+    base::FunctionRef<bool(BrowserWindowInterface*)> on_browser) {
   // Make a copy of the BrowserWindows from Java to simplify the case where we
   // need to add or remove a Browser during the loop.
   constexpr bool kEnumerateNewBrowser = true;
   AndroidBrowserWindowEnumerator browser_windows_copy(kEnumerateNewBrowser);
   while (!browser_windows_copy.empty()) {
-    on_browser(browser_windows_copy.Next());
+    if (!on_browser(browser_windows_copy.Next())) {
+      break;
+    }
   }
 }
 
