@@ -20,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -78,6 +79,7 @@ class AccountNameEmailStoreTest : public testing::Test {
 
   AccountNameEmailStore& account_name_email_store() { return store_; }
   AddressDataManager& address_data_manager() { return test_adm_; }
+  signin::IdentityManager& identity_manager() { return *identity_manager_; }
   PrefService& pref_service() { return *prefs_; }
   signin::IdentityTestEnvironment& identity_test_env() {
     return identity_test_env_;
@@ -312,6 +314,57 @@ TEST_F(AccountNameEmailStoreTest, ProfileReappearsAfterNameChange) {
                 prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
             0);
 }
+
+// ChromeOS does not support signing out
+#if !BUILDFLAG(IS_CHROMEOS)
+// Tests that the `OnExtendedAccountInfoRemoved` method will remove
+// `kAccountNameEmail` profile
+TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoRemoved) {
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  ASSERT_THAT(
+      address_data_manager().GetProfiles(),
+      ElementsAre(Property(&AutofillProfile::record_type,
+                           AutofillProfile::RecordType::kAccountNameEmail)));
+
+  identity_test_env().EnableRemovalOfExtendedAccountInfo();
+  identity_test_env().ClearPrimaryAccount();
+
+  EXPECT_THAT(address_data_manager().GetProfiles(), testing::IsEmpty());
+}
+
+// Tests that the `OnExtendedAccountInfoRemoved` method will not remove
+// `kAccountNameEmail` profile if it is called with info of a wrong profile.
+TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoRemoved_WrongInfo) {
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+
+  const AccountInfo info2 = identity_test_env().MakeAccountAvailable(
+      kTestEmailAddress2, {std::nullopt, false, kFakeGaiaId});
+
+  ASSERT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(kTestName1),
+                  base::UTF8ToUTF16(kTestEmailAddress1))));
+
+  identity_test_env().EnableRemovalOfExtendedAccountInfo();
+// On mobile platforms, accounts are stored outside of Chrome, thus
+// `AccountsMutator` of an `IdentityManager` is uninitialized.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  CHECK(!identity_manager().GetAccountsMutator());
+  identity_test_env().RemoveRefreshTokenForAccount(info2.account_id);
+#else
+  CHECK(identity_manager().GetAccountsMutator());
+  identity_manager().GetAccountsMutator()->RemoveAccount(
+      info2.account_id,
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+  EXPECT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(kTestName1),
+                  base::UTF8ToUTF16(kTestEmailAddress1))));
+}
+
+#endif  // !BUILDFLAG(CHROME_OS)
 
 }  // namespace
 

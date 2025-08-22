@@ -33,6 +33,8 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   ~AccountNameEmailStore() override;
 
   // IdentityManager::Observer:
+  // Called when the user signs out. Used to remove `kAccountNameEmail` profile.
+  void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
   // Called when the account's extended information (e.g., full name) is
   // updated. Used to keep the `kAccountNameEmail` profile up to date.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
@@ -48,6 +50,9 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   // account `info`. If the `kAccountNameEmail` profile doesn't exist, it is
   // created.
   void UpdateOrCreateAccountNameEmail(const AccountInfo& info);
+
+  // Removes the `kAccountNameEmail` autofill profile if it exists.
+  void RemoveAccountNameEmail();
 
  private:
   friend class AccountNameEmailStoreTestApi;
@@ -66,7 +71,6 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
 
   // Used to update the `kAccountNameEmail` profile when the account name
   // changes.
-  // TODO(crbug.com/356845298): Handle sign-out.
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};

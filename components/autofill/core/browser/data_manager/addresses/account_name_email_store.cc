@@ -18,8 +18,10 @@
 namespace autofill {
 
 namespace {
+
 constexpr std::string_view kSeparator = "|";
-}
+
+}  // namespace
 
 AccountNameEmailStore::AccountNameEmailStore(
     AddressDataManager& address_data_manager,
@@ -33,6 +35,13 @@ AccountNameEmailStore::AccountNameEmailStore(
 }
 
 AccountNameEmailStore::~AccountNameEmailStore() = default;
+
+void AccountNameEmailStore::OnExtendedAccountInfoRemoved(
+    const AccountInfo& info) {
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    RemoveAccountNameEmail();
+  }
+}
 
 void AccountNameEmailStore::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
@@ -111,6 +120,18 @@ void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(
   // changed their full name.
   pref_service_->SetInteger(
       prefs::kAutofillNameAndEmailProfileNotSelectedCounter, 0);
+}
+
+void AccountNameEmailStore::RemoveAccountNameEmail() {
+  const std::vector<const AutofillProfile*> account_name_email_profiles =
+      address_data_manager_->GetProfilesByRecordType(
+          AutofillProfile::RecordType::kAccountNameEmail);
+  if (account_name_email_profiles.empty()) {
+    return;
+  }
+  CHECK_EQ(1u, account_name_email_profiles.size());
+
+  address_data_manager_->RemoveProfile(account_name_email_profiles[0]->guid());
 }
 
 std::string AccountNameEmailStore::HashAccountInfo(
