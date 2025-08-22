@@ -124,7 +124,8 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
       }
       break;
   }
-  fill_card_callback_.Reset();
+
+  Reset();
 }
 
 void SaveAndFillManagerImpl::SetCreditCardUploadEnabledOverrideForTesting(
@@ -283,14 +284,13 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
       if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
         strike_database->AddStrike();
       }
+      Reset();
       break;
   }
 
   payments_autofill_client()
       ->GetPaymentsDataManager()
       .OnUserAcceptedUpstreamOffer();
-
-  fill_card_callback_.Reset();
 }
 
 void SaveAndFillManagerImpl::OnDidLoadRiskData(const std::string& risk_data) {
@@ -331,6 +331,17 @@ void SaveAndFillManagerImpl::OnDidCreateCard(
   // eligible for card saved via the Save and Fill flow).
   payments_autofill_client()->CreditCardUploadCompleted(
       result, /*on_confirmation_closed_callback=*/std::nullopt);
+
+  Reset();
+}
+
+void SaveAndFillManagerImpl::Reset() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  upload_details_ = payments::UploadCardRequestDetails();
+  fill_card_callback_.Reset();
+  upload_save_and_fill_dialog_accepted_ = false;
+  save_and_fill_suggestion_offered_ = false;
+  save_and_fill_suggestion_selected_ = false;
 }
 
 SaveAndFillStrikeDatabase*

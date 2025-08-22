@@ -47,6 +47,11 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
       bool credit_card_upload_enabled_override);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SaveAndFillManagerImplTest,
+                           ResetOnFlowEnds_ServerSave);
+  FRIEND_TEST_ALL_PREFIXES(SaveAndFillManagerImplTest,
+                           ResetOnFlowEnds_LocalSave);
+
   // Begins the process to show the local Save and Fill dialog.
   void OfferLocalSaveAndFill();
 
@@ -94,6 +99,10 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   void OnDidCreateCard(base::TimeTicks request_sent_timestamp,
                        PaymentsAutofillClient::PaymentsRpcResult result,
                        const std::string& instrument_id);
+
+  // Function invoked when the flow ends. This resets the state variables in
+  // this class.
+  void Reset();
 
   // Returns the SaveAndFillStrikeDatabase for `autofill_client_`.
   SaveAndFillStrikeDatabase* GetSaveAndFillStrikeDatabase();
