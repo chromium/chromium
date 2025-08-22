@@ -98,12 +98,8 @@ class ApplicationContextImpl : public ApplicationContext {
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
   AdditionalFeaturesController* GetAdditionalFeaturesController() override;
   auto_deletion::AutoDeletionService* GetAutoDeletionService() override;
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  optimization_guide::OnDeviceModelServiceController*
-  GetOnDeviceModelServiceController(
-      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-          on_device_component_manager) override;
-#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
+  optimization_guide::OptimizationGuideGlobalState*
+  GetOptimizationGuideGlobalState() override;
 
  private:
   // Represents the possible application states the app can be in.
@@ -191,10 +187,8 @@ class ApplicationContextImpl : public ApplicationContext {
 
   std::unique_ptr<auto_deletion::AutoDeletionService> auto_deletion_service_;
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  scoped_refptr<optimization_guide::OnDeviceModelServiceController>
-      on_device_model_service_controller_;
-#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
+  std::unique_ptr<optimization_guide::OptimizationGuideGlobalState>
+      optimization_guide_global_state_;
 
   // Must be the last member variable.
   base::WeakPtrFactory<ApplicationContextImpl> weak_ptr_factory_{this};

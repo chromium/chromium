@@ -5,16 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_IOS_CHROME_PREDICTION_MODEL_STORE_H_
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_IOS_CHROME_PREDICTION_MODEL_STORE_H_
 
-#import "base/no_destructor.h"
 #import "components/optimization_guide/core/delivery/prediction_model_store.h"
 
 namespace optimization_guide {
 
 class IOSChromePredictionModelStore : public PredictionModelStore {
  public:
-  // Returns the singleton model store.
-  static IOSChromePredictionModelStore* GetInstance();
-
   IOSChromePredictionModelStore();
   ~IOSChromePredictionModelStore() override;
 
@@ -24,9 +20,6 @@ class IOSChromePredictionModelStore : public PredictionModelStore {
 
   // optimization_guide::PredictionModelStore:
   PrefService* GetLocalState() const override;
-
- private:
-  friend base::NoDestructor<IOSChromePredictionModelStore>;
 };
 
 }  // namespace optimization_guide

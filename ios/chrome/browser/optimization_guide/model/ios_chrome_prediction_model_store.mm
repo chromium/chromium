@@ -8,12 +8,6 @@
 
 namespace optimization_guide {
 
-// static
-IOSChromePredictionModelStore* IOSChromePredictionModelStore::GetInstance() {
-  static base::NoDestructor<IOSChromePredictionModelStore> model_store;
-  return model_store.get();
-}
-
 IOSChromePredictionModelStore::IOSChromePredictionModelStore() = default;
 IOSChromePredictionModelStore::~IOSChromePredictionModelStore() = default;
 

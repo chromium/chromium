@@ -61,14 +61,6 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
     InfoBarManagerImpl::CreateForWebState(&web_state_);
   }
 
-  void TearDown() override {
-    // Reinitialize the store, so that tests do not use state from the
-    // previous test.
-    optimization_guide::IOSChromePredictionModelStore::GetInstance()
-        ->ResetForTesting();
-    PlatformTest::TearDown();
-  }
-
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;

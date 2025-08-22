@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "components/optimization_guide/optimization_guide_buildflags.h"
+#import "components/optimization_guide/proto/string_value.pb.h"
 
 namespace optimization_guide::proto {
 
@@ -36,6 +37,9 @@ enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 // selected text.
 - (void)executeEnhancedCalendarQueryWithPrompt:(NSString*)prompt
                                   selectedText:(NSString*)selectedText;
+
+- (void)executeFreeformOnDeviceQuery:
+    (optimization_guide::proto::StringValue)request;
 ;
 
 @end
