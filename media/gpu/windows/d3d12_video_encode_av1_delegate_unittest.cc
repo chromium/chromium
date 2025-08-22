@@ -26,6 +26,16 @@ constexpr uint32_t kInputFrameWidth = 1280;
 constexpr uint32_t kInputFrameHeight = 720;
 constexpr VideoCodecProfile kAV1Profile = AV1PROFILE_PROFILE_MAIN;
 
+uint8_t AV1QPtoQindex(uint8_t avenc_qp) {
+  uint8_t q_index = avenc_qp * 4;
+  if (q_index == 248) {
+    q_index = 249;
+  } else if (q_index == 252) {
+    q_index = 255;
+  }
+  return q_index;
+}
+
 class MockD3D12VideoEncodeAV1Delegate : public D3D12VideoEncodeAV1Delegate {
  public:
   explicit MockD3D12VideoEncodeAV1Delegate(
@@ -196,6 +206,44 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrame) {
     EXPECT_GT(metadata.payload_size_bytes, kStreamSize);
     EXPECT_LE(metadata.payload_size_bytes, kBufferSize);
     EXPECT_GT(metadata.qp, 0);
+  }
+}
+
+TEST_F(D3D12VideoEncodeAV1DelegateTest, ExternalRateControl) {
+  VideoEncodeAccelerator::Config config = GetDefaultConfig();
+  config.bitrate = Bitrate::ExternalRateControl();
+  EXPECT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  std::array<uint8_t, 3> quantizers = {56, 26, 10};
+  for (size_t i = 0; i < quantizers.size(); i++) {
+    auto input_frame = MakeComPtr<NiceMock<D3D12ResourceMock>>();
+    EXPECT_CALL(*input_frame.Get(), GetDesc())
+        .WillOnce(Return(D3D12_RESOURCE_DESC{
+            .Width = static_cast<UINT64>(config.input_visible_size.width()),
+            .Height = static_cast<UINT>(config.input_visible_size.height()),
+            .Format = VideoPixelFormatToDxgiFormat(config.input_format),
+        }));
+    constexpr size_t kBufferSize = 4096;
+    constexpr size_t kStreamSize = 3072;
+    auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+    BitstreamBuffer bitstream_buffer(base::RandInt(0, 7 /*MaxDPBSize - 1*/),
+                                     shared_memory.Duplicate(), kBufferSize);
+    EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
+        .WillOnce(Return(EncoderStatus::Codes::kOk));
+    EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+        .WillRepeatedly(
+            [&] { return GetEncoderOutputMetadataResourceMap(kStreamSize); });
+    EXPECT_CALL(*GetMockDelegate(), GetEncodedBitstreamWrittenBytesCount(_))
+        .WillRepeatedly(Return(kStreamSize));
+
+    VideoEncoder::EncodeOptions options;
+    options.quantizer = quantizers[i];
+    auto result = encoder_delegate_->Encode(
+        input_frame.Get(), 0 /*input_frame_subresource*/,
+        gfx::ColorSpace::CreateSRGB(), bitstream_buffer, options);
+    EXPECT_EQ(result.has_value(), true);
+    auto [bitstream_buffer_id, metadata] = std::move(result).value();
+    EXPECT_EQ(metadata.qp, AV1QPtoQindex(quantizers[i]));
   }
 }
 

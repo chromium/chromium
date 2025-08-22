@@ -43,6 +43,42 @@ constexpr auto kVideoCodecProfileToD3D12Profile =
          {AV1PROFILE_PROFILE_PRO,
           D3D12_VIDEO_ENCODER_AV1_PROFILE_PROFESSIONAL}});
 
+// See AV1 spec 7.12 for details.
+constexpr std::array<int16_t, 256> kAcQuantizerLookup = {
+    4,    8,    9,    10,   11,   12,   13,   14,   15,   16,   17,   18,
+    19,   20,   21,   22,   23,   24,   25,   26,   27,   28,   29,   30,
+    31,   32,   33,   34,   35,   36,   37,   38,   39,   40,   41,   42,
+    43,   44,   45,   46,   47,   48,   49,   50,   51,   52,   53,   54,
+    55,   56,   57,   58,   59,   60,   61,   62,   63,   64,   65,   66,
+    67,   68,   69,   70,   71,   72,   73,   74,   75,   76,   77,   78,
+    79,   80,   81,   82,   83,   84,   85,   86,   87,   88,   89,   90,
+    91,   92,   93,   94,   95,   96,   97,   98,   99,   100,  101,  102,
+    104,  106,  108,  110,  112,  114,  116,  118,  120,  122,  124,  126,
+    128,  130,  132,  134,  136,  138,  140,  142,  144,  146,  148,  150,
+    152,  155,  158,  161,  164,  167,  170,  173,  176,  179,  182,  185,
+    188,  191,  194,  197,  200,  203,  207,  211,  215,  219,  223,  227,
+    231,  235,  239,  243,  247,  251,  255,  260,  265,  270,  275,  280,
+    285,  290,  295,  300,  305,  311,  317,  323,  329,  335,  341,  347,
+    353,  359,  366,  373,  380,  387,  394,  401,  408,  416,  424,  432,
+    440,  448,  456,  465,  474,  483,  492,  501,  510,  520,  530,  540,
+    550,  560,  571,  582,  593,  604,  615,  627,  639,  651,  663,  676,
+    689,  702,  715,  729,  743,  757,  771,  786,  801,  816,  832,  848,
+    864,  881,  898,  915,  933,  951,  969,  988,  1007, 1026, 1046, 1066,
+    1087, 1108, 1129, 1151, 1173, 1196, 1219, 1243, 1267, 1292, 1317, 1343,
+    1369, 1396, 1423, 1451, 1479, 1508, 1537, 1567, 1597, 1628, 1660, 1692,
+    1725, 1759, 1793, 1828,
+};
+
+uint8_t AV1QPtoQindex(uint8_t avenc_qp) {
+  uint8_t q_index = avenc_qp * 4;
+  if (q_index == 248) {
+    q_index = 249;
+  } else if (q_index == 252) {
+    q_index = 255;
+  }
+  return q_index;
+}
+
 AV1BitstreamBuilder::SequenceHeader FillAV1BuilderSequenceHeader(
     uint8_t num_temporal_layers,
     D3D12_VIDEO_ENCODER_AV1_PROFILE profile,
@@ -500,12 +536,6 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
   // For L1T1  and L1T2, one reference frame is sufficient.
   max_num_ref_frames_ = GetNumTemporalLayers() == 3 ? 2 : 1;
 
-  if (config.bitrate.mode() != Bitrate::Mode::kConstant &&
-      config.bitrate.mode() != Bitrate::Mode::kVariable) {
-    return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
-            "D3D12VideoEncoder only support CBR/VBR mode."};
-  }
-
   D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC codec{
       .Codec = D3D12_VIDEO_ENCODER_CODEC_AV1};
   EncoderStatus status =
@@ -558,11 +588,14 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
 
   framerate_ = config.framerate;
   bitrate_allocation_ = AllocateBitrateForDefaultEncoding(config);
-  software_brc_ = aom::AV1RateControlRTC::Create(
-      ConvertToRateControlConfig(is_screen_, bitrate_allocation_, input_size_,
-                                 config.framerate, GetNumTemporalLayers()));
-  rate_control_ = D3D12VideoEncoderRateControl::CreateCqp(
-      26 /*i_frame_qp*/, 30 /*p_frame_qp*/, 30 /*b_frame_qp*/);
+  if (config.bitrate.mode() == Bitrate::Mode::kConstant ||
+      config.bitrate.mode() == Bitrate::Mode::kVariable) {
+    software_brc_ = aom::AV1RateControlRTC::Create(
+        ConvertToRateControlConfig(is_screen_, bitrate_allocation_, input_size_,
+                                   config.framerate, GetNumTemporalLayers()));
+    rate_control_ = D3D12VideoEncoderRateControl::CreateCqp(
+        26 /*i_frame_qp*/, 30 /*p_frame_qp*/, 30 /*b_frame_qp*/);
+  }
 
   CHECK(config.gop_length.has_value());
   gop_sequence_ = {.IntraDistance = 0,
@@ -657,10 +690,12 @@ bool D3D12VideoEncodeAV1Delegate::UpdateRateControl(const Bitrate& bitrate,
                                                     uint32_t framerate) {
   DVLOG(3) << base::StringPrintf("%s: bitrate = %s, framerate = %d.", __func__,
                                  bitrate.ToString(), framerate);
+  if (!software_brc_) {
+    return D3D12VideoEncodeDelegate::UpdateRateControl(bitrate, framerate);
+  }
+
   if (bitrate.mode() != Bitrate::Mode::kConstant &&
       bitrate.mode() != Bitrate::Mode::kVariable) {
-    LOG(ERROR) << "D3D12VideoEncoder only support AV1 "
-                  "Constant/Variable bitrate mode ";
     return false;
   }
 
@@ -682,8 +717,6 @@ bool D3D12VideoEncodeAV1Delegate::UpdateRateControl(const Bitrate& bitrate,
 
 void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
     const VideoEncoder::EncodeOptions& options) {
-  CHECK(software_brc_);
-
   base::span picture_params_span = UNSAFE_BUFFERS(base::span(
       reinterpret_cast<uint8_t*>(&picture_params_), sizeof(picture_params_)));
   std::ranges::fill(picture_params_span, 0);
@@ -845,27 +878,61 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
         request_keyframe ? 0xFF : 1 << (libgav1::kReferenceFrameLast - 1);
   }
 
-  aom::AV1FrameParamsRTC frame_params{
-      .frame_type = request_keyframe ? aom::kKeyFrame : aom::kInterFrame,
-      .spatial_layer_id = 0,
-      .temporal_layer_id =
-          metadata_.svc_generic ? metadata_.svc_generic->temporal_idx : 0};
-  software_brc_->ComputeQP(frame_params);
-  int computed_qp = software_brc_->GetQP();
-  picture_params_.Quantization.BaseQIndex = computed_qp;
+  int qindex = AV1QPtoQindex(kAV1MaxQuantizer);
+  if (software_brc_) {
+    aom::AV1FrameParamsRTC frame_params{
+        .frame_type = request_keyframe ? aom::kKeyFrame : aom::kInterFrame,
+        .spatial_layer_id = 0,
+        .temporal_layer_id =
+            metadata_.svc_generic ? metadata_.svc_generic->temporal_idx : 0};
+    software_brc_->ComputeQP(frame_params);
+    qindex = software_brc_->GetQP();
+  } else if (options.quantizer.has_value()) {
+    qindex = AV1QPtoQindex(
+        std::clamp(static_cast<uint8_t>(options.quantizer.value()),
+                   kAV1MinQuantizer, kAV1MaxQuantizer));
+  }
+  picture_params_.Quantization.BaseQIndex = qindex;
   DVLOG(4) << base::StringPrintf(
       "Encoding picture: %d, is_keyframe = %d, QP = %d", picture_id_,
-      request_keyframe, computed_qp);
+      request_keyframe, qindex);
 
   // Enable SCC tools will turn off CDEF, loop filter, etc on I-frame.
   if (!picture_ctrl_.allow_intrabc) {
-    const aom::AV1LoopfilterLevel lf = software_brc_->GetLoopfilterLevel();
-    base::span(picture_params_.LoopFilter.LoopFilterLevel)[0] =
-        base::span(lf.filter_level)[0];
-    base::span(picture_params_.LoopFilter.LoopFilterLevel)[1] =
-        base::span(lf.filter_level)[1];
-    picture_params_.LoopFilter.LoopFilterLevelU = lf.filter_level_u;
-    picture_params_.LoopFilter.LoopFilterLevelV = lf.filter_level_v;
+    if (software_brc_) {
+      const aom::AV1LoopfilterLevel lf = software_brc_->GetLoopfilterLevel();
+      base::span(picture_params_.LoopFilter.LoopFilterLevel)[0] =
+          base::span(lf.filter_level)[0];
+      base::span(picture_params_.LoopFilter.LoopFilterLevel)[1] =
+          base::span(lf.filter_level)[1];
+      picture_params_.LoopFilter.LoopFilterLevelU = lf.filter_level_u;
+      picture_params_.LoopFilter.LoopFilterLevelV = lf.filter_level_v;
+    } else {
+      // Calculate loop filter levels based on libaom's approach from
+      // //third_party/libaom/source/libaom/av1/encoder/picklpf.c.
+      // These values were determined by linear fitting the result of the
+      // searched level for 8 bit depth:
+      // Keyframes: filt_guess = q * 0.06699 - 1.60817
+      // Other frames: filt_guess = q * inter_frame_multiplier + 2.48225
+      int filter_level = 0;
+      const int q = kAcQuantizerLookup[qindex];
+      int inter_frame_multiplier =
+          input_size_.Width * input_size_.Height > 352 * 288 ? 12034 : 6017;
+      // Convert to fixed point: 0.06699 ≈ 17563/262144, -1.60817 ≈
+      // -421574/262144, 2.48225 ≈ 650707/26214.
+      if (request_keyframe) {
+        filter_level = (q * 17563 - 421574 + (1 << 17)) >> 18;
+      } else {
+        filter_level = (q * inter_frame_multiplier + 650707 + (1 << 17)) >> 18;
+      }
+      filter_level = std::clamp(filter_level, 0, 63);
+      picture_params_.LoopFilter.LoopFilterLevel[0] = filter_level;
+      picture_params_.LoopFilter.LoopFilterLevel[1] = filter_level;
+      if (filter_level > 0) {
+        picture_params_.LoopFilter.LoopFilterLevelU = filter_level;
+        picture_params_.LoopFilter.LoopFilterLevelV = filter_level;
+      }
+    }
 
     auto& cdef = picture_params_.CDEF;
     cdef.CdefDampingMinus3 = 2;
@@ -1064,8 +1131,6 @@ size_t D3D12VideoEncodeAV1Delegate::PackAV1BitstreamHeader(
 
 EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
     base::span<uint8_t> bitstream_buffer) {
-  CHECK(software_brc_);
-
   auto metadata_or_error = video_encoder_wrapper_->GetEncoderOutputMetadata();
   if (!metadata_or_error.has_value()) {
     return std::move(metadata_or_error).error();
@@ -1121,7 +1186,9 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
   }
 
   // Notify SW BRC about recent encoded frame size.
-  software_brc_->PostEncodeUpdate(packed_header_size + compressed_size);
+  if (software_brc_) {
+    software_brc_->PostEncodeUpdate(packed_header_size + compressed_size);
+  }
 
   RefreshDPBAndDescriptors();
 
