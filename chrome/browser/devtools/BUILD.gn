@@ -313,8 +313,6 @@ static_library("devtools") {
       "devtools_ui_controller.cc",
       "devtools_ui_controller.h",
       "devtools_window_views.cc",
-      "global_confirm_info_bar.cc",
-      "global_confirm_info_bar.h",
       "process_sharing_infobar_delegate.cc",
       "process_sharing_infobar_delegate.h",
       "remote_debugging_server.cc",
@@ -328,6 +326,13 @@ static_library("devtools") {
         "device/cast_device_provider.h",
       ]
     }
+  }
+
+  if (!is_android || enable_desktop_android_extensions) {
+    sources += [
+      "global_confirm_info_bar.cc",
+      "global_confirm_info_bar.h",
+    ]
   }
 
   if (is_mac) {
