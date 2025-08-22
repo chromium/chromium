@@ -163,9 +163,19 @@ public class ReorderDelegate {
                 instanceOfGroup
                         && ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID);
+        boolean isMultiSelectedTab =
+                instanceOfTab
+                        && mModel.isTabMultiSelected(((StripLayoutTab) interactingView).getTabId())
+                        && mModel.getMultiSelectedTabsCount() > 1;
         if (mSourceViewDragDropReorderStrategy != null
                 && (instanceOfTab || shouldDragDropGroup)
                 && reorderType == ReorderType.START_DRAG_DROP) {
+            if (isMultiSelectedTab) {
+                // Record the number of tabs that are multi-selected when the user starts dragging
+                // a multi-selected tab. This will include both drag-drop and reordering within the
+                // strip.
+                StripLayoutUtils.recordTabMultiSelectionTabCount(mModel);
+            }
             return mSourceViewDragDropReorderStrategy;
         } else if ((instanceOfTab || shouldDragDropGroup)
                 && reorderType == ReorderType.DRAG_ONTO_STRIP) {
@@ -174,9 +184,7 @@ public class ReorderDelegate {
             return mExternalViewDragDropReorderStrategy;
         } else {
             if (instanceOfTab) {
-                StripLayoutTab tab = (StripLayoutTab) interactingView;
-                if (mModel.isTabMultiSelected(tab.getTabId())
-                        && mModel.getMultiSelectedTabsCount() > 1) {
+                if (isMultiSelectedTab) {
                     return mMultiTabStrategy;
                 }
                 return mTabStrategy;

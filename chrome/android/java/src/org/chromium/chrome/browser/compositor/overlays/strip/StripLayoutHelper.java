@@ -3018,6 +3018,7 @@ public class StripLayoutHelper
     }
 
     private List<Integer> getMultiSelectedTabIds() {
+        StripLayoutUtils.recordTabMultiSelectionTabCount(mModel);
         List<Integer> multiSelectedTabs = new ArrayList<>();
         if (mModel == null) return multiSelectedTabs;
         for (StripLayoutTab stripTab : mStripTabs) {

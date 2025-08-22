@@ -12,6 +12,7 @@ import android.view.View;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -367,6 +368,17 @@ public class StripLayoutUtils {
             if (elem == desiredElem) return true;
         }
         return false;
+    }
+
+    /**
+     * Records the number of tabs that are currently multi-selected.
+     *
+     * @param tabModel The {@link TabModel}.
+     */
+    public static void recordTabMultiSelectionTabCount(@Nullable TabModel tabModel) {
+        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled() || tabModel == null) return;
+        RecordHistogram.recordCount100Histogram(
+                "Tabs.Selections.Count",tabModel.getMultiSelectedTabsCount());
     }
 
     // Other methods.
