@@ -78,8 +78,6 @@ namespace extensions {
 
 namespace {
 
-bool g_should_immediately_update = false;
-
 // For sanity checking on update frequency - enforced in release mode only.
 #if defined(NDEBUG)
 constexpr base::TimeDelta kMinUpdateFrequency = base::Seconds(30);
@@ -230,11 +228,7 @@ void ExtensionUpdater::Start() {
   alive_ = true;
   // Check soon, and set up the first delayed check.
   if (!g_skip_scheduled_checks_for_tests) {
-    if (g_should_immediately_update) {
-      CheckNow({});
-    } else {
-      CheckSoon();
-    }
+    CheckSoon();
     ScheduleNextCheck();
   }
 }
@@ -325,11 +319,6 @@ void ExtensionUpdater::SetExtensionCacheForTesting(
 void ExtensionUpdater::SetExtensionDownloaderForTesting(
     std::unique_ptr<ExtensionDownloader> downloader) {
   downloader_.swap(downloader);
-}
-
-// static
-void ExtensionUpdater::UpdateImmediatelyForFirstRun() {
-  g_should_immediately_update = true;
 }
 
 void ExtensionUpdater::SetBackoffPolicyForTesting(

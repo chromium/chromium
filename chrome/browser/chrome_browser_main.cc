@@ -239,6 +239,7 @@
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/pref_names.h"
 #include "extensions/components/javascript_dialog_extensions_client/javascript_dialog_extension_client_impl.h"
 #endif
 
@@ -1590,6 +1591,16 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
         first_run::StartBookmarksImportFromDict(
             profile, std::move(master_prefs_->import_bookmarks_dict));
       }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      if (base::FeatureList::IsEnabled(features::kInitialExternalExtensions)) {
+        // Store the initial extension IDs into the profile's prefs so that
+        // InitialExternalExtensionLoader can later pick them up.
+        profile->GetPrefs()->SetList(
+            extensions::pref_names::kInitialInstallList,
+            std::move(master_prefs_->initial_extensions));
+      }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     }
 
     // Note: This can pop-up the first run consent dialog on Linux & Mac.

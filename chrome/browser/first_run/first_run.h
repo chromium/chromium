@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/installer/util/initial_preferences.h"
+#include "extensions/buildflags/buildflags.h"
 
 class GURL;
 class Profile;
@@ -65,6 +66,9 @@ struct MasterPrefs {
   std::string import_bookmarks_path;
   std::string suppress_default_browser_prompt_for_version;
   base::Value::Dict import_bookmarks_dict;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  base::Value::List initial_extensions;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_MAC)
   bool confirm_to_quit;
 #endif

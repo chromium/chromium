@@ -141,6 +141,12 @@ BASE_FEATURE(kIncomingCallNotifications,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+BASE_FEATURE(kInitialExternalExtensions,
+             "InitialExternalExtensions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 #if !BUILDFLAG(IS_ANDROID)
 // Adds a "Snooze" action to mute notifications during screen sharing sessions.
 BASE_FEATURE(kMuteNotificationSnoozeAction,

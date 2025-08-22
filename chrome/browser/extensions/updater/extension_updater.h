@@ -195,10 +195,6 @@ class ExtensionUpdater : public KeyedService,
   void SetExtensionDownloaderForTesting(
       std::unique_ptr<ExtensionDownloader> downloader);
 
-  // After this is called, the next ExtensionUpdater instance to be started will
-  // call CheckNow() instead of CheckSoon() for its initial update.
-  static void UpdateImmediatelyForFirstRun();
-
   // For testing, changes the backoff policy for ExtensionDownloader's manifest
   // queue to get less initial delay and the tests don't time out.
   void SetBackoffPolicyForTesting(

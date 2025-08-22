@@ -314,16 +314,12 @@ std::vector<std::string> InitialPreferences::GetFirstRunTabs() const {
   return GetNamedList(kFirstRunTabs, *initial_dictionary_);
 }
 
-bool InitialPreferences::GetExtensionsBlock(
-    const base::Value::Dict*& extensions) const {
-  const base::Value::Dict* extensions_block =
-      initial_dictionary_->FindDictByDottedPath(
-          initial_preferences::kExtensionsBlock);
-  if (!extensions_block)
-    return false;
-  extensions = extensions_block;
-  return true;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+const base::Value::List* InitialPreferences::GetInitialExtensionsBlock() const {
+  return initial_dictionary_->FindList(
+      initial_preferences::kInitialExtensionsBlock);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 const base::Value::Dict* InitialPreferences::GetBookmarksBlock() const {
   return initial_dictionary_->FindDict(initial_preferences::kBookmarksBlock);

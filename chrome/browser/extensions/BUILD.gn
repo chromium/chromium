@@ -808,6 +808,8 @@ source_set("extensions") {
       "external_install_error_desktop.h",
       "file_handlers/file_handling_launch_utils.cc",
       "file_handlers/file_handling_launch_utils.h",
+      "initial_external_extension_loader.cc",
+      "initial_external_extension_loader.h",
       "menu_icon_loader.h",
       "navigation_extension_enabler.cc",
       "navigation_extension_enabler.h",

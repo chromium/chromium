@@ -57,9 +57,16 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/browser_features.h"
+#include "components/crx_file/id_util.h"
+#include "extensions/browser/pref_names.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace content {
 class BrowserContext;
@@ -398,6 +405,15 @@ void SetupInitialPrefsFromInstallPrefs(
     }
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (base::FeatureList::IsEnabled(features::kInitialExternalExtensions)) {
+    if (const base::Value::List* initial_extensions =
+            install_prefs.GetInitialExtensionsBlock()) {
+      out_prefs->initial_extensions = initial_extensions->Clone();
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 #if BUILDFLAG(IS_MAC)
   if (install_prefs.GetBool(prefs::kConfirmToQuitEnabled, &value) && value)
     out_prefs->confirm_to_quit = true;
@@ -524,17 +540,19 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
 
     initial_dictionary.Remove(installer::initial_preferences::kBookmarksBlock);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    // Extensions are not copied verbatim into prefs. Their installation
+    // is managed by the `InitialExternalExtensionsLoader` which will load
+    // extension ids from the local prefs.
+    initial_dictionary.RemoveByDottedPath(
+        installer::initial_preferences::kExtensionsBlock);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
     if (!chrome_prefs::InitializePrefsFromMasterPrefs(
             profiles::GetDefaultProfileDir(user_data_dir),
             std::move(initial_dictionary),
             g_browser_process->os_crypt_async())) {
       DLOG(ERROR) << "Failed to initialize from initial preferences.";
-    }
-
-    const base::Value::Dict* extensions = nullptr;
-    if (initial_prefs->GetExtensionsBlock(extensions)) {
-      DVLOG(1) << "Extensions block found in initial preferences";
-      extensions::ExtensionUpdater::UpdateImmediatelyForFirstRun();
     }
 
     internal::SetupInitialPrefsFromInstallPrefs(*initial_prefs, out_prefs);

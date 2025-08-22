@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/external_pref_loader.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/initial_external_extension_loader.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -895,6 +897,21 @@ void ExternalProviderImpl::CreateExternalProviders(
       service, base::MakeRefCounted<ExternalComponentLoader>(profile), profile,
       ManifestLocation::kInvalidLocation, ManifestLocation::kExternalComponent,
       Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (base::FeatureList::IsEnabled(features::kInitialExternalExtensions)) {
+    auto initial_external_extensions_provider =
+        std::make_unique<ExternalProviderImpl>(
+            service,
+            base::MakeRefCounted<InitialExternalExtensionLoader>(
+                *profile->GetPrefs()),
+            profile, ManifestLocation::kExternalPref,
+            ManifestLocation::kExternalPrefDownload, Extension::FROM_WEBSTORE);
+    initial_external_extensions_provider->set_allow_updates(true);
+    initial_external_extensions_provider->set_auto_acknowledge(false);
+    provider_list->push_back(std::move(initial_external_extensions_provider));
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace extensions

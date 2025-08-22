@@ -2279,6 +2279,8 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       pref_names::kExtensionInstallCloudPolicyChecksEnabled,
       /*default_value=*/false);
+
+  registry->RegisterListPref(pref_names::kInitialInstallList);
 }
 
 template <class ExtensionIdContainer>

@@ -180,6 +180,11 @@ const auto kTrackedPrefs = std::to_array<prefs::TrackedPreferenceMetadata>({
     // Allows it to trigger a write to the protected pref store.
     {36, user_prefs::kScheduleToFlushToDisk, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    {37, extensions::pref_names::kInitialInstallList,
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     ValueType::IMPERSONAL},
+#endif
 
     // See note at top, new items added here also need to be added to
     // histograms.xml's TrackedPreference enum.

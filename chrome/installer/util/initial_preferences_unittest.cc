@@ -199,32 +199,48 @@ TEST_F(InitialPreferencesTest, FirstRunTabs) {
   EXPECT_EQ("new_tab_page", tabs[2]);
 }
 
-// In this test instead of using our synthetic json file, we use an
-// actual test case from the extensions unittest. The hope here is that if
-// they change something in the manifest this test will break, but in
-// general it is expected the extension format to be backwards compatible.
-TEST(MasterPrefsExtension, ValidateExtensionJSON) {
-  base::FilePath prefs_path;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &prefs_path));
-  prefs_path = prefs_path.AppendASCII("extensions")
-                   .AppendASCII("good")
-                   .AppendASCII("Preferences");
+// Test the parsing of the initial_extensions block from initial preferences.
+TEST_F(InitialPreferencesTest, ParseInitialExtensions) {
+  constexpr char kTestExtensionId1[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  constexpr char kTestExtensionId2[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+  constexpr std::string_view kInitialExtensions = R"({
+  "initial_extensions": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ]
+  })";
 
-  installer::InitialPreferences prefs(prefs_path);
-  const base::Value::Dict* extensions = nullptr;
-  EXPECT_TRUE(prefs.GetExtensionsBlock(extensions));
-  EXPECT_TRUE(extensions->FindIntByDottedPath(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.location"));
-  EXPECT_TRUE(extensions->FindIntByDottedPath(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.state"));
-  EXPECT_TRUE(extensions->FindStringByDottedPath(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.path"));
-  EXPECT_TRUE(extensions->FindStringByDottedPath(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.key"));
-  EXPECT_TRUE(extensions->FindStringByDottedPath(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.name"));
-  EXPECT_TRUE(extensions->FindStringByDottedPath(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.version"));
+  ASSERT_TRUE(base::WriteFile(prefs_file(), kInitialExtensions));
+  installer::InitialPreferences prefs(prefs_file());
+  ASSERT_TRUE(prefs.read_from_file());
+
+  const base::Value::List* extensions = prefs.GetInitialExtensionsBlock();
+  ASSERT_NE(extensions, nullptr);
+  ASSERT_EQ(extensions->size(), 2u);
+
+  const std::string* id1 = (*extensions)[0].GetIfString();
+  ASSERT_NE(id1, nullptr);
+  EXPECT_EQ(*id1, kTestExtensionId1);
+
+  const std::string* id2 = (*extensions)[1].GetIfString();
+  ASSERT_NE(id2, nullptr);
+  EXPECT_EQ(*id2, kTestExtensionId2);
+}
+
+// Test that GetInitialExtensionsBlock returns null when the block is absent.
+TEST_F(InitialPreferencesTest, MissingInitialExtensionsBlock) {
+  constexpr std::string_view kDistribution = R"({
+  "distribution": {
+      "verbose_logging": true
+    }
+  })";
+
+  ASSERT_TRUE(base::WriteFile(prefs_file(), kDistribution));
+  installer::InitialPreferences prefs(prefs_file());
+  ASSERT_TRUE(prefs.read_from_file());
+
+  const base::Value::List* extensions = prefs.GetInitialExtensionsBlock();
+  EXPECT_EQ(extensions, nullptr);
 }
 
 // Test the parsing of bookmarks block from initial preferences.
