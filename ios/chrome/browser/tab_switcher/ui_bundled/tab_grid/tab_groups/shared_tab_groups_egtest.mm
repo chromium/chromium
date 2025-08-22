@@ -1184,7 +1184,8 @@ void WaitForFakeJoinFlowView() {
 
 // Tests that tapping items on Recent Activity takes an action corresponded to
 // the item.
-- (void)testTapRecentActivityItems {
+// TODO(crbug.com/440612088): This test is flaky.
+- (void)FLAKY_testTapRecentActivityItems {
   AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
