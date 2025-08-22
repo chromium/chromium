@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/sync_utils/plus_address_data_type_controller.h"
+#include "components/plus_addresses/core/browser/sync_utils/plus_address_data_type_controller.h"
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"

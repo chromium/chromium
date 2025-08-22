@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_SYNC_UTILS_PLUS_ADDRESS_DATA_TYPE_CONTROLLER_H_
-#define COMPONENTS_PLUS_ADDRESSES_SYNC_UTILS_PLUS_ADDRESS_DATA_TYPE_CONTROLLER_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_SYNC_UTILS_PLUS_ADDRESS_DATA_TYPE_CONTROLLER_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_SYNC_UTILS_PLUS_ADDRESS_DATA_TYPE_CONTROLLER_H_
 
 #include <memory>
 
@@ -32,7 +32,7 @@ namespace plus_addresses {
 // the user type not supported.
 // Tested by the sync integration tests.
 class PlusAddressDataTypeController : public syncer::DataTypeController,
-                                       public syncer::SyncServiceObserver {
+                                      public syncer::SyncServiceObserver {
  public:
   PlusAddressDataTypeController(
       syncer::DataType type,
@@ -67,4 +67,4 @@ class PlusAddressDataTypeController : public syncer::DataTypeController,
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_SYNC_UTILS_PLUS_ADDRESS_DATA_TYPE_CONTROLLER_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_SYNC_UTILS_PLUS_ADDRESS_DATA_TYPE_CONTROLLER_H_
