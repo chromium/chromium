@@ -5,6 +5,9 @@ thomasanderson@chromium.org
 # Chrome Build Team members
 file://infra/config/groups/chrome-build/OWNERS
 
+# For blessing manual libc++ rolls.
+per-file deps_revisions.gni=file://buildtools/third_party/libc++/OWNERS
+
 # For the libc++ autoroller.
 per-file deps_revisions.gni=chromium-autoroll@skia-public.iam.gserviceaccount.com
 per-file third_party/libc++/libcxx_headers.gni=chromium-autoroll@skia-public.iam.gserviceaccount.com
