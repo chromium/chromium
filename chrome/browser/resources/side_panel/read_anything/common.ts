@@ -5,6 +5,8 @@
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
+import {TextSegmenter} from './text_segmenter.js';
+
 // Determined by experimentation - can be adjusted to fine tune for different
 // platforms.
 export const minOverflowLengthToScroll = 75;
@@ -106,12 +108,9 @@ export function isWhitespace(s: string): boolean {
   return /\s+/g.test(s);
 }
 
-// Estimate the word count of the given text by splitting it by whitespace
-// characters.
-// TODO(crbug.com/c/372890165): Handle scriptio continua languages
-// that don't use whitespace to separate words.
+// Estimate the word count of the given text using the TextSegmenter class.
 export function getWordCount(text: string): number {
-  return text.split(/\s+/).filter(word => word.length > 0).length;
+  return TextSegmenter.getInstance().getWordCount(text);
 }
 
 // Returns true if the given rect is mostly within the visible window.

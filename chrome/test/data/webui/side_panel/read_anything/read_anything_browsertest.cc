@@ -309,6 +309,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, HighlightMenu) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, TextSegmenter) {
+  RunSidePanelTest("side_panel/read_anything/text_segmenter_test.js",
+                   "mocha.run()");
+}
+
 class ReadAnythingReadAloudPhraseHighlightingMochaTest
     : public ReadAnythingMochaBrowserTest {
  protected:
