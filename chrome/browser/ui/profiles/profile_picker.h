@@ -26,7 +26,7 @@ class View;
 class WebView;
 }  // namespace views
 
-enum class StartupProfileModeReason;
+enum class StartupProfileMode;
 class ForceSigninUIError;
 
 class ProfilePicker {
@@ -321,7 +321,7 @@ class ProfilePicker {
   // Returns whether to show profile picker at launch. This can be called on
   // startup or when Chrome is re-opened, e.g. when clicking on the dock icon on
   // MacOS when there are no windows, or from Windows tray icon.
-  static StartupProfileModeReason GetStartupModeReason();
+  static StartupProfileMode GetStartupMode();
 };
 
 #endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_

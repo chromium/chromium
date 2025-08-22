@@ -522,38 +522,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Timeout: Sign in error"/>
 </enum>
 
-<enum name="ProfilePickerStartupProfileMode">
-  <int value="0" label="kBrowserWindow"/>
-  <int value="1" label="kProfilePicker"/>
-  <int value="2" label="kError"/>
-</enum>
-
-<enum name="ProfilePickerStartupProfileReason">
-  <int value="0" label="kError"/>
-  <int value="1" label="kMultipleProfiles"/>
-  <int value="2" label="kPickerForcedByPolicy"/>
-  <int value="10" label="kGuestModeRequested"/>
-  <int value="11" label="kGuestSessionLacros"/>
-  <int value="12" label="kProfileDirSwitch"/>
-  <int value="13" label="kProfileEmailSwitch"/>
-  <int value="14" label="kIgnoreProfilePicker"/>
-  <int value="15" label="kCommandLineTabs"/>
-  <int value="16" label="kPickerNotSupported"/>
-  <int value="17" label="kWasRestarted"/>
-  <int value="18" label="kIncognitoModeRequested"/>
-  <int value="19" label="kAppRequested"/>
-  <int value="20" label="kUninstallApp"/>
-  <int value="21" label="kGcpwSignin"/>
-  <int value="22" label="kLaunchWithoutWindow"/>
-  <int value="23" label="kNotificationLaunchIdWin1"/>
-  <int value="24" label="kNotificationLaunchIdWin2"/>
-  <int value="25" label="kPickerDisabledByPolicy"/>
-  <int value="26" label="kProfilesDisabledLacros"/>
-  <int value="27" label="kSingleProfile"/>
-  <int value="28" label="kInactiveProfiles"/>
-  <int value="29" label="kUserOptedOut"/>
-</enum>
-
 <enum name="ProfileSignedInFlowOutcome">
   <int value="0" label="A consumer account is added and syncing"/>
   <int value="1" label="A consumer account is added without sync"/>

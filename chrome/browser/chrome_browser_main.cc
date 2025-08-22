@@ -393,8 +393,6 @@ StartupProfileInfo CreateInitialProfile(
   if (profile_info.mode == StartupProfileMode::kError &&
       !last_used_profile_set) {
     profile_info = GetFallbackStartupProfile();
-    base::UmaHistogramEnumeration(
-        "ProfilePicker.StartupMode.FallbackProfileUsed", profile_info.mode);
   }
 
   if (profile_info.mode == StartupProfileMode::kError) {
@@ -452,13 +450,7 @@ void ProcessSingletonNotificationCallbackImpl(
   StartupProfilePathInfo startup_profile_path_info =
       GetStartupProfilePath(current_directory, command_line,
                             /*ignore_profile_picker=*/false);
-  DCHECK_NE(startup_profile_path_info.reason, StartupProfileModeReason::kError);
-  base::UmaHistogramEnumeration(
-      "ProfilePicker.StartupMode.NotificationCallback",
-      StartupProfileModeFromReason(startup_profile_path_info.reason));
-  base::UmaHistogramEnumeration(
-      "ProfilePicker.StartupReason.NotificationCallback",
-      startup_profile_path_info.reason);
+  DCHECK_NE(startup_profile_path_info.mode, StartupProfileMode::kError);
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       command_line, current_directory, startup_profile_path_info);
@@ -1528,8 +1520,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // and more directly Profile.CreateAndInitializeProfile.
   StartupProfileInfo profile_info = CreateInitialProfile(
       user_data_dir_, *base::CommandLine::ForCurrentProcess());
-  base::UmaHistogramEnumeration(
-      "ProfilePicker.StartupMode.CreateInitialProfile", profile_info.mode);
 
   if (profile_info.mode == StartupProfileMode::kError)
     return content::RESULT_CODE_NORMAL_EXIT;

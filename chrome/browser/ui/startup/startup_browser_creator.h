@@ -47,46 +47,8 @@ enum class StartupProfileMode {
   kMaxValue = kError,
 };
 
-// Indicates the reason why the StartupProfileMode was chosen.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class StartupProfileModeReason {
-  kError = 0,
-
-  // Cases when the profile picker is shown:
-  kMultipleProfiles = 1,
-  kPickerForcedByPolicy = 2,
-
-  // Cases when the profile picker is not shown:
-  kGuestModeRequested = 10,
-  // Deleted kGuestSessionLacros = 11,
-  kProfileDirSwitch = 12,
-  kProfileEmailSwitch = 13,
-  kIgnoreProfilePicker = 14,
-  kCommandLineTabs = 15,
-  kPickerNotSupported = 16,
-  kWasRestarted = 17,
-  kIncognitoModeRequested = 18,
-  kAppRequested = 19,
-  kUninstallApp = 20,
-  kGcpwSignin = 21,
-  kLaunchWithoutWindow = 22,
-  // The check for Win notifications seems to be done twice. Record these
-  // separately, just in case.
-  kNotificationLaunchIdWin1 = 23,
-  kNotificationLaunchIdWin2 = 24,
-  kPickerDisabledByPolicy = 25,
-  // Deleted kProfilesDisabledLacros = 26
-  kSingleProfile = 27,
-  kInactiveProfiles = 28,
-  kUserOptedOut = 29,
-  kProfileEmailSwitchCreateProfile = 30,
-
-  kMaxValue = kProfileEmailSwitchCreateProfile,
-};
-
 // Bundles the startup profile path together with a `StartupProfileMode`.
-// Depending on `StartupProfileModeFromReason(reason)`, `path` is either:
+// Depending on `mode`, `path` is either:
 // - regular profile path for `kBrowserWindow`; if the guest mode is requested,
 //   may contain either the default profile path or the guest profile path
 // - empty profile path for `kProfilePicker` and `kError`
@@ -94,7 +56,7 @@ enum class StartupProfileModeReason {
 // mode.
 struct StartupProfilePathInfo {
   base::FilePath path;
-  StartupProfileModeReason reason = StartupProfileModeReason::kError;
+  StartupProfileMode mode = StartupProfileMode::kError;
 };
 
 // Bundles the startup profile together with a StartupProfileMode.
@@ -107,10 +69,6 @@ struct StartupProfileInfo {
   raw_ptr<Profile, LeakedDanglingUntriaged> profile;
   StartupProfileMode mode;
 };
-
-// Whether the profile picker should be shown based on `reason`.
-StartupProfileMode StartupProfileModeFromReason(
-    StartupProfileModeReason reason);
 
 // class containing helpers for BrowserMain to spin up a new instance and
 // initialize the profile.

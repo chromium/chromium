@@ -1692,7 +1692,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RestoreWithNoStartupWindow) {
   testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 2);
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
-      empty, {}, {dest_path1, StartupProfileModeReason::kWasRestarted});
+      empty, {}, {dest_path1, StartupProfileMode::kBrowserWindow});
   run_loop.Run();
 
   // profile1 and profile2 browser windows should be opened.
@@ -4016,8 +4016,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
   StartupProfilePathInfo startup_profile_path_info =
       GetStartupProfilePath(current_dir, command_line,
                             /*ignore_profile_picker=*/false);
-  EXPECT_EQ(startup_profile_path_info.reason,
-            StartupProfileModeReason::kMultipleProfiles);
+  EXPECT_EQ(startup_profile_path_info.mode, StartupProfileMode::kProfilePicker);
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       command_line, current_dir, startup_profile_path_info);
 
@@ -4059,8 +4058,7 @@ IN_PROC_BROWSER_TEST_F(SearchQueryStartupBrowserCreatorPickerTest,
   StartupProfilePathInfo startup_profile_path_info =
       GetStartupProfilePath(current_dir, command_line,
                             /*ignore_profile_picker=*/false);
-  EXPECT_EQ(startup_profile_path_info.reason,
-            StartupProfileModeReason::kCommandLineTabs);
+  EXPECT_EQ(startup_profile_path_info.mode, StartupProfileMode::kBrowserWindow);
 }
 
 class StartupBrowserCreatorPickerInfobarTest
