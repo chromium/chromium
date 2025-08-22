@@ -332,10 +332,9 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
                 NewScreencastPreconditionState::kEnabled,
                 {NewScreencastPreconditionReason::kEnabledBySoda})))
             .Times(0);
-        EXPECT_CALL(mock_client_, StopSpeechRecognition())
-            .WillOnce(testing::Invoke([&]() {
-              controller_->OnSpeechRecognitionStopped(/*forced=*/false);
-            }));
+        EXPECT_CALL(mock_client_, StopSpeechRecognition()).WillOnce([&]() {
+          controller_->OnSpeechRecognitionStopped(/*forced=*/false);
+        });
         EXPECT_CALL(*mock_metadata_controller_, SaveMetadata(_)).Times(0);
 
         controller_->OnRecordingEnded();
@@ -489,9 +488,9 @@ TEST_P(ProjectorOnDlpRestrictionCheckedAtVideoEndTest, WrapUpRecordingOnce) {
           } else {
             EXPECT_CALL(mock_client_, ForceEndSpeechRecognition())
                 .Times(1)
-                .WillOnce(testing::Invoke([&]() {
+                .WillOnce([&]() {
                   controller_->OnSpeechRecognitionStopped(/*forced=*/true);
-                }));
+                });
 
             // Simulate that the timer has fired.
             EXPECT_TRUE(controller_->get_timer_for_testing()->IsRunning());
@@ -704,10 +703,9 @@ TEST_P(ProjectorSpeechRecognitionEndTest, SpeechRecognitionEndMetric) {
       /*expected_count=*/1);
 
   // Tests speech recognition successfully stopping.
-  ON_CALL(mock_client_, StopSpeechRecognition)
-      .WillByDefault(testing::Invoke([&]() {
-        controller_->OnSpeechRecognitionStopped(/*forced=*/false);
-      }));
+  ON_CALL(mock_client_, StopSpeechRecognition).WillByDefault([&]() {
+    controller_->OnSpeechRecognitionStopped(/*forced=*/false);
+  });
   controller_->OnRecordingStarted(root);
   controller_->OnRecordingEnded();
   histogram_tester_.ExpectBucketCount(
@@ -719,8 +717,8 @@ TEST_P(ProjectorSpeechRecognitionEndTest, SpeechRecognitionEndMetric) {
   ON_CALL(mock_client_, StopSpeechRecognition).WillByDefault(testing::Return());
   EXPECT_CALL(mock_client_, ForceEndSpeechRecognition())
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&]() { controller_->OnSpeechRecognitionStopped(/*forced=*/true); }));
+      .WillOnce(
+          [&]() { controller_->OnSpeechRecognitionStopped(/*forced=*/true); });
   controller_->OnRecordingStarted(root);
   controller_->OnRecordingEnded();
   controller_->get_timer_for_testing()->FireNow();

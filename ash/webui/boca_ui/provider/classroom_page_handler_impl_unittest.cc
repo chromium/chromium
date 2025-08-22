@@ -131,9 +131,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllCourses) {
   base::MockCallback<ListCoursesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+      .WillOnce([&](std::vector<mojom::CoursePtr> courses) {
         response = std::move(courses);
-      }));
+      });
 
   base::RunLoop run_loop;
   classroom_handler()->ListCourses(
@@ -159,9 +159,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListCoursesOnHttpError) {
   base::MockCallback<ListCoursesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+      .WillOnce([&](std::vector<mojom::CoursePtr> courses) {
         response = std::move(courses);
-      }));
+      });
 
   base::RunLoop run_loop;
   classroom_handler()->ListCourses(
@@ -212,9 +212,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListCoursesMultiplePages) {
   base::MockCallback<ListCoursesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+      .WillOnce([&](std::vector<mojom::CoursePtr> courses) {
         response = std::move(courses);
-      }));
+      });
 
   base::RunLoop run_loop;
   classroom_handler()->ListCourses(
@@ -246,9 +246,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllStudents) {
   base::MockCallback<ListCoursesCallback> course_callback;
   EXPECT_CALL(course_callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+      .WillOnce([&](std::vector<mojom::CoursePtr> courses) {
         course_response = std::move(courses);
-      }));
+      });
 
   base::RunLoop course_run_loop;
   classroom_handler()->ListCourses(
@@ -288,9 +288,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllStudents) {
   base::MockCallback<ListStudentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::IdentityPtr> students) {
+      .WillOnce([&](std::vector<mojom::IdentityPtr> students) {
         response = std::move(students);
-      }));
+      });
 
   base::RunLoop run_loop;
   classroom_handler()->ListStudents(
@@ -327,9 +327,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsOnHttpError) {
   base::MockCallback<ListCoursesCallback> course_callback;
   EXPECT_CALL(course_callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+      .WillOnce([&](std::vector<mojom::CoursePtr> courses) {
         course_response = std::move(courses);
-      }));
+      });
 
   base::RunLoop course_run_loop;
   classroom_handler()->ListCourses(
@@ -344,9 +344,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsOnHttpError) {
   base::MockCallback<ListStudentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::IdentityPtr> students) {
+      .WillOnce([&](std::vector<mojom::IdentityPtr> students) {
         response = std::move(students);
-      }));
+      });
 
   base::RunLoop run_loop;
   classroom_handler()->ListStudents(
@@ -375,9 +375,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsMultiplePages) {
   base::MockCallback<ListCoursesCallback> course_callback;
   EXPECT_CALL(course_callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+      .WillOnce([&](std::vector<mojom::CoursePtr> courses) {
         course_response = std::move(courses);
-      }));
+      });
 
   base::RunLoop course_run_loop;
   classroom_handler()->ListCourses(
@@ -452,9 +452,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsMultiplePages) {
   base::MockCallback<ListStudentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::IdentityPtr> students) {
+      .WillOnce([&](std::vector<mojom::IdentityPtr> students) {
         response = std::move(students);
-      }));
+      });
 
   base::RunLoop run_loop;
   classroom_handler()->ListStudents(
@@ -486,9 +486,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsWithInvalidCourseId) {
   base::MockCallback<ListCoursesCallback> course_callback;
   EXPECT_CALL(course_callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+      .WillOnce([&](std::vector<mojom::CoursePtr> courses) {
         course_response = std::move(courses);
-      }));
+      });
 
   base::RunLoop course_run_loop;
   classroom_handler()->ListCourses(
@@ -500,9 +500,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsWithInvalidCourseId) {
   base::MockCallback<ListStudentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::IdentityPtr> students) {
+      .WillOnce([&](std::vector<mojom::IdentityPtr> students) {
         response = std::move(students);
-      }));
+      });
 
   base::RunLoop run_loop;
   classroom_handler()->ListStudents(
@@ -531,9 +531,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllAssignments) {
   base::MockCallback<ListCoursesCallback> course_callback;
   EXPECT_CALL(course_callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+      .WillOnce([&](std::vector<mojom::CoursePtr> courses) {
         course_response = std::move(courses);
-      }));
+      });
 
   base::RunLoop course_run_loop;
   classroom_handler()->ListCourses(
@@ -642,10 +642,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllAssignments) {
   base::MockCallback<ListAssignmentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<mojom::AssignmentPtr> assignments) {
-            response = std::move(assignments);
-          }));
+      .WillOnce([&](std::vector<mojom::AssignmentPtr> assignments) {
+        response = std::move(assignments);
+      });
 
   base::RunLoop run_loop;
   classroom_handler()->ListAssignments(
@@ -738,9 +737,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListAssignmentsOnHttpError) {
   base::MockCallback<ListCoursesCallback> course_callback;
   EXPECT_CALL(course_callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+      .WillOnce([&](std::vector<mojom::CoursePtr> courses) {
         course_response = std::move(courses);
-      }));
+      });
 
   base::RunLoop course_run_loop;
   classroom_handler()->ListCourses(
@@ -755,10 +754,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListAssignmentsOnHttpError) {
   base::MockCallback<ListAssignmentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<mojom::AssignmentPtr> assignments) {
-            response = std::move(assignments);
-          }));
+      .WillOnce([&](std::vector<mojom::AssignmentPtr> assignments) {
+        response = std::move(assignments);
+      });
 
   base::RunLoop run_loop;
   classroom_handler()->ListAssignments(
@@ -787,9 +785,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListAssignmentsMultiplePages) {
   base::MockCallback<ListCoursesCallback> course_callback;
   EXPECT_CALL(course_callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+      .WillOnce([&](std::vector<mojom::CoursePtr> courses) {
         course_response = std::move(courses);
-      }));
+      });
 
   base::RunLoop course_run_loop;
   classroom_handler()->ListCourses(
@@ -851,10 +849,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListAssignmentsMultiplePages) {
   base::MockCallback<ListAssignmentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<mojom::AssignmentPtr> assignments) {
-            response = std::move(assignments);
-          }));
+      .WillOnce([&](std::vector<mojom::AssignmentPtr> assignments) {
+        response = std::move(assignments);
+      });
 
   base::RunLoop run_loop;
   classroom_handler()->ListAssignments(

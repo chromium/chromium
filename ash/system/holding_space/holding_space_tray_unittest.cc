@@ -1446,12 +1446,11 @@ TEST_F(HoldingSpaceTrayTest, MultiselectInTouchMode) {
   // Tap an unselected view. This is the only way to open an item via touch.
   // There must be *no* views currently selected when tapping a view.
   EXPECT_CALL(*client(), OpenItems)
-      .WillOnce(
-          testing::Invoke([&](const std::vector<const HoldingSpaceItem*>& items,
-                              HoldingSpaceClient::SuccessCallback callback) {
-            ASSERT_EQ(items.size(), 1u);
-            EXPECT_EQ(items[0], item_views[2]->item());
-          }));
+      .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items,
+                    HoldingSpaceClient::SuccessCallback callback) {
+        ASSERT_EQ(items.size(), 1u);
+        EXPECT_EQ(items[0], item_views[2]->item());
+      });
   GestureTap(item_views[2]);
   testing::Mock::VerifyAndClearExpectations(client());
 }

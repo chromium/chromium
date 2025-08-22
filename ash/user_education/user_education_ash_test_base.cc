@@ -20,7 +20,6 @@ namespace ash {
 namespace {
 
 // Aliases.
-using ::testing::Invoke;
 using ::testing::WithArg;
 using ::testing::WithArgs;
 
@@ -69,20 +68,20 @@ void UserEducationAshTestBase::SetUp() {
         // Provide a default implementation for `StartTutorial()` which
         // caches `aborted_callbacks_by_tutorial_id`.
         ON_CALL(*user_education_delegate, StartTutorial)
-            .WillByDefault(WithArgs<1, 4>(
-                Invoke([aborted_callbacks_by_tutorial_id](
-                           TutorialId tutorial_id,
-                           base::OnceClosure aborted_callback) mutable {
+            .WillByDefault(
+                WithArgs<1, 4>([aborted_callbacks_by_tutorial_id](
+                                   TutorialId tutorial_id,
+                                   base::OnceClosure aborted_callback) mutable {
                   aborted_callbacks_by_tutorial_id->get()[tutorial_id]
                       .AddUnsafe(std::move(aborted_callback));
-                })));
+                }));
 
         // Provide a default implementation for `AbortTutorial()` which runs
         // cached `aborted_callbacks_by_tutorial_id`.
         ON_CALL(*user_education_delegate, AbortTutorial)
-            .WillByDefault(WithArg<1>(
-                Invoke([aborted_callbacks_by_tutorial_id](
-                           std::optional<TutorialId> tutorial_id) mutable {
+            .WillByDefault(
+                WithArg<1>([aborted_callbacks_by_tutorial_id](
+                               std::optional<TutorialId> tutorial_id) mutable {
                   auto it = aborted_callbacks_by_tutorial_id->get().begin();
                   while (it != aborted_callbacks_by_tutorial_id->get().end()) {
                     if (!tutorial_id || it->first == tutorial_id) {
@@ -92,7 +91,7 @@ void UserEducationAshTestBase::SetUp() {
                     }
                     ++it;
                   }
-                })));
+                }));
 
         return user_education_delegate;
       }));

@@ -82,7 +82,6 @@
 
 using ::testing::_;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::IsNull;
 using ::testing::NiceMock;
 using ::testing::NotNull;
@@ -559,11 +558,11 @@ class BocaAppPageHandlerTest : public testing::Test {
         .WillOnce(WithArg<0>(
             // Unique pointer have ownership issue, have to do manual deep copy
             // here instead of using SaveArg.
-            Invoke([&](auto request) {
+            [&](auto request) {
               ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
               ASSERT_EQ(::boca::Session::PAST, *request->session_state());
               request->callback().Run(std::make_unique<::boca::Session>());
-            })));
+            }));
   }
 
   MockSessionClientImpl* session_client_impl() { return &session_client_impl_; }
@@ -660,7 +659,7 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionWithFullInput) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(session_duration, request->duration());
             ASSERT_EQ(
@@ -754,7 +753,7 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionWithFullInput) {
             EXPECT_TRUE(request->captions_config()->captions_enabled());
             EXPECT_TRUE(request->captions_config()->translations_enabled());
             request->callback().Run(std::make_unique<::boca::Session>());
-          })));
+          }));
 
   // Verify local events dispatched
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
@@ -794,7 +793,7 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionWithCritialInputOnly) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(session_duration, request->duration());
             ASSERT_EQ(
@@ -805,7 +804,7 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionWithCritialInputOnly) {
             ASSERT_FALSE(request->on_task_config());
             ASSERT_TRUE(request->roster());
             request->callback().Run(std::make_unique<::boca::Session>());
-          })));
+          }));
 
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
@@ -847,7 +846,7 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionFailedWithHttpError) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(session_duration, request->duration());
             ASSERT_EQ(
@@ -859,7 +858,7 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionFailedWithHttpError) {
             ASSERT_TRUE(request->roster());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
 
   // Verify local events not dispatched
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(0);
@@ -924,7 +923,7 @@ TEST_F(BocaAppPageHandlerConsumerTest, GetSessionWithFullInputTest) {
                             future.GetCallback());
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/false))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
         auto* start_time = session->mutable_start_time();
         start_time->set_seconds(1111111);
@@ -995,7 +994,7 @@ TEST_F(BocaAppPageHandlerConsumerTest, GetSessionWithFullInputTest) {
         (*student_statuses)["111"] = std::move(status_1);
 
         request->callback().Run(std::move(session));
-      })));
+      }));
 
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
@@ -1060,12 +1059,12 @@ TEST_F(BocaAppPageHandlerProducerTest, GetSessionWithPartialInputTest) {
                             future.GetCallback());
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/false))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
         session->mutable_duration()->set_seconds(120);
         session->set_session_state(::boca::Session::ACTIVE);
         request->callback().Run(std::move(session));
-      })));
+      }));
 
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
@@ -1091,10 +1090,10 @@ TEST_F(BocaAppPageHandlerProducerTest, GetSessionWithHTTPError) {
                             future.GetCallback());
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/false))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         request->callback().Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
-      })));
+      }));
 
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
@@ -1123,8 +1122,8 @@ TEST_F(BocaAppPageHandlerProducerTest, GetSessionWithNullPtrInputTest) {
                             future.GetCallback());
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/false))
-      .WillOnce(WithArg<0>(Invoke(
-          [&](auto request) { request->callback().Run(base::ok(nullptr)); })));
+      .WillOnce(WithArg<0>(
+          [&](auto request) { request->callback().Run(base::ok(nullptr)); }));
 
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(IsNull(), /*dispatch_event=*/true))
@@ -1149,9 +1148,9 @@ TEST_F(BocaAppPageHandlerProducerTest, GetSessionWithNonActiveSessionTest) {
                             future.GetCallback());
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/false))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         request->callback().Run(std::make_unique<::boca::Session>());
-      })));
+      }));
 
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(IsNull(), /*dispatch_event=*/true))
@@ -1177,11 +1176,11 @@ TEST_F(BocaAppPageHandlerProducerTest,
                             future.GetCallback());
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/false))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
         session->set_session_state(::boca::Session::ACTIVE);
         request->callback().Run(std::move(session));
-      })));
+      }));
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
       .Times(1);
@@ -1244,11 +1243,11 @@ TEST_F(BocaAppPageHandlerProducerTest, EndSessionSucceed) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(::boca::Session::PAST, *request->session_state());
             request->callback().Run(std::make_unique<::boca::Session>());
-          })));
+          }));
 
   boca_app_handler()->EndSession(future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -1281,12 +1280,12 @@ TEST_F(BocaAppPageHandlerProducerTest, EndSessionWithHTTPFailure) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(::boca::Session::PAST, *request->session_state());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
 
   boca_app_handler()->EndSession(future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -1348,11 +1347,11 @@ TEST_F(BocaAppPageHandlerProducerTest, ExtendSessionDurationSucceed) {
                                future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
         ASSERT_EQ(base::Seconds(150), *request->duration());
         request->callback().Run(std::make_unique<::boca::Session>());
-      })));
+      }));
 
   boca_app_handler()->ExtendSessionDuration(base::Seconds(30),
                                             future_1.GetCallback());
@@ -1382,7 +1381,7 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateOnTaskConfigSucceed) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             EXPECT_EQ(session.teacher().gaia_id(),
                       request->teacher().gaia_id());
             ASSERT_EQ(GetCommonTestLockOnTaskConfigProto().SerializeAsString(),
@@ -1396,7 +1395,7 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateOnTaskConfigSucceed) {
                       request->captions_config()->SerializeAsString());
             request->callback().Run(std::make_unique<::boca::Session>(
                 GetCommonActiveSessionProto()));
-          })));
+          }));
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
                                          future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -1451,12 +1450,12 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateOnTaskConfigWithHTTPFailure) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(session.teacher().gaia_id(),
                       request->teacher().gaia_id());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
 
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
                                          future_1.GetCallback());
@@ -1520,7 +1519,7 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateCaptionConfigSucceed) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(session.teacher().gaia_id(),
                       request->teacher().gaia_id());
             ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
@@ -1534,7 +1533,7 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateCaptionConfigSucceed) {
                       request->on_task_config()->SerializeAsString());
             request->callback().Run(std::make_unique<::boca::Session>(
                 GetCommonActiveSessionProto()));
-          })));
+          }));
 
   SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
@@ -1624,12 +1623,12 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateCaptionWithHTTPFailure) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(session.teacher().gaia_id(),
                       request->teacher().gaia_id());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
 
   SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
@@ -1652,9 +1651,9 @@ TEST_F(BocaAppPageHandlerProducerTest,
 
   std::vector<UpdateSessionCallback> update_session_cb;
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
-      .WillRepeatedly(WithArg<0>(Invoke([&](auto request) {
+      .WillRepeatedly(WithArg<0>([&](auto request) {
         update_session_cb.emplace_back(request->callback());
-      })));
+      }));
   SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
                                          base::DoNothing());
@@ -1694,10 +1693,10 @@ TEST_F(BocaAppPageHandlerProducerTest,
   std::unique_ptr<UpdateSessionRequest> second_request;
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(
+          WithArg<0>([&](auto request) { first_request = std::move(request); }))
       .WillOnce(WithArg<0>(
-          Invoke([&](auto request) { first_request = std::move(request); })))
-      .WillOnce(WithArg<0>(
-          Invoke([&](auto request) { second_request = std::move(request); })));
+          [&](auto request) { second_request = std::move(request); }));
   SetSessionCaptionInitializer(/*success=*/true);
   // Update caption config.
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
@@ -1737,10 +1736,10 @@ TEST_F(BocaAppPageHandlerProducerTest,
   std::unique_ptr<UpdateSessionRequest> second_request;
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(
+          WithArg<0>([&](auto request) { first_request = std::move(request); }))
       .WillOnce(WithArg<0>(
-          Invoke([&](auto request) { first_request = std::move(request); })))
-      .WillOnce(WithArg<0>(
-          Invoke([&](auto request) { second_request = std::move(request); })));
+          [&](auto request) { second_request = std::move(request); }));
   // Update ontask config.
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
                                          base::DoNothing());
@@ -1792,7 +1791,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
                                session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
         ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
                   request->captions_config()->SerializeAsString());
@@ -1805,8 +1804,8 @@ TEST_F(BocaAppPageHandlerProducerTest,
                   request->on_task_config()->SerializeAsString());
         request->callback().Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-      })))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      }))
+      .WillOnce(WithArg<0>([&](auto request) {
         ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
         ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
                   request->on_task_config()->SerializeAsString());
@@ -1819,7 +1818,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
                   request->captions_config()->SerializeAsString());
         request->callback().Run(
             std::make_unique<::boca::Session>(GetCommonActiveSessionProto()));
-      })));
+      }));
   SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
                                           future_1.GetCallback());
@@ -1856,7 +1855,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
                                session.session_id(), future.GetCallback());
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      .WillOnce(WithArg<0>([&](auto request) {
         ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
         ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
                   request->on_task_config()->SerializeAsString());
@@ -1869,8 +1868,8 @@ TEST_F(BocaAppPageHandlerProducerTest,
                   request->captions_config()->SerializeAsString());
         request->callback().Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-      })))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+      }))
+      .WillOnce(WithArg<0>([&](auto request) {
         ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
         ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
                   request->captions_config()->SerializeAsString());
@@ -1883,7 +1882,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
                   request->on_task_config()->SerializeAsString());
         request->callback().Run(
             std::make_unique<::boca::Session>(GetCommonActiveSessionProto()));
-      })));
+      }));
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
                                          future_1.GetCallback());
   SetSessionCaptionInitializer(/*success=*/true);
@@ -2030,12 +2029,12 @@ TEST_F(BocaAppPageHandlerProducerTest,
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(1u, request->student_ids().size());
             ASSERT_EQ(student_id, request->student_ids()[0]);
             request->callback().Run(true);
-          })));
+          }));
 
   boca_app_handler()->RemoveStudent(student_id, future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -2068,13 +2067,13 @@ TEST_F(BocaAppPageHandlerProducerTest, RemoveStudentWithHTTPFailure) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(1u, request->student_ids().size());
             ASSERT_EQ(student_id, request->student_ids()[0]);
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
 
   boca_app_handler()->RemoveStudent(student_id, future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -2132,12 +2131,12 @@ TEST_F(BocaAppPageHandlerProducerTest, RenotifyStudentSucceed) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(1u, request->student_ids().size());
             ASSERT_EQ(student_id, request->student_ids()[0]);
             request->callback().Run(true);
-          })));
+          }));
 
   boca_app_handler()->RenotifyStudent(student_id, future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -2167,13 +2166,13 @@ TEST_F(BocaAppPageHandlerProducerTest, RenotifyStudentWithHTTPFailure) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(1u, request->student_ids().size());
             ASSERT_EQ(student_id, request->student_ids()[0]);
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
 
   boca_app_handler()->RenotifyStudent(student_id, future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -2233,7 +2232,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(2u, request->students().size());
             ASSERT_EQ(group_id, request->student_group_id());
@@ -2247,7 +2246,7 @@ TEST_F(BocaAppPageHandlerProducerTest,
             EXPECT_EQ("b@gmail.com", request->students()[1].email());
             EXPECT_EQ("cdn://s2", request->students()[1].photo_url());
             request->callback().Run(true);
-          })));
+          }));
   EXPECT_CALL(*session_manager(), LoadCurrentSession(/*from_polling=*/false))
       .Times(1);
   std::vector<mojom::IdentityPtr> students;
@@ -2285,12 +2284,12 @@ TEST_F(BocaAppPageHandlerProducerTest, AddStudentsWithHTTPFailure) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(0u, request->students().size());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
   EXPECT_CALL(*session_manager(), LoadCurrentSession(/*from_polling=*/false))
       .Times(0);
   boca_app_handler()->AddStudents({}, future_1.GetCallback());
@@ -2385,9 +2384,9 @@ TEST_F(BocaAppPageHandlerProducerTest, JoinSessionSucceeded) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             request->callback().Run(std::make_unique<::boca::Session>());
-          })));
+          }));
   EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
       .WillOnce(Return(false));
 
@@ -2416,10 +2415,10 @@ TEST_F(BocaAppPageHandlerProducerTest, JoinSessionFailed) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-          })));
+          }));
   EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
       .WillOnce(Return(false));
 
@@ -2461,8 +2460,8 @@ TEST_F(BocaAppPageHandlerProducerTest,
 TEST_F(BocaAppPageHandlerProducerTest, ViewScreenSucceeded) {
   const std::string student_id = "123";
   EXPECT_CALL(*spotlight_service(), ViewScreen(student_id, kTestUrlBase, _))
-      .WillOnce(WithArg<2>(Invoke(
-          [&](auto request) { std::move(request).Run(base::ok(true)); })));
+      .WillOnce(WithArg<2>(
+          [&](auto request) { std::move(request).Run(base::ok(true)); }));
 
   base::test::TestFuture<std::optional<mojom::ViewStudentScreenError>> future;
 
@@ -2476,10 +2475,10 @@ TEST_F(BocaAppPageHandlerProducerTest, ViewScreenFailed) {
   const std::string student_id = "123";
 
   EXPECT_CALL(*spotlight_service(), ViewScreen(student_id, kTestUrlBase, _))
-      .WillOnce(WithArg<2>(Invoke([&](auto request) {
+      .WillOnce(WithArg<2>([&](auto request) {
         std::move(request).Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-      })));
+      }));
 
   base::test::TestFuture<std::optional<mojom::ViewStudentScreenError>> future;
 
@@ -2496,8 +2495,7 @@ TEST_F(BocaAppPageHandlerProducerTest, ViewScreenFailed) {
 
 TEST_F(BocaAppPageHandlerProducerTest, AuthenticateWebviewSuccess) {
   EXPECT_CALL(*webview_auth_handler(), AuthenticateWebview(testing::_))
-      .WillOnce(
-          testing::Invoke(base::test::RunOnceCallback<0>(/*is_success=*/true)));
+      .WillOnce(base::test::RunOnceCallback<0>(/*is_success=*/true));
   base::RunLoop run_loop;
   boca_app_handler()->AuthenticateWebview(
       base::BindLambdaForTesting([&](bool success) -> void {
@@ -2509,8 +2507,7 @@ TEST_F(BocaAppPageHandlerProducerTest, AuthenticateWebviewSuccess) {
 
 TEST_F(BocaAppPageHandlerProducerTest, AuthenticateWebviewFailure) {
   EXPECT_CALL(*webview_auth_handler(), AuthenticateWebview(testing::_))
-      .WillOnce(testing::Invoke(
-          base::test::RunOnceCallback<0>(/*is_success=*/false)));
+      .WillOnce(base::test::RunOnceCallback<0>(/*is_success=*/false));
   base::RunLoop run_loop;
   boca_app_handler()->AuthenticateWebview(
       base::BindLambdaForTesting([&](bool success) -> void {
@@ -2544,8 +2541,8 @@ TEST_F(BocaAppPageHandlerProducerTest, EndViewScreenSessionSucceeded) {
       *spotlight_service(),
       UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::INACTIVE,
                             kTestUrlBase, _))
-      .WillOnce(WithArg<3>(Invoke(
-          [&](auto request) { std::move(request).Run(base::ok(true)); })));
+      .WillOnce(WithArg<3>(
+          [&](auto request) { std::move(request).Run(base::ok(true)); }));
 
   base::test::TestFuture<std::optional<mojom::EndViewScreenSessionError>>
       future;
@@ -2562,10 +2559,10 @@ TEST_F(BocaAppPageHandlerProducerTest, EndViewScreenSessionFailed) {
       *spotlight_service(),
       UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::INACTIVE,
                             kTestUrlBase, _))
-      .WillOnce(WithArg<3>(Invoke([&](auto request) {
+      .WillOnce(WithArg<3>([&](auto request) {
         std::move(request).Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-      })));
+      }));
 
   base::test::TestFuture<std::optional<mojom::EndViewScreenSessionError>>
       future;
@@ -2600,8 +2597,8 @@ TEST_F(BocaAppPageHandlerProducerTest, SetViewScreenSessionActiveSucceeded) {
       *spotlight_service(),
       UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::ACTIVE,
                             kTestUrlBase, _))
-      .WillOnce(WithArg<3>(Invoke(
-          [&](auto request) { std::move(request).Run(base::ok(true)); })));
+      .WillOnce(WithArg<3>(
+          [&](auto request) { std::move(request).Run(base::ok(true)); }));
 
   base::test::TestFuture<std::optional<mojom::SetViewScreenSessionActiveError>>
       future;
@@ -2619,10 +2616,10 @@ TEST_F(BocaAppPageHandlerProducerTest, SetViewScreenSessionActiveFailed) {
       *spotlight_service(),
       UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::ACTIVE,
                             kTestUrlBase, _))
-      .WillOnce(WithArg<3>(Invoke([&](auto request) {
+      .WillOnce(WithArg<3>([&](auto request) {
         std::move(request).Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
-      })));
+      }));
 
   base::test::TestFuture<std::optional<mojom::SetViewScreenSessionActiveError>>
       future;

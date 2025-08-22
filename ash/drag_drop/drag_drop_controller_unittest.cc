@@ -1262,14 +1262,14 @@ TEST_F(DragDropControllerTest, DragObserverEvents) {
     {
       testing::InSequence sequence;
       EXPECT_CALL(observer, OnDragUpdated)
-          .WillOnce(testing::Invoke([&](const ui::DropTargetEvent& event) {
+          .WillOnce([&](const ui::DropTargetEvent& event) {
             gfx::Point root_location_in_screen = event.root_location();
             ::wm::ConvertPointToScreen(
                 static_cast<aura::Window*>(event.target())->GetRootWindow(),
                 &root_location_in_screen);
             EXPECT_EQ(gfx::Point(200, 0), root_location_in_screen);
             EXPECT_EQ(&event.data(), data_ptr);
-          }));
+          });
       EXPECT_CALL(observer, OnDragCompleted);
       EXPECT_CALL(observer, OnDropCompleted);
     }

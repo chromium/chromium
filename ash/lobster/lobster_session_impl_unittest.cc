@@ -145,8 +145,8 @@ TEST_F(LobsterSessionImplTest, RequestCandidatesWithThreeResults) {
   EXPECT_CALL(*lobster_client,
               RequestCandidates(/*query=*/"a nice strawberry",
                                 /*num_candidates=*/3, testing::_))
-      .WillOnce(testing::Invoke([](std::string_view query, int num_candidates,
-                                   RequestCandidatesCallback done_callback) {
+      .WillOnce([](std::string_view query, int num_candidates,
+                   RequestCandidatesCallback done_callback) {
         std::vector<LobsterImageCandidate> image_candidates = {
             LobsterImageCandidate(
                 /*id=*/0, /*image_bytes=*/"a1b2c3",
@@ -164,7 +164,7 @@ TEST_F(LobsterSessionImplTest, RequestCandidatesWithThreeResults) {
                 /*user_query=*/"a nice strawberry",
                 /*rewritten_query=*/"rewritten: a nice strawberry")};
         std::move(done_callback).Run(std::move(image_candidates));
-      }));
+      });
 
   LobsterSessionImpl session(std::move(lobster_client),
                              LobsterEntryPoint::kQuickInsert,
@@ -200,12 +200,12 @@ TEST_F(LobsterSessionImplTest, RequestCandidatesReturnsUnknownError) {
   EXPECT_CALL(*lobster_client,
               RequestCandidates(/*query=*/"a nice blueberry",
                                 /*num_candidates=*/1, testing::_))
-      .WillOnce(testing::Invoke([](std::string_view query, int num_candidates,
-                                   RequestCandidatesCallback done_callback) {
+      .WillOnce([](std::string_view query, int num_candidates,
+                   RequestCandidatesCallback done_callback) {
         std::move(done_callback)
             .Run(base::unexpected(
                 LobsterError(LobsterErrorCode::kUnknown, "unknown error")));
-      }));
+      });
 
   LobsterSessionImpl session(std::move(lobster_client),
                              LobsterEntryPoint::kQuickInsert,

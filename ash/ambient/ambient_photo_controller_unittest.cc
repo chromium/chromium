@@ -86,11 +86,10 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
     SetAmbientTheme(personalization_app::mojom::AmbientTheme::kSlideshow);
     // This is common to all AmbientPhotoConfigs and mimics real-world behavior:
     // When OnImagesReady() is called, the UI synchronously starts rendering.
-    ON_CALL(images_ready_observer_, OnImagesReady)
-        .WillByDefault(::testing::Invoke([this]() {
-          photo_controller()->OnMarkerHit(
-              AmbientPhotoConfig::Marker::kUiStartRendering);
-        }));
+    ON_CALL(images_ready_observer_, OnImagesReady).WillByDefault([this]() {
+      photo_controller()->OnMarkerHit(
+          AmbientPhotoConfig::Marker::kUiStartRendering);
+    });
     images_ready_observation_.Observe(
         photo_controller()->ambient_backend_model());
   }
@@ -168,10 +167,10 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
     scoped_observation.Observe(photo_controller()->ambient_backend_model());
     bool images_ready = false;
     ON_CALL(mock_backend_observer, OnImagesReady)
-        .WillByDefault(::testing::Invoke([quit_closure, &images_ready]() {
+        .WillByDefault([quit_closure, &images_ready]() {
           quit_closure.Run();
           images_ready = true;
-        }));
+        });
     task_environment()->GetMainThreadTaskRunner()->PostDelayedTask(
         FROM_HERE, quit_closure, kTimeout);
     loop.Run();
@@ -188,12 +187,12 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
         scoped_observation{&mock_backend_observer};
     scoped_observation.Observe(photo_controller()->ambient_backend_model());
     ON_CALL(mock_backend_observer, OnImageAdded)
-        .WillByDefault(::testing::Invoke(
+        .WillByDefault(
             [quit_closure, num_expected_topics, &num_topics_added]() {
               ++num_topics_added;
               if (num_topics_added >= num_expected_topics)
                 quit_closure.Run();
-            }));
+            });
     task_environment()->GetMainThreadTaskRunner()->PostDelayedTask(
         FROM_HERE, quit_closure, kTimeout);
     loop.Run();

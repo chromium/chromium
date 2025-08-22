@@ -49,7 +49,6 @@ using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
 using ::testing::NiceMock;
