@@ -25,6 +25,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_recorder.h"
 #include "cc/paint/paint_shader.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -256,7 +257,9 @@ Tab::Tab(TabSlotController* controller)
       AddChildView(std::make_unique<AlertIndicatorButton>(this));
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines)) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
+      glic::GlicEnabling::IsProfileEligible(
+          controller_->GetBrowser()->GetProfile())) {
     glic_tab_underline_view_ = AddChildView(
         views::Builder<glic::GlicTabUnderlineView>(
             glic::GlicTabUnderlineView::Factory::Create(
