@@ -19,12 +19,6 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-namespace content {
-class SandboxIPCHandler;
-}
-#endif
-
 namespace base {
 namespace subtle {
 
@@ -85,26 +79,6 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
     GET_SHMEM_TEMP_DIR_FAILURE = 12,
     kMaxValue = GET_SHMEM_TEMP_DIR_FAILURE
   };
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Structure to limit access to executable region creation.
-  struct ExecutableRegion {
-   private:
-    // Creates a new shared memory region the unsafe mode (writable and not and
-    // convertible to read-only), and in addition marked executable. A ScopedFD
-    // to this region is returned. Any any mapping will have to be done
-    // manually, including setting executable permissions if necessary
-    //
-    // This is only used to support sandbox_ipc_linux.cc, and should not be used
-    // anywhere else in chrome. This is restricted via AllowCreateExecutable.
-    // TODO(crbug.com/41470149): remove this when NaCl is unshipped.
-    //
-    // Returns an invalid ScopedFD if the call fails.
-    static ScopedFD CreateFD(size_t size);
-
-    friend class content::SandboxIPCHandler;
-  };
-#endif
 
   // The minimum alignment in bytes that any mapped address produced by Map()
   // and MapAt() is guaranteed to have.

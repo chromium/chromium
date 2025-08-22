@@ -121,39 +121,7 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
   if (sandbox::HandleInterceptedCall(kind, fd, iter, fds))
     return;
 
-  if (kind ==
-      sandbox::policy::SandboxLinux::METHOD_MAKE_SHARED_MEMORY_SEGMENT) {
-    HandleMakeSharedMemorySegment(fd, iter, fds);
-    return;
-  }
   NOTREACHED();
-}
-
-void SandboxIPCHandler::HandleMakeSharedMemorySegment(
-    int fd,
-    base::PickleIterator iter,
-    const std::vector<base::ScopedFD>& fds) {
-  uint32_t size;
-  if (!iter.ReadUInt32(&size))
-    return;
-  // TODO(crbug.com/41470149): executable shared memory should be removed when
-  // NaCl is unshipped.
-  bool executable;
-  if (!iter.ReadBool(&executable))
-    return;
-  base::ScopedFD shm_fd;
-  if (executable) {
-    shm_fd =
-        base::subtle::PlatformSharedMemoryRegion::ExecutableRegion::CreateFD(
-            size);
-  } else {
-    base::subtle::PlatformSharedMemoryRegion region =
-        base::subtle::PlatformSharedMemoryRegion::CreateUnsafe(size);
-    shm_fd = std::move(region.PassPlatformHandle().fd);
-  }
-  base::Pickle reply;
-  SendRendererReply(fds, reply, shm_fd.get());
-  // shm_fd will close the handle which is no longer needed by this process.
 }
 
 void SandboxIPCHandler::SendRendererReply(
