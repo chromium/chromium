@@ -375,13 +375,15 @@ void OmniboxViewViews::ResetTabState(content::WebContents* web_contents) {
 }
 
 void OmniboxViewViews::InstallPlaceholderText() {
-  // If `keyword_placeholder()` is set, then the user is in a keyword mode that
-  // has placeholder text, so display that. If the Omnibox is visibly focused
-  // and AI Mode is enabled, display the AI Mode placeholder text to suggest
-  // tabbing into AI Mode. Otherwise, display the DSE placeholder text.
   if (!model()->keyword_placeholder().empty()) {
+    // If `keyword_placeholder()` is set, then the user is in a keyword mode
+    // that has placeholder text, so display that.
     SetPlaceholderText(model()->keyword_placeholder());
-  } else if (ShouldShowAimPlaceholderText()) {
+  } else if (model()->is_caret_visible()) {
+    // If the Omnibox is visibly focused, display the AI Mode placeholder text
+    // to suggest tabbing into AI Mode. Note, even if the AI placeholder text is
+    // installed, it will only be visible if ShouldShowAimPlaceholderText() is
+    // also true.
     SetPlaceholderText(
         l10n_util::GetStringUTF16(IDS_OMNIBOX_AIM_PLACEHOLDER_TEXT));
   } else if (const auto* default_provider = controller()
@@ -2333,7 +2335,7 @@ void OmniboxViewViews::UpdatePlaceholderTextColor() {
     return;
   }
   set_placeholder_text_color(GetColorProvider()->GetColor(
-      model()->keyword_placeholder().empty() && !ShouldShowAimPlaceholderText()
+      model()->keyword_placeholder().empty() && !model()->is_caret_visible()
           ? kColorOmniboxText : kColorOmniboxTextDimmed));
 }
 
@@ -2344,14 +2346,23 @@ bool OmniboxViewViews::ShouldShowAimPlaceholderText() const {
   if (!location_bar_view_ || !location_bar_view_->IsInitialized()) {
     return false;
   }
-  // The AIM placeholder text should only be shown when the AIM button is
-  // enabled, and the omnibox is visibly focused with no other popup buttons
-  // focused.
-  PageActionIconView* ai_mode_enabled =
+  // If the AIM button is not visible, the placeholder text is not shown.
+  PageActionIconView* aim_icon_view =
       location_bar_view_->page_action_icon_controller()
           ->GetIconView(PageActionIconType::kAiMode);
-  return ai_mode_enabled && model()->is_caret_visible() &&
-      !model()->GetPopupSelection().IsButtonFocused();
+  if (!aim_icon_view || !aim_icon_view->GetVisible()) {
+    return false;
+  }
+  // The placeholder text should only be shown when the omnibox is visibly
+  // focused and the popup selection state is normal (i.e. no popup buttons are
+  // focused and we are not in keyword mode). The hint text will be shown on NTP
+  // open by default, unless this option is explicitly disabled.
+  bool ntp_open = !model()->PopupIsOpen() && !model()->user_input_in_progress();
+  bool hide_text_on_ntp_open =
+      omnibox_feature_configs::AiModeOmniboxEntryPoint::Get()
+          .hide_aim_hint_text_on_ntp_open && ntp_open;
+  return model()->is_caret_visible() && !model()->is_keyword_selected() &&
+      !model()->GetPopupSelection().IsButtonFocused() && !hide_text_on_ntp_open;
 }
 
 BEGIN_METADATA(OmniboxViewViews)
