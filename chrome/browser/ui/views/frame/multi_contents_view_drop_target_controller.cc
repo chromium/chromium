@@ -190,7 +190,8 @@ void MultiContentsViewDropTargetController::OnWebContentsDragUpdate(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge)) {
+  if (base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge) &&
+      drop_target_view_->ShouldShowAnimation()) {
     HandleDragUpdateForNudge(point);
   } else {
     HandleDragUpdate(point);

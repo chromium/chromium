@@ -104,10 +104,11 @@ class MultiContentsDropTargetView : public views::View,
   raw_ptr<views::ImageView> icon_view_for_testing() { return icon_view_; }
   gfx::SlideAnimation& animation_for_testing() { return animation_; }
 
+  bool ShouldShowAnimation() const;
+
  private:
   void UpdateVisibility(bool should_be_open);
 
-  bool ShouldShowAnimation() const;
   double GetAnimationValue() const;
 
   void DoDrop(const ui::DropTargetEvent& event,

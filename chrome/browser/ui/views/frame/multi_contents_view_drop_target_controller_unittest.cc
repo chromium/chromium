@@ -23,6 +23,8 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/view_class_properties.h"
 
@@ -635,6 +637,24 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, DragDelegateMethods) {
   std::unique_ptr<ui::LayerTreeOwner> drag_image;
   std::move(callback).Run(drop_event, output_op, std::move(drag_image));
   EXPECT_FALSE(drop_target_view().GetVisible());
+}
+
+TEST_F(MultiContentsViewDropTargetControllerDragTest,
+       ShowsFullDropTargetWhenAnimationsDisabled) {
+  ASSERT_TRUE(
+      base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
+  auto animation_mode_reset = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  ASSERT_FALSE(drop_target_view().ShouldShowAnimation());
+  ASSERT_FALSE(drop_target_view().GetVisible());
+
+  // Drag to the start of the screen.
+  DragURLTo(kDragPointForStartDropTargetShow);
+  FastForward();
+
+  EXPECT_TRUE(drop_target_view().GetVisible());
+  EXPECT_EQ(drop_target_view().state().value(),
+            MultiContentsDropTargetView::DropTargetState::kFull);
 }
 
 }  // namespace
