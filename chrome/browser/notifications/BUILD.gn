@@ -147,7 +147,6 @@ if (is_android) {
       "//third_party/android_deps:espresso_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_core_java",
-      "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_ext_junit_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
