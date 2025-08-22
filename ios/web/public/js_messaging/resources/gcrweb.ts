@@ -25,21 +25,26 @@ class CrWeb {
     this.registerApi('crweb', crweb);
   }
 
+  hasRegisteredApi(apiIdentifier: string): boolean {
+    return apiIdentifier in this.registeredApis;
+  }
+
   /*
    * Register a Javascript API into the CrWeb object. In case
    * of any collision, do not override a pre-registered API.
    */
   registerApi(apiIdentifier: string, api: CrWebApi): void {
-    if (this.registeredApis[apiIdentifier] !== undefined) {
+    if (this.hasRegisteredApi(apiIdentifier)) {
       throw new CrWebError(`API ${apiIdentifier} already registered.`);
     }
     this.registeredApis[apiIdentifier] = api;
   }
 
-  // TODO(crbug.com/399666983): Throw an exception when deprecating legacy
-  // version.
-  getRegisteredApi(apiIdentifier: string): CrWebApi|undefined {
-    return this.registeredApis[apiIdentifier];
+  getRegisteredApi(apiIdentifier: string): CrWebApi {
+    if (!this.hasRegisteredApi(apiIdentifier)) {
+      throw new CrWebError(`API ${apiIdentifier} is not registered in CrWeb.`);
+    }
+    return this.registeredApis[apiIdentifier]!;
   }
 
   /**
@@ -78,8 +83,8 @@ class CrWeb {
   callFunctionInGcrWeb(
       apiName: string, funcOrPropName: string, args: unknown[]): unknown {
     try {
-      const registeredApi = gCrWeb.getRegisteredApi(apiName);
-      if (registeredApi) {
+      if (this.hasRegisteredApi(apiName)) {
+        const registeredApi = gCrWeb.getRegisteredApi(apiName);
         if (registeredApi.hasFunction(funcOrPropName)) {
           const func = registeredApi.getFunction(funcOrPropName);
           return func(...args);
