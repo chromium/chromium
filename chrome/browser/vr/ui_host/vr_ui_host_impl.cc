@@ -14,6 +14,7 @@
 #include "chrome/browser/vr/vr_browser_renderer_thread.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/navigation_entry.h"
@@ -303,8 +304,8 @@ void VRUiHostImpl::PollCapturingState() {
             web_contents_->GetPrimaryMainFrame());
 
     if (settings) {
-      active_capturing.location_access_enabled =
-          settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
+      active_capturing.location_access_enabled = settings->IsContentAllowed(
+          permissions::PermissionUtil::GetGeolocationType());
 
       active_capturing.audio_capture_enabled =
           settings->GetMicrophoneCameraState().Has(

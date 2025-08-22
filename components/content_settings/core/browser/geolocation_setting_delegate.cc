@@ -17,6 +17,7 @@ namespace content_settings {
 
 bool GeolocationSettingDelegate::IsValid(
     const PermissionSetting& setting) const {
+  DCHECK(std::holds_alternative<GeolocationSetting>(setting)) << setting;
   auto geo_setting = std::get<GeolocationSetting>(setting);
 
   if (!IsValidPermissionOption(geo_setting.approximate)) {
