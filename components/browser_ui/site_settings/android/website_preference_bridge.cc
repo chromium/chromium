@@ -1163,6 +1163,8 @@ static jint JNI_WebsitePreferenceBridge_GetDefaultContentSetting(
     GeolocationSetting setting = std::get<GeolocationSetting>(
         GetHostContentSettingsMap(jbrowser_context_handle)
             ->GetDefaultPermissionSetting(type));
+    // Currently it is not possible to set default settings where precise and
+    // approximate have different values.
     DCHECK_EQ(setting.precise, setting.approximate);
     return ToContentSetting(setting.precise);
   }
@@ -1177,17 +1179,15 @@ static void JNI_WebsitePreferenceBridge_SetDefaultContentSetting(
     int content_setting) {
   auto type = static_cast<ContentSettingsType>(content_settings_type);
   auto setting = static_cast<ContentSetting>(content_setting);
+  std::optional<PermissionSetting> permission_setting = setting;
   if (type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
-    std::optional<PermissionSetting> geo_setting;
     if (setting != CONTENT_SETTING_DEFAULT) {
-      geo_setting = GeolocationSetting{ToPermissionOption(setting),
-                                       ToPermissionOption(setting)};
+      permission_setting = GeolocationSetting{ToPermissionOption(setting),
+                                              ToPermissionOption(setting)};
     }
-    GetHostContentSettingsMap(jbrowser_context_handle)
-        ->SetDefaultPermissionSetting(type, geo_setting);
   }
   GetHostContentSettingsMap(jbrowser_context_handle)
-      ->SetDefaultContentSetting(type, setting);
+      ->SetDefaultPermissionSetting(type, permission_setting);
 }
 
 static jboolean JNI_WebsitePreferenceBridge_IsContentSettingUserModifiable(
@@ -1211,17 +1211,16 @@ static jint JNI_WebsitePreferenceBridge_GetDefaultContentSettingProviderSource(
 static jboolean JNI_WebsitePreferenceBridge_GetLocationAllowedByPolicy(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle) {
-  if (GetDefaultContentSettingProviderSource(
-          jbrowser_context_handle, ContentSettingsType::GEOLOCATION) !=
+  auto type = permissions::PermissionUtil::GetGeolocationType();
+  if (GetDefaultContentSettingProviderSource(jbrowser_context_handle, type) !=
       content_settings::SettingSource::kPolicy) {
     return false;
   }
-  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
-      permissions::PermissionUtil::GetGeolocationType());
+  auto* info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
   return info->delegate().IsAnyPermissionAllowed(
       GetHostContentSettingsMap(jbrowser_context_handle)
-          ->GetDefaultPermissionSetting(ContentSettingsType::GEOLOCATION,
-                                        nullptr));
+          ->GetDefaultPermissionSetting(type, nullptr));
 }
 
 static ScopedJavaLocalRef<jstring>
