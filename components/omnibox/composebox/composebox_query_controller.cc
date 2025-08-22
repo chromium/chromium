@@ -252,17 +252,17 @@ void ComposeboxQueryController::StartFileUploadFlow(
   // Async Flow 1: Fetching the cluster info, which is shared across.
   // This flow only occurs once per session and occurs in
   // NotifySessionStarted().
-  // Async Flow 2: Creating the file upload request.
-  CreateFileUploadRequestBodyAndContinue(
-      file_token, std::move(file_data), image_options,
-      base::BindOnce(&ComposeboxQueryController::OnUploadFileRequestBodyReady,
-                     weak_ptr_factory_.GetWeakPtr(), file_token));
-
-  // Async Flow 3: Retrieve the OAuth headers.
+  // Async Flow 2: Retrieve the OAuth headers.
   current_file_info.file_upload_access_token_fetcher_ =
       CreateOAuthHeadersAndContinue(base::BindOnce(
           &ComposeboxQueryController::OnUploadFileRequestHeadersReady,
           weak_ptr_factory_.GetWeakPtr(), file_token));
+
+  // Async Flow 3: Creating the file upload request.
+  CreateFileUploadRequestBodyAndContinue(
+      file_token, std::move(file_data), image_options,
+      base::BindOnce(&ComposeboxQueryController::OnUploadFileRequestBodyReady,
+                     weak_ptr_factory_.GetWeakPtr(), file_token));
 }
 
 bool ComposeboxQueryController::DeleteFile(
@@ -387,7 +387,16 @@ void ComposeboxQueryController::ResetRequestClusterInfoState(int session_id) {
   // Iterate through any existing files and mark them as expired.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info
   // expiration.
+  std::vector<base::UnguessableToken> file_tokens_to_expire;
   for (const auto& [file_token, file_info] : active_files_) {
+    file_tokens_to_expire.push_back(file_token);
+  }
+
+  for (const auto& file_token : file_tokens_to_expire) {
+    FileInfo* file_info = GetFileInfo(file_token);
+    if (!file_info) {
+      continue;
+    }
     // Stop the file upload request if it is in progress.
     file_info->file_upload_endpoint_fetcher_.reset();
     if (file_info->upload_status_ != FileUploadStatus::kValidationFailed) {
@@ -510,10 +519,14 @@ void ComposeboxQueryController::UpdateFileUploadStatus(
     return;
   }
 
-  file_info->upload_status_ = status;
   for (auto& observer : observers_) {
     observer.OnFileUploadStatusChanged(file_token, file_info->mime_type_,
                                        status, error_type);
+  }
+  if (!IsValidFileUploadStatusForMultimodalRequest(status)) {
+    active_files_.erase(file_token);
+  } else {
+    file_info->upload_status_ = status;
   }
 }
 
