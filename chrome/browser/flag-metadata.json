@@ -10019,6 +10019,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-default-apps-page-for-promos",
+    "owners": [ "gujen@google.com", "bling-mony-pod@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "use-dhcpcd10",
     "owners": [ "chenzikai@google.com", "cros-networking@google.com" ],
     "expiry_milestone": 150

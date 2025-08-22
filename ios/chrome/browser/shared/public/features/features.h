@@ -1066,4 +1066,11 @@ BASE_DECLARE_FEATURE(kIOSLogInstallAttribution);
 
 bool IsInstallAttributionLoggingEnabled();
 
+// Feature flag for migrating all default browser promos to use the new Default
+// Apps iOS settings page.
+BASE_DECLARE_FEATURE(kIOSUseDefaultAppsDestinationForPromos);
+
+bool IsDefaultAppsDestinationAvailable();
+bool IsUseDefaultAppsDestinationForPromosEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

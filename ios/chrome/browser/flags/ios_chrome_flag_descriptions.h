@@ -266,6 +266,9 @@ extern const char kDefaultBrowserBannerPromoDescription[];
 extern const char kDefaultBrowserOffCyclePromoName[];
 extern const char kDefaultBrowserOffCyclePromoDescription[];
 
+extern const char kUseDefaultAppsDestinationForPromosName[];
+extern const char kUseDefaultAppsDestinationForPromosDescription[];
+
 extern const char kDefaultBrowserPromoPropensityModelName[];
 extern const char kDefaultBrowserPromoPropensityModelDescription[];
 

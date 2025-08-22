@@ -469,6 +469,12 @@ const char kDefaultBrowserOffCyclePromoName[] =
 const char kDefaultBrowserOffCyclePromoDescription[] =
     "When enabled, an off-cycle default browser promo will be shown.";
 
+const char kUseDefaultAppsDestinationForPromosName[] =
+    "Use Default Apps page for promos";
+const char kUseDefaultAppsDestinationForPromosDescription[] =
+    "When enabled, all Default Browser promos redirecting to the iOS settings "
+    "will use the new Default Apps page, if the current device supports it.";
+
 const char kDefaultBrowserPromoPropensityModelName[] =
     "Default Browser promo propensity model";
 const char kDefaultBrowserPromoPropensityModelDescription[] =
