@@ -351,24 +351,6 @@ void GlicKeyedService::ClosePanel() {
   screenshot_capturer_->CloseScreenPicker();
 }
 
-void GlicKeyedService::AttachPanel() {
-  window_controller_->Attach();
-}
-
-void GlicKeyedService::DetachPanel() {
-  window_controller_->Detach();
-}
-
-void GlicKeyedService::ResizePanel(const gfx::Size& size,
-                                   base::TimeDelta duration,
-                                   base::OnceClosure callback) {
-  window_controller_->Resize(size, duration, std::move(callback));
-}
-
-void GlicKeyedService::SetPanelDraggableAreas(
-    const std::vector<gfx::Rect>& draggable_areas) {
-  window_controller_->SetDraggableAreas(draggable_areas);
-}
 
 void GlicKeyedService::SetContextAccessIndicator(bool show) {
   if (is_context_access_indicator_enabled_ == show) {

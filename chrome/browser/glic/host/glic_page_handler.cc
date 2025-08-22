@@ -514,6 +514,8 @@ class GlicWebClientHandler
     }
   }
 
+  Host& host() { return page_handler_->host(); }
+
   // glic::mojom::WebClientHandler implementation.
   void WebClientCreated(
       ::mojo::PendingRemote<glic::mojom::WebClient> web_client,
@@ -611,8 +613,7 @@ class GlicWebClientHandler
     state->os_location_permission_enabled =
         system_permission_settings::IsAllowed(ContentSettingsType::GEOLOCATION);
 
-    state->panel_state =
-        glic_service_->window_controller().GetPanelState().Clone();
+    state->panel_state = host().GetPanelState(this).Clone();
 
     state->focused_tab_data =
         CreateFocusedTabData(glic_sharing_manager_->GetFocusedTabData());
@@ -685,19 +686,17 @@ class GlicWebClientHandler
   }
 
   void WebClientInitializeFailed() override {
-    glic_service_->host().WebClientInitializeFailed(this);
+    host().WebClientInitializeFailed(this);
   }
 
   void WebClientInitialized() override {
-    glic_service_->host().SetWebClient(page_handler_, this);
+    host().SetWebClient(page_handler_, this);
     // If chrome://glic is opened in a tab for testing, send a synthetic open
     // signal.
-    if (page_handler_->webui_contents() !=
-        glic_service_->host().webui_contents()) {
+    if (page_handler_->webui_contents() != host().webui_contents()) {
       mojom::PanelOpeningDataPtr panel_opening_data =
           mojom::PanelOpeningData::New();
-      panel_opening_data->panel_state =
-          glic_service_->window_controller().GetPanelState().Clone();
+      panel_opening_data->panel_state = host().GetPanelState(this).Clone();
       panel_opening_data->invocation_source =
           mojom::InvocationSource::kUnsupported;
       web_client_->NotifyPanelWillOpen(std::move(panel_opening_data),
@@ -777,7 +776,7 @@ class GlicWebClientHandler
           "AttachPanel cannot be called when always detached mode is enabled.");
       return;
     }
-    glic_service_->AttachPanel();
+    host().AttachPanel(page_handler_);
   }
 
   void DetachPanel() override {
@@ -786,7 +785,7 @@ class GlicWebClientHandler
           "DetachPanel cannot be called when always detached mode is enabled.");
       return;
     }
-    glic_service_->DetachPanel();
+    host().DetachPanel(page_handler_);
   }
 
   void ShowProfilePicker() override {
@@ -796,7 +795,7 @@ class GlicWebClientHandler
   void ResizeWidget(const gfx::Size& size,
                     base::TimeDelta duration,
                     ResizeWidgetCallback callback) override {
-    glic_service_->ResizePanel(size, duration, std::move(callback));
+    host().ResizePanel(page_handler_, size, duration, std::move(callback));
   }
 
   void GetModelQualityClientId(
@@ -960,17 +959,17 @@ class GlicWebClientHandler
       const std::vector<gfx::Rect>& draggable_areas,
       SetPanelDraggableAreasCallback callback) override {
     if (!draggable_areas.empty()) {
-      glic_service_->SetPanelDraggableAreas(draggable_areas);
+      host().SetPanelDraggableAreas(page_handler_, draggable_areas);
     } else {
       // Default to the top bar area of the panel.
       // TODO(cuianthony): Define panel dimensions constants in shared location.
-      glic_service_->SetPanelDraggableAreas({{0, 0, 400, 80}});
+      host().SetPanelDraggableAreas(page_handler_, {{0, 0, 400, 80}});
     }
     std::move(callback).Run();
   }
 
   void SetMinimumPanelSize(const gfx::Size& size) override {
-    glic_service_->window_controller().SetMinimumWidgetSize(size);
+    host().SetMinimumWidgetSize(page_handler_, size);
   }
 
   void SetMicrophonePermissionState(
@@ -1039,14 +1038,14 @@ class GlicWebClientHandler
       ShouldAllowMediaPermissionRequestCallback callback) override {
     std::move(callback).Run(
         pref_service_->GetBoolean(prefs::kGlicMicrophoneEnabled) &&
-        glic_service_->window_controller().IsShowing());
+        host().IsWidgetShowing(this));
   }
 
   void ShouldAllowGeolocationPermissionRequest(
       ShouldAllowGeolocationPermissionRequestCallback callback) override {
     std::move(callback).Run(
         pref_service_->GetBoolean(prefs::kGlicGeolocationEnabled) &&
-        glic_service_->window_controller().IsShowing());
+        host().IsWidgetShowing(this));
   }
 
   void SetContextAccessIndicator(bool enabled) override {
@@ -1226,7 +1225,7 @@ class GlicWebClientHandler
   }
 
   void OnViewChanged(mojom::ViewChangedNotificationPtr notification) override {
-    glic_service_->host().OnViewChanged(this, notification->current_view);
+    host().OnViewChanged(this, notification->current_view);
   }
 
   // GlicWindowController::StateObserver implementation.
@@ -1558,7 +1557,7 @@ GlicPageHandler::GlicPageHandler(
       browser_context_(webui_contents->GetBrowserContext()),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
-  GetGlicService()->host().WebUIPageHandlerAdded(this);
+  host().WebUIPageHandlerAdded(this);
   subscriptions_.push_back(
       GetGlicService()->enabling().RegisterAllowedChanged(base::BindRepeating(
           &GlicPageHandler::AllowedChanged, base::Unretained(this))));
@@ -1569,7 +1568,7 @@ GlicPageHandler::~GlicPageHandler() {
   WebUiStateChanged(glic::mojom::WebUiState::kUninitialized);
   // `GlicWebClientHandler` holds a pointer back to us, so delete it first.
   web_client_handler_.reset();
-  GetGlicService()->host().WebUIPageHandlerRemoved(this);
+  host().WebUIPageHandlerRemoved(this);
 }
 
 GlicKeyedService* GlicPageHandler::GetGlicService() {
@@ -1594,7 +1593,7 @@ void GlicPageHandler::WebviewCommitted(const GURL& url) {
   // out.
   if (url.DomainIs("login.corp.google.com") ||
       url.DomainIs("accounts.google.com")) {
-    GetGlicService()->host().LoginPageCommitted(this);
+    host().LoginPageCommitted(this);
   }
 }
 
@@ -1643,17 +1642,17 @@ void GlicPageHandler::SignInAndClosePanel() {
 void GlicPageHandler::ResizeWidget(const gfx::Size& size,
                                    base::TimeDelta duration,
                                    ResizeWidgetCallback callback) {
-  GetGlicService()->ResizePanel(size, duration, std::move(callback));
+  host().ResizePanel(this, size, duration, std::move(callback));
 }
 
 void GlicPageHandler::EnableDragResize(bool enabled) {
   // features::kGlicUserResize is not checked here because the WebUI page
   // invokes this method when it is disabled, too (when its state changes).
-  GetGlicService()->window_controller().EnableDragResize(enabled);
+  host().EnableDragResize(this, enabled);
 }
 
 void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
-  GetGlicService()->host().WebUiStateChanged(this, new_state);
+  host().WebUiStateChanged(this, new_state);
 }
 
 void GlicPageHandler::AllowedChanged() {
@@ -1675,4 +1674,7 @@ void GlicPageHandler::ZeroStateSuggestionChanged(
       std::move(returned_suggestions), std::move(options));
 }
 
+Host& GlicPageHandler::host() {
+  return GetGlicService()->host();
+}
 }  // namespace glic

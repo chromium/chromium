@@ -91,28 +91,9 @@ class GlicWindowController : public Host::Delegate {
 
   virtual void FocusIfOpen() = 0;
 
-  // Attaches glic to the last focused Chrome window.
-  virtual void Attach() = 0;
-
-  // Detaches glic if attached and moves it to the top right of the current
-  // display.
-  virtual void Detach() = 0;
 
   // Destroy the glic panel and its web contents.
   virtual void Shutdown() = 0;
-
-  // Sets the size of the glic window to the specified dimensions. Callback runs
-  // when the animation finishes or is destroyed, or soon if the window
-  // doesn't exist yet. In this last case `size` will be used for the initial
-  // size when creating the widget later.
-  virtual void Resize(const gfx::Size& size,
-                      base::TimeDelta duration,
-                      base::OnceClosure callback) = 0;
-
-  // Allows the user to manually resize the widget by dragging. If the widget
-  // hasn't been created yet, apply this setting when it is created. No effect
-  // if the widget doesn't exist or the feature flag is disabled.
-  virtual void EnableDragResize(bool enabled) = 0;
 
   // Update the resize state of the widget if it is needed and safe to do so.
   // On Windows make sure that the client area size remains the same even if
@@ -121,14 +102,6 @@ class GlicWindowController : public Host::Delegate {
 
   // Returns the current size of the glic window.
   virtual gfx::Size GetSize() = 0;
-
-  // Sets the areas of the view from which it should be draggable.
-  virtual void SetDraggableAreas(
-      const std::vector<gfx::Rect>& draggable_areas) = 0;
-
-  // Sets the minimum widget size that the widget will allow the user to resize
-  // to.
-  virtual void SetMinimumWidgetSize(const gfx::Size& size) = 0;
 
   // Close the panel but keep the glic WebContents alive in the background.
   virtual void Close() = 0;
@@ -148,6 +121,23 @@ class GlicWindowController : public Host::Delegate {
 
   // Host::Delegate implementation.
   const mojom::PanelState& GetPanelState() const override = 0;
+  void Resize(const gfx::Size& size,
+              base::TimeDelta duration,
+              base::OnceClosure callback) override = 0;
+  void EnableDragResize(bool enabled) override = 0;
+  // Attaches glic to the last focused Chrome window.
+  void Attach() override = 0;
+  // Detaches glic if attached and moves it to the top right of the current
+  // display.
+  void Detach() override = 0;
+  // Sets the areas of the view from which it should be draggable.
+  void SetDraggableAreas(
+      const std::vector<gfx::Rect>& draggable_areas) override = 0;
+  // Sets the minimum widget size that the widget will allow the user to resize
+  // to.
+  void SetMinimumWidgetSize(const gfx::Size& size) override = 0;
+  // Returns true if the state is anything other than kClosed.
+  bool IsShowing() const override = 0;
 
   virtual void AddStateObserver(StateObserver* observer) = 0;
   virtual void RemoveStateObserver(StateObserver* observer) = 0;
@@ -155,9 +145,6 @@ class GlicWindowController : public Host::Delegate {
   // Returns whether the views::Widget associated with the glic window is active
   // (e.g. will receive keyboard events).
   virtual bool IsActive() = 0;
-
-  // Returns true if the state is anything other than kClosed.
-  virtual bool IsShowing() const = 0;
 
   // Returns whether or not the glic window is currently attached to a browser.
   virtual bool IsAttached() const = 0;

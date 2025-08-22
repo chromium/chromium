@@ -354,4 +354,53 @@ void Host::OnViewChanged(GlicWebClientAccess* client,
 mojom::CurrentView Host::GetPrimaryCurrentView() {
   return primary_current_view_;
 }
+
+void Host::ResizePanel(GlicPageHandler* page_handler,
+                       const gfx::Size& size,
+                       base::TimeDelta duration,
+                       base::OnceClosure callback) {
+  delegate_->Resize(size, duration, std::move(callback));
+}
+
+void Host::EnableDragResize(GlicPageHandler* page_handler, bool enabled) {
+  if (primary_page_handler_ == page_handler) {
+    delegate_->EnableDragResize(enabled);
+  }
+}
+
+void Host::AttachPanel(GlicPageHandler* page_handler) {
+  if (primary_page_handler_ == page_handler) {
+    delegate_->Attach();
+  }
+}
+
+void Host::DetachPanel(GlicPageHandler* page_handler) {
+  if (primary_page_handler_ == page_handler) {
+    delegate_->Detach();
+  }
+}
+
+void Host::SetPanelDraggableAreas(
+    GlicPageHandler* page_handler,
+    const std::vector<gfx::Rect>& draggable_areas) {
+  if (primary_page_handler_ == page_handler) {
+    delegate_->SetDraggableAreas(draggable_areas);
+  }
+}
+
+void Host::SetMinimumWidgetSize(GlicPageHandler* page_handler,
+                                const gfx::Size& size) {
+  if (primary_page_handler_ == page_handler) {
+    delegate_->SetMinimumWidgetSize(size);
+  }
+}
+
+bool Host::IsWidgetShowing(GlicWebClientAccess* client) const {
+  return delegate_->IsShowing();
+}
+
+const mojom::PanelState& Host::GetPanelState(
+    GlicWebClientAccess* client) const {
+  return delegate_->GetPanelState();
+}
 }  // namespace glic

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -74,6 +75,8 @@ class GlicPageHandler : public glic::mojom::PageHandler {
                                   mojom::ZeroStateSuggestionsOptions options);
 
   void WebUiStateChanged(glic::mojom::WebUiState new_state) override;
+
+  Host& host();
 
  private:
   void AllowedChanged();

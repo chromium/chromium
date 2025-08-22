@@ -146,12 +146,6 @@ class GlicKeyedService : public KeyedService {
                  const std::optional<int32_t>& window_id,
                  glic::mojom::WebClientHandler::CreateTabCallback callback);
   virtual void ClosePanel();
-  void AttachPanel();
-  void DetachPanel();
-  void ResizePanel(const gfx::Size& size,
-                   base::TimeDelta duration,
-                   base::OnceClosure callback);
-  void SetPanelDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
   void SetContextAccessIndicator(bool show);
 
   // Callback for changes to the context access indicator status.

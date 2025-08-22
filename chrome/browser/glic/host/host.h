@@ -32,6 +32,31 @@ class Host {
    public:
     // Returns the current panel state.
     virtual const mojom::PanelState& GetPanelState() const = 0;
+
+    // Sets the size of the glic window to the specified dimensions. Callback
+    // runs when the animation finishes or is destroyed, or soon if the window
+    // doesn't exist yet. In this last case `size` will be used for the
+    // initial size when creating the widget later.
+    virtual void Resize(const gfx::Size& size,
+                        base::TimeDelta duration,
+                        base::OnceClosure callback) = 0;
+    // Sets the areas of the view from which it should be draggable.
+    virtual void SetDraggableAreas(
+        const std::vector<gfx::Rect>& draggable_areas) = 0;
+    // Allows the user to manually resize the widget by dragging. If the widget
+    // hasn't been created yet, apply this setting when it is created. No effect
+    // if the widget doesn't exist or the feature flag is disabled.
+    virtual void EnableDragResize(bool enabled) = 0;
+
+    // Attaches glic to the last focused Chrome window.
+    virtual void Attach() = 0;
+    virtual void Detach() = 0;
+    // Sets the minimum widget size that the widget will allow the user to
+    // resize
+    // to.
+    virtual void SetMinimumWidgetSize(const gfx::Size& size) = 0;
+    // Returns true if the glic widget is visible.
+    virtual bool IsShowing() const = 0;
   };
 
   class Observer : public base::CheckedObserver {
@@ -78,31 +103,8 @@ class Host {
   // value is used (i.e. false).
   void CreateContents(bool initially_hidden);
 
-  // Called when a `GlicPageHandler` is created.
-  void WebUIPageHandlerAdded(GlicPageHandler* page_handler);
-
-  // Called when a `GlicPageHandler` is about to be destroyed.
-  void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
-
-  // Called when a login page was committed in a glic webview.
-  void LoginPageCommitted(GlicPageHandler* page_handler);
-
-  // Called when a glic guest (webview web contents) is added.
-  void GuestAdded(content::WebContents* guest_contents);
-
   // Signals the glic WebUI that the glic window will be shown soon.
   void NotifyWindowIntentToShow();
-
-  // Returns the page handler that owns the WebUI web contents.
-  GlicPageHandler* FindPageHandlerForWebUiContents(
-      const content::WebContents* webui_contents);
-
-  // Called when a page handler's web client is created or destroyed.
-  void SetWebClient(GlicPageHandler* page_handler,
-                    GlicWebClientAccess* web_client);
-  void WebClientInitializeFailed(GlicWebClientAccess* web_client);
-
-  void SetContextAccessIndicator(GlicWebClientAccess*, bool enabled);
 
   WebUIContentsContainer* contents_container() { return contents_.get(); }
   // Returns the WebUI web contents. May be null.
@@ -132,9 +134,6 @@ class Host {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Informs the host that the WebUi state has changed.
-  void WebUiStateChanged(GlicPageHandler* page_handler,
-                         mojom::WebUiState new_state);
   // Returns the current WebUI state, or kUninitialized if there is no active
   // glic WebUI.
   const mojom::WebUiState& GetPrimaryWebUiState() const {
@@ -145,14 +144,74 @@ class Host {
   void NotifyZeroStateSuggestion(mojom::ZeroStateSuggestionsV2Ptr suggestions,
                                  mojom::ZeroStateSuggestionsOptions options);
 
-  // Called when the current view changes in the glic webUI to update the state.
-  void OnViewChanged(GlicWebClientAccess* client, mojom::CurrentView new_view);
-
   // Sends a ViewChangeRequest to the primary client.
   void SendViewChangeRequest(mojom::ViewChangeRequestPtr change_request);
 
   // Returns the current view (conversation or actuation) in the floaty.
   mojom::CurrentView GetPrimaryCurrentView();
+
+  // Returns the page handler that owns the WebUI web contents.
+  GlicPageHandler* FindPageHandlerForWebUiContents(
+      const content::WebContents* webui_contents);
+
+  // Called when a glic guest (webview web contents) is added.
+  void GuestAdded(content::WebContents* guest_contents);
+
+  //////////////////////////////////////////////////////////////////////////
+  // Methods intended to be used by page handler or web client handler
+  //////////////////////////////////////////////////////////////////////////
+
+  // Called when a `GlicPageHandler` is created.
+  void WebUIPageHandlerAdded(GlicPageHandler* page_handler);
+
+  // Called when a `GlicPageHandler` is about to be destroyed.
+  void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
+
+  // Called when a login page was committed in a glic webview.
+  void LoginPageCommitted(GlicPageHandler* page_handler);
+
+  // Called when a page handler's web client is created or destroyed.
+  void SetWebClient(GlicPageHandler* page_handler,
+                    GlicWebClientAccess* web_client);
+  void WebClientInitializeFailed(GlicWebClientAccess* web_client);
+
+  void SetContextAccessIndicator(GlicWebClientAccess*, bool enabled);
+
+  // Informs the host that the WebUi state has changed.
+  void WebUiStateChanged(GlicPageHandler* page_handler,
+                         mojom::WebUiState new_state);
+
+  // Called when the current view changes in the glic webUI to update the state.
+  void OnViewChanged(GlicWebClientAccess* client, mojom::CurrentView new_view);
+
+  // Sets the size of the glic window to the specified dimensions. Callback
+  // runs when the animation finishes or is destroyed, or soon if the window
+  // doesn't exist yet. In this last case `size` will be used for the
+  // initial size when creating the widget later.
+  void ResizePanel(GlicPageHandler* page_handler,
+                   const gfx::Size& size,
+                   base::TimeDelta duration,
+                   base::OnceClosure callback);
+
+  // Allows the user to manually resize the widget by dragging. If the widget
+  // hasn't been created yet, apply this setting when it is created. No effect
+  // if the widget doesn't exist or the feature flag is disabled.
+  void EnableDragResize(GlicPageHandler* page_handler, bool enabled);
+
+  void AttachPanel(GlicPageHandler* page_handler);
+  void DetachPanel(GlicPageHandler* page_handler);
+  // Sets the areas of the view from which it should be draggable.
+  void SetPanelDraggableAreas(GlicPageHandler* page_handler,
+                              const std::vector<gfx::Rect>& draggable_areas);
+  // Sets the minimum widget size that the widget will allow the user to resize
+  // to.
+  void SetMinimumWidgetSize(GlicPageHandler* page_handler,
+                            const gfx::Size& size);
+
+  // Returns true if the widget is visible.
+  bool IsWidgetShowing(GlicWebClientAccess* client) const;
+  // Returns the current panel state.
+  const mojom::PanelState& GetPanelState(GlicWebClientAccess* client) const;
 
  private:
   GlicKeyedService& glic_service();
