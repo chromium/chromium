@@ -2556,7 +2556,7 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41490094
+    @DisabledTest(message = "crbug.com/41490094 && crbug.com/425926397")
     public void testMicNotBlocked() throws Exception {
         new TwoStatePermissionTestCaseWithRadioButton(
                         "Mic",
