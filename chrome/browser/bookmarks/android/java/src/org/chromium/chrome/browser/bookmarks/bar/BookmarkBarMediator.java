@@ -454,7 +454,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         mActivity,
                         mBookmarkBarView,
                         AppCompatResources.getDrawable(mActivity, R.drawable.default_popup_menu_bg),
-                        popupListMenu.getContentView(),
+                        popupListMenu::getContentView,
                         new ViewRectProvider(anchorView),
                         mBrowserControlsRectProvider);
 

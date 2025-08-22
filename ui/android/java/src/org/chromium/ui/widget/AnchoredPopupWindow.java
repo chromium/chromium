@@ -29,6 +29,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
@@ -219,6 +220,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     /** Provides the {@link Rect} to anchor the popup to in screen space. */
     private final RectProvider mRectProvider;
 
+    private final Supplier<View> mContentViewCreator;
+
     private final Runnable mDismissRunnable =
             new Runnable() {
                 @Override
@@ -256,6 +259,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     private final ObserverList<OnDismissListener> mDismissListeners = new ObserverList<>();
     private @Nullable OnTouchListener mTouchListener;
     private @Nullable LayoutObserver mLayoutObserver;
+    private @Nullable View mContentView;
 
     /** The margin to add to the popup so it doesn't bump against the edges of the screen. */
     private int mMarginPx;
@@ -299,15 +303,6 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     private @StyleRes int mAnimationStyleId;
     private boolean mAnimateFromAnchor;
 
-    public AnchoredPopupWindow(
-            Context context,
-            View rootView,
-            Drawable background,
-            View contentView,
-            RectProvider anchorRectProvider) {
-        this(context, rootView, background, contentView, anchorRectProvider, null);
-    }
-
     /**
      * Constructs an {@link AnchoredPopupWindow} instance.
      *
@@ -318,6 +313,30 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * @param anchorRectProvider The {@link RectProvider} that will provide the {@link Rect} this
      *     popup attaches and orients to. The coordinates in the {@link Rect} are expected to be
      *     screen coordinates.
+     * @deprecated Use {@link #AnchoredPopupWindow(Context, View, Drawable, Supplier, RectProvider,
+     *     RectProvider)} instead.
+     */
+    @Deprecated
+    public AnchoredPopupWindow(
+            Context context,
+            View rootView,
+            Drawable background,
+            View contentView,
+            RectProvider anchorRectProvider) {
+        this(context, rootView, background, () -> contentView, anchorRectProvider, null);
+    }
+
+    /**
+     * Constructs an {@link AnchoredPopupWindow} instance.
+     *
+     * @param context Context to draw resources from.
+     * @param rootView The {@link View} to use for size calculations and for display.
+     * @param background The background {@link Drawable} to use for the popup.
+     * @param contentViewCreator The supplier for the content view to set on the popup. The view is
+     *     expected to be a {@link ViewGroup}.
+     * @param anchorRectProvider The {@link RectProvider} that will provide the {@link Rect} this
+     *     popup attaches and orients to. The coordinates in the {@link Rect} are expected to be
+     *     screen coordinates.
      * @param viewportRectProvider The {@link RectProvider} that provides the {@link Rect} for the
      *     visible viewpoint. If null, the window coordinates of the root view will be used.
      */
@@ -325,11 +344,13 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             Context context,
             View rootView,
             Drawable background,
-            View contentView,
+            Supplier<View> contentViewCreator,
             RectProvider anchorRectProvider,
             @Nullable RectProvider viewportRectProvider) {
+
         mContext = context;
         mRootView = rootView.getRootView();
+        mContentViewCreator = contentViewCreator;
         mViewportRectProvider =
                 viewportRectProvider != null
                         ? viewportRectProvider
@@ -344,7 +365,6 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         mPopupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setBackgroundDrawable(background);
-        mPopupWindow.setContentView(contentView);
 
         mPopupWindow.setTouchInterceptor(this);
         mPopupWindow.setOnDismissListener(mDismissListener);
@@ -620,15 +640,11 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         boolean currentPositionToLeft = mPopupSpec.positionParams.isPositionToLeft;
         boolean preferCurrentOrientation = mPopupWindow.isShowing() && !mUpdateOrientationOnChange;
 
-        // Determine whether or not the popup should be above or below the anchor.
-        // Aggressively try to put it below the anchor.  Put it above only if it would fit better.
-        View contentView = mPopupWindow.getContentView();
-
         mPopupSpec =
                 calculatePopupWindowSpec(
                         mViewportRectProvider.getRect(),
                         anchorRect,
-                        contentView,
+                        getOrCreateContentView(),
                         mRootView.getWidth(),
                         paddingX,
                         paddingY,
@@ -676,6 +692,13 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             mPopupWindow.update(
                     popupRect.left, popupRect.top, popupRect.width(), popupRect.height());
         }
+    }
+
+    private View getOrCreateContentView() {
+        if (mContentView == null) {
+            mContentView = mContentViewCreator.get();
+        }
+        return mContentView;
     }
 
     /**
@@ -887,8 +910,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         final boolean idealFitsBelow = idealContentSize.getHeight() <= spaceBelowAnchor;
         final boolean idealFitsAbove = idealContentSize.getHeight() <= spaceAboveAnchor;
 
-        // Position the popup in the largest available space where it can fit.  This will bias the
-        // popups to show below the anchor if it will not fit in either place.
+        // Determine whether or not the popup should be above or below the anchor.
+        // Aggressively try to put it below the anchor. Put it above only if it would fit better.
         // TODO(crbug.com/40831291): Address cases where spaceBelowAnchor = 0, popup is still
         // biased to anchored below the rect.
         boolean isPositionBelow =
@@ -1142,6 +1165,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         }
         try {
             assert hasMinimalSize();
+            mPopupWindow.setContentView(getOrCreateContentView());
             mPopupWindow.showAtLocation(
                     mRootView,
                     Gravity.TOP | Gravity.START,

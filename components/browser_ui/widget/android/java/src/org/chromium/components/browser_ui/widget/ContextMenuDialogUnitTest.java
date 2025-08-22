@@ -16,7 +16,6 @@ import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
@@ -61,12 +60,12 @@ public class ContextMenuDialogUnitTest {
     ContextMenuDialog mDialog;
 
     Activity mActivity;
-    FrameLayout mMenuContentView;
     View mRootView;
     TestDragDispatchingDestinationView mSpyDragDispatchingDestinationView;
 
     @Mock UiWidgetFactory mMockUiWidgetFactory;
     @Spy PopupWindow mSpyPopupWindow;
+    @Spy FrameLayout mMenuContentView;
 
     @Before
     public void setup() {
@@ -74,8 +73,12 @@ public class ContextMenuDialogUnitTest {
         mRootView = new FrameLayout(mActivity);
         TextView textView = new TextView(mActivity);
         textView.setText("Test String");
-        mMenuContentView = new FrameLayout(mActivity);
+
+        mMenuContentView = Mockito.spy(new FrameLayout(mActivity));
         mMenuContentView.addView(textView);
+        Mockito.when(mMenuContentView.getMeasuredHeight()).thenReturn(DIALOG_SIZE_DIP);
+        Mockito.when(mMenuContentView.getMeasuredWidth()).thenReturn(DIALOG_SIZE_DIP);
+
         mActivity.setContentView(
                 mRootView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
@@ -88,11 +91,6 @@ public class ContextMenuDialogUnitTest {
                 .when(mSpyPopupWindow)
                 .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
         Mockito.doNothing().when(mSpyPopupWindow).dismiss();
-
-        View mockContentView = Mockito.mock(ViewGroup.class);
-        Mockito.when(mockContentView.getMeasuredHeight()).thenReturn(DIALOG_SIZE_DIP);
-        Mockito.when(mockContentView.getMeasuredWidth()).thenReturn(DIALOG_SIZE_DIP);
-        Mockito.doReturn(mockContentView).when(mSpyPopupWindow).getContentView();
     }
 
     @After

@@ -922,7 +922,7 @@ public final class AnchoredPopupWindowTest {
                         mActivity,
                         view,
                         null,
-                        mContentView,
+                        () -> contentView,
                         anchorRectProvider,
                         visibleWebContentsRectSupplier);
 
