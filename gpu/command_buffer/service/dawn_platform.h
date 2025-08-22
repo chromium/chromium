@@ -13,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
+#include "gpu/gpu_gles2_export.h"
 
 namespace gl {
 class ProgressReporter;
@@ -20,7 +21,7 @@ class ProgressReporter;
 
 namespace gpu::webgpu {
 
-class DawnPlatform : public dawn::platform::Platform {
+class GPU_GLES2_EXPORT DawnPlatform : public dawn::platform::Platform {
  public:
   explicit DawnPlatform(
       std::unique_ptr<DawnCachingInterface> dawn_caching_interface,

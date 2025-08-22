@@ -605,6 +605,7 @@ test("gpu_unittests") {
   if (use_dawn) {
     sources += [
       "command_buffer/service/dawn_caching_interface_unittest.cc",
+      "command_buffer/service/dawn_platform_unittest.cc",
       "config/webgpu_blocklist_unittest.cc",
     ]
   }

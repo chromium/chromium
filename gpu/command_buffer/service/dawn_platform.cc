@@ -97,16 +97,26 @@ class AsyncWorkerTaskPool : public dawn::platform::WorkerTaskPool {
 void RecordDelayedUMA(scoped_refptr<DawnPlatform::CacheCountsMap> cache_map,
                       std::string uma_prefix) {
   base::AutoLock autolock(cache_map->lock);
-  for (auto [uma_name, cache_counts] : cache_map->counts) {
-    if (uma_name.find("Hit") != std::string::npos) {
-      base::UmaHistogramCounts10000(
-          uma_prefix + uma_name + ".Counts.90SecondsPostStartup",
-          cache_counts.cache_hit_count);
-    } else {
-      CHECK(uma_name.find("Miss") != std::string::npos);
-      base::UmaHistogramCounts10000(
-          uma_prefix + uma_name + ".Counts.90SecondsPostStartup",
-          cache_counts.cache_miss_count);
+  for (auto const& [base_name, cache_counts] : cache_map->counts) {
+    // Report Hit counts
+    base::UmaHistogramCounts10000(
+        uma_prefix + base_name + "CacheHit.Counts.90SecondsPostStartup",
+        cache_counts.cache_hit_count);
+
+    // Report Miss counts
+    base::UmaHistogramCounts10000(
+        uma_prefix + base_name + "CacheMiss.Counts.90SecondsPostStartup",
+        cache_counts.cache_miss_count);
+
+    // Report Percentage
+    int total_counts =
+        cache_counts.cache_hit_count + cache_counts.cache_miss_count;
+    if (total_counts > 0) {
+      int hit_percentage = (cache_counts.cache_hit_count * 100) / total_counts;
+
+      base::UmaHistogramPercentage(
+          uma_prefix + base_name + "CacheHit.Percentage.90SecondsPostStartup",
+          hit_percentage);
     }
   }
 }
@@ -188,11 +198,23 @@ void DawnPlatform::HistogramCacheCountHelper(std::string name,
                                              int bucketCount) {
   if (name.find("Cache") != std::string::npos) {
     base::AutoLock autolock(cache_map_->lock);
-    auto& cache_counts = cache_map_->counts[name];
-    if (name.find("Hit") != std::string::npos) {
+    std::string base_name = name;
+    bool is_hit = false;
+    size_t pos = base_name.find("CacheHit");
+    if (pos != std::string::npos) {
+      base_name.erase(pos);
+      is_hit = true;
+    } else {
+      pos = base_name.find("CacheMiss");
+      if (pos != std::string::npos) {
+        base_name.erase(pos);
+      }
+    }
+
+    auto& cache_counts = cache_map_->counts[base_name];
+    if (is_hit) {
       ++cache_counts.cache_hit_count;
     } else {
-      CHECK(name.find("Miss") != std::string::npos);
       ++cache_counts.cache_miss_count;
     }
 
