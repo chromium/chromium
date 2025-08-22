@@ -39,7 +39,7 @@ class TestStorage : public BtmStorage {
 };
 
 // TODO(crbug.com/376754761): Remove this class, since it no longer sets the
-// main DIPS feature
+// main BTM feature
 class ScopedBtmInteractionTtlFeatureEnabledWithParams {
  public:
   explicit ScopedBtmInteractionTtlFeatureEnabledWithParams(
@@ -75,7 +75,7 @@ TEST(BtmGetSitesToClearTest, FiltersByTriggerParam) {
         features::kBtm, {{"triggering_action", "none"}});
     EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
   }
-  // Call 'GetSitesToClear' when DIPS is triggered by bounces.
+  // Call 'GetSitesToClear' when BTM is triggered by bounces.
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
@@ -164,7 +164,7 @@ TEST(BtmGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
     clock.SetNow(start);
   }
 
-  // Call 'GetSitesToClear' with a custom grace period when DIPS is triggered by
+  // Call 'GetSitesToClear' with a custom grace period when BTM is triggered by
   // bounces.
   {
     base::test::ScopedFeatureList features;
@@ -806,7 +806,7 @@ TEST_F(BtmStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
 
   // Removing events by site (i.e. by using a non-null filter) with a time-range
   // (other than base::Time() to base::Time::Max()), is currently unsupported.
-  // So url1's DIPS Storage entry should be unaffected.
+  // So url1's `BtmState` entry should be unaffected.
   BtmState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
             std::make_optional(

@@ -51,7 +51,7 @@ namespace content {
 // whether it's stateful) for use when testing that the bounce is
 // recorded by the BtmBounceDetector.
 using BounceTuple = std::tuple<GURL, base::Time, bool>;
-// Encodes data about an event recorded by DIPS event (the url, time of
+// Encodes data about an event recorded by a BTM event (the url, time of
 // bounce, and type of event) for use when testing that the event is recorded
 // by the BtmBounceDetector.
 using EventTuple = std::tuple<GURL, base::Time, BtmRecordedEvent>;
@@ -357,8 +357,8 @@ class BtmBounceDetectorTest : public ::testing::Test {
 };
 
 // Ensures that for every navigation, a client redirect occurring before
-// `dips:kClientBounceDetectionTimeout` is considered a bounce whilst leaving
-// Server redirects unaffected.
+// `features::kBtmClientBounceDetectionTimeout` is considered a bounce whilst
+// leaving server redirects unaffected.
 TEST_F(BtmBounceDetectorTest,
        DetectStatefulRedirects_Before_ClientBounceDetectionTimeout) {
   NavigateTo("http://a.test", kWithUserGesture);
@@ -413,8 +413,8 @@ TEST_F(BtmBounceDetectorTest,
 }
 
 // Ensures that for every navigation, a client redirect occurring after
-// `dips:kClientBounceDetectionTimeout` is not considered a bounce whilst server
-// redirects are unaffected.
+// `features::kBtmClientBounceDetectionTimeout` is not considered a bounce
+// whilst leaving server redirects unaffected.
 TEST_F(BtmBounceDetectorTest,
        DetectStatefulRedirects_After_ClientBounceDetectionTimeout) {
   NavigateTo("http://a.test", kWithUserGesture);

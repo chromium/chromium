@@ -130,7 +130,7 @@ class BtmDatabaseMigrationTest : public testing::Test {
   // Test setup.
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    db_path_ = temp_dir_.GetPath().AppendASCII("DIPS.db");
+    db_path_ = temp_dir_.GetPath().AppendASCII("BTM.db");
   }
 
   void TearDown() override { ASSERT_TRUE(temp_dir_.Delete()); }
