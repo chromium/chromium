@@ -176,7 +176,8 @@ DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest, Toast) {
 
 DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest, IdentityPill) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  constexpr char16_t kNewUrl[] = u"chrome://version";
+  constexpr char16_t kNewUrl1[] = u"chrome://version";
+  constexpr char16_t kNewUrl2[] = u"chrome://settings";
 
   // The user is implicitly signed in.
   ASSERT_TRUE(
@@ -202,9 +203,9 @@ DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest, IdentityPill) {
       // NOTE: This is only done to introduce some delay to finish setting up
       // the expanded identity pill and avoid flakiness.
       // TODO(crbug.com/440020019): Look for a way to avoid this workaround.
-      InstrumentTab(kActiveTab), EnterText(kOmniboxElementId, kNewUrl),
+      InstrumentTab(kActiveTab), EnterText(kOmniboxElementId, kNewUrl1),
       Confirm(kOmniboxElementId),
-      WaitForWebContentsNavigation(kActiveTab, GURL(kNewUrl)),
+      WaitForWebContentsNavigation(kActiveTab, GURL(kNewUrl1)),
 
       // The identity pill is expanded when the dialog is shown.
       Screenshot(kToolbarAvatarButtonElementId,
@@ -215,6 +216,13 @@ DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest, IdentityPill) {
       PressButton(DiceMigrationService::kAcceptButtonElementId),
 
       WaitForHide(DiceMigrationService::kAcceptButtonElementId),
+
+      // Navigate to another page using the omnibox.
+      // NOTE: This is only done to introduce some delay to finish collapsing
+      // the expanded identity pill and avoid flakiness.
+      // TODO(crbug.com/440020019): Look for a way to avoid this workaround.
+      EnterText(kOmniboxElementId, kNewUrl2), Confirm(kOmniboxElementId),
+      WaitForWebContentsNavigation(kActiveTab, GURL(kNewUrl2)),
 
       // The identity pill is collapsed again.
       Screenshot(kToolbarAvatarButtonElementId,
