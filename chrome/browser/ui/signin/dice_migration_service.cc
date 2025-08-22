@@ -193,20 +193,32 @@ class DiceMigrationService::AvatarButtonObserver
     CHECK(dice_migration_service_);
     CHECK(dice_migration_service_->dialog_widget_);
     avatar_button_observation_.Observe(avatar_button);
+
+    const std::u16string& avatar_button_text = base::ASCIIToUTF16(
+        dice_migration_service_->primary_account_info_.email);
+    if (!avatar_button_text.empty()) {
+      clear_avatar_button_effects_callback_ =
+          avatar_button->SetExplicitButtonState(
+              avatar_button_text, /*accessibility_label=*/std::nullopt,
+              /*explicit_action=*/std::nullopt);
+    }
   }
 
  private:
   // `AvatarToolbarButton::Observer`:
   void OnButtonPressed() override {
     CHECK(dice_migration_service_->dialog_widget_);
+    avatar_button_observation_.Reset();
     dice_migration_service_->StopTimerOrCloseDialog(
         DialogCloseReason::kAvatarButtonClicked);
-    avatar_button_observation_.Reset();
   }
 
   base::ScopedObservation<AvatarToolbarButton, AvatarToolbarButton::Observer>
       avatar_button_observation_{this};
   raw_ptr<DiceMigrationService> dice_migration_service_;
+
+  // Callback to reset the expanded avatar button.
+  base::ScopedClosureRunner clear_avatar_button_effects_callback_;
 };
 
 DiceMigrationService::DiceMigrationService(
@@ -394,7 +406,7 @@ DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
         base::DoNothing(),
         ui::DialogModel::Button::Params()
             .SetId(kCancelButtonElementId)
-            .SetLabel(l10n_util::GetStringUTF16(IDS_NOT_NOW)));
+            .SetLabel(l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON)));
   }
   builder.DisableCloseOnDeactivate();
   builder.SetIsAlertDialog();
@@ -415,7 +427,8 @@ DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   // never interacts with it.
   UpdateDialogShownCountAndTime();
 
-  // Close the dialog when the avatar pill is clicked.
+  // Close the dialog when the avatar pill is clicked. This is also responsible
+  // for expanding the avatar pill when the dialog is showing.
   avatar_button_observer_ =
       std::make_unique<AvatarButtonObserver>(avatar_button, this);
 
