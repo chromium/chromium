@@ -355,19 +355,21 @@
 }
 
 .gradient:before {
+  aspect-ratio: 1 / 1;
   background: var(--brand-gradient);
   border-radius: 50%;
   contain: paint;
   content: '';
-  height: 900px;
+  height: auto; /* Controlled by aspect-ratio */
   left: 50%;
   position: absolute;
   rotate: 0deg;
-  scale: 1 0.4;
+  scale: 1 0.6;
   top: 50%;
   translate: -50% -50%;
   opacity: 0;
-  width: 900px;
+  /* The gradient is 120% wide to ensure it fills passed the entire container. */
+  width: 120%;
 }
 
 :host([expanded_]) .gradient:before {
