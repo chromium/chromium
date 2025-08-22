@@ -1049,7 +1049,7 @@ class GlicWebClientHandler
   }
 
   void SetContextAccessIndicator(bool enabled) override {
-    glic_service_->host().SetContextAccessIndicator(this, enabled);
+    glic_service_->host().SetContextAccessIndicator(page_handler_, enabled);
   }
 
   void GetUserProfileInfo(GetUserProfileInfoCallback callback) override {

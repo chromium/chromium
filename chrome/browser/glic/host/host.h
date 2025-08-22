@@ -175,7 +175,7 @@ class Host {
                     GlicWebClientAccess* web_client);
   void WebClientInitializeFailed(GlicWebClientAccess* web_client);
 
-  void SetContextAccessIndicator(GlicWebClientAccess*, bool enabled);
+  void SetContextAccessIndicator(GlicPageHandler*, bool enabled);
 
   // Informs the host that the WebUi state has changed.
   void WebUiStateChanged(GlicPageHandler* page_handler,

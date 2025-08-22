@@ -232,9 +232,10 @@ void Host::WebClientInitializeFailed(GlicWebClientAccess* web_client) {
   }
 }
 
-void Host::SetContextAccessIndicator(GlicWebClientAccess* web_client,
+void Host::SetContextAccessIndicator(GlicPageHandler* page_handler,
                                      bool enabled) {
-  Host::PageHandlerInfo* info = FindInfoForClient(web_client);
+  Host::PageHandlerInfo* info = FindInfo(page_handler);
+  CHECK(info);
   if (info->context_access_indicator_enabled == enabled) {
     return;
   }
