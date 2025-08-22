@@ -10,6 +10,7 @@ import android.content.Context;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.ui.base.MimeTypeUtils;
 
 import java.util.List;
@@ -37,8 +38,8 @@ public class ChromeMultiTabDropDataAndroid extends ChromeDropDataAndroid {
 
     @Override
     public String buildTabClipDataText(Context context) {
-        // TODO(crbug.com/404074503): Implement clip data text for MultiTab.
-        return "null";
+        if (tabs == null || tabs.isEmpty()) return "";
+        return TabGroupTitleUtils.getDefaultTitle(context, tabs.size());
     }
 
     @Override
