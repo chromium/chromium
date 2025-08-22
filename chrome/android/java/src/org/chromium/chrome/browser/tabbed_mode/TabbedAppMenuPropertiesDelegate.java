@@ -219,11 +219,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                     .registerObserver(mUpdateStateChangeObserver);
         }
 
-        // New Tab
-        modelList.add(buildNewTabItem());
-
-        // New Incognito Tab
-        modelList.add(buildNewIncognitoTabItem());
+        // When the feature is enabled, show either "New Incognito tab" in incognito mode
+        // or "New tab" in normal mode. When the feature is disabled, show both.
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isIncognitoShowing()) {
+            modelList.add(buildNewTabItem());
+        }
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || isIncognitoShowing()) {
+            modelList.add(buildNewIncognitoTabItem());
+        }
 
         // Add to Group
         if (shouldShowAddToGroup()) modelList.add(buildAddToGroupItem(currentTab));
@@ -413,8 +416,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private void populateOverviewModeMenu(MVCListAdapter.ModelList modelList) {
-        modelList.add(buildNewTabItem());
-        modelList.add(buildNewIncognitoTabItem());
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isIncognitoShowing()) {
+            modelList.add(buildNewTabItem());
+        }
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || isIncognitoShowing()) {
+            modelList.add(buildNewIncognitoTabItem());
+        }
         if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
             modelList.add(buildNewTabGroupItem());
         }

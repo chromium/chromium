@@ -158,6 +158,10 @@ import java.util.List;
 // TODO(crbug.com/376238770): Removes ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION from
 // @DisableFeatures() and adds "Customize New Tab Page" to all expectedItems list once the feature
 // flag is turned on by default.
+
+// TODO(crbug.com/439930942): The change to Desktop-like incognito windows creates many changes to
+// incognito browsing. Add tests for incognito such as testPageMenuItems_Phone_IncognitoPage().
+
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
@@ -512,6 +516,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testPageMenuItems_Phone_Ntp() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
@@ -551,6 +556,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testPageMenuItems_Phone_Pdf() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1_WITH_PDF_PATH);
@@ -595,6 +601,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @Config(qualifiers = "sw320dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testPageMenuItems_Phone_RegularPage() {
         setUpMocksForPageMenu();
         setMenuOptions(
@@ -674,6 +681,88 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_PINNED_TABS,
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+    })
+    public void testPageMenuItems_Phone_RegularPage_incognitoWindowEnabled() {
+        setUpMocksForPageMenu();
+        setMenuOptions(
+                new MenuOptions()
+                        .withShowTranslate()
+                        .withShowAddToHomeScreen()
+                        .withAutoDarkEnabled());
+
+        assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        List<Integer> expectedItems = new ArrayList<>();
+        List<Integer> expectedTitles = new ArrayList<>();
+
+        expectedItems.add(R.id.icon_row_menu_id);
+        expectedTitles.add(0);
+        expectedItems.add(R.id.new_tab_menu_id);
+        expectedTitles.add(R.string.menu_new_tab);
+        expectedItems.add(R.id.add_to_group_menu_id);
+        expectedTitles.add(R.string.menu_add_tab_to_new_group);
+        expectedItems.add(R.id.pin_tab_menu_id);
+        expectedTitles.add(R.string.menu_pin_tab);
+        expectedItems.add(R.id.divider_line_id);
+        expectedTitles.add(0);
+        expectedItems.add(R.id.open_history_menu_id);
+        expectedTitles.add(R.string.menu_history);
+        expectedItems.add(R.id.quick_delete_menu_id);
+        expectedTitles.add(R.string.menu_quick_delete);
+        expectedItems.add(R.id.quick_delete_divider_line_id);
+        expectedTitles.add(0);
+        expectedItems.add(R.id.downloads_menu_id);
+        expectedTitles.add(R.string.menu_downloads);
+        expectedItems.add(R.id.all_bookmarks_menu_id);
+        expectedTitles.add(R.string.menu_bookmarks);
+        expectedItems.add(R.id.recent_tabs_menu_id);
+        expectedTitles.add(R.string.menu_recent_tabs);
+        if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
+            expectedItems.add(R.id.extensions_menu_id);
+            expectedTitles.add(R.string.menu_extensions);
+        }
+        expectedItems.add(R.id.divider_line_id);
+        expectedTitles.add(0);
+        expectedItems.add(R.id.share_menu_id);
+        expectedTitles.add(R.string.menu_share_page);
+        expectedItems.add(R.id.find_in_page_id);
+        expectedTitles.add(R.string.menu_find_in_page);
+        expectedItems.add(R.id.translate_id);
+        expectedTitles.add(R.string.menu_translate);
+        expectedItems.add(R.id.universal_install);
+        expectedTitles.add(R.string.menu_add_to_homescreen);
+        if (!DeviceInfo.isDesktop()) {
+            expectedItems.add(R.id.request_desktop_site_id);
+            expectedTitles.add(R.string.menu_request_desktop_site);
+        }
+        expectedItems.add(R.id.auto_dark_web_contents_id);
+        expectedTitles.add(R.string.menu_auto_dark_web_contents);
+        expectedItems.add(R.id.divider_line_id);
+        expectedTitles.add(0);
+        expectedItems.add(R.id.preferences_id);
+        expectedTitles.add(R.string.menu_settings);
+        expectedItems.add(R.id.help_id);
+        expectedTitles.add(R.string.menu_help);
+
+        Integer[] expectedActionBarItems = {
+            R.id.forward_menu_id,
+            R.id.bookmark_this_page_id,
+            R.id.offline_page_id,
+            R.id.info_menu_id,
+            R.id.reload_menu_id
+        };
+        assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
+        assertMenuTitlesAreEqual(modelList, expectedTitles.toArray(new Integer[0]));
+        assertActionBarItemsAreEqual(modelList, expectedActionBarItems);
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testPageMenuItems_Phone_RegularPage_WithPwa() {
         setUpMocksForPageMenu();
         setMenuOptions(
@@ -751,6 +840,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testPageMenuItems_DesktopAndroid() {
         mOverrideContextWrapperTestRule.setIsDesktop(true);
         setUpMocksForPageMenu();
@@ -809,6 +899,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testPageMenuItemsIcons_Phone_RegularPage_iconsBeforeMenuItems() {
         setUpMocksForPageMenu();
         setMenuOptions(
@@ -850,7 +941,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID,
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+    })
     public void testOverviewMenuItems_Phone_SelectTabs() {
         setUpMocksForOverviewMenu();
         when(mIncognitoTabModel.getCount()).thenReturn(0);
@@ -872,7 +966,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID,
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+    })
     public void testOverviewMenuItems_Phone_NoTabs() {
         setUpMocksForOverviewMenu();
         when(mTabModelSelector.getTotalTabCount()).thenReturn(0);
@@ -900,7 +997,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID,
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+    })
     public void testOverviewMenuItems_Phone_NoIncognitoTabs() {
         setUpMocksForOverviewMenu();
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
@@ -929,6 +1029,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @Config(qualifiers = "sw320dp")
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOverviewMenuItems_Phone_SelectTabs_tabGroupEntryPointsFeatureEnabled() {
         setUpMocksForOverviewMenu();
         when(mIncognitoTabModel.getCount()).thenReturn(0);
@@ -972,6 +1073,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testMenuItems_Accessibility_ImageDescriptions() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
@@ -1060,6 +1162,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testPageMenuItems_Phone_RegularPage_managed_users() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
@@ -1106,6 +1209,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testPageMenuItems_Phone_RegularPage_locally_supervised_users() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
@@ -1315,6 +1419,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testNewIncognitoTabOption_FromRegularMode_WithReauthNotInProgress() {
         setUpMocksForPageMenu();
         setMenuOptions(
