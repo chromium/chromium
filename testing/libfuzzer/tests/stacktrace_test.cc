@@ -54,9 +54,7 @@ TEST(FuzzerStacktraceTest, SymbolizesUAF) {
 
 // TODO(https://crbug.com/40948553): Get MSan fuzzer build to work and expect
 // the correct output here.
-#if !defined(ADDRESS_SANITIZER)
-  return;
-#endif
+#if defined(ADDRESS_SANITIZER)
 
   constexpr std::array<std::string_view, 3> kRegexLines = {
       R"(ERROR: AddressSanitizer: heap-use-after-free on address 0x[0-9a-f]+.*)",
@@ -70,6 +68,8 @@ TEST(FuzzerStacktraceTest, SymbolizesUAF) {
 
   EXPECT_THAT(output, ContainsRegex(base::JoinString(kRegexLines, "\n *")))
       << output;  // Print unescaped stack trace for easier debugging.
+
+#endif  // defined(ADDRESS_SANITIZER)
 }
 
 #endif  // !BUILDFLAG(IS_UBSAN) && !BUILDFLAG(IS_UBSAN_SECURITY)
