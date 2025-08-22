@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,7 +15,7 @@ gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
     const gfx::Size& size,
     gfx::BufferFormat format) {
   return SharedMemoryImageBackingFactory::CreateGpuMemoryBufferHandle(
-      size, format, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+      size, viz::GetSharedImageFormat(format));
 }
 
 TEST(SharedMemoryRegionWrapperTest, SinglePlaneRGBA_8888) {

@@ -26,8 +26,7 @@ class GPU_GLES2_EXPORT SharedMemoryImageBackingFactory
 
   static gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
       const gfx::Size& size,
-      gfx::BufferFormat buffer_format,
-      gfx::BufferUsage buffer_usage);
+      viz::SharedImageFormat format);
 
   // SharedImageBackingFactory implementation
   std::unique_ptr<SharedImageBacking> CreateSharedImage(

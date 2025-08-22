@@ -459,7 +459,7 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     if (SharedMemoryImageBackingFactory::IsBufferUsageSupported(buffer_usage) &&
         SharedMemoryImageBackingFactory::IsSizeValidForFormat(size, format)) {
       handle = SharedMemoryImageBackingFactory::CreateGpuMemoryBufferHandle(
-          size, buffer_format, buffer_usage);
+          size, format);
     }
   }
   if (handle.is_null()) {
