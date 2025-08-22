@@ -50,8 +50,6 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
-  TabStrip* tab_strip() { return browser_view()->tabstrip(); }
-
   TabSearchContainer* tab_search_container() {
     return browser_view()
         ->tab_strip_region_view()
