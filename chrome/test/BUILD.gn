@@ -7658,7 +7658,10 @@ test("unit_tests") {
     sources += [
       "../browser/paint_preview/services/paint_preview_tab_service_unittest.cc",
     ]
-    deps += [ "//chrome/browser/paint_preview:services" ]
+    deps += [
+      "//chrome/browser/paint_preview:services",
+      "//components/paint_preview/common:test_utils",
+    ]
   }
 
   if (is_win || is_chromeos || is_mac) {
