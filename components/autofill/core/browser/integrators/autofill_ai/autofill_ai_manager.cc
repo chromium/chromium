@@ -112,6 +112,9 @@ std::optional<std::pair<EntityInstance, EntityInstance>> MaybeUpdateEntity(
     if (entity.type() != existing_entity.type()) {
       continue;
     }
+    if (existing_entity.are_attributes_read_only()) {
+      continue;
+    }
     EntityInstance::EntityMergeability mergeability =
         existing_entity.GetEntityMergeability(entity);
     if (mergeability.mergeable_attributes.empty()) {

@@ -877,5 +877,38 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
             u"2020-02-01");
 }
 
+TEST_F(AutofillAiManagerImportFormTest,
+       UpdateEntity_DoNotShowPromptWhenEntityInstanceIsReadOnly) {
+  // The submitted form will have issue date info.
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({NAME_FULL, PASSPORT_NUMBER, PASSPORT_ISSUE_DATE});
+
+  // The current entity however does not, but is read only.
+  EntityInstance existing_entity_without_issue_date =
+      test::GetPassportEntityInstance({
+          .issue_date = nullptr,
+          .are_attributes_read_only =
+              EntityInstance::AreAttributesReadOnly(true),
+      });
+  AddOrUpdateEntityInstance(existing_entity_without_issue_date);
+
+  // Set the filled values to be the same as the ones already stored in the
+  // existing entity, also fill the issue and expiry dates.
+  form->field(0)->set_value(
+      GetValueFromEntity(existing_entity_without_issue_date,
+                         AttributeType(AttributeTypeName::kPassportName)));
+  form->field(1)->set_value(
+      GetValueFromEntity(existing_entity_without_issue_date,
+                         AttributeType(AttributeTypeName::kPassportNumber)));
+  // Issue date.
+  form->field(2)->set_value(u"01/02/16");
+  form->field(2)->set_format_string_unless_overruled(
+      u"DD/MM/YY", AutofillField::FormatStringSource::kServer);
+
+  // Since the current entity instance is read only, no prompt should be shown.
+  EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble).Times(0);
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
 }  // namespace
 }  // namespace autofill
