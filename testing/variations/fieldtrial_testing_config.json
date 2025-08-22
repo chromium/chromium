@@ -21010,6 +21010,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "HeuristicCheckIntervalSeconds": "28800",
+                        "HeuristicThreshold": "2"
+                    },
                     "enable_features": [
                         "SafeBrowsingExtensionTelemetrySearchHijackingSignal"
                     ]
