@@ -84,6 +84,19 @@ class RegionalCapabilitiesService : public KeyedService {
 #endif
   };
 
+  // Contains the string IDs for the UI elements on the search engine choice
+  // screen. This is returned for regions that require a choice screen.
+  struct ChoiceScreenDesign {
+    int title_string_id;
+    int subtitle_1_string_id;
+    // String id for learn more with a link. This learn more needs to be
+    // appended to `subtitle_1_string_id`.
+    int subtitle_1_learn_more_suffix_string_id;
+    // String id for the learn more accessibility.
+    int subtitle_1_learn_more_a11y_string_id;
+    std::optional<int> subtitle_2_string_id;
+  };
+
   RegionalCapabilitiesService(
       PrefService& profile_prefs,
       std::unique_ptr<Client> regional_capabilities_client);
@@ -97,6 +110,11 @@ class RegionalCapabilitiesService : public KeyedService {
   // Returns whether the profile is associated with a region in which we can
   // show a search engine choice screen.
   bool IsInSearchEngineChoiceScreenRegion();
+
+  // Returns the appropriate choice screen design strings for the active
+  // program, if one is required. Returns `std::nullopt` if the region does not
+  // require a search engine choice screen.
+  std::optional<ChoiceScreenDesign> GetChoiceScreenDesign();
 
   // -- Internal utils & deprecated getters -----------------------------------
 

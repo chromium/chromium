@@ -3,6 +3,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/prefs",
   "+components/pref_registry",
+  "+components/strings",
   "+ui/base/device_form_factor.h",
   "+third_party/jni_zero",
   "+components/regional_capabilities/access",

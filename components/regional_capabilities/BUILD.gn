@@ -35,6 +35,7 @@ static_library("regional_capabilities") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/search_engines:search_engine_pref_names",
+    "//components/strings",
     "//third_party/abseil-cpp:absl",
     "//third_party/search_engines_data:prepopulated_engines",
     "//third_party/search_engines_data:regional_settings",
