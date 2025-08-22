@@ -17,6 +17,7 @@ from gpu_tests import common_typing as ct
 from gpu_tests import expected_color_test_cases
 from gpu_tests import gpu_integration_test
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
+from gpu_tests.util import screenshot_utils
 
 _MAPS_PERF_TEST_PATH = os.path.join(gpu_path_util.TOOLS_PERF_DIR, 'page_sets',
                                     'maps_perf_test')
@@ -85,15 +86,14 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     if screenshot is None:
       self.fail('Could not capture screenshot')
 
-    dpr = self.tab.EvaluateJavaScript('window.devicePixelRatio')
-    logging.info('devicePixelRatio is %s', dpr)
+    dpr = screenshot_utils.GetEffectiveDpr(self.tab)
+    logging.info('Effective devicePixelRatio is %s', dpr)
 
     screenshot = test_case.crop_action.CropScreenshot(
         screenshot, dpr, self.browser.platform.GetDeviceTypeName(),
         self.browser.platform.GetOSName())
 
-    self._ValidateScreenshotSamplesWithSkiaGold(self.tab, test_case, screenshot,
-                                                dpr)
+    self._ValidateScreenshotSamplesWithSkiaGold(test_case, screenshot, dpr)
 
   def GetGoldOptionalKeys(self) -> dict[str, str]:
     keys = super().GetGoldOptionalKeys()
@@ -103,8 +103,7 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     return keys
 
   def _ValidateScreenshotSamplesWithSkiaGold(
-      self, tab: ct.Tab,
-      test_case: expected_color_test_cases.ExpectedColorTestCase,
+      self, test_case: expected_color_test_cases.ExpectedColorTestCase,
       screenshot: ct.Screenshot, device_pixel_ratio: float) -> None:
     """Samples the given screenshot and verifies pixel color values.
 
@@ -112,14 +111,12 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     a Failure and uploads the image to Gold.
 
     Args:
-      tab: the Telemetry Tab object that the test was run in.
       test_case: the GPU ExpectedColorTestCase object for the test.
       screenshot: the screenshot of the test page as a Telemetry Bitmap.
       device_pixel_ratio: the device pixel ratio for the test device as a float.
     """
     try:
-      self._CompareScreenshotSamples(tab, screenshot, test_case,
-                                     device_pixel_ratio)
+      self._CompareScreenshotSamples(screenshot, test_case, device_pixel_ratio)
     except Exception:
       # An exception raised from self.fail() indicates a failure.
       image_name = self._UrlToImageName(test_case.name)
@@ -132,13 +129,12 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       raise
 
   def _CompareScreenshotSamples(
-      self, tab: ct.Tab, screenshot: ct.Screenshot,
+      self, screenshot: ct.Screenshot,
       test_case: expected_color_test_cases.ExpectedColorTestCase,
       device_pixel_ratio: float) -> None:
     """Checks a screenshot for expected colors.
 
     Args:
-      tab: the Telemetry Tab object that the test was run in.
       screenshot: the screenshot of the test page as a Telemetry Bitmap.
       test_case: the GPU ExpectedColorTestCase object for the test.
       device_pixel_ratio: the device pixel ratio for the test device as a float.
@@ -183,21 +179,6 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
                       f'{actual_color.g}, {actual_color.b}, {actual_color.a}]')
 
     expected_colors = test_case.expected_colors
-
-    # First scan through the expected_colors and see if there are any scale
-    # factor overrides that would preempt the device pixel ratio. This
-    # is mainly a workaround for complex tests like the Maps test.
-    for device_type, scale_factor in test_case.scale_factor_overrides.items():
-      # Require exact matches to avoid confusion, because some
-      # machine models and names might be subsets of others
-      # (e.g. Nexus 5 vs Nexus 5X).
-      if tab.browser.platform.GetDeviceTypeName() == device_type:
-        logging.warning(
-            'Overriding device_pixel_ration %s with scale '
-            'factor %s for device type %s', device_pixel_ratio, scale_factor,
-            device_type)
-        device_pixel_ratio = scale_factor
-        break
     for color_expectation in expected_colors:
       tolerance = (test_case.base_tolerance
                    if color_expectation.tolerance is None else

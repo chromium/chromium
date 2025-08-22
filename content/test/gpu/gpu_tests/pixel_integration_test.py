@@ -18,6 +18,7 @@ from gpu_tests import gpu_integration_test
 from gpu_tests import pixel_test_pages
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
 from gpu_tests.util import host_information
+from gpu_tests.util import screenshot_utils
 
 # We're not sure if this is actually a fixed value or not, but it's 10 pixels
 # wide on the only device we've had issues with so far (Pixel 4), so assume
@@ -209,7 +210,7 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     if screen_shot is None:
       self.fail('Could not capture screenshot')
 
-    dpr = tab.EvaluateJavaScript('window.devicePixelRatio')
+    dpr = screenshot_utils.GetEffectiveDpr(tab)
     screen_shot = test_case.crop_action.CropScreenshot(
         screen_shot, dpr, self.browser.platform.GetDeviceTypeName(),
         self.browser.platform.GetOSName())

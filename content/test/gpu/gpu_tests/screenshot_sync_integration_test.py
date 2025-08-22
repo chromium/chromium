@@ -17,6 +17,7 @@ from gpu_tests import color_profile_manager
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
+from gpu_tests.util import screenshot_utils
 
 class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   """Tests that screenshots are properly synchronized with the frame on
@@ -120,11 +121,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                            green=canvasRGB.g,
                            blue=canvasRGB.b)
     screenshot = tab.Screenshot(10)
-    # This takes into account the fact that the page can be automatically scaled
-    # on mobile, causing the effective DPR to be lower than the true DPR
-    # reported by the device.
-    effective_dpr = tab.EvaluateJavaScript(
-        'window.devicePixelRatio * window.visualViewport.scale')
+    effective_dpr = screenshot_utils.GetEffectiveDpr(tab)
     # Avoid checking along antialiased boundary due to limited Adreno 3xx
     # interpolation precision (crbug.com/847984). We inset by one CSS pixel
     # adjusted by the device pixel ratio.

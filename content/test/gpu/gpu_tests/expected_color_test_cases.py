@@ -62,7 +62,6 @@ class ExpectedColorTestCase(sghitb.SkiaGoldHeartbeatTestCase):
       extra_browser_args: list[str] | None = None,
       should_capture_full_screenshot_func: Callable[[browser_module.Browser],
                                                     bool] | None = None,
-      scale_factor_overrides: dict[str, float] | None = None,
       **kwargs):
     """
     Args:
@@ -83,8 +82,6 @@ class ExpectedColorTestCase(sghitb.SkiaGoldHeartbeatTestCase):
           Otherwise, only the visible portion will be captured, which is more
           representative of behavior users will see. If this function is not
           specified, the visible-only code path will be used.
-      scale_factor_overrides: An optional dict mapping device names to device
-          pixel ratios to use instead of the one reported by the browser.
     """
     assert url
     assert name
@@ -103,7 +100,6 @@ class ExpectedColorTestCase(sghitb.SkiaGoldHeartbeatTestCase):
     self.crop_action = crop_action
     self.extra_browser_args = extra_browser_args
     self.ShouldCaptureFullScreenshot = should_capture_full_screenshot_func
-    self.scale_factor_overrides = scale_factor_overrides or {}
 
 
 def CaptureFullScreenshotOnFuchsia(browser: browser_module.Browser) -> bool:
@@ -180,26 +176,7 @@ def MapsTestCases() -> list[ExpectedColorTestCase]:
               cba.FORCE_COLOR_PROFILE_SRGB,
           ],
           # Small Fuchsia screens result in an incomplete capture without this.
-          should_capture_full_screenshot_func=CaptureFullScreenshotOnFuchsia,
-          # Certain devices, particularly Android devices, report incorrect
-          # device pixel ratios. These overrides are the correct values for
-          # such devices calculated using the fact that this test should produce
-          # an 800x600 image on a device with a DPR of 1.
-          scale_factor_overrides={
-              # NVIDIA Shield.
-              'sb_na_wf': 1.226,
-              'Pixel 2': 1.1067,
-              'Pixel 4': 1.1025,
-              'Pixel 6': 1.10375,
-              # Samsung A13.
-              'SM-A137F': 1.1025,
-              # Samsung A23.
-              'SM-A236B': 1.1025,
-              # Samsung S23.
-              'SM-S911U1': 1.1,
-              # Motorola Moto G Power 5G.
-              'moto g power 5G - 2023': 1.1,
-          }),
+          should_capture_full_screenshot_func=CaptureFullScreenshotOnFuchsia),
   ]
 
 
