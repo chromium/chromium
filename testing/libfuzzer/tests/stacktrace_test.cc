@@ -7,6 +7,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -41,6 +42,12 @@ base::FilePath FuzzerInputPath(std::string_view input_file) {
 TEST(FuzzerStacktraceTest, SymbolizesUAF) {
   base::CommandLine cmd(FuzzerPath());
   cmd.AppendArgPath(FuzzerInputPath("uaf"));
+
+  // This loosely replicates how we run fuzzers in production. Wet let ASAN
+  // handle the symbolization online - which fails for sandboxed processes, but
+  // this toy fuzzer does not run any sandboxed code.
+  auto environment = base::Environment::Create();
+  environment->SetVar("ASAN_OPTIONS", "symbolize=1");
 
   std::string output;
   EXPECT_FALSE(base::GetAppOutputAndError(cmd, &output));  // Target crashes.
