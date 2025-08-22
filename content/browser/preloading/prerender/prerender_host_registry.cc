@@ -1603,6 +1603,30 @@ base::WeakPtr<PrerenderHostRegistry> PrerenderHostRegistry::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+PrerenderHostId PrerenderHostRegistry::GetPrerenderHostIdForNavigation(
+    NavigationRequest* navigation_request) {
+  PrerenderHost* prerender_host = nullptr;
+  if (navigation_request->IsInPrerenderedMainFrame()) {
+    // This navigation is running on the main frame in the prerendered page, so
+    // its FrameTree::Delegate should be PrerenderHost.
+    prerender_host = &PrerenderHost::GetFromFrameTreeNode(
+        *navigation_request->frame_tree_node());
+  } else {
+    // Since the navigation in the fenced frames are deferred until the
+    // activation, we do not need to check the outermost main frame for
+    // navigation requests in prerendered pages.
+    FrameTreeNodeId main_frame_host_id = navigation_request->frame_tree_node()
+                                             ->frame_tree()
+                                             .root()
+                                             ->frame_tree_node_id();
+    prerender_host = FindNonReservedHostById(main_frame_host_id);
+  }
+  if (prerender_host) {
+    return prerender_host->prerender_host_id();
+  }
+  return PrerenderHostId();
+}
+
 void PrerenderHostRegistry::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   // DidStartNavigation is used for monitoring the main frame navigation in a
@@ -1617,7 +1641,6 @@ void PrerenderHostRegistry::DidStartNavigation(
   // its FrameTree::Delegate should be PrerenderHost.
   auto& prerender_host = PrerenderHost::GetFromFrameTreeNode(
       *navigation_request->frame_tree_node());
-
   prerender_host.DidStartNavigation(navigation_handle);
 }
 

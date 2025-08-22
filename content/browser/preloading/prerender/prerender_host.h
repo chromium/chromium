@@ -17,6 +17,7 @@
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
+#include "content/browser/prerender_host_id.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/common/content_export.h"
@@ -347,6 +348,7 @@ class CONTENT_EXPORT PrerenderHost {
 
   bool IsBrowserInitiated() { return attributes_.IsBrowserInitiated(); }
 
+  PrerenderHostId prerender_host_id() const { return prerender_host_id_; }
   FrameTreeNodeId frame_tree_node_id() const { return frame_tree_node_id_; }
 
   base::WeakPtr<WebContents> initiator_web_contents() {
@@ -522,6 +524,9 @@ class CONTENT_EXPORT PrerenderHost {
                                 no_vary_search_with_parse_error);
 
   const PrerenderAttributes attributes_;
+
+  // The unique id of this PrerenderHost.
+  const PrerenderHostId prerender_host_id_;
 
   // Indicates if this PrerenderHost is ready for activation.
   bool is_ready_for_activation_ = false;
