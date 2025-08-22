@@ -147,6 +147,7 @@ extern base::TimeDelta GetNtpBrowserPromoCompletedDuration();
 extern base::TimeDelta GetNtpBrowserPromoClickedHideDuration();
 extern base::TimeDelta GetNtpBrowserPromosSnoozedHideDuration();
 extern int GetNtpBrowserPromoSetupListPromoLimit();
+extern int GetNtpBrowserPromoSetupListCompletedPromoLimit();
 extern int GetNtpBrowserPromoIndividualPromoLimit();
 
 extern std::ostream& operator<<(std::ostream& os,

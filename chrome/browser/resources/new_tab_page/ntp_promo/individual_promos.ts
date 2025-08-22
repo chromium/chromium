@@ -23,7 +23,6 @@ export interface IndividualPromosElement {
   $: {promos: HTMLElement};
 }
 
-const DEFAULT_MAX_PROMOS = 1;
 export class IndividualPromosElement extends CrLitElement {
   static get is() {
     return 'individual-promos';
@@ -40,13 +39,13 @@ export class IndividualPromosElement extends CrLitElement {
   static override get properties() {
     return {
       eligiblePromos_: {type: Array},
-      maxPromos: {type: Number, reflect: true, useDefault: true},
+      maxPromos: {type: Number, attribute: true, useDefault: true},
     };
   }
 
 
   accessor eligiblePromos_: Promo[] = [];
-  accessor maxPromos: number = DEFAULT_MAX_PROMOS;
+  accessor maxPromos: number = 0;
 
   private handler_: NtpPromoHandlerInterface;
   private callbackRouter_: NtpPromoClientCallbackRouter;
