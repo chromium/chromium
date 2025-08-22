@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/tabs/glic_nudge_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
@@ -114,11 +116,8 @@ class ContextualCueingHelperBrowserTest
   }
 
   glic::GlicButton* GetGlicButtonForBrowser(Browser* browser) {
-    TabStripActionContainer* const container =
-        BrowserView::GetBrowserViewForBrowser(browser)
-            ->tab_strip_region_view()
-            ->GetTabStripActionContainer();
-    return container->GetGlicButton();
+    return BrowserElementsViews::From(browser)->GetViewAs<glic::GlicButton>(
+        kGlicButtonElementId);
   }
 
  protected:

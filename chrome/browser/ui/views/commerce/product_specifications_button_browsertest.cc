@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -95,9 +96,9 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   }
 
   ProductSpecificationsButton* product_specifications_button() {
-    return browser_view()
-        ->tab_strip_region_view()
-        ->GetProductSpecificationsButton();
+    return BrowserElementsViews::From(browser())
+        ->GetViewAs<ProductSpecificationsButton>(
+            kProductSpecificationsButtonElementId);
   }
 
   MockProductSpecificationsEntryPointController* controller() {
@@ -136,7 +137,9 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
 
   if (features::HasTabSearchToolbarButton()) {
     TabStripActionContainer* action_container =
-        browser_view()->tab_strip_region_view()->GetTabStripActionContainer();
+        BrowserElementsViews::From(browser())
+            ->GetViewAs<TabStripActionContainer>(
+                kTabStripActionContainerElementId);
     ASSERT_TRUE(action_container->GetIndexOf(product_specifications_button())
                     .has_value());
   } else if (GetRenderTabSearchBeforeTabStrip()) {

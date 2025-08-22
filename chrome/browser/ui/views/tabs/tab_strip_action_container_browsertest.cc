@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
@@ -122,9 +124,8 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   }
 
   TabStripActionContainer* tab_strip_action_container() {
-    return browser_view()
-        ->tab_strip_region_view()
-        ->GetTabStripActionContainer();
+    return BrowserElementsViews::From(browser())
+        ->GetViewAs<TabStripActionContainer>(kTabStripActionContainerElementId);
   }
 
  protected:

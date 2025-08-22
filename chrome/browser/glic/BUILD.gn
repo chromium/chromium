@@ -200,6 +200,7 @@ source_set("impl") {
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views",
     "//chrome/browser/ui/views/frame/",
+    "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/common",
     "//components/favicon/content",

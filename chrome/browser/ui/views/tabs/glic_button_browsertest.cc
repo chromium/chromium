@@ -14,9 +14,11 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -45,12 +47,9 @@ class GlicButtonTest : public InProcessBrowserTest {
   }
 
  protected:
-  GlicButton* glic_button() {
-    return browser()
-        ->GetBrowserView()
-        .tab_strip_region_view()
-        ->GetTabStripActionContainer()
-        ->GetGlicButton();
+  glic::GlicButton* glic_button() {
+    return BrowserElementsViews::From(browser())->GetViewAs<glic::GlicButton>(
+        kGlicButtonElementId);
   }
 
   GlicKeyedService* glic_service() {

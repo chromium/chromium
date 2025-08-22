@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/common/chrome_features.h"
@@ -48,7 +50,8 @@ class TabSearchButtonBrowserTest : public InProcessBrowserTest {
   }
 
   TabSearchButton* tab_search_button() {
-    return browser_view()->tab_strip_region_view()->GetTabSearchButton();
+    return BrowserElementsViews::From(browser())->GetViewAs<TabSearchButton>(
+        kTabSearchButtonElementId);
   }
 
   TabSearchBubbleHost* tab_search_bubble_host() {
@@ -97,9 +100,9 @@ class TabSearchButtonBrowserUITest : public DialogBrowserTest {
     AppendTab(chrome::kChromeUISettingsURL);
     AppendTab(chrome::kChromeUIHistoryURL);
     AppendTab(chrome::kChromeUIBookmarksURL);
-    auto* tab_search_button = BrowserView::GetBrowserViewForBrowser(browser())
-                                  ->tab_strip_region_view()
-                                  ->GetTabSearchButton();
+    auto* tab_search_button =
+        BrowserElementsViews::From(browser())->GetViewAs<TabSearchButton>(
+            kTabSearchButtonElementId);
     views::test::ButtonTestApi(tab_search_button).NotifyClick(GetDummyEvent());
   }
 

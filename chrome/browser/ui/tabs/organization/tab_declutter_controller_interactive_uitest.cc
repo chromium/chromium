@@ -17,6 +17,7 @@
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/chrome_features.h"
@@ -120,12 +122,14 @@ class TabDeclutterControllerBrowserTest : public InProcessBrowserTest {
   }
 
   views::View* nudge_container() {
+    if (features::HasTabSearchToolbarButton()) {
+      return BrowserElementsViews::From(browser())->GetView(
+          kTabStripActionContainerElementId);
+    }
+
     auto* tab_strip_region_view =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->tab_strip_region_view();
-    if (features::HasTabSearchToolbarButton()) {
-      return tab_strip_region_view->GetTabStripActionContainer();
-    }
     return tab_strip_region_view->tab_search_container_for_testing();
   }
 
@@ -301,9 +305,9 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   views::LabelButton* close_button;
   if (features::HasTabSearchToolbarButton()) {
     TabStripActionContainer* tab_strip_action_container =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->tab_strip_region_view()
-            ->GetTabStripActionContainer();
+        BrowserElementsViews::From(browser())
+            ->GetViewAs<TabStripActionContainer>(
+                kTabStripActionContainerElementId);
     EXPECT_TRUE(
         tab_strip_action_container->tab_declutter_button()->GetVisible());
     close_button = tab_strip_action_container->tab_declutter_button()

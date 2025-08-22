@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_instant_controller.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_location_bar_model_delegate.h"
@@ -561,7 +562,9 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     if (glic_service) {
       glic_button_controller_ = std::make_unique<glic::GlicButtonController>(
           browser_view->GetProfile(),
-          browser_view->tab_strip_region_view()->GetTabStripActionContainer(),
+          BrowserElementsViews::From(browser_view->browser())
+              ->GetViewAs<TabStripActionContainer>(
+                  kTabStripActionContainerElementId),
           glic_service);
 
       if (features::kGlicActorUiTaskIcon.Get() &&
@@ -571,8 +574,9 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
             GetUserDataFactory()
                 .CreateInstance<tabs::GlicActorTaskIconController>(
                     *browser_, browser_,
-                    browser_view->tab_strip_region_view()
-                        ->GetTabStripActionContainer());
+                    BrowserElementsViews::From(browser_view->browser())
+                        ->GetViewAs<TabStripActionContainer>(
+                            kTabStripActionContainerElementId));
       }
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)

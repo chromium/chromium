@@ -144,6 +144,7 @@
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -5134,8 +5135,9 @@ void BrowserView::AddedToWidget() {
           tabstrip_->AsWeakPtr());
     } else {
       tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
-          tab_strip_region_view_->GetTabSearchButton(), browser_.get(),
-          tabstrip_->AsWeakPtr());
+          BrowserElementsViews::From(browser_.get())
+              ->GetViewAs<TabSearchButton>(kTabSearchButtonElementId),
+          browser_.get(), tabstrip_->AsWeakPtr());
     }
   }
 

@@ -241,6 +241,8 @@ TabStripActionContainer::TabStripActionContainer(
       tab_declutter_controller_(tab_declutter_controller),
       glic_nudge_controller_(glic_nudge_controller),
       tab_strip_controller_(tab_strip_controller) {
+  SetProperty(views::kElementIdentifierKey, kTabStripActionContainerElementId);
+
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view_,
                                                     gfx::Insets()),

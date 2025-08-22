@@ -479,44 +479,15 @@ gfx::Size TabStripRegionView::GetMinimumSize() const {
   return tab_strip_min_size;
 }
 
-gfx::Size TabStripRegionView::GetPreferredSizeForView() const {
-  return GetPreferredSize();
+gfx::Size TabStripRegionView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return GetLayoutManager()->GetPreferredSize(this, available_size);
 }
 
 views::View* TabStripRegionView::GetDefaultFocusableChild() {
   auto* focusable_child = tab_strip_->GetDefaultFocusableChild();
   return focusable_child ? focusable_child
                          : AccessiblePaneView::GetDefaultFocusableChild();
-}
-
-TabSearchButton* TabStripRegionView::GetTabSearchButton() const {
-  if (tab_search_container_) {
-    // tab_search_container_ may be null if browser is not TYPE_NORMAL or
-    // ShouldShowNewTabButton(browser) otherwise returns false.
-    return tab_search_container_->tab_search_button();
-  } else {
-    return nullptr;
-  }
-}
-
-TabStripActionContainer* TabStripRegionView::GetTabStripActionContainer()
-    const {
-  return tab_strip_action_container_;
-}
-
-ProductSpecificationsButton*
-TabStripRegionView::GetProductSpecificationsButton() const {
-  if (tab_strip_action_container_) {
-    return tab_strip_action_container_->GetProductSpecificationsButton();
-  }
-  return product_specifications_button_;
-}
-
-glic::GlicButton* TabStripRegionView::GetGlicButton() const {
-  if (tab_strip_action_container_) {
-    return tab_strip_action_container_->GetGlicButton();
-  }
-  return nullptr;
 }
 
 bool TabStripRegionView::IsAnimating() const {
@@ -543,10 +514,6 @@ Tab* TabStripRegionView::GetTabAnchorViewAt(int tab_index) {
 views::View* TabStripRegionView::GetTabGroupAnchorView(
     const tab_groups::TabGroupId& group) {
   return tab_strip_->group_header(group);
-}
-
-gfx::Rect TabStripRegionView::GetBoundsInScreenForView() {
-  return views::View::GetBoundsInScreen();
 }
 
 TabDragContext* TabStripRegionView::GetDragContext() {

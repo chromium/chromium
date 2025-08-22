@@ -13,9 +13,6 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
 
-namespace glic {
-class GlicButton;
-}
 namespace views {
 class Button;
 }
@@ -29,8 +26,7 @@ class TabSearchPositionMetricsLogger;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
-class TabStripRegionView final : public views::AccessiblePaneView,
-                                 public TabStripViewInterface {
+class TabStripRegionView final : public TabStripViewInterface {
   METADATA_HEADER(TabStripRegionView, views::AccessiblePaneView)
 
  public:
@@ -108,18 +104,14 @@ class TabStripRegionView final : public views::AccessiblePaneView,
 
   // TabStripViewInterface:
   gfx::Size GetMinimumSize() const override;
-  gfx::Size GetPreferredSizeForView() const override;
-  TabSearchButton* GetTabSearchButton() const override;
-  TabStripActionContainer* GetTabStripActionContainer() const override;
-  ProductSpecificationsButton* GetProductSpecificationsButton() const override;
-  glic::GlicButton* GetGlicButton() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool IsAnimating() const override;
   void StopAnimating() override;
   std::optional<int> GetFocusedTabIndex() const override;
   Tab* GetTabAnchorViewAt(int tab_index) override;
   views::View* GetTabGroupAnchorView(
       const tab_groups::TabGroupId& group) override;
-  gfx::Rect GetBoundsInScreenForView() override;
   TabDragContext* GetDragContext() override;
   void SetTabStripObserver(TabStripObserver* observer) override;
 

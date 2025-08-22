@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -94,7 +95,8 @@ class GlicStatusIconUiTest : public test::InteractiveGlicTest,
   auto ForceEmptyButtonBounds(Browser* browser) {
     return Do([browser] {
       auto* glic_button =
-          browser->window()->AsBrowserView()->tab_strip_view()->GetGlicButton();
+          BrowserElementsViews::From(browser)->GetViewAs<glic::GlicButton>(
+              kGlicButtonElementId);
       glic_button->SetSize(gfx::Size(0, 0));
     });
   }
