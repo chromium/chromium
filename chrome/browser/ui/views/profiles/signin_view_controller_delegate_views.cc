@@ -159,7 +159,8 @@ SigninViewControllerDelegateViews::CreateHistorySyncOptInWebView(
   DCHECK(web_ui);
   web_view->SetProperty(views::kElementIdentifierKey,
                         SigninViewController::kHistorySyncOptinViewId);
-  web_ui->Initialize(browser);
+  web_ui->Initialize(browser,
+                     /*history_optin_completed_closure=*/base::DoNothing());
   return web_view;
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

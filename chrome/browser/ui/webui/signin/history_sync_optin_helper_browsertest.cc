@@ -4,20 +4,33 @@
 
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 
+#include <memory>
+
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_capability_fetcher.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class EnterprisePolicyCapabilityObserverBrowserTest
-    : public SigninBrowserTestBase {
+namespace {
+class MockHistorySyncOptinHelperDelegate
+    : public HistorySyncOptinHelper::Delegate {
  public:
-  EnterprisePolicyCapabilityObserverBrowserTest()
+  MOCK_METHOD(void, ShowHistorySyncOptinScreen, (), (override));
+};
+}  // namespace
+
+class HistorySyncOptinHelperBrowserTest : public SigninBrowserTestBase {
+ public:
+  HistorySyncOptinHelperBrowserTest()
       : SigninBrowserTestBase(/*use_main_profile=*/true) {}
 
   AccountInfo MakeAccountInfoAvailable() {
@@ -33,53 +46,59 @@ class EnterprisePolicyCapabilityObserverBrowserTest
   }
 
   // Updates the fields relating to the account management.
-  void UpdateEnterprizePolicyCapabilities(AccountInfo& account_info) {
-    account_info.hosted_domain = "example.com";
+  void UpdateEnterprisePolicyCapabilities(AccountInfo& account_info,
+                                          bool is_managed) {
+    account_info.hosted_domain =
+        is_managed ? "example.com" : signin::constants::kNoHostedDomainFound;
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_is_subject_to_account_level_enterprise_policies(true);
+    mutator.set_is_subject_to_account_level_enterprise_policies(is_managed);
 
     CHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_features{
+      switches::kEnableHistorySyncOptin};
 };
 
-IN_PROC_BROWSER_TEST_F(EnterprisePolicyCapabilityObserverBrowserTest,
-                       ExecutesCallbackWhenCapabilityFetched) {
-  base::test::TestFuture<signin::Tribool>
-      enterprize_policy_capability_fetched_callback;
+IN_PROC_BROWSER_TEST_F(
+    HistorySyncOptinHelperBrowserTest,
+    TriggersHistorySyncScreenWhenCapabilityFetchedForNonManagedAccount) {
   AccountInfo account_info = MakeAccountInfoAvailable();
+  MockHistorySyncOptinHelperDelegate delegate;
 
-  EnterprisePolicyCapabilityObserver enterprise_policy_capability_observer(
-      identity_test_env()->identity_manager(), account_info,
-      enterprize_policy_capability_fetched_callback.GetCallback());
-  enterprise_policy_capability_observer.FetchCapability();
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(1);
 
-  UpdateEnterprizePolicyCapabilities(account_info);
-  EXPECT_TRUE(enterprize_policy_capability_fetched_callback.Wait());
-  signin::Tribool is_managed_account =
-      enterprize_policy_capability_fetched_callback.Get<signin::Tribool>();
-  EXPECT_EQ(signin::Tribool::kTrue, is_managed_account);
+  HistorySyncOptinHelper history_sync_optin_helper(
+      identity_test_env()->identity_manager(), account_info, &delegate);
+  history_sync_optin_helper.StartHistorySyncOptinFlow();
+
+  // This triggers the flopw that reaches the delegate's
+  // `ShowHistorySyncOptinScreen`.
+  UpdateEnterprisePolicyCapabilities(account_info, /*is_managed=*/false);
 
   // Subsequent updates should have no impact.
-  UpdateEnterprizePolicyCapabilities(account_info);
+  UpdateEnterprisePolicyCapabilities(account_info, /*is_managed=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(EnterprisePolicyCapabilityObserverBrowserTest,
-                       ExecutesCallbackWhenCapabilityFetchingTimesOut) {
-  base::test::TestFuture<signin::Tribool>
-      enterprize_policy_capability_fetched_callback;
+IN_PROC_BROWSER_TEST_F(
+    HistorySyncOptinHelperBrowserTest,
+    TriggersHistorySyncScreenWhenCapabilityFetchingTimesOut) {
   AccountInfo account_info = MakeAccountInfoAvailable();
+  MockHistorySyncOptinHelperDelegate delegate;
 
-  EnterprisePolicyCapabilityObserver enterprise_policy_capability_observer(
-      identity_test_env()->identity_manager(), account_info,
-      enterprize_policy_capability_fetched_callback.GetCallback());
-  enterprise_policy_capability_observer.FetchCapability();
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
 
-  enterprise_policy_capability_observer.GetAccountCapabilityFetcherForTesting()
+  HistorySyncOptinHelper history_sync_optin_helper(
+      identity_test_env()->identity_manager(), account_info, &delegate);
+  history_sync_optin_helper.StartHistorySyncOptinFlow();
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(1);
+  history_sync_optin_helper.GetAccountCapabilityFetcherForTesting()
       ->EnforceTimeoutReachedForTesting();
 
-  EXPECT_TRUE(enterprize_policy_capability_fetched_callback.Wait());
-  signin::Tribool is_managed_account =
-      enterprize_policy_capability_fetched_callback.Get<signin::Tribool>();
-  EXPECT_EQ(signin::Tribool::kUnknown, is_managed_account);
+  // After the timeout is reached, capability updates should have no impact.
+  UpdateEnterprisePolicyCapabilities(account_info, /*is_managed=*/true);
 }

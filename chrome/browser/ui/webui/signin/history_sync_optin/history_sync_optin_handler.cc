@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
@@ -32,11 +34,14 @@ HistorySyncOptinHandler::HistorySyncOptinHandler(
     mojo::PendingReceiver<history_sync_optin::mojom::PageHandler> receiver,
     mojo::PendingRemote<history_sync_optin::mojom::Page> page,
     Browser* browser,
-    Profile* profile)
+    Profile* profile,
+    base::OnceClosure history_optin_completed_closure)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       browser_(browser ? browser->AsWeakPtr() : nullptr),
       profile_(profile),
+      history_optin_completed_closure_(
+          std::move(history_optin_completed_closure)),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)) {
   CHECK(profile_);
   CHECK(identity_manager_);
@@ -82,6 +87,8 @@ void HistorySyncOptinHandler::FinishAndCloseDialog() {
   if (browser_) {
     browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
   }
+  CHECK(history_optin_completed_closure_);
+  std::move(history_optin_completed_closure_).Run();
 }
 
 void HistorySyncOptinHandler::AddHistorySyncConsent() {

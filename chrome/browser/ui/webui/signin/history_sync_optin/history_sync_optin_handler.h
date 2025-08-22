@@ -28,7 +28,8 @@ class HistorySyncOptinHandler : public history_sync_optin::mojom::PageHandler,
       mojo::PendingReceiver<history_sync_optin::mojom::PageHandler> receiver,
       mojo::PendingRemote<history_sync_optin::mojom::Page> page,
       Browser* browser,
-      Profile* profile);
+      Profile* profile,
+      base::OnceClosure history_optin_completed_closure);
   ~HistorySyncOptinHandler() override;
 
   HistorySyncOptinHandler(const HistorySyncOptinHandler&) = delete;
@@ -62,6 +63,8 @@ class HistorySyncOptinHandler : public history_sync_optin::mojom::PageHandler,
 
   const base::WeakPtr<Browser> browser_;
   const raw_ptr<Profile> profile_;
+  base::OnceClosure history_optin_completed_closure_;
+
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   base::ScopedObservation<signin::IdentityManager,

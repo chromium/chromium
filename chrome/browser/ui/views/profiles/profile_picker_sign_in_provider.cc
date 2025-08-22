@@ -44,6 +44,7 @@
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
@@ -315,10 +316,18 @@ void ProfilePickerSignInProvider::FinishFlow(
   std::move(callback_).Run(profile_.get(), account_info, std::move(contents_));
 }
 
-void ProfilePickerSignInProvider::FinishFlowInPicker(
+void ProfilePickerSignInProvider::FinishFlowInPickerWithSyncConfirmation(
     Profile* profile,
     signin_metrics::AccessPoint /*access_point*/,
     signin_metrics::PromoAction /*promo_action*/,
+    content::WebContents* /*contents*/,
+    const CoreAccountInfo& account_info) {
+  CHECK_EQ(profile, profile_.get());
+  FinishFlow(account_info);
+}
+
+void ProfilePickerSignInProvider::FinishFlowInPickerWithHistorySyncOptin(
+    Profile* profile,
     content::WebContents* /*contents*/,
     const CoreAccountInfo& account_info) {
   CHECK_EQ(profile, profile_.get());
@@ -347,36 +356,30 @@ GURL ProfilePickerSignInProvider::BuildSigninURL() const {
 void ProfilePickerSignInProvider::InitializeOrUpdateDiceTabHelper(
     DiceTabHelper& helper,
     DiceTabHelperMode mode) {
-  DiceTabHelper::EnableSyncCallback enable_sync_callback;
-  DiceTabHelper::ShowSigninErrorCallback show_signin_error_callback;
-  // Use |redirect_url| and not |continue_url|, so that the DiceTabHelper can
-  // redirect to chrome:// URLs such as the NTP.
-  GURL redirect_url;
-  bool record_signin_started_metrics = true;
   switch (mode) {
     case DiceTabHelperMode::kInPicker:
       // This is the default case. The signin flow starts in the picker,
       // assuming that this is not SAML. If the user uses a SAML account, a
       // browser window will open, and the `DiceTabHelper` will be reinitialized
       // with the `kInBrowser` mode.
-      enable_sync_callback =
-          base::BindRepeating(&ProfilePickerSignInProvider::FinishFlowInPicker,
-                              weak_ptr_factory_.GetWeakPtr());
-      // TODO(crbug.com/40276801): Handle signin errors in the profile
-      // picker.
-      show_signin_error_callback = base::DoNothing();
-
       helper.InitializeSigninFlow(
           BuildSigninURL(), signin_access_point_,
           signin_metrics::Reason::kSigninPrimaryAccount,
           signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-          std::move(redirect_url), record_signin_started_metrics,
-          std::move(enable_sync_callback),
-          /* TODO(crbug.com/418139693): Update the callback once this entry
-             point is supported for history sync. */
-          /*history_sync_optin_callback=*/base::NullCallback(),
+          // Use |redirect_url| and not |continue_url|, so that the
+          // DiceTabHelper can redirect to chrome:// URLs such as the NTP.
+          /*redirect_url=*/GURL(),
+          /*record_signin_started_metrics=*/true,
+          base::BindRepeating(&ProfilePickerSignInProvider::
+                                  FinishFlowInPickerWithSyncConfirmation,
+                              weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&ProfilePickerSignInProvider::
+                                  FinishFlowInPickerWithHistorySyncOptin,
+                              weak_ptr_factory_.GetWeakPtr()),
           DiceTabHelper::OnSigninHeaderReceived(),
-          std::move(show_signin_error_callback));
+          // TODO(crbug.com/40276801): Handle signin errors in the profile
+          // picker.
+          /*show_signin_error_callback=*/base::DoNothing());
       tab_helper_is_initialized_ = true;
       return;
     case DiceTabHelperMode::kInBrowser:
