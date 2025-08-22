@@ -750,18 +750,17 @@ void HostResolverManager::Job::OnDnsTaskFailure(
     bool secure) {
   DCHECK_NE(OK, failure_results.error());
 
-  if (!secure) {
-    DCHECK_NE(key_.secure_dns_mode, SecureDnsMode::kSecure);
-    UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.InsecureDnsTask.FailureTime",
-                                 duration);
-  }
+  base::UmaHistogramLongTimes100(
+      base::StrCat(
+          {"Net.DNS.DnsTask.", secure ? "Secure" : "Insecure", ".FailureTime"}),
+      duration);
 
   if (!dns_task) {
     return;
   }
 
-  UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.JobQueueTime.Failure",
-                               total_transaction_time_queued_);
+  base::UmaHistogramLongTimes100("Net.DNS.JobQueueTime.Failure",
+                                 total_transaction_time_queued_);
 
   // If one of the fallback tasks doesn't complete the request, store a result
   // to use during request completion.
@@ -806,10 +805,13 @@ void HostResolverManager::Job::OnDnsTaskComplete(
     return;
   }
 
-  UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.DnsTask.SuccessTime", duration);
+  base::UmaHistogramLongTimes100(
+      base::StrCat(
+          {"Net.DNS.DnsTask.", secure ? "Secure" : "Insecure", ".SuccessTime"}),
+      duration);
 
-  UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.JobQueueTime.Success",
-                               total_transaction_time_queued_);
+  base::UmaHistogramLongTimes100("Net.DNS.JobQueueTime.Success",
+                                 total_transaction_time_queued_);
 
   // Reset the insecure DNS failure counter if an insecure DnsTask completed
   // successfully.

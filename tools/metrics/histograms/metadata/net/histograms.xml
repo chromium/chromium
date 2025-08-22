@@ -2084,17 +2084,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.DNS.DnsTask.SuccessTime" units="ms"
-    expires_after="2025-12-28">
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Duration of time taken by DnsTask (the grouping of all individual DNS
-    queries for a single instance of resolving a name) in resolutions that
-    succeeded.
-  </summary>
-</histogram>
-
 <histogram name="Net.DNS.DnsTask.SvcbHttpsTransactionError"
     enum="DNS.SvcbHttpsTransactionError" expires_after="2025-08-10">
   <owner>horo@chromium.org</owner>
@@ -2104,6 +2093,30 @@ chromium-metrics-reviews@google.com.
     and whether or not any failure is fatal to the DnsTask. Recorded for all
     completed HTTPS record transactions.
   </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsTask.{Secure}.FailureTime" units="ms"
+    expires_after="2025-11-21">
+  <owner>bashi@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Duration of time taken by a {Secure}DnsTask (the grouping of all individual
+    DNS queries for a single instance of resolving a name) in resolutions that
+    failed. Recorded when a {Secure}DnsTask failed.
+  </summary>
+  <token key="Secure" variants="DnsOverHttpsSecure"/>
+</histogram>
+
+<histogram name="Net.DNS.DnsTask.{Secure}.SuccessTime" units="ms"
+    expires_after="2025-11-21">
+  <owner>bashi@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Duration of time taken by a {Secure}DnsTask (the grouping of all individual
+    DNS queries for a single instance of resolving a name) in resolutions that
+    succeeded. Recorded when a {Secure}DnsTask succeeded.
+  </summary>
+  <token key="Secure" variants="DnsOverHttpsSecure"/>
 </histogram>
 
 <histogram name="Net.DNS.DnsTransaction.AttemptType" enum="DNS.AttemptType"
@@ -2422,18 +2435,9 @@ chromium-metrics-reviews@google.com.
   <token key="secure" variants="DnsOverHttpsSecure"/>
 </histogram>
 
-<histogram name="Net.DNS.InsecureDnsTask.FailureTime" units="ms"
-    expires_after="2025-05-11">
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Duration of time taken by an insecure DnsTask in resolutions that failed.
-  </summary>
-</histogram>
-
 <histogram name="Net.DNS.JobQueueTime.Failure" units="ms"
-    expires_after="2025-09-14">
-  <owner>horo@chromium.org</owner>
+    expires_after="2026-08-21">
+  <owner>bashi@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     The duration of time DnsTransactions spend waiting to be started by a
@@ -2443,8 +2447,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.JobQueueTime.PerTransaction" units="ms"
-    expires_after="2025-09-14">
-  <owner>horo@chromium.org</owner>
+    expires_after="2026-08-21">
+  <owner>bashi@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     The duration of time a DnsTransaction spends waiting to be started by a
@@ -2456,8 +2460,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.JobQueueTime.Success" units="ms"
-    expires_after="2025-08-24">
-  <owner>horo@chromium.org</owner>
+    expires_after="2026-08-21">
+  <owner>bashi@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     The duration of time DnsTransactions spend waiting to be started by a
