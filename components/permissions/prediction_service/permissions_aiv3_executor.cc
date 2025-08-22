@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/permissions/prediction_service/permissions_aiv3_encoder.h"
+#include "components/permissions/prediction_service/permissions_aiv3_executor.h"
 
 #include <array>
 #include <vector>
@@ -12,16 +12,16 @@
 #include "components/permissions/prediction_service/permissions_aiv3_model_metadata.pb.h"
 
 namespace permissions {
-PermissionsAiv3EncoderInput::~PermissionsAiv3EncoderInput() = default;
-PermissionsAiv3EncoderInput::PermissionsAiv3EncoderInput() = default;
-PermissionsAiv3EncoderInput::PermissionsAiv3EncoderInput(
-    const PermissionsAiv3EncoderInput&) = default;
-PermissionsAiv3EncoderInput::PermissionsAiv3EncoderInput(
-    PermissionsAiv3EncoderInput&&) = default;
-PermissionsAiv3EncoderInput::PermissionsAiv3EncoderInput(SkBitmap snapshot)
+PermissionsAiv3ExecutorInput::~PermissionsAiv3ExecutorInput() = default;
+PermissionsAiv3ExecutorInput::PermissionsAiv3ExecutorInput() = default;
+PermissionsAiv3ExecutorInput::PermissionsAiv3ExecutorInput(
+    const PermissionsAiv3ExecutorInput&) = default;
+PermissionsAiv3ExecutorInput::PermissionsAiv3ExecutorInput(
+    PermissionsAiv3ExecutorInput&&) = default;
+PermissionsAiv3ExecutorInput::PermissionsAiv3ExecutorInput(SkBitmap snapshot)
     : snapshot(std::move(snapshot)) {}
 
-bool PermissionsAiv3Encoder::Preprocess(
+bool PermissionsAiv3Executor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const ModelInput& input) {
   if (!ConvertSkBitMapToTfliteTensor(input_tensors[0], input.snapshot)) {
@@ -31,7 +31,7 @@ bool PermissionsAiv3Encoder::Preprocess(
   return true;
 }
 
-void PermissionsAiv3Encoder::SetThresholdValues(
+void PermissionsAiv3Executor::SetThresholdValues(
     base::optional_ref<const PermissionsAiv3ModelMetadata> metadata) {
   if (!metadata.has_value() || !metadata.value().has_relevance_thresholds()) {
     DCHECK(request_type() == RequestType::kNotifications ||

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV3_ENCODER_H_
-#define COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV3_ENCODER_H_
+#ifndef COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV3_EXECUTOR_H_
+#define COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV3_EXECUTOR_H_
 
 #include <optional>
 #include <vector>
@@ -20,26 +20,26 @@
 
 namespace permissions {
 
-struct PermissionsAiv3EncoderInput {
-  explicit PermissionsAiv3EncoderInput(SkBitmap snapshot);
-  PermissionsAiv3EncoderInput();
-  ~PermissionsAiv3EncoderInput();
-  PermissionsAiv3EncoderInput(const PermissionsAiv3EncoderInput&);
-  PermissionsAiv3EncoderInput(PermissionsAiv3EncoderInput&&);
+struct PermissionsAiv3ExecutorInput {
+  explicit PermissionsAiv3ExecutorInput(SkBitmap snapshot);
+  PermissionsAiv3ExecutorInput();
+  ~PermissionsAiv3ExecutorInput();
+  PermissionsAiv3ExecutorInput(const PermissionsAiv3ExecutorInput&);
+  PermissionsAiv3ExecutorInput(PermissionsAiv3ExecutorInput&&);
   SkBitmap snapshot;
   std::optional<PermissionsAiv3ModelMetadata> metadata;
 };
 
 // The executor maps its inputs into TFLite's tensor format and converts the
 // model output's tensor representation back.
-class PermissionsAiv3Encoder
-    : public PermissionsAiEncoderBase<const PermissionsAiv3EncoderInput&> {
+class PermissionsAiv3Executor
+    : public PermissionsAiEncoderBase<const PermissionsAiv3ExecutorInput&> {
  public:
-  using ModelInput = PermissionsAiv3EncoderInput;
+  using ModelInput = PermissionsAiv3ExecutorInput;
 
-  explicit PermissionsAiv3Encoder(RequestType request_type)
+  explicit PermissionsAiv3Executor(RequestType request_type)
       : PermissionsAiEncoderBase(request_type) {}
-  ~PermissionsAiv3Encoder() override = default;
+  ~PermissionsAiv3Executor() override = default;
 
   void SetThresholdsFromMetadata(
       std::optional<PermissionsAiv3ModelMetadata>& metadata);
@@ -56,4 +56,4 @@ class PermissionsAiv3Encoder
 
 }  // namespace permissions
 
-#endif  // COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV3_ENCODER_H_
+#endif  // COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV3_EXECUTOR_H_

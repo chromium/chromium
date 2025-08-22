@@ -6,10 +6,10 @@
 #include <memory>
 #include <string>
 
-#include "components/permissions/prediction_service/permissions_aiv3_encoder.h"
+#include "components/permissions/prediction_service/permissions_aiv3_executor.h"
 
 namespace test {
-using permissions::PermissionsAiv3Encoder;
+using permissions::PermissionsAiv3Executor;
 using permissions::PermissionsAiv3Handler;
 using permissions::PermissionsAiv4Executor;
 using permissions::PermissionsAiv4Handler;
@@ -19,7 +19,7 @@ inline PermissionsAiv4HandlerFake::~PermissionsAiv4HandlerFake() = default;
 
 void PermissionsAivXHandlerFakeBase::ExecuteModelWrapper(
     PermissionsAivXHandlerFakeBase::ExecutionCallback callback,
-    const std::optional<PermissionsAiv3Encoder::ModelOutput>& output) {
+    const std::optional<PermissionsAiv3Executor::ModelOutput>& output) {
   std::move(callback).Run(output);
   model_execute_run_loop_for_testing_.Quit();
 }
@@ -47,7 +47,7 @@ PermissionsAiv3HandlerFake::PermissionsAiv3HandlerFake(
           model_provider,
           optimization_target,
           request_type,
-          std::make_unique<PermissionsAiv3Encoder>(request_type)) {}
+          std::make_unique<PermissionsAiv3Executor>(request_type)) {}
 
 void PermissionsAiv3HandlerFake::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,

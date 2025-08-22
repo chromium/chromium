@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/run_loop.h"
+#include "components/permissions/prediction_service/permissions_aiv3_executor.h"
 #include "components/permissions/prediction_service/permissions_aiv3_handler.h"
+#include "components/permissions/prediction_service/permissions_aiv4_executor.h"
 #include "components/permissions/prediction_service/permissions_aiv4_handler.h"
 
 // Contains fake classes to be used in tests for AIvX model handlers.
@@ -24,7 +26,7 @@ class PermissionsAivXHandlerFakeBase {
 
   void ExecuteModelWrapper(
       ExecutionCallback callback,
-      const std::optional<permissions::PermissionsAiv3Encoder::ModelOutput>&
+      const std::optional<permissions::PermissionsAiv3Executor::ModelOutput>&
           output);
 
   void OnModelUpdated(

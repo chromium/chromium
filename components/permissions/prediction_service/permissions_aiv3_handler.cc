@@ -9,14 +9,14 @@
 #include "base/feature_list.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
-#include "components/permissions/prediction_service/permissions_aiv3_encoder.h"
+#include "components/permissions/prediction_service/permissions_aiv3_executor.h"
 #include "components/version_info/version_info.h"
 
 namespace permissions {
 
 namespace {
-using ModelInput = PermissionsAiv3Encoder::ModelInput;
-using ModelOutput = PermissionsAiv3Encoder::ModelOutput;
+using ModelInput = PermissionsAiv3Executor::ModelInput;
+using ModelOutput = PermissionsAiv3Executor::ModelOutput;
 
 // This is the timeout for the model execution. If the model execution takes
 // longer than this timeout, the callback will be called with a nullopt result.
@@ -28,7 +28,7 @@ PermissionsAiv3Handler::PermissionsAiv3Handler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     optimization_guide::proto::OptimizationTarget optimization_target,
     RequestType request_type,
-    std::unique_ptr<PermissionsAiv3Encoder> model_executor,
+    std::unique_ptr<PermissionsAiv3Executor> model_executor,
     scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
     scoped_refptr<base::SequencedTaskRunner> reply_task_runner)
     : ModelHandler<ModelOutput, const ModelInput&>(
@@ -49,7 +49,7 @@ PermissionsAiv3Handler::PermissionsAiv3Handler(
           optimization_target,
           request_type,
           /*model_executor=*/
-          std::make_unique<PermissionsAiv3Encoder>(request_type)) {}
+          std::make_unique<PermissionsAiv3Executor>(request_type)) {}
 
 PermissionsAiv3Handler::~PermissionsAiv3Handler() = default;
 

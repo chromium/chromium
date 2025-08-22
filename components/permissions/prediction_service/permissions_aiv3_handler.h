@@ -9,7 +9,7 @@
 #include "base/timer/timer.h"
 #include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/permissions/prediction_service/permissions_aiv3_encoder.h"
+#include "components/permissions/prediction_service/permissions_aiv3_executor.h"
 #include "components/permissions/prediction_service/permissions_aiv3_model_metadata.pb.h"
 #include "components/permissions/prediction_service/prediction_model_metadata.pb.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
@@ -17,13 +17,13 @@
 namespace permissions {
 
 class PermissionsAiv3Handler : public optimization_guide::ModelHandler<
-                                   PermissionsAiv3Encoder::ModelOutput,
-                                   const PermissionsAiv3Encoder::ModelInput&> {
+                                   PermissionsAiv3Executor::ModelOutput,
+                                   const PermissionsAiv3Executor::ModelInput&> {
  public:
   // The timeout for the model execution. If the model execution takes longer
   // than this timeout, the callback will be called with a nullopt result.
   static const int kModelExecutionTimeout = 2;
-  using ModelInput = PermissionsAiv3Encoder::ModelInput;
+  using ModelInput = PermissionsAiv3Executor::ModelInput;
 
   PermissionsAiv3Handler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
@@ -33,7 +33,7 @@ class PermissionsAiv3Handler : public optimization_guide::ModelHandler<
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       optimization_guide::proto::OptimizationTarget optimization_target,
       RequestType request_type,
-      std::unique_ptr<PermissionsAiv3Encoder> model_executor,
+      std::unique_ptr<PermissionsAiv3Executor> model_executor,
       scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner =
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),

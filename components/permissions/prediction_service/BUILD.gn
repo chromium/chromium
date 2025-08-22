@@ -42,8 +42,8 @@ source_set("prediction_service") {
     sources += [
       "permissions_ai_encoder_base.cc",
       "permissions_ai_encoder_base.h",
-      "permissions_aiv3_encoder.cc",
-      "permissions_aiv3_encoder.h",
+      "permissions_aiv3_executor.cc",
+      "permissions_aiv3_executor.h",
       "permissions_aiv3_handler.cc",
       "permissions_aiv3_handler.h",
       "permissions_aiv4_executor.cc",

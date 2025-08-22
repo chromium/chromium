@@ -17,7 +17,7 @@
 #include "components/optimization_guide/core/inference/test_model_handler.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/permissions/prediction_service/permissions_ai_encoder_base.h"
-#include "components/permissions/prediction_service/permissions_aiv3_encoder.h"
+#include "components/permissions/prediction_service/permissions_aiv3_executor.h"
 #include "components/permissions/prediction_service/permissions_aiv3_model_metadata.pb.h"
 #include "components/permissions/test/aivx_modelhandler_utils.h"
 #include "components/permissions/test/enums_to_string.h"
@@ -45,8 +45,8 @@ constexpr std::string_view kOneReturnModel = "aiv3_ret_1.tflite";
 
 constexpr SkColor kDefaultColor = SkColorSetRGB(0x1E, 0x1C, 0x0F);
 
-auto& kImageInputWidth = PermissionsAiv3Encoder::kImageInputWidth;
-auto& kImageInputHeight = PermissionsAiv3Encoder::kImageInputHeight;
+auto& kImageInputWidth = PermissionsAiv3Executor::kImageInputWidth;
+auto& kImageInputHeight = PermissionsAiv3Executor::kImageInputHeight;
 
 constexpr char kModelExecutionAlreadyInProgressHistogram[] =
     "Permissions.AIv3.ModelExecutionAlreadyInProgress";
@@ -74,7 +74,7 @@ class PermissionsAiv3HandlerMock : public PermissionsAiv3Handler {
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       optimization_guide::proto::OptimizationTarget optimization_target,
       RequestType request_type,
-      std::unique_ptr<PermissionsAiv3Encoder> model_executor)
+      std::unique_ptr<PermissionsAiv3Executor> model_executor)
       : PermissionsAiv3Handler(model_provider,
                                optimization_target,
                                request_type,
@@ -86,7 +86,7 @@ class PermissionsAiv3HandlerMock : public PermissionsAiv3Handler {
   // simulate the model execution being stuck (or simply too long).
   void ExecuteModelWithInput(
       ExecutionCallback callback,
-      const PermissionsAiv3Encoder::ModelInput& input) override {
+      const PermissionsAiv3Executor::ModelInput& input) override {
     callback_ = std::move(callback);
   }
 
@@ -99,10 +99,10 @@ class PermissionsAiv3HandlerMock : public PermissionsAiv3Handler {
   ExecutionCallback callback_;
 };
 
-class PermissionsAiv3EncoderFake : public PermissionsAiv3Encoder {
+class PermissionsAiv3ExecutorFake : public PermissionsAiv3Executor {
  public:
-  explicit PermissionsAiv3EncoderFake(RequestType type)
-      : PermissionsAiv3Encoder(type) {}
+  explicit PermissionsAiv3ExecutorFake(RequestType type)
+      : PermissionsAiv3Executor(type) {}
 
   void set_preprocess_hook(
       base::OnceCallback<void(const std::vector<TfLiteTensor*>& input_tensors)>
@@ -117,7 +117,7 @@ class PermissionsAiv3EncoderFake : public PermissionsAiv3Encoder {
  protected:
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   const ModelInput& input) override {
-    auto ret = PermissionsAiv3Encoder::Preprocess(input_tensors, input);
+    auto ret = PermissionsAiv3Executor::Preprocess(input_tensors, input);
     if (preprocess_hook_) {
       std::move(preprocess_hook_).Run(input_tensors);
     }
@@ -134,29 +134,30 @@ class Aiv3HandlerTestBase : public testing::Test {
     model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
 
-    auto geolocation_encoder_mock =
-        std::make_unique<PermissionsAiv3EncoderFake>(RequestType::kGeolocation);
-    geolocation_encoder_mock_ = geolocation_encoder_mock.get();
+    auto geolocation_executor_mock =
+        std::make_unique<PermissionsAiv3ExecutorFake>(
+            RequestType::kGeolocation);
+    geolocation_executor_mock_ = geolocation_executor_mock.get();
     geolocation_model_handler_ = std::make_unique<PermissionsAiv3Handler>(
         model_provider_.get(),
         /*optimization_target=*/kOptTargetGeolocation,
         /*request_type=*/RequestType::kGeolocation,
-        std::move(geolocation_encoder_mock));
+        std::move(geolocation_executor_mock));
 
-    auto notification_encoder_mock =
-        std::make_unique<PermissionsAiv3EncoderFake>(
+    auto notification_executor_mock =
+        std::make_unique<PermissionsAiv3ExecutorFake>(
             RequestType::kNotifications);
-    notification_encoder_mock_ = notification_encoder_mock.get();
+    notification_executor_mock_ = notification_executor_mock.get();
     notification_model_handler_ = std::make_unique<PermissionsAiv3Handler>(
         model_provider_.get(),
         /*optimization_target=*/kOptTargetNotification,
         /*request_type=*/RequestType::kNotifications,
-        std::move(notification_encoder_mock));
+        std::move(notification_executor_mock));
   }
 
   void TearDown() override {
-    geolocation_encoder_mock_ = nullptr;
-    notification_encoder_mock_ = nullptr;
+    geolocation_executor_mock_ = nullptr;
+    notification_executor_mock_ = nullptr;
     geolocation_model_handler_.reset();
     notification_model_handler_.reset();
     model_provider_.reset();
@@ -203,8 +204,8 @@ class Aiv3HandlerTestBase : public testing::Test {
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  protected:
-  raw_ptr<PermissionsAiv3EncoderFake> geolocation_encoder_mock_;
-  raw_ptr<PermissionsAiv3EncoderFake> notification_encoder_mock_;
+  raw_ptr<PermissionsAiv3ExecutorFake> geolocation_executor_mock_;
+  raw_ptr<PermissionsAiv3ExecutorFake> notification_executor_mock_;
 
   std::unique_ptr<PermissionsAiv3Handler> geolocation_model_handler_;
   std::unique_ptr<PermissionsAiv3Handler> notification_model_handler_;
@@ -295,7 +296,7 @@ TEST_F(Aiv3HandlerTest, BitmapGetsCopiedToTensor) {
       test::BuildBitmap(kImageInputWidth, kImageInputHeight, kDefaultColor);
 
   bool flag = false;
-  geolocation_encoder_mock_->set_preprocess_hook(base::BindOnce(
+  geolocation_executor_mock_->set_preprocess_hook(base::BindOnce(
       [](bool* flag, const std::vector<TfLiteTensor*>& input_tensors) {
         std::vector<float> data;
         if (tflite::task::core::PopulateVector<float>(input_tensors[0], &data)
@@ -354,7 +355,7 @@ TEST_P(ResizeAiv3HandlerTest, ResizesBitmapsForModelInput) {
                                     GetParam().input_height, kDefaultColor);
 
   bool flag = false;
-  geolocation_encoder_mock_->set_preprocess_hook(base::BindOnce(
+  geolocation_executor_mock_->set_preprocess_hook(base::BindOnce(
       [](bool* flag, const std::vector<TfLiteTensor*>& input_tensors) {
         std::vector<float> data;
         ASSERT_TRUE(
@@ -386,7 +387,7 @@ TEST_F(Aiv3HandlerTest, ModelHandlerPreventsConcurrentExecutions) {
   base::HistogramTester histograms;
 
   auto geolocation_encoder_mock =
-      std::make_unique<PermissionsAiv3EncoderFake>(RequestType::kGeolocation);
+      std::make_unique<PermissionsAiv3ExecutorFake>(RequestType::kGeolocation);
   std::unique_ptr<PermissionsAiv3HandlerMock> model_handler_mock =
       std::make_unique<PermissionsAiv3HandlerMock>(
           GetModelProvider(),
@@ -394,7 +395,7 @@ TEST_F(Aiv3HandlerTest, ModelHandlerPreventsConcurrentExecutions) {
           /*request_type=*/RequestType::kGeolocation,
           std::move(geolocation_encoder_mock));
 
-  // Because of `PermissionsAiv3EncoderFake` the first execution will be hold
+  // Because of `PermissionsAiv3ExecutorFake` the first execution will be hold
   // until manually released to simulate a long execution so that we can test
   // the concurrent execution prevention logic.
   ModelCallbackFuture future1;
@@ -437,7 +438,7 @@ TEST_F(Aiv3HandlerTest, ModelHandlerSingleExecutions) {
   base::HistogramTester histograms;
 
   auto geolocation_encoder_mock =
-      std::make_unique<PermissionsAiv3EncoderFake>(RequestType::kGeolocation);
+      std::make_unique<PermissionsAiv3ExecutorFake>(RequestType::kGeolocation);
   std::unique_ptr<PermissionsAiv3HandlerMock> model_handler_mock =
       std::make_unique<PermissionsAiv3HandlerMock>(
           GetModelProvider(),
@@ -445,7 +446,7 @@ TEST_F(Aiv3HandlerTest, ModelHandlerSingleExecutions) {
           /*request_type=*/RequestType::kGeolocation,
           std::move(geolocation_encoder_mock));
 
-  // Because of `PermissionsAiv3EncoderFake` the first execution will be hold
+  // Because of `PermissionsAiv3ExecutorFake` the first execution will be hold
   // until manually released. In this case we release the callback before we
   // try to execute the model again.
   ModelCallbackFuture future1;
@@ -478,7 +479,7 @@ TEST_F(Aiv3HandlerTest, ModelHandlerTimeoutExecutions) {
   base::HistogramTester histograms;
 
   auto geolocation_encoder_mock =
-      std::make_unique<PermissionsAiv3EncoderFake>(RequestType::kGeolocation);
+      std::make_unique<PermissionsAiv3ExecutorFake>(RequestType::kGeolocation);
   std::unique_ptr<PermissionsAiv3HandlerMock> model_handler_mock =
       std::make_unique<PermissionsAiv3HandlerMock>(
           GetModelProvider(),
@@ -486,7 +487,7 @@ TEST_F(Aiv3HandlerTest, ModelHandlerTimeoutExecutions) {
           /*request_type=*/RequestType::kGeolocation,
           std::move(geolocation_encoder_mock));
 
-  // Because of `PermissionsAiv3EncoderFake` the first execution will be hold
+  // Because of `PermissionsAiv3ExecutorFake` the first execution will be hold
   // until manually released. In this case we release the callback before we
   // try to execute the model again.
   ModelCallbackFuture future1;
