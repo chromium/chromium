@@ -119,10 +119,14 @@ bool IdentityDialogController::ShowAccountsDialog(
     rp_data.rp_icon = favicon_driver->GetFavicon();
   }
 
-  bool did_show = account_view_->Show(rp_data, identity_provider_data, accounts,
-                                      rp_mode, new_accounts);
-  did_show_ui_ |= did_show;
-  return did_show;
+  // Do not modify any member variables if the accounts dialog is not shown
+  // because the caller may have destroyed this object.
+  if (account_view_->Show(rp_data, identity_provider_data, accounts, rp_mode,
+                          new_accounts)) {
+    did_show_ui_ = true;
+    return true;
+  }
+  return false;
 }
 
 bool IdentityDialogController::ShowFailureDialog(
@@ -143,10 +147,14 @@ bool IdentityDialogController::ShowFailureDialog(
   //   TODO: If the failure dialog is already being shown, notify user that
   //   sign-in attempt failed.
 
-  bool did_show = account_view_->ShowFailureDialog(
-      rp_data, idp_for_display, rp_context, rp_mode, idp_metadata);
-  did_show_ui_ |= did_show;
-  return did_show;
+  // Do not modify any member variables if the failure dialog is not shown
+  // because the caller may have destroyed this object.
+  if (account_view_->ShowFailureDialog(rp_data, idp_for_display, rp_context,
+                                       rp_mode, idp_metadata)) {
+    did_show_ui_ = true;
+    return true;
+  }
+  return false;
 }
 
 bool IdentityDialogController::ShowErrorDialog(
@@ -164,10 +172,14 @@ bool IdentityDialogController::ShowErrorDialog(
     return false;
   }
 
-  bool did_show = account_view_->ShowErrorDialog(
-      rp_data, idp_for_display, rp_context, rp_mode, idp_metadata, error);
-  did_show_ui_ |= did_show;
-  return did_show;
+  // Do not modify any member variables if the error dialog is not shown
+  // because the caller may have destroyed this object.
+  if (account_view_->ShowErrorDialog(rp_data, idp_for_display, rp_context,
+                                     rp_mode, idp_metadata, error)) {
+    did_show_ui_ = true;
+    return true;
+  }
+  return false;
 }
 
 bool IdentityDialogController::ShowLoadingDialog(
@@ -199,10 +211,14 @@ bool IdentityDialogController::ShowVerifyingDialog(
   if (!TrySetAccountView()) {
     return false;
   }
-  bool did_show = account_view_->ShowVerifyingDialog(rp_data, idp_data, account,
-                                                     sign_in_mode, rp_mode);
-  did_show_ui_ |= did_show;
-  return did_show;
+  // Do not modify any member variables if the verifying dialog is not shown
+  // because the caller may have destroyed this object.
+  if (account_view_->ShowVerifyingDialog(rp_data, idp_data, account,
+                                         sign_in_mode, rp_mode)) {
+    did_show_ui_ = true;
+    return true;
+  }
+  return false;
 }
 
 void IdentityDialogController::OnLoginToIdP(const GURL& idp_config_url,
