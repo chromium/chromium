@@ -20,16 +20,16 @@
 
 namespace syncer {
 
-const char kTestURL[] = "http://chromium.org/test";
-const char kTestURLTrailingSlash[] = "http://chromium.org/test/";
-const char kEventURL[] = "http://chromium.org/test/event";
+constexpr char kTestURL[] = "http://chromium.org/test";
+constexpr char kTestURLTrailingSlash[] = "http://chromium.org/test/";
+constexpr char kEventURL[] = "http://chromium.org/test/event";
 
-const char kTestUserAgent[] = "the_fifth_element";
-const char kAuthToken[] = "multipass";
-const char kCacheGuid[] = "leeloo";
-const char kBirthday[] = "2263";
+constexpr char kTestUserAgent[] = "the_fifth_element";
+constexpr char kAuthToken[] = "multipass";
+constexpr char kCacheGuid[] = "leeloo";
+constexpr char kBirthday[] = "2263";
 
-const char kAuthHeaderPrefix[] = "Bearer ";
+constexpr char kAuthHeaderPrefix[] = "Bearer ";
 
 class SyncStoppedReporterTest : public testing::Test {
  public:

@@ -40,7 +40,7 @@ const base::FilePath::CharType kDocRoot[] =
 
 }  // namespace
 
-const char kUserAgent[] = "user-agent";
+constexpr char kUserAgent[] = "user-agent";
 
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SyncHttpBridgeTest DISABLED_SyncHttpBridgeTest

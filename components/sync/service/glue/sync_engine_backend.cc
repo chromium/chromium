@@ -43,7 +43,7 @@ namespace syncer {
 
 namespace {
 
-const base::FilePath::CharType kNigoriStorageFilename[] =
+constexpr base::FilePath::CharType kNigoriStorageFilename[] =
     FILE_PATH_LITERAL("Nigori.bin");
 
 void RecordInvalidationPerDataType(DataType type) {

@@ -64,7 +64,7 @@ sync_pb::SyncEnums::GetUpdatesOrigin GetOriginFromReason(
   return sync_pb::SyncEnums::UNKNOWN_ORIGIN;
 }
 
-const char kSyncServerSyncPath[] = "/command/";
+constexpr char kSyncServerSyncPath[] = "/command/";
 
 std::string StripTrailingSlash(const std::string& s) {
   int stripped_end_pos = s.size();

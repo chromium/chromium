@@ -28,7 +28,7 @@ namespace {
 // The number of random ASCII bytes we'll add to CommitMessage. We choose 256
 // because it is not too large (to hurt performance and compression ratio), but
 // it is not too small to easily be canceled out using statistical analysis.
-const size_t kPaddingSize = 256;
+constexpr size_t kPaddingSize = 256;
 
 std::string RandASCIIString(size_t length) {
   std::string result;

@@ -31,8 +31,8 @@ namespace syncer {
 
 namespace {
 
-const char kEmail[] = "test_user@gmail.com";
-const char kTimeDeferredHistogram[] = "Sync.Startup.TimeDeferred2";
+constexpr char kEmail[] = "test_user@gmail.com";
+constexpr char kTimeDeferredHistogram[] = "Sync.Startup.TimeDeferred2";
 
 class MockSyncServiceObserver : public SyncServiceObserver {
  public:

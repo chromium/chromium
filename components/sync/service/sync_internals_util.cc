@@ -31,10 +31,10 @@ namespace syncer::sync_ui_util {
 
 namespace {
 
-const char kUninitialized[] = "Uninitialized";
+constexpr char kUninitialized[] = "Uninitialized";
 
-const char kUninitializedCSSClass[] = "uninitialized";
-const char kBadStateCSSClass[] = "in_bad_state";
+constexpr char kUninitializedCSSClass[] = "uninitialized";
+constexpr char kBadStateCSSClass[] = "in_bad_state";
 
 std::string SeverityToString(TypeStatusForDebugging::Severity severity) {
   switch (severity) {

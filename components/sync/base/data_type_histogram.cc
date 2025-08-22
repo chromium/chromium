@@ -16,10 +16,10 @@ namespace syncer {
 
 namespace {
 
-const char kDataTypeMemoryHistogramPrefix[] = "Sync.DataTypeMemoryKB.";
-const char kDataTypeCountHistogramPrefix[] = "Sync.DataTypeCount.";
-const char kDataTypeUpdateDropHistogramPrefix[] = "Sync.DataTypeUpdateDrop.";
-const char kDataTypeNumUnsyncedEntities[] = "Sync.DataTypeNumUnsyncedEntities";
+constexpr char kDataTypeMemoryHistogramPrefix[] = "Sync.DataTypeMemoryKB.";
+constexpr char kDataTypeCountHistogramPrefix[] = "Sync.DataTypeCount.";
+constexpr char kDataTypeUpdateDropHistogramPrefix[] = "Sync.DataTypeUpdateDrop.";
+constexpr char kDataTypeNumUnsyncedEntities[] = "Sync.DataTypeNumUnsyncedEntities";
 
 // Suffixes for `kDataTypeNumUnsyncedEntities`:
 constexpr char kDataTypeNumUnsyncedEntitiesOnModelReady[] = "OnModelReady";
@@ -31,11 +31,11 @@ constexpr char kDataTypeNumUnsyncedEntitiesOnSignoutConfirmation[] =
 constexpr char kDataTypeNumUnsyncedEntitiesOnReauthFromPendingState[] =
     "OnReauthFromPendingState";
 
-const char kEntitySizeWithMetadataHistogramPrefix[] =
+constexpr char kEntitySizeWithMetadataHistogramPrefix[] =
     "Sync.EntitySizeOnCommit.Entity.WithMetadata.";
-const char kEntitySizeSpecificsOnlyHistogramPrefix[] =
+constexpr char kEntitySizeSpecificsOnlyHistogramPrefix[] =
     "Sync.EntitySizeOnCommit.Entity.SpecificsOnly.";
-const char kEntitySizeTombstoneHistogramPrefix[] =
+constexpr char kEntitySizeTombstoneHistogramPrefix[] =
     "Sync.EntitySizeOnCommit.Tombstone.";
 
 std::string GetHistogramSuffixForUpdateDropReason(UpdateDropReason reason) {

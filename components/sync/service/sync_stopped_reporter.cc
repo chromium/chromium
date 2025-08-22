@@ -25,7 +25,7 @@ namespace syncer {
 
 namespace {
 
-const char kEventEndpoint[] = "event";
+constexpr char kEventEndpoint[] = "event";
 
 // The request is tiny, so even on poor connections 10 seconds should be
 // plenty of time. Since sync is off when this request is started, we don't

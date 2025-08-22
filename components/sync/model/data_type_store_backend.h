@@ -94,8 +94,9 @@ class DataTypeStoreBackend
   int64_t GetStoreVersionForTest();
 
   // Some constants exposed for testing.
-  static const int64_t kLatestSchemaVersion;
-  static const char kDBSchemaDescriptorRecordId[];
+  static constexpr int64_t kLatestSchemaVersion = 1;
+  static constexpr char kDBSchemaDescriptorRecordId[] =
+      "_mts_schema_descriptor";
 
  private:
   friend class base::RefCountedThreadSafe<DataTypeStoreBackend>;

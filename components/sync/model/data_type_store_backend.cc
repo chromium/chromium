@@ -24,10 +24,7 @@ using sync_pb::DataTypeStoreSchemaDescriptor;
 
 namespace syncer {
 
-const int64_t kInvalidSchemaVersion = -1;
-const int64_t DataTypeStoreBackend::kLatestSchemaVersion = 1;
-const char DataTypeStoreBackend::kDBSchemaDescriptorRecordId[] =
-    "_mts_schema_descriptor";
+constexpr int64_t kInvalidSchemaVersion = -1;
 
 namespace {
 

@@ -18,7 +18,7 @@
 
 namespace syncer {
 
-static const int64_t kUncommittedVersion = -1;
+constexpr int64_t kUncommittedVersion = -1;
 
 enum class SyncCommitError {
   kNetworkError,

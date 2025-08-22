@@ -29,8 +29,8 @@
 #include "crypto/random.h"
 #include "crypto/subtle_passkey.h"
 
-const size_t kHashSize = 32;
-const size_t kDefaultScryptCostParameter = 8192;  // 2^13.
+constexpr size_t kHashSize = 32;
+constexpr size_t kDefaultScryptCostParameter = 8192;  // 2^13.
 
 namespace syncer {
 

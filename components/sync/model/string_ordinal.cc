@@ -13,15 +13,6 @@
 
 namespace syncer {
 
-const uint8_t StringOrdinal::kZeroDigit;
-const uint8_t StringOrdinal::kMaxDigit;
-const size_t StringOrdinal::kMinLength;
-const uint8_t StringOrdinal::kOneDigit;
-const uint8_t StringOrdinal::kMidDigit;
-const unsigned int StringOrdinal::kMidDigitValue;
-const unsigned int StringOrdinal::kMaxDigitValue;
-const unsigned int StringOrdinal::kRadix;
-
 StringOrdinal::LessThanFn::LessThanFn() = default;
 
 bool StringOrdinal::LessThanFn::operator()(const StringOrdinal& lhs,

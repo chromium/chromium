@@ -122,14 +122,14 @@ class StringOrdinal {
   // Use of copy constructor and default assignment for this class is allowed.
 
   // Constants for StringOrdinal digits.
-  static const uint8_t kZeroDigit = 'a';
-  static const uint8_t kMaxDigit = 'z';
-  static const size_t kMinLength = 1;
-  static const uint8_t kOneDigit = kZeroDigit + 1;
-  static const uint8_t kMidDigit = kOneDigit + (kMaxDigit - kOneDigit) / 2;
-  static const unsigned int kMidDigitValue = kMidDigit - kZeroDigit;
-  static const unsigned int kMaxDigitValue = kMaxDigit - kZeroDigit;
-  static const unsigned int kRadix = kMaxDigitValue + 1;
+  static constexpr uint8_t kZeroDigit = 'a';
+  static constexpr uint8_t kMaxDigit = 'z';
+  static constexpr size_t kMinLength = 1;
+  static constexpr uint8_t kOneDigit = kZeroDigit + 1;
+  static constexpr uint8_t kMidDigit = kOneDigit + (kMaxDigit - kOneDigit) / 2;
+  static constexpr unsigned int kMidDigitValue = kMidDigit - kZeroDigit;
+  static constexpr unsigned int kMaxDigitValue = kMaxDigit - kZeroDigit;
+  static constexpr unsigned int kRadix = kMaxDigitValue + 1;
 
   static_assert(kOneDigit > kZeroDigit, "incorrect StringOrdinal one digit");
   static_assert(kMidDigit > kOneDigit, "incorrect StringOrdinal mid digit");

@@ -19,12 +19,12 @@
 namespace syncer {
 
 // Lower bound time between two token validations when listening.
-const int kTokenValidationPeriodMinutesDefault = 60 * 24;
+constexpr int kTokenValidationPeriodMinutesDefault = 60 * 24;
 
-const int kInstanceIDTokenTTLSeconds = 14 * 24 * 60 * 60;  // 2 weeks.
+constexpr int kInstanceIDTokenTTLSeconds = 14 * 24 * 60 * 60;  // 2 weeks.
 
 // Limits the number of last received buffered messages.
-const size_t kMaxBufferedLastFcmMessages = 20;
+constexpr size_t kMaxBufferedLastFcmMessages = 20;
 
 FCMHandler::FCMHandler(gcm::GCMDriver* gcm_driver,
                        instance_id::InstanceIDDriver* instance_id_driver,

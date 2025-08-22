@@ -34,7 +34,7 @@ namespace {
 // We chose the underscore character because it doesn't conflict with the
 // special characters used by base/base64.h's encoding, which is also used in
 // the construction of some IDs.
-const char kIdSeparator[] = "_";
+constexpr char kIdSeparator[] = "_";
 }  // namespace
 
 namespace syncer {

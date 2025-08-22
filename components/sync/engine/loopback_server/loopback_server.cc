@@ -53,18 +53,18 @@ class LoopbackServerEntity;
 
 namespace {
 
-static const char kHistogramSuffix[] = "LoopBackServer";
+constexpr char kHistogramSuffix[] = "LoopBackServer";
 
-static const int kCurrentLoopbackServerProtoVersion = 1;
-static const int kKeystoreKeyLength = 16;
+constexpr int kCurrentLoopbackServerProtoVersion = 1;
+constexpr int kKeystoreKeyLength = 16;
 
 // Properties of the bookmark bar permanent folders.
-static const char kBookmarkBarFolderServerTag[] = "bookmark_bar";
-static const char kBookmarkBarFolderName[] = "Bookmark Bar";
-static const char kOtherBookmarksFolderServerTag[] = "other_bookmarks";
-static const char kOtherBookmarksFolderName[] = "Other Bookmarks";
-static const char kSyncedBookmarksFolderServerTag[] = "synced_bookmarks";
-static const char kSyncedBookmarksFolderName[] = "Synced Bookmarks";
+constexpr char kBookmarkBarFolderServerTag[] = "bookmark_bar";
+constexpr char kBookmarkBarFolderName[] = "Bookmark Bar";
+constexpr char kOtherBookmarksFolderServerTag[] = "other_bookmarks";
+constexpr char kOtherBookmarksFolderName[] = "Other Bookmarks";
+constexpr char kSyncedBookmarksFolderServerTag[] = "synced_bookmarks";
+constexpr char kSyncedBookmarksFolderName[] = "Synced Bookmarks";
 
 int GetServerMigrationVersion(
     const std::map<DataType, int>& server_migration_versions,

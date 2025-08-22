@@ -10,8 +10,7 @@ namespace syncer {
 
 namespace {
 
-constexpr char kEntityChangeHistogramPrefix[] =
-    "Sync.DataTypeEntityChange.";
+constexpr char kEntityChangeHistogramPrefix[] = "Sync.DataTypeEntityChange.";
 
 }  // namespace
 
