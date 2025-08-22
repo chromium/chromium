@@ -124,6 +124,10 @@ using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::SizeIs;
 
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+constexpr uint8_t kSaveDataBuffer[] = {'b', 'u', 'f', 'f', 'e', 'r'};
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+
 #if BUILDFLAG(ENABLE_PDF_INK2)
 constexpr char kPdfLoadedWithV2InkAnnotationsMetric[] =
     "PDF.LoadedWithV2InkAnnotations2";
@@ -2510,6 +2514,41 @@ TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest,
   EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
   EXPECT_TRUE(plugin_->IsSaveDataBufferEmptyForTesting());
   pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest,
+       MultipleHandlersEditedInMultipleBlocks) {
+  plugin_->EnteredEditMode();
+  plugin_->SetMaxSaveBufferSizeForTesting(3);
+
+  base::span<const uint8_t> data(TestPDFiumEngine::kSaveData);
+  ASSERT_GT(data.size(), 3u);
+  base::span<const uint8_t> data2(kSaveDataBuffer);
+  ASSERT_GT(data2.size(), 3u);
+
+  EXPECT_CALL(*engine_ptr_, GetSaveData)
+      .WillOnce(Return(std::vector<uint8_t>(data.begin(), data.end())))
+      .WillOnce(Return(std::vector<uint8_t>(data2.begin(), data2.end())));
+
+  auto [handler, total_file_size] =
+      GetSaveDataBufferHandler(pdf::mojom::SaveRequestType::kEdited);
+  EXPECT_EQ(total_file_size, data.size());
+  ReadSaveDataBufferAndExpectResult(handler, data, 0, 2);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 1u);
+
+  auto [handler2, total_file_size2] =
+      GetSaveDataBufferHandler(pdf::mojom::SaveRequestType::kEdited);
+  EXPECT_EQ(total_file_size2, data2.size());
+  ReadSaveDataBufferAndExpectResult(handler2, data2, 0, 2);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 2u);
+
+  ReadSaveDataBufferAndExpectResult(handler, data, 2, data.size() - 2);
+  FreeHandler(handler);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 1u);
+
+  ReadSaveDataBufferAndExpectResult(handler2, data2, 2, data2.size() - 2);
+  FreeHandler(handler2);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
 }
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 

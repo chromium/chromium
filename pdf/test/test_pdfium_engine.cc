@@ -32,6 +32,10 @@ TestPDFiumEngine::TestPDFiumEngine(PDFiumEngineClient* client)
   ON_CALL(*this, GetLoadedByteSize)
       .WillByDefault(testing::Return(sizeof(kLoadedData)));
 
+  ON_CALL(*this, GetSaveData)
+      .WillByDefault(testing::Return(
+          std::vector<uint8_t>(std::begin(kSaveData), std::end(kSaveData))));
+
   ON_CALL(*this, ReadLoadedBytes)
       .WillByDefault(
           testing::Invoke([](uint32_t offset, base::span<uint8_t> buffer) {
@@ -58,10 +62,6 @@ int TestPDFiumEngine::GetNumberOfPages() const {
 
 base::Value::List TestPDFiumEngine::GetBookmarks() {
   return base::Value::List();
-}
-
-std::vector<uint8_t> TestPDFiumEngine::GetSaveData() {
-  return std::vector<uint8_t>(std::begin(kSaveData), std::end(kSaveData));
 }
 
 }  // namespace chrome_pdf

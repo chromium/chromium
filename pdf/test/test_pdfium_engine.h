@@ -160,7 +160,7 @@ class TestPDFiumEngine : public PDFiumEngine {
               (override));
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
-  std::vector<uint8_t> GetSaveData() override;
+  MOCK_METHOD(std::vector<uint8_t>, GetSaveData, (), (override));
 
   MOCK_METHOD(void, SetCaretPosition, (const gfx::Point&), (override));
 
