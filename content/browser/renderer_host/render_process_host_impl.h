@@ -844,16 +844,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver)
       override;
 
-  // Used for shared workers and service workers to create a websocket.
-  // In other cases, RenderFrameHostImpl for documents or DedicatedWorkerHost
-  // for dedicated workers handles interface requests in order to associate
-  // websockets with a frame. Shared workers and service workers don't have to
-  // do it because they don't have a frame.
-  void CreateWebSocketConnector(
-      const blink::StorageKey& storage_key,
-      mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver)
-      override;
-
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   void CreateOOPVideoDecoder(
       mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) override;

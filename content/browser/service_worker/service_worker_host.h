@@ -89,6 +89,8 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext,
 
   void CreateWebTransportConnector(
       mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver);
+  void CreateWebSocketConnector(
+      mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver);
   // Used when EagerCacheStorageSetupForServiceWorkers is disabled, or when
   // setup for eager cache storage has failed.
   void BindCacheStorage(

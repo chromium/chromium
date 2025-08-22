@@ -706,9 +706,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
       NotificationServiceCreatorType creator_type,
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver) = 0;
-  virtual void CreateWebSocketConnector(
-      const blink::StorageKey& storage_key,
-      mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver) = 0;
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   virtual void CreateOOPVideoDecoder(

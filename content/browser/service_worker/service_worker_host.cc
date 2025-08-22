@@ -19,6 +19,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/websockets/websocket_connector_impl.h"
 #include "content/browser/webtransport/web_transport_connector_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -90,6 +91,18 @@ void ServiceWorkerHost::CreateWebTransportConnector(
       std::make_unique<WebTransportConnectorImpl>(
           worker_process_id_, /*frame=*/nullptr, version_->key().origin(),
           GetNetworkAnonymizationKey()),
+      std::move(receiver));
+}
+
+void ServiceWorkerHost::CreateWebSocketConnector(
+    mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  const blink::StorageKey& storage_key = version_->key();
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<WebSocketConnectorImpl>(
+          worker_process_id_, IPC::mojom::kRoutingIdNone, storage_key.origin(),
+          storage_key.ToPartialNetIsolationInfo()),
       std::move(receiver));
 }
 

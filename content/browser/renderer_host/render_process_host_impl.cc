@@ -2234,18 +2234,6 @@ void RenderProcessHostImpl::CreateNotificationService(
   }
 }
 
-void RenderProcessHostImpl::CreateWebSocketConnector(
-    const blink::StorageKey& storage_key,
-    mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver) {
-  // TODO(jam): is it ok to not send extraHeaders for sockets created from
-  // shared and service workers?
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<WebSocketConnectorImpl>(
-          GetDeprecatedID(), IPC::mojom::kRoutingIdNone, storage_key.origin(),
-          storage_key.ToPartialNetIsolationInfo()),
-      std::move(receiver));
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void RenderProcessHostImpl::ReinitializeLogging(
     uint32_t logging_dest,
