@@ -127,14 +127,14 @@ def main():
     still_blocked.sort(key=lambda x: len(x[1]))
     logging.info('Classes with circular deps: %d', len(still_blocked))
 
-    # TODO(agrieve): Try and find clusters of circuclar within still_blocked.
+    # TODO(agrieve): Try and find clusters of circular within still_blocked.
     # E.g. Sort by len(unique(deps + deps_of_deps + deps_of_deps_of_deps))
     # Then just try and add the first file and all recursive deps until all
     # files are seen.
 
     if args.csv:
         writer = csv.writer(sys.stdout)
-        writer.writerow(('Path', 'Num Deps', 'Has Ciruclar Dep'))
+        writer.writerow(('Path', 'Num Deps', 'Has Circular Dep'))
         for name, _ in current_unblocked:
             clazz = names_to_class[name]
             writer.writerow((clazz.path.lstrip('/.'), 0, 'No'))
@@ -142,10 +142,16 @@ def main():
             clazz = names_to_class[name]
             deps = [x for x in deps if x not in already_marked]
             writer.writerow((clazz.path.lstrip('/.'), len(deps), 'No'))
-        for name, ciruclar_deps in still_blocked:
+            for dep in deps:
+                clazz = names_to_class[dep]
+                writer.writerow(('', clazz.path.lstrip('/.')))
+        for name, circular_deps in still_blocked:
             clazz = names_to_class[name]
             writer.writerow(
-                (clazz.path.lstrip('/.'), len(ciruclar_deps), 'Yes'))
+                (clazz.path.lstrip('/.'), len(circular_deps), 'Yes'))
+            for dep in circular_deps:
+                clazz = names_to_class[dep]
+                writer.writerow(('', clazz.path.lstrip('/.')))
         return
 
     print('Already Unblocked:')
