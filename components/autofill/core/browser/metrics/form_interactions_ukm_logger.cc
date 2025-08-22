@@ -81,8 +81,8 @@ void FormInteractionsUkmLogger::LogSuggestionsShown(
       .SetServerType(static_cast<int>(field.server_type()))
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
-      .SetMillisecondsSinceFormParsed(
-          MillisecondsSinceFormParsed(form_parsed_timestamp))
+      .SetMillisecondsSinceFormParsed(MillisecondsSinceFormParsed(
+          form_parsed_timestamp, base::TimeTicks::Now()))
       .Record(autofill_client_->GetUkmRecorder());
 
   base::UmaHistogramBoolean("Autofill.SuggestionShown.OffTheRecord",
@@ -103,8 +103,8 @@ void FormInteractionsUkmLogger::LogDidFillSuggestion(
     metric.SetRecordType(base::to_underlying(*record_type));
   }
   metric.SetIsForCreditCard(record_type.has_value())
-      .SetMillisecondsSinceFormParsed(
-          MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
+      .SetMillisecondsSinceFormParsed(MillisecondsSinceFormParsed(
+          form.form_parsed_timestamp(), base::TimeTicks::Now()))
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .Record(autofill_client_->GetUkmRecorder());
@@ -154,8 +154,8 @@ void FormInteractionsUkmLogger::LogTextFieldValueChanged(
       .SetHtmlFieldMode(static_cast<int>(field.html_mode()))
       .SetIsAutofilled(field.is_autofilled())
       .SetIsEmpty(field.value().empty())
-      .SetMillisecondsSinceFormParsed(
-          MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
+      .SetMillisecondsSinceFormParsed(MillisecondsSinceFormParsed(
+          form.form_parsed_timestamp(), base::TimeTicks::Now()))
       .Record(autofill_client_->GetUkmRecorder());
 }
 
@@ -163,20 +163,21 @@ void FormInteractionsUkmLogger::LogFieldFillStatus(
     ukm::SourceId ukm_source_id,
     const FormStructure& form,
     const AutofillField& field,
-    QualityMetricType metric_type) {
+    QualityMetricType metric_type,
+    base::TimeTicks now) {
   if (!CanLog(ukm_source_id)) {
     return;
   }
 
   ukm::builders::Autofill_FieldFillStatus(ukm_source_id)
-      .SetMillisecondsSinceFormParsed(
-          MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetValidationEvent(static_cast<int64_t>(metric_type))
       .SetIsAutofilled(static_cast<int64_t>(field.is_autofilled()))
       .SetWasPreviouslyAutofilled(
           static_cast<int64_t>(field.previously_autofilled()))
+      .SetMillisecondsSinceFormParsed(
+          MillisecondsSinceFormParsed(form.form_parsed_timestamp(), now))
       .Record(autofill_client_->GetUkmRecorder());
 }
 
@@ -190,14 +191,15 @@ void FormInteractionsUkmLogger::LogFieldType(
     QualityMetricPredictionSource prediction_source,
     QualityMetricType metric_type,
     FieldType predicted_type,
-    FieldType actual_type) {
+    FieldType actual_type,
+    base::TimeTicks now) {
   if (!CanLog(ukm_source_id)) {
     return;
   }
 
   ukm::builders::Autofill_FieldTypeValidation(ukm_source_id)
       .SetMillisecondsSinceFormParsed(
-          MillisecondsSinceFormParsed(form_parsed_timestamp))
+          MillisecondsSinceFormParsed(form_parsed_timestamp, now))
       .SetFormSignature(HashFormSignature(form_signature))
       .SetFieldSignature(HashFieldSignature(field_signature))
       .SetValidationEvent(static_cast<int64_t>(metric_type))
@@ -928,8 +930,8 @@ void FormInteractionsUkmLogger::LogFormEvent(
   ukm::builders::Autofill_FormEvent builder(ukm_source_id);
   builder.SetAutofillFormEvent(static_cast<int>(form_event))
       .SetFormTypes(AutofillMetrics::FormTypesToBitVector(form_types))
-      .SetMillisecondsSinceFormParsed(
-          MillisecondsSinceFormParsed(form_parsed_timestamp))
+      .SetMillisecondsSinceFormParsed(MillisecondsSinceFormParsed(
+          form_parsed_timestamp, base::TimeTicks::Now()))
       .Record(autofill_client_->GetUkmRecorder());
 }
 
@@ -939,26 +941,11 @@ bool FormInteractionsUkmLogger::CanLog(ukm::SourceId ukm_source_id) const {
 }
 
 int64_t FormInteractionsUkmLogger::MillisecondsSinceFormParsed(
-    base::TimeTicks form_parsed_timestamp) const {
-  DCHECK(!form_parsed_timestamp.is_null());
-  // Use the pinned timestamp as the current time if it's set.
-  base::TimeTicks now =
-      pinned_timestamp_.is_null() ? base::TimeTicks::Now() : pinned_timestamp_;
-
+    base::TimeTicks form_parsed_timestamp,
+    base::TimeTicks now) const {
   return ukm::GetExponentialBucketMin(
       (now - form_parsed_timestamp).InMilliseconds(),
       kAutofillEventDataBucketSpacing);
-}
-
-UkmTimestampPin::UkmTimestampPin(FormInteractionsUkmLogger* logger)
-    : logger_(*logger) {
-  DCHECK(!logger_->has_pinned_timestamp(/*pass_key=*/{}));
-  logger_->set_pinned_timestamp(base::TimeTicks::Now(), /*pass_key=*/{});
-}
-
-UkmTimestampPin::~UkmTimestampPin() {
-  DCHECK(logger_->has_pinned_timestamp(/*pass_key=*/{}));
-  logger_->set_pinned_timestamp(base::TimeTicks(), /*pass_key=*/{});
 }
 
 int64_t GetSemanticBucketMinForAutofillDurationTiming(int64_t sample) {

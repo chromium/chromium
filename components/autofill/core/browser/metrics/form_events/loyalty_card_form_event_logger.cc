@@ -89,7 +89,8 @@ void LoyaltyCardFormEventLogger::OnDidFillSuggestion(
     const LoyaltyCard& loyalty_card,
     const GURL& url) {
   client().GetFormInteractionsUkmLogger().LogDidFillSuggestion(
-      driver().GetPageUkmSourceId(), form, field);
+      driver().GetPageUkmSourceId(), form, field,
+      /*record_type=*/std::nullopt);
   Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
   if (!has_logged_form_filling_suggestion_filled_) {
     has_logged_form_filling_suggestion_filled_ = true;

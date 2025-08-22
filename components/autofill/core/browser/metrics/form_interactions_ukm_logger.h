@@ -26,8 +26,6 @@ namespace autofill::autofill_metrics {
 // current session.
 bool ShouldRecordUkm();
 
-class UkmTimestampPin;
-
 // Utility to log URL keyed form interaction events.
 // Owned by AutofillClient. Therefore, it must not have page-specific state. In
 // particular, the page-specific `ukm::SourceId`s must be passed as a parameter.
@@ -85,14 +83,6 @@ class FormInteractionsUkmLogger {
 
   explicit FormInteractionsUkmLogger(AutofillClient* autofill_client);
 
-  bool has_pinned_timestamp(base::PassKey<UkmTimestampPin> pass_key) const {
-    return !pinned_timestamp_.is_null();
-  }
-  void set_pinned_timestamp(base::TimeTicks t,
-                            base::PassKey<UkmTimestampPin> pass_key) {
-    pinned_timestamp_ = t;
-  }
-
   void LogInteractedWithForm(ukm::SourceId ukm_source_id,
                              bool is_for_credit_card,
                              size_t local_record_type_count,
@@ -104,11 +94,10 @@ class FormInteractionsUkmLogger {
                            base::TimeTicks form_parsed_timestamp,
                            bool off_the_record);
   // For address suggestions, the `record_type` is irrelevant.
-  void LogDidFillSuggestion(
-      ukm::SourceId ukm_source_id,
-      const FormStructure& form,
-      const AutofillField& field,
-      std::optional<CreditCard::RecordType> record_type = std::nullopt);
+  void LogDidFillSuggestion(ukm::SourceId ukm_source_id,
+                            const FormStructure& form,
+                            const AutofillField& field,
+                            std::optional<CreditCard::RecordType> record_type);
   void LogTextFieldValueChanged(ukm::SourceId ukm_source_id,
                                 const FormStructure& form,
                                 const AutofillField& field);
@@ -118,7 +107,8 @@ class FormInteractionsUkmLogger {
   void LogFieldFillStatus(ukm::SourceId ukm_source_id,
                           const FormStructure& form,
                           const AutofillField& field,
-                          QualityMetricType metric_type);
+                          QualityMetricType metric_type,
+                          base::TimeTicks now);
   void LogFieldType(ukm::SourceId ukm_source_id,
                     base::TimeTicks form_parsed_timestamp,
                     FormSignature form_signature,
@@ -126,7 +116,8 @@ class FormInteractionsUkmLogger {
                     QualityMetricPredictionSource prediction_source,
                     QualityMetricType metric_type,
                     FieldType predicted_type,
-                    FieldType actual_type);
+                    FieldType actual_type,
+                    base::TimeTicks now);
   void LogAutofillFieldInfoAtFormRemove(
       ukm::SourceId ukm_source_id,
       const FormStructure& form,
@@ -170,38 +161,10 @@ class FormInteractionsUkmLogger {
 
  private:
   bool CanLog(ukm::SourceId ukm_source_id) const;
-  int64_t MillisecondsSinceFormParsed(
-      base::TimeTicks form_parsed_timestamp) const;
+  int64_t MillisecondsSinceFormParsed(base::TimeTicks form_parsed_timestamp,
+                                      base::TimeTicks now) const;
 
   const raw_ref<AutofillClient> autofill_client_;
-
-  // The pinned timestamp is used to that metrics logged sequentially refer to
-  // the same timestamp to determine MillisecondsSinceFormParsed().
-  //
-  // For example, in
-  //   UkmTimestampPin timestamp_pin(&logger);
-  //   LogFoo(&logger);
-  //   LogBar(&logger);
-  // all logged metrics use the same value for MillisecondsSinceFormParsed().
-  base::TimeTicks pinned_timestamp_;
-};
-
-// Utility class to pin the timestamp used by the FormInteractionsUkmLogger
-// while an instance of this class is in scope. Pinned timestamps cannot be
-// nested.
-class UkmTimestampPin {
- public:
-  UkmTimestampPin() = delete;
-
-  explicit UkmTimestampPin(FormInteractionsUkmLogger* logger);
-
-  UkmTimestampPin(const UkmTimestampPin&) = delete;
-  UkmTimestampPin& operator=(const UkmTimestampPin&) = delete;
-
-  ~UkmTimestampPin();
-
- private:
-  const raw_ref<FormInteractionsUkmLogger> logger_;
 };
 
 // This defines a second-to-minute-scale prioritized set of buckets for
