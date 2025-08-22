@@ -27,7 +27,7 @@ from pylib.results import json_results
 
 # Chosen after timing test runs of chrome_junit_tests with 7,16,32,
 # and 64 workers in threadpool and different classes_per_job.
-_MAX_TESTS_PER_JOB = 150
+_MAX_TESTS_PER_JOB = 128
 
 _FAILURE_TYPES = (
     base_test_result.ResultType.FAIL,
