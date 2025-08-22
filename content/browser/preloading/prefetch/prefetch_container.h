@@ -528,7 +528,7 @@ class CONTENT_EXPORT PrefetchContainer {
   void OnUnregisterCandidate(
       const GURL& navigated_url,
       bool is_served,
-      PrefetchPotentialCandidateServingResult matching_result,
+      PrefetchPotentialCandidateServingResult serving_result,
       bool is_nav_prerender,
       std::optional<base::TimeDelta> blocked_duration);
 

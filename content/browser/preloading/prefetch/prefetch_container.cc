@@ -1608,7 +1608,7 @@ bool PrefetchContainer::ShouldWaitForNoVarySearchHeader(const GURL& url) const {
 void PrefetchContainer::OnUnregisterCandidate(
     const GURL& navigated_url,
     bool is_served,
-    PrefetchPotentialCandidateServingResult matching_result,
+    PrefetchPotentialCandidateServingResult serving_result,
     bool is_nav_prerender,
     std::optional<base::TimeDelta> blocked_duration) {
   // Note that this method can be called with `is_in_dtor_` true.
@@ -1629,7 +1629,7 @@ void PrefetchContainer::OnUnregisterCandidate(
   RecordBlockUntilHeadDurationHistogram(blocked_duration, is_served,
                                         is_nav_prerender);
 
-  RecordPrefetchPotentialCandidateServingResultHistogram(matching_result);
+  RecordPrefetchPotentialCandidateServingResultHistogram(serving_result);
 
   // Note that `PreloadingAttemptImpl::SetIsAccurateTriggering()` is called for
   // prefetch in
@@ -1973,12 +1973,12 @@ void PrefetchContainer::RecordBlockUntilHeadDurationHistogram(
 }
 
 void PrefetchContainer::RecordPrefetchPotentialCandidateServingResultHistogram(
-    PrefetchPotentialCandidateServingResult matching_result) {
+    PrefetchPotentialCandidateServingResult serving_result) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Prefetch.PrefetchPotentialCandidateServingResult."
                     "PerMatchingCandidate.",
                     GetMetricsSuffix()}),
-      matching_result);
+      serving_result);
 }
 
 void PrefetchContainer::RecordPrefetchContainerServedCountHistogram() {

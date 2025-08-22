@@ -234,7 +234,7 @@ void PrefetchMatchResolver::StartWaitFor(const PrefetchKey& prefetch_key,
 void PrefetchMatchResolver::UnregisterCandidate(
     const PrefetchKey& prefetch_key,
     bool is_served,
-    PrefetchPotentialCandidateServingResult matching_reuslt) {
+    PrefetchPotentialCandidateServingResult serving_result) {
   // By #prefetch-key-availability
   CHECK(candidates_.contains(prefetch_key));
   auto& candidate_data = candidates_[prefetch_key];
@@ -242,7 +242,7 @@ void PrefetchMatchResolver::UnregisterCandidate(
   PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
 
   prefetch_container.OnUnregisterCandidate(navigated_key_.url(), is_served,
-                                           matching_reuslt, is_nav_prerender_,
+                                           serving_result, is_nav_prerender_,
                                            GetBlockedDuration());
   prefetch_container.RemoveObserver(this);
   candidates_.erase(prefetch_key);
@@ -414,8 +414,8 @@ void PrefetchMatchResolver::UnblockForNoCandidates() {
 
 void PrefetchMatchResolver::MaybeUnblockForUnmatch(
     const PrefetchKey& prefetch_key,
-    PrefetchPotentialCandidateServingResult matching_result) {
-  UnregisterCandidate(prefetch_key, /*is_served=*/false, matching_result);
+    PrefetchPotentialCandidateServingResult serving_result) {
+  UnregisterCandidate(prefetch_key, /*is_served=*/false, serving_result);
 
   if (candidates_.size() == 0) {
     UnblockForNoCandidates();

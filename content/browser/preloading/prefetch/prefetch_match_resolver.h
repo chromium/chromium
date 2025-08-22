@@ -177,7 +177,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   void UnregisterCandidate(
       const PrefetchKey& prefetch_key,
       bool is_served,
-      PrefetchPotentialCandidateServingResult matching_result);
+      PrefetchPotentialCandidateServingResult serving_result);
   void OnTimeout(PrefetchKey prefetch_key);
   void UnblockForMatch(const PrefetchKey& prefetch_key);
   void UnblockForNoCandidates();
@@ -185,7 +185,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   // prefetches.
   void MaybeUnblockForUnmatch(
       const PrefetchKey& prefetch_key,
-      PrefetchPotentialCandidateServingResult matching_result);
+      PrefetchPotentialCandidateServingResult serving_result);
   void UnblockForCookiesChanged(const PrefetchKey& key);
   void UnblockInternal(PrefetchServingHandle serving_handle);
 
