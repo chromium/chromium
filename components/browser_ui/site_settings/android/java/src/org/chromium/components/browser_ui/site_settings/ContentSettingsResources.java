@@ -980,7 +980,6 @@ public class ContentSettingsResources {
             case CookieControlsMode.BLOCK_THIRD_PARTY:
                 return R.string.third_party_cookies_link_row_sub_label_disabled;
             case CookieControlsMode.INCOGNITO_ONLY:
-                return R.string.third_party_cookies_link_row_sub_label_disabled_incognito;
             case CookieControlsMode.OFF:
                 return R.string.third_party_cookies_link_row_sub_label_enabled;
         }

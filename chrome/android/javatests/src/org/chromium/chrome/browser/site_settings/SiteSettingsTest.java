@@ -98,7 +98,6 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
@@ -174,9 +173,7 @@ import java.util.concurrent.TimeoutException;
     "ignore-certificate-errors"
 })
 @EnableFeatures(ChromeFeatureList.DISPLAY_WILDCARD_CONTENT_SETTINGS)
-// TODO(crbug.com/370008370): Update individual tests after launch.
 @DisableFeatures({
-    ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
     ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
 })
 // TODO(crbug.com/344672098): Failing when batched, batch this again.
@@ -614,7 +611,7 @@ public class SiteSettingsTest {
                         websitePreferences.onPreferenceChange(
                                 cookies,
                                 enabled
-                                        ? CookieControlsMode.OFF
+                                        ? CookieControlsMode.INCOGNITO_ONLY
                                         : CookieControlsMode.BLOCK_THIRD_PARTY);
                         Assert.assertEquals(
                                 "Cookies should be " + (enabled ? "allowed" : "blocked"),
@@ -625,7 +622,7 @@ public class SiteSettingsTest {
                     private boolean doesAcceptCookies() {
                         return UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getInteger(COOKIE_CONTROLS_MODE)
-                                == CookieControlsMode.OFF;
+                                == CookieControlsMode.INCOGNITO_ONLY;
                     }
                 });
     }
@@ -701,7 +698,7 @@ public class SiteSettingsTest {
                         preferences.onPreferenceChange(
                                 preference,
                                 enabled
-                                        ? CookieControlsMode.OFF
+                                        ? CookieControlsMode.INCOGNITO_ONLY
                                         : CookieControlsMode.BLOCK_THIRD_PARTY);
                     } else if (ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
@@ -741,23 +738,6 @@ public class SiteSettingsTest {
                     TriStateSiteSettingsPreference triStateToggle =
                             preferences.findPreference(SingleCategorySettings.TRI_STATE_TOGGLE_KEY);
                     preferences.onPreferenceChange(triStateToggle, newValue);
-                });
-        settingsActivity.finish();
-    }
-
-    private void setTriStateCookieToggle(@CookieControlsMode int newState) {
-        final SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(
-                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SingleCategorySettings preferences =
-                            (SingleCategorySettings) settingsActivity.getMainFragment();
-                    TriStateCookieSettingsPreference triStateCookieToggle =
-                            preferences.findPreference(
-                                    SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
-                    preferences.onPreferenceChange(triStateCookieToggle, newState);
                 });
         settingsActivity.finish();
     }
@@ -1052,47 +1032,9 @@ public class SiteSettingsTest {
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
         checkTriStateCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.EnabledUnchecked);
-        checkTriStateCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.INCOGNITO_ONLY,
                 ToggleButtonState.EnabledChecked);
-        checkTriStateCookieToggleButtonState(
-                settingsActivity,
-                CookieControlsMode.BLOCK_THIRD_PARTY,
-                ToggleButtonState.EnabledUnchecked);
-        // TODO(crbug.com/40064993): fix this assertion.
-        // onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
-        onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
-        settingsActivity.finish();
-    }
-
-    /**
-     * Set the cookie content setting to allow through policy, disable incognito mode and ensure the
-     * correct radio buttons are enabled.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @Policies.Add({@Policies.Item(key = "DefaultCookiesSetting", string = "1")})
-    @DisabledTest(message = "https://crbug.com/373414947")
-    public void testDefaultCookiesSettingManagedAllowWithIncognitoDisabled() throws Exception {
-        IncognitoUtils.setEnabledForTesting(false);
-        setTriStateCookieToggle(CookieControlsMode.INCOGNITO_ONLY);
-
-        checkDefaultCookiesSettingManaged(true);
-        checkThirdPartyCookieBlockingManaged(false);
-        // The ContentSetting is managed (and set to ALLOW) while ThirdPartyCookieBlocking managed.
-        // Cookie toggle is set to block third party incognito but since
-        // incognito is disabled the button should be disabled and the allow
-        // toggle should be checked.
-        SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(
-                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
-        checkTriStateCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.EnabledChecked);
-        checkTriStateCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.INCOGNITO_ONLY, ToggleButtonState.Disabled);
         checkTriStateCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.BLOCK_THIRD_PARTY,
@@ -1120,8 +1062,6 @@ public class SiteSettingsTest {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
-        checkTriStateCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.Disabled);
         checkTriStateCookieToggleButtonState(
                 settingsActivity, CookieControlsMode.INCOGNITO_ONLY, ToggleButtonState.Disabled);
         checkTriStateCookieToggleButtonState(
@@ -1158,9 +1098,9 @@ public class SiteSettingsTest {
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
         checkTriStateCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.EnabledChecked);
-        checkTriStateCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.INCOGNITO_ONLY, ToggleButtonState.Disabled);
+                settingsActivity,
+                CookieControlsMode.INCOGNITO_ONLY,
+                ToggleButtonState.EnabledChecked);
         checkTriStateCookieToggleButtonState(
                 settingsActivity, CookieControlsMode.BLOCK_THIRD_PARTY, ToggleButtonState.Disabled);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
@@ -1189,9 +1129,9 @@ public class SiteSettingsTest {
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
         checkTriStateCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.EnabledChecked);
-        checkTriStateCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.INCOGNITO_ONLY, ToggleButtonState.Disabled);
+                settingsActivity,
+                CookieControlsMode.INCOGNITO_ONLY,
+                ToggleButtonState.EnabledChecked);
         checkTriStateCookieToggleButtonState(
                 settingsActivity, CookieControlsMode.BLOCK_THIRD_PARTY, ToggleButtonState.Disabled);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
@@ -1212,8 +1152,6 @@ public class SiteSettingsTest {
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
         checkTriStateCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.EnabledUnchecked);
-        checkTriStateCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.INCOGNITO_ONLY,
                 ToggleButtonState.EnabledChecked);
@@ -1226,12 +1164,11 @@ public class SiteSettingsTest {
         settingsActivity.finish();
     }
 
-    /** Ensure correct radio buttons are shown and enabled when AlwaysBlock3pcsIncognito is on. */
+    /** Ensure correct radio buttons are shown. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
-    public void testAlwaysBlock3pcsIncognitoHidesCookiesOffOption() throws Exception {
+    public void blockAndAllowThirdPartyCookieOptionsShown() throws Exception {
         checkDefaultCookiesSettingManaged(false);
         checkThirdPartyCookieBlockingManaged(false);
 
@@ -1242,37 +1179,6 @@ public class SiteSettingsTest {
                 settingsActivity,
                 CookieControlsMode.INCOGNITO_ONLY,
                 ToggleButtonState.EnabledChecked);
-        checkTriStateCookieToggleButtonState(
-                settingsActivity,
-                CookieControlsMode.BLOCK_THIRD_PARTY,
-                ToggleButtonState.EnabledUnchecked);
-        SingleCategorySettings preferences =
-                (SingleCategorySettings) settingsActivity.getMainFragment();
-        TriStateCookieSettingsPreference triStateCookieToggle =
-                preferences.findPreference(SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
-        Assert.assertFalse(triStateCookieToggle.isButtonVisibleForTesting(CookieControlsMode.OFF));
-        onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(not(isDisplayed())));
-        onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
-        settingsActivity.finish();
-    }
-
-    /** Ensure no radio buttons are enforced when cookie settings are unmanaged. */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    public void testNoCookieSettingsManagedWithIncognitoDisabled() throws Exception {
-        IncognitoUtils.setEnabledForTesting(false);
-        checkDefaultCookiesSettingManaged(false);
-        checkThirdPartyCookieBlockingManaged(false);
-        // The ContentSetting and ThirdPartyCookieBlocking are unmanaged. This means all buttons
-        // should be enabled.
-        SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(
-                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
-        checkTriStateCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.EnabledChecked);
-        checkTriStateCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.INCOGNITO_ONLY, ToggleButtonState.Disabled);
         checkTriStateCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.BLOCK_THIRD_PARTY,
@@ -1698,7 +1604,7 @@ public class SiteSettingsTest {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
                 new String[] {"info_text", "tri_state_cookie_toggle", "add_exception"},
-                new String[] {"info_text", "tri_state_cookie_toggle"});
+                new String[] {"info_text", "tri_state_cookie_toggle", "add_exception"});
     }
 
     @Test
@@ -1973,7 +1879,6 @@ public class SiteSettingsTest {
                             preferences.findPreference(
                                     SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
 
-                    clickButtonAndVerifyItsChecked(cookieToggle, CookieControlsMode.OFF);
                     clickButtonAndVerifyItsChecked(cookieToggle, CookieControlsMode.INCOGNITO_ONLY);
                     clickButtonAndVerifyItsChecked(
                             cookieToggle, CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -1998,7 +1903,6 @@ public class SiteSettingsTest {
                             preferences.findPreference(
                                     SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
 
-                    clickButtonAndVerifyItsChecked(threeStateCookieToggle, CookieControlsMode.OFF);
                     clickButtonAndVerifyItsChecked(
                             threeStateCookieToggle, CookieControlsMode.INCOGNITO_ONLY);
                     clickButtonAndVerifyItsChecked(
@@ -4161,7 +4065,6 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"RenderTest"})
     @Policies.Add({@Policies.Item(key = "BlockThirdPartyCookies", string = "true")})
-    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void renderThirdPartyCookiesPageManagedBlocked() throws Exception {
         renderCategoryPage(
                 SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
@@ -4172,7 +4075,6 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"RenderTest"})
     @Policies.Add({@Policies.Item(key = "BlockThirdPartyCookies", string = "false")})
-    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void renderThirdPartyCookiesPageManagedAllowed() throws Exception {
         renderCategoryPage(
                 SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,

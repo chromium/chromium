@@ -51,10 +51,7 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({
-    ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
-    ChromeFeatureList.RELATED_WEBSITE_SETS_UI
-})
+@EnableFeatures({ChromeFeatureList.RELATED_WEBSITE_SETS_UI})
 public class CookieSettingsTest {
     @Rule
     public SettingsActivityTestRule<SingleCategorySettings> mSettingsActivityTestRule =
@@ -91,51 +88,6 @@ public class CookieSettingsTest {
         assertEquals(1, mUserActionTester.getActionCount("Settings.ThirdPartyCookies.Block"));
         onView(withId(R.id.block_third_party_incognito_with_aux)).perform(click());
         assertEquals(1, mUserActionTester.getActionCount("Settings.ThirdPartyCookies.Allow"));
-    }
-
-    // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
-    @Test
-    @SmallTest
-    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
-    public void shouldDisplayBlockThirdPartyDescriptionAndRwsToggleWhenAuxButtonClicked()
-            throws IOException {
-        onView(withId(R.id.block_third_party_with_aux)).perform(click());
-        onView(
-                        allOf(
-                                withId(R.id.expand_arrow),
-                                isDescendantOfA(withId(R.id.block_third_party_with_aux))))
-                .perform(click());
-        onView(withText(R.string.website_settings_category_cookie_block_third_party_subtitle))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.website_settings_category_cookie_subpage_bullet_one))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.website_settings_category_cookie_subpage_bullet_two))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.website_settings_category_cookie_rws_toggle_title))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.website_settings_category_cookie_rws_toggle_description))
-                .check(matches(isDisplayed()));
-    }
-
-    // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
-    @Test
-    @SmallTest
-    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
-    public void shouldDisplayBlockThirdPartyIncognitoDescriptionWhenAuxButtonClicked()
-            throws IOException {
-        onView(withId(R.id.block_third_party_incognito_with_aux)).perform(click());
-        onView(
-                        allOf(
-                                withId(R.id.expand_arrow),
-                                isDescendantOfA(withId(R.id.block_third_party_incognito_with_aux))))
-                .perform(click());
-        onView(
-                        withText(
-                                R.string
-                                        .website_settings_category_cookie_block_third_party_incognito_subtitle))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.website_settings_category_cookie_subpage_incognito_bullet_two))
-                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -176,45 +128,6 @@ public class CookieSettingsTest {
                 .check(matches(isDisplayed()));
         onView(withText(R.string.website_settings_category_cookie_rws_toggle_description))
                 .check(matches(isDisplayed()));
-    }
-
-    // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
-    public void renderBlockThirdPartyDescriptionAndRwsToggleWhenAuxButtonClicked()
-            throws IOException {
-        onView(withId(R.id.block_third_party_with_aux)).perform(click());
-        onView(
-                        allOf(
-                                withId(R.id.expand_arrow),
-                                isDescendantOfA(withId(R.id.block_third_party_with_aux))))
-                .perform(click());
-
-        mRenderTestRule.render(
-                getRootView(R.string.website_settings_category_cookie_block_third_party_subtitle),
-                "settings_cookie_rws_subpage_block_third_party");
-    }
-
-    // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
-    public void renderBlockThirdPartyIncognitoDescriptionWhenAuxButtonClicked() throws IOException {
-        onView(withId(R.id.block_third_party_incognito_with_aux)).perform(click());
-        onView(
-                        allOf(
-                                withId(R.id.expand_arrow),
-                                isDescendantOfA(withId(R.id.block_third_party_incognito_with_aux))))
-                .perform(click());
-
-        mRenderTestRule.render(
-                getRootView(
-                        R.string
-                                .website_settings_category_cookie_block_third_party_incognito_subtitle),
-                "settings_cookie_rws_subpage_block_third_party_incognito");
     }
 
     @Test

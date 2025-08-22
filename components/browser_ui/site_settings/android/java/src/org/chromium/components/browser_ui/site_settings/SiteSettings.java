@@ -156,11 +156,8 @@ public class SiteSettings extends BaseSiteSettingsFragment
                 p.setSummary(ContentSettingsResources.getSiteDataListSummary(checked));
             } else if (Type.THIRD_PARTY_COOKIES == prefCategory) {
                 p.setSummary(
-                        getSiteSettingsDelegate().isAlwaysBlock3pcsIncognitoEnabled()
-                                        && cookieControlsMode == CookieControlsMode.INCOGNITO_ONLY
-                                ? R.string.third_party_cookies_link_row_sub_label_enabled
-                                : ContentSettingsResources.getThirdPartyCookieListSummary(
-                                        cookieControlsMode));
+                        ContentSettingsResources.getThirdPartyCookieListSummary(
+                                cookieControlsMode));
             } else if (Type.DEVICE_LOCATION == prefCategory
                     && checked
                     && WebsitePreferenceBridge.isLocationAllowedByPolicy(browserContextHandle)) {

@@ -830,10 +830,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                         ? R.string.website_settings_site_data_page_add_block_exception_description
                         : R.string.website_settings_site_data_page_add_allow_exception_description;
             case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
-                return (getCookieControlsMode() == CookieControlsMode.OFF)
-                        ? 0
-                        : R.string
-                                .website_settings_third_party_cookies_page_add_allow_exception_description;
+                return R.string
+                        .website_settings_third_party_cookies_page_add_allow_exception_description;
             case SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT:
                 return isCategoryEnabled()
                         ? R.string.website_settings_add_site_description_auto_dark_block
@@ -956,6 +954,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
             case SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER:
+            case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
                 shouldAddExceptionButton = true;
                 break;
             case SiteSettingsCategory.Type.BACKGROUND_SYNC:
@@ -964,9 +963,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 break;
             case SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT:
                 shouldAddExceptionButton = isCategoryEnabled();
-                break;
-            case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
-                shouldAddExceptionButton = getCookieControlsMode() != CookieControlsMode.OFF;
                 break;
             default:
                 break;
@@ -1551,11 +1547,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 new TriStateCookieSettingsPreference.Params();
         params.cookieControlsMode = getCookieControlsMode();
         params.cookieControlsModeEnforced = mCategory.isManaged();
-        params.isIncognitoModeEnabled = getSiteSettingsDelegate().isIncognitoModeEnabled();
         params.isRelatedWebsiteSetsDataAccessEnabled =
                 getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled();
-        params.isAlwaysBlock3pcsIncognitoEnabled =
-                getSiteSettingsDelegate().isAlwaysBlock3pcsIncognitoEnabled();
         triStateCookieToggle.setState(params);
     }
 

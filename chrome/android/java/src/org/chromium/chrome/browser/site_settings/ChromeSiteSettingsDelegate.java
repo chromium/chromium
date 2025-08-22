@@ -203,11 +203,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean isAlwaysBlock3pcsIncognitoEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO);
-    }
-
-    @Override
     public boolean isDisplayWildcardInContentSettingsEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.DISPLAY_WILDCARD_CONTENT_SETTINGS);
     }

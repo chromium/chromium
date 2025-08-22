@@ -71,47 +71,28 @@ public class RwsCookieSettings extends BaseSiteSettingsFragment
                     getSiteSettingsDelegate().isRelatedWebsiteSetsUiEnabled());
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_block_third_party_subtitle);
-            if (getSiteSettingsDelegate().isAlwaysBlock3pcsIncognitoEnabled()) {
-                int bulletOneId =
-                        R.string.settings_cookies_block_third_party_settings_block_bullet_one;
-                int bulletTwoId =
-                        R.string.settings_cookies_block_third_party_settings_block_bullet_two;
-                int bulletThreeId =
-                        R.string.settings_cookies_block_third_party_settings_block_bullet_three;
-                mBulletOne.setSummary(getContext().getString(bulletOneId));
-                mBulletOne.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_block));
-                mBulletTwo.setSummary(getContext().getString(bulletTwoId));
-                mBulletTwo.setIcon(
-                        SettingsUtils.getTintedIcon(getContext(), R.drawable.permission_cookie));
-                mBulletThree.setVisible(true);
-                mBulletThree.setSummary(getContext().getString(bulletThreeId));
-                mBulletThree.setIcon(
-                        SettingsUtils.getTintedIcon(getContext(), R.drawable.broken_24));
-            } else {
-                mBulletTwo.setSummary(R.string.website_settings_category_cookie_subpage_bullet_two);
-            }
+            int bulletOneId = R.string.settings_cookies_block_third_party_settings_block_bullet_one;
+            int bulletTwoId = R.string.settings_cookies_block_third_party_settings_block_bullet_two;
+            int bulletThreeId =
+                    R.string.settings_cookies_block_third_party_settings_block_bullet_three;
+            mBulletOne.setSummary(getContext().getString(bulletOneId));
+            mBulletOne.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_block));
+            mBulletTwo.setSummary(getContext().getString(bulletTwoId));
+            mBulletTwo.setIcon(
+                    SettingsUtils.getTintedIcon(getContext(), R.drawable.permission_cookie));
+            mBulletThree.setSummary(getContext().getString(bulletThreeId));
+            mBulletThree.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.broken_24));
         } else if (pageState == CookieControlsMode.INCOGNITO_ONLY) {
-            if (getSiteSettingsDelegate().isAlwaysBlock3pcsIncognitoEnabled()) {
-                mSubtitle.setTitle(
-                        R.string.website_settings_category_cookie_allow_third_party_subtitle);
-                int bulletOneId =
-                        R.string.settings_cookies_block_third_party_settings_allow_bullet_one;
-                int bulletTwoId =
-                        R.string.settings_cookies_block_third_party_settings_allow_bullet_two;
-                int bulletThreeId =
-                        R.string.settings_cookies_block_third_party_settings_allow_bullet_three;
-                mBulletOne.setSummary(getContext().getString(bulletOneId));
-                mBulletTwo.setSummary(getContext().getString(bulletTwoId));
-                mBulletTwo.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.web_24));
-                mBulletThree.setVisible(true);
-                mBulletThree.setSummary(getContext().getString(bulletThreeId));
-            } else {
-                mSubtitle.setTitle(
-                        R.string
-                                .website_settings_category_cookie_block_third_party_incognito_subtitle);
-                mBulletTwo.setSummary(
-                        R.string.website_settings_category_cookie_subpage_incognito_bullet_two);
-            }
+            mSubtitle.setTitle(
+                    R.string.website_settings_category_cookie_allow_third_party_subtitle);
+            int bulletOneId = R.string.settings_cookies_block_third_party_settings_allow_bullet_one;
+            int bulletTwoId = R.string.settings_cookies_block_third_party_settings_allow_bullet_two;
+            int bulletThreeId =
+                    R.string.settings_cookies_block_third_party_settings_allow_bullet_three;
+            mBulletOne.setSummary(getContext().getString(bulletOneId));
+            mBulletTwo.setSummary(getContext().getString(bulletTwoId));
+            mBulletTwo.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.web_24));
+            mBulletThree.setSummary(getContext().getString(bulletThreeId));
             mAllowRwsPreference.setVisible(false);
         } else {
             assert false

@@ -55,9 +55,6 @@
    <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_ENABLED" desc="1 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label.">
     Third-party cookies are allowed
   </message>
-  <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED_INCOGNITO" desc="2 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label.">
-    Third-party cookies are blocked in Incognito mode
-  </message>
   <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED" desc="3 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label." >
     Third-party cookies are blocked
   </message>
@@ -669,15 +666,6 @@
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ALLOW_RADIO_LABEL" desc="1 of 3 options the user has to configure cookies. See the cookies page for context: chrome://settings/cookies.">
     Allow third-party cookies
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ALLOW_RADIO_SUB_LABEL" desc="This string appears as a sub label beneath the 'Allow all cookies' label. It summarizes the result of choosing this option.">
-    Sites will work normally
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_INCOGNITO_RADIO_LABEL" desc="2 of 3 options the user has to configure cookies. See the cookies page for context: chrome://settings/cookies. For more about Incognito mode, see https://support.google.com/chrome?p=incognito.">
-    Block third-party cookies in Incognito mode
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_INCOGNITO_RADIO_SUB_LABEL" desc="This string appears as a sub label beneath the 'Block third-party cookies in Incognito mode' label. It summarizes the result of choosing this option. A site you visit may rely on cookies for certain functionality, such as remembering your language preferences or maintaining a shopping cart. If the user chooses this option, some sites they visit may not work as designed.">
-    Features on some sites may not work in Incognito mode
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_LABEL" desc="3 of 3 options the user has to configure cookies. See the cookies page for context: chrome://settings/cookies">
     Block third-party cookies
   </message>
@@ -687,23 +675,8 @@
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ADD_ALLOW_EXCEPTION_DESCRIPTION" desc="The description of a dialog box. Dialog to add a third-party cookie exception to allow a site">
     Allow a site to use third-party cookies
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_RWS_ENABLED" desc="* 'related sites': These words reference a new feature that's part of the Privacy Sandbox project (see details below). What are 'related sites'? ** Chrome will limit how much information 2 sites can share about a user. ** But there are legitimate purposes for sharing information about a user between 2 domains. ** For example, a company might have 2 sites, www.showBiz-music.com and www.showBiz-films.com. The company showBiz might want to keep users signed in across these sites. ** Chrome is launching a new service that allows companies to define groups of related sites. The number of sites in a group is limited to just a few. ** 'related sites' is referring to this new feature. As a counter example, www.some-shoe-store.com and www.a-different-shoe-store.com aren't considered 'related' in this context even though both sites sell shoes. * So this sentence, 'Related sites can still...' explains to the user that there is an exception to the 'Block third-party cookies' option they chose. That exception exists because the use has previously chosen to enable 'Related sites'.">
-    Some features may not work. Related sites can still use third-party cookies.
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_RWS_DISABLED" desc="This string appears as a sub label beneath the 'Block third-party cookies' label. It summarizes the result of choosing this option. A site you visit may rely on cookies for certain functionality, such as remembering your language preferences or maintaining a shopping cart. If the user chooses this option, some sites they visit may not work as designed.">
     Features on some sites may not work
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_BULLET_ONE" desc="Description for the first bullet of cookie settings subpage.">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_BULLET_TWO" desc="Description for the second bullet of cookie settings subpage.">
-    Sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work.
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_INCOGNITO_BULLET_TWO" desc="Description for the second bullet of cookie settings subpage.">
-    While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalizing ads. Features on some sites may not work.
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_INCOGNITO_SUBTITLE" desc="Text used as subtitle for the block third-party cookies subpage in Incognito option in settings">
-    Block third-party cookies in Incognito:
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_SUBTITLE" desc="Text used as subtitle for the block third-party cookies subpage option in settings">
     Block third-party cookies:

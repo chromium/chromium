@@ -65,7 +65,6 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -462,14 +461,9 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
         Preference thirdPartyCookies = findPreference(PREF_THIRD_PARTY_COOKIES);
         if (thirdPartyCookies != null) {
-            @CookieControlsMode
-            int cookieControlsMode = UserPrefs.get(getProfile()).getInteger(COOKIE_CONTROLS_MODE);
             thirdPartyCookies.setSummary(
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)
-                                    && cookieControlsMode == CookieControlsMode.INCOGNITO_ONLY
-                            ? R.string.third_party_cookies_link_row_sub_label_enabled
-                            : ContentSettingsResources.getThirdPartyCookieListSummary(
-                                    UserPrefs.get(getProfile()).getInteger(COOKIE_CONTROLS_MODE)));
+                    ContentSettingsResources.getThirdPartyCookieListSummary(
+                            UserPrefs.get(getProfile()).getInteger(COOKIE_CONTROLS_MODE)));
         }
 
         Preference javascriptOptimizerPref = findPreference(PREF_JAVASCRIPT_OPTIMIZER);
