@@ -24,6 +24,7 @@ include_rules = [
   "+components/lens/lens_overlay_permission_utils.h",
   "+components/sharing_message/sharing_sync_preference.h",
   "+components/regional_capabilities/regional_capabilities_prefs.h",
+  "+components/themes/pref_names.h",
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h",

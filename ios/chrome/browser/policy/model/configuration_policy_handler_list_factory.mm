@@ -46,6 +46,7 @@
 #import "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/service/sync_policy_handler.h"
+#import "components/themes/theme_color_policy_handler.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/unified_consent/pref_names.h"
 #import "components/variations/pref_names.h"
@@ -279,6 +280,8 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           policy::key::kTabGroupSharingSettings,
           collaboration::prefs::kSharedTabGroupsManagedAccountSetting,
           base::Value::Type::INTEGER)));
+
+  handlers->AddHandler(std::make_unique<ThemeColorPolicyHandler>());
 
   handlers->AddHandler(
       std::make_unique<

@@ -78,6 +78,7 @@
 #import "components/sync/service/sync_prefs.h"
 #import "components/sync_device_info/device_info_prefs.h"
 #import "components/sync_sessions/session_sync_prefs.h"
+#import "components/themes/pref_names.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/unified_consent/unified_consent_service.h"
@@ -879,6 +880,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kIosChooseFromDriveFilePickerPolicySettings,
       static_cast<int>(ChooseFromDrivePolicySettings::kEnabled));
+
+  // Preferences related to ntp browser theme color set by enterprise policy.
+  registry->RegisterIntegerPref(themes::prefs::kPolicyThemeColor,
+                                SK_ColorTRANSPARENT);
 
   // Preferences related to download restrictions enterprise policy.
   registry->RegisterIntegerPref(policy::policy_prefs::kDownloadRestrictions, 0);

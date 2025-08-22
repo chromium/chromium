@@ -12,6 +12,7 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+- ios
 owners:
 - igorruvinov@google.com
 - ydago@google.com

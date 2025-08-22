@@ -97,6 +97,7 @@ source_set("model") {
     "//components/search_engines",
     "//components/security_interstitials/core",
     "//components/strings",
+    "//components/themes:policy",
     "//components/translate/core/browser:translate_pref_names",
     "//components/unified_consent",
     "//components/variations",
