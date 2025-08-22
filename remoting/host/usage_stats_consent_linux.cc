@@ -39,8 +39,8 @@ bool GetUsageStatsConsent(bool* allowed, bool* set_by_policy) {
     *allowed = *usage_stats_consent;
   }
   const std::string* host_owner_ptr = config->FindString(kHostOwnerConfigPath);
-  if (host_owner_ptr) {
-    // Override crash reporting for Google hosts.
+  if (host_owner_ptr && !initialized) {
+    // Opt into crash reporting for Googlers if not set in the config.
     initialized = true;
     *allowed |= IsGoogleEmail(*host_owner_ptr);
   }

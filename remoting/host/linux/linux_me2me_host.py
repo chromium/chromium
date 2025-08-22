@@ -290,9 +290,13 @@ def is_supported_platform():
 
 
 def is_crash_reporting_enabled(config):
-  # Enable crash reporting for Google hosts or when usage_stats_consent is true.
-  return (config.get("host_owner", "").endswith("@google.com") or
-          config.get("usage_stats_consent", False))
+  # Use the value in the host config for usage_stats_consent if it exists,
+  # otherwise opt into crash reporting if the owner is a Googler.
+  usage_stats_consent = config.get("usage_stats_consent", None)
+  if usage_stats_consent is not None:
+    return usage_stats_consent
+  else:
+    return config.get("host_owner", "").endswith("@google.com")
 
 
 def get_pipewire_session_manager():
