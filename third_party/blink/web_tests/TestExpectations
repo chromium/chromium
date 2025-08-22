@@ -2918,7 +2918,7 @@ crbug.com/435620308 external/wpt/pointerevents/pointerevent_lostpointercapture_r
 
 crbug.com/438770398 external/wpt/css/css-anchor-position/position-visibility-remove-no-overflow.html [ Failure ]
 
-external/wpt/content-security-policy/xslt/document-function-blocked.html [ Timeout ]
+crbug.com/440374744 external/wpt/content-security-policy/xslt/document-function-blocked.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/439645285 [ Win10.20h2 ] external/wpt/bluetooth/bidi/characteristic/getDescriptors/gen-service-is-removed.https.window.html [ Pass Timeout ]
