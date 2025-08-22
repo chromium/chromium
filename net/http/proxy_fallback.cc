@@ -76,20 +76,24 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
     // server (like a captive portal).
     case ERR_SSL_PROTOCOL_ERROR:
       return true;
-      // A failure while establishing a tunnel through the proxy can fail for
-      // reasons related to the request itself (for instance, failing to resolve
-      // the hostname of the request) or because of issues with the proxy
-      // itself. A proxy delegate can be used to differentiate the two based on
-      // response codes and/or response headers, so use that determination to
-      // decide whether fallback should occur. Note that some client's PAC
-      // configurations rely on CONNECT request failures for some degree of
-      // content blocking (see https://crbug.com/680837 for details), while
-      // proxies like those for IP Protection want to more conservatively fail
-      // open in unspecified failure cases.
-    case ERR_PROXY_TUNNEL_REQUEST_FAILED:
-      return true;
-    case ERR_TUNNEL_CONNECTION_FAILED:
+    // A failure while establishing a tunnel through the proxy can fail for
+    // reasons related to the request itself (for instance, failing to resolve
+    // the hostname of the request) or because of issues with the proxy itself.
+    // A ProxyDelegate differentiates the two based on response codes and/or
+    // response headers. The delegate signals a destination-related error by
+    // returning ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION, which prevents
+    // fallback.
+    case ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION:
       return false;
+    case ERR_TUNNEL_CONNECTION_FAILED:
+      // Tunnel connection failures not indicated by
+      // ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION are only considered grounds
+      // for fallback when connecting to an IP Protection proxy. Other browsers
+      // similarly don't fallback, and some client's PAC configurations rely on
+      // this for some degree of content blocking. See https://crbug.com/680837
+      // for details.
+      return is_for_ip_protection;
+
     case ERR_SOCKS_CONNECTION_HOST_UNREACHABLE:
       // Remap the SOCKS-specific "host unreachable" error to a more
       // generic error code (this way consumers like the link doctor

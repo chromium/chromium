@@ -171,7 +171,8 @@ NET_ERROR(ADDRESS_UNREACHABLE, -109)
 // The server requested a client certificate for SSL client authentication.
 NET_ERROR(SSL_CLIENT_AUTH_CERT_NEEDED, -110)
 
-// A tunnel connection through the proxy could not be established.
+// A tunnel connection through the proxy could not be established. For more info
+// see the comment on PROXY_UNABLE_TO_CONNECT_TO_DESTINATION.
 NET_ERROR(TUNNEL_CONNECTION_FAILED, -111)
 
 // No SSL protocol versions are enabled.
@@ -444,12 +445,22 @@ NET_ERROR(ECH_NOT_NEGOTIATED, -183)
 // and additionally did not present a certificate valid for the public name.
 NET_ERROR(ECH_FALLBACK_CERTIFICATE_INVALID, -184)
 
-// The proxy failed to create a tunnel for a reason that warrants trying an
-// alternate proxy. This error should cause the proxy to be marked as bad.
-// This is in contrast to ERR_TUNNEL_CONNECTION_FAILED which is used for errors
-// outside of the proxy's control and should not cause the proxy to be marked as
-// bad.
-NET_ERROR(PROXY_TUNNEL_REQUEST_FAILED, -185)
+// Error -185 was removed (PROXY_TUNNEL_REQUEST_FAILED).
+
+// An attempt to proxy a request failed because the proxy wasn't able to
+// successfully connect to the destination. This likely indicates an issue with
+// the request itself (for instance, the hostname failed to resolve to an IP
+// address or the destination server refused the connection). This error code
+// is used to indicate that the error is outside the control of the proxy server
+// and thus the proxy chain should not be marked as bad. This is in contrast to
+// ERR_TUNNEL_CONNECTION_FAILED which is used for general purpose errors
+// connecting to the proxy and by the proxy request response handling when a
+// proxy delegate doesn't indicate via a different error code whether proxy
+// fallback should occur. Note that for IP Protection proxies this error code
+// causes the proxy to be marked as bad since the preference is to fail open for
+// general purpose errors, but for other proxies this error does not cause the
+// proxy to be marked as bad.
+NET_ERROR(PROXY_UNABLE_TO_CONNECT_TO_DESTINATION, -186)
 
 // Certificate error codes
 //
