@@ -89,9 +89,7 @@ void MemoryPurgeManager::OnPageFrozen(
   if (CanPurge()) {
     if (called_from == base::MemoryReductionTaskContext::kProactive) {
       PerformMemoryPurge();
-    } else if (!did_purge_with_page_frozen_since_backgrounded_ ||
-               !base::FeatureList::IsEnabled(
-                   features::kMemoryPurgeOnFreezeLimit)) {
+    } else {
       RequestMemoryPurgeWithDelay(kFreezePurgeDelay);
     }
   }
@@ -165,8 +163,11 @@ void MemoryPurgeManager::PerformMemoryPurge() {
   TRACE_EVENT0("blink", "MemoryPurgeManager::PerformMemoryPurge()");
   DCHECK(CanPurge());
 
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  if (!did_purge_with_page_frozen_since_backgrounded_ ||
+      !base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreezeLimit)) {
+    base::MemoryPressureListener::NotifyMemoryPressure(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  }
 
   if (AreAllPagesFrozen()) {
     base::MemoryPressureListener::SetNotificationsSuppressed(true);
