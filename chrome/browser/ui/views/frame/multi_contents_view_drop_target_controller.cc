@@ -51,6 +51,11 @@ void MultiContentsViewDropTargetController::OnTabDragUpdated(
 
   const gfx::Point point_in_parent = views::View::ConvertPointFromScreen(
       &drop_target_parent_view_.get(), point_in_screen);
+  if (PointOverlapsWithOSDropTarget(point_in_parent)) {
+    ResetDropTargetTimer();
+    drop_target_view_->Hide();
+    return;
+  }
   HandleDragUpdate(point_in_parent);
 }
 
@@ -308,4 +313,24 @@ void MultiContentsViewDropTargetController::MaybeHideDropTarget() {
       &MultiContentsDropTargetView::Hide, base::Unretained(drop_target_view_)));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, hide_drop_target_callback_.callback());
+}
+
+bool MultiContentsViewDropTargetController::PointOverlapsWithOSDropTarget(
+    const gfx::Point& point_in_view) {
+  if (!drop_target_parent_view_->GetWidget() ||
+      !drop_target_parent_view_->GetWidget()->IsMaximized()) {
+    return false;
+  }
+
+  const float hide_for_os_width =
+      features::kSideBySideDropTargetHideForOSWidth.Get();
+  const gfx::Point point_in_screen = views::View::ConvertPointToScreen(
+      drop_target_view_->parent(), point_in_view);
+  const views::Widget* top_level_widget =
+      drop_target_parent_view_->GetWidget()->GetTopLevelWidget();
+
+  return (point_in_screen.x() < hide_for_os_width) ||
+         (point_in_screen.x() >
+          top_level_widget->GetWorkAreaBoundsInScreen().width() -
+              hide_for_os_width);
 }

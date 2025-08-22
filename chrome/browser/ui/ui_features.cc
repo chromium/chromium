@@ -146,6 +146,18 @@ BASE_FEATURE_PARAM(int,
                    &kSideBySide,
                    "drop_target_width_percentage",
                    30);
+BASE_FEATURE_PARAM(int,
+                   kSideBySideDropTargetHideForOSWidth,
+                   &kSideBySide,
+                   "drop_target_hide_for_os_width",
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+                   32
+#elif BUILDFLAG(IS_LINUX)
+                   50
+#else
+                   0
+#endif
+);
 
 BASE_FEATURE(kSideBySideDropTargetNudge,
              "SideBySideDropTargetNudge",

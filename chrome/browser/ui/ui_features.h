@@ -152,6 +152,7 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSideBySideShowDropTargetDelay);
 BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetMinWidth);
 BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetMaxWidth);
 BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetTargetWidthPercentage);
+BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetHideForOSWidth);
 
 // Feature and params to control the "nudge" behavior of drop targets.
 BASE_DECLARE_FEATURE(kSideBySideDropTargetNudge);

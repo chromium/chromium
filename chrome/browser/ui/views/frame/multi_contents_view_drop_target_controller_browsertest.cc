@@ -1,0 +1,186 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
+
+#include <memory>
+
+#include "base/check_deref.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
+#include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/common/drop_data.h"
+#include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget_utils.h"
+
+class MockTabDragController : public TabDragDelegate::DragController {
+ public:
+  MOCK_METHOD(std::unique_ptr<tabs::TabModel>,
+              DetachTabAtForInsertion,
+              (int drag_idx),
+              (override));
+  MOCK_METHOD(const DragSessionData&, GetSessionData, (), (const, override));
+};
+
+class MultiContentsViewDropTargetControllerBrowserTest
+    : public InProcessBrowserTest {
+ protected:
+  MultiContentsViewDropTargetControllerBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSideBySide,
+          {{features::kSideBySideDropTargetHideForOSWidth.name, "50"}}}},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    if (ShouldSkipTests()) {
+      return;
+    }
+    delegate_ = std::make_unique<MultiContentsViewDelegateImpl>(*browser());
+    controller_ = std::make_unique<MultiContentsViewDropTargetController>(
+        drop_target_view(), *delegate_.get());
+  }
+
+  void TearDownOnMainThread() override {
+    controller_.reset();
+    delegate_.reset();
+  }
+
+  MultiContentsViewDropTargetController& controller() { return *controller_; }
+  TabStrip* tabstrip() { return browser()->GetBrowserView().tabstrip(); }
+
+  // TODO(crbug.com/440564277): Make a split view mixin for this shared logic.
+  MultiContentsDropTargetView& drop_target_view() {
+    MultiContentsDropTargetView* view =
+        views::ElementTrackerViews::GetInstance()
+            ->GetFirstMatchingViewAs<MultiContentsDropTargetView>(
+                MultiContentsDropTargetView::kMultiContentsDropTargetElementId,
+                views::ElementTrackerViews::GetContextForWidget(
+                    multi_contents_view().GetWidget()));
+
+    return *view;
+  }
+  MultiContentsView& multi_contents_view() {
+    return CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser())
+                           ->multi_contents_view());
+  }
+
+  int GetViewWidth() { return browser()->GetBrowserView().width(); }
+
+  void SimulateTabDrag(bool is_maximized, const gfx::Point& point_in_view) {
+    MockTabDragController mock_tab_drag_controller;
+    DragSessionData session_data;
+    Tab* tab = tabstrip()->tab_at(0);
+
+    // Construct drag data
+    session_data.tab_drag_data_ = {
+        TabDragData(tabstrip()->GetDragContext(), tab),
+    };
+    session_data.tab_drag_data_[0].attached_view = tab;
+    EXPECT_CALL(mock_tab_drag_controller, GetSessionData)
+        .WillRepeatedly(testing::ReturnRef(session_data));
+
+    // Maximize the browser if necessary
+    if (is_maximized) {
+      browser()->GetBrowserView().Maximize();
+      EXPECT_TRUE(ui_test_utils::WaitForMaximized(browser()));
+    }
+
+    // Return whether the drop timer is running which indicates if the drop
+    // target will show.
+    const gfx::Point point_in_screen = views::View::ConvertPointToScreen(
+        drop_target_view().parent(), point_in_view);
+    controller().OnTabDragUpdated(mock_tab_drag_controller, point_in_screen);
+  }
+
+  bool IsDropTimerRunning() {
+    return controller().IsDropTimerRunningForTesting();
+  }
+
+  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
+  bool ShouldSkipTests() {
+#if BUILDFLAG(IS_OZONE)
+    if (!ui::OzonePlatform::GetInstance()
+             ->GetPlatformProperties()
+             .supports_split_view_drag_and_drop) {
+      return true;
+    }
+#endif
+    return false;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<MultiContentsViewDropTargetController> controller_;
+  std::unique_ptr<MultiContentsViewDelegateImpl> delegate_;
+};
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
+                       OnTabDragUpdatedMaximizedWithStartPoint) {
+  if (ShouldSkipTests()) {
+    return;
+  }
+  SimulateTabDrag(true, gfx::Point(30, 250));
+  EXPECT_FALSE(IsDropTimerRunning());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
+                       OnTabDragUpdatedNotMaximizedWithStartPoint) {
+  if (ShouldSkipTests()) {
+    return;
+  }
+  SimulateTabDrag(false, gfx::Point(30, 250));
+  EXPECT_TRUE(IsDropTimerRunning());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
+                       OnTabDragUpdatedMaximizedWithMiddlePoint) {
+  if (ShouldSkipTests()) {
+    return;
+  }
+  SimulateTabDrag(true, gfx::Point(GetViewWidth() / 2, 250));
+  EXPECT_FALSE(IsDropTimerRunning());
+}
+
+// On Linux  and ChromeOS there are test-only discreptencies between the screen
+// width and the maximized browser width, so these test need to be skipped.
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
+                       OnTabDragUpdatedMaximizedWithEndPoint) {
+  if (ShouldSkipTests()) {
+    return;
+  }
+  SimulateTabDrag(true, gfx::Point(GetViewWidth() - 10, 250));
+  EXPECT_FALSE(IsDropTimerRunning());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
+                       OnTabDragUpdatedNotMaximizedWithEndPoint) {
+  if (ShouldSkipTests()) {
+    return;
+  }
+  SimulateTabDrag(false, gfx::Point(GetViewWidth() - 10, 250));
+  EXPECT_TRUE(IsDropTimerRunning());
+}
+#endif
