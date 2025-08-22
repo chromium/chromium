@@ -516,5 +516,5 @@ Refer to README.md for content description and update process.
  <item id="glic_web_ui" added_in_milestone="140" content_hash_code="015cd923" os_list="linux,windows" file_path="chrome/browser/glic/glic_net_log.cc" />
  <item id="glic_fre_web_ui" added_in_milestone="140" content_hash_code="0354f161" os_list="linux,windows" file_path="chrome/browser/glic/glic_net_log.cc" />
  <item id="webview_preconnect" added_in_milestone="140" content_hash_code="03d15024" os_list="android" file_path="android_webview/browser/aw_preconnector.cc" />
- <item id="aim_eligibility_fetch" added_in_milestone="141" content_hash_code="0750802b" os_list="linux,windows,android,chromeos" file_path="components/omnibox/browser/aim_eligibility_service.cc" />
+ <item id="aim_eligibility_fetch" added_in_milestone="141" content_hash_code="00755d9b" os_list="linux,windows,android,chromeos" file_path="components/omnibox/browser/aim_eligibility_service.cc" />
 </annotations>

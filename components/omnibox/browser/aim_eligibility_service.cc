@@ -90,7 +90,8 @@ const net::NetworkTrafficAnnotationTag kRequestTrafficAnnotation =
         last_reviewed: "2025-08-06"
       }
       policy {
-        cookies_allowed: NO
+        cookies_allowed: YES
+        cookies_store: "user"
         setting: "Coupled to Google default search."
         policy_exception_justification:
           "Not gated by policy. Setting AIModeSetting to '1' prevents the "
@@ -224,7 +225,7 @@ void AimEligibilityService::StartServerEligibilityRequest() {
   std::unique_ptr<network::ResourceRequest> request =
       std::make_unique<network::ResourceRequest>();
   request->url = GURL{kRequestEndpoint};
-  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  request->credentials_mode = network::mojom::CredentialsMode::kInclude;
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request),
                                        kRequestTrafficAnnotation);
