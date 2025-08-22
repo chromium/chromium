@@ -117,6 +117,7 @@
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/timing/container_timing.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
@@ -334,6 +335,14 @@ bool HTMLElement::IsValidDirAttribute(const AtomicString& value) {
          EqualIgnoringASCIICase(value, "rtl");
 }
 
+bool HTMLElement::IsValidContainerTimingNestingAttribute(
+    const AtomicString& value) {
+  return EqualIgnoringASCIICase(value, "auto") ||
+         EqualIgnoringASCIICase(value, "ignore") ||
+         EqualIgnoringASCIICase(value, "transparent") ||
+         EqualIgnoringASCIICase(value, "shadowed");
+}
+
 void HTMLElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
@@ -447,6 +456,8 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        &HTMLElement::OnContainerTimingAttrChanged},
       {html_names::kContainertimingIgnoreAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnContainerTimingIgnoreAttrChanged},
+      {html_names::kContainertimingNestingAttr, kNoWebFeature, kNoEvent,
+       &HTMLElement::OnContainerTimingNestingAttrChanged},
 
       {html_names::kOnabortAttr, kNoWebFeature, event_type_names::kAbort,
        nullptr},
@@ -3375,6 +3386,28 @@ void HTMLElement::OnContainerTimingIgnoreAttrChanged(
     // the tree if the node has ignore only
     ClearSelfOrAncestorHasContainerTiming();
     UpdateDescendantHasContainerTiming(false /* has_container_timing */);
+  }
+}
+
+void HTMLElement::OnContainerTimingNestingAttrChanged(
+    const AttributeModificationParams& params) {
+  if (!RuntimeEnabledFeatures::ContainerTimingEnabled()) {
+    return;
+  }
+
+  if (!FastHasAttribute(html_names::kContainertimingAttr)) {
+    return;
+  }
+
+  bool is_old_valid = IsValidContainerTimingNestingAttribute(params.old_value);
+  bool is_new_valid = IsValidContainerTimingNestingAttribute(params.new_value);
+  if (!is_old_valid && !is_new_valid) {
+    return;
+  }
+
+  if (auto* window = GetDocument().domWindow()) {
+    ContainerTiming::From(*window).MaybeUpdateContainerRootNestingPolicy(
+        this, params.new_value);
   }
 }
 

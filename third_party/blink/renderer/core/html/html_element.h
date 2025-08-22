@@ -172,6 +172,8 @@ class CORE_EXPORT HTMLElement : public Element {
 
   HTMLFormElement* FindFormAncestor() const;
 
+  static bool IsValidContainerTimingNestingAttribute(const AtomicString& value);
+
   bool HasDirectionAuto() const;
 
   static bool IsValidDirAttribute(const AtomicString& value);
@@ -456,6 +458,8 @@ class CORE_EXPORT HTMLElement : public Element {
   void OnPopoverChanged(const AttributeModificationParams&);
   void OnContainerTimingAttrChanged(const AttributeModificationParams&);
   void OnContainerTimingIgnoreAttrChanged(const AttributeModificationParams&);
+  void OnContainerTimingNestingAttrChanged(
+      const AttributeModificationParams& params);
   void OnRoleAttrChanged(const AttributeModificationParams&);
 
   int AdjustedOffsetForZoom(LayoutUnit);

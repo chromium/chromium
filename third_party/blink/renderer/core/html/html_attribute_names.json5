@@ -64,6 +64,7 @@
     "compact",
     "containertiming",
     "containertiming-ignore",
+    "containertiming-nesting",
     "content",
     "contenteditable",
     "controls",
