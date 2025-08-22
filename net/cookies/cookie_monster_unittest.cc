@@ -8596,7 +8596,7 @@ TEST_F(CookieMonsterHttpPrefixTest, RejectsHostHttpPrefixCookie) {
   cookie_monster->SetPersistSessionCookies(true);
   EXPECT_TRUE(GetAllCookies(cookie_monster.get()).empty());
 
-  std::string cookie_line = "__HostHttp-Test=1; path=/; secure";
+  std::string cookie_line = "__Host-Http-Test=1; path=/; secure";
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::CreateForTesting(
       https_www_foo_.url(), cookie_line, base::Time::Now(),
       /*server_time=*/std::nullopt,
@@ -8611,7 +8611,7 @@ TEST_F(CookieMonsterNoHttpPrefixTest, AcceptsHostHttpPrefixCookieWithoutFlag) {
   cookie_monster->SetPersistSessionCookies(true);
   EXPECT_TRUE(GetAllCookies(cookie_monster.get()).empty());
 
-  std::string cookie_line = "__HostHttp-Test=1; path=/; secure";
+  std::string cookie_line = "__Host-Http-Test=1; path=/; secure";
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::CreateForTesting(
       https_www_foo_.url(), cookie_line, base::Time::Now(),
       /*server_time=*/std::nullopt,
@@ -8628,7 +8628,7 @@ TEST_F(CookieMonsterHttpPrefixTest, RejectsHostHttpPrefixCookiePath) {
   EXPECT_TRUE(GetAllCookies(cookie_monster.get()).empty());
 
   std::string cookie_line =
-      "__HostHttp-Test=1; path=/cookies/; secure; httponly";
+      "__Host-Http-Test=1; path=/cookies/; secure; httponly";
   std::string url = https_www_foo_.url().spec() + "cookies/";
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::CreateForTesting(
       GURL(url), cookie_line, base::Time::Now(),
@@ -8644,7 +8644,7 @@ TEST_F(CookieMonsterHttpPrefixTest, AcceptsHostHttpPrefixCookie) {
   cookie_monster->SetPersistSessionCookies(true);
   EXPECT_TRUE(GetAllCookies(cookie_monster.get()).empty());
 
-  std::string cookie_line = "__HostHttp-Test=1; path=/; secure; httponly";
+  std::string cookie_line = "__Host-Http-Test=1; path=/; secure; httponly";
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::CreateForTesting(
       https_www_foo_.url(), cookie_line, base::Time::Now(),
       /*server_time=*/std::nullopt,
@@ -8661,7 +8661,7 @@ TEST_F(CookieMonsterHttpPrefixTest, RejectsHostHttpPrefixCookieWithDomain) {
   cookie_monster->SetPersistSessionCookies(true);
   EXPECT_TRUE(GetAllCookies(cookie_monster.get()).empty());
   std::string cookie_line =
-      "__HostHttp-Test=1; path=/; secure; httponly; domain=foo.com";
+      "__Host-Http-Test=1; path=/; secure; httponly; domain=foo.com";
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::CreateForTesting(
       https_www_foo_.url(), cookie_line, base::Time::Now(),
       /*server_time=*/std::nullopt,

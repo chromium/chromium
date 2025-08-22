@@ -270,19 +270,19 @@ TEST(CookieCravingTest, CreateFailInvalidPrefix) {
   cc = CookieCraving::Create(GURL(kUrlString), "__http-blah",
                              "secure;Path=/;httpOnly", kCreationTime);
   EXPECT_TRUE(cc);
-  cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah", "Path=/",
+  cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah", "Path=/",
                              kCreationTime);
   EXPECT_FALSE(cc);
-  cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah",
+  cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah",
                              "secure;Path=/", kCreationTime);
   EXPECT_FALSE(cc);
-  cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah",
+  cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah",
                              "secure;Path=/;httpOnly", kCreationTime);
   EXPECT_TRUE(cc);
-  cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah",
+  cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah",
                              "secure;Path=/cookies/;httpOnly", kCreationTime);
   EXPECT_FALSE(cc);
-  cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah",
+  cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah",
                              "secure;Path=/;httpOnly;Domain=example.test",
                              kCreationTime);
   EXPECT_FALSE(cc);
