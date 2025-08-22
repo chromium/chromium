@@ -49,6 +49,7 @@ test("fuzzing_unittests") {
     # TODO(crbug.com/40603084): Get these tests working on Windows.
     if (!is_win) {
       sources += [ "fuzzer_launcher_test.cc" ]
+      deps += [ "//testing/libfuzzer:buildflags" ]
       data_deps += [
         ":check_fuzzer_config",
         ":check_seed_corpus_archive",
