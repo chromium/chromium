@@ -24975,6 +24975,11 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="Phrases not supported"/>
 </enum>
 
+<enum name="SplitViewLayout">
+  <int value="0" label="Vertical"/>
+  <int value="1" label="Horizontal"/>
+</enum>
+
 <enum name="SqliteErrorCode">
   <summary>Error codes returned by SQLite - see sqlite3.h</summary>
   <int value="0" label="SQLITE_OK">Successful result</int>

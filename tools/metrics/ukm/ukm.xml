@@ -23991,6 +23991,45 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SplitView.Created">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a new split view is created.
+  </summary>
+  <metric name="SplitEventId">
+    <summary>
+      An ID corresponding to the event that will enable joining both tabs in the
+      split together.
+    </summary>
+  </metric>
+  <metric name="SplitViewLayout" enum="SplitViewLayout">
+    <summary>
+      The orientation of the split which can be horizontal or vertical.
+    </summary>
+  </metric>
+</event>
+
+<event name="SplitView.Updated">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a split view is updated which could mean a navigation happened
+    within a split view or another tab is swapped into a split.
+  </summary>
+  <metric name="SplitEventId">
+    <summary>
+      An ID corresponding to the event that will enable joining both tabs in the
+      split together.
+    </summary>
+  </metric>
+  <metric name="SplitViewLayout" enum="SplitViewLayout">
+    <summary>
+      The orientation of the split which can be horizontal or vertical.
+    </summary>
+  </metric>
+</event>
+
 <event name="SubresourceFilter" singular="True">
   <owner>csharrison@chromium.org</owner>
   <summary>

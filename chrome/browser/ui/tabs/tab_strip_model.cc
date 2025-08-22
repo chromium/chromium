@@ -1819,8 +1819,10 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
   auto position = lower_bound(indices.begin(), indices.end(), active_index());
   indices.insert(position, active_index());
 
-  return AddToSplitImpl(split_id, indices, active_index(), visual_data,
-                        SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
+  AddToSplitImpl(split_id, indices, active_index(), visual_data,
+                 SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
+  split_tabs::LogSplitViewCreatedUKM(this, split_id);
+  return split_id;
 }
 
 void TabStripModel::RestoreSplit(split_tabs::SplitTabId split_id,
@@ -3943,6 +3945,8 @@ void TabStripModel::UpdateTabInSplitImpl(tabs::TabInterface* split_tab,
 
   AddToSplitImpl(split_id, split_indices, active_index(), split_visual_data,
                  SplitTabChange::SplitTabAddReason::kSplitTabUpdated);
+
+  split_tabs::LogSplitViewUpdatedUKM(this, split_id);
 }
 
 void TabStripModel::AddToNewGroupImpl(
