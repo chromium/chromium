@@ -23,7 +23,6 @@ class GURL;
 namespace net {
 class IsolationInfo;
 class SiteForCookies;
-class SSLInfo;
 struct NetworkTrafficAnnotationTag;
 }  // namespace net
 
@@ -65,15 +64,6 @@ class WebSocketFactory final {
 
   // Returns a URLRequestContext associated with this factory.
   net::URLRequestContext* GetURLRequestContext();
-
-  // Called when a WebSocket sees a SSL certificate error.
-  void OnSSLCertificateError(base::OnceCallback<void(int)> callback,
-                             const GURL& url,
-                             int process_id,
-                             int render_frame_id,
-                             int net_error,
-                             const net::SSLInfo& ssl_info,
-                             bool fatal);
 
   // Removes and deletes |impl|.
   void Remove(WebSocket* impl);
