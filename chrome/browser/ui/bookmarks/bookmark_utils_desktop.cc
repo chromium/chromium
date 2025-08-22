@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -329,6 +330,8 @@ void DoOpen(Browser* browser,
             std::optional<BookmarkLaunchAction> launch_action,
             OpenGroupMessageBoxResult result) {
   if (result == OpenGroupMessageBoxResult::kCancel) {
+    base::RecordAction(
+        base::UserMetricsAction("BookmarkTabGroupConversion_UserSelectCancel"));
     return;
   }
   const auto opened_web_contents = OpenAllHelper(
@@ -368,24 +371,25 @@ void DoOpen(Browser* browser,
                                                  bookmark_folder_node_id);
     bool is_new_group = true;
     if (features::IsBookmarkTabGroupConversionEnabled() &&
-        connected_group_id.has_value() &&
-        result == OpenGroupMessageBoxResult::kReplaceOldGroup) {
-      is_new_group = false;
+        connected_group_id.has_value()) {
+      if (result == OpenGroupMessageBoxResult::kReplaceOldGroup) {
+        is_new_group = false;
+        base::RecordAction(base::UserMetricsAction(
+            "BookmarkTabGroupConversion_UserSelectReplaceOldGroup"));
+      } else if (result == OpenGroupMessageBoxResult::kCreateNewGroup) {
+        base::RecordAction(base::UserMetricsAction(
+            "BookmarkTabGroupConversion_UserSelectCreateNewGroup"));
+      }
     }
 
     if (is_new_group) {
       // Create a new group and add the tabs.
-      std::optional<tab_groups::TabGroupId> new_group_id =
-          model->AddToNewGroup(tab_indices);
-
-      if (!new_group_id.has_value()) {
-        return;
-      }
+      tab_groups::TabGroupId new_group_id = model->AddToNewGroup(tab_indices);
 
       // Use the bookmark folder's title as the group's title.
       // TODO(http://crbug.com/436846784): Suggest a new name for the new tab
       // group if there is already a tab group with the same name.
-      TabGroup* group = model->group_model()->GetTabGroup(new_group_id.value());
+      TabGroup* group = model->group_model()->GetTabGroup(new_group_id);
       const tab_groups::TabGroupVisualData* current_visual_data =
           group->visual_data();
       tab_groups::TabGroupVisualData new_visual_data(
@@ -394,7 +398,7 @@ void DoOpen(Browser* browser,
           current_visual_data->color(), current_visual_data->is_collapsed());
       model->ChangeTabGroupVisuals(group->id(), new_visual_data);
 
-      model->OpenTabGroupEditor(new_group_id.value());
+      model->OpenTabGroupEditor(new_group_id);
 
       if (!tab_group_sync_service ||
           !features::IsBookmarkTabGroupConversionEnabled()) {
@@ -409,7 +413,7 @@ void DoOpen(Browser* browser,
 
       // Connect to new group.
       std::optional<tab_groups::SavedTabGroup> new_tab_group =
-          tab_group_sync_service->GetGroup(new_group_id.value());
+          tab_group_sync_service->GetGroup(new_group_id);
       if (new_tab_group.has_value()) {
         tab_group_sync_service->UpdateBookmarkNodeId(
             new_tab_group->saved_guid(), bookmark_folder_node_id);
@@ -505,6 +509,8 @@ void DoOpenPromptConfirm(
           .SetCloseActionCallback(std::move(on_cancel));
 
       chrome::ShowBrowserModal(browser, dialog_model_builder.Build());
+      base::RecordAction(base::UserMetricsAction(
+          "BookmarkTabGroupConversion_ShowGroupAlreadyCreatedDialog"));
     }
 
   } else {
@@ -642,12 +648,16 @@ void ShowBookmarkTabGroupDialog(
                  callback) {
             // We record the profile that invoked this option.
             RecordBookmarksAdded(browser->profile());
+            base::RecordAction(base::UserMetricsAction(
+                "BookmarkTabGroupConversion_ConvertToBookmarkConfirmed"));
             if (callback) {
               std::move(callback).Run(browser, tab_group_id);
             }
           },
           base::Unretained(browser), tab_group.id(),
           std::move(on_save_callback)));
+  base::RecordAction(base::UserMetricsAction(
+      "BookmarkTabGroupConversion_ConvertToBookmarkSelected"));
 }
 
 bool HasBookmarkURLs(

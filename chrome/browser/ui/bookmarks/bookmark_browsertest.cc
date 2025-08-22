@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -283,6 +284,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, ConvertBookmarkFolderToGroup) {
+  base::UserActionTester user_action_tester;
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
   const BookmarkNode* const folder = bookmark_model->AddFolder(
       bookmark_model->bookmark_bar_node(), 0, u"Folder");
@@ -325,6 +327,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, ConvertBookmarkFolderToGroup) {
                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
                               bookmarks::OpenAllBookmarksContext::kInGroup);
 
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "BookmarkTabGroupConversion_UserSelectCreateNewGroup"));
+
   EXPECT_EQ(
       2u, browser()->tab_strip_model()->group_model()->ListTabGroups().size());
   local_tab_group_id1 =
@@ -361,6 +366,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, ConvertBookmarkFolderToGroup) {
   bookmarks::OpenAllIfAllowed(browser(), {folder},
                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
                               bookmarks::OpenAllBookmarksContext::kInGroup);
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "BookmarkTabGroupConversion_UserSelectReplaceOldGroup"));
 
   // Verify group 1 has the original URLs and group 2 has the updated URLs.
   EXPECT_EQ(

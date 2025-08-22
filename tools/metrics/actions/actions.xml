@@ -6275,6 +6275,60 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="BookmarkTabGroupConversion_ConvertToBookmarkConfirmed">
+  <owner>yuhengh@google.com</owner>
+  <description>
+    User selects the save button from the bookmark editor dialog to complete
+    converting a tab group to bookmark folder.
+  </description>
+</action>
+
+<action name="BookmarkTabGroupConversion_ConvertToBookmarkSelected">
+  <owner>yuhengh@google.com</owner>
+  <description>
+    User selected the menu item to convert a tab group to bookmark folder
+  </description>
+</action>
+
+<action name="BookmarkTabGroupConversion_ShowGroupAlreadyCreatedDialog">
+  <owner>yuhengh@google.com</owner>
+  <description>
+    The user tries to open a bookmark folder as group but the bookmark folder is
+    already connected to an existing group. A dialog is shown to prompt user to
+    make a choice.
+  </description>
+</action>
+
+<action name="BookmarkTabGroupConversion_UserSelectCancel">
+  <owner>yuhengh@google.com</owner>
+  <description>
+    The user tries to open a bookmark folder as group but the bookmark folder is
+    already connected to an existing group. A dialog is shown to prompt user to
+    make a choice. User dismisses the dialog without selecting either the create
+    new group button or the replace old group button.
+  </description>
+</action>
+
+<action name="BookmarkTabGroupConversion_UserSelectCreateNewGroup">
+  <owner>yuhengh@google.com</owner>
+  <description>
+    The user tries to open a bookmark folder as group but the bookmark folder is
+    already connected to an existing group. A dialog is shown to prompt user to
+    make a choice. User selects the create new group button. This action is used
+    for logging user selection, it's not equivalent to creating new group.
+  </description>
+</action>
+
+<action name="BookmarkTabGroupConversion_UserSelectReplaceOldGroup">
+  <owner>yuhengh@google.com</owner>
+  <description>
+    The user tries to open a bookmark folder as group but the bookmark folder is
+    already connected to an existing group. A dialog is shown to prompt user to
+    make a choice. User selects the replace old group button. This action is
+    used for logging user selection, it's not equivalent to replacing old group.
+  </description>
+</action>
+
 <action name="BottomSheet_CreditCard_SuggestionAccepted">
   <owner>noemies@google.com</owner>
   <owner>sugoi@google.com</owner>
