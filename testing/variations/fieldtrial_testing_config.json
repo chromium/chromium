@@ -11166,6 +11166,22 @@
             ]
         }
     ],
+    "Glic1PTools": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicExtensions"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicAssetsUpdate": [
         {
             "platforms": [
