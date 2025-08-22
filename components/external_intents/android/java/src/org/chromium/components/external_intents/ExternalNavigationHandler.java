@@ -159,16 +159,16 @@ public class ExternalNavigationHandler {
     }
 
     // A Supplier that only evaluates when needed then caches the value.
-    protected static class LazySupplier<T> implements Supplier<T> {
+    protected static class LazySupplier<T extends @Nullable Object> implements Supplier<T> {
         private @Nullable T mValue;
         private @Nullable Supplier<T> mInnerSupplier;
 
         public LazySupplier(Supplier<T> innerSupplier) {
-            assert innerSupplier != null : "innerSupplier cannot be null";
             mInnerSupplier = innerSupplier;
         }
 
         @Override
+        @SuppressWarnings("NullAway") // Using mInnerSupplier as condition for mValue.
         public T get() {
             if (mInnerSupplier != null) {
                 mValue = mInnerSupplier.get();
@@ -177,12 +177,7 @@ public class ExternalNavigationHandler {
                 // references it may have held.
                 mInnerSupplier = null;
             }
-            return assumeNonNull(mValue);
-        }
-
-        @Override
-        public boolean hasValue() {
-            return true;
+            return mValue;
         }
     }
 
