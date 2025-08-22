@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -76,11 +77,14 @@ const char kIgnoreCertificateErrorsSPKIListValue[] =
 }  // namespace
 
 GlicE2ETest::GlicE2ETest() {
+  // TODO(https://crbug.com/440578183): ZeroStateSuggestionsV2 is enabled here
+  // due to the associated bug and should be removed here once fixed.
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
                             features::kGlicKeyboardShortcutNewBadge,
                             features::kGlicRollout,
-                            contextual_cueing::kContextualCueing},
+                            contextual_cueing::kContextualCueing,
+                            mojom::features::kZeroStateSuggestionsV2},
       /*disabled_features=*/{});
 }
 
