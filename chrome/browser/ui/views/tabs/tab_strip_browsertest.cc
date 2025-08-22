@@ -1525,7 +1525,8 @@ IN_PROC_BROWSER_TEST_F(TabStripSplitViewBrowsertest, CreateSplitUKMLogged) {
           entries[1], ukm::builders::SplitView_Created::kSplitEventIdName));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripSplitViewBrowsertest, UpdateSplitUKMLogged) {
+IN_PROC_BROWSER_TEST_F(TabStripSplitViewBrowsertest,
+                       SwapTabIntoSplitUKMLogged) {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_ =
       std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
@@ -1546,6 +1547,39 @@ IN_PROC_BROWSER_TEST_F(TabStripSplitViewBrowsertest, UpdateSplitUKMLogged) {
   // Swap the first tab with the last.
   tab_strip_model()->UpdateTabInSplit(tab_strip_model()->GetTabAtIndex(0), 2,
                                       TabStripModel::SplitUpdateType::kSwap);
+
+  // Ensure UKM is recorded.
+  auto entries = ukm_recorder_->GetEntriesByName(
+      ukm::builders::SplitView_Updated::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  ukm_recorder_->ExpectEntrySourceHasUrl(entries[0], c_url);
+  ukm_recorder_->ExpectEntrySourceHasUrl(entries[1], b_url);
+  EXPECT_EQ(
+      *ukm_recorder_->GetEntryMetric(
+          entries[0], ukm::builders::SplitView_Updated::kSplitEventIdName),
+      *ukm_recorder_->GetEntryMetric(
+          entries[1], ukm::builders::SplitView_Updated::kSplitEventIdName));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripSplitViewBrowsertest,
+                       NavigateSplitTabUKMLogged) {
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_ =
+      std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
+  // Create three tabs with the first two being split.
+  GURL a_url = GURL("https://a.com");
+  GURL b_url = GURL("https://b.com");
+  GURL c_url = GURL("https://c.com");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+  AppendTab();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
+  tab_strip_model()->ActivateTabAt(0);
+  tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // Navigate the first tab to a new URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), c_url));
 
   // Ensure UKM is recorded.
   auto entries = ukm_recorder_->GetEntriesByName(

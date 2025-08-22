@@ -17,6 +17,10 @@ namespace ui {
 class ImageModel;
 }  // namespace ui
 
+namespace content {
+class Page;
+}
+
 // TabUIHelper is used by UI code to obtain the title and favicon for a
 // WebContents. The values returned by TabUIHelper differ from the WebContents
 // when the WebContents hasn't loaded.
@@ -41,7 +45,9 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   // tabs::ContentsObservingTabFeature override:
   void DidStopLoading() override;
   void OnVisibilityChanged(content::Visibility visiblity) override;
-
+#if !BUILDFLAG(IS_ANDROID)
+  void PrimaryPageChanged(content::Page& page) override;
+#endif
   void set_created_by_session_restore(bool created_by_session_restore) {
     created_by_session_restore_ = created_by_session_restore;
   }

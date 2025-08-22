@@ -11,11 +11,16 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/resources/grit/ui_resources.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#endif
 
 namespace {
 
@@ -103,3 +108,13 @@ void TabUIHelper::OnVisibilityChanged(content::Visibility visiblity) {
     was_active_at_least_once_ = true;
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void TabUIHelper::PrimaryPageChanged(content::Page& page) {
+  if (tab().IsSplit()) {
+    split_tabs::LogSplitViewUpdatedUKM(
+        tab().GetBrowserWindowInterface()->GetTabStripModel(),
+        tab().GetSplit().value());
+  }
+}
+#endif
