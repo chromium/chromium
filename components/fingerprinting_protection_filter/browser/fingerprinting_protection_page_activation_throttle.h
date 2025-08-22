@@ -90,6 +90,9 @@ class FingerprintingProtectionPageActivationThrottle
   FRIEND_TEST_ALL_PREFIXES(
       FPFPageActivationThrottleWithTrackingProtectionSettingTest,
       GetActivationComputesLevelAndDecision);
+  FRIEND_TEST_ALL_PREFIXES(
+      FPFPageActivationThrottleWithTrackingProtectionSettingTest,
+      TrackingProtectionSettingsIgnoredOutsideOfIncognitoMode);
 
   // Helper for `GetActivation()`.
   // If feature flags and related settings immediately determine the result of

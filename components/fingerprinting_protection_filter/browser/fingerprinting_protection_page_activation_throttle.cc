@@ -91,7 +91,8 @@ bool FingerprintingProtectionPageActivationThrottle::
   //
 
   if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kFingerprintingProtectionUx)) {
+          privacy_sandbox::kFingerprintingProtectionUx) &&
+      is_incognito_) {
     // Gate path (1).
     if (tracking_protection_settings_ == nullptr) {
       // If the Tracking Protection UX is enabled, we should never see a null

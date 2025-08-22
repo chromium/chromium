@@ -26,6 +26,8 @@ COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 BASE_DECLARE_FEATURE(kEnableFingerprintingProtectionFilter);
 
 // Toggle to enable/disable the Fingerprinting Protection Filter in Incognito.
+// TODO(crbug.com/440320836): Deprecate this flag once it has been consolidated
+// with `privacy_sandbox::kFingerprintingProtectionUx` in terms of behavior.
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 BASE_DECLARE_FEATURE(kEnableFingerprintingProtectionFilterInIncognito);
 
