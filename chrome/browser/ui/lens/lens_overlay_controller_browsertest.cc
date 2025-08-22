@@ -6288,8 +6288,11 @@ class LensOverlayControllerBrowserWithPixelsTest
   }
 
   void SetupFeatureList() override {
-    feature_list_.InitAndDisableFeature(
-        lens::features::kLensOverlayVisualSelectionUpdates);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{}, /*disabled_features=*/{
+            lens::features::kLensOverlayVisualSelectionUpdates,
+            lens::features::
+                kLensOverlayVisualSelectionUpdatesForOmniboxSuggestions});
   }
 
   bool IsNotEmptyAndNotTransparentBlack(SkBitmap bitmap) {
@@ -8326,7 +8329,9 @@ class LensOverlayControllerContextualFeaturesDisabledTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{
-            lens::features::kLensOverlayContextualSearchbox});
+            lens::features::kLensOverlayContextualSearchbox,
+            lens::features::
+                kLensOverlayContextualSearchboxForOmniboxSuggestions});
   }
 };
 

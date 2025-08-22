@@ -36,8 +36,11 @@ class LensOverlayWebUIBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     set_test_loader_host(chrome::kChromeUILensOverlayHost);
     scoped_feature_list_.InitWithFeatures(
-        {lens::features::kLensOverlay},
-        {lens::features::kLensOverlayContextualSearchbox});
+        /*enabled_features=*/{lens::features::kLensOverlay},
+        /*disabled_features=*/{
+            lens::features::kLensOverlayContextualSearchbox,
+            lens::features::
+                kLensOverlayContextualSearchboxForOmniboxSuggestions});
   }
 
   void SetUp() override {
