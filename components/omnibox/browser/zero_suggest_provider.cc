@@ -272,6 +272,13 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
     }
   }
 
+  // Composebox
+  if (omnibox::IsComposebox(page_class)) {
+    if (input.type() == OIT::EMPTY) {
+      return ResultType::kRemoteNoURL;
+    }
+  }
+
   // Lens unimodal, multimodal, and contextual searchboxes.
   if (omnibox::IsLensSearchbox(page_class)) {
     if (input.type() == OIT::EMPTY) {

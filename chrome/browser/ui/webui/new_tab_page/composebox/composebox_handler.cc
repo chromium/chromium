@@ -34,8 +34,7 @@ ComposeboxOmniboxClient::~ComposeboxOmniboxClient() = default;
 
 metrics::OmniboxEventProto::PageClassification
 ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
-  // TODO(crbug.com/434711904): Create new page classification
-  return metrics::OmniboxEventProto::NTP_REALBOX;
+  return metrics::OmniboxEventProto::NTP_COMPOSEBOX;
 }
 
 }  // namespace

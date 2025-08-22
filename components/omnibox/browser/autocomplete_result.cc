@@ -523,6 +523,23 @@ void AutocompleteResult::SortAndCull(
                   suggestion_groups_map_));
         }
 #endif
+      } else if (omnibox::IsComposebox(page_classification)) {
+        auto composebox_suggestion_limit_config =
+            omnibox_feature_configs::ComposeboxSuggestionLimit::Get();
+        size_t composebox_max_suggestions = 8u;
+        size_t max_aim_suggestions = 8u;
+        size_t max_contextual_suggestions = 8u;
+        if (composebox_suggestion_limit_config.enabled) {
+          composebox_max_suggestions =
+              composebox_suggestion_limit_config.max_suggestions;
+          max_aim_suggestions =
+              composebox_suggestion_limit_config.max_aim_suggestions;
+          max_contextual_suggestions =
+              composebox_suggestion_limit_config.max_contextual_suggestions;
+        }
+        sections.push_back(std::make_unique<DesktopComposeboxZpsSection>(
+            suggestion_groups_map_, composebox_max_suggestions,
+            max_aim_suggestions, max_contextual_suggestions));
       } else {
         if (contextual_zps_limit > 0u &&
             omnibox_feature_configs::ContextualSearch::Get()

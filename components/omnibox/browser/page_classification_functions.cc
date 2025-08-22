@@ -56,7 +56,8 @@ bool IsAndroidHub(OEP::PageClassification classification) {
 }
 
 bool IsWebUISearchbox(OEP::PageClassification classification) {
-  return classification == OEP::NTP_REALBOX || IsLensSearchbox(classification);
+  return classification == OEP::NTP_REALBOX ||
+         IsLensSearchbox(classification) || IsComposebox(classification);
 }
 
 void CheckObsoletePageClass(OEP::PageClassification classification) {
@@ -77,6 +78,10 @@ bool SupportsMostVisitedSites(OEP::PageClassification classification) {
   return classification == OEP::OTHER ||
          classification == OEP::ANDROID_SEARCH_WIDGET ||
          classification == OEP::ANDROID_SHORTCUTS_WIDGET;
+}
+
+bool IsComposebox(OEP::PageClassification classification) {
+  return classification == OEP::NTP_COMPOSEBOX;
 }
 
 }  // namespace omnibox

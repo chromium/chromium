@@ -746,4 +746,34 @@ HappinessTrackingSurveyForOmniboxOnFocusZps::operator=(
 
 HappinessTrackingSurveyForOmniboxOnFocusZps::
     ~HappinessTrackingSurveyForOmniboxOnFocusZps() = default;
+
+BASE_FEATURE(ComposeboxSuggestionLimit::kComposeboxSuggestionLimit,
+             "ComposeboxSuggestionLimit",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+ComposeboxSuggestionLimit::ComposeboxSuggestionLimit() {
+  enabled = base::FeatureList::IsEnabled(kComposeboxSuggestionLimit);
+  max_suggestions = base::FeatureParam<size_t>(&kComposeboxSuggestionLimit,
+                                               "ComposeboxMaxSuggestions", 8)
+                        .Get();
+  max_aim_suggestions =
+      base::FeatureParam<size_t>(&kComposeboxSuggestionLimit,
+                                 "ComposeboxMaxAimSuggestions", 8)
+          .Get();
+  max_contextual_suggestions =
+      base::FeatureParam<size_t>(&kComposeboxSuggestionLimit,
+                                 "ComposeboxMaxContextualSuggestions", 8)
+          .Get();
+}
+
+ComposeboxSuggestionLimit::ComposeboxSuggestionLimit(
+    const ComposeboxSuggestionLimit&) = default;
+ComposeboxSuggestionLimit::ComposeboxSuggestionLimit(
+    ComposeboxSuggestionLimit&&) = default;
+ComposeboxSuggestionLimit&
+ComposeboxSuggestionLimit::ComposeboxSuggestionLimit::operator=(
+    const ComposeboxSuggestionLimit&) = default;
+ComposeboxSuggestionLimit&
+ComposeboxSuggestionLimit::ComposeboxSuggestionLimit::operator=(
+    ComposeboxSuggestionLimit&&) = default;
+ComposeboxSuggestionLimit::~ComposeboxSuggestionLimit() = default;
 }  // namespace omnibox_feature_configs

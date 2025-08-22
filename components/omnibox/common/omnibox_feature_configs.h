@@ -604,6 +604,23 @@ struct HappinessTrackingSurveyForOmniboxOnFocusZps
   std::string utility_trigger_id;
 };
 
+struct ComposeboxSuggestionLimit : Config<ComposeboxSuggestionLimit> {
+  DECLARE_FEATURE(kComposeboxSuggestionLimit);
+  ComposeboxSuggestionLimit();
+  ComposeboxSuggestionLimit(const ComposeboxSuggestionLimit&);
+  ComposeboxSuggestionLimit(ComposeboxSuggestionLimit&&);
+  ComposeboxSuggestionLimit& operator=(const ComposeboxSuggestionLimit&);
+  ComposeboxSuggestionLimit& operator=(ComposeboxSuggestionLimit&&);
+  ~ComposeboxSuggestionLimit();
+  bool enabled;
+  // Max number of zps suggestions to show.
+  size_t max_suggestions;
+  // Max number of aim zps suggestions to show.
+  size_t max_aim_suggestions;
+  // Max number of contextual zps suggestions to show.
+  size_t max_contextual_suggestions;
+};
+
 // Do not add new configs here at the bottom by default. They should be ordered
 // alphabetically.
 

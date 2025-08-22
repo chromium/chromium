@@ -280,6 +280,14 @@ class DesktopLensMultimodalZpsSection : public ZpsSection {
       omnibox::GroupConfigMap& group_configs);
 };
 
+class DesktopComposeboxZpsSection : public ZpsSection {
+ public:
+  explicit DesktopComposeboxZpsSection(omnibox::GroupConfigMap& group_configs,
+                                       size_t max_suggestions,
+                                       size_t max_aim_suggestions,
+                                       size_t max_contextual_suggestions);
+};
+
 // A ZPS section that includes only the toolbelt match.
 class ToolbeltSection : public ZpsSection {
  public:
