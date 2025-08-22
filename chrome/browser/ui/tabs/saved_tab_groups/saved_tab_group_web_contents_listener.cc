@@ -262,8 +262,10 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     TabGroupSyncTabState::Reset(contents());
   }
 
-  if (!TabGroupSyncUtils::IsSaveableNavigation(
-          group->collaboration_id().has_value(), navigation_handle)) {
+  // Shard tab groups aren't allowed to navigate via extension
+  bool is_extension_navigation_allowed = !group->collaboration_id().has_value();
+  if (!TabGroupSyncUtils::IsSaveableNavigation(is_extension_navigation_allowed,
+                                               navigation_handle)) {
     return;
   }
 
