@@ -4,10 +4,12 @@
 
 #include "net/socket/ssl_server_socket_impl.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -678,47 +680,26 @@ int SSLServerContextImpl::SocketImpl::Init() {
 
   SSL_set_shed_handshake_config(ssl_.get(), 1);
 
-  std::vector<uint16_t> signing_algorithm_prefs;
-  if (context_->ssl_server_config_.signature_algorithm_for_testing
-          .has_value()) {
-    signing_algorithm_prefs.emplace_back(
-        *context_->ssl_server_config_.signature_algorithm_for_testing);
-  }
+  for (const SSLServerCredential& credential : context_->credentials_) {
+    std::vector<uint16_t> signing_algorithm_prefs;
+    if (credential.signature_algorithm_for_testing.has_value()) {
+      signing_algorithm_prefs.emplace_back(
+          *credential.signature_algorithm_for_testing);
+    }
+    std::vector<CRYPTO_BUFFER*> chain_raw =
+        GetCertChainRawVector(credential.cert_chain);
+    ConfigureSSLCredentialParams params{
+        .cert_chain = chain_raw,
+        .private_key = credential.pkey.get(),
+        .signing_algorithm_prefs = signing_algorithm_prefs,
+        .ocsp_response = credential.ocsp_response,
+        .signed_cert_timestamp_list = credential.signed_cert_timestamp_list,
+        .trust_anchor_id = credential.trust_anchor_id,
+    };
 
-  ConfigureSSLCredentialParams params{
-      .private_key = context_->pkey_.get(),
-      .signing_algorithm_prefs = signing_algorithm_prefs,
-      .ocsp_response = context_->ssl_server_config_.ocsp_response,
-      .signed_cert_timestamp_list =
-          context_->ssl_server_config_.signed_cert_timestamp_list,
-  };
-
-  // If a Trust Anchor ID for the intermediate certificate was provided,
-  // configure an alternative, shorter chain that omits the intermediate.
-  if (!context_->ssl_server_config_.intermediate_trust_anchor_id.empty()) {
-    // The current Trust Anchor IDs API only allows configuring a Trust Anchor
-    // ID for a single intermediate certificate.
-    DCHECK_EQ(context_->cert_chain_.size(), 2u);
-
-    std::vector<CRYPTO_BUFFER*> elided_chain = {context_->cert_chain_[0].get()};
-
-    ConfigureSSLCredentialParams params_with_trust_anchor_id = params;
-    params_with_trust_anchor_id.cert_chain = elided_chain;
-    params_with_trust_anchor_id.trust_anchor_id =
-        context_->ssl_server_config_.intermediate_trust_anchor_id;
-
-    if (!ConfigureSSLCredential(ssl_.get(), params_with_trust_anchor_id)) {
+    if (!ConfigureSSLCredential(ssl_.get(), params)) {
       return ERR_UNEXPECTED;
     }
-  }
-
-  // Set the full (un-elided) certificate chain and private key.
-  std::vector<CRYPTO_BUFFER*> chain_raw =
-      GetCertChainRawVector(context_->cert_chain_);
-  params.cert_chain = chain_raw;
-
-  if (!ConfigureSSLCredential(ssl_.get(), params)) {
-    return ERR_UNEXPECTED;
   }
 
   const std::vector<int>& curves =
@@ -788,39 +769,28 @@ std::unique_ptr<SSLServerContext> CreateSSLServerContext(
     X509Certificate* certificate,
     EVP_PKEY* pkey,
     const SSLServerConfig& ssl_server_config) {
-  return std::make_unique<SSLServerContextImpl>(certificate, pkey,
+  SSLServerCredential credential;
+  credential.cert_chain = ChainFromX509Certificate(certificate);
+  credential.pkey = bssl::UpRef(pkey);
+  std::vector<SSLServerCredential> credentials;
+  credentials.push_back(std::move(credential));
+  return std::make_unique<SSLServerContextImpl>(std::move(credentials),
                                                 ssl_server_config);
 }
 
-std::unique_ptr<SSLServerContext> CreateSSLServerContext(
-    base::span<const bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
-    EVP_PKEY* pkey,
-    const SSLServerConfig& ssl_server_config) {
-  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> copied_cert_chain;
-  copied_cert_chain.reserve(cert_chain.size());
-  for (const auto& handle : cert_chain) {
-    copied_cert_chain.push_back(bssl::UpRef(handle.get()));
-  }
-  return std::make_unique<SSLServerContextImpl>(std::move(copied_cert_chain),
-                                                pkey, ssl_server_config);
+NET_EXPORT std::unique_ptr<SSLServerContext> CreateSSLServerContext(
+    std::vector<SSLServerCredential> credentials,
+    const SSLServerConfig& ssl_config) {
+  return std::make_unique<SSLServerContextImpl>(std::move(credentials),
+                                                ssl_config);
 }
 
 SSLServerContextImpl::SSLServerContextImpl(
-    X509Certificate* certificate,
-    EVP_PKEY* pkey,
-    const SSLServerConfig& ssl_server_config)
-    : SSLServerContextImpl(ChainFromX509Certificate(certificate),
-                           pkey,
-                           ssl_server_config) {}
-
-SSLServerContextImpl::SSLServerContextImpl(
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
-    EVP_PKEY* pkey,
+    std::vector<SSLServerCredential> credentials,
     const SSLServerConfig& ssl_server_config)
     : ssl_server_config_(ssl_server_config),
-      cert_chain_(std::move(cert_chain)) {
-  CHECK(pkey);
-  pkey_ = bssl::UpRef(pkey);
+      credentials_(std::move(credentials)) {
+  CHECK(!credentials_.empty());
   Init();
 }
 
@@ -906,18 +876,6 @@ void SSLServerContextImpl::Init() {
 
   SSL_CTX_set_alpn_select_cb(ssl_ctx_.get(), &SocketImpl::ALPNSelectCallback,
                              nullptr);
-
-  if (!ssl_server_config_.ocsp_response.empty()) {
-    SSL_CTX_set_ocsp_response(ssl_ctx_.get(),
-                              ssl_server_config_.ocsp_response.data(),
-                              ssl_server_config_.ocsp_response.size());
-  }
-
-  if (!ssl_server_config_.signed_cert_timestamp_list.empty()) {
-    SSL_CTX_set_signed_cert_timestamp_list(
-        ssl_ctx_.get(), ssl_server_config_.signed_cert_timestamp_list.data(),
-        ssl_server_config_.signed_cert_timestamp_list.size());
-  }
 
   if (ssl_server_config_.ech_keys) {
     CHECK(SSL_CTX_set1_ech_keys(ssl_ctx_.get(),

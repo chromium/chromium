@@ -1547,12 +1547,12 @@ class PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest
   }
 
   void SetUpOnMainThread() override {
-    // Set up an HTTPS server that uses a certificate chain with an
-    // intermediate, associated with the trust anchor ID
+    // Set up an HTTPS server that has two certificate chains.
+    // The first is directly issued by a unique root with the trust anchor ID
     // `kIntermediateTrustAnchorId`.
+    // The second chain has a leaf and intermediate issued by the default test
+    // root cert, and has no trust anchor ID.
     net::SSLServerConfig server_config;
-    server_config.intermediate_trust_anchor_id =
-        base::ToVector(kIntermediateTrustAnchorId);
     // TODO(crbug.com/431064813): this callback just adds some debugging
     // info to try to investigate a flake. It can be removed once the cause of
     // the flake is found.
@@ -1567,11 +1567,21 @@ class PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest
           return true;
         });
 
-    net::EmbeddedTestServer::ServerCertificateConfig certificate_config;
-    certificate_config.intermediate =
+    net::EmbeddedTestServer::ServerCertificateConfig tai_cert_config;
+    tai_cert_config.intermediate =
+        net::EmbeddedTestServer::IntermediateType::kNone;
+    tai_cert_config.root = net::EmbeddedTestServer::RootType::kUniqueRoot;
+    tai_cert_config.trust_anchor_id =
+        base::ToVector(kIntermediateTrustAnchorId);
+    tai_cert_config.dns_names.emplace_back(kHostname);
+
+    net::EmbeddedTestServer::ServerCertificateConfig default_cert_config;
+    default_cert_config.intermediate =
         net::EmbeddedTestServer::IntermediateType::kInHandshake;
-    certificate_config.dns_names.emplace_back(kHostname);
-    trust_anchor_ids_server_.SetSSLConfig(certificate_config, server_config);
+    default_cert_config.dns_names.emplace_back(kHostname);
+
+    trust_anchor_ids_server_.SetSSLConfig(
+        {tai_cert_config, default_cert_config}, server_config);
     trust_anchor_ids_server_.ServeFilesFromSourceDirectory("chrome/test/data");
     ASSERT_TRUE(trust_anchor_ids_server_.Start());
 
@@ -1677,11 +1687,14 @@ class PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest
 IN_PROC_BROWSER_TEST_F(
     PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest,
     TrustAnchorIDs) {
+  static constexpr size_t kTaiCredentialNum = 0;
+  static constexpr size_t kDefaultCredentialNum = 1;
+
   // Before updating the root store with trust anchor IDs, the server should
-  // serve both a leaf and an intermediate.
+  // serve the default credential which has both a leaf and an intermediate.
   {
     scoped_refptr<net::X509Certificate> server_certificate =
-        trust_anchor_ids_server_.GetCertificate();
+        trust_anchor_ids_server_.GetCertificate(kDefaultCredentialNum);
     ASSERT_EQ(server_certificate->intermediate_buffers().size(), 1u);
 
     SetExpectedCertificateOnResponses(server_certificate);
@@ -1693,7 +1706,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 
   // Install CRS update that contains two trusted Trust Anchor IDs, including
-  // one that is advertised by the server corresponding to its intermediate
+  // one that is advertised by the server corresponding to its root
   // certificate.
   {
     int64_t crs_version = net::CompiledChromeRootStoreVersion();
@@ -1702,13 +1715,14 @@ IN_PROC_BROWSER_TEST_F(
     chrome_root_store::TrustAnchor* anchor =
         root_store_proto.add_trust_anchors();
     anchor->set_der(std::string(net::x509_util::CryptoBufferAsStringPiece(
-        trust_anchor_ids_server_.GetRoot()->cert_buffer())));
+        trust_anchor_ids_server_.GetRoot(kDefaultCredentialNum)
+            ->cert_buffer())));
 
     chrome_root_store::TrustAnchor* additional_cert1 =
         root_store_proto.add_additional_certs();
     additional_cert1->set_der(
         std::string(net::x509_util::CryptoBufferAsStringPiece(
-            trust_anchor_ids_server_.GetGeneratedIntermediate()
+            trust_anchor_ids_server_.GetRoot(kTaiCredentialNum)
                 ->cert_buffer())));
     additional_cert1->set_trust_anchor_id(
         base::as_string_view(kIntermediateTrustAnchorId));
@@ -1737,8 +1751,7 @@ IN_PROC_BROWSER_TEST_F(
     // because the client should signal that it trusts the intermediate as a
     // trust anchor.
     scoped_refptr<net::X509Certificate> server_certificate =
-        trust_anchor_ids_server_.GetCertificate()
-            ->CloneWithDifferentIntermediates({});
+        trust_anchor_ids_server_.GetCertificate(kTaiCredentialNum);
     ASSERT_EQ(server_certificate->intermediate_buffers().size(), 0u);
     SetExpectedCertificateOnResponses(server_certificate);
 

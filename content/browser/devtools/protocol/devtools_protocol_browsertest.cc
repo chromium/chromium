@@ -3869,13 +3869,13 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
   net::SSLServerConfig server_config;
   server_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
   server_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
-  // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-  server_config.cipher_suite_for_testing = 0xc02f;
+  // TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  server_config.cipher_suite_for_testing = 0xc02b;
   server_config.curves_for_testing = {NID_X25519};
-  server_config.signature_algorithm_for_testing = SSL_SIGN_RSA_PSS_RSAE_SHA384;
+  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.signature_algorithm_for_testing = SSL_SIGN_ECDSA_SECP384R1_SHA384;
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
-  server.SetSSLConfig(net::EmbeddedTestServer::ServerCertificate::CERT_OK,
-                      server_config);
+  server.SetSSLConfig(cert_config, server_config);
   server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
   ASSERT_TRUE(server.Start());
 
@@ -3896,7 +3896,7 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
   const std::string* key_exchange =
       response.FindStringByDottedPath("response.securityDetails.keyExchange");
   ASSERT_TRUE(key_exchange);
-  EXPECT_EQ("ECDHE_RSA", *key_exchange);
+  EXPECT_EQ("ECDHE_ECDSA", *key_exchange);
 
   const std::string* cipher =
       response.FindStringByDottedPath("response.securityDetails.cipher");
@@ -3913,7 +3913,7 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
 
   std::optional<int> sigalg = response.FindIntByDottedPath(
       "response.securityDetails.serverSignatureAlgorithm");
-  EXPECT_EQ(SSL_SIGN_RSA_PSS_RSAE_SHA384, sigalg);
+  EXPECT_EQ(SSL_SIGN_ECDSA_SECP384R1_SHA384, sigalg);
 
   std::optional<bool> ech = response.FindBoolByDottedPath(
       "response.securityDetails.encryptedClientHello");
@@ -3955,10 +3955,10 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetailsTLS13) {
   server_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_3;
   server_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_3;
   server_config.curves_for_testing = {NID_X25519};
-  server_config.signature_algorithm_for_testing = SSL_SIGN_RSA_PSS_RSAE_SHA384;
+  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.signature_algorithm_for_testing = SSL_SIGN_ECDSA_SECP256R1_SHA256;
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
-  server.SetSSLConfig(net::EmbeddedTestServer::ServerCertificate::CERT_OK,
-                      server_config);
+  server.SetSSLConfig(cert_config, server_config);
   server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
   ASSERT_TRUE(server.Start());
 
@@ -3998,7 +3998,7 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetailsTLS13) {
 
   std::optional<int> sigalg = response.FindIntByDottedPath(
       "response.securityDetails.serverSignatureAlgorithm");
-  EXPECT_EQ(SSL_SIGN_RSA_PSS_RSAE_SHA384, sigalg);
+  EXPECT_EQ(SSL_SIGN_ECDSA_SECP256R1_SHA256, sigalg);
 
   std::optional<bool> ech = response.FindBoolByDottedPath(
       "response.securityDetails.encryptedClientHello");

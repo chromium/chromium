@@ -691,12 +691,20 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   // Starts the embedded test server with the specified parameters. Returns true
   // on success.
   bool StartEmbeddedTestServer(
-      const EmbeddedTestServer::ServerCertificateConfig& cert_config,
+      base::span<const EmbeddedTestServer::ServerCertificateConfig>
+          cert_configs,
       const SSLServerConfig& server_config) {
     embedded_test_server_ =
         std::make_unique<EmbeddedTestServer>(EmbeddedTestServer::TYPE_HTTPS);
-    embedded_test_server_->SetSSLConfig(cert_config, server_config);
+    embedded_test_server_->SetSSLConfig(cert_configs, server_config);
     return FinishStartingEmbeddedTestServer();
+  }
+
+  bool StartEmbeddedTestServer(
+      const EmbeddedTestServer::ServerCertificateConfig& cert_config,
+      const SSLServerConfig& server_config) {
+    return StartEmbeddedTestServer(base::span_from_ref(cert_config),
+                                   server_config);
   }
 
   bool FinishStartingEmbeddedTestServer() {
@@ -2703,11 +2711,11 @@ TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsTLSExtension) {
   // Encoding of SCT List containing 'test'.
   std::string_view sct_ext("\x00\x06\x00\x04test", 8);
 
-  SSLServerConfig server_config = GetServerConfig();
-  server_config.signed_cert_timestamp_list =
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.tls_signed_cert_timestamp_list =
       std::vector<uint8_t>(sct_ext.begin(), sct_ext.end());
-  ASSERT_TRUE(
-      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+  SSLServerConfig server_config = GetServerConfig();
+  ASSERT_TRUE(StartEmbeddedTestServer(cert_config, server_config));
 
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
@@ -2804,12 +2812,20 @@ TEST_P(SSLClientSocketVersionTest, ConnectWithEmptyTrustAnchorIDs) {
 // the server serves), and properly retrieves the server's Trust Anchor IDs from
 // the handshake on error.
 TEST_P(SSLClientSocketVersionTest, ConnectToServerWithTrustAnchorIDs) {
-  SSLServerConfig server_config;
-  SSLConfig client_config;
-  server_config.intermediate_trust_anchor_id = {0x01, 0x02, 0x03};
+  EmbeddedTestServer::ServerCertificateConfig tai_config;
+  tai_config.intermediate = EmbeddedTestServer::IntermediateType::kNone;
+  tai_config.trust_anchor_id = {0x01, 0x02, 0x03};
 
-  ASSERT_TRUE(StartEmbeddedTestServer(
-      EmbeddedTestServer::CERT_OK_BY_INTERMEDIATE, server_config));
+  EmbeddedTestServer::ServerCertificateConfig default_config;
+  default_config.intermediate =
+      EmbeddedTestServer::IntermediateType::kInHandshake;
+
+  SSLServerConfig server_config;
+
+  ASSERT_TRUE(
+      StartEmbeddedTestServer({tai_config, default_config}, server_config));
+
+  SSLConfig client_config;
 
   // If the client doesn't advertise any trust anchor IDs on the connection,
   // then the server should provide a full chain (with the intermediate).
@@ -3456,9 +3472,9 @@ TEST_F(SSLClientSocketTest, SHA1) {
   // Disable RSA key exchange, to ensure the server does not pick a non-signing
   // cipher.
   server_config.require_ecdhe = true;
-  server_config.signature_algorithm_for_testing = SSL_SIGN_RSA_PKCS1_SHA1;
-  ASSERT_TRUE(
-      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.signature_algorithm_for_testing = SSL_SIGN_ECDSA_SHA1;
+  ASSERT_TRUE(StartEmbeddedTestServer(cert_config, server_config));
 
   // SHA-1 server signatures are always disabled.
   int rv;
