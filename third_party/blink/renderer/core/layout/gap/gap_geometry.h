@@ -61,6 +61,22 @@ using GapIntersectionList = Vector<GapIntersection>;
 using MainGaps = Vector<MainGap>;
 using CrossGaps = Vector<CrossGap>;
 
+// Represents a range of tracks within a grid or columns within a multicol. Used
+// to track areas inside a gap that are blocked by spanners.
+struct TrackRange {
+  wtf_size_t start;
+  wtf_size_t end;
+};
+
+using TrackRanges = std::unique_ptr<Vector<TrackRange>>;
+
+// Represents a mapping from gap indices to the ranges of tracks blocked within
+// those gaps. For example, a gap with index 0 might map to a list of track
+// ranges such as {[2, 4], 7, 9]}, indicating that tracks 2 through 4 and 7
+// through 9 are blocked in gap[0].
+using GapToTrackRangesMap =
+    WTF::HashMap<wtf_size_t, TrackRanges, blink::IntWithZeroKeyHashTraits<int>>;
+
 // Gap locations are used for painting gap decorations.
 class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
  public:
@@ -121,9 +137,29 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     cross_gaps_ = std::move(cross_gaps);
   }
 
+  void SetRowGapsToBlockedColumnRanges(
+      GapToTrackRangesMap&& row_gaps_to_blocked_column_ranges) {
+    row_gaps_to_blocked_column_ranges_ =
+        std::move(row_gaps_to_blocked_column_ranges);
+  }
+
+  void SetColumnGapsToBlockedRowRanges(
+      GapToTrackRangesMap&& column_gaps_to_blocked_row_ranges) {
+    column_gaps_to_blocked_row_ranges_ =
+        std::move(column_gaps_to_blocked_row_ranges);
+  }
+
   const Vector<MainGap>& GetMainGaps() const { return main_gaps_; }
 
   const Vector<CrossGap>& GetCrossGaps() const { return cross_gaps_; }
+
+  const GapToTrackRangesMap& GetRowGapsToBlockedColumnRanges() const {
+    return row_gaps_to_blocked_column_ranges_;
+  }
+
+  const GapToTrackRangesMap& GetColumnGapsToBlockedRowRanges() const {
+    return column_gaps_to_blocked_row_ranges_;
+  }
 
   blink::String ToString(bool verbose = false) const;
 
@@ -163,6 +199,13 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   LayoutUnit content_inline_end_;
   LayoutUnit content_block_start_;
   LayoutUnit content_block_end_;
+
+  // Maintains the portions of each gap that are blocked by spanning items. A
+  // gap normally represents a continuous range of intersections (e.g. tracks
+  // 1–N), but a spanning item may block part of that range, resulting in one or
+  // more sub-ranges.
+  GapToTrackRangesMap row_gaps_to_blocked_column_ranges_;
+  GapToTrackRangesMap column_gaps_to_blocked_row_ranges_;
 };
 
 }  // namespace blink
