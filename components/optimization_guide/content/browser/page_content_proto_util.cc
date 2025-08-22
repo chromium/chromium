@@ -417,6 +417,24 @@ optimization_guide::proto::FormControlType ConvertFormControlType(
   NOTREACHED();
 }
 
+optimization_guide::proto::RedactionDecision ConvertRedactionDecision(
+    blink::mojom::AIPageContentRedactionDecision redaction_decision) {
+  switch (redaction_decision) {
+    case blink::mojom::AIPageContentRedactionDecision::kNoRedactionNecessary:
+      return optimization_guide::proto::
+          REDACTION_DECISION_NO_REDACTION_NECESSARY;
+    case blink::mojom::AIPageContentRedactionDecision::
+        kUnredacted_EmptyPassword:
+      return optimization_guide::proto::
+          REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD;
+    case blink::mojom::AIPageContentRedactionDecision::
+        kRedacted_HasBeenPassword:
+      return optimization_guide::proto::
+          REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD;
+  }
+  NOTREACHED();
+}
+
 void ConvertFormControlData(
     const blink::mojom::AIPageContentFormControlData& mojom_form_control_data,
     optimization_guide::proto::FormControlData* proto_form_control_data) {
@@ -446,6 +464,8 @@ void ConvertFormControlData(
     }
     proto_select_option->set_is_selected(select_option->is_selected);
   }
+  proto_form_control_data->set_redaction_decision(
+      ConvertRedactionDecision(mojom_form_control_data.redaction_decision));
 }
 
 void ConvertTableData(

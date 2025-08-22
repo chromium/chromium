@@ -35,6 +35,7 @@
 //components/test/data/optimization_guide/paragraph_iframe_partially_offscreen.html
 //components/test/data/optimization_guide/paragraph_iframe_partially_scrolled_offscreen.html
 //components/test/data/optimization_guide/paragraph_iframe_sandbox.html
+//components/test/data/optimization_guide/redaction.html
 //components/test/data/optimization_guide/relative_path.html
 //components/test/data/optimization_guide/script_tool.html
 //components/test/data/optimization_guide/script_tool_no_annotation.html
