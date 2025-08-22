@@ -106,11 +106,15 @@ on the motivation / use case.
 #### Use a `MetricsProvider` {#metrics-provider}
 
 For the first two motivations, you should emit to histogram with every UMA
-record. It ensures that every client who uploads data also uploads this
-histogram (regardless of what else they do or do not do). That's necessary for
-counting unique clients in various states. It's also the only way to satisfy the
-second motivation, as this ensures that all data you might want to slice comes
-with the histogram attached.
+record. (Chrome collects data emitted to histograms. Chrome periodically
+packages a set of data into a "record" which gets uploaded to Google servers.
+Each new record includes all data emitted since the last record. Multiple
+different triggers cause a record to be created. Consequently, each record can
+cover different lengths of time.) Emitting with every record ensures that
+every client who uploads data also uploads this histogram (regardless of what
+else they do or do not do). That's necessary for counting unique clients in
+various states. It's also the only way to satisfy the second motivation, as this
+ensures that all data you might want to slice comes with the histogram attached.
 
 To emit to histogram with every UMA record, implement a
 [`MetricsProvider`](https://source.chromium.org/chromium/chromium/src/+/main:components/metrics/metrics_provider.h).
@@ -260,7 +264,8 @@ perhaps with the screen locked, for days. Including that time in the numerator
 and denominator isn't going to be a accurate reflect of percent of spent with
 the browser when the feature was in use.
 
-It's possible to get a very rough estimate of the desired percentage using a `MetricsProvider`. Emit "feature in use" in each UMA record. If you take this
+It's possible to get a very rough estimate of the desired percentage using a
+`MetricsProvider`. Emit "feature in use" in each UMA record. If you take this
 approach keep in mind that each UMA record may represent different lengths of
 time. See details in [the `MetricsProvider` section](#metrics-provider). That's
 why this approach will not give a true percentage of time. (It gives a
