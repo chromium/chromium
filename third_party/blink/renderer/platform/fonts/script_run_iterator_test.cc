@@ -366,7 +366,12 @@ TEST_F(ScriptRunIteratorTest, Common) {
 }
 
 TEST_F(ScriptRunIteratorTest, CombiningCircle) {
-  CHECK_SCRIPT_RUNS({{"◌́◌̀◌̈◌̂◌̄◌̊", USCRIPT_COMMON}});
+#if U_ICU_VERSION_MAJOR_NUM >= 76
+  const UScriptCode script = USCRIPT_LATIN;
+#else
+  const UScriptCode script = USCRIPT_COMMON;
+#endif
+  CHECK_SCRIPT_RUNS({{"◌́◌̀◌̈◌̂◌̄◌̊", script}});
 }
 
 TEST_F(ScriptRunIteratorTest, Latin) {

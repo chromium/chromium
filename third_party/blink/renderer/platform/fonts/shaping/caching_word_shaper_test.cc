@@ -83,7 +83,11 @@ TEST_F(CachingWordShaperTest, CommonAccentLeftToRightByWord) {
       TestInfo(result)->RunInfoForTesting(0, start_index, num_glyphs, script));
   EXPECT_EQ(0u, offset + start_index);
   EXPECT_EQ(3u, num_glyphs);
+#if U_ICU_VERSION_MAJOR_NUM >= 76
+  EXPECT_EQ(HB_SCRIPT_CHEROKEE, script);
+#else
   EXPECT_EQ(HB_SCRIPT_COMMON, script);
+#endif
   offset += result->NumCharacters();
 
   ASSERT_TRUE(iterator.Next(&result));
