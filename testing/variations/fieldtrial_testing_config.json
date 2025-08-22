@@ -9046,21 +9046,6 @@
             ]
         }
     ],
-    "DiscountsOnAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableDiscountInfoApi"
-                    ]
-                }
-            ]
-        }
-    ],
     "DiskCacheBackendExperiment": [
         {
             "platforms": [

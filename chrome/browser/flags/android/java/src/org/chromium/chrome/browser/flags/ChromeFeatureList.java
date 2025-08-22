@@ -918,8 +918,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD, false);
     public static final CachedFlag sEducationalTipModule =
             newCachedFlag(EDUCATIONAL_TIP_MODULE, false, true);
-    public static final CachedFlag sEnableDiscountInfoApi =
-            newCachedFlag(ENABLE_DISCOUNT_INFO_API, false, true);
     public static final CachedFlag sEnableExclusiveAccessManager =
             newCachedFlag(ENABLE_EXCLUSIVE_ACCESS_MANAGER, false);
     public static final CachedFlag sEnableFullscreenToAnyScreenAndroid =
@@ -1183,7 +1181,6 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeUseBackupNavbarInsets,
                     sEducationalTipDefaultBrowserPromoCard,
                     sEducationalTipModule,
-                    sEnableDiscountInfoApi,
                     sEnableExclusiveAccessManager,
                     sEnableFullscreenToAnyScreenAndroid,
                     sEnableXAxisActivityTransition,

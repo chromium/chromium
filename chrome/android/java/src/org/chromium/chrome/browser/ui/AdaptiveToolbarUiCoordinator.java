@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.coupons.DiscountsBottomSheetContentCoordinator;
 import org.chromium.chrome.browser.commerce.coupons.DiscountsButtonController;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -186,17 +185,15 @@ public class AdaptiveToolbarUiCoordinator {
                         toolbarBehavior,
                         windowAndroid);
 
-        if (ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
-            DiscountsButtonController discountsButtonController =
-                    new DiscountsButtonController(
-                            mContext,
-                            mActivityTabProvider,
-                            mModalDialogManagerSupplier.get(),
-                            mBottomSheetController,
-                            this::getCommerceBottomSheetContentController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.DISCOUNTS, discountsButtonController);
-        }
+        DiscountsButtonController discountsButtonController =
+                new DiscountsButtonController(
+                        mContext,
+                        mActivityTabProvider,
+                        mModalDialogManagerSupplier.get(),
+                        mBottomSheetController,
+                        this::getCommerceBottomSheetContentController);
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.DISCOUNTS, discountsButtonController);
 
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.SHARE, shareButtonController);

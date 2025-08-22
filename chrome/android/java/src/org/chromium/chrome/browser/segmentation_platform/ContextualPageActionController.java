@@ -157,11 +157,10 @@ public class ContextualPageActionController {
         mActionProviders.put(
                 AdaptiveToolbarButtonVariant.PRICE_INSIGHTS,
                 new PriceInsightsActionProvider(shoppingServiceSupplier));
-        if (AdaptiveToolbarFeatures.isDiscountsPageActionEnabled()) {
-            mActionProviders.put(
-                    AdaptiveToolbarButtonVariant.DISCOUNTS,
-                    new DiscountsActionProvider(shoppingServiceSupplier));
-        }
+        mActionProviders.put(
+                AdaptiveToolbarButtonVariant.DISCOUNTS,
+                new DiscountsActionProvider(shoppingServiceSupplier));
+
         if (AdaptiveToolbarFeatures.isTabGroupingPageActionEnabled()) {
             Supplier<@Nullable GroupSuggestionsButtonController>
                     groupSuggestionButtonControllerSupplier =
