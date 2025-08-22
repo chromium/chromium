@@ -59,7 +59,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private @Nullable OnLayoutChangeListener mOnLayoutChangeListener;
     private @Nullable DragEventDispatchHelper mDragEventDispatchHelper;
     private final Rect mRect;
-    private final boolean mIsTouchSource;
 
     private final int mTopMarginPx;
     private final int mBottomMarginPx;
@@ -111,8 +110,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             @Nullable Integer desiredPopupContentWidth,
             @Nullable View touchEventDelegateView,
             Rect rect,
-            boolean shouldPadForWindowInsets,
-            boolean isTouchSource) {
+            boolean shouldPadForWindowInsets) {
         super(ownerActivity, theme, shouldPadForWindowInsets);
         mActivity = ownerActivity;
         mTopMarginPx = topMarginPx;
@@ -125,7 +123,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mDesiredPopupContentWidth = desiredPopupContentWidth;
         mTouchEventDelegateView = touchEventDelegateView;
         mRect = rect;
-        mIsTouchSource = isTouchSource;
     }
 
     @Override
@@ -218,15 +215,13 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                             mPopupWindow.setOutsideTouchable(false);
                             mPopupWindow.setAnimateFromAnchor(true);
                             // Set popup focusable so the screen reader can announce the popup
-                            // properly.
-                            // It is also required so that the key press events are handdled
-                            // correctly for context menu keyboard navigation. However, it will
-                            // cause touch events to be intercepted by the context menu and not
-                            // dismiss on drag, so do not set it if it is triggered from touch
-                            // long press.
-                            mPopupWindow.setFocusable(
-                                    AccessibilityState.isKnownScreenReaderEnabled()
-                                            || !mIsTouchSource);
+                            // properly, and key press events are handdled correctly for context
+                            // menu keyboard navigation.
+                            mPopupWindow.setFocusable(true);
+                            // Set touch modal false (outside touches will be sent to other windows
+                            // behind it) so that touches from drag-drop will dismiss the context
+                            // menu.
+                            mPopupWindow.setTouchModal(false);
                             // If the popup is dismissed, dismiss this dialog as well. This is
                             // required when the popup is dismissed through backpress / hardware
                             // accessiries where the #dismiss is not triggered by #onTouchEvent.

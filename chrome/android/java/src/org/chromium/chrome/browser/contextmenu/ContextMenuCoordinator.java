@@ -47,7 +47,6 @@ import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
-import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
 import java.lang.annotation.Retention;
@@ -286,8 +285,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         popupMargin,
                         desiredPopupContentWidth,
                         dragDispatchingTargetView,
-                        contextMenuRect,
-                        params.getSourceType() == MenuSourceType.LONG_PRESS);
+                        contextMenuRect);
         mDialog.setOnShowListener(dialogInterface -> onMenuShown.run());
         mDialog.setOnDismissListener(
                 (dialogInterface) -> {
@@ -379,8 +377,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             @Nullable Integer popupMargin,
             @Nullable Integer desiredPopupContentWidth,
             @Nullable View dragDispatchingTargetView,
-            Rect rect,
-            boolean isTouchSource) {
+            Rect rect) {
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
         final ContextMenuDialog dialog =
                 new ContextMenuDialog(
@@ -396,8 +393,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         desiredPopupContentWidth,
                         dragDispatchingTargetView,
                         rect,
-                        EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled(),
-                        isTouchSource);
+                        EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
         dialog.setContentView(layout);
 
         return dialog;
