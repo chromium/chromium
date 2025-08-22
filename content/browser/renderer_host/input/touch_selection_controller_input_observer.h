@@ -43,7 +43,12 @@ class TouchSelectionControllerInputObserver
     controller_ = controller;
   }
 
+  blink::WebInputEvent::Type LastSeenAckTypeForTesting() const {
+    return last_seen_ack_type_;
+  }
+
  private:
+  blink::WebInputEvent::Type last_seen_ack_type_;
   raw_ptr<ui::TouchSelectionController> controller_;
   raw_ptr<TouchSelectionControllerClientManager> manager_;
 };

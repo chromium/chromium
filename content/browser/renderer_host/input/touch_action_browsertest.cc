@@ -48,6 +48,11 @@
 #include "ui/events/blink/blink_features.h"
 #include "ui/latency/latency_info.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/renderer_host/input/touch_selection_controller_input_observer.h"
+#include "content/browser/renderer_host/render_widget_host_view_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 using blink::WebInputEvent;
 
 namespace {
@@ -962,5 +967,109 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
   EXPECT_EQ(selection_start, EvalJs(shell(), "container.selectionEnd"));
   EXPECT_EQ(32, selection_start);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class ScrollBeginObserver : public RenderWidgetHost::InputEventObserver {
+ public:
+  ScrollBeginObserver(RenderWidgetHost& rwh,
+                      RenderWidgetHostViewAndroid& rwhv_android,
+                      base::OnceClosure quit_closure)
+      : rwh_(rwh),
+        rwhv_android_(rwhv_android),
+        quit_closure_(std::move(quit_closure)) {
+    rwh_->AddInputEventObserver(this);
+  }
+
+  ~ScrollBeginObserver() override { rwh_->RemoveInputEventObserver(this); }
+
+  void OnInputEvent(const RenderWidgetHost&,
+                    const blink::WebInputEvent& event) override {
+    if (event.GetType() != blink::WebInputEvent::Type::kGestureScrollBegin) {
+      return;
+    }
+    // Insertion handles were active due to first scroll and should become
+    // inactive after view is removed from hierarchy.
+    EXPECT_EQ(rwhv_android_->touch_selection_controller()->active_status(),
+              ui::TouchSelectionController::ActiveStatus::INSERTION_ACTIVE);
+    ui::ViewAndroid* view_android = rwhv_android_->GetNativeView();
+    view_android->RemoveFromParent();
+    EXPECT_EQ(rwhv_android_->touch_selection_controller()->active_status(),
+              ui::TouchSelectionController::ActiveStatus::INACTIVE);
+  }
+
+  void OnInputEventAck(const RenderWidgetHost&,
+                       blink::mojom::InputEventResultSource,
+                       blink::mojom::InputEventResultState,
+                       const blink::WebInputEvent& event) override {
+    if (event.GetType() != blink::WebInputEvent::Type::kGestureScrollBegin) {
+      return;
+    }
+    // Post a task so that it's guaranteed
+    // TouchSelectionControllerInputObserver would have also processed this
+    // problematic ack which comes after view having already been removed from
+    // hierarchy.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(quit_closure_));
+  }
+
+ private:
+  raw_ref<RenderWidgetHost> rwh_;
+  raw_ref<RenderWidgetHostViewAndroid> rwhv_android_;
+  base::OnceClosure quit_closure_;
+};
+
+IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
+                       CursorControlDetachViewMidScroll) {
+  if (!::features::IsSwipeToMoveCursorEnabled()) {
+    return;
+  }
+
+  LoadURL(base::StringPrintf(kInputTagCursorControl, 40).c_str());
+
+  EXPECT_EQ(32, EvalJs(shell(), "container.selectionStart"));
+  EXPECT_EQ(32, EvalJs(shell(), "container.selectionEnd"));
+
+  // Do a scroll over input field to activate insertion handle.
+  DoTouchScroll(gfx::Point(85, 5), gfx::Vector2d(40, 0),
+                /* wait_until_scrolled*/ false, gfx::Vector2d(0, 0),
+                kNoJankTime);
+
+  auto* rwhv_android =
+      static_cast<RenderWidgetHostViewAndroid*>(GetWidgetHost()->GetView());
+  ASSERT_TRUE(rwhv_android);
+  EXPECT_EQ(rwhv_android->touch_selection_controller()->active_status(),
+            ui::TouchSelectionController::ActiveStatus::INSERTION_ACTIVE);
+
+  base::RunLoop run_loop;
+  ScrollBeginObserver observer(*GetWidgetHost(), *rwhv_android,
+                               run_loop.QuitClosure());
+
+  float page_scale_factor = GetWidgetHost()
+                                ->render_frame_metadata_provider()
+                                ->LastRenderFrameMetadata()
+                                .page_scale_factor;
+  if (page_scale_factor == 0) {
+    page_scale_factor = 1.0f;
+  }
+  gfx::PointF touch_point(85, 5);
+  touch_point.Scale(page_scale_factor);
+
+  SyntheticSmoothScrollGestureParams params;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
+  params.anchor = touch_point;
+  params.distances.emplace_back(-80, 0);
+
+  GetWidgetHost()->QueueSyntheticGesture(
+      std::make_unique<SyntheticSmoothScrollGesture>(params),
+      base::DoNothing());
+
+  // We expect the run loop be exited when ScrollBeginObserver processes
+  // ScrollBegin ack.
+  run_loop.Run();
+  EXPECT_EQ(rwhv_android->GetTouchSelectionControllerInputObserver()
+                ->LastSeenAckTypeForTesting(),
+            blink::WebInputEvent::Type::kGestureScrollBegin);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

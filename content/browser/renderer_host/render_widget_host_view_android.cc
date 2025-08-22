@@ -2984,11 +2984,7 @@ void RenderWidgetHostViewAndroid::OnDetachCompositor() {
   overscroll_controller_.reset();
   if (using_browser_compositor_)
     delegated_frame_host_->DetachFromCompositor();
-  // TODO(440324557): Remove conditional in follow up change adding browser
-  // tests.
-  if (input_transfer_handler_) {
-    DismissTextHandles();
-  }
+  DismissTextHandles();
 }
 
 void RenderWidgetHostViewAndroid::OnAnimate(base::TimeTicks begin_frame_time) {

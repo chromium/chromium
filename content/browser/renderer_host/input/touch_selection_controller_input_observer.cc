@@ -85,6 +85,8 @@ void TouchSelectionControllerInputObserver::OnInputEventAck(
     blink::mojom::InputEventResultSource source,
     blink::mojom::InputEventResultState state,
     const blink::WebInputEvent& input_event) {
+  last_seen_ack_type_ = input_event.GetType();
+
   if (!input_event.IsGestureScroll()) {
     return;
   }
