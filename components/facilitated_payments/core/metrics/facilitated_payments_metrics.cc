@@ -280,6 +280,20 @@ void LogEwalletFlowExitedReason(
   }
 }
 
+void LogA2APayflowExitedReason(
+    A2AFlowExitedReason reason,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
+  base::UmaHistogramEnumeration("FacilitatedPayments.A2A.PayflowExitedReason",
+                                reason);
+
+  if (scheme.has_value() && *scheme != PaymentLinkValidator::Scheme::kInvalid) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"FacilitatedPayments.A2A.PayflowExitedReason.",
+                      SchemeToString(*scheme)}),
+        reason);
+  }
+}
+
 void LogPixFlowExitedReason(PixFlowExitedReason reason) {
   base::UmaHistogramEnumeration("FacilitatedPayments.Pix.PayflowExitedReason",
                                 reason);

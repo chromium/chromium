@@ -369,6 +369,50 @@ INSTANTIATE_TEST_SUITE_P(
                         PaymentLinkValidator::Scheme::kTngd,
                         PaymentLinkValidator::Scheme::kMomo)));
 
+class FacilitatedPaymentsMetricsA2AExitedReasonTest
+    : public testing::TestWithParam<
+          std::tuple<A2AFlowExitedReason, PaymentLinkValidator::Scheme>> {
+ public:
+  A2AFlowExitedReason payflow_exit_reason() const {
+    return std::get<0>(GetParam());
+  }
+
+  PaymentLinkValidator::Scheme scheme() const {
+    return std::get<1>(GetParam());
+  }
+};
+
+TEST_P(FacilitatedPaymentsMetricsA2AExitedReasonTest,
+       LogA2APayflowExitedReason) {
+  base::HistogramTester histogram_tester;
+
+  LogA2APayflowExitedReason(payflow_exit_reason(), scheme());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.A2A.PayflowExitedReason",
+      /*sample=*/payflow_exit_reason(),
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"FacilitatedPayments.A2A.PayflowExitedReason.",
+                    GetSchemeString(scheme())}),
+      /*sample=*/payflow_exit_reason(),
+      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FacilitatedPaymentsMetricsTest,
+    FacilitatedPaymentsMetricsA2AExitedReasonTest,
+    testing::Combine(
+        testing::Values(A2AFlowExitedReason::kNotInAllowlist,
+                        A2AFlowExitedReason::kUserOptedOut,
+                        A2AFlowExitedReason::kNoSupportedPaymentApp,
+                        A2AFlowExitedReason::kFopSelectorClosedNotByUser,
+                        A2AFlowExitedReason::kFopSelectorClosedByUser,
+                        A2AFlowExitedReason::kOtherFopSelected,
+                        A2AFlowExitedReason::kFlagNotEnabled),
+        testing::Values(PaymentLinkValidator::Scheme::kPromptPay)));
+
 class FacilitatedPaymentsMetricsPixExitedReasonTest
     : public testing::TestWithParam<PixFlowExitedReason> {};
 
