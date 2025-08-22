@@ -206,8 +206,10 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::CSS::CSSStyle>* attributes_style) override;
   protocol::Response getComputedStyleForNode(
       int node_id,
-      std::unique_ptr<
-          protocol::Array<protocol::CSS::CSSComputedStyleProperty>>*) override;
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSComputedStyleProperty>>*
+          style,
+      std::unique_ptr<protocol::CSS::ComputedStyleExtraFields>* extra_fields)
+      override;
   protocol::Response resolveValues(
       std::unique_ptr<protocol::Array<String>> values,
       int node_id,

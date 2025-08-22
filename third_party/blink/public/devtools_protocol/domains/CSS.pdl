@@ -239,6 +239,13 @@ experimental domain CSS
       # Computed style property value.
       string value
 
+  experimental type ComputedStyleExtraFields extends object
+    properties
+      # Returns whether or not this node is being rendered with base appearance,
+      # which happens when it has its appearance property set to base/base-select
+      # or it is in the subtree of an element being rendered with base appearance.
+      boolean isAppearanceBase
+
   # CSS style representation.
   type CSSStyle extends object
     properties
@@ -674,6 +681,9 @@ experimental domain CSS
     returns
       # Computed style for the specified DOM node.
       array of CSSComputedStyleProperty computedStyle
+      # A list of non-standard "extra fields" which blink stores alongside each
+      # computed style.
+      experimental ComputedStyleExtraFields extraFields
 
   # Resolve the specified values in the context of the provided element.
   # For example, a value of '1em' is evaluated according to the computed

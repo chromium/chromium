@@ -2098,7 +2098,8 @@ protocol::Response InspectorCSSAgent::getInlineStylesForNode(
 protocol::Response InspectorCSSAgent::getComputedStyleForNode(
     int node_id,
     std::unique_ptr<protocol::Array<protocol::CSS::CSSComputedStyleProperty>>*
-        style) {
+        style,
+    std::unique_ptr<protocol::CSS::ComputedStyleExtraFields>* extra_fields) {
   protocol::Response response = AssertEnabled();
   if (!response.IsSuccess())
     return response;
@@ -2147,6 +2148,15 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
                                .setValue(it.value->CssText())
                                .build());
   }
+
+  bool is_appearance_base = false;
+  if (auto* computed_style = element->GetComputedStyle()) {
+    is_appearance_base = computed_style->InBaseSelectAppearance();
+  }
+  *extra_fields = protocol::CSS::ComputedStyleExtraFields::create()
+                      .setIsAppearanceBase(is_appearance_base)
+                      .build();
+
   return protocol::Response::Success();
 }
 
