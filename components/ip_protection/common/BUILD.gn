@@ -439,6 +439,32 @@ source_set("ip_protection_token_fetcher_helper") {
   ]
 }
 
+source_set("ip_protection_performance_hooks") {
+  sources = [
+    "ip_protection_performance_hooks.cc",
+    "ip_protection_performance_hooks.h",
+  ]
+  public_deps = [
+    "//net/third_party/quiche:blind_sign_auth",
+  ]
+  deps = [
+    "//base",
+  ]
+}
+
+source_set("ip_protection_performance_hooks_unittest") {
+  testonly = true
+  sources = [ "ip_protection_performance_hooks_unittest.cc" ]
+  deps = [
+    ":ip_protection_performance_hooks",
+    "//base",
+    "//base/test:test_support",
+    "//base/test:test_trace_processor",
+    "//testing/gtest",
+    "//testing/gmock",
+  ]
+}
+
 source_set("ip_protection_token_manager") {
   sources = [ "ip_protection_token_manager.h" ]
 }

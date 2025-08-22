@@ -855,6 +855,7 @@ component("blind_sign_auth") {
   sources = [
     "src/quiche/blind_sign_auth/blind_sign_auth.cc",
     "src/quiche/blind_sign_auth/blind_sign_auth.h",
+    "src/quiche/blind_sign_auth/blind_sign_tracing_hooks.h",
     "src/quiche/blind_sign_auth/blind_sign_auth_interface.h",
     "src/quiche/blind_sign_auth/blind_sign_message_interface.h",
     "src/quiche/blind_sign_auth/blind_sign_message_response.cc",
