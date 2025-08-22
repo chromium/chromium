@@ -18,8 +18,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-import java.util.LinkedHashSet;
-
 /** Helper methods for supporting night mode. */
 @NullMarked
 public class NightModeUtils {
@@ -35,21 +33,18 @@ public class NightModeUtils {
 
     /**
      * Updates configuration for night mode to ensure night mode settings are applied properly.
-     * Should be called anytime the Activity's configuration changes (e.g. from
-     * {@link Activity#onConfigurationChanged(Configuration)}) if uiMode was not overridden on
-     * the configuration during activity initialization
-     * (see {@link #applyOverridesForNightMode(NightModeStateProvider, Configuration)}).
+     * Should be called anytime the Activity's configuration changes (e.g. from {@link
+     * Activity#onConfigurationChanged(Configuration)}) if uiMode was not overridden on the
+     * configuration during activity initialization (see {@link
+     * #applyOverridesForNightMode(NightModeStateProvider, Configuration)}).
+     *
      * @param activity The {@link Activity} that needs to be updated.
      * @param inNightMode Whether night mode should be set on the activity.
-     * @param newConfig The new {@link Configuration} from
-     *                  {@link Activity#onConfigurationChanged(Configuration)}.
-     * @param themeResIds An ordered set of {@link StyleRes} of the themes applied to the activity.
+     * @param newConfig The new {@link Configuration} from {@link
+     *     Activity#onConfigurationChanged(Configuration)}.
      */
     public static void updateConfigurationForNightMode(
-            Activity activity,
-            boolean inNightMode,
-            Configuration newConfig,
-            LinkedHashSet<Integer> themeResIds) {
+            Activity activity, boolean inNightMode, Configuration newConfig) {
         final int uiNightMode =
                 inNightMode ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO;
 

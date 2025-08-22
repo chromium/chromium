@@ -29,7 +29,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -84,7 +83,6 @@ import org.chromium.ui.util.XrUtils;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
-import java.util.LinkedHashSet;
 
 /**
  * A subclass of {@link AppCompatActivity} that maintains states and objects applied to all
@@ -131,7 +129,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             new ObservableSupplierImpl<>();
 
     private NightModeStateProvider mNightModeStateProvider;
-    private final LinkedHashSet<Integer> mThemeResIds = new LinkedHashSet<>();
     private @Nullable ServiceTracingProxyProvider mServiceTracingProxyProvider;
     private InsetObserver mInsetObserver;
     // Created in #onCreate
@@ -351,12 +348,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     }
 
     @Override
-    public void setTheme(@StyleRes int resid) {
-        super.setTheme(resid);
-        mThemeResIds.add(resid);
-    }
-
-    @Override
     public void onMultiWindowModeChanged(boolean inMultiWindowMode, Configuration configuration) {
         super.onMultiWindowModeChanged(inMultiWindowMode, configuration);
         onMultiWindowModeChanged(inMultiWindowMode);
@@ -366,7 +357,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         NightModeUtils.updateConfigurationForNightMode(
-                this, mNightModeStateProvider.isInNightMode(), newConfig, mThemeResIds);
+                this, mNightModeStateProvider.isInNightMode(), newConfig);
         // newConfig will have the default system locale so reapply the app locale override if
         // needed: https://crbug.com/1248944
         GlobalAppLocaleController.getInstance().maybeOverrideContextConfig(this);
@@ -585,7 +576,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
     protected void applySingleThemeOverlay(int themeOverlay) {
         getTheme().applyStyle(themeOverlay, /* force= */ true);
-        mThemeResIds.add(themeOverlay);
     }
 
     /** Sets the default task description that will appear in the recents UI. */
