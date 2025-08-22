@@ -11888,9 +11888,9 @@ class GpuInfoUpdateObserver : public GpuDataManagerObserver {
 };
 
 // Checks if RenderInputRouterDelegate mojo connection is reset when GPU process
-// restarts.
+// restarts. Disabled due to flake: crbug.com/439855865.
 IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
-                       RestartingGPUProcessResetsMojoConnection) {
+                       DISABLED_RestartingGPUProcessResetsMojoConnection) {
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("viz");
   RenderFrameSubmissionObserver render_frame_submission_observer(
