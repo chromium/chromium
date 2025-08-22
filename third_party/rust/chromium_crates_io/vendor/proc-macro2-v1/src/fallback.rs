@@ -11,6 +11,8 @@ use alloc::collections::BTreeMap;
 use core::cell::RefCell;
 #[cfg(span_locations)]
 use core::cmp;
+#[cfg(all(span_locations, not(fuzzing)))]
+use core::cmp::Ordering;
 use core::fmt::{self, Debug, Display, Write};
 use core::mem::ManuallyDrop;
 #[cfg(span_locations)]
@@ -23,7 +25,7 @@ use core::str::FromStr;
 use std::ffi::CStr;
 #[cfg(wrap_proc_macro)]
 use std::panic;
-#[cfg(procmacro2_semver_exempt)]
+#[cfg(span_locations)]
 use std::path::PathBuf;
 
 /// Force use of proc-macro2's fallback implementation of the API for now, even
@@ -455,36 +457,39 @@ impl SourceMap {
         span
     }
 
-    #[cfg(procmacro2_semver_exempt)]
-    fn filepath(&self, span: Span) -> String {
-        for (i, file) in self.files.iter().enumerate() {
-            if file.span_within(span) {
-                return if i == 0 {
-                    "<unspecified>".to_owned()
-                } else {
-                    format!("<parsed string {}>", i)
-                };
+    fn find(&self, span: Span) -> usize {
+        match self.files.binary_search_by(|file| {
+            if file.span.hi < span.lo {
+                Ordering::Less
+            } else if file.span.lo > span.hi {
+                Ordering::Greater
+            } else {
+                assert!(file.span_within(span));
+                Ordering::Equal
             }
+        }) {
+            Ok(i) => i,
+            Err(_) => unreachable!("Invalid span with no related FileInfo!"),
         }
-        unreachable!("Invalid span with no related FileInfo!");
+    }
+
+    fn filepath(&self, span: Span) -> String {
+        let i = self.find(span);
+        if i == 0 {
+            "<unspecified>".to_owned()
+        } else {
+            format!("<parsed string {}>", i)
+        }
     }
 
     fn fileinfo(&self, span: Span) -> &FileInfo {
-        for file in &self.files {
-            if file.span_within(span) {
-                return file;
-            }
-        }
-        unreachable!("Invalid span with no related FileInfo!");
+        let i = self.find(span);
+        &self.files[i]
     }
 
     fn fileinfo_mut(&mut self, span: Span) -> &mut FileInfo {
-        for file in &mut self.files {
-            if file.span_within(span) {
-                return file;
-            }
-        }
-        unreachable!("Invalid span with no related FileInfo!");
+        let i = self.find(span);
+        &mut self.files[i]
     }
 }
 
@@ -568,7 +573,7 @@ impl Span {
         })
     }
 
-    #[cfg(procmacro2_semver_exempt)]
+    #[cfg(span_locations)]
     pub(crate) fn file(&self) -> String {
         #[cfg(fuzzing)]
         return "<unspecified>".to_owned();
@@ -580,7 +585,7 @@ impl Span {
         })
     }
 
-    #[cfg(procmacro2_semver_exempt)]
+    #[cfg(span_locations)]
     pub(crate) fn local_file(&self) -> Option<PathBuf> {
         None
     }

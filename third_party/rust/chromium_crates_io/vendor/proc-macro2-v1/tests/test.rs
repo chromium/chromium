@@ -454,6 +454,81 @@ fn source_text() {
 }
 
 #[test]
+fn lifetimes() {
+    let mut tokens = "'a 'static 'struct 'r#gen 'r#prefix#lifetime"
+        .parse::<TokenStream>()
+        .unwrap()
+        .into_iter();
+    assert!(match tokens.next() {
+        Some(TokenTree::Punct(punct)) => {
+            punct.as_char() == '\'' && punct.spacing() == Spacing::Joint
+        }
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Ident(ident)) => ident == "a",
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Punct(punct)) => {
+            punct.as_char() == '\'' && punct.spacing() == Spacing::Joint
+        }
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Ident(ident)) => ident == "static",
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Punct(punct)) => {
+            punct.as_char() == '\'' && punct.spacing() == Spacing::Joint
+        }
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Ident(ident)) => ident == "struct",
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Punct(punct)) => {
+            punct.as_char() == '\'' && punct.spacing() == Spacing::Joint
+        }
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Ident(ident)) => ident == "r#gen",
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Punct(punct)) => {
+            punct.as_char() == '\'' && punct.spacing() == Spacing::Joint
+        }
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Ident(ident)) => ident == "r#prefix",
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Punct(punct)) => {
+            punct.as_char() == '#' && punct.spacing() == Spacing::Alone
+        }
+        _ => false,
+    });
+    assert!(match tokens.next() {
+        Some(TokenTree::Ident(ident)) => ident == "lifetime",
+        _ => false,
+    });
+
+    "' a".parse::<TokenStream>().unwrap_err();
+    "' r#gen".parse::<TokenStream>().unwrap_err();
+    "' prefix#lifetime".parse::<TokenStream>().unwrap_err();
+    "'prefix#lifetime".parse::<TokenStream>().unwrap_err();
+    "'aa'bb".parse::<TokenStream>().unwrap_err();
+    "'r#gen'a".parse::<TokenStream>().unwrap_err();
+}
+
+#[test]
 fn roundtrip() {
     fn roundtrip(p: &str) {
         println!("parse: {}", p);

@@ -20,7 +20,10 @@ fn main() {
         println!("cargo:rustc-check-cfg=cfg(no_literal_c_string)");
         println!("cargo:rustc-check-cfg=cfg(no_source_text)");
         println!("cargo:rustc-check-cfg=cfg(proc_macro_span)");
+        println!("cargo:rustc-check-cfg=cfg(proc_macro_span_file)");
+        println!("cargo:rustc-check-cfg=cfg(proc_macro_span_location)");
         println!("cargo:rustc-check-cfg=cfg(procmacro2_backtrace)");
+        println!("cargo:rustc-check-cfg=cfg(procmacro2_build_probe)");
         println!("cargo:rustc-check-cfg=cfg(procmacro2_nightly_testing)");
         println!("cargo:rustc-check-cfg=cfg(procmacro2_semver_exempt)");
         println!("cargo:rustc-check-cfg=cfg(randomize_layout)");
@@ -67,18 +70,16 @@ fn main() {
         return;
     }
 
-    println!("cargo:rerun-if-changed=build/probe.rs");
-
     let proc_macro_span;
     let consider_rustc_bootstrap;
-    if compile_probe(false) {
+    if compile_probe_unstable("proc_macro_span", false) {
         // This is a nightly or dev compiler, so it supports unstable features
         // regardless of RUSTC_BOOTSTRAP. No need to rerun build script if
         // RUSTC_BOOTSTRAP is changed.
         proc_macro_span = true;
         consider_rustc_bootstrap = false;
     } else if let Some(rustc_bootstrap) = env::var_os("RUSTC_BOOTSTRAP") {
-        if compile_probe(true) {
+        if compile_probe_unstable("proc_macro_span", true) {
             // This is a stable or beta compiler for which the user has set
             // RUSTC_BOOTSTRAP to turn on unstable features. Rerun build script
             // if they change it.
@@ -115,11 +116,23 @@ fn main() {
     }
 
     if proc_macro_span {
-        // Enable non-dummy behavior of Span::start and Span::end methods which
-        // requires an unstable compiler feature. Enabled when building with
-        // nightly, unless `-Z allow-feature` in RUSTFLAGS disallows unstable
-        // features.
+        // Enable non-dummy behavior of Span::byte_range and Span::join methods
+        // which requires an unstable compiler feature. Enabled when building
+        // with nightly, unless `-Z allow-feature` in RUSTFLAGS disallows
+        // unstable features.
         println!("cargo:rustc-cfg=proc_macro_span");
+    }
+
+    if proc_macro_span || (rustc >= 88 && compile_probe_stable("proc_macro_span_location")) {
+        // Enable non-dummy behavior of Span::start and Span::end methods on
+        // Rust 1.88+.
+        println!("cargo:rustc-cfg=proc_macro_span_location");
+    }
+
+    if proc_macro_span || (rustc >= 88 && compile_probe_stable("proc_macro_span_file")) {
+        // Enable non-dummy behavior of Span::file and Span::local_file methods
+        // on Rust 1.88+.
+        println!("cargo:rustc-cfg=proc_macro_span_file");
     }
 
     if semver_exempt && proc_macro_span {
@@ -133,22 +146,31 @@ fn main() {
     }
 }
 
-fn compile_probe(rustc_bootstrap: bool) -> bool {
-    if env::var_os("RUSTC_STAGE").is_some() {
-        // We are running inside rustc bootstrap. This is a highly non-standard
-        // environment with issues such as:
-        //
-        //     https://github.com/rust-lang/cargo/issues/11138
-        //     https://github.com/rust-lang/rust/issues/114839
-        //
-        // Let's just not use nightly features here.
-        return false;
-    }
+fn compile_probe_unstable(feature: &str, rustc_bootstrap: bool) -> bool {
+    // RUSTC_STAGE indicates that this crate is being compiled as a dependency
+    // of a multistage rustc bootstrap. This environment uses Cargo in a highly
+    // non-standard way with issues such as:
+    //
+    //     https://github.com/rust-lang/cargo/issues/11138
+    //     https://github.com/rust-lang/rust/issues/114839
+    //
+    env::var_os("RUSTC_STAGE").is_none() && do_compile_probe(feature, rustc_bootstrap)
+}
+
+fn compile_probe_stable(feature: &str) -> bool {
+    env::var_os("RUSTC_STAGE").is_some() || do_compile_probe(feature, true)
+}
+
+fn do_compile_probe(feature: &str, rustc_bootstrap: bool) -> bool {
+    println!("cargo:rerun-if-changed=src/probe/{}.rs", feature);
 
     let rustc = cargo_env_var("RUSTC");
     let out_dir = cargo_env_var("OUT_DIR");
     let out_subdir = Path::new(&out_dir).join("probe");
-    let probefile = Path::new("build").join("probe.rs");
+    let probefile = Path::new("src")
+        .join("probe")
+        .join(feature)
+        .with_extension("rs");
 
     if let Err(err) = fs::create_dir(&out_subdir) {
         if err.kind() != ErrorKind::AlreadyExists {
@@ -172,11 +194,13 @@ fn compile_probe(rustc_bootstrap: bool) -> bool {
     }
 
     cmd.stderr(Stdio::null())
+        .arg("--cfg=procmacro2_build_probe")
         .arg("--edition=2021")
         .arg("--crate-name=proc_macro2")
         .arg("--crate-type=lib")
         .arg("--cap-lints=allow")
         .arg("--emit=dep-info,metadata")
+        .arg("--cap-lints=allow")
         .arg("--out-dir")
         .arg(&out_subdir)
         .arg(probefile);
