@@ -11,8 +11,6 @@ static_library("signaling") {
     "ftl_host_device_id_provider.h",
     "ftl_message_channel_strategy.cc",
     "ftl_message_channel_strategy.h",
-    "ftl_message_reception_channel.cc",
-    "ftl_message_reception_channel.h",
     "ftl_messaging_client.cc",
     "ftl_messaging_client.h",
     "ftl_registration_manager.cc",
@@ -28,7 +26,6 @@ static_library("signaling") {
     "message_channel.cc",
     "message_channel.h",
     "message_channel_strategy.h",
-    "message_reception_channel.h",
     "message_tracker.cc",
     "message_tracker.h",
     "messaging_client.h",
@@ -94,7 +91,6 @@ source_set("unit_tests") {
 
   sources = [
     "ftl_message_channel_strategy_unittest.cc",
-    "ftl_message_reception_channel_unittest.cc",
     "ftl_messaging_client_unittest.cc",
     "ftl_registration_manager_unittest.cc",
     "ftl_signal_strategy_unittest.cc",
