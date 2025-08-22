@@ -38,6 +38,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     private @Mock NavigationAttachmentsPopup mPopup;
     private @Mock ChromeImageButton mAddButton;
     private @Mock Button mCameraButton;
+    private @Mock Button mGalleryButton;
 
     private PropertyModel mModel;
     private NavigationAttachmentsViewHolder mViewHolder;
@@ -49,6 +50,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
         mViewHolder.popup.mCameraButton = mCameraButton;
+        mViewHolder.popup.mGalleryButton = mGalleryButton;
         PropertyModelChangeProcessor.create(
                 mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
     }
@@ -84,6 +86,19 @@ public class NavigationAttachmentsViewBinderUnitTest {
                 ArgumentCaptor.forClass(View.OnClickListener.class);
         verify(mCameraButton).setOnClickListener(listenerCaptor.capture());
         listenerCaptor.getValue().onClick(mCameraButton);
+
+        verify(runnable).run();
+    }
+
+    @Test
+    public void galleryButtonClickListener_isCalled() {
+        Runnable runnable = mock(Runnable.class);
+        mModel.set(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED, runnable);
+
+        ArgumentCaptor<View.OnClickListener> listenerCaptor =
+                ArgumentCaptor.forClass(View.OnClickListener.class);
+        verify(mGalleryButton).setOnClickListener(listenerCaptor.capture());
+        listenerCaptor.getValue().onClick(mGalleryButton);
 
         verify(runnable).run();
     }

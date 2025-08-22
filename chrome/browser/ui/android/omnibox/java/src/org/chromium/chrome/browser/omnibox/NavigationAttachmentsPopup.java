@@ -21,6 +21,7 @@ class NavigationAttachmentsPopup {
     private final AnchoredPopupWindow mPopupWindow;
     private final View mContentView;
     /* package */ Button mCameraButton;
+    /* package */ Button mGalleryButton;
 
     NavigationAttachmentsPopup(Context context, View anchorView) {
         mContentView =
@@ -43,7 +44,8 @@ class NavigationAttachmentsPopup {
                                 R.dimen.location_bar_navigation_attachments_popup_width),
                 0);
         mPopupWindow.setHorizontalOverlapAnchor(true);
-        mCameraButton = mContentView.findViewById(R.id.navigation_attachments_pick_picture_button);
+        mCameraButton = mContentView.findViewById(R.id.navigation_attachments_camera_button);
+        mGalleryButton = mContentView.findViewById(R.id.navigation_attachments_pick_picture_button);
     }
 
     void show() {

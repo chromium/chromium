@@ -13,6 +13,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.content.Intent;
+import android.provider.MediaStore;
 import android.view.ViewGroup;
 
 import org.junit.Before;
@@ -86,8 +87,23 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
-    public void onCameraButtonClicked_launchesImagePicker() {
+    public void onCameraButtonClicked_launchesCamera() {
         Runnable runnable = mModel.get(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED);
+        assertNotNull(runnable);
+
+        runnable.run();
+
+        verify(mPopup).dismiss();
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mWindowAndroid).showCancelableIntent(intentCaptor.capture(), any(), any());
+
+        Intent intent = intentCaptor.getValue();
+        assertEquals(MediaStore.ACTION_IMAGE_CAPTURE, intent.getAction());
+    }
+
+    @Test
+    public void onGalleryButtonClicked_launchesImagePicker() {
+        Runnable runnable = mModel.get(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED);
         assertNotNull(runnable);
 
         runnable.run();

@@ -28,7 +28,7 @@ found in the LICENSE file.
         android:textAlignment="viewStart"/>
 
     <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/navigation_attachments_pick_picture_button"
+        android:id="@+id/navigation_attachments_camera_button"
         android:layout_width="match_parent"
         android:layout_height="@dimen/min_touch_target_size"
         android:drawableStart="@drawable/ic_photo_camera"
@@ -36,6 +36,18 @@ found in the LICENSE file.
         style="@style/TextButton"
         app:drawableTint="@color/default_icon_color_tint_list"
         android:text="@string/photo_picker_camera"
+        android:singleLine="true"
+        android:textAlignment="viewStart"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/navigation_attachments_pick_picture_button"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:drawableStart="@drawable/ic_collections_grey"
+        android:drawablePadding="8dp"
+        style="@style/TextButton"
+        app:drawableTint="@color/default_icon_color_tint_list"
+        android:text="@string/photo_picker_browse"
         android:singleLine="true"
         android:textAlignment="viewStart"/>
 

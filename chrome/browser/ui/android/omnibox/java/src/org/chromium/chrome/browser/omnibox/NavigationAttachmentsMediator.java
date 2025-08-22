@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.omnibox;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Log;
 
-import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -36,7 +38,8 @@ class NavigationAttachmentsMediator {
 
         mModel.set(
                 NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
-        mModel.set(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED, this::launchImagePicker);
+        mModel.set(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED, this::launchCamera);
+        mModel.set(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED, this::launchImagePicker);
     }
 
     void destroy() {}
@@ -55,6 +58,32 @@ class NavigationAttachmentsMediator {
         } else {
             mPopup.show();
         }
+    }
+
+    private void launchCamera() {
+        mPopup.dismiss();
+
+        // Ask for a small-sized bitmap as a direct reply (passing no `EXTRA_OUTPUT` uri).
+        // This should be sufficiently good, offering image of around 200-300px on the long edge.
+        var i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        mWindowAndroid.showCancelableIntent(
+                i,
+                (resultCode, data) -> {
+                    if (resultCode != Activity.RESULT_OK
+                            || data == null
+                            || data.getExtras() == null) {
+                        return;
+                    }
+
+                    var bitmap = (Bitmap) data.getExtras().get("data");
+                    if (bitmap == null) return;
+                    Log.i(
+                            TAG,
+                            String.format(
+                                    "Photo Bitmap: %dx%d", bitmap.getWidth(), bitmap.getHeight()));
+                },
+                R.string.low_memory_error);
     }
 
     private void launchImagePicker() {
