@@ -3187,8 +3187,6 @@ crbug.com/431038525 external/wpt/css/css-masking/clip-path/clip-path-inline-006.
 crbug.com/431038525 [ Mac15-arm64 ] external/wpt/css/css-masking/clip-path/clip-path-inline-009.html [ Failure ]
 crbug.com/431038525 external/wpt/css/css-masking/clip-path/clip-path-inline-010.html [ Failure ]
 crbug.com/431038525 external/wpt/css/css-masking/clip-path/clip-path-reference-box-004.html [ Failure ]
-crbug.com/431039945 external/wpt/css/css-overflow/scrollable-overflow-input-001.html [ Failure ]
-crbug.com/431039945 external/wpt/css/css-overflow/scrollable-overflow-input-002.html [ Failure ]
 crbug.com/431030817 external/wpt/css/css-page/margin-boxes/dimensions-003-print.html [ Failure ]
 crbug.com/431030817 external/wpt/css/css-page/margin-boxes/dimensions-004-print.html [ Failure ]
 crbug.com/431030817 external/wpt/css/css-page/margin-boxes/dimensions-005-print.html [ Failure ]
