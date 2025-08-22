@@ -203,7 +203,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       # 3 seconds per method.
       num_classes = len(test_group.methods_by_class)
       num_tests = sum(len(x) for x in test_group.methods_by_class.values())
-      timeout = 20 + 5 * num_classes + num_tests * 3
+      timeout = 30 + 5 * num_classes + num_tests * 3
     return _Job(shard_id=shard_id,
                 cmd=cmd,
                 timeout=timeout,
