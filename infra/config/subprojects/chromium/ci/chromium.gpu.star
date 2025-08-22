@@ -293,9 +293,6 @@ gpu.ci.windows_builder(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = [
-                # TODO(https://crbug.com/440203328): cache is causing build
-                # failures.
-                "clobber",
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
