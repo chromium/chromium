@@ -791,7 +791,10 @@ def main():
     if args.sync_for_gnrt:
         return 0
 
-    VerifyStage0JsonHash()
+    # If we're pulling the most recent rust, we shouldn't expect its stage 0
+    # hash to match the pinned one.
+    if not args.rust_force_head_revision:
+        VerifyStage0JsonHash()
     if args.verify_stage0_hash:
         # The above function exits and prints the actual hash if
         # verification failed so we just quit here; if we reach this point,
