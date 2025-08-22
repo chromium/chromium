@@ -19,8 +19,10 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/test/split_tabs_interactive_test_mixin.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -100,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   }
 #endif
 
-  EXPECT_TRUE(multi_contents_view().is_drag_and_drop_enabled());
+  EXPECT_TRUE(multi_contents_view().IsDragAndDropEnabled());
 
   Browser::CreateParams app_browser_params =
       Browser::CreateParams::CreateForApp("AppName", true, gfx::Rect(),
@@ -109,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(app_browser)
                    ->multi_contents_view()
-                   ->is_drag_and_drop_enabled());
+                   ->IsDragAndDropEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
@@ -308,6 +310,30 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   EXPECT_EQ(contents_to_drop, tab_strip_model->GetWebContentsAt(0));
   EXPECT_EQ(original_contents, tab_strip_model->GetWebContentsAt(1));
   EXPECT_EQ(0, tab_strip_model->active_index());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DragAndDropEnabledPref) {
+// TODO(crbug.com/425715421): Fix drag and drop on Wayland.
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_split_view_drag_and_drop) {
+    return;
+  }
+#endif
+
+  // Drag and drop should be enabled by default.
+  EXPECT_TRUE(multi_contents_view().IsDragAndDropEnabled());
+
+  // Disable drag and drop.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kSplitViewDragAndDropEnabled, false);
+  EXPECT_FALSE(multi_contents_view().IsDragAndDropEnabled());
+
+  // Enable drag and drop.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kSplitViewDragAndDropEnabled, true);
+  EXPECT_TRUE(multi_contents_view().IsDragAndDropEnabled());
 }
 
 // Test class for WebContents ReLayout.

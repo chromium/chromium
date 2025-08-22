@@ -726,6 +726,7 @@ chromium-metrics-reviews@google.com.
   <int value="100328" label="GlicRolloutEligibility"/>
   <int value="100329" label="ShelfNotebookLmAppPinRolls"/>
   <int value="100330" label="VerticalTabsEnabled"/>
+  <int value="100331" label="SplitViewDragAndDropEnabled"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

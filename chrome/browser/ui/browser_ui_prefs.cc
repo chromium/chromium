@@ -103,6 +103,8 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 pref_registration_flags);
   registry->RegisterBooleanPref(prefs::kShowHomeButton, false,
                                 pref_registration_flags);
+  registry->RegisterBooleanPref(prefs::kSplitViewDragAndDropEnabled, true,
+                                pref_registration_flags);
 
   registry->RegisterBooleanPref(prefs::kShowForwardButton, true,
                                 pref_registration_flags);

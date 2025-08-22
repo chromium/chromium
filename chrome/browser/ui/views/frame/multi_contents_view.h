@@ -132,9 +132,7 @@ class MultiContentsView : public views::View,
     return contents_container_views_;
   }
 
-  MultiContentsViewDropTargetController& drop_target_controller() {
-    return *drop_target_controller_;
-  }
+  MultiContentsViewDropTargetController& drop_target_controller() const;
 
   gfx::Insets& start_contents_view_inset() {
     return start_contents_view_inset_;
@@ -142,7 +140,7 @@ class MultiContentsView : public views::View,
 
   gfx::Insets& end_contents_view_inset() { return end_contents_view_inset_; }
 
-  bool is_drag_and_drop_enabled() const { return is_drag_and_drop_enabled_; }
+  bool IsDragAndDropEnabled() const;
 
   void set_min_contents_width_for_testing(int width) {
     min_contents_width_for_testing_ = std::make_optional(width);
@@ -189,8 +187,6 @@ class MultiContentsView : public views::View,
   double CalculateRatioWithSnapPoints(double end_width,
                                       double total_width) const;
 
-  bool SupportsSplitViewDragAndDrop() const;
-
   raw_ptr<BrowserView> browser_view_;
   std::unique_ptr<MultiContentsViewDelegate> delegate_;
 
@@ -236,9 +232,6 @@ class MultiContentsView : public views::View,
   gfx::Insets end_contents_view_inset_;
 
   bool show_inactive_scrim_ = false;
-
-  // This returns true if we support split view drag and drop.
-  bool is_drag_and_drop_enabled_ = true;
 
   std::optional<int> min_contents_width_for_testing_ = std::nullopt;
 

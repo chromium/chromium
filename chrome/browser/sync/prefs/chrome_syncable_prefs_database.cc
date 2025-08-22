@@ -395,6 +395,7 @@ enum {
   kGlicRolloutEligibility = 100328,
   kShelfNotebookLmAppPinRolls = 100329,
   kVerticalTabsEnabled = 100330,
+  kSplitViewDragAndDropEnabled = 100331,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -553,6 +554,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kPinSplitTabButton,
      {syncable_prefs_ids::kPinSplitTabButton, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kSplitViewDragAndDropEnabled,
+     {syncable_prefs_ids::kSplitViewDragAndDropEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kPinnedActions,

@@ -1327,6 +1327,10 @@ inline constexpr char kShowForwardButton[] = "browser.show_forward_button";
 // toolbar.
 inline constexpr char kPinSplitTabButton[] = "browser.pin_split_tab_button";
 
+// A boolean pref set to true if links/tabs can be dragged to create split tabs.
+inline constexpr char kSplitViewDragAndDropEnabled[] =
+    "browser.split_view_drag_and_drop_enabled";
+
 // A boolean pref set to true if Gemini integration be enabled. This is managed
 // by enterprise policy.
 inline constexpr char kGeminiSettings[] = "browser.gemini_settings";

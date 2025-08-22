@@ -2490,7 +2490,7 @@ void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
 TabDragDelegate* BrowserView::GetTabDragDelegate(
     const gfx::Point& point_in_screen) {
   if (!multi_contents_view_ || multi_contents_view_->IsInSplitView() ||
-      !multi_contents_view_->is_drag_and_drop_enabled()) {
+      !multi_contents_view_->IsDragAndDropEnabled()) {
     return nullptr;
   }
   if (!multi_contents_view_->GetBoundsInScreen().Contains(point_in_screen)) {
@@ -3529,8 +3529,7 @@ content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
 
 void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
                                       const gfx::PointF& point) {
-  if (multi_contents_view_ &&
-      multi_contents_view_->is_drag_and_drop_enabled()) {
+  if (multi_contents_view_ && multi_contents_view_->IsDragAndDropEnabled()) {
     // Read the split state from the active tab because when BrowserView is in
     // full screen it may not be rendering a split, even though the active tab
     // is in a split.
@@ -3546,15 +3545,13 @@ void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
 }
 
 void BrowserView::PreHandleDragExit() {
-  if (multi_contents_view_ &&
-      multi_contents_view_->is_drag_and_drop_enabled()) {
+  if (multi_contents_view_ && multi_contents_view_->IsDragAndDropEnabled()) {
     multi_contents_view_->drop_target_controller().OnWebContentsDragExit();
   }
 }
 
 void BrowserView::HandleDragEnded() {
-  if (multi_contents_view_ &&
-      multi_contents_view_->is_drag_and_drop_enabled()) {
+  if (multi_contents_view_ && multi_contents_view_->IsDragAndDropEnabled()) {
     multi_contents_view_->drop_target_controller().OnWebContentsDragEnded();
   }
 }

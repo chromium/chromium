@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_timeouts.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
@@ -10,10 +11,12 @@
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/test/split_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
@@ -146,6 +149,18 @@ class MultiContentsViewTabDragEntrypointsUiTest
  public:
   using DragStep = base::OnceCallback<void(base::OnceClosure)>;
 
+  gfx::Point GetPointForDropSide(MultiContentsDropTargetView::DropSide side) {
+    const gfx::Rect bounds = GetBrowserView().GetBoundsInScreen();
+    switch (side) {
+      case MultiContentsDropTargetView::DropSide::START:
+        return gfx::Point(bounds.left_center().x() + 10,
+                          bounds.left_center().y());
+      case MultiContentsDropTargetView::DropSide::END:
+        return gfx::Point(bounds.right_center().x() - 10,
+                          bounds.right_center().y());
+    }
+  }
+
   // Moves the mouse to the tab header for the given index, then presses the
   // mouse button down.
   void SelectTabAt(int index) {
@@ -239,18 +254,6 @@ class MultiContentsViewTabDragEntrypointsUiParamTest
  public:
   MultiContentsViewTabDragEntrypointsUiParamTest() = default;
   ~MultiContentsViewTabDragEntrypointsUiParamTest() override = default;
-
-  gfx::Point GetPointForDropSide(MultiContentsDropTargetView::DropSide side) {
-    const gfx::Rect bounds = GetBrowserView().GetBoundsInScreen();
-    switch (side) {
-      case MultiContentsDropTargetView::DropSide::START:
-        return gfx::Point(bounds.left_center().x() + 10,
-                          bounds.left_center().y());
-      case MultiContentsDropTargetView::DropSide::END:
-        return gfx::Point(bounds.right_center().x() - 10,
-                          bounds.right_center().y());
-    }
-  }
 };
 
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
@@ -304,6 +307,37 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
             WaitForDropTargetHidden(), ReleaseMouse());
         observer.Wait();
       }));
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewTabDragEntrypointsUiTest,
+                       DragAndDropDisabled) {
+  SKIP_FOR_WAYLAND();
+
+  BrowserView& browser_view = GetBrowserView();
+
+  // Disable drag and drop.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kSplitViewDragAndDropEnabled, false);
+
+  QuitTabDraggingObserver observer(browser_view.tab_strip_view());
+  RunTestSequence(
+      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 1),
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
+      WaitForActiveTabChange(2), Do([&]() {
+        SelectTabAt(1);
+        DragSequence(MoveMouse(ui_test_utils::GetCenterInScreenCoordinates(
+                         &browser_view)),
+                     WaitForDetachedWindow(),
+                     MoveMouse(GetPointForDropSide(
+                         MultiContentsDropTargetView::DropSide::START)),
+                     ReleaseMouse());
+        observer.Wait();
+      }),
+      CheckResult(
+          [this]() {
+            return GetDropTargetView(GetBrowserView())->GetVisible();
+          },
+          false));
 }
 
 INSTANTIATE_TEST_SUITE_P(
