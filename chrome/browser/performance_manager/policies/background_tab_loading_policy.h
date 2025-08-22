@@ -288,6 +288,8 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   FRIEND_TEST_ALL_PREFIXES(BackgroundTabLoadingPolicyTest, ShouldLoad_OldTab);
   FRIEND_TEST_ALL_PREFIXES(BackgroundTabLoadingPolicyTest,
                            ShouldLoad_SiteEngagement);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundTabLoadingPolicyTest,
+                           ScheduleLoadForRestoredTabsWithLoadingStatusChanged);
   FRIEND_TEST_ALL_PREFIXES(BackgroundTabLoadingPolicySiteEngagementTest,
                            ShouldLoad_NoBackgroundCommunication);
   FRIEND_TEST_ALL_PREFIXES(BackgroundTabLoadingPolicySiteEngagementTest,

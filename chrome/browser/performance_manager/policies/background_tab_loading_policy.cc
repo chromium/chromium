@@ -217,14 +217,21 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
       // PageNode from the set of PageNodes for which a load needs to be
       // initiated and from the set of PageNodes for which a load has been
       // initiated but hasn't started.
+      const bool erased_page_node_to_load = ErasePageNodeToLoadData(page_node);
       const bool erased =
-          ErasePageNodeToLoadData(page_node) ||
+          erased_page_node_to_load ||
           std::erase(page_nodes_load_initiated_, page_node) != 0;
 
       // Keep track of all PageNodes that are loading, even when the load isn't
       // initiated by this policy.
       DCHECK(!base::Contains(page_nodes_loading_, page_node));
       page_nodes_loading_.emplace(page_node, erased);
+
+      if (erased_page_node_to_load) {
+        // Removing a page to load may result in all those remaining being
+        // scored.
+        DispatchNotifyAllTabsScoredIfNeeded();
+      }
 
       return;
     }
@@ -548,6 +555,7 @@ void BackgroundTabLoadingPolicy::InitiateSinglePageLoad(
   // The page shouldn't already be loading.
   DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
   DCHECK(!base::Contains(page_nodes_loading_, page_node));
+  DCHECK_EQ(tabs_scored_, page_nodes_to_load_.size());
 
   // Mark |page_node| as load initiated. Ensure that InitiateLoad is only called
   // for a PageNode that is tracked by the policy.
@@ -558,15 +566,24 @@ void BackgroundTabLoadingPolicy::InitiateSinglePageLoad(
 
   // Make the call to load |page_node|.
   page_loader_->LoadPageNode(page_node);
+
+  // No need to call DispatchNotifyAllTabsScoredIfNeeded() following
+  // ErasePageNodeToLoadData() - all pages to load were already scored at the
+  // beginning of this method.
 }
 
 void BackgroundTabLoadingPolicy::RemovePageNode(const PageNode* page_node) {
-  ErasePageNodeToLoadData(page_node);
+  const bool erased_page_node_to_load_data = ErasePageNodeToLoadData(page_node);
   std::erase(page_nodes_load_initiated_, page_node);
   page_nodes_loading_.erase(page_node);
 
   // All restored tabs may be loaded.
   UpdateHasRestoredTabsToLoad();
+
+  if (erased_page_node_to_load_data) {
+    // Removing a page to load may result in all those remaining being scored.
+    DispatchNotifyAllTabsScoredIfNeeded();
+  }
 }
 
 void BackgroundTabLoadingPolicy::MaybeLoadSomeTabs() {
@@ -623,6 +640,10 @@ void BackgroundTabLoadingPolicy::LoadNextTab() {
     // |page_node| should not be loaded at this time. Remove |page_node| from
     // the policy.
     ErasePageNodeToLoadData(page_node);
+
+    // No need to call DispatchNotifyAllTabsScoredIfNeeded() following
+    // ErasePageNodeToLoadData() - all pages to load were already scored at the
+    // beginning of this method.
   }
 }
 
@@ -641,14 +662,9 @@ bool BackgroundTabLoadingPolicy::ErasePageNodeToLoadData(
         // |tabs_scored_| count.
         DCHECK_GT(tabs_scored_, 0U);
         --tabs_scored_;
-        std::erase(page_nodes_to_load_, page_node_to_load_data);
-      } else {
-        std::erase(page_nodes_to_load_, page_node_to_load_data);
-
-        // If the PageNode has not been scored yet, then removing it may trigger
-        // all tabs scored notification.
-        DispatchNotifyAllTabsScoredIfNeeded();
       }
+
+      std::erase(page_nodes_to_load_, page_node_to_load_data);
       return true;
     }
   }

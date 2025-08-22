@@ -657,6 +657,26 @@ TEST_F(BackgroundTabLoadingPolicyTest, OnMemoryPressure) {
   page_node_impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
 }
 
+TEST_F(BackgroundTabLoadingPolicyTest,
+       ScheduleLoadForRestoredTabsWithLoadingStatusChanged) {
+  testing::SimpleTestSiteDataReader site_data_reader_default(
+      {.updates_favicon = false, .updates_title = false, .uses_audio = false});
+
+  performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
+      page_node = CreateNode<performance_manager::PageNodeImpl>();
+  policy()->SetSiteDataReaderForPageNode(page_node.get(),
+                                         &site_data_reader_default);
+  page_node->SetType(PageType::kTab);
+  PageNodeToLoadData page_node_data = CreatePageNodeToLoadData(page_node.get());
+
+  std::vector<PageNodeData> to_load;
+  to_load.emplace_back(page_node.get()->GetWeakPtr());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  page_node->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_FALSE(policy()->has_restored_tabs_to_load_);
+}
+
 // Tests that enable the kBackgroundTabLoadingMinSiteEngagement feature param.
 
 class BackgroundTabLoadingPolicySiteEngagementTest
