@@ -219,20 +219,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram name="Privacy.ClearOnExitSyncEvent" enum="ClearOnExitSyncEvent"
-    expires_after="M103">
-  <owner>sauski@google.com</owner>
-  <owner>chrome-privacy-controls@google.com</owner>
-  <summary>
-    Interactions between sync and the cookies clear on exit setting. Only
-    recorded when the user has cookies clear on exit enabled.
-
-    Recorded on all profiles, including for profiles such as guest profiles that
-    do not allow modification of this setting. (This value logged on those cases
-    is the default value for the setting.)
-  </summary>
-</histogram>
-
 <histogram name="Privacy.ConsentAuditor.ConsentGiven.Feature"
     enum="ConsentAuditorFeature" expires_after="M85">
   <owner>markusheintz@google.com</owner>

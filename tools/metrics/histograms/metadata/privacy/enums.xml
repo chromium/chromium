@@ -52,25 +52,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="First-party resource Allowed"/>
 </enum>
 
-<enum name="ClearOnExitSyncEvent">
-  <int value="0" label="Profile startup, sync is disabled"/>
-  <int value="1" label="Profile startup, sync is paused"/>
-  <int value="2" label="Profile startup, sync is active"/>
-  <int value="3" label="Re-login to a sync paused account"/>
-  <int value="4" label="Logout of a sync paused account"/>
-  <int value="5"
-      label="Profile shutdown, sync is active, started paused, consent change"/>
-  <int value="6"
-      label="Profile shutdown, sync is active, started paused, no consent
-             change"/>
-  <int value="7"
-      label="Profile shutdown, sync is active, started active, consent change"/>
-  <int value="8"
-      label="Profile shutdown, sync is active, started active, no consent
-             change"/>
-  <int value="9" label="Profile shutdown, sync is paused"/>
-</enum>
-
 <enum name="ConsentAuditorFeature">
   <int value="0" label="CHROME_SYNC"/>
   <int value="1" label="PLAY_STORE"/>

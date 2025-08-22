@@ -6529,7 +6529,6 @@ test("unit_tests") {
     "../browser/preloading/prefetch/prefetch_service/chrome_prefetch_service_delegate_unittest.cc",
     "../browser/preloading/prefetch/prefetch_service/prefetch_origin_decider_unittest.cc",
     "../browser/preloading/preloading_prefs_unittest.cc",
-    "../browser/privacy/privacy_metrics_service_unittest.cc",
     "../browser/profiles/gaia_info_update_service_unittest.cc",
     "../browser/profiles/incognito_mode_policy_handler_unittest.cc",
     "../browser/profiles/profile_attributes_storage_unittest.cc",
