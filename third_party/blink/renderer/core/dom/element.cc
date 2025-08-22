@@ -5244,10 +5244,16 @@ StyleRecalcChange Element::RecalcOwnStyle(
       // anchor_evaluator is reset for children so that that elements
       // recalculated for anchored() queries will be invalidates as normal.
       apply_changes = LayoutObject::ApplyStyleChanges::kNo;
-    } else if (new_style->HasAnchorFunctionsWithoutEvaluator()) {
+    } else if (new_style->HasAnchorFunctionsWithoutEvaluator() ||
+               (IsFirstLetterPseudoElement() &&
+                !layout_style->InitialLetter().IsNormal())) {
       // For regular (non-interleaved) recalcs that depend on anchor*()
       // functions, we need to invalidate layout even without a diff,
       // see ComputedStyle::HasAnchorFunctionsWithoutEvaluator.
+      //
+      // For ::first-letter pseudo elements with initial-letter, we may need to
+      // compute new font styling for the initial letter text box if a new font
+      // was available.
       apply_changes = LayoutObject::ApplyStyleChanges::kYes;
     }
     layout_object->SetStyle(layout_style, apply_changes);
