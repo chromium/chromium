@@ -146,6 +146,8 @@ class CORE_EXPORT CSSParserImpl {
   };
 
   // Rules that are valid when nested within a style rule.
+  // Note that this is not a strict subset of kRegularRules
+  // (in particular, @apply is not valid at top level).
   //
   // https://drafts.csswg.org/css-nesting/#nested-group-rules
   static constexpr AllowedRules kNestedGroupRules =
