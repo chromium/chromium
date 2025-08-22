@@ -216,9 +216,6 @@ export class AppElement extends AppElementBase {
       composeButtonEnabled: {type: Boolean},
 
       browserPromoType_: {type: String},
-      browserPromoLimit_: {type: Number},
-      browserPromoCompletedLimit_: {type: Number},
-
       realboxShown_: {type: Boolean},
       logoEnabled_: {type: Boolean},
       oneGoogleBarEnabled_: {type: Boolean},
@@ -305,10 +302,6 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('modulesEnabled');
   protected accessor browserPromoType_: string =
       loadTimeData.getString('browserPromoType');
-  protected accessor browserPromoLimit_: number =
-      loadTimeData.getInteger('browserPromoLimit');
-  protected accessor browserPromoCompletedLimit_: number =
-      loadTimeData.getInteger('browserPromoCompletedLimit');
   private accessor middleSlotPromoLoaded_: boolean = false;
   private accessor modulesLoaded_: boolean = false;
   protected accessor modulesShownToUser: boolean = false;

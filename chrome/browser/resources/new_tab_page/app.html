@@ -76,15 +76,11 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
     ${ (() => { switch (this.browserPromoType_) {
      case "simple":
       return html`
-        <individual-promos maxPromos="${this.browserPromoLimit_}">
-        </individual-promos>
-
+        <individual-promos></individual-promos>
       `;
      case "setuplist":
       return html`
-        <setup-list-module-wrapper maxPromos="${this.browserPromoLimit_}"
-            maxCompletedPromos="${this.browserPromoCompletedLimit_}">
-        </setup-list-module-wrapper>
+        <setup-list-module-wrapper></setup-list-module-wrapper>
       `;
      default:
       return '';

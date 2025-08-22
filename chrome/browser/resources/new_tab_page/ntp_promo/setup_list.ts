@@ -19,6 +19,8 @@ import {NtpPromoProxyImpl} from './ntp_promo_proxy.js';
 import {getCss} from './setup_list.css.js';
 import {getHtml} from './setup_list.html.js';
 
+export const MAX_SETUP_LIST_ENTRIES = 5;
+
 export interface SetupListElement {
   $: {
     moduleHeaderElementV2: ModuleHeaderElement,
@@ -42,9 +44,6 @@ export class SetupListElement extends I18nMixinLit
 
   static override get properties() {
     return {
-      maxPromos: {type: Number, attribute: true, useDefault: true},
-      maxCompletedPromos: {type: Number, attribute: true, useDefault: true},
-
       completedPromos_: {type: Array},
 
       eligiblePromos_: {type: Array},
@@ -54,9 +53,6 @@ export class SetupListElement extends I18nMixinLit
       allowFaviconServerFallback_: {type: Boolean},
     };
   }
-
-  accessor maxPromos: number = 0;
-  accessor maxCompletedPromos: number = 0;
 
   protected accessor completedPromos_: Promo[] = [];
   protected accessor eligiblePromos_: Promo[] = [];
@@ -90,9 +86,10 @@ export class SetupListElement extends I18nMixinLit
   }
 
   onSetPromos(eligible: Promo[], completed: Promo[]) {
-    this.completedPromos_ = completed.slice(0, this.maxCompletedPromos);
-    const maxEligible = this.maxPromos - this.completedPromos_.length;
-    this.eligiblePromos_ = eligible.slice(0, maxEligible);
+    this.completedPromos_ = completed.slice(0, 2);
+    this.eligiblePromos_ = eligible.slice(
+        0, MAX_SETUP_LIST_ENTRIES - this.completedPromos_.length);
+
     const hasPromos =
         this.completedPromos_.length !== 0 || this.eligiblePromos_.length !== 0;
     const readyEvent = new CustomEvent('module-ready', {
