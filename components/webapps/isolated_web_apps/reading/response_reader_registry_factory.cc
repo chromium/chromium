@@ -8,7 +8,6 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
@@ -34,9 +33,8 @@ IsolatedWebAppReaderRegistryFactory::GetInstance() {
 }
 
 IsolatedWebAppReaderRegistryFactory::IsolatedWebAppReaderRegistryFactory()
-    : BrowserContextKeyedServiceFactory(
-          "IsolatedWebAppReaderRegistry",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : IsolatedWebAppBrowserContextServiceFactory(
+          "IsolatedWebAppReaderRegistry") {}
 
 IsolatedWebAppReaderRegistryFactory::~IsolatedWebAppReaderRegistryFactory() =
     default;
@@ -49,16 +47,6 @@ IsolatedWebAppReaderRegistryFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<IsolatedWebAppResponseReaderFactory>(context);
   return std::make_unique<IsolatedWebAppReaderRegistry>(
       context, std::move(reader_factory));
-}
-
-content::BrowserContext*
-IsolatedWebAppReaderRegistryFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  if (content::AreIsolatedWebAppsEnabled(context)) {
-    // TODO(crbug.com/433468113): Do we need to support OTR profiles?
-    return context;
-  }
-  return nullptr;
 }
 
 }  // namespace web_app

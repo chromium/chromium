@@ -6,7 +6,7 @@
 #define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_REGISTRY_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/webapps/isolated_web_apps/service/isolated_web_app_browser_context_service_factory.h"
 
 namespace web_app {
 
@@ -21,7 +21,7 @@ class IsolatedWebAppReaderRegistry;
 // which makes sure that the integrity of an Isolated Web App is verified on a
 // per-profile basis.
 class IsolatedWebAppReaderRegistryFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public IsolatedWebAppBrowserContextServiceFactory {
  public:
   IsolatedWebAppReaderRegistryFactory(
       const IsolatedWebAppReaderRegistryFactory&) = delete;
@@ -40,8 +40,6 @@ class IsolatedWebAppReaderRegistryFactory
 
   // BrowserContextKeyedServiceFactory
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

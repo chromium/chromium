@@ -7,13 +7,16 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service.h"
+#include "components/webapps/isolated_web_apps/service/isolated_web_app_browser_context_service_factory.h"
+
+class Profile;
 
 namespace web_app {
 
+class IsolatedWebAppsOpenedTabsCounterService;
+
 class IsolatedWebAppsOpenedTabsCounterServiceFactory
-    : public ProfileKeyedServiceFactory {
+    : public IsolatedWebAppBrowserContextServiceFactory {
  public:
   static IsolatedWebAppsOpenedTabsCounterServiceFactory* GetInstance();
   static IsolatedWebAppsOpenedTabsCounterService* GetForProfile(
