@@ -503,14 +503,6 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         mSmartAnchorWithMaxWidth = smartAnchor;
     }
 
-    /**
-     * Changes the background of the popup.
-     * @param background The {@link Drawable} that is set to be background.
-     */
-    public void setBackgroundDrawable(Drawable background) {
-        mPopupWindow.setBackgroundDrawable(background);
-    }
-
     /** Sets the elevation of the popup. */
     public void setElevation(float elevation) {
         mPopupWindow.setElevation(elevation);
