@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/notreached.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -19,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
 #include "components/user_education/common/user_education_data.h"
@@ -37,6 +39,7 @@
 
 namespace {
 
+using user_education::ShowNtpPromosResult;
 using user_education::features::NtpBrowserPromoType;
 using Eligibility = user_education::NtpPromoSpecification::Eligibility;
 
@@ -181,6 +184,21 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
         .AddDescriptionPrefix(__func__);
   }
 
+  static constexpr std::string_view kShowResultHistogramName =
+      "UserEducation.NtpPromos.ShowResult";
+
+  auto CheckShowMetrics(std::optional<ShowNtpPromosResult> expected_result) {
+    return Do([this, expected_result]() {
+             if (expected_result) {
+               histogram_tester_.ExpectBucketCount(kShowResultHistogramName,
+                                                   *expected_result, 1);
+             }
+             histogram_tester_.ExpectTotalCount(kShowResultHistogramName,
+                                                expected_result ? 1 : 0);
+           })
+        .AddDescriptionPrefix(__func__);
+  }
+
  private:
   Eligibility GetTestPromoEligibility(Profile* profile) {
     return test_promo_eligibility_;
@@ -199,6 +217,7 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
 
   Eligibility test_promo_eligibility_ = Eligibility::kEligible;
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -229,24 +248,22 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoEligible) {
       // run these in parallel.
       InParallel(RunSubsequence(PressActionButton()),
                  RunSubsequence(WaitForEvent(kBrowserViewElementId,
-                                             kTestPromoClickedEvent))));
-
-  // TODD(https://crbug.com/433607240): Check model, histograms.
+                                             kTestPromoClickedEvent))),
+      // Verify that the correct histogram was recorded.
+      CheckShowMetrics(ShowNtpPromosResult::kShown));
 }
 
 IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoCompleted) {
-  // Individual promo mode does not show completed promos.
-  if (GetParam() == NtpBrowserPromoType::kSimple) {
-    GTEST_SKIP();
-  }
-
   InstallTestPromo(Eligibility::kCompleted);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
       NavigateWebContents(kNtpElementId, GURL(chrome::kChromeUINewTabPageURL)),
-      WaitForPromoVisible(Eligibility::kCompleted), VerifyTestPromoText());
-
-  // TODD(https://crbug.com/433607240): Check model, histograms.
+      If([]() { return GetParam() == NtpBrowserPromoType::kSetupList; },
+         Then(WaitForPromoVisible(Eligibility::kCompleted),
+              VerifyTestPromoText(),
+              CheckShowMetrics(ShowNtpPromosResult::kShown)),
+         Else(EnsureNotVisible(kNtpElementId, GetFirstPromoPath()),
+              CheckShowMetrics(ShowNtpPromosResult::kNotShownNoPromos))));
 }
 
 // Tests in this block rely on the fact that the top priority promotion is

@@ -24,6 +24,27 @@ class NtpPromoRegistry;
 class NtpPromoOrderPolicy;
 class UserEducationStorageService;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Records the decision made by the NTP on whether to show NTP promos.
+//
+// LINT.IfChange(show_ntp_promos_result_enum)
+enum ShowNtpPromosResult {
+  kShown = 0,
+  kNotShownNoPromos = 1,
+  kNotShownDueToPolicy = 2,
+  kMaxValue = kNotShownDueToPolicy,
+};
+// LINT.ThenChange(//components/user_education/common/ntp_promo/ntp_promo_controller.cc:show_ntp_promos_result_names,//tools/metrics/histograms/enums.xml:show_ntp_promos_result_enum)
+
+// These are used for histogram recording and debugging.
+std::string GetShowNtpPromosResultName(ShowNtpPromosResult result);
+std::ostream& operator<<(std::ostream& os, ShowNtpPromosResult result);
+
+// Record that NTP promos were either shown or not shown, and why.
+void RecordShowNtpPromosResult(ShowNtpPromosResult result);
+
 // The contents of a promo as it will be shown in the NTP.
 struct NtpShowablePromo {
   NtpShowablePromo();
@@ -100,7 +121,7 @@ class NtpPromoController {
 
   // Determines if there are any showable promos. This may return false if
   // promos are snoozed or disabled, or if there are no eligible promos to show.
-  virtual bool HasShowablePromos(Profile* profile);
+  virtual bool HasShowablePromos(Profile* profile, bool include_completed);
 
   // Provides ordered lists of eligible and completed promos, intended to be
   // displayed by the NTP. May update prefs as a side effect.

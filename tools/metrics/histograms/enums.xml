@@ -24650,6 +24650,16 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="Extension Renderer"/>
 </enum>
 
+<!-- LINT.IfChange(show_ntp_promos_result_enum) -->
+
+<enum name="ShowNtpPromosResult">
+  <int value="0" label="Shown"/>
+  <int value="1" label="NotShownNoPromos"/>
+  <int value="2" label="NotShownDueToPolicy"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/user_education/common/ntp_promo/ntp_promo_controller.h:show_ntp_promos_result_enum) -->
+
 <enum name="ShutdownReason">
   <summary>
     The reason that the Chrome OS power manager shut down or rebooted the

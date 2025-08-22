@@ -343,11 +343,33 @@ TEST_F(NtpPromoControllerTest, ShownCallbackInvoked) {
   controller().OnPromosShown({kPromoId}, {});
 }
 
-TEST_F(NtpPromoControllerTest, HasShowablePromos) {
+TEST_F(NtpPromoControllerTest, HasShowablePromosNoCompleted) {
   CreateController();
-  EXPECT_FALSE(controller().HasShowablePromos(nullptr));
+  EXPECT_FALSE(controller().HasShowablePromos(nullptr, false));
+  RegisterPromo(kPromoId, kCompleted, true);
+  EXPECT_FALSE(controller().HasShowablePromos(nullptr, false));
+  RegisterPromo(kPromo2Id, kEligible);
+  EXPECT_TRUE(controller().HasShowablePromos(nullptr, false));
+}
+
+TEST_F(NtpPromoControllerTest,
+       HasShowablePromosIncludeCompleted_CompletedOnly) {
+  CreateController();
+  EXPECT_FALSE(controller().HasShowablePromos(nullptr, true));
+  RegisterPromo(kPromoId, kCompleted, true);
+  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
+  RegisterPromo(kPromo2Id, kEligible);
+  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
+}
+
+TEST_F(NtpPromoControllerTest,
+       HasShowablePromosIncludeCompleted_EligibleThenCompleted) {
+  CreateController();
+  EXPECT_FALSE(controller().HasShowablePromos(nullptr, true));
   RegisterPromo(kPromoId, kEligible);
-  EXPECT_TRUE(controller().HasShowablePromos(nullptr));
+  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
+  RegisterPromo(kPromo2Id, kCompleted, true);
+  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
 }
 
 TEST_F(NtpPromoControllerTest, SetAllPromosSnoozed) {
@@ -401,7 +423,7 @@ TEST_F(NtpPromoControllerTest, SnoozeBlocksPromos) {
   RegisterPromo(kPromoId, kEligible);
   RegisterPromo(kPromo2Id, kCompleted, /*clicked=*/true);
   controller().SetAllPromosSnoozed(true);
-  EXPECT_FALSE(controller().HasShowablePromos(nullptr));
+  EXPECT_FALSE(controller().HasShowablePromos(nullptr, true));
   const auto promos = controller().GenerateShowablePromos(nullptr);
   EXPECT_EQ(0U, promos.pending.size());
   EXPECT_EQ(0U, promos.completed.size());
@@ -413,7 +435,7 @@ TEST_F(NtpPromoControllerTest, UnsnoozeRestoresPromos) {
   RegisterPromo(kPromo2Id, kCompleted, /*clicked=*/true);
   controller().SetAllPromosSnoozed(true);
   controller().SetAllPromosSnoozed(false);
-  EXPECT_TRUE(controller().HasShowablePromos(nullptr));
+  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
   const auto promos = controller().GenerateShowablePromos(nullptr);
   EXPECT_EQ(1U, promos.pending.size());
   EXPECT_EQ(1U, promos.completed.size());
@@ -427,7 +449,7 @@ TEST_F(NtpPromoControllerTest, SnoozeExpiresRestoresPromos) {
   controller().SetAllPromosSnoozed(true);
   task_environment_.FastForwardBy(params.promos_snoozed_hide_duration +
                                   base::Minutes(1));
-  EXPECT_TRUE(controller().HasShowablePromos(nullptr));
+  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
   auto promos = controller().GenerateShowablePromos(nullptr);
   EXPECT_EQ(1U, promos.pending.size());
   EXPECT_EQ(1U, promos.completed.size());
@@ -438,7 +460,7 @@ TEST_F(NtpPromoControllerTest, DisableBlocksPromos) {
   RegisterPromo(kPromoId, kEligible);
   RegisterPromo(kPromo2Id, kCompleted, /*clicked=*/true);
   controller().SetAllPromosDisabled(true);
-  EXPECT_FALSE(controller().HasShowablePromos(nullptr));
+  EXPECT_FALSE(controller().HasShowablePromos(nullptr, true));
   const auto promos = controller().GenerateShowablePromos(nullptr);
   EXPECT_EQ(0U, promos.pending.size());
   EXPECT_EQ(0U, promos.completed.size());
@@ -450,7 +472,7 @@ TEST_F(NtpPromoControllerTest, UndisableRestoresPromos) {
   RegisterPromo(kPromo2Id, kCompleted, /*clicked=*/true);
   controller().SetAllPromosDisabled(true);
   controller().SetAllPromosDisabled(false);
-  EXPECT_TRUE(controller().HasShowablePromos(nullptr));
+  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
   const auto promos = controller().GenerateShowablePromos(nullptr);
   EXPECT_EQ(1U, promos.pending.size());
   EXPECT_EQ(1U, promos.completed.size());

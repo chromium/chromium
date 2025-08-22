@@ -352,6 +352,18 @@ chromium-metrics-reviews@google.com.
   <token key="NtpPromoAction" variants="NtpPromoAction"/>
 </histogram>
 
+<histogram name="UserEducation.NtpPromos.ShowResult" enum="ShowNtpPromosResult"
+    expires_after="2026-09-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>cjgrant@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Recorded when the NTP decides whether or not to show NTP promos, and why.
+    Recorded every time a fresh NTP is loaded. This is intended as a health
+    check for the NTP promo system, to better understand why promos do not show.
+  </summary>
+</histogram>
+
 <histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under1Hour"
     units="minutes" expires_after="2026-01-04">
   <owner>mickeyburks@chromium.org</owner>
