@@ -105,6 +105,10 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
       const std::string& storage_key,
       const sync_pb::SharedTabGroupAccountDataSpecifics& specifics);
 
+  // Delete an entity from sync. Also deletes from local storage and in-memory
+  // cache.
+  void RemoveSpecifics(const std::string& storage_key);
+
  private:
   // Loads the data already stored in the DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
@@ -123,10 +127,6 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
   // with a new value and sync needs to be triggered.
   void WriteEntityToSync(const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity);
-
-  // Delete an entity from sync. Also deletes from local storage and in-memory
-  // cache.
-  void RemoveEntitySpecifics(const std::string& storage_key);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

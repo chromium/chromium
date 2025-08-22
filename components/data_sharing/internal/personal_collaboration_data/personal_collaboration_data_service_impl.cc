@@ -139,8 +139,8 @@ void PersonalCollaborationDataServiceImpl::CreateOrUpdateSpecifics(
 void PersonalCollaborationDataServiceImpl::DeleteSpecifics(
     SpecificsType specifics_type,
     const std::string& storage_key) {
-  // TODO(haileywang): Implement actual logic.
-  NOTREACHED();
+  bridge_->RemoveSpecifics(
+      CreateStorageKeyWithType(specifics_type, storage_key));
 }
 
 bool PersonalCollaborationDataServiceImpl::IsInitialized() const {

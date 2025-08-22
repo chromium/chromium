@@ -363,6 +363,28 @@ void PersonalCollaborationDataSyncBridge::CreateOrUpdateSpecifics(
   WriteEntityToSync(storage_key, CreateEntityDataFromSpecifics(specifics));
 }
 
+void PersonalCollaborationDataSyncBridge::RemoveSpecifics(
+    const std::string& storage_key) {
+  if (!is_initialized_ || !change_processor()->IsTrackingMetadata()) {
+    // Ignore any changes before the model is successfully initialized.
+    return;
+  }
+
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+
+  // Remove the entity from in-memory cache, storage, and sync.
+  specifics_.erase(storage_key);
+  batch->DeleteData(storage_key);
+  change_processor()->Delete(storage_key, syncer::DeletionOrigin::Unspecified(),
+                             batch->GetMetadataChangeList());
+  store_->CommitWriteBatch(
+      std::move(batch),
+      base::BindOnce(
+          &PersonalCollaborationDataSyncBridge::OnDataTypeStoreCommit,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
 void PersonalCollaborationDataSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::DataTypeStore> store) {

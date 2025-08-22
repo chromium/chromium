@@ -577,6 +577,28 @@ TEST_F(PersonalCollaborationDataSyncBridgeTest, ShouldCreateAndGetSpecifics) {
   EXPECT_THAT(*updated_result, EqualsProto(updated_specifics));
 }
 
+TEST_F(PersonalCollaborationDataSyncBridgeTest, ShouldRemoveSpecifics) {
+  const CollaborationId kCollaborationId(kTestCollaborationId);
+  InitializeBridge();
+
+  // Create and add specifics.
+  sync_pb::SharedTabGroupAccountDataSpecifics specifics =
+      CreateTabGroupAccountSpecifics(kCollaborationId, kTestTabGuid,
+                                     kTestGroupGuid, base::Time::Now());
+  bridge().CreateOrUpdateSpecifics(kTestStorageKey, specifics);
+
+  // Verify the specifics exist.
+  EXPECT_TRUE(bridge().GetSpecificsForStorageKey(kTestStorageKey).has_value());
+  EXPECT_EQ(GetNumTabDetailsInStore(), 1u);
+
+  // Remove the specifics.
+  bridge().RemoveSpecifics(kTestStorageKey);
+
+  // Verify the specifics are removed.
+  EXPECT_FALSE(bridge().GetSpecificsForStorageKey(kTestStorageKey).has_value());
+  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
+}
+
 TEST_F(PersonalCollaborationDataSyncBridgeTest, ShouldHandleNoData) {
   InitializeBridge();
 
