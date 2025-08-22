@@ -189,8 +189,11 @@ void AAudioInputStream::HandleDeviceChange() {
   }
 }
 
-android::AudioDevice AAudioInputStream::GetDevice() {
-  return device_;
+std::optional<android::AudioDeviceId> AAudioInputStream::GetActualDeviceId() {
+  if (!stream_wrapper_) {
+    return std::nullopt;
+  }
+  return stream_wrapper_->GetActualDeviceId();
 }
 
 double AAudioInputStream::GetMaxVolume() {

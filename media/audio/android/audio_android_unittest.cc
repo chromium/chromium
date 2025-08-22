@@ -1008,8 +1008,11 @@ TEST_F(AudioAndroidOutputTest, GetOutputStreamParametersForDevice) {
 
 // Get the audio output parameters for a combined Bluetooth device. This test is
 // only relevant for AAudioWithPerStreamDeviceSelection.
-TEST_F(AudioAndroidInputTest,
-       GetOutputStreamParametersForCombinedBluetoothDevice) {
+//
+// TODO(crbug.com/405955144): Re-enable this test once SCO checks can be mocked
+// via `MockJniDelegate`.
+TEST_F(AudioAndroidOutputTest,
+       DISABLED_GetOutputStreamParametersForCombinedBluetoothDevice) {
   InitFeatures(AudioApi::AAudioWithPerStreamDeviceSelection);
   if (IsSkipped()) {
     return;
@@ -1041,7 +1044,6 @@ TEST_F(AudioAndroidInputTest,
 
   // Ensure device metadata is fetched and cached.
   GetAudioOutputDeviceDescriptionsOnAudioThread();
-  GetAudioInputDeviceDescriptionsOnAudioThread();
 
   AudioParameters params;
 
@@ -1049,24 +1051,12 @@ TEST_F(AudioAndroidInputTest,
   EXPECT_TRUE(params.IsValid()) << params.AsHumanReadableString();
   EXPECT_EQ(params.sample_rate(), 10000);
 
-  // Manually invoke `AudioManagerAndroid`'s callback for starting an SCO input
-  // stream, which enables SCO. This can't be done by starting the stream
-  // normally, as that uses the real AAudio path and so would rely on the SCO
-  // device with ID 30 actually being present.
-  //
-  // TODO(crbug.com/405955144): This is a hacky approach; change it once it is
-  // no longer necessary to start an SCO input stream for output streams to
-  // react to the SCO state change, and then make this test an
-  // `AudioAndroidOutputTest`.
-  MakeAudioInputStreamOnAudioThread(TestAudioParameters::Normal(), "30");
-  audio_manager_->OnStartAAudioInputStream(
-      static_cast<AAudioInputStream*>(audio_input_stream_.get()));
+  // TODO(crbug.com/405955144): Mock-enable SCO here once it is possible to do
+  // so.
 
   params = GetOutputStreamParametersOnAudioThread("10");
   EXPECT_TRUE(params.IsValid()) << params.AsHumanReadableString();
   EXPECT_EQ(params.sample_rate(), 20000);
-
-  CloseAudioInputStreamOnAudioThread(audio_input_stream_);
 }
 
 // Verify input device enumeration when using communication devices.

@@ -53,7 +53,8 @@ class AAudioInputStream : public AudioInputStream,
   void OnError() override;
   void OnDeviceChange() override;
 
-  android::AudioDevice GetDevice();
+  // Returns the ID of the "actual" device the stream was opened with.
+  std::optional<android::AudioDeviceId> GetActualDeviceId();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

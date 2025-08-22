@@ -851,14 +851,45 @@ AudioInputStream* AudioManagerAndroid::MakeLowLatencyInputStream(
 
 void AudioManagerAndroid::OnStartAAudioInputStream(AAudioInputStream* stream) {
   // Enable Bluetooth SCO for Bluetooth SCO input streams when per-stream device
-  // selection is enabled.
+  // selection is enabled. This should be done both in the case where a
+  // Bluetooth device was explicitly requested, and in the case where a
+  // Bluetooth device was implicitly chosen for a default stream.
 
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
-  bool stream_requires_sco =
-      UseAAudioPerStreamDeviceSelection() &&
-      stream->GetDevice().GetType() == AudioDeviceType::kBluetoothSco;
-  if (!stream_requires_sco) {
+  if (!UseAAudioPerStreamDeviceSelection()) {
+    // With per-stream device selection disabled, SCO is instead managed via the
+    // Java `CommunicationDeviceSelector`.
+    return;
+  }
+
+  std::optional<AudioDeviceId> actual_device_id = stream->GetActualDeviceId();
+  if (!actual_device_id.has_value()) {
+    // It is not possible to determine whether the stream requires SCO without
+    // the actual device ID.
+    return;
+  }
+
+  auto devices = GetDeviceCache(AudioDeviceDirection::kInput);
+  auto actual_device = devices.find(actual_device_id);
+  if (actual_device == devices.end()) {
+    // Although it should be uncommon, it is theoretically possible for the
+    // default device to be resolved to a device that was connected later than
+    // the most recent device cache update. Thus, the cache is refreshed and
+    // checked again after the first failed lookup.
+    UpdateDeviceCache(AudioDeviceDirection::kInput);
+
+    devices = GetDeviceCache(AudioDeviceDirection::kInput);
+    actual_device = devices.find(actual_device_id);
+    if (actual_device == devices.end()) {
+      // It is not possible to determine whether the stream requires SCO without
+      // the device metadata. Furthermore, this situation likely means that the
+      // device assigned to this stream has since been disconnected.
+      return;
+    }
+  }
+  if (actual_device->second.GetType() != AudioDeviceType::kBluetoothSco) {
+    // SCO is not required.
     return;
   }
 

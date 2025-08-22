@@ -64,6 +64,12 @@ class AAudioStreamWrapper {
                                                      int32_t num_frames);
   void OnStreamError(aaudio_result_t error);
 
+  // Returns the ID of the "actual" device the stream was opened with, in
+  // particular resolving to a non-default device ID if the default device was
+  // requested. Returns `std::nullopt` if the actual device ID cannot be
+  // resolved, for instance if the stream is not open.
+  std::optional<android::AudioDeviceId> GetActualDeviceId();
+
   // Returns the amount of unplayed audio relative to |delay_timestamp|.
   base::TimeDelta GetOutputDelay(base::TimeTicks delay_timestamp);
 
@@ -77,7 +83,7 @@ class AAudioStreamWrapper {
   void EmitSetDeviceIdResultToHistogram(bool success);
 
   const AudioParameters params_;
-  const android::AudioDevice device_;
+  const android::AudioDevice requested_device_;
 
   // Whether this class is using an input or an output stream.
   StreamType stream_type_;
