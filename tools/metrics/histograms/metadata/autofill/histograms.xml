@@ -295,6 +295,15 @@ chromium-metrics-reviews@google.com.
       summary="Progress dialog for the VCN Card Unmask Flow"/>
 </variants>
 
+<variants name="Autofill.RequestResult">
+  <variant name=""
+      summary="there is no result specified and it is logged as an aggregated
+               histogram"/>
+  <variant name=".Failure" summary="the request failed"/>
+  <variant name=".Success"
+      summary="the request succeeded and returned valid response"/>
+</variants>
+
 <variants name="Autofill.ServerCardUnmaskFlowType">
   <variant name="DeviceUnlock" summary="Device unlock authentication"/>
   <variant name="Fido" summary="FIDO authentication only"/>
@@ -5912,6 +5921,32 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Logs the latency of risk data loading. It is logged when the loading is
     completed or timed out.
   </summary>
+</histogram>
+
+<histogram name="Autofill.SaveAndFill.CreateCard.Latency{RequestResult}"
+    units="ms" expires_after="2026-06-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>averina@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the latency of the CreateCard request of the Save-and-Fill flow when
+    {RequestResult}. Logged when the response of the request is received.
+  </summary>
+  <token key="RequestResult" variants="Autofill.RequestResult"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveAndFill.GetDetailsForCreateCard.Latency{RequestResult}"
+    units="ms" expires_after="2026-06-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>averina@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the latency of the GetDetailsForCreateCard request of the
+    Save-and-Fill flow when {RequestResult}. Logged when the response of the
+    request is received.
+  </summary>
+  <token key="RequestResult" variants="Autofill.RequestResult"/>
 </histogram>
 
 <histogram name="Autofill.SaveAndFill.SuggestionNotShownReason"

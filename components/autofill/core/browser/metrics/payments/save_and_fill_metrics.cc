@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 
 namespace autofill::autofill_metrics {
 
@@ -17,6 +18,27 @@ void LogSaveAndFillSuggestionNotShownReason(
     SaveAndFillSuggestionNotShownReason reason) {
   base::UmaHistogramEnumeration("Autofill.SaveAndFill.SuggestionNotShownReason",
                                 reason);
+}
+
+void LogSaveAndFillGetDetailsForCreateCardResultAndLatency(
+    bool succeeded,
+    base::TimeDelta latency) {
+  static constexpr std::string_view kHistogramName =
+      "Autofill.SaveAndFill.GetDetailsForCreateCard.Latency";
+  base::UmaHistogramMediumTimes(kHistogramName, latency);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({kHistogramName, succeeded ? ".Success" : ".Failure"}),
+      latency);
+}
+
+void LogSaveAndFillCreateCardResultAndLatency(bool succeeded,
+                                              base::TimeDelta latency) {
+  static constexpr std::string_view kHistogramName =
+      "Autofill.SaveAndFill.CreateCard.Latency";
+  base::UmaHistogramMediumTimes(kHistogramName, latency);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({kHistogramName, succeeded ? ".Success" : ".Failure"}),
+      latency);
 }
 
 }  // namespace autofill::autofill_metrics

@@ -62,6 +62,7 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
 
   // Callback invoked when the response to fetch upload details is returned.
   void OnDidGetDetailsForCreateCard(
+      base::TimeTicks request_sent_timestamp,
       PaymentsAutofillClient::PaymentsRpcResult result,
       const std::u16string& context_token,
       std::unique_ptr<base::Value::Dict> legal_message,
@@ -90,7 +91,8 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   void SendCreateCardRequest();
 
   // Callback invoked when the CreateCard response is received.
-  void OnDidCreateCard(PaymentsAutofillClient::PaymentsRpcResult result,
+  void OnDidCreateCard(base::TimeTicks request_sent_timestamp,
+                       PaymentsAutofillClient::PaymentsRpcResult result,
                        const std::string& instrument_id);
 
   // Returns the SaveAndFillStrikeDatabase for `autofill_client_`.

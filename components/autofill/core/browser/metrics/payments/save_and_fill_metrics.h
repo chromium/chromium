@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_SAVE_AND_FILL_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_SAVE_AND_FILL_METRICS_H_
 
+#include "base/time/time.h"
+
 namespace autofill::autofill_metrics {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -43,6 +45,16 @@ void LogSaveAndFillFormEvent(SaveAndFillFormEvent event);
 // Logs the reason why the Save and Fill suggestion was not shown.
 void LogSaveAndFillSuggestionNotShownReason(
     SaveAndFillSuggestionNotShownReason reason);
+
+// Logs the latency for the GetDetailsForCreateCard & CreateCard request. Logs
+// to parent histogram with no breakdown by result and child histograms with
+// specific result (success/failure) of the request. This is due to the latency
+// of the failed requests having a larger variation and possible long tails.
+void LogSaveAndFillGetDetailsForCreateCardResultAndLatency(
+    bool succeeded,
+    base::TimeDelta latency);
+void LogSaveAndFillCreateCardResultAndLatency(bool succeeded,
+                                              base::TimeDelta latency);
 
 }  // namespace autofill::autofill_metrics
 

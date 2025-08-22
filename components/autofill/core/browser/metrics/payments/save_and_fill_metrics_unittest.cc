@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -90,6 +91,34 @@ TEST_F(SaveAndFillMetricsTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveAndFill.SuggestionNotShownReason",
       SaveAndFillSuggestionNotShownReason::kIncompleteCreditCardForm, 1);
+}
+
+TEST_F(SaveAndFillMetricsTest,
+       LogGetDetailsForCreateCardRequestLatencyAndResult) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveAndFillGetDetailsForCreateCardResultAndLatency(
+      /*succeeded=*/true, base::Milliseconds(600));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.GetDetailsForCreateCard.Latency",
+      /*sample=*/600, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.GetDetailsForCreateCard.Latency.Success",
+      /*sample=*/600, 1);
+}
+
+TEST_F(SaveAndFillMetricsTest, LogCreateCardRequestLatencyAndResult) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveAndFillCreateCardResultAndLatency(
+      /*succeeded=*/false, base::Milliseconds(1000));
+
+  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.CreateCard.Latency",
+                                      /*sample=*/1000, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.CreateCard.Latency.Failure",
+      /*sample=*/1000, 1);
 }
 
 }  // namespace autofill::autofill_metrics

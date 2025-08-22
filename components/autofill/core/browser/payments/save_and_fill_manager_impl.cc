@@ -9,8 +9,10 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
+#include "components/autofill/core/browser/payments/multiple_request_payments_network_interface_base.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
@@ -49,7 +51,7 @@ void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion(
             upload_details_,
             base::BindOnce(
                 &SaveAndFillManagerImpl::OnDidGetDetailsForCreateCard,
-                weak_ptr_factory_.GetWeakPtr()));
+                weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
   } else {
     OfferLocalSaveAndFill();
   }
@@ -175,24 +177,30 @@ bool SaveAndFillManagerImpl::IsCreditCardUploadEnabled() const {
 }
 
 void SaveAndFillManagerImpl::OnDidGetDetailsForCreateCard(
+    base::TimeTicks request_sent_timestamp,
     PaymentsAutofillClient::PaymentsRpcResult result,
     const std::u16string& context_token,
     std::unique_ptr<base::Value::Dict> legal_message,
     std::vector<std::pair<int, int>> supported_card_bin_ranges) {
+  autofill_metrics::LogSaveAndFillGetDetailsForCreateCardResultAndLatency(
+      result == PaymentsRpcResult::kSuccess,
+      base::TimeTicks::Now() - request_sent_timestamp);
+
   if (result == PaymentsRpcResult::kSuccess) {
     LegalMessageLines parsed_legal_message_lines;
     LegalMessageLine::Parse(*legal_message, &parsed_legal_message_lines,
                             /*escape_apostrophes=*/true);
     if (parsed_legal_message_lines.empty()) {
-      // If parsing the legal messages fails, upload Save and Fill should not be
-      // offered. Offer local Save and Fill instead.
+      // If parsing the legal messages fails, upload Save and Fill should not
+      // be offered. Offer local Save and Fill instead.
       OfferLocalSaveAndFill();
       return;
     }
     upload_details_.context_token = context_token;
     OfferUploadSaveAndFill(parsed_legal_message_lines);
   } else {
-    // If the pre-flight call fails, fall back to offering local Save and Fill.
+    // If the pre-flight call fails, fall back to offering local Save and
+    // Fill.
     OfferLocalSaveAndFill();
   }
 }
@@ -297,12 +305,18 @@ void SaveAndFillManagerImpl::SendCreateCardRequest() {
       ->GetMultipleRequestPaymentsNetworkInterface()
       ->CreateCard(upload_details_,
                    base::BindOnce(&SaveAndFillManagerImpl::OnDidCreateCard,
-                                  weak_ptr_factory_.GetWeakPtr()));
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  base::TimeTicks::Now()));
 }
 
 void SaveAndFillManagerImpl::OnDidCreateCard(
+    base::TimeTicks request_sent_timestamp,
     PaymentsAutofillClient::PaymentsRpcResult result,
     const std::string& instrument_id) {
+  autofill_metrics::LogSaveAndFillCreateCardResultAndLatency(
+      result == PaymentsRpcResult::kSuccess,
+      base::TimeTicks::Now() - request_sent_timestamp);
+
   if (result != PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     // If card creation fails, save the card locally instead. All card
     // information should exist, except for the optional CVC.
