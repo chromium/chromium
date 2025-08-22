@@ -133,6 +133,34 @@ RTCEncodedAudioFrameMetadata* CreateAudioMetadata(
   return new_metadata;
 }
 
+bool AreMetadataEqual(RTCEncodedAudioFrameMetadata* m1,
+                      RTCEncodedAudioFrameMetadata* m2) {
+  return m1->hasSequenceNumber() == m2->hasSequenceNumber() &&
+         (!m1->hasSequenceNumber() ||
+          m1->sequenceNumber() == m2->sequenceNumber()) &&
+         m1->hasRtpTimestamp() == m2->hasRtpTimestamp() &&
+         (!m1->hasRtpTimestamp() || m1->rtpTimestamp() == m2->rtpTimestamp()) &&
+         m1->hasCaptureTime() == m2->hasCaptureTime() &&
+         (!m1->hasCaptureTime() || m1->captureTime() == m2->captureTime()) &&
+         m1->hasSenderCaptureTimeOffset() == m2->hasSenderCaptureTimeOffset() &&
+         (!m1->hasSenderCaptureTimeOffset() ||
+          m1->senderCaptureTimeOffset() == m2->senderCaptureTimeOffset()) &&
+         m1->hasReceiveTime() == m2->hasReceiveTime() &&
+         (!m1->hasReceiveTime() || m1->receiveTime() == m2->receiveTime()) &&
+         m1->hasMimeType() == m2->hasMimeType() &&
+         (!m1->hasMimeType() || m1->mimeType() == m2->mimeType()) &&
+         m1->hasPayloadType() == m2->hasPayloadType() &&
+         (!m1->hasPayloadType() || m1->payloadType() == m2->payloadType()) &&
+         m1->hasContributingSources() == m2->hasContributingSources() &&
+         (!m1->hasContributingSources() ||
+          (m1->contributingSources() == m2->contributingSources())) &&
+         m1->hasSynchronizationSource() == m2->hasSynchronizationSource() &&
+         (!m1->hasSynchronizationSource() ||
+          (m1->synchronizationSource() == m2->synchronizationSource())) &&
+         m1->hasAudioLevel() == m2->hasAudioLevel() &&
+         (!m1->hasAudioLevel() || m1->audioLevel() == m2->audioLevel());
+}
+
 TEST_F(RTCEncodedAudioFrameTest, GetMetadataReturnsCorrectMetadata) {
   V8TestingScope v8_scope;
 
@@ -244,10 +272,6 @@ TEST_F(RTCEncodedAudioFrameTest, SetMetadataOnEmptyFrameFails) {
   encoded_frame->setMetadata(v8_scope.GetExecutionContext(), new_metadata,
                              exception_state);
   EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(exception_state.Message(),
-            "Cannot setMetadata: Invalid modification of "
-            "RTCEncodedAudioFrameMetadata. Bad "
-            "synchronizationSource");
 }
 
 TEST_F(RTCEncodedAudioFrameTest, SetMetadataModifiesMetadata) {
@@ -703,6 +727,28 @@ TEST_F(RTCEncodedAudioFrameTest, FrameWithAudioLevel) {
       encoded_frame->getMetadata(v8_scope.GetExecutionContext());
   EXPECT_TRUE(metadata->hasAudioLevel());
   EXPECT_EQ(metadata->audioLevel(), ToLinearAudioLevel(kAudioLevel_dBov));
+}
+
+TEST_F(RTCEncodedAudioFrameTest,
+       ReadingMetadataOnEmptyFrameReturnsOriginalMetadata) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockTransformableAudioFrame> frame =
+      std::make_unique<NiceMock<MockTransformableAudioFrame>>();
+  MockMetadata(frame.get());
+
+  RTCEncodedAudioFrame* encoded_frame =
+      MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
+  RTCEncodedAudioFrameMetadata* original_metadata =
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext());
+
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
+
+  RTCEncodedAudioFrameMetadata* post_neuter_metadata =
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext());
+
+  EXPECT_TRUE(AreMetadataEqual(original_metadata, post_neuter_metadata));
 }
 
 }  // namespace

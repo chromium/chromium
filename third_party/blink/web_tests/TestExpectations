@@ -2365,7 +2365,6 @@ crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-054.html 
 crbug.com/932343 [ Mac ] external/wpt/css/css-pseudo/active-selection-014.html [ Failure ]
 
 # WebRTC Encoded Transform
-crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-metadata-transform.https.html [ Skip Timeout ]
 crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-transform-generateKeyFrame.https.html [ Crash Skip ]
 
 # This test should pass when prefetch behavior in iframe is fixed.
@@ -8347,6 +8346,9 @@ crbug.com/386799957 [ Mac15 ] external/wpt/webrtc/simulcast/h264.https.html [ Sk
 crbug.com/386799957 [ Mac15-arm64 ] external/wpt/webrtc/simulcast/h264.https.html [ Skip Timeout ]
 crbug.com/386799957 [ Mac15 ] external/wpt/webrtc/simulcast/vp8.https.html [ Skip Timeout ]
 crbug.com/386799957 [ Mac15-arm64 ] external/wpt/webrtc/simulcast/vp8.https.html [ Skip Timeout ]
+crbug.com/386799957 [ Mac15 ] external/wpt/webrtc-encoded-transform/script-metadata-transform.https.html [ Skip Timeout ]
+crbug.com/386799957 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/script-metadata-transform.https.html [ Skip Timeout ]
+
 
 # Mac15/arm64 - Timeout on webrtc
 crbug.com/356930166 [ Mac15 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-default-src-none.html [ Timeout ]
