@@ -24,8 +24,9 @@ namespace {
 
 const IpczDriver& kDriver = reference_drivers::kSyncReferenceDriver;
 
-std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodes(Ref<Node> broker,
-                                                  Ref<Node> non_broker) {
+std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodesWithoutActivation(
+    Ref<Node> broker,
+    Ref<Node> non_broker) {
   IpczDriverHandle handle0, handle1;
   EXPECT_EQ(IPCZ_RESULT_OK,
             kDriver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -51,18 +52,19 @@ std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodes(Ref<Node> broker,
       Node::Type::kNormal, 0, broker->features(), transport1,
       NodeLinkMemory::Create(non_broker, LinkSide::kB, broker->features(),
                              buffer.memory.Map()));
+  return {link0, link1};
+}
+
+std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodes(Ref<Node> broker,
+                                                  Ref<Node> non_broker) {
+  auto [link0, link1] = LinkNodesWithoutActivation(broker, non_broker);
   link0->Activate();
   link1->Activate();
   return {link0, link1};
 }
 
-using NodeLinkTest = testing::Test;
-
-TEST_F(NodeLinkTest, BasicTransmission) {
-  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
-  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
-
-  auto [link0, link1] = LinkNodes(node0, node1);
+std::pair<Ref<Router>, Ref<Router>> AttachRouters(Ref<NodeLink> link0,
+                                                  Ref<NodeLink> link1) {
   auto router0 = MakeRefCounted<Router>();
   auto router1 = MakeRefCounted<Router>();
   FragmentRef<RouterLinkState> link_state =
@@ -72,11 +74,146 @@ TEST_F(NodeLinkTest, BasicTransmission) {
   router1->SetOutwardLink(link1->AddRemoteRouterLink(
       SublinkId(0), link_state, LinkType::kCentral, LinkSide::kB, router1));
   link_state->status = RouterLinkState::kStable;
+  EXPECT_FALSE(router1->IsPeerClosed());
+  EXPECT_FALSE(router0->IsPeerClosed());
+  return {router0, router1};
+}
+
+using NodeLinkTest = testing::Test;
+
+TEST_F(NodeLinkTest, BasicTransmission) {
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+
+  auto [link0, link1] = LinkNodes(node0, node1);
+  auto [router0, router1] = AttachRouters(link0, link1);
 
   EXPECT_FALSE(router1->IsPeerClosed());
   router0->CloseRoute();
   EXPECT_TRUE(router1->IsPeerClosed());
   router1->CloseRoute();
+
+  link0->Deactivate();
+  link1->Deactivate();
+}
+
+constexpr char kMessage[] = "hello";
+
+absl::Span<const uint8_t> MessageSpan() {
+  return absl::MakeSpan(reinterpret_cast<const uint8_t*>(kMessage),
+                        sizeof(kMessage));
+}
+
+TEST_F(NodeLinkTest, BasicTransmissionWithMessage) {
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+
+  auto [link0, link1] = LinkNodes(node0, node1);
+  auto [router0, router1] = AttachRouters(link0, link1);
+
+  // Send message.
+  router0->Put(MessageSpan(), {});
+
+  // Verify that one parcel arrived.
+  IpczPortalStatus status = {.size = sizeof(status)};
+  router1->QueryStatus(status);
+  EXPECT_EQ(1u, status.num_local_parcels);
+  EXPECT_EQ(sizeof(kMessage), status.num_local_bytes);
+
+  // Verify message contents.
+  char received_data[100];
+  size_t received_data_size = sizeof(received_data);
+  IpczResult result = router1->Get(0, received_data, &received_data_size,
+                                   nullptr, nullptr, nullptr);
+  EXPECT_EQ(IPCZ_RESULT_OK, result);
+  EXPECT_EQ(sizeof(kMessage), received_data_size);
+  EXPECT_STREQ("hello", received_data);
+
+  router0->CloseRoute();
+  router1->CloseRoute();
+
+  link0->Deactivate();
+  link1->Deactivate();
+}
+
+TEST_F(NodeLinkTest, AcceptEarlyParcel) {
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+  auto [link0, link1] = LinkNodes(node0, node1);
+
+  // Set up the central link, but delay attaching the Router on the receiving
+  // end.
+  auto router0 = MakeRefCounted<Router>();
+  FragmentRef<RouterLinkState> link_state =
+      link0->memory().GetInitialRouterLinkState(0);
+  router0->SetOutwardLink(link0->AddRemoteRouterLink(
+      SublinkId(0), link_state, LinkType::kCentral, LinkSide::kA, router0));
+  link_state->status = RouterLinkState::kStable;
+
+  // Send message. The parcel is sent immediately, but should be queued as
+  // 'early' because there is no Router+RouterLink for it.
+  router0->Put(MessageSpan(), {});
+
+  // Attach the Router.
+  auto router1 = MakeRefCounted<Router>();
+  router1->SetOutwardLink(link1->AddRemoteRouterLink(
+      SublinkId(0), link_state, LinkType::kCentral, LinkSide::kB, router1));
+
+  // Verify that no parcels arrived to the receiving Router.
+  IpczPortalStatus status = {.size = sizeof(status)};
+  router1->QueryStatus(status);
+  EXPECT_EQ(0u, status.num_local_parcels);
+
+  // Take the early parcels. Normally it is done during Router deserialization.
+  // Here, to avoid deserialization verbosity simulate it for a Router that
+  // already exists (router1).
+  link1->AcceptEarlyParcelsForSublink(SublinkId(0));
+
+  // Verify that the parcel is accepted after the simulated deserialization.
+  router1->QueryStatus(status);
+  EXPECT_EQ(1u, status.num_local_parcels);
+
+  // Verify message contents.
+  char received_data[100];
+  size_t received_data_size = sizeof(received_data);
+  IpczResult result = router1->Get(0, received_data, &received_data_size,
+                                   nullptr, nullptr, nullptr);
+  EXPECT_EQ(IPCZ_RESULT_OK, result);
+  EXPECT_EQ(sizeof(kMessage), received_data_size);
+  EXPECT_STREQ("hello", received_data);
+
+  link0->Deactivate();
+  link1->Deactivate();
+}
+
+TEST_F(NodeLinkTest, RejectParcelForClosedRouter) {
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+
+  // Link nodes and avoid activating link1 to let the incoming message wait
+  // until transport activation.
+  auto [link0, link1] = LinkNodesWithoutActivation(node0, node1);
+  link0->Activate();
+  auto [router0, router1] = AttachRouters(link0, link1);
+
+  // Send message. The parcel should get queued in router0 because the transport
+  // is not activated.
+  router0->Put(MessageSpan(), {});
+
+  // Simulate early closing of the Router while the parcel is in flight.
+  link1->RemoveRemoteRouterLink(SublinkId(0));
+  EXPECT_EQ(1u, link1->DeletedSublinkCountForTesting());
+
+  // Activate transport.
+  link1->Activate();
+
+  // Verify that the early parcels are gone.
+  EXPECT_EQ(0u, link1->EarlyParcelCountForTesting());
+  char received_data[100];
+  size_t received_data_size = sizeof(received_data);
+  IpczResult result = router1->Get(0, received_data, &received_data_size,
+                                   nullptr, nullptr, nullptr);
+  EXPECT_EQ(IPCZ_RESULT_UNAVAILABLE, result);
 
   link0->Deactivate();
   link1->Deactivate();
