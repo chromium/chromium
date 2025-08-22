@@ -239,8 +239,7 @@ bool IsChangePrimaryAccountAllowed(Profile* profile, const std::string& email) {
       IdentityManagerFactory::GetForProfile(profile);
 
   if (ChromeSigninClientFactory::GetForProfile(profile)
-          ->IsClearPrimaryAccountAllowed(
-              identity_manager->HasPrimaryAccount(ConsentLevel::kSync)) ||
+          ->IsClearPrimaryAccountAllowed() ||
       !identity_manager->HasPrimaryAccount(ConsentLevel::kSignin)) {
     return true;
   }
@@ -843,7 +842,7 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
 
   bool is_clear_primary_account_allowed =
       ChromeSigninClientFactory::GetForProfile(profile_)
-          ->IsClearPrimaryAccountAllowed(is_syncing);
+          ->IsClearPrimaryAccountAllowed();
 
   if (is_syncing) {
     HandleTurnOffSync(delete_profile, is_clear_primary_account_allowed);

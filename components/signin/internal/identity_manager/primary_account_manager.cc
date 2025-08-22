@@ -637,7 +637,7 @@ void PrimaryAccountManager::StartSignOut(
       base::BindOnce(&PrimaryAccountManager::OnSignoutDecisionReached,
                      base::Unretained(this), signout_source_metric,
                      remove_option),
-      signout_source_metric, HasPrimaryAccount(signin::ConsentLevel::kSync));
+      signout_source_metric);
 }
 
 void PrimaryAccountManager::OnSignoutDecisionReached(

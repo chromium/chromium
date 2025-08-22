@@ -135,7 +135,7 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   bool has_sync_account =
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
-  if (!signin_client_->IsClearPrimaryAccountAllowed(has_sync_account)) {
+  if (!signin_client_->IsClearPrimaryAccountAllowed()) {
     if (current_primary_account.IsEmpty()) {
       DLOG(ERROR)
           << "Clear primary account is not allowed, the primary account "

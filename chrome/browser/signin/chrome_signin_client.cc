@@ -312,8 +312,7 @@ void ChromeSigninClient::RemoveContentSettingsObserver(
       observer);
 }
 
-bool ChromeSigninClient::IsClearPrimaryAccountAllowed(
-    bool has_sync_account) const {
+bool ChromeSigninClient::IsClearPrimaryAccountAllowed() const {
   return GetSignoutDecision(
              /*signout_source=*/std::nullopt) ==
          SigninClient::SignoutDecision::ALLOW;
@@ -327,8 +326,7 @@ bool ChromeSigninClient::IsRevokeSyncConsentAllowed() const {
 
 void ChromeSigninClient::PreSignOut(
     base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
-    signin_metrics::ProfileSignout signout_source_metric,
-    bool has_sync_account) {
+    signin_metrics::ProfileSignout signout_source_metric) {
   DCHECK(on_signout_decision_reached);
   DCHECK(!on_signout_decision_reached_) << "SignOut already in-progress!";
   on_signout_decision_reached_ = std::move(on_signout_decision_reached);

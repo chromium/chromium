@@ -389,8 +389,7 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
       !signin::IsImplicitBrowserSigninOrExplicitDisabled(
           identity_manager_, signin_client_->GetPrefs()) ||
-      !signin_client_->IsClearPrimaryAccountAllowed(
-          /*has_sync_account=*/false);
+      !signin_client_->IsClearPrimaryAccountAllowed();
 
   CoreAccountId primary_account =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);

@@ -262,8 +262,7 @@ void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
   }
 
   if (ChromeSigninClientFactory::GetForProfile(profile)
-          ->IsClearPrimaryAccountAllowed(identity_manager->HasPrimaryAccount(
-              signin::ConsentLevel::kSync))) {
+          ->IsClearPrimaryAccountAllowed()) {
     // Force clear the primary account if it is no longer allowed and if sign
     // out is allowed.
     auto* primary_account_mutator =

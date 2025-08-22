@@ -118,9 +118,7 @@ std::u16string GetSyncErrorButtonText(Profile* profile,
   switch (error) {
     case AvatarSyncErrorType::kUnrecoverableError:
       if (!ChromeSigninClientFactory::GetForProfile(profile)
-               ->IsClearPrimaryAccountAllowed(
-                   IdentityManagerFactory::GetForProfile(profile)
-                       ->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
+               ->IsClearPrimaryAccountAllowed()) {
         // As opposed to the corresponding error in an unmanaged account,
         // sign-out hasn't happened here yet. The button directs to the sign-out
         // confirmation dialog in settings.
@@ -377,9 +375,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       // Managed users get directed to the sign-out confirmation dialog in
       // settings.
       if (!ChromeSigninClientFactory::GetForProfile(&profile())
-               ->IsClearPrimaryAccountAllowed(
-                   identity_manager->HasPrimaryAccount(
-                       signin::ConsentLevel::kSync))) {
+               ->IsClearPrimaryAccountAllowed()) {
         chrome::ShowSettingsSubPage(&browser(), chrome::kSignOutSubPage);
         break;
       }
@@ -456,11 +452,8 @@ void ProfileMenuView::OnSigninButtonClicked(
 }
 
 void ProfileMenuView::OnSignoutButtonClicked() {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(&profile());
   DCHECK(ChromeSigninClientFactory::GetForProfile(&profile())
-             ->IsClearPrimaryAccountAllowed(identity_manager->HasPrimaryAccount(
-                 signin::ConsentLevel::kSync)))
+             ->IsClearPrimaryAccountAllowed())
       << "Clear primary account is not allowed. Signout should not be offered "
          "in the UI.";
 

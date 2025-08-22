@@ -524,8 +524,7 @@ IdentityManager::GetAccountsWithRefreshTokens(JNIEnv* env) const {
 }
 
 jboolean IdentityManager::IsClearPrimaryAccountAllowed(JNIEnv* env) const {
-  return signin_client_->IsClearPrimaryAccountAllowed(
-      HasPrimaryAccount(signin::ConsentLevel::kSync));
+  return signin_client_->IsClearPrimaryAccountAllowed();
 }
 #endif
 

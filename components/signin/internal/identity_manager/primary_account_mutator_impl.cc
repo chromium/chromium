@@ -89,8 +89,7 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
           signin::ConsentLevel::kSignin) &&
       account_info.account_id != primary_account_manager_->GetPrimaryAccountId(
                                      signin::ConsentLevel::kSignin) &&
-      !signin_client_->IsClearPrimaryAccountAllowed(
-          /*has_sync_account=*/false)) {
+      !signin_client_->IsClearPrimaryAccountAllowed()) {
     DVLOG(1) << "Changing the primary account is not allowed.";
     return PrimaryAccountError::kPrimaryAccountChangeNotAllowed;
   }

@@ -52,15 +52,14 @@ class ChromeSigninClient : public SigninClient {
   //   destruction (See ChromeSigninClient::PreSignOut(),
   //   PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile()).
   // - Supervised users on Android.IsRevokeSyncConsentAllowed
-  bool IsClearPrimaryAccountAllowed(bool has_sync_account) const override;
+  bool IsClearPrimaryAccountAllowed() const override;
 
   // TODO(crbug.com/40240844): Remove revoke sync restriction when allowing
   // enterprise users to revoke sync fully launches.
   bool IsRevokeSyncConsentAllowed() const override;
   void PreSignOut(
       base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
-      signin_metrics::ProfileSignout signout_source_metric,
-      bool has_sync_account) override;
+      signin_metrics::ProfileSignout signout_source_metric) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::CookieManager* GetCookieManager() override;
   network::mojom::NetworkContext* GetNetworkContext() override;

@@ -266,10 +266,8 @@ ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
   // regardless of the consent.
   // TODO(https://crbug.com.1464264): Migrate away from `ConsentLevel::kSync`
   // on desktop platforms.
-  return signin_client_->IsClearPrimaryAccountAllowed(
-             identity_manager_->HasPrimaryAccount(ConsentLevel::kSync))
-             ? ConsentLevel::kSync
-             : ConsentLevel::kSignin;
+  return signin_client_->IsClearPrimaryAccountAllowed() ? ConsentLevel::kSync
+                                                        : ConsentLevel::kSignin;
 }
 
 bool DiceAccountReconcilorDelegate::ShouldRevokeTokensBeforeMultilogin(

@@ -692,11 +692,10 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
                          chrome::kSearchHistoryUrlInClearBrowsingData);
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  html_source->AddBoolean(
-      "isClearPrimaryAccountAllowed",
-      !profile->IsGuestSession() &&
-          ChromeSigninClientFactory::GetForProfile(profile)
-              ->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  html_source->AddBoolean("isClearPrimaryAccountAllowed",
+                          !profile->IsGuestSession() &&
+                              ChromeSigninClientFactory::GetForProfile(profile)
+                                  ->IsClearPrimaryAccountAllowed());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

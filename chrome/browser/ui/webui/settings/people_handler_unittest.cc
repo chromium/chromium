@@ -1592,8 +1592,7 @@ TEST_F(PeopleHandlerTest, HandleStartSigninManaged) {
   SigninClient* client = ChromeSigninClientFactory::GetForProfile(profile());
   client->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
-  ASSERT_FALSE(
-      client->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  ASSERT_FALSE(client->IsClearPrimaryAccountAllowed());
   TriggerPrimaryAccountInPersistentError();
   CreatePeopleHandler();
   // This should not crash.
