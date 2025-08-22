@@ -164,6 +164,20 @@ class MultiplexRouter::InterfaceEndpoint
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
     EnsureSyncWatcherExists();
+
+    {
+      MayAutoLock locker(&router_->lock_);
+      // If the peer is already closed, this could hang. To make sure the watch
+      // terminates immediately, signal the event. Additionally don't go through
+      // `SignalSyncMessageEvent()`, since sync_message_event_signaled_ might be
+      // true even though the watcher is no longer signalled. This can happen if
+      // a sync call on a different associated endpoint is made in between our
+      // peer closing and this sync watch starting.
+      if (peer_closed_) {
+        sync_watcher_->SignalEvent();
+      }
+    }
+
     // SyncWatch may delete `this`.
     return sync_watcher_->SyncWatch(&should_stop);
   }
