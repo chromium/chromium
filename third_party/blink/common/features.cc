@@ -1903,7 +1903,13 @@ BASE_FEATURE_PARAM(int,
                    "prerender_moderate_threshold",
                    50);
 
-BASE_FEATURE(PreloadingViewportHeuristics, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(PreloadingViewportHeuristics,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Firing pagehide events for intended prerender cancellation. See
 // crbug.com/353628449 for more details.

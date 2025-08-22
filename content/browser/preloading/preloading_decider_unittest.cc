@@ -1035,8 +1035,9 @@ TEST_F(PreloadingDeciderTest,
 
 TEST_F(PreloadingDeciderTest, ViewportHeuristicPredictionIsNotEnacted) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kPreloadingViewportHeuristics);
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kPreloadingViewportHeuristics,
+      {{"enact_candidates", "false"}});
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());

@@ -350,7 +350,7 @@ void PreloadingDecider::OnViewportHeuristicTriggered(const GURL& url) {
       blink::features::kPreloadingViewportHeuristics));
   static const base::FeatureParam<bool> kShouldEnactCandidates{
       &blink::features::kPreloadingViewportHeuristics, "enact_candidates",
-      false};
+      BUILDFLAG(IS_ANDROID)};
   const bool should_enact_candidates = kShouldEnactCandidates.Get();
   if (!should_enact_candidates) {
     AddPreloadingPrediction(url, preloading_predictor::kViewportHeuristic,

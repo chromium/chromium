@@ -164,6 +164,7 @@ class AnchorElementMetricsSenderTest : public SimTest {
     // Report all anchors to avoid non-deterministic behavior.
     std::map<std::string, std::string> params;
     params["random_anchor_sampling_period"] = "1";
+    params["intersection_observation_after_fcp_only"] = "false";
 
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kNavigationPredictor, params);
@@ -1057,8 +1058,10 @@ TEST_F(AnchorElementMetricsSenderTest,
 TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kNavigationPredictor, {{"max_intersection_observations", "3"},
-                                       {"random_anchor_sampling_period", "1"}});
+      features::kNavigationPredictor,
+      {{"max_intersection_observations", "3"},
+       {"random_anchor_sampling_period", "1"},
+       {"intersection_observation_after_fcp_only", "false"}});
 
   String source("https://example.com/p1");
   SimRequest main_resource(source, "text/html");
@@ -1133,8 +1136,10 @@ TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
 TEST_F(AnchorElementMetricsSenderTest, AnchorUnobservedByIntersectionObserver) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kNavigationPredictor, {{"max_intersection_observations", "1"},
-                                       {"random_anchor_sampling_period", "1"}});
+      features::kNavigationPredictor,
+      {{"max_intersection_observations", "1"},
+       {"random_anchor_sampling_period", "1"},
+       {"intersection_observation_after_fcp_only", "false"}});
 
   String source("https://example.com/p1");
   SimRequest main_resource(source, "text/html");
@@ -1198,8 +1203,10 @@ TEST_F(AnchorElementMetricsSenderTest,
        AnchorNotInViewportUnobservedByIntersectionObserver) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kNavigationPredictor, {{"max_intersection_observations", "1"},
-                                       {"random_anchor_sampling_period", "1"}});
+      features::kNavigationPredictor,
+      {{"max_intersection_observations", "1"},
+       {"random_anchor_sampling_period", "1"},
+       {"intersection_observation_after_fcp_only", "false"}});
 
   String source("https://example.com/p1");
   SimRequest main_resource(source, "text/html");
@@ -1238,7 +1245,8 @@ TEST_F(AnchorElementMetricsSenderTest, IntersectionObserverDelay) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kNavigationPredictor,
-      {{"intersection_observer_delay", "252ms"}});
+      {{"intersection_observer_delay", "252ms"},
+       {"intersection_observation_after_fcp_only", "false"}});
 
   String source("https://foo.com/bar.html");
   SimRequest main_resource(source, "text/html");
@@ -1828,8 +1836,10 @@ TEST_F(AnchorElementMetricsSenderTest,
        ObservedAnchorInIframeHasHrefUnsetAndIsRemoved) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kNavigationPredictor, {{"max_intersection_observations", "1"},
-                                       {"random_anchor_sampling_period", "1"}});
+      features::kNavigationPredictor,
+      {{"max_intersection_observations", "1"},
+       {"random_anchor_sampling_period", "1"},
+       {"intersection_observation_after_fcp_only", "false"}});
 
   // Navigate the main frame.
   String source("https://foo.com");

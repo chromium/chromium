@@ -248,7 +248,12 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
       random_anchor_sampling_period_(base::GetFieldTrialParamByFeatureAsInt(
           blink::features::kNavigationPredictor,
           "random_anchor_sampling_period",
-          100)),
+#if BUILDFLAG(IS_ANDROID)
+          1
+#else
+          100
+#endif
+          )),
       clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(document.IsInOutermostMainFrame());

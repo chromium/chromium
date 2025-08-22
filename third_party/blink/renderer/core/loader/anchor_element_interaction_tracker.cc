@@ -69,11 +69,21 @@ ViewportHeuristicConfig GetViewportHeuristicConfig() {
   // Note: The default value was selected arbitrarily and hasn't been tuned.
   const base::FeatureParam<double> kLargestAnchorThreshold{
       &features::kPreloadingViewportHeuristics, "largest_anchor_threshold",
-      0.5};
+#if BUILDFLAG(IS_ANDROID)
+      0.25
+#else
+      0.5
+#endif
+  };
   // Note: The default value was selected arbitrarily and hasn't been tuned.
   const base::FeatureParam<base::TimeDelta> kDelay{
       &features::kPreloadingViewportHeuristics, "delay",
-      base::Milliseconds(1000)};
+#if BUILDFLAG(IS_ANDROID)
+      base::Milliseconds(500)
+#else
+      base::Milliseconds(1000)
+#endif
+  };
 
   double low = std::clamp(kDistanceFromPointerDownLowerBound.Get(), -1.0, 1.0);
   double high = std::clamp(kDistanceFromPointerDownUpperBound.Get(), low, 1.0);

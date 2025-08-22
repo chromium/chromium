@@ -725,10 +725,7 @@ class AnchorElementInteractionViewportHeuristicsTest
  public:
   AnchorElementInteractionViewportHeuristicsTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kNavigationPredictor,
-          {{"random_anchor_sampling_period", "1"},
-           {"intersection_observation_after_fcp_only", "true"},
-           {"post_fcp_observation_delay", "10ms"}}},
+        {{features::kNavigationPredictor, GetParamsForNavigationPredictor()},
          {features::kNavigationPredictorNewViewportFeatures, {}},
          {features::kPreloadingViewportHeuristics,
           {{"delay", "100ms"},
@@ -740,6 +737,12 @@ class AnchorElementInteractionViewportHeuristicsTest
 
   static constexpr int kViewportWidth = 400;
   static constexpr int kViewportHeight = 400;
+
+  std::map<std::string, std::string> GetParamsForNavigationPredictor() {
+    return {{"random_anchor_sampling_period", "1"},
+            {"intersection_observation_after_fcp_only", "true"},
+            {"post_fcp_observation_delay", "10ms"}};
+  }
 
   void DispatchPointerDown(gfx::PointF coordinates) {
     GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
@@ -1008,9 +1011,11 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
 
 TEST_F(AnchorElementInteractionViewportHeuristicsTest,
        PredictorDisabledIfAllAnchorsNotSampledIn) {
+  std::map<std::string, std::string> params = GetParamsForNavigationPredictor();
+  params["random_anchor_sampling_period"] = "2";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kNavigationPredictor, {{"random_anchor_sampling_period", "2"}});
+      features::kNavigationPredictor, params);
 
   String body = R"HTML(
     <body style="margin: 0px">

@@ -18592,69 +18592,6 @@
             ]
         }
     ],
-    "PreloadingDeterministicViewportBasedPredictorAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Aggressive_20250428",
-                    "params": {
-                        "delay": "500ms",
-                        "distance_from_ptr_down_hi": "0.0",
-                        "distance_from_ptr_down_low": "-0.3",
-                        "enact_candidates": "true",
-                        "intersection_observation_after_fcp_only": "true",
-                        "intersection_observer_delay": "1000ms",
-                        "largest_anchor_threshold": "0.25",
-                        "max_intersection_observations": "60",
-                        "random_anchor_sampling_period": "1"
-                    },
-                    "enable_features": [
-                        "NavigationPredictor",
-                        "PreloadingViewportHeuristics"
-                    ]
-                },
-                {
-                    "name": "Moderate_20250428",
-                    "params": {
-                        "delay": "1000ms",
-                        "distance_from_ptr_down_hi": "0.0",
-                        "distance_from_ptr_down_low": "-0.3",
-                        "enact_candidates": "true",
-                        "intersection_observation_after_fcp_only": "true",
-                        "intersection_observer_delay": "1000ms",
-                        "largest_anchor_threshold": "0.25",
-                        "max_intersection_observations": "60",
-                        "random_anchor_sampling_period": "1"
-                    },
-                    "enable_features": [
-                        "NavigationPredictor",
-                        "PreloadingViewportHeuristics"
-                    ]
-                },
-                {
-                    "name": "Conservative_20250428",
-                    "params": {
-                        "delay": "1000ms",
-                        "distance_from_ptr_down_hi": "0.0",
-                        "distance_from_ptr_down_low": "-0.3",
-                        "enact_candidates": "true",
-                        "intersection_observation_after_fcp_only": "true",
-                        "intersection_observer_delay": "1000ms",
-                        "largest_anchor_threshold": "0.5",
-                        "max_intersection_observations": "60",
-                        "random_anchor_sampling_period": "1"
-                    },
-                    "enable_features": [
-                        "NavigationPredictor",
-                        "PreloadingViewportHeuristics"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreloadingEagerHeuristicsForDesktop": [
         {
             "platforms": [
