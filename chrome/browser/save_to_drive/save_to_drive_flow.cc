@@ -4,6 +4,7 @@
 
 #include "chrome/browser/save_to_drive/save_to_drive_flow.h"
 
+#include "chrome/browser/save_to_drive/content_reader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -12,9 +13,11 @@ namespace save_to_drive {
 
 SaveToDriveFlow::SaveToDriveFlow(
     content::RenderFrameHost* render_frame_host,
-    std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher)
+    std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
+    std::unique_ptr<ContentReader> content_reader)
     : content::DocumentUserData<SaveToDriveFlow>(render_frame_host),
-      event_dispatcher_(std::move(event_dispatcher)) {}
+      event_dispatcher_(std::move(event_dispatcher)),
+      content_reader_(std::move(content_reader)) {}
 
 SaveToDriveFlow::~SaveToDriveFlow() = default;
 

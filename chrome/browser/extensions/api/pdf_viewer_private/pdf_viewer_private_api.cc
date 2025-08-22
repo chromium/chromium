@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/pdf_viewer_private/pdf_viewer_private_api.h"
 
 #include <cmath>
+#include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -13,8 +14,6 @@
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
-#include "chrome/browser/save_to_drive/save_to_drive_flow.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/pdf/common/constants.h"
@@ -22,6 +21,13 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "pdf/buildflags.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+#include "chrome/browser/save_to_drive/content_reader.h"
+#include "chrome/browser/save_to_drive/pdf_content_reader.h"
+#include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
+#include "chrome/browser/save_to_drive/save_to_drive_flow.h"
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 namespace extensions {
 
@@ -74,6 +80,27 @@ base::WeakPtr<StreamContainer> GetStreamContainer(
 
   return pdf_viewer_stream_manager->GetStreamContainer(embedder_host);
 }
+
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+// Converts the `SaveRequestType` enum from the extension API to the mojom enum.
+pdf::mojom::SaveRequestType ToMojomSaveRequestType(
+    api::pdf_viewer_private::SaveRequestType request_type) {
+  switch (request_type) {
+    case api::pdf_viewer_private::SaveRequestType::kOriginal:
+      return pdf::mojom::SaveRequestType::kOriginal;
+    case api::pdf_viewer_private::SaveRequestType::kEdited:
+      return pdf::mojom::SaveRequestType::kEdited;
+    case api::pdf_viewer_private::SaveRequestType::kSearchified:
+      return pdf::mojom::SaveRequestType::kSearchified;
+    case api::pdf_viewer_private::SaveRequestType::kAnnotation:
+      return pdf::mojom::SaveRequestType::kAnnotation;
+    case api::pdf_viewer_private::SaveRequestType::kNone:
+      // It should not be called with `kNone`.
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 }  // namespace
 
@@ -139,9 +166,11 @@ ExtensionFunction::ResponseAction PdfViewerPrivateSaveToDriveFunction::Run() {
   if (!event_dispatcher) {
     return RespondNow(Error("Failed to create event dispatcher"));
   }
+  auto content_reader = std::make_unique<save_to_drive::PDFContentReader>(
+      render_frame_host(), ToMojomSaveRequestType(params->save_request_type));
   save_to_drive::SaveToDriveFlow::CreateForCurrentDocument(
-      render_frame_host(), std::move(event_dispatcher));
-
+      render_frame_host(), std::move(event_dispatcher),
+      std::move(content_reader));
   auto* flow = SaveToDriveFlow::GetForCurrentDocument(render_frame_host());
   flow->Run();
   return RespondNow(NoArguments());

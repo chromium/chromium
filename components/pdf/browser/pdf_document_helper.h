@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "pdf/buildflags.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -106,6 +107,13 @@ class PDFDocumentHelper
   // document is loaded, the callback will be invoked with an empty vector.
   void GetPdfBytes(uint32_t size_limit,
                    pdf::mojom::PdfListener::GetPdfBytesCallback callback);
+
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+  void GetSaveDataBufferHandlerForDrive(
+      pdf::mojom::SaveRequestType request_type,
+      pdf::mojom::PdfListener::GetSaveDataBufferHandlerForDriveCallback
+          callback);
+#endif
 
   // Returns text of the given page. If called before document is loaded, the
   // callback will be invoked with an empty string.

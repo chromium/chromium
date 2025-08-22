@@ -29,6 +29,7 @@ source_set("browser") {
     "//components/pdf/common:constants",
     "//components/pdf/common:util",
     "//content/public/common",
+    "//pdf:buildflags",
     "//pdf:features",
     "//services/screen_ai/buildflags",
     "//ui/base",

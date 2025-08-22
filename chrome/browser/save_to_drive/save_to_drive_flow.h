@@ -13,6 +13,7 @@ class RenderFrameHost;
 
 namespace save_to_drive {
 
+class ContentReader;
 class SaveToDriveEventDispatcher;
 
 // This class is responsible for orchastrating the entire save to Drive flow
@@ -37,9 +38,11 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
   friend class content::DocumentUserData<SaveToDriveFlow>;
 
   SaveToDriveFlow(content::RenderFrameHost* render_frame_host,
-                  std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher);
+                  std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
+                  std::unique_ptr<ContentReader> content_reader);
 
   std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher_;
+  std::unique_ptr<ContentReader> content_reader_;
 
   DOCUMENT_USER_DATA_KEY_DECL();
 };
