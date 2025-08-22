@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/digital_credentials/digital_identity_request_impl.h"
+#include "content/browser/digital_credentials/digital_identity_request_impl.h"
 
 #include <optional>
 
@@ -743,8 +743,9 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
             std::nullopt);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpAndPreviewProtocol_ComputeInterstitialType_AgeOverAndGivenName) {
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpAndPreviewProtocol_ComputeInterstitialType_AgeOverAndGivenName) {
   base::Value openid4vp_request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
   base::Value preview_request = GenerateOnlyAgePreviewRequest();
   ASSERT_TRUE(SetFieldNameValue(preview_request, "given_name"));
@@ -793,9 +794,9 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
     ]
   }
 })");
-  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
-                                    std::move(malformed_request)),
-            InterstitialType::kLowRisk);
+  EXPECT_EQ(
+      ComputeInterstitialType(kOpenid4vpProtocol, std::move(malformed_request)),
+      InterstitialType::kLowRisk);
 }
 
 TEST_F(DigitalIdentityRequestImplInterstitialTest,
@@ -1053,8 +1054,7 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetWithProperFormatting) {
                         }
                       }),
                       base::test::RunOnceClosure(run_loop.QuitClosure())));
-  digital_identity_request_impl()->Get(std::move(requests),
-                                       base::DoNothing());
+  digital_identity_request_impl()->Get(std::move(requests), base::DoNothing());
   run_loop.Run();
 }
 
@@ -1076,15 +1076,15 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInRequest) {
 
   // Simulate a provider that returns a response without a protocol.
   EXPECT_CALL(*mock_digital_identity_provider(), Get)
-      .WillOnce(WithArg<3>([this,
-                            &kResponseData](DigitalIdentityCallback callback) {
-        // Running the `callback` will destroy the provider, reset the pointer
-        // to avoid dangling pointers after invoking the callback.
-        reset_provider_pointer();
+      .WillOnce(
+          WithArg<3>([this, &kResponseData](DigitalIdentityCallback callback) {
+            // Running the `callback` will destroy the provider, reset the
+            // pointer to avoid dangling pointers after invoking the callback.
+            reset_provider_pointer();
 
-        std::move(callback).Run(
-            DigitalCredential(std::nullopt, kResponseData.Clone()));
-      }));
+            std::move(callback).Run(
+                DigitalCredential(std::nullopt, kResponseData.Clone()));
+          }));
 
   base::MockCallback<GetCallback> mock_callback;
   // The protocol in the request should be used when invoking the callback,

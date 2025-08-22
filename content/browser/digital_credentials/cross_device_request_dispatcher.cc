@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/digital_credentials/cross_device_request_dispatcher.h"
+#include "content/browser/digital_credentials/cross_device_request_dispatcher.h"
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/digital_credentials/cross_device_request_dispatcher.h"
+#include "content/browser/digital_credentials/cross_device_request_dispatcher.h"
 
 #include "base/json/json_reader.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "content/browser/webid/digital_credentials/cross_device_request_dispatcher.h"
+#include "content/browser/digital_credentials/cross_device_request_dispatcher.h"
 #include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"

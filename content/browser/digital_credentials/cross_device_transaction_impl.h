@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_DIGITAL_CREDENTIALS_CROSS_DEVICE_TRANSACTION_IMPL_H_
-#define CONTENT_BROWSER_WEBID_DIGITAL_CREDENTIALS_CROSS_DEVICE_TRANSACTION_IMPL_H_
+#ifndef CONTENT_BROWSER_DIGITAL_CREDENTIALS_CROSS_DEVICE_TRANSACTION_IMPL_H_
+#define CONTENT_BROWSER_DIGITAL_CREDENTIALS_CROSS_DEVICE_TRANSACTION_IMPL_H_
 
 #include <array>
 #include <cstdint>
@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "content/browser/webid/digital_credentials/cross_device_request_dispatcher.h"
+#include "content/browser/digital_credentials/cross_device_request_dispatcher.h"
 #include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -86,4 +86,4 @@ class CONTENT_EXPORT TransactionImpl : public Transaction,
 
 }  // namespace content::digital_credentials::cross_device
 
-#endif  // CONTENT_BROWSER_WEBID_DIGITAL_CREDENTIALS_CROSS_DEVICE_TRANSACTION_IMPL_H_
+#endif  // CONTENT_BROWSER_DIGITAL_CREDENTIALS_CROSS_DEVICE_TRANSACTION_IMPL_H_

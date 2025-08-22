@@ -2581,6 +2581,7 @@ test("content_unittests") {
     "../browser/devtools/protocol_unittest.cc",
     "../browser/devtools/request_body_collector_unittest.cc",
     "../browser/devtools/shared_storage_worklet_devtools_agent_host_unittest.cc",
+    "../browser/digital_credentials/digital_identity_request_impl_unittest.cc",
     "../browser/dom_storage/dom_storage_context_wrapper_unittest.cc",
     "../browser/download/download_manager_impl_unittest.cc",
     "../browser/download/save_package_unittest.cc",
@@ -2924,7 +2925,6 @@ test("content_unittests") {
     "../browser/webid/config_fetcher_unittest.cc",
     "../browser/webid/delegation/jwt_signer_unittest.cc",
     "../browser/webid/delegation/sd_jwt_unittest.cc",
-    "../browser/webid/digital_credentials/digital_identity_request_impl_unittest.cc",
     "../browser/webid/federated_auth_disconnect_request_unittest.cc",
     "../browser/webid/federated_auth_request_impl_multiple_frames_unittest.cc",
     "../browser/webid/federated_auth_request_impl_registry_unittest.cc",
@@ -3100,8 +3100,8 @@ test("content_unittests") {
     sources += [
       "../browser/compute_pressure/pressure_service_for_frame_unittest.cc",
       "../browser/compute_pressure/pressure_service_for_worker_unittest.cc",
-      "../browser/webid/digital_credentials/cross_device_request_dispatcher_unittest.cc",
-      "../browser/webid/digital_credentials/cross_device_transaction_impl_unittest.cc",
+      "../browser/digital_credentials/cross_device_request_dispatcher_unittest.cc",
+      "../browser/digital_credentials/cross_device_transaction_impl_unittest.cc",
     ]
   }
 

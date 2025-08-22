@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/digital_credentials/cross_device_transaction_impl.h"
+#include "content/browser/digital_credentials/cross_device_transaction_impl.h"
 
 #include <optional>
 #include <variant>
@@ -11,7 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
-#include "content/browser/webid/digital_credentials/cross_device_request_dispatcher.h"
+#include "content/browser/digital_credentials/cross_device_request_dispatcher.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"

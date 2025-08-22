@@ -1391,6 +1391,8 @@ source_set("browser") {
     # TODO(crbug.com/202736352): This is built even if enable_screen_capture is
     # false. Consider better separation of the screen capture and the other
     # capture code so we can only build this if actually necessary.
+    "digital_credentials/digital_identity_request_impl.cc",
+    "digital_credentials/digital_identity_request_impl.h",
     "media/capture/native_screen_capture_picker.cc",
     "media/capture/native_screen_capture_picker.h",
     "media/capture_handle_manager.cc",
@@ -2442,8 +2444,6 @@ source_set("browser") {
     "webid/delegation/jwt_signer.h",
     "webid/delegation/sd_jwt.cc",
     "webid/delegation/sd_jwt.h",
-    "webid/digital_credentials/digital_identity_request_impl.cc",
-    "webid/digital_credentials/digital_identity_request_impl.h",
     "webid/fake_identity_request_dialog_controller.cc",
     "webid/fake_identity_request_dialog_controller.h",
     "webid/federated_auth_disconnect_request.cc",
@@ -3495,10 +3495,10 @@ source_set("browser") {
 
       # Cross-device digital credentials flows are handled by Play Services on
       # Android, not the browser.
-      "webid/digital_credentials/cross_device_request_dispatcher.cc",
-      "webid/digital_credentials/cross_device_request_dispatcher.h",
-      "webid/digital_credentials/cross_device_transaction_impl.cc",
-      "webid/digital_credentials/cross_device_transaction_impl.h",
+      "digital_credentials/cross_device_request_dispatcher.cc",
+      "digital_credentials/cross_device_request_dispatcher.h",
+      "digital_credentials/cross_device_transaction_impl.cc",
+      "digital_credentials/cross_device_transaction_impl.h",
     ]
 
     if (!is_fuchsia) {
