@@ -9,10 +9,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
-import org.chromium.base.CancelableRunnable;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -48,9 +45,7 @@ class TileInteractionDelegateImpl
 
     private @Nullable Runnable mOnClickRunnable;
     private @Nullable Runnable mOnRemoveRunnable;
-    private @Nullable CancelableRunnable mPrerenderRunnable;
     private @Nullable GURL mPrerenderedUrl;
-    private @Nullable GURL mScheduldedPrerenderingUrl;
 
     public TileInteractionDelegateImpl(
             ContextMenuManager contextMenuManager,
@@ -86,41 +81,22 @@ class TileInteractionDelegateImpl
     }
 
     private void maybePrerender(GURL url) {
-        // Avoid resetting the delayed task if witness several MotionEvent.ACTION_DOWN in a row. If
-        // the URL has been scheduled to be prerendered or already prerendered, it should be
-        // skipped.
-        if (Objects.equals(mScheduldedPrerenderingUrl, url)
-                || Objects.equals(mPrerenderedUrl, url)) {
+        // If the URL has been already prerendered, it should be skipped.
+        if (Objects.equals(mPrerenderedUrl, url)) {
             return;
         }
 
-        assert mScheduldedPrerenderingUrl == null;
-        mScheduldedPrerenderingUrl = url;
-        mPrerenderRunnable =
-                new CancelableRunnable(
-                        () -> {
-                            if (mAndroidPrerenderManager.startPrerendering(url)) {
-                                mPrerenderedUrl = url;
-                            }
-                            mScheduldedPrerenderingUrl = null;
-                        });
-        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, mPrerenderRunnable, 0);
+        if (mAndroidPrerenderManager.startPrerendering(url)) {
+            mPrerenderedUrl = url;
+        }
     }
 
-    // This function cancels scheduled prerendering or calls stopPrerendering to stop stale
-    // prerendering.
     private void cancelPrerender() {
-        if (mPrerenderRunnable != null) {
-            mPrerenderRunnable.cancel();
-            mPrerenderRunnable = null;
-        }
-
         if (mPrerenderedUrl != null) {
             mAndroidPrerenderManager.stopPrerendering();
         }
 
         mPrerenderedUrl = null;
-        mScheduldedPrerenderingUrl = null;
     }
 
     // TileGroup.TileInteractionDelegate => View.OnKeyListener implementation.
