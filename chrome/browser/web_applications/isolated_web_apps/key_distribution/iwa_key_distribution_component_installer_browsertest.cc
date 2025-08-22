@@ -108,8 +108,9 @@ IN_PROC_BROWSER_TEST_F(IwaKeyDistributionComponentInstallBrowserTest,
   // UMAs.
   IwaKeyDistributionInfoProvider::GetInstance().GetKeyRotationInfo("anything");
 
-  EXPECT_THAT(ht.GetAllSamples(kIwaKeyRotationInfoSource),
-              base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1)));
+  EXPECT_THAT(
+      ht.GetAllSamples(kIwaKeyRotationInfoSource),
+      base::BucketsAre(base::Bucket(KeyDistributionComponentSource::kNone, 1)));
 
   ASSERT_OK_AND_ASSIGN(
       (auto [version, is_preloaded]),
@@ -120,10 +121,10 @@ IN_PROC_BROWSER_TEST_F(IwaKeyDistributionComponentInstallBrowserTest,
   // UMAs.
   IwaKeyDistributionInfoProvider::GetInstance().GetKeyRotationInfo("anything");
 
-  EXPECT_THAT(
-      ht.GetAllSamples(kIwaKeyRotationInfoSource),
-      base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1),
-                       base::Bucket(KeyRotationInfoSource::kPreloaded, 1)));
+  EXPECT_THAT(ht.GetAllSamples(kIwaKeyRotationInfoSource),
+              base::BucketsAre(
+                  base::Bucket(KeyDistributionComponentSource::kNone, 1),
+                  base::Bucket(KeyDistributionComponentSource::kPreloaded, 1)));
 }
 
 }  // namespace web_app

@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/types/optional_ref.h"
 #include "components/webapps/isolated_web_apps/features.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_histograms.h"
 #include "components/webapps/isolated_web_apps/proto/key_distribution.pb.h"
@@ -32,6 +33,16 @@ namespace {
 // has loaded. After this duration, readiness is signaled via
 // OnMaybeDownloadedComponentDataReady().
 constexpr base::TimeDelta kDownloadedComponentDataWaitTime = base::Seconds(15);
+
+KeyDistributionComponentSource GetComponentDataSource(
+    base::optional_ref<const IwaKeyDistributionInfoProvider::ComponentData>
+        data) {
+  if (data) {
+    return data->is_preloaded ? KeyDistributionComponentSource::kPreloaded
+                              : KeyDistributionComponentSource::kDownloaded;
+  }
+  return KeyDistributionComponentSource::kNone;
+}
 
 bool IsIsolatedWebAppManagedAllowlistEnabled() {
   return base::FeatureList::IsEnabled(
@@ -180,34 +191,49 @@ IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
     return kr_info;
   }
 
-  if (data_) {
-    base::UmaHistogramEnumeration(kIwaKeyRotationInfoSource,
-                                  data_->is_preloaded
-                                      ? KeyRotationInfoSource::kPreloaded
-                                      : KeyRotationInfoSource::kDownloaded);
-    return base::FindOrNull(data_->key_rotations, web_bundle_id);
-  }
-
   base::UmaHistogramEnumeration(kIwaKeyRotationInfoSource,
-                                KeyRotationInfoSource::kNone);
-  return nullptr;
+                                GetComponentDataSource(data_));
+
+  return data_ ? base::FindOrNull(data_->key_rotations, web_bundle_id)
+               : nullptr;
 }
+
 bool IwaKeyDistributionInfoProvider::IsManagedInstallPermitted(
     std::string_view web_bundle_id) const {
-  if (!IsIsolatedWebAppManagedAllowlistEnabled()) {
-    return true;
-  }
+  bool is_permitted =
+      data_ && base::Contains(data_->managed_allowlist, web_bundle_id);
+
+  base::UmaHistogramEnumeration(
+      kIwaKeyDistributionManagedInstallCheckInfoSourceHistogramName,
+      GetComponentDataSource(data_));
+  base::UmaHistogramBoolean(
+      kIwaKeyDistributionManagedInstallAllowedHistogramName, is_permitted);
+
   if (skip_managed_checks_for_testing_) {
     CHECK_IS_TEST();
     return true;
   }
-  return data_ && data_->managed_allowlist.contains(web_bundle_id);
+
+  return IsIsolatedWebAppManagedAllowlistEnabled() ? is_permitted : true;
 }
 
 bool IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted(
     std::string_view web_bundle_id) const {
-  // Both installs and updates are allowed only for allowlisted apps.
-  return IsManagedInstallPermitted(web_bundle_id);
+  bool is_permitted =
+      data_ && base::Contains(data_->managed_allowlist, web_bundle_id);
+
+  base::UmaHistogramEnumeration(
+      kIwaKeyDistributionManagedUpdateCheckInfoSourceHistogramName,
+      GetComponentDataSource(data_));
+  base::UmaHistogramBoolean(
+      kIwaKeyDistributionManagedUpdateAllowedHistogramName, is_permitted);
+
+  if (skip_managed_checks_for_testing_) {
+    CHECK_IS_TEST();
+    return true;
+  }
+
+  return IsIsolatedWebAppManagedAllowlistEnabled() ? is_permitted : true;
 }
 
 void IwaKeyDistributionInfoProvider::SkipManagedAllowlistChecksForTesting(

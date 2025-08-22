@@ -267,7 +267,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Downloaded component"/>
 </enum>
 
-<enum name="KeyRotationInfoSource">
+<enum name="KeyDistributionComponentSource">
   <int value="0" label="No component"/>
   <int value="1" label="Preloaded component"/>
   <int value="2" label="Downloaded component"/>

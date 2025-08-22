@@ -1457,7 +1457,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebApp.Isolated.KeyDistributionComponent.KeyRotationInfoSource"
-    enum="KeyRotationInfoSource" expires_after="2026-01-01">
+    enum="KeyDistributionComponentSource" expires_after="2026-01-01">
   <owner>greengrape@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
@@ -1472,6 +1472,73 @@ chromium-metrics-reviews@google.com.
 
     This is normally called during installation/updates as well as before
     launching the app.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebApp.Isolated.KeyDistributionComponent.ManagedInstallAllowed"
+    enum="BooleanAllowed" expires_after="2026-07-01">
+  <owner>rferens@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    This metric records if the checked app is present in the managed allowlist.
+    The metric is recorded on
+    IwaKeyDistributionInfoProvider::IsManagedInstallPermitted() call, and gives
+    the same result if IsolatedWebAppAllowlistFlag is enabled.
+
+    This is normally called when the policy is processed.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebApp.Isolated.KeyDistributionComponent.ManagedInstallCheckInfoSource"
+    enum="KeyDistributionComponentSource" expires_after="2026-07-01">
+  <owner>rferens@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Allowlist data for Isolated Web Apps (i.e. which app can be
+    installed/updated) comes from the Iwa Key Distribution component which is
+    managed by the Chrome component updater.
+
+    This metric records the currently loaded data source for calls to
+    IwaKeyDistributionInfoProvider::IsManagedInstallPermitted() -- whether
+    there's no component loaded at all, whether the component is preloaded with
+    Chrome distribution or whether it's properly downloaded from Omaha servers.
+
+    This is normally called when the policy is processed.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Isolated.KeyDistributionComponent.ManagedUpdateAllowed"
+    enum="BooleanAllowed" expires_after="2026-07-01">
+  <owner>rferens@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    This metric records if the checked app is present in the managed allowlist.
+    The metric is recorded on
+    IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted() call, and gives
+    the same result if IsolatedWebAppAllowlistFlag is enabled.
+
+    This is called when the update manager check if apps require updates.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebApp.Isolated.KeyDistributionComponent.ManagedUpdateCheckInfoSource"
+    enum="KeyDistributionComponentSource" expires_after="2026-07-01">
+  <owner>rferens@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Allowlist data for Isolated Web Apps (i.e. which app can be
+    installed/updated) comes from the Iwa Key Distribution component which is
+    managed by the Chrome component updater.
+
+    This metric records the currently loaded data source for calls to
+    IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted() -- whether
+    there's no component loaded at all, whether the component is preloaded with
+    Chrome distribution or whether it's properly downloaded from Omaha servers.
+
+    This is called when the update manager check if apps require updates.
   </summary>
 </histogram>
 

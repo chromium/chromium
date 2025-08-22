@@ -9,9 +9,23 @@
 
 namespace web_app {
 
+inline constexpr std::string_view
+    kIwaKeyDistributionManagedUpdateAllowedHistogramName =
+        "WebApp.Isolated.KeyDistributionComponent.ManagedUpdateAllowed";
+inline constexpr std::string_view
+    kIwaKeyDistributionManagedUpdateCheckInfoSourceHistogramName =
+        "WebApp.Isolated.KeyDistributionComponent.ManagedUpdateCheckInfoSource";
+inline constexpr std::string_view
+    kIwaKeyDistributionManagedInstallAllowedHistogramName =
+        "WebApp.Isolated.KeyDistributionComponent.ManagedInstallAllowed";
+inline constexpr std::string_view
+    kIwaKeyDistributionManagedInstallCheckInfoSourceHistogramName =
+        "WebApp.Isolated.KeyDistributionComponent."
+        "ManagedInstallCheckInfoSource";
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class KeyRotationInfoSource {
+enum class KeyDistributionComponentSource {
   // No key distribution component loaded.
   kNone = 0,
 

@@ -211,8 +211,9 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
                                      "public key in the signature list.",
                                      kWebBundleId))));
 
-  EXPECT_THAT(ht.GetAllSamples(kIwaKeyRotationInfoSource),
-              base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1)));
+  EXPECT_THAT(
+      ht.GetAllSamples(kIwaKeyRotationInfoSource),
+      base::BucketsAre(base::Bucket(KeyDistributionComponentSource::kNone, 1)));
 
   auto expected_key = std::visit(
       [](const auto& key_pair) -> base::span<const uint8_t> {
@@ -229,8 +230,9 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
 
   EXPECT_THAT(
       ht.GetAllSamples(kIwaKeyRotationInfoSource),
-      base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1),
-                       base::Bucket(KeyRotationInfoSource::kDownloaded, 1)));
+      base::BucketsAre(
+          base::Bucket(KeyDistributionComponentSource::kNone, 1),
+          base::Bucket(KeyDistributionComponentSource::kDownloaded, 1)));
 
   auto random_key = web_package::test::Ed25519KeyPair::CreateRandom();
   EXPECT_THAT(
@@ -248,8 +250,9 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
 
   EXPECT_THAT(
       ht.GetAllSamples(kIwaKeyRotationInfoSource),
-      base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1),
-                       base::Bucket(KeyRotationInfoSource::kDownloaded, 2)));
+      base::BucketsAre(
+          base::Bucket(KeyDistributionComponentSource::kNone, 1),
+          base::Bucket(KeyDistributionComponentSource::kDownloaded, 2)));
 
   EXPECT_THAT(
       test::UpdateKeyDistributionInfo(base::Version("1.0.2"), kWebBundleId,
@@ -265,8 +268,9 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
 
   EXPECT_THAT(
       ht.GetAllSamples(kIwaKeyRotationInfoSource),
-      base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1),
-                       base::Bucket(KeyRotationInfoSource::kDownloaded, 3)));
+      base::BucketsAre(
+          base::Bucket(KeyDistributionComponentSource::kNone, 1),
+          base::Bucket(KeyDistributionComponentSource::kDownloaded, 3)));
 }
 
 namespace {

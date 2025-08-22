@@ -881,6 +881,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
        SkipsUpdateDiscoveryTaskForNotAllowlistedIwa) {
+  base::HistogramTester ht;
   // Turn off default skipping of allowlist for IWA tests
   IwaKeyDistributionInfoProvider::GetInstance()
       .SkipManagedAllowlistChecksForTesting(false);
@@ -908,6 +909,10 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
       IwaKeyDistributionInfoProvider::GetInstance().IsManagedUpdatePermitted(
           GetIwa2WebBundleId().id()));
 
+  EXPECT_THAT(
+      ht.GetAllSamples(kIwaKeyDistributionManagedUpdateAllowedHistogramName),
+      base::BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+
   test_update_server().AddBundle(CreateIwa1Bundle("2.1.0"));
   test_update_server().AddBundle(CreateIwa2Bundle("3.1.0"));
 
@@ -917,6 +922,10 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
       &provider().install_manager());
   manifest_updated_observer.BeginListeningAndWait(
       {GetAppId(GetIwa2WebBundleId())});
+
+  EXPECT_THAT(
+      ht.GetAllSamples(kIwaKeyDistributionManagedUpdateAllowedHistogramName),
+      base::BucketsAre(base::Bucket(false, 2), base::Bucket(true, 2)));
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("2.0.0"));
   AssertAppInstalledAtVersion(GetIwa2WebBundleId(), base::Version("3.1.0"));
