@@ -131,21 +131,20 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();
 
-    // TODO(crbug.com/342205162): Require native for ProfileDataCache creation.
-    /**
-     * @deprecated Use the constructor below which accepts {@link IdentityManager}
-     */
     @VisibleForTesting
-    @Deprecated
-    ProfileDataCache(Context context, @Px int imageSize, @Nullable BadgeConfig badgeConfig) {
-
+    ProfileDataCache(
+            Context context,
+            IdentityManager identityManager,
+            @Px int imageSize,
+            @Nullable BadgeConfig badgeConfig) {
+        // TODO(crbug.com/341948846): Remove AccountInfoService and update
+        // populateCache/populateCacheForAllAccounts to use identityManager to get the list of
+        // accounts
+        assert identityManager != null;
         mContext = context;
         mImageSize = imageSize;
         mDefaultBadgeConfig = badgeConfig;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
-        // TODO(crbug.com/341948846): Remove AccountInfoService and update
-        // populateCache/populateCacheForAllAccounts to use identityManager to get the list of
-        // accounts
         Promise<AccountInfoService> accountInfoServicePromise =
                 AccountInfoServiceProvider.getPromise();
         if (accountInfoServicePromise.isFulfilled()) {
@@ -153,31 +152,6 @@ public class ProfileDataCache implements AccountInfoService.Observer {
         } else {
             accountInfoServicePromise.then(this::populateCache);
         }
-    }
-
-    @VisibleForTesting
-    ProfileDataCache(
-            Context context,
-            IdentityManager identityManager,
-            @Px int imageSize,
-            @Nullable BadgeConfig badgeConfig) {
-        this(context, imageSize, badgeConfig);
-        // TODO(crbug.com/341948846): Remove AccountInfoService and update
-        // populateCache/populateCacheForAllAccounts to use identityManager to get the list of
-        // accounts
-        assert identityManager != null;
-    }
-
-    /**
-     * @param context Context of the application to extract resources from.
-     * @return A {@link ProfileDataCache} object with default image size(R.dimen.user_picture_size)
-     *     and no badge.
-     */
-    public static ProfileDataCache createWithDefaultImageSizeAndNoBadge(Context context) {
-        return new ProfileDataCache(
-                context,
-                context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
-                /* badgeConfig= */ null);
     }
 
     /**
