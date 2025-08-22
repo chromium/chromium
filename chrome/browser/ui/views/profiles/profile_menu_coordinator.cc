@@ -9,6 +9,7 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -38,14 +39,12 @@ void ProfileMenuCoordinator::Show(
     std::optional<signin_metrics::AccessPoint> explicit_signin_access_point) {
   // TODO(crbug.com/425953501): Update this code.
   Browser* const browser = browser_->GetBrowserForMigrationOnly();
-  auto* avatar_toolbar_button = BrowserView::GetBrowserViewForBrowser(browser)
-                                    ->toolbar_button_provider()
-                                    ->GetAvatarToolbarButton();
+  auto* avatar_toolbar_button =
+      BrowserElements::From(browser)->GetElement(kToolbarAvatarButtonElementId);
 
-  // Do not show avatar bubble if there is no avatar menu button, the button
-  // action is disabled or the bubble is already showing.
-  if (!avatar_toolbar_button ||
-      avatar_toolbar_button->IsButtonActionDisabled() || IsShowing()) {
+  // Do not show avatar bubble if there is no avatar menu button or if the
+  // bubble is already showing.
+  if (!avatar_toolbar_button || IsShowing()) {
     return;
   }
 

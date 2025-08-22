@@ -163,10 +163,8 @@ void WebUIBrowserPageHandler::OpenAppMenu() {
 }
 
 void WebUIBrowserPageHandler::OpenProfileMenu() {
-  // TODO(webium): Find profile menu button and call
-  // GetBrowser()->GetFeatures().profile_menu_coordinator()->Show(
-  //    /*is_source_accelerator=*/false, avatar_button);
-  NOTIMPLEMENTED();
+  GetBrowser()->GetFeatures().profile_menu_coordinator()->Show(
+      /*is_source_accelerator=*/false);
 }
 
 void WebUIBrowserPageHandler::LaunchDevToolsForBrowser() {
