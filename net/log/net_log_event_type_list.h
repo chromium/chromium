@@ -1362,6 +1362,7 @@ EVENT_TYPE(HTTP_STREAM_JOB_INIT_CONNECTION)
 EVENT_TYPE(HTTP_STREAM_REQUEST_BOUND_TO_JOB)
 
 // Identifies the NetLogSource() for the Request that the Job was attached to.
+// Event is logged to both the Request and the JobController.
 // The event parameters are:
 //   {
 //      "source_dependency": <Source identifier for the Request to which we were

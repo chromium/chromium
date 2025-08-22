@@ -1038,6 +1038,9 @@ void HttpStreamFactory::JobController::BindJob(Job* job) {
   job->net_log().AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_JOB_BOUND_TO_REQUEST,
       request_->net_log().source());
+  net_log_.AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_JOB_BOUND_TO_REQUEST,
+      request_->net_log().source());
 
   OrphanUnboundJob();
 }
