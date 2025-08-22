@@ -283,8 +283,10 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   TableViewModel* model = self.tableViewModel;
 
   [model addSectionWithIdentifier:SectionIdentifierFields];
-  [model addItem:[self updateModalDescriptionItem]
-      toSectionWithIdentifier:SectionIdentifierFields];
+  if (!self.homeProfile && !self.workProfile) {
+    [model addItem:[self updateModalDescriptionItem]
+        toSectionWithIdentifier:SectionIdentifierFields];
+  }
 
   BOOL showOld = [self shouldShowOldSection];
 

@@ -313,11 +313,11 @@ TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
 
   CheckTitleWithId(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
   EXPECT_EQ(1, NumberOfSections());
-  EXPECT_EQ(7, NumberOfItemsInSection(0));
+  EXPECT_EQ(6, NumberOfItemsInSection(0));
   CheckTextCellText(
       l10n_util::GetNSStringF(IDS_AUTOFILL_ADDRESS_HOME_RECORD_TYPE_NOTICE,
                               u"test@gmail.com"),
-      0, 5);
+      0, 4);
   CheckTextButtonCellButtonTextWithId(
-      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL, 0, 6);
+      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL, 0, 5);
 }
