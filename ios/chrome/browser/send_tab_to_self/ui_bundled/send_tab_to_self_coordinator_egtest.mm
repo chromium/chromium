@@ -79,9 +79,9 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
 
   // Confirm the promo.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kConsistencySigninPrimaryButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   // The device list should be shown.

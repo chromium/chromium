@@ -494,7 +494,7 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
 
   // Verify that no sign-in error alert action is shown.
   [ChromeEarlGrey
-      waitForMatcher:chrome_test_util::WebSigninPrimaryButtonMatcher()];
+      waitForMatcher:chrome_test_util::ConsistencySigninPrimaryButtonMatcher()];
   NSString* errorTitle = l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_TITLE);
   [[EarlGrey selectElementWithMatcher:grey_text(errorTitle)]
       assertWithMatcher:grey_notVisible()];
@@ -570,8 +570,8 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
       tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
 
   // Proceed with sign-in.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          WebSigninPrimaryButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
 }
 

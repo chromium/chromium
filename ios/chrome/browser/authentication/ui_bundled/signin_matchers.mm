@@ -20,16 +20,16 @@ id<GREYMatcher> IdentityCellMatcherForEmail(NSString* email) {
                     grey_sufficientlyVisible(), nil);
 }
 
-id<GREYMatcher> WebSigninSkipButtonMatcher() {
+id<GREYMatcher> ConsistencySigninSkipButtonMatcher() {
   return grey_allOf(
-      grey_accessibilityID(kWebSigninSkipButtonAccessibilityIdentifier),
+      grey_accessibilityID(kConsistencySigninSkipButtonAccessibilityIdentifier),
       grey_sufficientlyVisible(), nil);
 }
 
-id<GREYMatcher> WebSigninPrimaryButtonMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
+id<GREYMatcher> ConsistencySigninPrimaryButtonMatcher() {
+  return grey_allOf(grey_accessibilityID(
+                        kConsistencySigninPrimaryButtonAccessibilityIdentifier),
+                    grey_sufficientlyVisible(), nil);
 }
 
 id<GREYMatcher> SigninScreenPromoMatcher() {

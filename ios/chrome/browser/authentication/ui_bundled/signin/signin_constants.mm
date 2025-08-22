@@ -6,11 +6,11 @@
 
 NSString* const kHistorySyncViewAccessibilityIdentifier =
     @"HistorySyncViewAccessibilityIdentifier";
-NSString* const kWebSigninAccessibilityIdentifier =
+NSString* const kConsistencySigninAccessibilityIdentifier =
     @"WebSigninAccessibilityIdentifier";
-NSString* const kWebSigninPrimaryButtonAccessibilityIdentifier =
+NSString* const kConsistencySigninPrimaryButtonAccessibilityIdentifier =
     @"WebSigninPrimaryButtonAccessibilityIdentifier";
-NSString* const kWebSigninSkipButtonAccessibilityIdentifier =
+NSString* const kConsistencySigninSkipButtonAccessibilityIdentifier =
     @"WebSigninSkipButtonAccessibilityIdentifier";
 NSString* const kConsistencyAccountChooserAddAccountIdentifier =
     @"ConsistencyAccountChooserAddAccountIdentifier";

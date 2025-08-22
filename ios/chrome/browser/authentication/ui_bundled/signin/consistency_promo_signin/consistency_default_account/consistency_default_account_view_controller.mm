@@ -161,7 +161,7 @@ UIFont* GetNavigationBarTitleFont() {
                                         action:@selector(skipButtonAction:)];
   }
   rightItem.accessibilityIdentifier =
-      kWebSigninSkipButtonAccessibilityIdentifier;
+      kConsistencySigninSkipButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = rightItem;
 
   // Replace the controller view by the scroll view.
@@ -238,7 +238,7 @@ UIFont* GetNavigationBarTitleFont() {
   self.primaryButton.configuration = buttonConfiguration;
 
   self.primaryButton.accessibilityIdentifier =
-      kWebSigninPrimaryButtonAccessibilityIdentifier;
+      kConsistencySigninPrimaryButtonAccessibilityIdentifier;
   self.primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
   [self.primaryButton addTarget:self
                          action:@selector(primaryButtonAction:)

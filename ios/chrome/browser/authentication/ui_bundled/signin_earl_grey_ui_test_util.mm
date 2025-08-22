@@ -79,10 +79,10 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
   if ([SigninEarlGrey isSignedOut]) {
     // First tap the "Continue as ..." button in the signin bottom sheet.
     [ChromeEarlGreyUI waitForAppToIdle];
-    [ChromeEarlGrey
-        waitForMatcher:chrome_test_util::WebSigninPrimaryButtonMatcher()];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            WebSigninPrimaryButtonMatcher()]
+    [ChromeEarlGrey waitForMatcher:chrome_test_util::
+                                       ConsistencySigninPrimaryButtonMatcher()];
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
         performAction:grey_tap()];
   }
 
@@ -313,9 +313,10 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
       conditionWithName:conditionDescription
                   block:^BOOL {
                     NSError* error;
-                    [[EarlGrey selectElementWithMatcher:
-                                   grey_accessibilityID(
-                                       kWebSigninAccessibilityIdentifier)]
+                    [[EarlGrey
+                        selectElementWithMatcher:
+                            grey_accessibilityID(
+                                kConsistencySigninAccessibilityIdentifier)]
                         assertWithMatcher:matcher
                                     error:&error];
                     return error == nil;

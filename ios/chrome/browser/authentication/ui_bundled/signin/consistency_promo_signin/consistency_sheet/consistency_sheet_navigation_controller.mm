@@ -80,7 +80,7 @@ constexpr CGFloat kCornerRadius = 12.;
   self.backgroundView.frame = self.view.bounds;
   self.view.layer.masksToBounds = YES;
   self.view.clipsToBounds = YES;
-  self.view.accessibilityIdentifier = kWebSigninAccessibilityIdentifier;
+  self.view.accessibilityIdentifier = kConsistencySigninAccessibilityIdentifier;
   UIScreenEdgePanGestureRecognizer* edgeSwipeGesture =
       [[UIScreenEdgePanGestureRecognizer alloc]
           initWithTarget:self

@@ -16,11 +16,11 @@ namespace chrome_test_util {
 id<GREYMatcher> IdentityCellMatcherForEmail(NSString* email);
 
 // Returns a matcher for the skip button in the web sign-in consistency dialog.
-id<GREYMatcher> WebSigninSkipButtonMatcher();
+id<GREYMatcher> ConsistencySigninSkipButtonMatcher();
 
 // Returns a matcher for the primary button in the web sign-in consistency
 // dialog.
-id<GREYMatcher> WebSigninPrimaryButtonMatcher();
+id<GREYMatcher> ConsistencySigninPrimaryButtonMatcher();
 
 // Matcher for the sign-in screens (like history sync opt-in, upgrade promo…).
 id<GREYMatcher> SigninScreenPromoMatcher();

@@ -273,12 +273,12 @@ void MaybeDismissNotification() {
 
   // Verify the signin screen is showing.
   id<GREYMatcher> signinView =
-      grey_accessibilityID(kWebSigninAccessibilityIdentifier);
+      grey_accessibilityID(kConsistencySigninAccessibilityIdentifier);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:signinView];
 
   // Dismiss Signin.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ConsistencySigninSkipButtonMatcher()]
       performAction:grey_tap()];
 }
 

@@ -59,8 +59,8 @@
   const GURL url = self.testServer->GetURL("/echo");
   [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ConsistencySigninSkipButtonMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
@@ -81,8 +81,8 @@
   const GURL url = self.testServer->GetURL("/echo");
   [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ConsistencySigninSkipButtonMatcher()]
       performAction:grey_tap()];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
   GREYAssertEqual(
@@ -116,8 +116,8 @@
   const GURL url = self.testServer->GetURL("/echo");
   [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          WebSigninPrimaryButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
   // Wait for the error dialog (sign-in fails since the sign-in is done with a
   // fake identity).
@@ -154,8 +154,8 @@
   const GURL url = self.testServer->GetURL("/echo");
   [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          WebSigninPrimaryButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
   // Wait for the error dialog (sign-in fails since the sign-in is done with a
   // fake identity).
@@ -171,8 +171,8 @@
                      IDS_IOS_SIGN_IN_DISMISS)] performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
   // Skip the web sign-in dialog.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ConsistencySigninSkipButtonMatcher()]
       performAction:grey_tap()];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
 }
@@ -185,8 +185,8 @@
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          WebSigninPrimaryButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
@@ -204,8 +204,8 @@
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          WebSigninPrimaryButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
   // Confirm the fake reauthentication dialog.
@@ -255,9 +255,9 @@
 
   // Sign-in.
   [ChromeEarlGrey
-      waitForMatcher:chrome_test_util::WebSigninPrimaryButtonMatcher()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          WebSigninPrimaryButtonMatcher()]
+      waitForMatcher:chrome_test_util::ConsistencySigninPrimaryButtonMatcher()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];

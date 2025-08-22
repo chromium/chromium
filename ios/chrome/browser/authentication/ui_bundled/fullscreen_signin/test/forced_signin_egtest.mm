@@ -209,8 +209,8 @@ void OpenGoogleServicesSettings() {
 }
 
 void CompleteSigninFlow() {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          WebSigninPrimaryButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
   //  Dismiss signin in confirmation snackbar.
   [SigninEarlGreyUI
@@ -635,8 +635,8 @@ void CompleteSigninFlow() {
   SetSigninEnterprisePolicyValue(BrowserSigninMode::kForced);
 
   // Dismiss the regular sign-in prompt by skipping it.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ConsistencySigninSkipButtonMatcher()]
       performAction:grey_tap()];
 
   // Wait and verify that the forced sign-in screen is shown when the policy is
@@ -751,8 +751,8 @@ void CompleteSigninFlow() {
   SimulateExternalAppURLOpeningWithURL(URLToOpen);
 
   // Dismiss the regular sign-in prompt by skipping it.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ConsistencySigninSkipButtonMatcher()]
       performAction:grey_tap()];
 
   // Wait and verify that the forced sign-in screen is shown when the policy is

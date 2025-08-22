@@ -41,14 +41,15 @@ using SigninCoordinatorCompletionCallback =
 
 // Name of the accessibility identifier for the History Sync view.
 extern NSString* const kHistorySyncViewAccessibilityIdentifier;
-// Name of accessibility identifier for the web sign-in consistency sheet.
-extern NSString* const kWebSigninAccessibilityIdentifier;
+// Name of accessibility identifier for the consistency sign-in consistency
+// sheet.
+extern NSString* const kConsistencySigninAccessibilityIdentifier;
 // Name of accessibility identifier for the primary button that signs in
-// the user for the web sign-in consistency sheet.
-extern NSString* const kWebSigninPrimaryButtonAccessibilityIdentifier;
-// Name of accessibility identifier for "Skip" button in the web sign-in
+// the user for the consistency sign-in consistency sheet.
+extern NSString* const kConsistencySigninPrimaryButtonAccessibilityIdentifier;
+// Name of accessibility identifier for "Skip" button in the consistency sign-in
 // consistency sheet.
-extern NSString* const kWebSigninSkipButtonAccessibilityIdentifier;
+extern NSString* const kConsistencySigninSkipButtonAccessibilityIdentifier;
 // Name of the accessibility identifier for the "add account" button in the
 // consistency account chooser.
 extern NSString* const kConsistencyAccountChooserAddAccountIdentifier;
