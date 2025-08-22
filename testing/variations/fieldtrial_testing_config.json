@@ -16278,6 +16278,25 @@
                     "enable_features": [
                         "OffloadAcceptCHFrameCheck"
                     ]
+                },
+                {
+                    "name": "EnabledWithRedirect",
+                    "params": {
+                        "AcceptCHOffloadWithRedirect": "true"
+                    },
+                    "enable_features": [
+                        "OffloadAcceptCHFrameCheck"
+                    ]
+                },
+                {
+                    "name": "EnabledWithRedirectAndSubframe",
+                    "params": {
+                        "AcceptCHOffloadForSubframe": "true",
+                        "AcceptCHOffloadWithRedirect": "true"
+                    },
+                    "enable_features": [
+                        "OffloadAcceptCHFrameCheck"
+                    ]
                 }
             ]
         }
