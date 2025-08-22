@@ -185,6 +185,7 @@
     "ToTMacArm64PGO": "ci/ToTMacArm64PGO/gn-args.json",
     "ToTMacCoverage": "ci/ToTMacCoverage/gn-args.json",
     "ToTMacPGO": "ci/ToTMacPGO/gn-args.json",
+    "ToTRustLinux (dbg)": "ci/ToTRustLinux (dbg)/gn-args.json",
     "ToTWin": "ci/ToTWin/gn-args.json",
     "ToTWin(dbg)": "ci/ToTWin(dbg)/gn-args.json",
     "ToTWin(dll)": "ci/ToTWin(dll)/gn-args.json",

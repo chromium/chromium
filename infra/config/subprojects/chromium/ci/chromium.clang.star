@@ -2118,3 +2118,51 @@ clang_mac_builder(
         short_name = "mac",
     ),
 )
+
+### Rust builders: These are also on the clang/lexan waterfall and watched by
+### the same gardening rotation
+
+ci.builder(
+    name = "ToTRustLinux (dbg)",
+    description_html = "Builder that builds and tests chromium using ToT Rust," +
+                       "built against ToT LLVM, on linux in debug mode.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["rust_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "clang_tot_linux",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "rust_tot",
+            "no_treat_warnings_as_errors",
+            "shared",
+            "debug",
+            "x64",
+            "linux",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT Linux|rust",
+        short_name = "dbg",
+    ),
+    contact_team_email = "lexan@google.com",
+)

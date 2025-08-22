@@ -29,6 +29,7 @@ ci/ToTMacArm64
 ci/ToTMacArm64PGO
 ci/ToTMacCoverage
 ci/ToTMacPGO
+ci/ToTRustLinux (dbg)
 ci/ToTWin
 ci/ToTWin(dbg)
 ci/ToTWin(dll)
