@@ -406,10 +406,17 @@ void PaymentLinkManager::OnUiEvent(UiEvent ui_event_type) {
       CHECK_NE(ui_state_, UiState::kHidden);
       LogUiScreenShown(kPaymentsType, ui_state_, scheme_);
       if (ui_state_ == UiState::kFopSelector) {
-        LogFopSelectorShownLatency(
-            FacilitatedPaymentsType::kEwallet,
-            base::TimeTicks::Now() - payment_flow_triggered_timestamp_,
-            scheme_);
+        if (is_ewallet_available_) {
+          // LogFopSelectorShownLatency is used to log latency for eWallet and
+          // Pix. Pix payment methods is not handled by PaymentLinkManager.
+          LogFopSelectorShownLatency(
+              FacilitatedPaymentsType::kEwallet,
+              base::TimeTicks::Now() - payment_flow_triggered_timestamp_,
+              scheme_);
+        }
+        // LogPaymentLinkFopSelectorShownLatency is used to log latency for both
+        // eWallet and A2A. PaymentLinkManager handles payment via eWallet and
+        // Payment app.
         LogPaymentLinkFopSelectorShownLatency(
             GetPaymentLinkFopSelectorType(),
             base::TimeTicks::Now() - payment_flow_triggered_timestamp_,

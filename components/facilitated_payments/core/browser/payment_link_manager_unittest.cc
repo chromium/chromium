@@ -1662,6 +1662,10 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, A2APaymentPromptShown) {
       "LatencyAfterDetectingPaymentLink.PromptPay",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "FacilitatedPayments.Ewallet.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink",
+      0);
 }
 
 // Payment prompt is shown with A2A and eWallet options and latency metrics are
