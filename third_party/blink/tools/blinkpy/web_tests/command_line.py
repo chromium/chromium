@@ -608,6 +608,15 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                                    action='store_true',
                                    default=None,
                                    help=('Do not run virtual tests.'))
+        testing_group.add_argument(
+            '--enable-per-test-tracing',
+            metavar='CATEGORIES',
+            dest='trace_categories',
+            nargs='?',
+            const='*',
+            help=('For each test, capture and write a trace file with the '
+                  'given comma-separated categories recorded. When no '
+                  'categories are given, default to recording all.'))
 
 
 # for run_wpt_tests.py only

@@ -1084,6 +1084,13 @@ class WPTResultsProcessor:
                             test_failures.FILENAME_SUFFIX_LEAK_LOG,
                             '\n'.join(leak_log) + '\n')
 
+        if trace := extra.get('trace'):
+            trace_subpath = self.port.output_filename(
+                result.name, test_failures.FILENAME_SUFFIX_TRACE, '.json')
+            # Serialize JSON compactly by trimming whitespace.
+            contents = json.dumps(trace, separators=(',', ':'))
+            artifacts.CreateArtifact('trace', trace_subpath, contents.encode())
+
         # If the browser process isn't restarted, it's possible for that process
         # to continue producing stdio that will be dumped into the log for the
         # next test that browser runs.

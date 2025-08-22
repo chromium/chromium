@@ -1092,6 +1092,21 @@ class WPTResultsProcessorTest(LoggingTestCase):
                   live_nodes: Expected 4, got 5
                 """))
 
+    def test_extract_trace(self):
+        trace_events = [{'cat': 'blink', 'name': 'Document::Document'}]
+        self._event(action='test_start', test='/test.html')
+        self._event(action='test_end',
+                    test='/test.html',
+                    status='CRASH',
+                    expected='OK',
+                    extra={'trace': trace_events})
+
+        artifact_path = self.fs.join('/mock-checkout', 'out', 'Default',
+                                     'layout-test-results', 'external', 'wpt',
+                                     'test-trace.json')
+        self.assertEqual(trace_events,
+                         json.loads(self.fs.read_text_file(artifact_path)))
+
     def test_extract_command(self):
         self._event(action='test_start', test='/test.html')
         self._event(

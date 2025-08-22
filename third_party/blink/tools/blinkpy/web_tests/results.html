@@ -572,7 +572,11 @@ class PathParser {
     '-crash-log.txt': 'crash_log',
     '-stderr.txt': 'stderr',
     '-command.txt': 'command',
+    // A test result must not have traces in both formats.
+    // TODO(crbug.com/439044977): Drop legacy JSON format support once
+    // `run_wpt_tests.py` can produce traces as protobuf.
     '-trace.pftrace': 'trace',
+    '-trace.json': 'trace',
   };
   static numCachedTests = 0;
   static numCachedArtifacts = 0;
@@ -1039,10 +1043,17 @@ const Report = {
         default:
           console.error("unexpected actual", test.actual);
       }
-      let trace_link = pathParser.resultLink("-trace.pftrace");
-      if (trace_link && trace_link != "about:blank") {
-        toolbars.push(new NonSelectableLinkToolbar().createDom(
-          trace_link, "Perfetto trace file", "trace"));
+      // TODO(crbug.com/434017035): Check if the artifacts actually exist.
+      // Currently, these links can 404.
+      for (const {suffix, alt_text} of [
+        {suffix: "trace.pftrace", alt_text: "Perfetto trace file"},
+        {suffix: "trace.json", alt_text: "JSON trace file"},
+      ]) {
+        let trace_link = pathParser.resultLink(`-${suffix}`);
+        if (trace_link && trace_link != "about:blank") {
+          toolbars.push(new NonSelectableLinkToolbar().createDom(
+            trace_link, alt_text, suffix));
+        }
       }
     }
     if (test.has_stderr) {

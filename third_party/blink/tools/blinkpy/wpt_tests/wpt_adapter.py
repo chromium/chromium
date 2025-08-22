@@ -179,6 +179,7 @@ class WPTAdapter:
         runner_options.no_capture_stdio = True
         runner_options.pause_after_test = False
         runner_options.headless = self.options.headless
+        runner_options.trace_categories = self.options.trace_categories
 
         # Set up logging as early as possible.
         self._set_up_runner_output_options(runner_options)

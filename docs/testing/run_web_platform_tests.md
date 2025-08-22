@@ -112,6 +112,24 @@ See [here](./run_web_platform_tests_on_android.md) for Android specific instruct
 
 ## Debugging Support
 
+### Per-Test Tracing
+
+The `--enable-per-test-tracing` option will record [trace events] for each test.
+One use case is to record JavaScript bindings used:
+
+1. Build `blink_tests` with the GN arg `extended_tracing_enabled=true`.
+1. Run the desired tests with `--enable-per-test-tracing=blink.bindings`.
+1. Locate trace files written to
+   `//out/$target/layout-test-results/**/*-trace.json`.
+   They're also downloadable from the [results viewer]:
+     ![Trace link in results viewer](images/wpt_results_viewer_trace.png)
+
+1. Open the desired trace files [in Perfetto](https://ui.perfetto.dev/):
+     ![WPT trace opened in Perfetto](images/wpt_bindings_trace.png)
+
+[trace events]: https://www.chromium.org/developers/how-tos/trace-event-profiling-tool/
+[results viewer]: web_tests_addressing_flake.md#Understanding-builder-results
+
 ### Text-Based Debuggers
 
 To interactively debug WPTs, prefix the `run_wpt_tests.py` command with
