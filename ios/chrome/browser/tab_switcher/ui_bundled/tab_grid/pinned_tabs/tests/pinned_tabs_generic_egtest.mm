@@ -127,7 +127,8 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 }
 
 // Tests that there is only one active (selected) tab at a time.
-- (void)testOneActiveTabAtATime {
+// TODO(crbug.com/440615724): This test is flaky.
+- (void)FLAKY_testOneActiveTabAtATime {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
