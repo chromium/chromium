@@ -610,7 +610,10 @@ void Widget::Init(InitParams params) {
     parent_->OnChildAdded(this);
   }
 
-  native_widget_->OnWidgetThemeChanged(GetColorMode(), background_color_);
+  native_widget_->OnWidgetThemeChanged(
+      GetColorMode(), background_color_ ? GetColorProvider()->GetColor(
+                                              background_color_.value())
+                                        : std::optional<SkColor>());
 
   UpdateAccessibleNameForRootView();
   native_theme_observation_.Observe(GetNativeTheme());
@@ -1479,7 +1482,10 @@ void Widget::ThemeChanged() {
   NotifyColorProviderChanged();
 
   if (native_widget_) {
-    native_widget_->OnWidgetThemeChanged(GetColorMode(), background_color_);
+    native_widget_->OnWidgetThemeChanged(
+        GetColorMode(), background_color_ ? GetColorProvider()->GetColor(
+                                                background_color_.value())
+                                          : std::optional<SkColor>());
   }
 }
 
@@ -2403,7 +2409,7 @@ void Widget::OnAXModeAdded(ui::AXMode mode) {
 
 void Widget::SetColorModeOverride(
     std::optional<ui::ColorProviderKey::ColorMode> color_mode,
-    std::optional<SkColor> background_color) {
+    std::optional<ui::ColorId> background_color) {
   if (color_mode != color_mode_override_ ||
       background_color != background_color_) {
     color_mode_override_ = color_mode;

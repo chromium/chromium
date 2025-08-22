@@ -26,6 +26,7 @@
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/color/color_provider_utils.h"
@@ -553,7 +554,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 #endif
 
     // Initial native widget background color, if supported.
-    std::optional<SkColor> background_color;
+    std::optional<ui::ColorId> background_color;
   };
 
   // Represents a lock held on the widget's ShouldPaintAsActive() state. As
@@ -1432,7 +1433,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // e.g. if set to kDark, colors will always be for the dark theme.
   void SetColorModeOverride(
       std::optional<ui::ColorProviderKey::ColorMode> color_mode,
-      std::optional<SkColor> background_color);
+      std::optional<ui::ColorId> background_color);
 
   // ui::ColorProviderSource:
   const ui::ColorProvider* GetColorProvider() const override;
@@ -1775,7 +1776,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   base::OnceCallback<void(ClosedReason)> override_close_;
 
   // Color used to fill the native widget if supported, overriding theme colors.
-  std::optional<SkColor> background_color_;
+  std::optional<ui::ColorId> background_color_;
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
