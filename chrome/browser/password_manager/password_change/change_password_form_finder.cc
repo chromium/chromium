@@ -203,7 +203,7 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
           &ChangePasswordFormFinder::OnButtonClickedAndSubsequentFormFound,
           weak_ptr_factory_.GetWeakPtr()));
   click_helper_ = std::make_unique<ButtonClickHelper>(
-      web_contents_, dom_node_id,
+      web_contents_, client_, dom_node_id,
       base::BindOnce(&ChangePasswordFormFinder::OnButtonClicked,
                      weak_ptr_factory_.GetWeakPtr())
           .Then(button_clicked_or_form_found_cb));

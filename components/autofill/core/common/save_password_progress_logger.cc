@@ -526,6 +526,10 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Automated password change: page content received";
     case STRING_AUTOMATED_PASSWORD_CHANGE_ON_BUTTON_CLICKED:
       return "Automated password change: on button clicked";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_BUTTON_CLICK_ACTION_RESULT:
+      return "Automated password change: button click action result";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_DOM_NODE_ID_TO_CLICK:
+      return "Automated password change: DOM node ID to click";
     case STRING_AUTOMATED_PASSWORD_CHANGE_FORM_NOT_FOUND:
       return "Automated password change: form not found";
     case STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_DETECTED_OR_TIMEOUT:

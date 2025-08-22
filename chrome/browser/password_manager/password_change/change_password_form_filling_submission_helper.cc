@@ -349,7 +349,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
   submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
       web_contents_, logs_uploader_);
   click_helper_ = std::make_unique<ButtonClickHelper>(
-      web_contents_.get(), dom_node_id,
+      web_contents_.get(), client_, dom_node_id,
       base::BindOnce(
           &ChangePasswordFormFillingSubmissionHelper::OnButtonClicked,
           weak_ptr_factory_.GetWeakPtr()));

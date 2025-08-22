@@ -13,6 +13,10 @@ namespace content {
 class WebContents;
 }
 
+namespace password_manager {
+class PasswordManagerClient;
+}
+
 // A helper class which performs a click on specified element based on
 // `dom_node_id`. Invokes `callback` on completing.
 class ButtonClickHelper {
@@ -20,6 +24,7 @@ class ButtonClickHelper {
   using ClickResult = base::OnceCallback<void(bool)>;
 
   ButtonClickHelper(content::WebContents* web_contents,
+                    password_manager::PasswordManagerClient* client,
                     int dom_node_id,
                     ClickResult callback);
   ~ButtonClickHelper();
@@ -34,6 +39,7 @@ class ButtonClickHelper {
   ClickResult callback_;
 
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame_;
+  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
   base::WeakPtrFactory<ButtonClickHelper> weak_ptr_factory_{this};
 };
