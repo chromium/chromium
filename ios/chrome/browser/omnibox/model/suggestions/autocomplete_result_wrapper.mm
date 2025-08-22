@@ -11,6 +11,7 @@
 #import "components/omnibox/browser/autocomplete_match_classification.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/omnibox_client.h"
+#import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/aim/model/aim_availability.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
@@ -29,8 +30,6 @@
 @end
 
 @implementation AutocompleteResultWrapper {
-  /// The profile.
-  raw_ptr<ProfileIOS> _profile;
   /// Search engine observer.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   /// Whether the default search engine is Google.
@@ -41,18 +40,21 @@
   NSArray<id<AutocompleteSuggestionGroup>>* _nonPedalSuggestionsGroups;
   /// The omnibox client.
   base::WeakPtr<OmniboxClient> _omniboxClient;
+  /// The autocomplete client.
+  base::WeakPtr<AutocompleteProviderClient> _autocompleteProviderClient;
   /// Whether aim shortcut is available.
   BOOL _aimShortcutAvailable;
 }
 
 - (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
-                              profile:(ProfileIOS*)profile {
+           autocompleteProviderClient:
+               (AutocompleteProviderClient*)autocompleteProviderClient {
   self = [super init];
   if (self) {
     _omniboxClient = omniboxClient->AsWeakPtr();
+    _autocompleteProviderClient = autocompleteProviderClient->GetWeakPtr();
     _pedalSectionExtractor = [[PedalSectionExtractor alloc] init];
     _pedalSectionExtractor.delegate = self;
-    _profile = profile;
   }
   return self;
 }
@@ -60,7 +62,7 @@
 - (void)disconnect {
   _searchEngineObserver.reset();
   _omniboxClient = nullptr;
-  _profile = nullptr;
+  _autocompleteProviderClient = nullptr;
 }
 
 - (NSArray<id<AutocompleteSuggestionGroup>>*)wrapAutocompleteResultInGroups:
@@ -119,9 +121,9 @@
       templateURLService->GetDefaultSearchProvider()->GetEngineType(
           templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
   _aimShortcutAvailable =
-      !self.isLensOverlay &&
-      base::FeatureList::IsEnabled(omnibox::kOmniboxAimShortcutTypedState) &&
-      IsAIMAvailable(_profile);
+      !self.isLensOverlay && _autocompleteProviderClient &&
+      OmniboxFieldTrial::IsDeterministicAimActionInTypedStateEnabled(
+          _autocompleteProviderClient.get());
 }
 
 #pragma mark - Private

@@ -172,6 +172,15 @@ using base::UserMetricsAction;
           disposition:disposition];
 }
 
+#pragma mark - properties
+
+- (AutocompleteProviderClient*)autocompleteProviderClient {
+  if (!_autocompleteController) {
+    return nullptr;
+  }
+  return _autocompleteController->autocomplete_provider_client();
+}
+
 #pragma mark - AutocompleteControllerObserver
 
 - (void)autocompleteController:(AutocompleteController*)autocompleteController

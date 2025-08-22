@@ -12,6 +12,7 @@
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_annotator.h"
@@ -39,24 +40,27 @@
 class AutocompleteResultWrapperTest : public PlatformTest {
  public:
   AutocompleteResultWrapperTest() {
-    _fake_autocomplete_wrapper_delegate =
-        [[FakeAutocompleteResultWrapperDelegate alloc] init];
-    omnibox_client_ = std::make_unique<TestOmniboxClient>();
-    wrapper_ = [[AutocompleteResultWrapper alloc]
-        initWithOmniboxClient:omnibox_client_.get()
-                      profile:profile_.get()];
-    wrapper_.incognito = NO;
-    wrapper_.templateURLService =
-        search_engines_test_environment_.template_url_service();
-    wrapper_.delegate = _fake_autocomplete_wrapper_delegate;
-    wrapper_.pedalAnnotator = [[OmniboxPedalAnnotator alloc] init];
-
     TestProfileIOS::Builder builder;
 
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
+
+    _fake_autocomplete_wrapper_delegate =
+        [[FakeAutocompleteResultWrapperDelegate alloc] init];
+    omnibox_client_ = std::make_unique<TestOmniboxClient>();
+    autocomplete_provider_client_ =
+        std::make_unique<AutocompleteProviderClientImpl>(profile_.get());
+
+    wrapper_ = [[AutocompleteResultWrapper alloc]
+             initWithOmniboxClient:omnibox_client_.get()
+        autocompleteProviderClient:autocomplete_provider_client_.get()];
+    wrapper_.incognito = NO;
+    wrapper_.templateURLService =
+        search_engines_test_environment_.template_url_service();
+    wrapper_.delegate = _fake_autocomplete_wrapper_delegate;
+    wrapper_.pedalAnnotator = [[OmniboxPedalAnnotator alloc] init];
   }
 
   ~AutocompleteResultWrapperTest() override { [wrapper_ disconnect]; }
@@ -68,6 +72,7 @@ class AutocompleteResultWrapperTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   FakeAutocompleteResultWrapperDelegate* _fake_autocomplete_wrapper_delegate;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
+  std::unique_ptr<AutocompleteProviderClientImpl> autocomplete_provider_client_;
 };
 
 // Tests wrapping an autocomplete result with 2 non-pedal starred matches.

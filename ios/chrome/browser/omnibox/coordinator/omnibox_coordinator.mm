@@ -243,8 +243,10 @@
       HandlerForProtocol(dispatcher, QuickDeleteCommands);
 
   AutocompleteResultWrapper* autocompleteResultWrapper =
-      [[AutocompleteResultWrapper alloc] initWithOmniboxClient:_client.get()
-                                                       profile:self.profile];
+      [[AutocompleteResultWrapper alloc]
+               initWithOmniboxClient:_client.get()
+          autocompleteProviderClient:_omniboxAutocompleteController
+                                         .autocompleteProviderClient];
   autocompleteResultWrapper.pedalAnnotator = annotator;
   autocompleteResultWrapper.isLensOverlay = _isLensOverlay;
   autocompleteResultWrapper.templateURLService = templateURLService;
