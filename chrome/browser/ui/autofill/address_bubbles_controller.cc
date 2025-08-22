@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/save_address_bubble_controller.h"
@@ -257,14 +259,29 @@ void AddressBubblesController::SetUpAndShowBubble(
              std::nullopt);
     return;
   }
-  // If the user closed the bubble of the previous import process using the
-  // "Close" button without making a decision to "Accept" or "Deny" the prompt,
-  // a fallback icon is shown, so the user can get back to the prompt. In this
-  // specific scenario the import process is considered in progress (since the
-  // backend didn't hear back via the callback yet), but hidden. When a second
-  // prompt arrives, we finish the previous import process as "Ignored", before
-  // showing the 2nd prompt.
+
+  const bool bubble_manager_enabled = base::FeatureList::IsEnabled(
+      features::kAutofillShowBubblesBasedOnPriorities);
+
+  if (bubble_manager_enabled) {
+    auto* manager = BubbleManager::GetForWebContents(web_contents());
+    if (!manager || manager->HasPendingBubble(*this)) {
+      std::move(address_profile_save_prompt_callback)
+          .Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
+               std::nullopt);
+      return;
+    }
+  }
+
   if (address_profile_save_prompt_callback_) {
+    // If the user closed the bubble of the previous import process using the
+    // "Close" button without making a decision to "Accept" or "Deny" the
+    // prompt, a fallback icon is shown, so the user can get back to the prompt.
+    // In this specific scenario the import process is considered in progress
+    // (since the backend didn't hear back via the callback yet), but hidden. Or
+    // when `bubble_manager_enabled` and the bubble is in the queue to be shown
+    // but timed out. When a second prompt arrives, we finish the previous
+    // import process as "Ignored", before showing the 2nd prompt.
     std::move(address_profile_save_prompt_callback_)
         .Run(AutofillClient::AddressPromptUserDecision::kIgnored, std::nullopt);
   }
@@ -274,7 +291,13 @@ void AddressBubblesController::SetUpAndShowBubble(
               user_has_any_profile_saved,
               std::move(address_profile_save_prompt_callback));
 
-  ShowBubble();
+  if (bubble_manager_enabled) {
+    if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
+      manager->RequestShowController(*this);
+    }
+  } else {
+    ShowBubble();
+  }
 }
 
 void AddressBubblesController::SetUpBubble(
