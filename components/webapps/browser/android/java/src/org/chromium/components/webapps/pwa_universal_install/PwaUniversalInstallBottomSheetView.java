@@ -19,7 +19,6 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.webapps.R;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.LocalizationUtils;
 
 /** The view portion of the PWA Universal Install bottom sheet. */
 @NullMarked
@@ -69,11 +68,6 @@ public class PwaUniversalInstallBottomSheetView {
             ImageView shortcutArrow = contentView.findViewById(R.id.arrow_shortcut);
             installArrow.setImageResource(arrowId);
             shortcutArrow.setImageResource(arrowId);
-            if (LocalizationUtils.isLayoutRtl()) {
-                // Flip the image horizontally, so that the arrow points the right way for RTL.
-                installArrow.setScaleX(-1);
-                shortcutArrow.setScaleX(-1);
-            }
         }
         if (installOverlayId != 0 && shortcutOverlayId != 0) {
             ((ImageView) contentView.findViewById(R.id.install_icon_overlay))
