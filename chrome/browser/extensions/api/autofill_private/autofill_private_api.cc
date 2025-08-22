@@ -1081,7 +1081,8 @@ AutofillPrivateGetAllEntityTypesFunction::Run() {
   std::vector<autofill_private::EntityType> result;
   result.reserve(all_types.size());
   for (EntityType entity_type : all_types) {
-    if (!entity_type.enabled()) {
+    if (!entity_type.enabled(
+            autofill_client()->GetVariationConfigCountryCode())) {
       continue;
     }
     autofill_private::EntityType& api_type = result.emplace_back();
