@@ -239,12 +239,12 @@ TEST_F(FtlMessageChannelStrategyTest,
               const ReceiveMessagesResponseCallback& on_incoming_msg,
               StatusCallback on_channel_closed) {
             // The first open stream attempt fails with UNAVAILABLE error.
-            ASSERT_EQ(0, GetRetryFailureCount());
+            ASSERT_EQ(GetRetryFailureCount(), 0);
 
             std::move(on_channel_closed)
                 .Run(HttpStatus(HttpStatus::Code::UNAVAILABLE, ""));
 
-            ASSERT_EQ(1, GetRetryFailureCount());
+            ASSERT_EQ(GetRetryFailureCount(), 1);
             ASSERT_NEAR(FtlServicesContext::kBackoffInitialDelay.InSecondsF(),
                         GetTimeUntilRetry().InSecondsF(), 0.5);
 
@@ -263,7 +263,7 @@ TEST_F(FtlMessageChannelStrategyTest,
 
             std::move(on_channel_ready).Run();
 
-            ASSERT_EQ(0, GetRetryFailureCount());
+            ASSERT_EQ(GetRetryFailureCount(), 0);
           }));
 
   channel_->StartReceivingMessages(run_loop.QuitClosure(),
@@ -394,7 +394,7 @@ TEST_F(FtlMessageChannelStrategyTest, NoPongWithinTimeout_ResetsStream) {
             task_environment_.FastForwardBy(
                 raw_strategy_->GetInactivityTimeout());
 
-            ASSERT_EQ(1, GetRetryFailureCount());
+            ASSERT_EQ(GetRetryFailureCount(), 1);
             ASSERT_NEAR(FtlServicesContext::kBackoffInitialDelay.InSecondsF(),
                         GetTimeUntilRetry().InSecondsF(), 0.5);
 
@@ -412,7 +412,7 @@ TEST_F(FtlMessageChannelStrategyTest, NoPongWithinTimeout_ResetsStream) {
             ASSERT_FALSE(old_stream);
 
             std::move(on_channel_ready).Run();
-            ASSERT_EQ(0, GetRetryFailureCount());
+            ASSERT_EQ(GetRetryFailureCount(), 0);
             run_loop.Quit();
           }));
 
@@ -449,7 +449,7 @@ TEST_F(FtlMessageChannelStrategyTest, ServerClosesStream_ResetsStream) {
             ASSERT_FALSE(old_stream);
 
             std::move(on_channel_ready).Run();
-            ASSERT_EQ(0, GetRetryFailureCount());
+            ASSERT_EQ(GetRetryFailureCount(), 0);
             run_loop.Quit();
           }));
 
@@ -521,13 +521,12 @@ TEST_F(FtlMessageChannelStrategyTest,
               const ReceiveMessagesResponseCallback& on_incoming_msg,
               StatusCallback on_channel_closed) {
             // The first open stream attempt fails with UNAUTHENTICATED error.
-            ASSERT_EQ(0, GetRetryFailureCount());
+            ASSERT_EQ(GetRetryFailureCount(), 0);
 
             std::move(on_channel_closed)
-                .Run(HttpStatus(HttpStatus::HttpStatus::Code::UNAUTHENTICATED,
-                                ""));
+                .Run(HttpStatus(HttpStatus::Code::UNAUTHENTICATED, ""));
 
-            ASSERT_EQ(1, GetRetryFailureCount());
+            ASSERT_EQ(GetRetryFailureCount(), 1);
             ASSERT_NEAR(FtlServicesContext::kBackoffInitialDelay.InSecondsF(),
                         GetTimeUntilRetry().InSecondsF(), 0.5);
           },
@@ -540,16 +539,15 @@ TEST_F(FtlMessageChannelStrategyTest,
 
             // Assert old stream closed.
             ASSERT_FALSE(old_stream);
-            ASSERT_EQ(1, GetRetryFailureCount());
+            ASSERT_EQ(GetRetryFailureCount(), 1);
             std::move(on_channel_ready).Run();
-            ASSERT_EQ(0, GetRetryFailureCount());
+            ASSERT_EQ(GetRetryFailureCount(), 0);
           }));
 
   channel_->StartReceivingMessages(
       base::DoNothing(),
       base::BindLambdaForTesting([&](const HttpStatus& status) {
-        ASSERT_EQ(HttpStatus::HttpStatus::Code::UNAUTHENTICATED,
-                  status.error_code());
+        ASSERT_EQ(status.error_code(), HttpStatus::Code::UNAUTHENTICATED);
         channel_->StartReceivingMessages(run_loop.QuitClosure(),
                                          NotReachedStatusCallback(FROM_HERE));
       }));
@@ -558,3 +556,4 @@ TEST_F(FtlMessageChannelStrategyTest,
 }
 
 }  // namespace remoting
+   // namespace remoting

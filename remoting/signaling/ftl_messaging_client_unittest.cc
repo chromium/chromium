@@ -83,15 +83,15 @@ base::OnceCallback<void(const HttpStatus&)> CheckStatusThenQuitRunLoopCallback(
     HttpStatus::Code expected_status_code,
     base::RunLoop* run_loop) {
   return base::BindLambdaForTesting([=](const HttpStatus& status) {
-    ASSERT_EQ(expected_status_code, status.error_code())
+    ASSERT_EQ(status.error_code(), expected_status_code)
         << "Incorrect status code. Location: " << from_here.ToString();
     run_loop->QuitWhenIdle();
   });
 }
 
 std::string GetChromotingMessageText(const ftl::InboxMessage& message) {
-  EXPECT_EQ(ftl::InboxMessage_MessageType_CHROMOTING_MESSAGE,
-            message.message_type());
+  EXPECT_EQ(message.message_type(),
+            ftl::InboxMessage_MessageType_CHROMOTING_MESSAGE);
   ftl::ChromotingMessage chromoting_message;
   chromoting_message.ParseFromString(message.message());
   return chromoting_message.xmpp().stanza();
@@ -169,11 +169,11 @@ TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithoutRegId) {
 
   ftl::InboxSendRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(0, request.dest_registration_ids_size());
-  EXPECT_LT(0, request.time_to_live());
-  EXPECT_EQ(kFakeReceiverId, request.dest_id().id());
+  EXPECT_EQ(request.dest_registration_ids_size(), 0);
+  EXPECT_GE(request.time_to_live(), 0);
+  EXPECT_EQ(request.dest_id().id(), kFakeReceiverId);
   EXPECT_FALSE(request.message().message_id().empty());
-  EXPECT_EQ(kMessage1Text, GetChromotingMessageText(request.message()));
+  EXPECT_EQ(GetChromotingMessageText(request.message()), kMessage1Text);
 
   test_responder_.AddResponseToMostRecentRequestUrl(ftl::InboxSendResponse());
   run_loop.Run();
@@ -188,12 +188,12 @@ TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithRegId) {
 
   ftl::InboxSendRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(1, request.dest_registration_ids_size());
-  EXPECT_EQ(kFakeSenderRegId, request.dest_registration_ids(0));
-  EXPECT_LT(0, request.time_to_live());
-  EXPECT_EQ(kFakeReceiverId, request.dest_id().id());
+  EXPECT_EQ(request.dest_registration_ids_size(), 1);
+  EXPECT_EQ(request.dest_registration_ids(0), kFakeSenderRegId);
+  EXPECT_GE(request.time_to_live(), 0);
+  EXPECT_EQ(request.dest_id().id(), kFakeReceiverId);
   EXPECT_FALSE(request.message().message_id().empty());
-  EXPECT_EQ(kMessage1Text, GetChromotingMessageText(request.message()));
+  EXPECT_EQ(GetChromotingMessageText(request.message()), kMessage1Text);
 
   test_responder_.AddResponseToMostRecentRequestUrl(ftl::InboxSendResponse());
   run_loop.Run();
@@ -227,11 +227,11 @@ TEST_F(FtlMessagingClientTest,
   EXPECT_CALL(mock_on_incoming_msg, Run(_, _, _))
       .WillOnce([&](const ftl::Id&, const std::string&,
                     const ftl::ChromotingMessage& message) {
-        EXPECT_EQ(kMessage1Text, message.xmpp().stanza());
+        EXPECT_EQ(message.xmpp().stanza(), kMessage1Text);
       })
       .WillOnce([&](const ftl::Id&, const std::string&,
                     const ftl::ChromotingMessage& message) {
-        EXPECT_EQ(kMessage2Text, message.xmpp().stanza());
+        EXPECT_EQ(message.xmpp().stanza(), kMessage2Text);
         run_loop.Quit();
       });
 
@@ -305,11 +305,11 @@ TEST_F(FtlMessagingClientTest, ReceivedDuplicatedMessage_AckAndDrop) {
   EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId, _))
       .WillOnce([](const ftl::Id&, const std::string&,
                    const ftl::ChromotingMessage& message) {
-        EXPECT_EQ(kMessage1Text, message.xmpp().stanza());
+        EXPECT_EQ(message.xmpp().stanza(), kMessage1Text);
       })
       .WillOnce([](const ftl::Id&, const std::string&,
                    const ftl::ChromotingMessage& message) {
-        EXPECT_EQ(kMessage2Text, message.xmpp().stanza());
+        EXPECT_EQ(message.xmpp().stanza(), kMessage2Text);
       });
 
   int ack_count = 0;
@@ -322,13 +322,13 @@ TEST_F(FtlMessagingClientTest, ReceivedDuplicatedMessage_AckAndDrop) {
           return;
         }
         ack_count++;
-        EXPECT_EQ(1, message.message_ids_size());
+        EXPECT_EQ(message.message_ids_size(), 1);
         if (ack_count == 1) {
-          EXPECT_EQ(kMessage1Id, message.message_ids(0));
+          EXPECT_EQ(message.message_ids(0), kMessage1Id);
         } else if (ack_count == 2) {
-          EXPECT_EQ(kMessage1Id, message.message_ids(0));
+          EXPECT_EQ(message.message_ids(0), kMessage1Id);
         } else if (ack_count == 3) {
-          EXPECT_EQ(kMessage2Id, message.message_ids(0));
+          EXPECT_EQ(message.message_ids(0), kMessage2Id);
           run_loop.Quit();
         }
       });
