@@ -129,7 +129,8 @@ id<GREYMatcher> CarouselMatcher() {
 #pragma mark - Context Menu
 
 // Tests deleting most visited tiles from context menu.
-- (void)testDeleteMostVisitedTiles {
+// TODO(crbug.com/440566014): This test is flaky.
+- (void)FLAKY_testDeleteMostVisitedTiles {
   // Visit page 1 and 2 multiple times.
   [self addNumberOfMostVisitedTiles:2];
   id<GREYMatcher> tile1 = TileWithTitle(PageTitle(Page(1)));
