@@ -1282,7 +1282,6 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::SharedBufferMemoryD3D12Resource:
     case wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix:
     case wgpu::FeatureName::TextureComponentSwizzle:
-    case wgpu::FeatureName::ChromiumExperimentalPrimitiveId:
       return safety_level_ == webgpu::SafetyLevel::kUnsafe;
     case wgpu::FeatureName::AdapterPropertiesD3D:
     case wgpu::FeatureName::AdapterPropertiesVk:
@@ -1308,7 +1307,8 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::ClipDistances:
     case wgpu::FeatureName::DualSourceBlending:
     case wgpu::FeatureName::Subgroups:
-    case wgpu::FeatureName::DawnMultiPlanarFormats: {
+    case wgpu::FeatureName::DawnMultiPlanarFormats:
+    case wgpu::FeatureName::PrimitiveIndex: {
       // Likely case when no features are blocked.
       if (runtime_unsafe_features_.empty() ||
           safety_level_ == webgpu::SafetyLevel::kUnsafe) {

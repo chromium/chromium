@@ -58,8 +58,8 @@ std::optional<V8GPUFeatureName::Enum> GPUSupportedFeatures::ToV8FeatureNameEnum(
       return V8GPUFeatureName::Enum::kChromiumExperimentalSnorm16TextureFormats;
     case wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix:
       return V8GPUFeatureName::Enum::kChromiumExperimentalSubgroupMatrix;
-    case wgpu::FeatureName::ChromiumExperimentalPrimitiveId:
-      return V8GPUFeatureName::Enum::kChromiumExperimentalPrimitiveId;
+    case wgpu::FeatureName::PrimitiveIndex:
+      return V8GPUFeatureName::Enum::kPrimitiveIndex;
     default:
       return std::nullopt;
   }
