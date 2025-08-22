@@ -397,6 +397,9 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
     }
   }
   bool has_actor_task_id = chrome_ui_data && chrome_ui_data->actor_task_id();
+  const history::VisitResponseCodeCategory response_code_category =
+      http_response_code == 404 ? history::VisitResponseCodeCategory::k404
+                                : history::VisitResponseCodeCategory::kNot404;
 
   // TODO(crbug.com/434976953): Move TaskId to be accessible by
   // HistoryAddPageArgs, so we can pass actor_task_id() directly without getting
@@ -407,7 +410,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       navigation_handle->GetNavigationId(), referrer_url,
       navigation_handle->GetRedirectChain(), page_transition, hidden,
       has_actor_task_id ? history::SOURCE_ACTOR : history::SOURCE_BROWSED,
-      navigation_handle->DidReplaceEntry(),
+      response_code_category, navigation_handle->DidReplaceEntry(),
       should_consider_for_ntp_most_visited, is_ephemeral, title, top_level_url,
       frame_url, opener,
       chrome_ui_data == nullptr ? std::nullopt : chrome_ui_data->bookmark_id(),

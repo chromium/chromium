@@ -129,6 +129,7 @@ class BrowsingTopicsPageLoadDataTrackerTest
         /*referrer=*/GURL(),
         /*redirects=*/{}, ui::PageTransition::PAGE_TRANSITION_TYPED,
         history::VisitSource::SOURCE_BROWSED,
+        history::VisitResponseCodeCategory::kNot404,
         /*did_replace_entry=*/false);
   }
 

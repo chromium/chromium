@@ -285,12 +285,15 @@ void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
   // blocked navigations.  (This is in contrast to the normal behavior, wherein
   // Chrome marks navigations that result in an error as hidden.)  This is to
   // show the user the same thing that the custodian will see on the dashboard
-  // (where it gets via a different mechanism unrelated to history).
+  // (where it gets via a different mechanism unrelated to history).  Blocked
+  // requests are also distinct from 404 navigations, and we report the attempt
+  // accordingly.
   history::HistoryAddPageArgs add_page_args(
       url, timestamp, history::ContextIDForWebContents(web_contents()),
       /*nav_entry_id=*/0, /*local_navigation_id=*/std::nullopt,
       /*referrer=*/url, history::RedirectList(), ui::PAGE_TRANSITION_BLOCKED,
       /*hidden=*/false, history::SOURCE_BROWSED,
+      history::VisitResponseCodeCategory::kNot404,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
       /*is_ephemeral=*/false,
       /*title=*/std::nullopt,

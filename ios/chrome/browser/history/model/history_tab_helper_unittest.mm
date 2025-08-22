@@ -11,6 +11,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
 #import "components/history/core/browser/history_service.h"
+#import "components/history/core/browser/history_types.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -68,7 +69,8 @@ class HistoryTabHelperTest : public PlatformTest {
             profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
     service->AddPage(
         url, base::Time::Now(), 0, 0, GURL(), history::RedirectList(),
-        ui::PAGE_TRANSITION_MANUAL_SUBFRAME, history::SOURCE_BROWSED, false);
+        ui::PAGE_TRANSITION_MANUAL_SUBFRAME, history::SOURCE_BROWSED,
+        history::VisitResponseCodeCategory::kNot404, false);
   }
 
  protected:
@@ -314,4 +316,47 @@ TEST_F(HistoryTabHelperTest,
   // other TabHelpers, etc). At least check the response code that was set up
   // above.
   EXPECT_EQ(args.context_annotations->response_code, 234);
+}
+
+TEST_F(HistoryTabHelperTest, CreateAddPageArgsPopulatesResponseCodeCategory) {
+  GURL test_url("https://www.google.com/");
+
+  std::unique_ptr<web::NavigationItem> item_403 = web::NavigationItem::Create();
+  item_403->SetVirtualURL(test_url);
+
+  web::FakeNavigationContext context_403;
+  context_403.SetUrl(test_url);
+  context_403.SetHasCommitted(true);
+
+  std::string raw_response_headers_403 = "HTTP/1.1 403 Forbidden\r\n\r\n";
+  scoped_refptr<net::HttpResponseHeaders> response_headers_403 =
+      net::HttpResponseHeaders::TryToCreate(raw_response_headers_403);
+  DCHECK(response_headers_403);
+  context_403.SetResponseHeaders(response_headers_403);
+
+  HistoryTabHelper* helper = HistoryTabHelper::FromWebState(&web_state_);
+  history::HistoryAddPageArgs args_403 =
+      helper->CreateHistoryAddPageArgs(item_403.get(), &context_403);
+
+  EXPECT_EQ(args_403.response_code_category,
+            history::VisitResponseCodeCategory::kNot404);
+
+  std::unique_ptr<web::NavigationItem> item_404 = web::NavigationItem::Create();
+  item_404->SetVirtualURL(test_url);
+
+  web::FakeNavigationContext context_404;
+  context_404.SetUrl(test_url);
+  context_404.SetHasCommitted(true);
+
+  std::string raw_response_headers_404 = "HTTP/1.1 404 Not Found\r\n\r\n";
+  scoped_refptr<net::HttpResponseHeaders> response_headers_404 =
+      net::HttpResponseHeaders::TryToCreate(raw_response_headers_404);
+  DCHECK(response_headers_404);
+  context_404.SetResponseHeaders(response_headers_404);
+
+  history::HistoryAddPageArgs args_404 =
+      helper->CreateHistoryAddPageArgs(item_404.get(), &context_404);
+
+  EXPECT_EQ(args_404.response_code_category,
+            history::VisitResponseCodeCategory::k404);
 }

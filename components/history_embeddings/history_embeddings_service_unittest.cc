@@ -212,6 +212,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     history_service_->AddPage(GURL(url), base::Time::Now() - base::Days(4), 0,
                               0, GURL(), history::RedirectList(),
                               ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
+                              history::VisitResponseCodeCategory::kNot404,
                               false);
   }
 

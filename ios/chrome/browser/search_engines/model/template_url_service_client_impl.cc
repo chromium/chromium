@@ -69,6 +69,7 @@ void TemplateURLServiceClientImpl::AddKeywordGeneratedVisit(const GURL& url) {
         url, base::Time::Now(), /*context_id=*/0, /*nav_entry_id=*/0,
         /*referrer=*/GURL(), history::RedirectList(),
         ui::PAGE_TRANSITION_KEYWORD_GENERATED, history::SOURCE_BROWSED,
+        history::VisitResponseCodeCategory::kNot404,
         /*did_replace_entry=*/false);
   }
 }

@@ -1245,6 +1245,15 @@ struct Cluster {
 
 // Navigation -----------------------------------------------------------------
 
+// The category of HTTP response code for a page visit.
+enum class VisitResponseCodeCategory {
+  // The HTTP response code for the page visit was something other than 404, or
+  // the visit had no response code (such as for synthetic visits).
+  kNot404 = 0,
+  // The HTTP response code for the page visit was 404.
+  k404,
+};
+
 // Marshalling structure for AddPage.
 struct HistoryAddPageArgs {
   // The default constructor is equivalent to:
@@ -1252,10 +1261,14 @@ struct HistoryAddPageArgs {
   //   HistoryAddPageArgs(
   //       GURL(), base::Time(), nullptr, 0, std::nullopt, GURL(),
   //       RedirectList(), ui::PAGE_TRANSITION_LINK,
-  //       false, SOURCE_BROWSED, false, true, false,
-  //       std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
-  //       std::nullopt, std::nullopt)
+  //       false, SOURCE_BROWSED, VisitResponseCodeCategory::kNot404, false,
+  //       true, false, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+  //       std::nullopt, std::nullopt, std::nullopt)
   HistoryAddPageArgs();
+  // TODO: crbug.com/439920192 - Stop using a defaulted boolean for
+  // `is_ephemeral`. Using boolean params with a default value adjacent to
+  // boolean params with no default creates dangerous ambiguity when adding
+  // new boolean params.
   HistoryAddPageArgs(const GURL& url,
                      base::Time time,
                      ContextID context_id,
@@ -1266,6 +1279,7 @@ struct HistoryAddPageArgs {
                      ui::PageTransition transition,
                      bool hidden,
                      VisitSource source,
+                     VisitResponseCodeCategory response_code_category,
                      bool did_replace_entry,
                      bool consider_for_ntp_most_visited,
                      bool is_ephemeral = false,
@@ -1291,6 +1305,7 @@ struct HistoryAddPageArgs {
   ui::PageTransition transition;
   bool hidden;
   VisitSource visit_source;
+  VisitResponseCodeCategory response_code_category;
   bool did_replace_entry;
   // Specifies whether a page visit should contribute to the Most Visited tiles
   // in the New Tab Page. Note that setting this to true (most common case)

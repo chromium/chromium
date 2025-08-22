@@ -250,7 +250,8 @@ TEST_F(HistoryServiceTest, RemoveNotification) {
 
   history_service_->AddPage(url, base::Time::Now(), 0, 1, GURL(),
                             RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            SOURCE_BROWSED, false);
+                            SOURCE_BROWSED, VisitResponseCodeCategory::kNot404,
+                            false);
 
   // This won't actually delete the URL, rather it'll empty out the visits.
   // This triggers blocking on the BookmarkModel.
@@ -263,7 +264,8 @@ TEST_F(HistoryServiceTest, AddPage) {
   const GURL test_url("http://www.google.com/");
   history_service_->AddPage(
       test_url, base::Time::Now(), 0, 0, GURL(), history::RedirectList(),
-      ui::PAGE_TRANSITION_MANUAL_SUBFRAME, history::SOURCE_BROWSED, false);
+      ui::PAGE_TRANSITION_MANUAL_SUBFRAME, history::SOURCE_BROWSED,
+      VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(test_url));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
@@ -273,7 +275,8 @@ TEST_F(HistoryServiceTest, AddPage) {
   // Add the page once from the main frame (should unhide it).
   history_service_->AddPage(test_url, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(test_url));
   EXPECT_EQ(2, query_url_result_.row.visit_count());  // Added twice.
   EXPECT_EQ(0, query_url_result_.row.typed_count());  // Never typed.
@@ -290,7 +293,8 @@ TEST_F(HistoryServiceTest, AddRedirect) {
   // to have a non-NULL page ID scope.
   history_service_->AddPage(first_redirects.back(), base::Time::Now(), 1, 0,
                             GURL(), first_redirects, ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, true);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, true);
 
   // The first page should be added once with a link visit type (because we set
   // LINK when we added the original URL, and a referrer of nowhere (0).
@@ -332,7 +336,7 @@ TEST_F(HistoryServiceTest, AddRedirect) {
       second_redirects,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
                                 ui::PAGE_TRANSITION_CLIENT_REDIRECT),
-      history::SOURCE_BROWSED, true);
+      history::SOURCE_BROWSED, VisitResponseCodeCategory::kNot404, true);
 
   // The last page (source of the client redirect) should NOT have an
   // additional visit added, because it was a client redirect (normally it
@@ -359,7 +363,8 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   const GURL test_url("http://intranet_host/path");
   history_service_->AddPage(test_url, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(test_url));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(1, query_url_result_.row.typed_count());
@@ -374,7 +379,8 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   const GURL test_url2("http://intranet_host/different_path");
   history_service_->AddPage(test_url2, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(test_url2));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
@@ -386,7 +392,8 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   const GURL test_url3("http://intranet_host/");
   history_service_->AddPage(test_url3, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(test_url3));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
@@ -398,7 +405,8 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   const GURL test_url4("https://intranet_host/");
   history_service_->AddPage(test_url4, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(test_url4));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
@@ -410,7 +418,8 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   const GURL test_url5("http://intranet_host/another_path");
   history_service_->AddPage(
       test_url5, base::Time::Now(), 0, 0, GURL(), history::RedirectList(),
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK, history::SOURCE_BROWSED, false);
+      ui::PAGE_TRANSITION_AUTO_BOOKMARK, history::SOURCE_BROWSED,
+      VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(test_url5));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
@@ -422,7 +431,8 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   // Original URL.
   history_service_->AddPage(test_url, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(test_url));
   EXPECT_EQ(2, query_url_result_.row.visit_count());
   EXPECT_EQ(1, query_url_result_.row.typed_count());
@@ -436,7 +446,8 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
                                       GURL("http://third1.com/")};
   history_service_->AddPage(redirects1.back(), base::Time::Now(), 0, 0, GURL(),
                             redirects1, ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(redirects1.front()));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(1, query_url_result_.row.typed_count());
@@ -450,7 +461,8 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
                                       GURL("http://intranet2/path")};
   history_service_->AddPage(redirects2.back(), base::Time::Now(), 0, 0, GURL(),
                             redirects2, ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(redirects2.back()));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
@@ -464,7 +476,8 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
                                       GURL("http://third3.com/")};
   history_service_->AddPage(redirects3.back(), base::Time::Now(), 0, 0, GURL(),
                             redirects3, ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(redirects3[1]));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
@@ -482,7 +495,8 @@ TEST_F(HistoryServiceTest, Typed) {
   const GURL test_url("http://www.google.com/");
   history_service_->AddPage(test_url, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(test_url));
 
   // We should have the same typed & visit count.
@@ -492,7 +506,8 @@ TEST_F(HistoryServiceTest, Typed) {
   // Add the page again not typed.
   history_service_->AddPage(test_url, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(test_url));
 
   // The second time should not have updated the typed count.
@@ -500,10 +515,10 @@ TEST_F(HistoryServiceTest, Typed) {
   EXPECT_EQ(1, query_url_result_.row.typed_count());
 
   // Add the page again as a generated URL.
-  history_service_->AddPage(test_url, base::Time::Now(), context_id, 0, GURL(),
-                            history::RedirectList(),
-                            ui::PAGE_TRANSITION_GENERATED,
-                            history::SOURCE_BROWSED, false);
+  history_service_->AddPage(
+      test_url, base::Time::Now(), context_id, 0, GURL(),
+      history::RedirectList(), ui::PAGE_TRANSITION_GENERATED,
+      history::SOURCE_BROWSED, VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(test_url));
 
   // This should have worked like a link click.
@@ -513,7 +528,8 @@ TEST_F(HistoryServiceTest, Typed) {
   // Add the page again as a reload.
   history_service_->AddPage(test_url, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_RELOAD,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(QueryURL(test_url));
 
   // This should not have incremented any visit counts.
@@ -566,10 +582,12 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
   // Add two pages.
   history_service_->AddPage(url0, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   history_service_->AddPage(url1, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
 
   QueryMostVisitedURLs();
   histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 1);
@@ -581,7 +599,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
   // Add another page.
   history_service_->AddPage(url2, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
 
   QueryMostVisitedURLs();
   histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 2);
@@ -594,7 +613,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
   // Revisit url2, making it the top URL.
   history_service_->AddPage(url2, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
 
   QueryMostVisitedURLs();
   histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 3);
@@ -607,7 +627,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
   // Revisit url1, making it the top URL.
   history_service_->AddPage(url1, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
 
   QueryMostVisitedURLs();
   histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 4);
@@ -621,7 +642,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
   history::RedirectList redirects = {url3, url4};
   history_service_->AddPage(url4, base::Time::Now(), context_id, 0, GURL(),
                             redirects, ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
 
   QueryMostVisitedURLs();
   histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 5);
@@ -844,7 +866,8 @@ void AddPageAtTime(HistoryService* history,
                    base::Time time_in_the_past) {
   const GURL url(url_spec);
   history->AddPage(url, time_in_the_past, 0, 0, GURL(), history::RedirectList(),
-                   ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED, false);
+                   ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
+                   VisitResponseCodeCategory::kNot404, false);
 }
 
 void AddPageInThePast(HistoryService* history,
@@ -861,7 +884,8 @@ void AddSyncedPageInThePast(HistoryService* history,
   base::Time time_in_the_past = base::Time::Now() - base::Days(days_back);
   history->AddPage(GURL(url_spec), time_in_the_past, 0, 0, GURL(),
                    history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                   history::SOURCE_SYNCED, false);
+                   history::SOURCE_SYNCED, VisitResponseCodeCategory::kNot404,
+                   false);
 }
 
 // Helper to add a page with specified days back in the past.
@@ -1285,7 +1309,8 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLocalVsSynced) {
                    GetTimeInThePast(query_time, /*days_back=*/1,
                                     /*hours_since_midnight=*/12),
                    0, 0, GURL(), history::RedirectList(),
-                   ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED, false);
+                   ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
+                   VisitResponseCodeCategory::kNot404, false);
 
   // Add a synced visit, as it would be created by HISTORY sync. The API to do
   // this isn't exposed in HistoryService (only HistoryBackend).
@@ -1420,8 +1445,9 @@ TEST_F(OrderingHistoryServiceTest, EnsureCorrectOrder) {
   HistoryAddPageArgs request(
       client_redirect_url, base::Time::Now() - base::Seconds(1), context_id1, 0,
       std::nullopt, GURL(),
-      /*redirects=*/{}, ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED, false,
-      true, /*is_ephemeral=*/false, std::nullopt, top_level_url, frame_url);
+      /*redirects=*/{}, ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED,
+      VisitResponseCodeCategory::kNot404, false, true, /*is_ephemeral=*/false,
+      std::nullopt, top_level_url, frame_url);
 
   // Simulate a user clicking on our VistedLink.
   history_service_->AddPage(request);

@@ -154,10 +154,15 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
 
   context_annotations.response_code = http_response_code;
 
+  history::VisitResponseCodeCategory response_code_category =
+      http_response_code == 404 ? history::VisitResponseCodeCategory::k404
+                                : history::VisitResponseCodeCategory::kNot404;
+
   return history::HistoryAddPageArgs(
       url, last_committed_item->GetTimestamp(), GetContextID(),
       last_committed_item->GetUniqueID(), navigation_context->GetNavigationId(),
       referrer_url, redirects, transition, hidden, history::SOURCE_BROWSED,
+      response_code_category,
       /*did_replace_entry=*/false, consider_for_ntp_most_visited,
       /*is_ephemeral=*/false,
       navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)

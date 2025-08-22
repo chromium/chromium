@@ -248,7 +248,8 @@ TEST_F(ProfileSigninConfirmationHelperTest,
     base::SpanPrintf(buf, "http://foo.com/%d", i);
     history->AddPage(GURL(std::string(buf)), base::Time::Now(),
                      /*context_id=*/{}, 1, GURL(), history::RedirectList(),
-                     ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED, false);
+                     ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
+                     history::VisitResponseCodeCategory::kNot404, false);
   }
   EXPECT_TRUE(GetCallbackResult(
       base::BindOnce(&ui::CheckShouldPromptForNewProfile, profile_.get())));
@@ -265,7 +266,8 @@ TEST_F(ProfileSigninConfirmationHelperTest,
   profile_->SetIsNewProfile(true);
   history->AddPage(GURL("http://example.com"), base::Time::Now(),
                    /*context_id=*/{}, 1, GURL(), history::RedirectList(),
-                   ui::PAGE_TRANSITION_TYPED, history::SOURCE_BROWSED, false);
+                   ui::PAGE_TRANSITION_TYPED, history::SOURCE_BROWSED,
+                   history::VisitResponseCodeCategory::kNot404, false);
   EXPECT_TRUE(GetCallbackResult(
       base::BindOnce(&ui::CheckShouldPromptForNewProfile, profile_.get())));
 }

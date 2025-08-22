@@ -225,7 +225,8 @@ void AddToHistory(history::HistoryService* service,
   service->AddPage(url, timestamp, /*context_id=*/0,
                    /*nav_entry_id=*/1234,
                    /*referrer=*/GURL(), history::RedirectList(), transition,
-                   source, /*did_replace_entry=*/false);
+                   source, history::VisitResponseCodeCategory::kNot404,
+                   /*did_replace_entry=*/false);
 }
 
 bool GetUrlFromHistoryService(history::HistoryService* service,
