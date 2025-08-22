@@ -66,8 +66,26 @@ enum class ServerRequestStatus {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:ServerAimEligibilityRequestStatus)
 
-static constexpr char kRequestEndpoint[] =
-    "http://www.google.com/async/folae?async=_fmt:pb";
+static constexpr char kRequestPath[] = "/async/folae";
+static constexpr char kRequestQuery[] = "async=_fmt:pb";
+
+// Returns the request URL or an empty GURL if a valid URL cannot be created;
+// e.g., Google is not the default search provider.
+GURL GetRequestUrl(const TemplateURLService& template_url_service) {
+  if (!search::DefaultSearchProviderIsGoogle(&template_url_service)) {
+    return GURL();
+  }
+
+  GURL base_gurl(template_url_service.search_terms_data().GoogleBaseURLValue());
+  if (!base_gurl.is_valid()) {
+    return GURL();
+  }
+
+  GURL::Replacements replacements;
+  replacements.SetPathStr(kRequestPath);
+  replacements.SetQueryStr(kRequestQuery);
+  return base_gurl.ReplaceComponents(replacements);
+}
 
 const net::NetworkTrafficAnnotationTag kRequestTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("aim_eligibility_fetch", R"(
@@ -231,9 +249,15 @@ void AimEligibilityService::StartServerEligibilityRequest() {
     return;
   }
 
+  // Request URL may be invalid.
+  GURL request_url = GetRequestUrl(template_url_service_.get());
+  if (!request_url.is_valid()) {
+    return;
+  }
+
   std::unique_ptr<network::ResourceRequest> request =
       std::make_unique<network::ResourceRequest>();
-  request->url = GURL{kRequestEndpoint};
+  request->url = request_url;
   request->credentials_mode = network::mojom::CredentialsMode::kInclude;
   request->load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
   // Set the SiteForCookies to the request URL's site to avoid cookie blocking.
