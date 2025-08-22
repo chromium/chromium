@@ -167,7 +167,7 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
 
   auto tab_dialog_params = std::make_unique<tabs::TabDialogManager::Params>();
   tab_dialog_params->close_on_navigate = false;
-  tab_dialog_params->close_on_detach = false;
+  tab_dialog_params->close_on_detach = true;
   tab_dialog_params->disable_input = false;
   tab_dialog_params->animated = false;
   tab_dialog_params->should_show_inactive = true;
