@@ -143,8 +143,9 @@ void CriticalClientHintsThrottle::MaybeRestartWithHints(
 
   LogCriticalCHStatus(CriticalCHRestart::kHeaderPresent);
 
-  if (!AreCriticalHintsMissing(response_origin, frame_tree_node,
-                               client_hint_delegate_, critical_hints)) {
+  if (GetCriticalHintsMissingStatus(response_origin, frame_tree_node,
+                                    client_hint_delegate_, critical_hints) !=
+      CriticalHintsMissingStatus::kMissing) {
     return;
   }
 

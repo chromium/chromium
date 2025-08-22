@@ -62,11 +62,26 @@ CONTENT_EXPORT double RoundKbpsToMbpsForTesting(
     const std::string& host,
     const std::optional<int32_t>& downlink_kbps);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(CriticalHintsMissingStatus)
+enum class CriticalHintsMissingStatus {
+  // All critical hints were already present.
+  kPresent = 0,
+  // All allowed critical hints were present, but some hints were not allowed
+  // by the permissions policy.
+  kPresentButContainsNotAllowed = 1,
+  // Some critical hints were missing.
+  kMissing = 2,
+  kMaxValue = kMissing,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:CriticalHintsMissingStatus)
+
 // Returns true if there is a hint in |critical_hints| that would be sent (i.e.
 // not blocked by browser or origin level preferences like disabled JavaScript
 // or Feature/Permission Policy) but is not currently in the client hint
 // storage.
-CONTENT_EXPORT bool AreCriticalHintsMissing(
+CONTENT_EXPORT CriticalHintsMissingStatus GetCriticalHintsMissingStatus(
     const url::Origin& origin,
     FrameTreeNode* frame_tree_node,
     ClientHintsControllerDelegate* delegate,

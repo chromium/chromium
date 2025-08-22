@@ -3323,6 +3323,16 @@ shown properly on the user-facing crash UI.
   <int value="2" label="Navigation restarted"/>
 </enum>
 
+<!-- LINT.IfChange(CriticalHintsMissingStatus) -->
+
+<enum name="CriticalHintsMissingStatus">
+  <int value="0" label="kPresent"/>
+  <int value="1" label="kPresentButContainsNotAllowed"/>
+  <int value="2" label="kMissing"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/client_hints/client_hints.h:CriticalHintsMissingStatus) -->
+
 <enum name="CrosDiagnosticsCrosHealthdProbeError">
   <summary>
     Error types matching ProbeError types from cros_healthd mojom

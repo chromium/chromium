@@ -1037,23 +1037,30 @@ std::vector<WebClientHintsType> LookupAcceptCHForCommit(
   return data.hints.GetEnabledHints();
 }
 
-bool AreCriticalHintsMissing(
+CriticalHintsMissingStatus GetCriticalHintsMissingStatus(
     const url::Origin& origin,
     FrameTreeNode* frame_tree_node,
     ClientHintsControllerDelegate* delegate,
     const std::vector<WebClientHintsType>& critical_hints) {
   ClientHintsExtendedData data(origin, frame_tree_node, delegate);
 
+  bool contains_not_allowed = false;
   // Note: these only check for per-hint origin/permissions policy settings, not
   // origin-level or "browser-level" policies like disabling JS or other
   // features.
   for (auto hint : critical_hints) {
-    if (IsClientHintAllowed(data, hint) && !IsClientHintEnabled(data, hint)) {
-      return true;
+    if (!IsClientHintAllowed(data, hint)) {
+      contains_not_allowed = true;
+      continue;
+    }
+    if (!IsClientHintEnabled(data, hint)) {
+      return CriticalHintsMissingStatus::kMissing;
     }
   }
 
-  return false;
+  return contains_not_allowed
+             ? CriticalHintsMissingStatus::kPresentButContainsNotAllowed
+             : CriticalHintsMissingStatus::kPresent;
 }
 
 network::ResourceRequest::TrustedParams::EnabledClientHints

@@ -501,4 +501,39 @@ TEST_F(ClientHintsTest, AddNavigationRequestClientHintsHeaders_Subframe) {
   EXPECT_TRUE(headers.HasHeader("sec-ch-device-memory"));
 }
 
+TEST_F(ClientHintsTest, GetCriticalHintsMissingStatus) {
+  const GURL main_url(kOriginUrl);
+  contents()->NavigateAndCommit(main_url);
+  const url::Origin origin = url::Origin::Create(main_url);
+
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* main_frame_node = frame_tree.root();
+
+  blink::UserAgentMetadata ua_metadata;
+  MockClientHintsControllerDelegate delegate(ua_metadata);
+
+  const ClientHintsVector critical_hints = {WebClientHintsType::kDeviceMemory,
+                                            WebClientHintsType::kDpr};
+
+  // No hints persisted.
+  EXPECT_EQ(GetCriticalHintsMissingStatus(origin, main_frame_node, &delegate,
+                                          critical_hints),
+            CriticalHintsMissingStatus::kMissing);
+
+  // One hint persisted.
+  delegate.PersistClientHints(origin,
+                              main_frame_node->GetParentOrOuterDocument(),
+                              {WebClientHintsType::kDeviceMemory});
+  EXPECT_EQ(GetCriticalHintsMissingStatus(origin, main_frame_node, &delegate,
+                                          critical_hints),
+            CriticalHintsMissingStatus::kMissing);
+
+  // All hints persisted.
+  delegate.PersistClientHints(
+      origin, main_frame_node->GetParentOrOuterDocument(), critical_hints);
+  EXPECT_EQ(GetCriticalHintsMissingStatus(origin, main_frame_node, &delegate,
+                                          critical_hints),
+            CriticalHintsMissingStatus::kPresent);
+}
+
 }  // namespace content
