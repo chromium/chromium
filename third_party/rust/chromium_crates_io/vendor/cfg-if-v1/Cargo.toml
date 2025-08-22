@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "cfg-if"
-version = "1.0.1"
+version = "1.0.3"
 authors = ["Alex Crichton <alex@alexcrichton.com>"]
 build = false
 autolib = false

@@ -156,15 +156,17 @@ mod tests {
     #[test]
     #[allow(clippy::assertions_on_constants)]
     fn test_usage_within_a_function() {
-        cfg_if! {if #[cfg(debug_assertions)] {
-            // we want to put more than one thing here to make sure that they
-            // all get configured properly.
-            assert!(cfg!(debug_assertions));
-            assert_eq!(4, 2+2);
-        } else {
-            assert!(works1().is_some());
-            assert_eq!(10, 5+5);
-        }}
+        cfg_if! {
+            if #[cfg(debug_assertions)] {
+                // we want to put more than one thing here to make sure that they
+                // all get configured properly.
+                assert!(cfg!(debug_assertions));
+                assert_eq!(4, 2 + 2);
+            } else {
+                assert!(works1().is_some());
+                assert_eq!(10, 5 + 5);
+            }
+        }
     }
 
     #[allow(dead_code)]
@@ -178,13 +180,9 @@ mod tests {
     impl Trait for Struct {
         cfg_if! {
             if #[cfg(feature = "blah")] {
-                fn blah(&self) {
-                    unimplemented!();
-                }
+                fn blah(&self) { unimplemented!(); }
             } else {
-                fn blah(&self) {
-                    unimplemented!();
-                }
+                fn blah(&self) { unimplemented!(); }
             }
         }
     }

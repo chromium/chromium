@@ -1,6 +1,6 @@
 [package]
 name = "cfg-if"
-version = "1.0.1"
+version = "1.0.3"
 authors = ["Alex Crichton <alex@alexcrichton.com>"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
