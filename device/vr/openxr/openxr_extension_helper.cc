@@ -107,6 +107,9 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
     : extension_enumeration_(extension_enumeration) {
   // Failure to query a method results in a nullptr
 
+  // General methods
+  OPENXR_LOAD_FN(xrPollFutureEXT);
+
   // Hand tracking methods
   OPENXR_LOAD_FN(xrCreateHandTrackerEXT);
   OPENXR_LOAD_FN(xrDestroyHandTrackerEXT);
@@ -223,6 +226,7 @@ OpenXrExtensionHelper::CreateLightEstimator(XrSession session,
 
 std::unique_ptr<OpenXRSceneUnderstandingManager>
 OpenXrExtensionHelper::CreateSceneUnderstandingManager(
+    OpenXrApiWrapper* openxr,
     XrSession session,
     XrSpace base_space,
     const std::vector<mojom::XRSessionFeature>& required_features,
@@ -273,7 +277,7 @@ OpenXrExtensionHelper::CreateSceneUnderstandingManager(
     // then use it.
     if (supported_optional_features_count ==
         optional_features_requested_count) {
-      return factory->CreateSceneUnderstandingManager(*this, session,
+      return factory->CreateSceneUnderstandingManager(*this, openxr, session,
                                                       base_space);
     }
 
@@ -288,7 +292,7 @@ OpenXrExtensionHelper::CreateSceneUnderstandingManager(
   }
 
   if (best_factory) {
-    return best_factory->CreateSceneUnderstandingManager(*this, session,
+    return best_factory->CreateSceneUnderstandingManager(*this, openxr, session,
                                                          base_space);
   }
 

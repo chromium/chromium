@@ -36,6 +36,9 @@ namespace device {
 struct OpenXrExtensionMethods {
   OpenXrExtensionMethods();
   ~OpenXrExtensionMethods();
+  // General Methods
+  OPENXR_DECLARE_FN(xrPollFutureEXT);
+
   // Hand Tracking
   OPENXR_DECLARE_FN(xrCreateHandTrackerEXT);
   OPENXR_DECLARE_FN(xrDestroyHandTrackerEXT);
@@ -88,6 +91,7 @@ struct OpenXrExtensionMethods {
 // Ensure that we don't export our helper macro.
 #undef OPENXR_DECLARE_FN
 
+class OpenXrApiWrapper;
 class OpenXrExtensionEnumeration {
  public:
   OpenXrExtensionEnumeration();
@@ -143,6 +147,7 @@ class OpenXrExtensionHelper {
 
   std::unique_ptr<OpenXRSceneUnderstandingManager>
   CreateSceneUnderstandingManager(
+      OpenXrApiWrapper* openxr,
       XrSession session,
       XrSpace base_space,
       const std::vector<mojom::XRSessionFeature>& required_features,

@@ -97,6 +97,7 @@ void OpenXrSceneUnderstandingManagerMsftFactory::CheckAndUpdateEnabledState(
 std::unique_ptr<OpenXRSceneUnderstandingManager>
 OpenXrSceneUnderstandingManagerMsftFactory::CreateSceneUnderstandingManager(
     const OpenXrExtensionHelper& extension_helper,
+    OpenXrApiWrapper* openxr,
     XrSession session,
     XrSpace mojo_space) const {
   bool is_supported = IsEnabled();

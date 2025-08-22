@@ -53,6 +53,7 @@ OpenXrExtensionHandlerFactory::CreateLightEstimator(
 std::unique_ptr<OpenXRSceneUnderstandingManager>
 OpenXrExtensionHandlerFactory::CreateSceneUnderstandingManager(
     const OpenXrExtensionHelper& extension_helper,
+    OpenXrApiWrapper* openxr,
     XrSession session,
     XrSpace mojo_space) const {
   return nullptr;

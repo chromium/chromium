@@ -26,6 +26,7 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/vr_export.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -57,6 +58,7 @@ using VisibilityChangedCallback =
 
 class OpenXrApiWrapper {
  public:
+  using XrFutureReadyCallback = base::OnceCallback<void(XrFutureEXT)>;
   OpenXrApiWrapper();
 
   OpenXrApiWrapper(const OpenXrApiWrapper&) = delete;
@@ -124,6 +126,12 @@ class OpenXrApiWrapper {
 
   bool CanEnableAntiAliasing() const;
 
+  // Polls the given future until it is ready. Once ready, the provided
+  // callback will be invoked with the future. If polling fails, the callback
+  // will be invoked with XR_NULL_FUTURE_EXT.
+  void PollFuture(XrFutureEXT future,
+                  base::OnceCallback<void(XrFutureEXT)> on_ready_callback);
+
   static void DEVICE_VR_EXPORT SetTestHook(VRTestHook* hook);
 
  private:
@@ -142,6 +150,7 @@ class OpenXrApiWrapper {
       std::vector<XrViewConfigurationView>& view_properties) const;
   XrResult InitializeEnvironmentBlendMode(XrSystemId system);
   XrResult ProcessEvents();
+  void ProcessPendingFutures();
   void EnsureEventPolling();
 
   XrResult CreateSession();
@@ -242,6 +251,8 @@ class OpenXrApiWrapper {
   std::unordered_map<XrViewConfigurationType, OpenXrViewConfiguration>
       secondary_view_configs_;
 
+  absl::flat_hash_map<XrFutureEXT, XrFutureReadyCallback> pending_futures_;
+
   std::unique_ptr<OpenXrDepthSensor> depth_sensor_;
   std::unique_ptr<OpenXrLightEstimator> light_estimator_;
   std::unique_ptr<OpenXrStageBoundsProvider> bounds_provider_;
@@ -251,6 +262,8 @@ class OpenXrApiWrapper {
   // The context provider is owned by the OpenXrRenderLoop, and may change when
   // there is a context lost.
   scoped_refptr<viz::ContextProvider> context_provider_;
+
+  raw_ptr<const OpenXrExtensionHelper> extension_helper_ = nullptr;
 
   base::WeakPtrFactory<OpenXrApiWrapper> weak_ptr_factory_{this};
 };

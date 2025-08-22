@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <type_traits>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -33,6 +34,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
@@ -526,7 +528,8 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         if (scene_understanding_manager_ == nullptr) {
           scene_understanding_manager_ =
               extension_helper.CreateSceneUnderstandingManager(
-                  session_, local_space_, session_options_->required_features,
+                  this, session_, local_space_,
+                  session_options_->required_features,
                   session_options_->optional_features);
         }
         is_enabled =
@@ -545,7 +548,8 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         if (scene_understanding_manager_ == nullptr) {
           scene_understanding_manager_ =
               extension_helper.CreateSceneUnderstandingManager(
-                  session_, local_space_, session_options_->required_features,
+                  this, session_, local_space_,
+                  session_options_->required_features,
                   session_options_->optional_features);
         }
         is_enabled =
@@ -630,6 +634,8 @@ XrResult OpenXrApiWrapper::InitSession(
     VisibilityChangedCallback visibility_changed_callback) {
   DCHECK(IsInitialized());
   DCHECK(options);
+
+  extension_helper_ = &extension_helper;
 
   session_options_ = std::move(options);
   on_session_started_callback_ = std::move(on_session_started_callback);
@@ -1388,6 +1394,38 @@ std::vector<mojom::XRInputSourceStatePtr> OpenXrApiWrapper::GetInputState() {
   return input_helper_->GetInputState(GetPredictedDisplayTime());
 }
 
+void OpenXrApiWrapper::PollFuture(
+    XrFutureEXT future,
+    base::OnceCallback<void(XrFutureEXT)> on_ready_callback) {
+  pending_futures_.emplace(future, std::move(on_ready_callback));
+}
+
+void OpenXrApiWrapper::ProcessPendingFutures() {
+  if (pending_futures_.empty()) {
+    return;
+  }
+
+  auto it = pending_futures_.begin();
+  while (it != pending_futures_.end()) {
+    XrFuturePollInfoEXT poll_info = {XR_TYPE_FUTURE_POLL_INFO_EXT};
+    poll_info.future = it->first;
+    XrFuturePollResultEXT poll_result = {XR_TYPE_FUTURE_POLL_RESULT_EXT};
+    XrResult result = extension_helper_->ExtensionMethods().xrPollFutureEXT(
+        instance_, &poll_info, &poll_result);
+
+    if (result == XR_SUCCESS &&
+        poll_result.state == XR_FUTURE_STATE_READY_EXT) {
+      std::move(it->second).Run(it->first);
+      pending_futures_.erase(it++);
+    } else if (XR_FAILED(result)) {
+      std::move(it->second).Run(XR_NULL_FUTURE_EXT);
+      pending_futures_.erase(it++);
+    } else {
+      it++;
+    }
+  }
+}
+
 void OpenXrApiWrapper::EnsureEventPolling() {
   // Events are usually processed at the beginning of a frame. When frames
   // aren't being requested, this timer loop ensures OpenXR events are
@@ -1414,6 +1452,8 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
   if (!HasInstance()) {
     return XR_ERROR_INSTANCE_LOST;
   }
+
+  ProcessPendingFutures();
 
   // If we've received an exit gesture from any of the input sources, end the
   // session.

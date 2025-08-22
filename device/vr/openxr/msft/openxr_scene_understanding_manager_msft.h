@@ -66,6 +66,7 @@ class OpenXrSceneUnderstandingManagerMsftFactory
 
   std::unique_ptr<OpenXRSceneUnderstandingManager>
   CreateSceneUnderstandingManager(const OpenXrExtensionHelper& extension_helper,
+                                  OpenXrApiWrapper* openxr,
                                   XrSession session,
                                   XrSpace mojo_space) const override;
 
