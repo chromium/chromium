@@ -220,7 +220,7 @@
   max-height: calc-size(fit-content, min(size - 24px, 190px));
   min-height: 72px;
   outline: none;
-  padding: 20px 0 0;
+  padding: 16px 0 0;
   position: relative;
   resize: none;
   scrollbar-width: none;
