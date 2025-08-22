@@ -48,7 +48,6 @@ class BrowserAppMenuButton;
 class Browser;
 class ExtensionsToolbarButton;
 class ExtensionsToolbarContainer;
-class ChromeLabsButton;
 class HomeButton;
 class IntentChipButton;
 class ExtensionsToolbarCoordinator;
@@ -141,11 +140,6 @@ class ToolbarView : public views::AccessiblePaneView,
   // Accessors.
   Browser* browser() const { return browser_; }
   views::Button* GetChromeLabsButton() const;
-
-  // NOTE: Use of the above method `GetChromeLabsButton` is preferred while the
-  // Chrome Labs button is migrated to PinnedActionToolbarButton.
-  // TODO(b/353385180): Remove once Chrome Labs button migration is complete.
-  ChromeLabsButton* chrome_labs_button() const { return chrome_labs_button_; }
   ExtensionsToolbarContainer* extensions_container() const {
     return extensions_container_;
   }
@@ -299,7 +293,6 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<LocationBarView> location_bar_ = nullptr;
   raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
   raw_ptr<views::View> toolbar_divider_ = nullptr;
-  raw_ptr<ChromeLabsButton> chrome_labs_button_ = nullptr;
   raw_ptr<BatterySaverButton> battery_saver_button_ = nullptr;
   raw_ptr<PerformanceInterventionButton> performance_intervention_button_ =
       nullptr;
