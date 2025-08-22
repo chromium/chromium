@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -80,9 +81,10 @@ class PdfInfoBarController : public infobars::InfoBarManager::Observer,
   // The infobar being shown, or `nullptr` if no infobar currently exists.
   raw_ptr<infobars::InfoBar> infobar_ = nullptr;
 
-  // The manager of the infobar being shown, or `nullptr` if no infobar
-  // currently exists.
-  raw_ptr<infobars::ContentInfoBarManager> infobar_manager_ = nullptr;
+  // Scoped observer that facilitates observing an InfoBarManager.
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      infobar_scoped_observation_{this};
 
   // Enables `OnActiveTabChanged()` and `OnBrowserClosed()` to be called.
   std::vector<base::CallbackListSubscription> browser_subscriptions_;
