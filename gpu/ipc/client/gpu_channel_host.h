@@ -169,8 +169,8 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
     return &image_decode_accelerator_proxy_;
   }
 
-  // Calls ConnectionTracker::AddObserver() directly.
-  void AddObserver(GpuChannelLostObserver* obs);
+  // Calls ConnectionTracker::AddObserverIfNotAlreadyLost directly.
+  [[nodiscard]] bool AddObserverIfNotAlreadyLost(GpuChannelLostObserver* obs);
 
   // Calls ConnectionTracker::RemoveObserver() directly.
   void RemoveObserver(GpuChannelLostObserver* obs);
@@ -200,8 +200,10 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
 
     void OnDisconnectedFromGpuProcess();
 
-    // With |channel_obs_lock_|, it can becalled on any thread.
-    void AddObserver(GpuChannelLostObserver* obs);
+    // Adds observer if gpu channel is not already lost and returns true,
+    // otherwise returns false.
+    // With |channel_obs_lock_|, it can be called on any thread.
+    [[nodiscard]] bool AddObserverIfNotAlreadyLost(GpuChannelLostObserver* obs);
 
     // With |channel_obs_lock_|, it can be called on any thread.
     // Cannot be called during NotifyGpuChannelLost(). This creates a deadlock.

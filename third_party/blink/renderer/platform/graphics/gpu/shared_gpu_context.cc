@@ -216,18 +216,9 @@ void SharedGpuContext::CreateSharedImageInterfaceProviderIfNeeded() {
     waitable_event.Wait();
   }
 
-  if (!gpu_channel) {
-    return;
-  }
-
-  auto shared_image_interface = gpu_channel->CreateClientSharedImageInterface();
-  if (!shared_image_interface) {
-    return;
-  }
-
   shared_image_interface_provider_ =
-      std::make_unique<WebGraphicsSharedImageInterfaceProviderImpl>(
-          std::move(shared_image_interface));
+      WebGraphicsSharedImageInterfaceProviderImpl::TryCreate(
+          std::move(gpu_channel));
 }
 
 // static

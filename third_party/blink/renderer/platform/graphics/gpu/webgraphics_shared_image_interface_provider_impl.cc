@@ -10,6 +10,30 @@
 
 namespace blink {
 
+// static
+std::unique_ptr<WebGraphicsSharedImageInterfaceProviderImpl>
+WebGraphicsSharedImageInterfaceProviderImpl::TryCreate(
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel) {
+  if (!gpu_channel) {
+    return nullptr;
+  }
+
+  auto shared_image_interface = gpu_channel->CreateClientSharedImageInterface();
+  if (!shared_image_interface) {
+    return nullptr;
+  }
+
+  auto shared_image_interface_provider =
+      base::WrapUnique(new WebGraphicsSharedImageInterfaceProviderImpl(
+          std::move(shared_image_interface)));
+  if (!gpu_channel->AddObserverIfNotAlreadyLost(
+          shared_image_interface_provider.get())) {
+    return nullptr;
+  }
+
+  return shared_image_interface_provider;
+}
+
 // Created on the CrRendererMain or the DedicatedWorker thread.
 WebGraphicsSharedImageInterfaceProviderImpl::
     WebGraphicsSharedImageInterfaceProviderImpl(
@@ -21,8 +45,6 @@ WebGraphicsSharedImageInterfaceProviderImpl::
       base::BindOnce(&WebGraphicsSharedImageInterfaceProviderImpl::
                          GpuChannelLostOnWorkerThread,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  shared_image_interface_->gpu_channel()->AddObserver(this);
 }
 
 // Destroyed on the same ctor thread.

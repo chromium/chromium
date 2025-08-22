@@ -367,11 +367,15 @@ void GpuChannelHost::ConnectionTracker::OnDisconnectedFromGpuProcess() {
   NotifyGpuChannelLost();
 }
 
-void GpuChannelHost::ConnectionTracker::AddObserver(
+bool GpuChannelHost::ConnectionTracker::AddObserverIfNotAlreadyLost(
     GpuChannelLostObserver* obs) {
   AutoLock lock(channel_obs_lock_);
+  if (!is_connected()) {
+    return false;
+  }
   CHECK(!base::Contains(observer_list_, obs));
   observer_list_.push_back(obs);
+  return true;
 }
 
 void GpuChannelHost::ConnectionTracker::RemoveObserver(
@@ -426,8 +430,8 @@ void GpuChannelHost::Listener::OnChannelError() {
   channel_ = nullptr;
 }
 
-void GpuChannelHost::AddObserver(GpuChannelLostObserver* obs) {
-  connection_tracker_->AddObserver(obs);
+bool GpuChannelHost::AddObserverIfNotAlreadyLost(GpuChannelLostObserver* obs) {
+  return connection_tracker_->AddObserverIfNotAlreadyLost(obs);
 }
 
 void GpuChannelHost::RemoveObserver(GpuChannelLostObserver* obs) {

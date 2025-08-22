@@ -58,6 +58,9 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
 
   void EstablishGpuChannel(EstablishGpuChannelCallback callback) override;
 
+  void SetEstablishGpuChannelCallbackForTesting(
+      base::OnceCallback<void(bool)> callback);
+
 #if BUILDFLAG(IS_CHROMEOS)
   void CreateJpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
@@ -90,6 +93,7 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
   mojo::ReceiverSet<mojom::Gpu> gpu_receivers_;
   bool gpu_channel_requested_ = false;
   EstablishGpuChannelCallback callback_;
+  base::OnceCallback<void(bool)> callback_for_testing_;
   mojo::ScopedMessagePipeHandle channel_handle_;
   gpu::GPUInfo gpu_info_;
   gpu::GpuFeatureInfo gpu_feature_info_;

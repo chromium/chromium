@@ -548,7 +548,9 @@ void VideoFrameSubmitter::OnReceivedContextProvider(
 
   if (!use_gpu_compositing) {
     shared_image_interface_ = std::move(shared_image_interface);
-    if (!shared_image_interface_) {
+    if (!shared_image_interface_ ||
+        !shared_image_interface_->gpu_channel()->AddObserverIfNotAlreadyLost(
+            this)) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
@@ -559,7 +561,6 @@ void VideoFrameSubmitter::OnReceivedContextProvider(
       return;
     }
 
-    shared_image_interface_->gpu_channel()->AddObserver(this);
     resource_provider_->Initialize(nullptr, shared_image_interface_);
     if (frame_sink_id_.is_valid()) {
       StartSubmitting();

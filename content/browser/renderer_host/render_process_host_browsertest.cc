@@ -29,6 +29,7 @@
 #include "base/threading/hang_watcher.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "components/viz/host/gpu_client.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -41,6 +42,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/child_process_launcher_utils.h"
+#include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -2313,6 +2315,61 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ReuseSiteURLChanges) {
       SiteInstanceImpl::CreateReusableInstanceForTesting(context, kUrl);
   EXPECT_EQ(root->current_frame_host()->GetProcess(),
             site_instance->GetProcess());
+}
+
+class PreEstablishGpuChannelRenderProcessHostTest
+    : public RenderProcessHostTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (!UseGpuCompositing()) {
+      command_line->AppendSwitch(switches::kDisableGpu);
+    }
+  }
+
+ protected:
+  bool WaitForGpuChannelEstablishment() {
+    auto* rphi = static_cast<RenderProcessHostImpl*>(
+        shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
+    auto* gpu_client = rphi->GetGpuClient();
+
+    base::test::TestFuture<bool> success_future;
+    gpu_client->SetEstablishGpuChannelCallbackForTesting(
+        success_future.GetCallback());
+    return success_future.Get();
+  }
+
+  bool UseGpuCompositing() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PreEstablishGpuChannelRenderProcessHostTest,
+// ChromeOS and Android don't support software compositing.
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+    testing::Bool(),
+#else
+    testing::Values(true),
+#endif
+    [](const testing::TestParamInfo<
+        PreEstablishGpuChannelRenderProcessHostTest::ParamType>& info) {
+      return info.param ? "WithGpuCompositing" : "WithoutGpuCompositing";
+    });
+
+IN_PROC_BROWSER_TEST_P(PreEstablishGpuChannelRenderProcessHostTest,
+                       PreEstablishedChannelIsDroppedOnGpuCrash) {
+  // Hide WebContents to prevent renderer from using pre-established gpu channel
+  // right away.
+  shell()->web_contents()->WasHidden();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/simple_page.html");
+  shell()->LoadURL(test_url);
+  ASSERT_TRUE(WaitForGpuChannelEstablishment());
+
+  // Kill gpu process and check that gpu channel is re-requested.
+  KillGpuProcess();
+  shell()->web_contents()->WasShown();
+  EXPECT_TRUE(WaitForGpuChannelEstablishment());
 }
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
