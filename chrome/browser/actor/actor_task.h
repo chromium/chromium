@@ -112,18 +112,25 @@ class ActorTask {
   tabs::TabInterface* GetTabForObservation() const;
 
   // The set of tabs that have been acted on at any point during this task.
-  const absl::flat_hash_set<tabs::TabHandle>& GetTabs() const {
-    return tab_handles_;
-  }
+  absl::flat_hash_set<tabs::TabHandle> GetTabs() const;
 
   // The set of tabs that were acted on by the last call to Act.
-  const absl::flat_hash_set<tabs::TabHandle>& GetLastActedTabs() const {
-    // TODO(bokan): Currently the client only acts on a single tab but this
-    // should track which tabs were acted on in the last call to Act.
-    return tab_handles_;
-  }
+  absl::flat_hash_set<tabs::TabHandle> GetLastActedTabs() const;
 
  private:
+  struct ActingTabState {
+    ActingTabState();
+    ~ActingTabState();
+    ActingTabState(ActingTabState&&);
+    ActingTabState& operator=(ActingTabState&&);
+
+    // Keeps the tab in "actuation mode". The runner is present when the tab is
+    // actively being kept awake and is reset during pause.
+    base::ScopedClosureRunner actuation_runner;
+    // Subscription for TabInterface::WillDetach.
+    base::CallbackListSubscription will_detach_subscription;
+  };
+
   void OnFinishedAct(ActCallback callback,
                      mojom::ActionResultPtr result,
                      std::optional<size_t> index_of_failed_action,
@@ -151,19 +158,9 @@ class ActorTask {
   // An accumulation of elapsed times for previous "active" states.
   base::TimeDelta total_active_time_;
 
-  // The set of all tabs this task has acted upon.
-  // TODO(mcnee): We have additional tab related state below. We could wrap them
-  // up into a struct and have the handle be a map key for easier management.
-  absl::flat_hash_set<tabs::TabHandle> tab_handles_;
-
-  // Holds subscriptions for TabInterface callbacks.
-  std::vector<base::CallbackListSubscription> tab_subscriptions_;
-
-  // A map from a tab's handle to a ScopedClosureRunner that keeps the tab
-  // in "actuation mode". This is released when the tab is removed from the
-  // task.
-  absl::flat_hash_map<tabs::TabHandle, base::ScopedClosureRunner>
-      actuation_mode_runners_;
+  // A map from a tab's handle to state associated with that tab. The presence
+  // of a tab in this map signifies that it is part of the task.
+  absl::flat_hash_map<tabs::TabHandle, ActingTabState> acting_tabs_;
 
   base::WeakPtrFactory<ui::UiEventDispatcher> ui_weak_ptr_factory_;
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};

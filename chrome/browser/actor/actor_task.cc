@@ -20,8 +20,15 @@
 #include "chrome/common/actor/action_result.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace actor {
+
+ActorTask::ActingTabState::ActingTabState() = default;
+ActorTask::ActingTabState::~ActingTabState() = default;
+ActorTask::ActingTabState::ActingTabState(ActingTabState&&) = default;
+ActorTask::ActingTabState& ActorTask::ActingTabState::operator=(
+    ActingTabState&&) = default;
 
 ActorTask::ActorTask(Profile* profile,
                      std::unique_ptr<ExecutionEngine> execution_engine,
@@ -145,9 +152,8 @@ void ActorTask::Stop(bool success) {
   }
   end_time_ = base::Time::Now();
   // Remove all the tabs from the task.
-  auto tabs_to_remove = tab_handles_;
-  for (auto& tab : tabs_to_remove) {
-    RemoveTab(tab);
+  while (!acting_tabs_.empty()) {
+    RemoveTab(acting_tabs_.begin()->first);
   }
   if (success) {
     SetState(State::kFinished);
@@ -169,27 +175,35 @@ void ActorTask::Pause(bool from_actor) {
   } else {
     SetState(State::kPausedByUser);
   }
-  actuation_mode_runners_.clear();
+
+  // Release all the capturer count increments. The ScopedClosureRunner's
+  // destructor will handle this as `actuation_runner` is reset.
+  for (auto& [handle, state] : acting_tabs_) {
+    state.actuation_runner = {};
+  }
 }
 
 void ActorTask::Resume() {
-  if (GetState() != State::kFinished || GetState() != State::kCancelled) {
-    if (actuation_mode_runners_.empty()) {
-      for (const auto& tab_handle : tab_handles_) {
-        if (tab_handle.Get()) {
-          content::WebContents* web_contents = tab_handle.Get()->GetContents();
-          CHECK(web_contents);
-          actuation_mode_runners_.emplace(
-              tab_handle,
-              web_contents->IncrementCapturerCount(gfx::Size(),
-                                                   /*stay_hidden=*/false,
-                                                   /*stay_awake=*/true,
-                                                   /*is_activity=*/true));
-        }
-      }
-    }
-    SetState(State::kReflecting);
+  // Only resume from a paused state.
+  if (!IsPaused()) {
+    return;
   }
+
+  // Re-create the capturer count runners for all tabs that need one.
+  for (auto& [handle, state] : acting_tabs_) {
+    if (!handle.Get()) {
+      continue;
+    }
+    if (content::WebContents* web_contents = handle.Get()->GetContents()) {
+      state.actuation_runner =
+          web_contents->IncrementCapturerCount(gfx::Size(),
+                                               /*stay_hidden=*/false,
+                                               /*stay_awake=*/true,
+                                               /*is_activity=*/true);
+    }
+  }
+
+  SetState(State::kReflecting);
 }
 
 bool ActorTask::IsPaused() const {
@@ -206,29 +220,30 @@ base::Time ActorTask::GetEndTime() const {
 }
 
 void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
-  if (tab_handles_.contains(tab_handle)) {
+  if (acting_tabs_.contains(tab_handle)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
     return;
   }
 
-  CHECK(!actuation_mode_runners_.contains(tab_handle));
+  ActingTabState state;
   tabs::TabInterface* tab = tab_handle.Get();
   // GetContents may be null in unit tests.
   if (tab && tab->GetContents()) {
     content::WebContents* web_contents = tab->GetContents();
-    actuation_mode_runners_.emplace(
-        tab_handle, web_contents->IncrementCapturerCount(gfx::Size(),
-                                                         /*stay_hidden=*/false,
-                                                         /*stay_awake=*/true,
-                                                         /*is_activity=*/true));
+    state.actuation_runner =
+        web_contents->IncrementCapturerCount(gfx::Size(),
+                                             /*stay_hidden=*/false,
+                                             /*stay_awake=*/true,
+                                             /*is_activity=*/true);
 
-    tab_subscriptions_.push_back(tab->RegisterWillDetach(base::BindRepeating(
-        &ActorTask::OnTabWillDetach, weak_ptr_factory_.GetWeakPtr())));
+    state.will_detach_subscription =
+        tab->RegisterWillDetach(base::BindRepeating(
+            &ActorTask::OnTabWillDetach, weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Notify the UI of the new tab.
-  tab_handles_.insert(tab_handle);
+  acting_tabs_.emplace(tab_handle, std::move(state));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ui::UiEventDispatcher::OnActorTaskAsyncChange,
                                 ui_weak_ptr_factory_.GetWeakPtr(),
@@ -238,11 +253,11 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
 }
 
 void ActorTask::RemoveTab(tabs::TabHandle tab_handle) {
-  // Erasing the ScopedClosureRunner from the map triggers its destructor, which
-  // automatically calls DecrementCapturerCount on the WebContents.
-  actuation_mode_runners_.erase(tab_handle);
+  // Erasing the entry from the map triggers the ScopedClosureRunner's
+  // destructor (via std::optional's destructor), which automatically calls
+  // DecrementCapturerCount on the WebContents.
+  auto num_removed = acting_tabs_.erase(tab_handle);
 
-  auto num_removed = tab_handles_.erase(tab_handle);
   if (num_removed > 0) {
     // Notify the UI of the tab removal.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -269,19 +284,33 @@ void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
 }
 
 bool ActorTask::IsActingOnTab(tabs::TabHandle tab) const {
-  return tab_handles_.contains(tab);
+  return acting_tabs_.contains(tab);
 }
 
 tabs::TabInterface* ActorTask::GetTabForObservation() const {
-  DCHECK_GT(tab_handles_.size(), 0ul);
-  DCHECK_LT(tab_handles_.size(), 2ul);
-  for (const tabs::TabHandle& handle : tab_handles_) {
+  DCHECK_GT(acting_tabs_.size(), 0ul);
+  DCHECK_LT(acting_tabs_.size(), 2ul);
+  for (const auto& [handle, state] : acting_tabs_) {
     if (tabs::TabInterface* tab = handle.Get()) {
       return tab;
     }
   }
 
   return nullptr;
+}
+
+absl::flat_hash_set<tabs::TabHandle> ActorTask::GetLastActedTabs() const {
+  // TODO(bokan): Currently the client only acts on a single tab but this
+  // should track which tabs were acted on in the last call to Act.
+  return GetTabs();
+}
+
+absl::flat_hash_set<tabs::TabHandle> ActorTask::GetTabs() const {
+  absl::flat_hash_set<tabs::TabHandle> handles;
+  for (const auto& [handle, state] : acting_tabs_) {
+    handles.insert(handle);
+  }
+  return handles;
 }
 
 std::string ToString(const ActorTask::State& state) {

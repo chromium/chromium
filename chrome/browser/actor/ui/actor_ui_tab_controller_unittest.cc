@@ -36,7 +36,7 @@ namespace actor::ui {
 namespace {
 using ::tabs::MockTabInterface;
 using ::testing::_;
-using ::testing::ByMove;
+using ::testing::Invoke;
 using ::testing::MockFunction;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -56,6 +56,10 @@ MockWebContents::MockWebContents(content::BrowserContext* browser_context)
     : TestWebContents(browser_context) {}
 
 MockWebContents::~MockWebContents() = default;
+
+ACTION(ReturnNewScopedClosureRunner) {
+  return base::ScopedClosureRunner(base::DoNothing());
+}
 
 class ActorUiTabControllerTest : public testing::Test {
  public:
@@ -95,8 +99,7 @@ class ActorUiTabControllerTest : public testing::Test {
     ON_CALL(mock_tab_, GetContents)
         .WillByDefault(Return(mock_web_contents_.get()));
     ON_CALL(*mock_web_contents_, IncrementCapturerCount(_, _, _, _))
-        .WillByDefault(
-            Return(ByMove(base::ScopedClosureRunner(base::DoNothing()))));
+        .WillByDefault(ReturnNewScopedClosureRunner());
 
     actor_ui_tab_controller_ = std::make_unique<ActorUiTabController>(
         mock_tab_, actor_keyed_service(), std::move(controller_factory));
@@ -169,6 +172,8 @@ TEST_F(ActorUiTabControllerTest, SetActorTaskStatePaused_SetsStateCorrectly) {
 }
 
 TEST_F(ActorUiTabControllerTest, SetActorTaskStateResume_SetsStateCorrectly) {
+  // Must pause before resume.
+  tab_controller()->SetActorTaskPaused();
   tab_controller()->SetActorTaskResume();
   EXPECT_EQ(actor_keyed_service()->GetTask(task_id())->GetState(),
             ActorTask::State::kReflecting);
