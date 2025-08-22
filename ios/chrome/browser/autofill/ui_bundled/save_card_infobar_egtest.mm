@@ -18,6 +18,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
+#import "ios/chrome/browser/badges/model/features.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -254,6 +256,16 @@ void FillAndSubmitXframeCreditCardForm() {
 // Some tests are not compatible with explicit save prompts for addresses.
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+
+  if ([self isRunningTest:@selector(FLAKY_testInfobarWithoutBadge)]) {
+    config.features_enabled.push_back(kAutofillBadgeRemoval);
+  }
+
+  if ([self isRunningTest:@selector(testOfferLocalSave_WithInfobar)]) {
+    // This test needs the badge.
+    config.features_disabled.push_back(kAutofillBadgeRemoval);
+  }
+
   if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
   }
@@ -1358,6 +1370,72 @@ void FillAndSubmitXframeCreditCardForm() {
   GREYAssert(
       [self waitForUIElementToAppearWithMatcher:LocalBannerLabelsMatcher()],
       @"Local save card infobar failed to show.");
+
+  // Verify that the badge is displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBadgeButtonSaveCardAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap the save button.
+  [[EarlGrey selectElementWithMatcher:LocalSaveButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Wait until the save card infobar disappears.
+  GREYAssert(
+      [self waitForUIElementToDisappearWithMatcher:LocalBannerLabelsMatcher()
+                               showingConfirmation:NO],
+      @"Local save card infobar failed to disappear.");
+
+  // Ensure credit card is saved locally.
+  GREYAssertEqual(1U, [AutofillAppInterface localCreditCount],
+                  @"Credit card should have been saved.");
+}
+
+// TODO(crbug.com/440644620): Find a solution to page loading flakes.
+// Tests that the save card flow via the infobar still works correctly when the
+// badge is removed.
+- (void)FLAKY_testInfobarWithoutBadge {
+  // Ensure there are no saved credit cards.
+  GREYAssertEqual(0U, [AutofillAppInterface localCreditCount],
+                  @"There should be no saved credit card.");
+
+  [ChromeEarlGrey
+      loadURL:web::test::HttpServer::MakeUrl(kCreditCardUploadForm)];
+
+  // Set up the Google Payments server response.
+  [AutofillAppInterface setPaymentsResponse:kResponseGetUploadDetailsFailure
+                                 forRequest:kURLGetUploadDetailsRequest
+                              withErrorCode:net::HTTP_OK];
+
+  // Set strike count as 1 to directly show the infobar.
+  [AutofillAppInterface setFormFillMaxStrikes:1
+                                      forCard:@"CreditCardSave__5454"];
+
+  [AutofillAppInterface resetEventWaiterForEvents:@[
+    @(CreditCardSaveManagerObserverEvent::kOnDecideToRequestUploadSaveCalled),
+    @(CreditCardSaveManagerObserverEvent::
+          kOnReceivedGetUploadDetailsResponseCalled),
+    @(CreditCardSaveManagerObserverEvent::kOnOfferLocalSaveCalled)
+  ]
+                                          timeout:kWaitForDownloadTimeout];
+
+  [self fillAndSubmitFormWithID:kFillFullFormId];
+
+  GREYAssertTrue([AutofillAppInterface waitForEvents],
+                 @"Request upload save or get upload details response or offer "
+                 @"local save not called");
+
+  // Wait until the save card infobar becomes visible.
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:LocalBannerLabelsMatcher()],
+      @"Local save card infobar failed to show.");
+
+  // Verify that the badge isn't displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBadgeButtonSaveCardAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
 
   // Tap the save button.
   [[EarlGrey selectElementWithMatcher:LocalSaveButtonMatcher()]

@@ -7,7 +7,9 @@
 #import <map>
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
@@ -238,6 +240,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 }
 
 - (void)passwordsBadgeButtonTapped:(id)sender {
+  CHECK(!base::FeatureList::IsEnabled(kAutofillBadgeRemoval));
   BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK(badgeButton.badgeType == kBadgeTypePasswordSave ||
          badgeButton.badgeType == kBadgeTypePasswordUpdate);
@@ -246,6 +249,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 }
 
 - (void)saveAddressProfileBadgeButtonTapped:(id)sender {
+  CHECK(!base::FeatureList::IsEnabled(kAutofillBadgeRemoval));
   BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK_EQ(badgeButton.badgeType, kBadgeTypeSaveAddressProfile);
 
@@ -253,6 +257,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 }
 
 - (void)saveCardBadgeButtonTapped:(id)sender {
+  CHECK(!base::FeatureList::IsEnabled(kAutofillBadgeRemoval));
   BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK_EQ(badgeButton.badgeType, kBadgeTypeSaveCard);
 
@@ -288,7 +293,35 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 #pragma mark - InfobarBadgeTabHelperDelegate
 
 - (BOOL)badgeSupportedForInfobarType:(InfobarType)infobarType {
-  return BadgeTypeForInfobarType(infobarType) != kBadgeTypeNone;
+  if (base::FeatureList::IsEnabled(kAutofillBadgeRemoval)) {
+    // TODO(crbug.com/440366193): Remove this ad hoc logic once we can fully
+    // cleanup the autofill and password badges code once we are done
+    // experimenting.
+    switch (infobarType) {
+      case InfobarType::kInfobarTypePasswordSave:
+      case InfobarType::kInfobarTypePasswordUpdate:
+      case InfobarType::kInfobarTypeSaveCard:
+      case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
+        // Special case where we dynamically want to exclude the badge for
+        // certain infobars while still keeping a badge type for the infobar
+        // in BadgeTypeForInfobarType(). This ad hoc logic is temporary the
+        // time we sunset these badges.
+        return false;
+      case InfobarType::kInfobarTypeConfirm:
+      case InfobarType::kInfobarTypeTranslate:
+      case InfobarType::kInfobarTypePermissions:
+      case InfobarType::kInfobarTypeTailoredSecurityService:
+      case InfobarType::kInfobarTypeSyncError:
+      case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
+      case InfobarType::kInfobarTypeSignin:
+      case InfobarType::kInfobarTypeCollaborationGroup:
+      case InfobarType::kInfobarTypeCollaborationOutOfDate:
+      case InfobarType::kInfobarTypeSaveCvc:
+        return BadgeTypeForInfobarType(infobarType) != kBadgeTypeNone;
+    }
+  } else {
+    return BadgeTypeForInfobarType(infobarType) != kBadgeTypeNone;
+  }
 }
 
 - (void)updateBadgesShownForWebState:(web::WebState*)webState {

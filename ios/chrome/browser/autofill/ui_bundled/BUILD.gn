@@ -192,6 +192,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:constants",
+    "//ios/chrome/browser/badges/model:features",
     "//ios/chrome/browser/badges/ui_bundled:public",
     "//ios/chrome/browser/infobars/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/infobars/ui_bundled/banners:public",

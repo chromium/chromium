@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
+#import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/infobar_earl_grey_ui_test_util.h"
@@ -219,6 +220,17 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
             (MAYBE_testEditBottomSheetAlertBySwipingDown)]) {
     config.features_enabled.push_back(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
+  }
+
+  if ([self isRunningTest:@selector(FLAKY_testSaveWithoutBadge)]) {
+    config.features_enabled.push_back(kAutofillBadgeRemoval);
+  }
+
+  if ([self isRunningTest:@selector(testUserData_AccountSave)] ||
+      [self
+          isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)]) {
+    // These test cases need a badge.
+    config.features_disabled.push_back(kAutofillBadgeRemoval);
   }
 
   config.features_disabled.push_back(
@@ -523,6 +535,12 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
   [self fillPresidentProfileAndShowSaveModal];
 
+  // Verify that the address badge is displayed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBadgeButtonSaveAddressProfileAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
   id<GREYMatcher> footerMatcher = grey_text(
       l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
                               base::UTF8ToUTF16(std::string(kEmail))));
@@ -731,6 +749,37 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   // Save the profile.
   [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
       performAction:grey_tap()];
+}
+
+// Tests that the save address flow is still working correctly when the address
+// badge is removed.
+- (void)FLAKY_testSaveWithoutBadge {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  [self fillPresidentProfileAndShowSaveModal];
+
+  // Verify that the address badge is not displayed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBadgeButtonSaveAddressProfileAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  id<GREYMatcher> footerMatcher = grey_text(
+      l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
+                              base::UTF8ToUTF16(std::string(kEmail))));
+
+  [[EarlGrey selectElementWithMatcher:footerMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved locally.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  [SigninEarlGrey signOut];
 }
 
 // Tests the sticky address prompt journey where the prompt remains there when

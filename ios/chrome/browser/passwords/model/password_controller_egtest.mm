@@ -29,6 +29,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/badges/model/features.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
@@ -264,6 +266,17 @@ void LoginOnUff() {
   }
 #endif  // TARGET_OS_SIMULATOR
 
+  if ([self isRunningTest:@selector(FLAKY_testSaveWithoutBadges)] ||
+      [self isRunningTest:@selector(FLAKY_testUpdateWithoutBadges)]) {
+    config.features_enabled.push_back(kAutofillBadgeRemoval);
+  }
+
+  if ([self isRunningTest:@selector(testSavePromptAppearsOnFormSubmission)] ||
+      [self isRunningTest:@selector(testUpdatePromptAppearsOnFormSubmission)]) {
+    // These tests need a badge.
+    config.features_disabled.push_back(kAutofillBadgeRemoval);
+  }
+
   // The proactive password suggestion bottom sheet isn't tested here, it
   // is tested in its own suite in password_suggestion_egtest.mm.
   config.features_disabled.push_back(
@@ -328,7 +341,7 @@ void LoginOnUff() {
 - (void)testSavePromptAppearsOnFormSubmission {
   [self loadLoginPage];
 
-  // Simulate user interacting with fields.
+  // Simulate user interacting with fields to trigger a capture of credentials.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormUsername)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -342,6 +355,13 @@ void LoginOnUff() {
       waitForUIElementToAppearWithMatcher:
           PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
 
+  // Verify that the password badge is in the omnibox.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBadgeButtonSavePasswordAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap to save password.
   [[EarlGrey selectElementWithMatcher:PasswordInfobarButton(
                                           IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON)]
       performAction:grey_tap()];
@@ -367,7 +387,7 @@ void LoginOnUff() {
 
   // Load the page again and have a new password value to save.
   [self loadLoginPage];
-  // Simulate user interacting with fields.
+  // Simulate user interacting with fields to trigger a capture of credentials.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormUsername)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -381,6 +401,13 @@ void LoginOnUff() {
       waitForUIElementToAppearWithMatcher:
           PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD)];
 
+  // Verify that the password badge is in the omnibox.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBadgeButtonUpdatePasswordAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap to update password.
   [[EarlGrey
       selectElementWithMatcher:PasswordInfobarButton(
                                    IDS_IOS_PASSWORD_MANAGER_UPDATE_BUTTON)]
@@ -882,6 +909,96 @@ void LoginOnUff() {
   // part shouldn't be.
   GREYAssertTrue(identity.username().ends_with("@test-domain.com"),
                  @"Wrong domain in leaked username.");
+}
+
+// TODO(crbug.com/440644620): Find a solution to page loading flakes.
+// Tests that the password save flow via the infobar still works correctly
+// when the badge is removed.
+- (void)FLAKY_testSaveWithoutBadges {
+  [self loadLoginPage];
+
+  // Simulate user interacting with fields to trigger a capture of credentials.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormUsername)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("submit_button")];
+
+  // Wait until the save password prompt becomes visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBadgeButtonSavePasswordAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  // Save password.
+  [[EarlGrey selectElementWithMatcher:PasswordInfobarButton(
+                                          IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Wait until the save password infobar disappears.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
+
+  // Verify that the credentials were saved.
+  int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
+  GREYAssertEqual(1, credentialsCount, @"Wrong number of stored credentials.");
+}
+
+// TODO(crbug.com/440644620): Find a solution to page loading flakes.
+// Tests that the password update flow via the infobar still works correctly
+// when the badge is removed.
+- (void)FLAKY_testUpdateWithoutBadges {
+  // Load the page the first time an store credentials.
+  [self loadLoginPage];
+  [PasswordManagerAppInterface storeCredentialWithUsername:@"Eguser"
+                                                  password:@"OldPass"];
+  int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
+  GREYAssertEqual(1, credentialsCount, @"Wrong number of initial credentials.");
+
+  // Load the page again and have a new password value to save.
+  [self loadLoginPage];
+
+  // Simulate user interacting with fields to trigger a capture of credentials.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormUsername)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  // Submit to trigger the password update infobar.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("submit_button")];
+
+  // Wait until the update password prompt becomes visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD)];
+
+  // Verify that the password badge isn't there.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBadgeButtonSavePasswordAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  // Tap to update password.
+  [[EarlGrey
+      selectElementWithMatcher:PasswordInfobarButton(
+                                   IDS_IOS_PASSWORD_MANAGER_UPDATE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Wait until the update password infobar disappears.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD)];
+
+  credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
+  GREYAssertEqual(1, credentialsCount, @"Wrong number of final credentials.");
 }
 
 @end

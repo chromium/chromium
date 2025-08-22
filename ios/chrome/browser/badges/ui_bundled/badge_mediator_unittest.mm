@@ -9,6 +9,8 @@
 #import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_type.h"
@@ -18,6 +20,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/infobars/ui_bundled/test_infobar_delegate.h"
 #import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
@@ -315,6 +318,27 @@ TEST_P(BadgeMediatorTest, InfobarBannerOverlayObserving) {
   queue->CancelAllRequests();
   badge_states = tab_helper->GetInfobarBadgeStates();
   EXPECT_FALSE(badge_states[type] & BadgeStatePresented);
+}
+
+// Test that no badge is shown when an autofill infobar is added and the feature
+// to remove the badge is enabled.
+TEST_P(BadgeMediatorTest, BadgeMediatorTestNoBadge) {
+  base::test::ScopedFeatureList feature_list_{kAutofillBadgeRemoval};
+
+  AppendActivatedWebState();
+
+  AddInfobar(InfobarType::kInfobarTypePasswordSave, u"FakeInfobar1");
+  EXPECT_FALSE(badge_consumer_.displayedBadge);
+
+  AddInfobar(InfobarType::kInfobarTypePasswordUpdate, u"FakeInfobar2");
+  EXPECT_FALSE(badge_consumer_.displayedBadge);
+
+  AddInfobar(InfobarType::kInfobarTypeSaveAutofillAddressProfile,
+             u"FakeInfobar3");
+  EXPECT_FALSE(badge_consumer_.displayedBadge);
+
+  AddInfobar(InfobarType::kInfobarTypeSaveCard, u"FakeInfobar4");
+  EXPECT_FALSE(badge_consumer_.displayedBadge);
 }
 
 INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,
