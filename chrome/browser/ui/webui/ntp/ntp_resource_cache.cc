@@ -255,6 +255,10 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kFingerprintingProtectionUx) ||
       base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx)) {
+    replacements["incognitoTabFeatures"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_NOT_SAVED_V2);
+    replacements["incognitoTabDescription"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST_V2);
     replacements["hideUserBypassIcon"] = "hidden";
     replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
         IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_HEADER);

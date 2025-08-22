@@ -72,7 +72,8 @@ import java.util.Locale;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({
     ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
-    ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+    ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
+    ChromeFeatureList.IP_PROTECTION_UX
 })
 @DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})

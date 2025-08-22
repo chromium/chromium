@@ -101,6 +101,11 @@ public class IncognitoDescriptionView extends LinearLayout {
         settingsNavigation.startSettings(getContext(), IncognitoTrackingProtectionsFragment.class);
     }
 
+    private boolean isTrackingProtectionsUi() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX);
+    }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -108,7 +113,11 @@ public class IncognitoDescriptionView extends LinearLayout {
         mWidthDp = getContext().getResources().getConfiguration().screenWidthDp;
         mHeightDp = getContext().getResources().getConfiguration().screenHeightDp;
 
-        populateBulletpoints(R.id.new_tab_incognito_features, R.string.new_tab_otr_not_saved);
+        populateBulletpoints(
+                R.id.new_tab_incognito_features,
+                isTrackingProtectionsUi()
+                        ? R.string.new_tab_otr_not_saved_v2
+                        : R.string.new_tab_otr_not_saved);
         populateBulletpoints(R.id.new_tab_incognito_warning, R.string.new_tab_otr_visible);
 
         mContainer = findViewById(R.id.new_tab_incognito_container);
@@ -156,8 +165,7 @@ public class IncognitoDescriptionView extends LinearLayout {
                             .launchUrl(TRACKING_PROTECTION_URL, TabLaunchType.FROM_CHROME_UI);
                 };
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)) {
+        if (isTrackingProtectionsUi()) {
             title.setText(
                     context.getString(
                             R.string.incognito_ntp_incognito_tracking_protections_header));
@@ -422,7 +430,11 @@ public class IncognitoDescriptionView extends LinearLayout {
     /** Adjust the "Learn More" link. */
     private void adjustLearnMore() {
         final String subtitleText =
-                getContext().getString(R.string.new_tab_otr_subtitle_with_reading_list);
+                getContext()
+                        .getString(
+                                isTrackingProtectionsUi()
+                                        ? R.string.new_tab_otr_subtitle_with_reading_list_v2
+                                        : R.string.new_tab_otr_subtitle_with_reading_list);
 
         final ChromeClickableSpan learnMoreSpan =
                 new ChromeClickableSpan(
