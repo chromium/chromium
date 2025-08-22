@@ -389,6 +389,10 @@ class TestAutofillClientTemplate : public T {
     return last_committed_primary_main_frame_url_.SchemeIs("https");
   }
 
+  bool IsCvcSavingSupported() const override {
+    return is_cvc_saving_supported_;
+  }
+
   LogManager* GetCurrentLogManager() override { return log_manager_.get(); }
 
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
@@ -579,6 +583,10 @@ class TestAutofillClientTemplate : public T {
     is_off_the_record_ = is_off_the_record;
   }
 
+  void set_is_cvc_saving_supported(bool is_cvc_saving_supported) {
+    is_cvc_saving_supported_ = is_cvc_saving_supported;
+  }
+
   void set_crowdsourcing_manager(
       std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager) {
     crowdsourcing_manager_ = std::move(crowdsourcing_manager);
@@ -687,6 +695,8 @@ class TestAutofillClientTemplate : public T {
   bool is_off_the_record_ = false;
 
   bool is_showing_popup_ = false;
+
+  bool is_cvc_saving_supported_ = true;
 
   SuggestionHidingReason popup_hidden_reason_;
 

@@ -267,6 +267,10 @@ void AutofillClient::UpdateAutofillSuggestions(
   NOTIMPLEMENTED();
 }
 
+bool AutofillClient::IsCvcSavingSupported() const {
+  return true;
+}
+
 void AutofillClient::set_test_addresses(
     std::vector<AutofillProfile> test_addresses) {}
 

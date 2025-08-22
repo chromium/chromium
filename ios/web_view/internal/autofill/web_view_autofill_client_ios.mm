@@ -278,6 +278,10 @@ bool WebViewAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state());
 }
 
+bool WebViewAutofillClientIOS::IsCvcSavingSupported() const {
+  return false;
+}
+
 autofill::FormInteractionsFlowId
 WebViewAutofillClientIOS::GetCurrentFormInteractionsFlowId() {
   // Currently not in use here. See `ChromeAutofillClient` for a proper

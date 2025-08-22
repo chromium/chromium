@@ -144,6 +144,7 @@ class WebViewAutofillClientIOS : public AutofillClientIOS {
   void DidFillForm(AutofillTriggerSource trigger_source,
                    bool is_refill) override;
   bool IsContextSecure() const override;
+  bool IsCvcSavingSupported() const override;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
       override;
