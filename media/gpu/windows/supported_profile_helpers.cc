@@ -293,12 +293,14 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
     return supported_resolutions;
   }
 
-  // To detect if a driver supports the desired resolutions, we try and create
-  // a DXVA decoder instance for that resolution and profile. If that succeeds
-  // we assume that the driver supports decoding for that resolution.
+  // To detect if a driver supports the desired resolutions, we use
+  // GetVideoDecoderConfigCount (D3D11) or CheckFeatureSupport (D3D12), both of
+  // which are fast to execute. If that succeeds we assume that the driver
+  // supports decoding for that resolution.
   // Legacy AMD drivers with UVD3 or earlier and some Intel GPU's crash while
   // creating surfaces larger than 1920 x 1088.
   const std::vector<gfx::Size> kModernResolutions = {
+      gfx::Size(1920, 1080),  gfx::Size(2560, 1440), gfx::Size(3840, 2160),
       gfx::Size(4096, 2160),  gfx::Size(4096, 2304), gfx::Size(4096, 4096),
       gfx::Size(7680, 4320),  gfx::Size(8192, 4352), gfx::Size(8192, 8192),
       gfx::Size(16384, 16384)};
@@ -309,10 +311,8 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
   for (const GUID& profile_id :
        video_device_wrapper->GetVideoDecodeProfileGuids()) {
     if (profile_id == D3D11_DECODER_PROFILE_H264_VLD_NOFGT) {
-      const auto result = GetResolutionsForGUID(
-          video_device_wrapper, profile_id,
-          {gfx::Size(2560, 1440), gfx::Size(3840, 2160), gfx::Size(4096, 2160),
-           gfx::Size(4096, 2304), gfx::Size(4096, 4096)});
+      const auto result = GetResolutionsForGUID(video_device_wrapper,
+                                                profile_id, kModernResolutions);
 
       // Unlike the other codecs, H.264 support is assumed up to 1080p, even if
       // our initial queries fail. If they fail, we use the defaults set above.
@@ -381,11 +381,6 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
       if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN) {
         auto supported_resolution = GetResolutionsForGUID(
             video_device_wrapper, profile_id, kModernResolutions);
-
-        if (supported_resolution.max_landscape_resolution.IsEmpty()) {
-          supported_resolution = GetResolutionsForGUID(
-              video_device_wrapper, profile_id, {gfx::Size(1920, 1080)});
-        }
 
         supported_resolutions[HEVCPROFILE_MAIN] = supported_resolution;
         supported_resolutions[HEVCPROFILE_MAIN_STILL_PICTURE] =
