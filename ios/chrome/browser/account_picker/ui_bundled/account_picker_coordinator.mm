@@ -195,6 +195,7 @@
                                           browser:self.browser
                                      contextStyle:contextStyle
                                       accessPoint:_accessPoint
+                                   prefilledEmail:nil
                              continuationProvider:
                                  DoNothingContinuationProvider()];
   _addAccountSigninCoordinator.signinCompletion =

@@ -174,7 +174,8 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
   void OnManageAccounts(const GURL& url) override {
     [canceler_ schedulePrerenderCancel];
   }
-  void OnAddAccount(const GURL& url) override {
+  void OnAddAccount(const GURL& url,
+                    const std::string& prefilled_email) override {
     [canceler_ schedulePrerenderCancel];
   }
   void OnShowConsistencyPromo(const GURL& url,

@@ -247,6 +247,7 @@ using signin_metrics::PromoAction;
                                           browser:self.browser
                                      contextStyle:SigninContextStyle::kDefault
                                       accessPoint:AccessPoint::kSettings
+                                   prefilledEmail:nil
                              continuationProvider:
                                  DoNothingContinuationProvider()];
   _addAccountSigninCoordinator.signinCompletion =

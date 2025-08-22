@@ -8,6 +8,7 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
@@ -125,7 +126,9 @@ void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
   }
 }
 
-void AccountConsistencyBrowserAgent::OnAddAccount(const GURL& url) {
+void AccountConsistencyBrowserAgent::OnAddAccount(
+    const GURL& url,
+    const std::string& prefilled_email) {
   if ([base_view_controller_ presentedViewController]) {
     // If the base view controller is already presenting a view, the sign-in
     // should not appear on top of it.
@@ -141,7 +144,9 @@ void AccountConsistencyBrowserAgent::OnAddAccount(const GURL& url) {
                            BrowserCoordinatorCommands);
     signin_metrics::AccessPoint access_point =
         signin_metrics::AccessPoint::kAccountConsistencyService;
-    [browser_coordinator_handler showAddAccountWithAccessPoint:access_point];
+    [browser_coordinator_handler
+        showAddAccountWithAccessPoint:access_point
+                       prefilledEmail:base::SysUTF8ToNSString(prefilled_email)];
   }
 }
 

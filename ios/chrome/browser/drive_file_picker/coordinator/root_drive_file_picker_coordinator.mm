@@ -354,6 +354,7 @@
                                           browser:self.browser
                                      contextStyle:contextStyle
                                       accessPoint:accessPoint
+                                   prefilledEmail:nil
                              continuationProvider:
                                  DoNothingContinuationProvider()];
   _signinCoordinator.signinCompletion =

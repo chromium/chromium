@@ -2552,7 +2552,8 @@ enum class ToolbarKind {
   _notificationsOptInCoordinator = nil;
 }
 
-- (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint {
+- (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
+                       prefilledEmail:(NSString*)email {
   if (_signinCoordinator.viewWillPersist) {
     return;
   }
@@ -2563,6 +2564,7 @@ enum class ToolbarKind {
                                           browser:self.browser
                                      contextStyle:contextStyle
                                       accessPoint:accessPoint
+                                   prefilledEmail:email
                              continuationProvider:
                                  DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;

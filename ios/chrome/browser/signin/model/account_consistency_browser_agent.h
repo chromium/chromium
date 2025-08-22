@@ -40,7 +40,8 @@ class AccountConsistencyBrowserAgent
   // ManageAccountsDelegate
   void OnRestoreGaiaCookies() override;
   void OnManageAccounts(const GURL& url) override;
-  void OnAddAccount(const GURL& url) override;
+  void OnAddAccount(const GURL& url,
+                    const std::string& prefilled_email) override;
   void OnShowConsistencyPromo(const GURL& url,
                               web::WebState* webState) override;
   void OnGoIncognito(const GURL& url) override;

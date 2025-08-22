@@ -149,7 +149,7 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnGoIncognitoWithURL) {
 TEST_P(AccountConsistencyBrowserAgentTest, OnAddAccountWithPresentedView) {
   OCMStub([base_view_controller_mock_ presentedViewController])
       .andReturn([[UIViewController alloc] init]);
-  agent_->OnAddAccount(GURL());
+  agent_->OnAddAccount(GURL(), "");
   // Expect [application_commands_mock_ showSignin:baseViewController:] to not
   // be called. This is ensured by TearDown because application_commands_mock_
   // is a strict mock.
@@ -163,8 +163,9 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnAddAccountWithoutPresentedView) {
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kAccountConsistencyService;
   OCMExpect([browser_coordinator_commands_mock_
-      showAddAccountWithAccessPoint:access_point]);
-  agent_->OnAddAccount(GURL());
+      showAddAccountWithAccessPoint:access_point
+                     prefilledEmail:@"test"]);
+  agent_->OnAddAccount(GURL(), "test");
 }
 
 TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
@@ -187,7 +188,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
   OCMExpect([application_commands_mock_
       showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb
                                  URL:url]);
-  agent_->OnAddAccount(url);
+  agent_->OnAddAccount(url, "");
   // Expect [application_commands_mock_ showSignin:baseViewController:] to not
   // be called. This is ensured by TearDown because application_commands_mock_
   // is a strict mock.

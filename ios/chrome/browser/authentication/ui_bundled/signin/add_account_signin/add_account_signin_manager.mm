@@ -10,6 +10,7 @@
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
@@ -70,6 +71,8 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
   BOOL _addAccountFlowDone;
   // Timestamp of the last start of the flow to add an account to the device.
   base::TimeTicks _lastStartAddAccountToDeviceTs;
+  // Email to pre-fill.
+  NSString* _prefilledEmail;
 }
 
 #pragma mark - Public
@@ -79,7 +82,8 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
                    prefService:(PrefService*)prefService
                identityManager:(signin::IdentityManager*)identityManager
     identityInteractionManager:
-        (id<SystemIdentityInteractionManager>)identityInteractionManager {
+        (id<SystemIdentityInteractionManager>)identityInteractionManager
+                prefilledEmail:(NSString*)email {
   self = [super init];
   if (self) {
     CHECK(baseViewController, base::NotFatalUntil::M140);
@@ -90,6 +94,7 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
     _prefService = prefService;
     _identityManager = identityManager;
     _identityInteractionManager = identityInteractionManager;
+    _prefilledEmail = [email copy];
   }
   return self;
 }
@@ -108,7 +113,10 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
       userEmail = base::SysUTF8ToNSString(primaryAccount.email);
       break;
     case AddAccountSigninIntent::kAddAccount:
-      // The user wants to add a new account, don't pre-fill any email.
+      if (base::FeatureList::IsEnabled(
+              switches::kSupportAddSessionEmailPrefill)) {
+        userEmail = _prefilledEmail;
+      }
       break;
     case AddAccountSigninIntent::kResignin:
       DUMP_WILL_BE_CHECK(primaryAccount.IsEmpty())

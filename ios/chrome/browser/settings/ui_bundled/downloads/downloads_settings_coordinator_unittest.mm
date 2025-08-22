@@ -321,6 +321,7 @@ TEST_F(DownloadsSettingsCoordinatorTest,
                                promoAction:signin_metrics::PromoAction::
                                                PROMO_ACTION_NO_SIGNIN_PROMO
                               signinIntent:AddAccountSigninIntent::kAddAccount
+                            prefilledEmail:nil
                       continuationProvider:DoNothingContinuationProvider()])
       .ignoringNonObjectArgs()
       .andReturn(signin_coordinator_mock);

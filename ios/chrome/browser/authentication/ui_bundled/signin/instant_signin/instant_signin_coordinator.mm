@@ -312,6 +312,7 @@
                                           browser:self.browser
                                      contextStyle:self.contextStyle
                                       accessPoint:self.accessPoint
+                                   prefilledEmail:nil
                              continuationProvider:_continuationProvider];
   __weak __typeof(self) weakSelf = self;
   _addAccountSigninCoordinator.signinCompletion = ^(

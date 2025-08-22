@@ -11,11 +11,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_timeouts.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -37,6 +39,11 @@ enum class TestCase {
   kResigninWithoutUsername,
 };
 
+constexpr NSString* kNewAccountEmail = @"new-account@gmail.com";
+constexpr NSString* kSignedInAccountEmail = @"signed-in-account@gmail.com";
+constexpr NSString* kPreviouslySignedInAccountEmail =
+    @"previously-signed-in-account@gmail.com";
+
 class AddAccountSigninManagerTest
     : public testing::WithParamInterface<TestCase>,
       public PlatformTest {
@@ -44,28 +51,34 @@ class AddAccountSigninManagerTest
   AddAccountSigninManagerTest() {
     test_pref_service_.registry()->RegisterStringPref(
         prefs::kGoogleServicesLastSignedInUsername, std::string());
+    base::test::ScopedFeatureList enable_feature(
+        switches::kSupportAddSessionEmailPrefill);
     add_account_signin_manager_.delegate = mock_delegate_;
 
     switch (GetParam()) {
       case TestCase::kAddAccountWhileSignedOut:
+        expected_prefilled_email_ = kNewAccountEmail;
         break;
       case TestCase::kAddAccountWhileSignedIn:
         identity_test_environment_.MakePrimaryAccountAvailable(
-            "signed-in-account@gmail.com", signin::ConsentLevel::kSignin);
+            base::SysNSStringToUTF8(kSignedInAccountEmail),
+            signin::ConsentLevel::kSignin);
+        expected_prefilled_email_ = kNewAccountEmail;
         break;
       case TestCase::kPrimaryAccountReauth:
         identity_test_environment_.MakePrimaryAccountAvailable(
-            "signed-in-account@gmail.com", signin::ConsentLevel::kSignin);
-        expected_prefilled_email_ =
-            base::SysUTF8ToNSString("signed-in-account@gmail.com");
+            base::SysNSStringToUTF8(kSignedInAccountEmail),
+            signin::ConsentLevel::kSignin);
+        expected_prefilled_email_ = kSignedInAccountEmail;
         break;
       case TestCase::kResigninWithUsername:
-        test_pref_service_.SetString(prefs::kGoogleServicesLastSignedInUsername,
-                                     "previously-signed-in-account@gmail.com");
-        expected_prefilled_email_ =
-            base::SysUTF8ToNSString("previously-signed-in-account@gmail.com");
+        test_pref_service_.SetString(
+            prefs::kGoogleServicesLastSignedInUsername,
+            base::SysNSStringToUTF8(kPreviouslySignedInAccountEmail));
+        expected_prefilled_email_ = kPreviouslySignedInAccountEmail;
         break;
       case TestCase::kResigninWithoutUsername:
+        expected_prefilled_email_ = nil;
         break;
     }
   }
@@ -117,7 +130,8 @@ class AddAccountSigninManagerTest
                          prefService:&test_pref_service_
                      identityManager:identity_test_environment_
                                          .identity_manager()
-          identityInteractionManager:fake_interaction_manager_];
+          identityInteractionManager:fake_interaction_manager_
+                      prefilledEmail:kNewAccountEmail];
   NSString* expected_prefilled_email_ = nil;
 };
 

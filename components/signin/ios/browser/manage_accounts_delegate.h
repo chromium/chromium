@@ -31,7 +31,9 @@ class ManageAccountsDelegate {
   // property.
   // |url| is the continuation URL received from the server. If it is valid,
   // then this delegate should navigate to |url|.
-  virtual void OnAddAccount(const GURL& url) = 0;
+  // |prefilled_email| is the email to pre-fill, if available.
+  virtual void OnAddAccount(const GURL& url,
+                            const std::string& prefilled_email) = 0;
 
   // Called when the user taps a sign-in or add account button in a Google web
   // property.

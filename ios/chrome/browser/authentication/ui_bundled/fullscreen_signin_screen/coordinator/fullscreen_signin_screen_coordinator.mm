@@ -200,6 +200,7 @@
                                           browser:self.browser
                                      contextStyle:_contextStyle
                                       accessPoint:_accessPoint
+                                   prefilledEmail:nil
                              continuationProvider:
                                  _changeProfileContinuationProvider];
   __weak __typeof(self) weakSelf = self;

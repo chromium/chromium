@@ -33,6 +33,7 @@
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
                   signinIntent:(AddAccountSigninIntent)signinIntent
+                prefilledEmail:(NSString*)email
           continuationProvider:
               (const ChangeProfileContinuationProvider&)continuationProvider
     NS_DESIGNATED_INITIALIZER;

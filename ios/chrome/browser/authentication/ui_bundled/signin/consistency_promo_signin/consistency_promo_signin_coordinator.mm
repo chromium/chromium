@@ -399,6 +399,7 @@
                                           browser:self.browser
                                      contextStyle:self.contextStyle
                                       accessPoint:self.accessPoint
+                                   prefilledEmail:nil
                              continuationProvider:_continuationProvider];
   __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
   self.addAccountCoordinator.signinCompletion =

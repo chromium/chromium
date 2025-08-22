@@ -217,6 +217,11 @@ BASE_DECLARE_FEATURE(kEnableASWebAuthenticationSession);
 // other scopes will be ignored.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kAllowlistScopesForMdmErrors);
+
+// Killswitch for the feature to prefill the email of the account to add when
+// opening the "add account" flow for an ADDSESSION header.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSupportAddSessionEmailPrefill);
 #endif
 
 // Enables users to perform an explicit signin upon installing an extension.

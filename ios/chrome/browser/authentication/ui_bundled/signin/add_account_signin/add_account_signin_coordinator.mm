@@ -69,6 +69,8 @@ using signin_metrics::PromoAction;
   raw_ptr<syncer::SyncService> _syncService;
   ChangeProfileContinuationProvider _continuationProvider;
   AddAccountSigninMediator* _mediator;
+  // Email to pre-fill.
+  NSString* _prefilledEmail;
 }
 
 #pragma mark - Public
@@ -79,6 +81,7 @@ using signin_metrics::PromoAction;
                                accessPoint:(AccessPoint)accessPoint
                                promoAction:(PromoAction)promoAction
                               signinIntent:(AddAccountSigninIntent)signinIntent
+                            prefilledEmail:(NSString*)email
                       continuationProvider:
                           (const ChangeProfileContinuationProvider&)
                               continuationProvider {
@@ -93,6 +96,7 @@ using signin_metrics::PromoAction;
     _continuationProvider = continuationProvider;
     _signinIntent = signinIntent;
     _promoAction = promoAction;
+    _prefilledEmail = [email copy];
   }
   return self;
 }
@@ -142,7 +146,8 @@ using signin_metrics::PromoAction;
       initWithBaseViewController:self.baseViewController
                      prefService:profile->GetPrefs()
                  identityManager:_identityManager
-      identityInteractionManager:identityInteractionManager];
+      identityInteractionManager:identityInteractionManager
+                  prefilledEmail:_prefilledEmail];
   self.addAccountSigninManager.delegate = self;
   // Note that, up to iOS 18, the view may disappear if the user turn off their
   // screen, without informing the delegate, due to a bug in UIKit. See

@@ -131,7 +131,8 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)dismissNotificationsOptIn;
 
 // Show the add account view
-- (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint;
+- (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
+                       prefilledEmail:(NSString*)email;
 
 // Presents the Trusted Vault reauthentication dialog. `trigger` indicates an
 // entry point from which the trusted vault reauth has been triggered.

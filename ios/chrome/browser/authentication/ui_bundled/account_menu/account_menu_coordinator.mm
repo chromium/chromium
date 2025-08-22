@@ -343,6 +343,7 @@ void maybeShowSettingsIPH(Browser* browser) {
                                           browser:self.browser
                                      contextStyle:style
                                       accessPoint:accessPoint
+                                   prefilledEmail:nil
                              continuationProvider:
                                  DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;

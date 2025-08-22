@@ -198,6 +198,7 @@ using signin_metrics::PromoAction;
                                         browser:(Browser*)browser
                                    contextStyle:(SigninContextStyle)contextStyle
                                     accessPoint:(AccessPoint)accessPoint
+                                 prefilledEmail:(NSString*)email
                            continuationProvider:
                                (const ChangeProfileContinuationProvider&)
                                    continuationProvider {
@@ -211,6 +212,7 @@ using signin_metrics::PromoAction;
                      accessPoint:accessPoint
                      promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
                     signinIntent:AddAccountSigninIntent::kAddAccount
+                  prefilledEmail:email
             continuationProvider:continuationProvider];
 }
 
@@ -237,6 +239,7 @@ using signin_metrics::PromoAction;
                      accessPoint:accessPoint
                      promoAction:promoAction
                     signinIntent:AddAccountSigninIntent::kPrimaryAccountReauth
+                  prefilledEmail:nil
             continuationProvider:continuationProvider];
 }
 
@@ -263,6 +266,7 @@ using signin_metrics::PromoAction;
                      accessPoint:accessPoint
                      promoAction:promoAction
                     signinIntent:AddAccountSigninIntent::kResignin
+                  prefilledEmail:nil
             continuationProvider:continuationProvider];
 }
 

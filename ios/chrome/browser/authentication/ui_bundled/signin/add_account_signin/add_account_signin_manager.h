@@ -69,7 +69,7 @@ enum class SigninAddAccountToDeviceResult : int {
                identityManager:(signin::IdentityManager*)identityManager
     identityInteractionManager:
         (id<SystemIdentityInteractionManager>)identityInteractionManager
-    NS_DESIGNATED_INITIALIZER;
+                prefilledEmail:(NSString*)email NS_DESIGNATED_INITIALIZER;
 
 // Displays the add account sign-in flow.
 // `signinIntent`: intent for the add account sign-in flow.

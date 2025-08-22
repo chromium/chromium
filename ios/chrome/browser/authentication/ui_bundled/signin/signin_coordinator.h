@@ -122,6 +122,7 @@ class PrefRegistrySyncable;
                                    contextStyle:(SigninContextStyle)contextStyle
                                     accessPoint:
                                         (signin_metrics::AccessPoint)accessPoint
+                                 prefilledEmail:(NSString*)email
                            continuationProvider:
                                (const ChangeProfileContinuationProvider&)
                                    continuationProvider;
