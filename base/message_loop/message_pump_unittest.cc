@@ -39,7 +39,6 @@
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtMost;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace base {
@@ -208,10 +207,10 @@ TEST_P(MessagePumpTest, QuitStopsWork) {
 
   // Not expecting any calls to DoIdleWork after quitting, nor any of the
   // PostDoWorkExpectations, quitting should be instantaneous.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
-  }));
+  });
 
   // MessagePumpGlib uses a work item between a HandleDispatch() call and
   // passing control back to the chrome loop, which handles the Quit() despite
@@ -247,25 +246,26 @@ TEST_P(MessagePumpTest, DetectingHasInputYieldsOnUi) {
   uint32_t initial_work_enters = GetAndroidNonDelayedWorkEnterCount();
 
   // Override the first DoWork() to return an immediate next.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([] {
     auto work_info =
         MessagePump::Delegate::NextWorkInfo{.delayed_run_time = TimeTicks()};
     CHECK(work_info.is_immediate());
     return work_info;
-  }));
+  });
 
   if (pump_type == MessagePumpType::UI) {
     // Override the following InputHintChecker::HasInput() to return true.
-    EXPECT_CALL(hint_checker_mock, HasInputImplWithThrottling())
-        .WillOnce(Invoke([] { return true; }));
+    EXPECT_CALL(hint_checker_mock, HasInputImplWithThrottling()).WillOnce([] {
+      return true;
+    });
   }
 
   // Override the second DoWork() to quit the loop.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{.delayed_run_time =
                                                    TimeTicks::Max()};
-  }));
+  });
 
   // No immediate next_work_info remaining before the yield. Not expecting
   // to observe an input hint check.
@@ -292,7 +292,7 @@ TEST_P(MessagePumpTest, YieldDuringStartup) {
 
   // Override the first DoWork() to return an immediate next. Also set startup
   // as running.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([pump_type] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([pump_type] {
     if (pump_type == MessagePumpType::UI) {
       android::YieldToLooperChecker::GetInstance().SetStartupRunning(true);
     }
@@ -300,24 +300,24 @@ TEST_P(MessagePumpTest, YieldDuringStartup) {
         MessagePump::Delegate::NextWorkInfo{.delayed_run_time = TimeTicks()};
     CHECK(work_info.is_immediate());
     return work_info;
-  }));
+  });
 
   // Override the second DoWork() and mark startup as complete so we don't yield
   // again.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([pump_type] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([pump_type] {
     if (pump_type == MessagePumpType::UI) {
       // Mark startup as done so we don't yield again
       android::YieldToLooperChecker::GetInstance().SetStartupRunning(false);
     }
     return MessagePump::Delegate::NextWorkInfo{.delayed_run_time = TimeTicks()};
-  }));
+  });
 
   // Override the third DoWork() to quit the loop.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{.delayed_run_time =
                                                    TimeTicks::Max()};
-  }));
+  });
 
   // No immediate next_work_info remaining before the yield.
   EXPECT_CALL(delegate, DoIdleWork()).Times(0);
@@ -346,21 +346,21 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
   // the nested loop exits, we schedule another DoWork which quits the outer
   // (original) run loop. The test verifies that there are no extra calls to
   // DoWork after the outer loop quits.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([&] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([&] {
     message_pump_->Run(&nested_delegate);
     // A null NextWorkInfo indicates immediate follow-up work.
     return MessagePump::Delegate::NextWorkInfo();
-  }));
+  });
 
   AddPreDoWorkExpectations(nested_delegate);
-  EXPECT_CALL(nested_delegate, DoWork).WillOnce(Invoke([&] {
+  EXPECT_CALL(nested_delegate, DoWork).WillOnce([&] {
     // Quit the nested run loop.
     message_pump_->Quit();
     // The underlying pump should process the next task in the first run-level
     // regardless of whether the nested run-level indicates there's no more work
     // (e.g. can happen when the only remaining tasks are non-nestable).
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
-  }));
+  });
 
   // The `nested_delegate` will quit first.
   AddPostDoWorkExpectations(nested_delegate);
@@ -370,10 +370,10 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
 
   AddPreDoWorkExpectations(delegate);
 
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
-  }));
+  });
 
   message_pump_->ScheduleWork();
   message_pump_->Run(&delegate);
@@ -390,12 +390,12 @@ TEST_P(MessagePumpTest, LeewaySmokeTest) {
 
   AddPreDoWorkExpectations(delegate);
   // Return a delayed task with |yield_to_native| set, and exit.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     auto now = TimeTicks::Now();
     return MessagePump::Delegate::NextWorkInfo{now + Milliseconds(1),
                                                Milliseconds(8), now};
-  }));
+  });
   EXPECT_CALL(delegate, DoIdleWork()).Times(AnyNumber());
 
   message_pump_->ScheduleWork();
@@ -408,10 +408,10 @@ TEST_P(MessagePumpTest, RunWithoutScheduleWorkInvokesDoWork) {
 
   AddPreDoWorkExpectations(delegate);
 
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
-  }));
+  });
 
   AddPostDoWorkExpectations(delegate);
 
@@ -429,18 +429,18 @@ TEST_P(MessagePumpTest, NestedRunWithoutScheduleWorkInvokesDoWork) {
 
   AddPreDoWorkExpectations(delegate);
 
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this, &nested_delegate] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this, &nested_delegate] {
     message_pump_->Run(&nested_delegate);
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
-  }));
+  });
 
   AddPreDoWorkExpectations(nested_delegate);
 
-  EXPECT_CALL(nested_delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(nested_delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
-  }));
+  });
 
   // We quit `nested_delegate` before `delegate`
   AddPostDoWorkExpectations(nested_delegate);

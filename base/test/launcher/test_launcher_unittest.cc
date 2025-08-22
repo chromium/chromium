@@ -1010,7 +1010,7 @@ TEST_F(ResultWatcherTest, PollCompletesSlowly) {
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
       .Times(10)
       .WillRepeatedly(DoAll(
-          Invoke([&](TimeDelta timeout) {
+          [&](TimeDelta timeout) {
             task_environment.AdvanceClock(timeout);
             // Append a result with "time" (duration) as 40.000s and
             // "timestamp" (test start) as `Now()` - 45s.
@@ -1037,7 +1037,7 @@ TEST_F(ResultWatcherTest, PollCompletesSlowly) {
                           TimeFormatAsIso8601(Time::Now() - Seconds(5)).c_str(),
                           "\" />\n"}));
             }
-          }),
+          },
           ReturnPointee(&done)));
 
   ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));
@@ -1095,13 +1095,14 @@ TEST_F(ResultWatcherTest, RetryIncompleteResultRead) {
   bool done = false;
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
       .Times(5)
-      .WillRepeatedly(DoAll(Invoke([&](TimeDelta timeout) {
-                              task_environment.AdvanceClock(timeout);
-                              // Don't bother writing the rest of the file when
-                              // this test completes.
-                              done = ++attempts >= 5;
-                            }),
-                            ReturnPointee(&done)));
+      .WillRepeatedly(DoAll(
+          [&](TimeDelta timeout) {
+            task_environment.AdvanceClock(timeout);
+            // Don't bother writing the rest of the file when
+            // this test completes.
+            done = ++attempts >= 5;
+          },
+          ReturnPointee(&done)));
 
   Time start = Time::Now();
   ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));

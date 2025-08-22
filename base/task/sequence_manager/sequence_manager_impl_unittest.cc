@@ -6059,10 +6059,10 @@ TEST(
       SingleThreadTaskRunner::GetCurrentDefault();
 
   StrictMock<MockCallback<base::OnceClosure>> cb;
-  EXPECT_CALL(cb, Run).WillOnce(testing::Invoke([expected_task_runner] {
+  EXPECT_CALL(cb, Run).WillOnce([expected_task_runner] {
     EXPECT_EQ(SingleThreadTaskRunner::GetCurrentDefault(),
               expected_task_runner);
-  }));
+  });
 
   static base::SequenceLocalStorageSlot<std::unique_ptr<DestructionCallback>>
       storage_slot;
