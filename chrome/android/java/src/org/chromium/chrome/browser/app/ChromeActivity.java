@@ -3068,6 +3068,16 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         return AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW;
     }
 
+    @Override
+    public boolean shouldAllocateChildConnection() {
+        if (!getProfileProviderSupplier().hasValue()) return true;
+
+        // If a spare Tab exists, a child connection has already been allocated that will be
+        // used by the next created tab.
+        Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
+        return !WarmupManager.getInstance().hasSpareTab(profile, /* targetsNetwork= */ false);
+    }
+
     // === START of ThemeResourceProvider functionality ===
 
     private void initializeThemeResourceWrapper() {
