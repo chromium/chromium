@@ -1252,7 +1252,7 @@ ContentsContainerView* BrowserView::GetContentsContainerViewFor(
     return multi_contents_view_->GetContentsContainerViewFor(web_contents);
   }
 
-  if (contents_container_view_->contents_view()->GetWebContents() ==
+  if (contents_container_view_->contents_view()->web_contents() ==
       web_contents) {
     return contents_container_view_;
   }
@@ -2373,10 +2373,14 @@ void BrowserView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
   }
 }
 
-void BrowserView::SetContentScrimVisibility(bool visible) {
+void BrowserView::SetContentScrimVisibility(content::WebContents* contents,
+                                            bool visible) {
   if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
-    GetActiveContentsContainerView()->contents_scrim_view()->SetVisible(
-        visible);
+    ContentsContainerView* contents_container_view =
+        GetContentsContainerViewFor(contents);
+    if (contents_container_view) {
+      contents_container_view->contents_scrim_view()->SetVisible(visible);
+    }
   }
 }
 

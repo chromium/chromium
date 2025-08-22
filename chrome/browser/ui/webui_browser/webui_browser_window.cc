@@ -395,7 +395,9 @@ void WebUIBrowserWindow::UpdateCustomTabBarVisibility(bool visible,
   NOTIMPLEMENTED();
 }
 
-void WebUIBrowserWindow::SetContentScrimVisibility(bool visible) {
+void WebUIBrowserWindow::SetContentScrimVisibility(
+    content::WebContents* contents,
+    bool visible) {
   NOTIMPLEMENTED();
 }
 

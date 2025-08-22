@@ -1103,7 +1103,6 @@ std::vector<StatusBubble*> Browser::GetStatusBubblesForTesting() {
   return GetStatusBubbles();
 }
 
-
 views::WebView* Browser::GetWebView() {
   return window_->GetContentsWebView();
 }
@@ -1111,7 +1110,6 @@ views::WebView* Browser::GetWebView() {
 Profile* Browser::GetProfile() {
   return profile();
 }
-
 
 void Browser::OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) {
   OpenURL(content::OpenURLParams(gurl, content::Referrer(), disposition,
@@ -2964,7 +2962,7 @@ void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
   }
 
   if (contents_is_active) {
-    window_->SetContentScrimVisibility(/*visible=*/blocked);
+    window_->SetContentScrimVisibility(web_contents, /*visible=*/blocked);
   }
 }
 
@@ -3158,14 +3156,14 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
   BookmarkBarController::From(this)->UpdateBookmarkBarState(
       BookmarkBarController::StateChangeReason::kTabSwitch);
 
-  bool is_blocked = tab_strip_model_->IsTabBlocked(index);
-  window_->SetContentScrimVisibility(/*visible=*/is_blocked);
-
   // Let the BrowserWindow do its handling.  On e.g. views this changes the
   // focused object, which should happen before we update the toolbar below,
-  // since the omnibox expects the correct element to already be focused when it
-  // is updated.
+  // since the omnibox expects the correct element to already be focused when
+  // it is updated.
   window_->OnActiveTabChanged(old_contents, new_contents, index, reason);
+
+  bool is_blocked = tab_strip_model_->IsTabBlocked(index);
+  window_->SetContentScrimVisibility(new_contents, /*visible=*/is_blocked);
 
   browser_window_features()->exclusive_access_manager()->OnTabDetachedFromView(
       old_contents);
@@ -3782,7 +3780,6 @@ bool Browser::SupportsWindowFeatureImpl(WindowFeature feature,
                                                           check_can_support);
   }
 }
-
 
 bool Browser::IsBrowserClosing() const {
   BrowserList* browser_list = BrowserList::GetInstance();
