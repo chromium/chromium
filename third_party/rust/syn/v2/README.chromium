@@ -1,7 +1,7 @@
 Name: syn
 URL: https://crates.io/crates/syn
-Version: 2.0.104
-Revision: 2283a9852a5ae363a72ac09e5897d7f2f89157b2
+Version: 2.0.106
+Revision: 0e4bc64fe1e07a574b6f3133927a27991fd40c2e
 Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/syn-v2/LICENSE-APACHE

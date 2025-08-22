@@ -7,7 +7,9 @@
 )]
 
 #[macro_use]
-mod macros;
+mod snapshot;
+
+mod debug;
 
 use syn::{Meta, MetaList, MetaNameValue};
 

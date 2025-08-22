@@ -5,7 +5,9 @@
 )]
 
 #[macro_use]
-mod macros;
+mod snapshot;
+
+mod debug;
 
 use proc_macro2::TokenStream;
 use quote::quote;

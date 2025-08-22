@@ -7,7 +7,9 @@
 )]
 
 #[macro_use]
-mod macros;
+mod snapshot;
+
+mod debug;
 
 use quote::quote;
 use syn::{DeriveInput, ItemFn, TypeParamBound, WhereClause, WherePredicate};
@@ -128,7 +130,7 @@ fn test_split_for_impl() {
 }
 
 #[test]
-fn test_ty_param_bound() {
+fn test_type_param_bound() {
     let tokens = quote!('a);
     snapshot!(tokens as TypeParamBound, @r#"
     TypeParamBound::Lifetime {
@@ -169,6 +171,42 @@ fn test_ty_param_bound() {
         },
     })
     "#);
+
+    let tokens = quote!(for<'a> Trait);
+    snapshot!(tokens as TypeParamBound, @r#"
+    TypeParamBound::Trait(TraitBound {
+        lifetimes: Some(BoundLifetimes {
+            lifetimes: [
+                GenericParam::Lifetime(LifetimeParam {
+                    lifetime: Lifetime {
+                        ident: "a",
+                    },
+                }),
+            ],
+        }),
+        path: Path {
+            segments: [
+                PathSegment {
+                    ident: "Trait",
+                },
+            ],
+        },
+    })
+    "#);
+
+    let tokens = quote!(for<> ?Trait);
+    let err = syn::parse2::<TypeParamBound>(tokens).unwrap_err();
+    assert_eq!(
+        "`for<...>` binder not allowed with `?` trait polarity modifier",
+        err.to_string(),
+    );
+
+    let tokens = quote!(?for<> Trait);
+    let err = syn::parse2::<TypeParamBound>(tokens).unwrap_err();
+    assert_eq!(
+        "`for<...>` binder not allowed with `?` trait polarity modifier",
+        err.to_string(),
+    );
 }
 
 #[test]

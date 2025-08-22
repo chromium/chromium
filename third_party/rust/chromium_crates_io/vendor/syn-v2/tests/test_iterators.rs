@@ -8,8 +8,19 @@
 use syn::punctuated::{Pair, Punctuated};
 use syn::{parse_quote, GenericParam, Generics, Lifetime, LifetimeParam, Token};
 
-#[macro_use]
-mod macros;
+macro_rules! punctuated {
+    ($($e:expr,)+) => {{
+        let mut seq = ::syn::punctuated::Punctuated::new();
+        $(
+            seq.push($e);
+        )+
+        seq
+    }};
+
+    ($($e:expr),+) => {
+        punctuated!($($e,)+)
+    };
+}
 
 macro_rules! check_exact_size_iterator {
     ($iter:expr) => {{

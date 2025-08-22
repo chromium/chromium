@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.61"
 name = "syn"
-version = "2.0.104"
+version = "2.0.106"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 include = [
@@ -46,6 +46,7 @@ repository = "https://github.com/dtolnay/syn"
 
 [package.metadata.docs.rs]
 all-features = true
+targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
     "--extend-css=src/gen/token.css",
@@ -54,7 +55,6 @@ rustdoc-args = [
     "--extern-html-root-url=std=https://doc.rust-lang.org",
     "--extern-html-root-url=proc_macro=https://doc.rust-lang.org",
 ]
-targets = ["x86_64-unknown-linux-gnu"]
 
 [package.metadata.playground]
 features = [

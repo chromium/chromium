@@ -404,11 +404,11 @@ pub(crate) mod parsing {
                             bounds.push_punct(plus);
                             bounds.push_value({
                                 let allow_precise_capture = false;
-                                let allow_tilde_const = false;
+                                let allow_const = false;
                                 TypeParamBound::parse_single(
                                     input,
                                     allow_precise_capture,
-                                    allow_tilde_const,
+                                    allow_const,
                                 )?
                             });
                         }
@@ -480,11 +480,11 @@ pub(crate) mod parsing {
                                 bounds.push_punct(plus);
                                 bounds.push_value({
                                     let allow_precise_capture = false;
-                                    let allow_tilde_const = false;
+                                    let allow_const = false;
                                     TypeParamBound::parse_single(
                                         input,
                                         allow_precise_capture,
-                                        allow_tilde_const,
+                                        allow_const,
                                     )?
                                 });
                             }
@@ -551,12 +551,8 @@ pub(crate) mod parsing {
                         }
                         bounds.push_value({
                             let allow_precise_capture = false;
-                            let allow_tilde_const = false;
-                            TypeParamBound::parse_single(
-                                input,
-                                allow_precise_capture,
-                                allow_tilde_const,
-                            )?
+                            let allow_const = false;
+                            TypeParamBound::parse_single(input, allow_precise_capture, allow_const)?
                         });
                     }
                 }
@@ -849,12 +845,12 @@ pub(crate) mod parsing {
             allow_plus: bool,
         ) -> Result<Punctuated<TypeParamBound, Token![+]>> {
             let allow_precise_capture = false;
-            let allow_tilde_const = false;
+            let allow_const = false;
             let bounds = TypeParamBound::parse_multiple(
                 input,
                 allow_plus,
                 allow_precise_capture,
-                allow_tilde_const,
+                allow_const,
             )?;
             let mut last_lifetime_span = None;
             let mut at_least_one_trait = false;
@@ -899,12 +895,12 @@ pub(crate) mod parsing {
         pub(crate) fn parse(input: ParseStream, allow_plus: bool) -> Result<Self> {
             let impl_token: Token![impl] = input.parse()?;
             let allow_precise_capture = true;
-            let allow_tilde_const = false;
+            let allow_const = true;
             let bounds = TypeParamBound::parse_multiple(
                 input,
                 allow_plus,
                 allow_precise_capture,
-                allow_tilde_const,
+                allow_const,
             )?;
             let mut last_nontrait_span = None;
             let mut at_least_one_trait = false;
@@ -929,7 +925,7 @@ pub(crate) mod parsing {
                         }
                     }
                     TypeParamBound::Verbatim(_) => {
-                        // ~const Trait
+                        // `[const] Trait`
                         at_least_one_trait = true;
                         break;
                     }

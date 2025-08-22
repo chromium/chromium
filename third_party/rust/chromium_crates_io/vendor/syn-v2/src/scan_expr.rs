@@ -92,13 +92,14 @@ static BREAK_VALUE: [(Input, Action); 3] = [
     (Otherwise, SetState(&POSTFIX)),
 ];
 
-static CLOSURE: [(Input, Action); 6] = [
+static CLOSURE: [(Input, Action); 7] = [
     (Keyword("async"), SetState(&CLOSURE)),
     (Keyword("move"), SetState(&CLOSURE)),
     (Punct(","), SetState(&CLOSURE)),
     (Punct(">"), SetState(&CLOSURE)),
     (Punct("|"), SetState(&CLOSURE_ARGS)),
     (ConsumeLifetime, SetState(&CLOSURE)),
+    (ConsumeIdent, SetState(&CLOSURE)),
 ];
 
 static CLOSURE_ARGS: [(Input, Action); 2] = [

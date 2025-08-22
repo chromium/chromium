@@ -13,8 +13,11 @@
 
 #[macro_use]
 mod macros;
+#[macro_use]
+mod snapshot;
 
 mod common;
+mod debug;
 
 use crate::common::visit::{AsIfPrinted, FlattenParens};
 use proc_macro2::{Delimiter, Group, Ident, Span, TokenStream};
@@ -900,9 +903,9 @@ fn test_fixup() {
             original == reconstructed,
             "original: {}\n{:#?}\nreconstructed: {}\n{:#?}",
             original.to_token_stream(),
-            crate::macros::debug::Lite(&original),
+            crate::debug::Lite(&original),
             reconstructed.to_token_stream(),
-            crate::macros::debug::Lite(&reconstructed),
+            crate::debug::Lite(&reconstructed),
         );
     }
 }
@@ -1663,7 +1666,7 @@ fn test_permutations() -> ExitCode {
             fail!(
                 "failed to parse: {}\n{:#?}",
                 tokens,
-                crate::macros::debug::Lite(&original),
+                crate::debug::Lite(&original),
             );
         };
         AsIfPrinted.visit_expr_mut(&mut original);
@@ -1672,9 +1675,9 @@ fn test_permutations() -> ExitCode {
             fail!(
                 "before: {}\n{:#?}\nafter: {}\n{:#?}",
                 tokens,
-                crate::macros::debug::Lite(&original),
+                crate::debug::Lite(&original),
                 parsed.to_token_stream(),
-                crate::macros::debug::Lite(&parsed),
+                crate::debug::Lite(&parsed),
             );
         }
         let mut tokens_no_paren = tokens.clone();

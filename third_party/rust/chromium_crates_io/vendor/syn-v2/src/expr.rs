@@ -1189,7 +1189,7 @@ pub(crate) mod parsing {
         FieldValue, Index, Member,
     };
     #[cfg(feature = "full")]
-    use crate::generics::BoundLifetimes;
+    use crate::generics::{self, BoundLifetimes};
     use crate::ident::Ident;
     #[cfg(feature = "full")]
     use crate::lifetime::Lifetime;
@@ -1251,7 +1251,7 @@ pub(crate) mod parsing {
         } else if input.peek(Token![while]) {
             Expr::While(input.parse()?)
         } else if input.peek(Token![for])
-            && !(input.peek2(Token![<]) && (input.peek3(Lifetime) || input.peek3(Token![>])))
+            && !generics::parsing::choose_generics_over_qpath_after_keyword(input)
         {
             Expr::ForLoop(input.parse()?)
         } else if input.peek(Token![loop]) {
@@ -1803,8 +1803,7 @@ pub(crate) mod parsing {
         } else if input.peek(Token![|])
             || input.peek(Token![move])
             || input.peek(Token![for])
-                && input.peek2(Token![<])
-                && (input.peek3(Lifetime) || input.peek3(Token![>]))
+                && generics::parsing::choose_generics_over_qpath_after_keyword(input)
             || input.peek(Token![const]) && !input.peek2(token::Brace)
             || input.peek(Token![static])
             || input.peek(Token![async]) && (input.peek2(Token![|]) || input.peek2(Token![move]))

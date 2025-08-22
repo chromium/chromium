@@ -264,7 +264,9 @@ fn librustc_parenthesize(mut librustc_expr: Box<ast::Expr>) -> Box<ast::Expr> {
                     fields,
                     rest,
                 } = expr.deref_mut();
-                vis.visit_qself(qself);
+                if let Some(qself) = qself {
+                    vis.visit_qself(qself);
+                }
                 vis.visit_path(path);
                 fields.flat_map_in_place(|field| flat_map_field(field, vis));
                 if let StructRest::Base(rest) = rest {
