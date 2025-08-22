@@ -314,14 +314,14 @@ void ChromeSigninClient::RemoveContentSettingsObserver(
 
 bool ChromeSigninClient::IsClearPrimaryAccountAllowed(
     bool has_sync_account) const {
-  return GetSignoutDecision(has_sync_account,
-                            /*signout_source=*/std::nullopt) ==
+  return GetSignoutDecision(
+             /*signout_source=*/std::nullopt) ==
          SigninClient::SignoutDecision::ALLOW;
 }
 
 bool ChromeSigninClient::IsRevokeSyncConsentAllowed() const {
-  return GetSignoutDecision(/*has_sync_account=*/true,
-                            /*signout_source=*/std::nullopt) !=
+  return GetSignoutDecision(
+             /*signout_source=*/std::nullopt) !=
          SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
 }
 
@@ -365,7 +365,7 @@ void ChromeSigninClient::PreSignOut(
         profile_,
         base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersSuccess,
                             base::Unretained(this), signout_source_metric,
-                            /*should_sign_out=*/true, has_sync_account),
+                            /*should_sign_out=*/true),
         base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersAborted,
                             base::Unretained(this)),
         signout_source_metric == signin_metrics::ProfileSignout::kAbortSignin ||
@@ -379,7 +379,7 @@ void ChromeSigninClient::PreSignOut(
   {
 #endif
     std::move(on_signout_decision_reached_)
-        .Run(GetSignoutDecision(has_sync_account, signout_source_metric));
+        .Run(GetSignoutDecision(signout_source_metric));
   }
 }
 
@@ -465,7 +465,6 @@ ChromeSigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
 }
 
 SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
-    bool has_sync_account,
     const std::optional<signin_metrics::ProfileSignout> signout_source) const {
   // TODO(crbug.com/40239707): Revisit |kAlwaysAllowedSignoutSources|.
   for (const auto& always_allowed_source : kAlwaysAllowedSignoutSources) {
@@ -533,9 +532,7 @@ void ChromeSigninClient::OnTokenFetchComplete(bool token_is_valid) {
           signin_metrics::ProfileSignout::kAuthenticationFailedWithForceSignin,
           // Do not sign the user out to allow them to reauthenticate from the
           // profile picker.
-          /*should_sign_out=*/false,
-          // Sync value is not used since we are not signing out.
-          /*has_sync_account=*/false),
+          /*should_sign_out=*/false),
       /*on_close_aborted=*/base::DoNothing(),
       /*skip_beforeunload=*/true);
 }
@@ -588,7 +585,6 @@ void ChromeSigninClient::SetURLLoaderFactoryForTest(
 void ChromeSigninClient::OnCloseBrowsersSuccess(
     const signin_metrics::ProfileSignout signout_source_metric,
     bool should_sign_out,
-    bool has_sync_account,
     const base::FilePath& profile_path) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   if (signin_util::IsForceSigninEnabled() && force_signin_verifier_.get()) {
@@ -598,7 +594,7 @@ void ChromeSigninClient::OnCloseBrowsersSuccess(
 
   if (should_sign_out) {
     std::move(on_signout_decision_reached_)
-        .Run(GetSignoutDecision(has_sync_account, signout_source_metric));
+        .Run(GetSignoutDecision(signout_source_metric));
   }
 
   LockForceSigninProfile(profile_path);
