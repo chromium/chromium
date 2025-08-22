@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -33,6 +34,10 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+
+namespace gpu {
+class ClientSharedImage;
+}  // namespace gpu
 
 namespace blink {
 
@@ -130,6 +135,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                             ScriptPromiseResolver<blink::MLTensor>* resolver,
                             webnn::OperandDescriptor validated_descriptor,
                             webnn::MLTensorUsage usage,
+                            scoped_refptr<gpu::ClientSharedImage> shared_image,
                             webnn::mojom::blink::CreateTensorResultPtr result);
 
   V8MLDeviceType device_type_;

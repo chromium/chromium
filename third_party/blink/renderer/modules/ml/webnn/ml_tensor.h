@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_TENSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_TENSOR_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
@@ -24,6 +25,10 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+namespace gpu {
+class ClientSharedImage;
+}  // namespace gpu
 
 namespace blink {
 
@@ -45,6 +50,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
            MLContext* context,
            webnn::OperandDescriptor descriptor,
            webnn::MLTensorUsage usage,
+           scoped_refptr<gpu::ClientSharedImage> shared_image,
            webnn::mojom::blink::CreateTensorSuccessPtr create_tensor_success,
            base::PassKey<MLContext> pass_key);
   MLTensor(const MLTensor&) = delete;
@@ -130,6 +136,9 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   HeapHashSet<Member<ScriptPromiseResolver<DOMArrayBuffer>>> pending_resolvers_;
   HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>>
       pending_byob_resolvers_;
+
+  // Exists when `WebNNTensor` is a tensor created for WebGPUInterop.
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
 };
 
 }  // namespace blink

@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
@@ -32,13 +33,15 @@ MLTensor::MLTensor(
     MLContext* context,
     webnn::OperandDescriptor descriptor,
     webnn::MLTensorUsage usage,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     webnn::mojom::blink::CreateTensorSuccessPtr create_tensor_success,
     base::PassKey<MLContext> /*pass_key*/)
     : ml_context_(context),
       descriptor_(std::move(descriptor)),
       usage_(usage),
       webnn_handle_(std::move(create_tensor_success->tensor_handle)),
-      remote_tensor_(execution_context) {
+      remote_tensor_(execution_context),
+      shared_image_(std::move(shared_image)) {
   remote_tensor_.Bind(
       std::move(create_tensor_success->tensor_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));

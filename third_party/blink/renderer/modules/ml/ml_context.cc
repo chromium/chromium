@@ -9,6 +9,8 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -59,6 +61,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 
 namespace blink {
 
@@ -105,6 +108,82 @@ blink::V8MLInputOperandLayout::Enum InputOperandLayoutToBlink(
     case webnn::InputOperandLayout::kNhwc:
       return blink::V8MLInputOperandLayout::Enum::kNhwc;
   }
+}
+
+// Flatten N-D shape into 2D size for shared image creation.
+// For example:
+//   shape = [2,3,4]  W=4 x H=6 = 24 elements
+//   shape = [3]      W=3 x H=1 = 3 elements
+//   shape = [2,0,4]  W=4 x H=0 = 0 elements
+//   shape = [0]      W=0 x H=0 = 0 elements
+base::expected<gfx::Size, String> ShapeToSharedImageSize(
+    const std::vector<uint32_t>& shape) {
+  if (shape.empty()) {
+    return base::unexpected("The tensor shape must not be [].");
+  }
+
+  // Last dimension
+  const uint32_t width = shape.back();
+
+  // Product of all preceding dimensions
+  base::CheckedNumeric<uint32_t> checked_height(1u);
+  for (size_t i = 0; i < shape.size() - 1; ++i) {
+    checked_height *= shape[i];
+  }
+
+  uint32_t height;
+  if (!checked_height.AssignIfValid(&height)) {
+    return base::unexpected(
+        "The number of elements implied by the shape is too large.");
+  }
+
+  // TODO(crbug.com/329471677): Consider supporting size 0 dimensions.
+  DCHECK_NE(width, 0u);
+
+  return gfx::Size(width, height);
+}
+
+base::expected<viz::SharedImageFormat, String>
+OperandDataTypeToSharedImageFormat(webnn::OperandDataType data_type) {
+  // Maps data_type to equivalent element size.
+  switch (data_type) {
+    // 1 byte per element
+    case webnn::OperandDataType::kUint8:
+    case webnn::OperandDataType::kInt8:
+      return viz::SinglePlaneFormat::kR_8;
+    // 2 bytes per element
+    case webnn::OperandDataType::kFloat16:
+      return viz::SinglePlaneFormat::kR_F16;
+    // 4 bytes per element
+    case webnn::OperandDataType::kUint32:
+    case webnn::OperandDataType::kInt32:
+    case webnn::OperandDataType::kFloat32:
+      // TODO(crbug.com/345352987): use shared image formats with 32 bits per
+      // channel for float32/int32/uint32 instead of RGBA_8888, which only
+      // matches the size.
+      return viz::SinglePlaneFormat::kRGBA_8888;
+    // Default case is for new format types added to MLTensor.
+    default:
+      return base::unexpected(
+          String::Format("Invalid operand data type: %s",
+                         ToBlinkDataType(data_type).AsCStr()));
+  }
+}
+
+gpu::SharedImageUsageSet OperandUsageToSharedImageUsageSet(
+    const webnn::MLTensorUsage& usage) {
+  gpu::SharedImageUsageSet shared_image_usage_set(
+      gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR);
+  if (usage.Has(webnn::MLTensorUsageFlags::kRead)) {
+    shared_image_usage_set |= gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ;
+  }
+  if (usage.Has(webnn::MLTensorUsageFlags::kWrite)) {
+    shared_image_usage_set |= gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE;
+  }
+  if (usage.Has(webnn::MLTensorUsageFlags::kWebGpuInterop)) {
+    shared_image_usage_set |= gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER;
+  }
+  return shared_image_usage_set;
 }
 
 }  // namespace
@@ -1033,11 +1112,15 @@ ScriptPromise<MLTensor> MLContext::createTensor(
     return EmptyPromise();
   }
 
+  // TODO(crbug.com/345352987): use label from MLTensor if provided, instead of
+  // hardcoding it here.
+  constexpr char kTensorLabel[] = "tensor";
+
   ASSIGN_OR_RETURN(
       webnn::OperandDescriptor validated_descriptor,
       webnn::OperandDescriptor::Create(
           properties_, FromBlinkDataType(descriptor->dataType().AsEnum()),
-          descriptor->shape(), "tensor"),
+          descriptor->shape(), kTensorLabel),
       [&exception_state](std::string error) {
         exception_state.ThrowTypeError(String(error));
         return ScriptPromise<MLTensor>();
@@ -1068,6 +1151,52 @@ ScriptPromise<MLTensor> MLContext::createTensor(
   // MLTensorUsageFlags::kGraphConstant is only assigned for
   // createConstantTensor().
 
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  gpu::SyncToken shared_image_create_finished_token;
+  if (descriptor->exportableToGPU()) {
+    // If the context is lost, the context provider would be invalid.
+    auto context_provider_wrapper =
+        blink::SharedGpuContext::ContextProviderWrapper();
+    if (!context_provider_wrapper ||
+        context_provider_wrapper->ContextProvider().IsContextLost()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Context is lost.");
+      return EmptyPromise();
+    }
+
+    gpu::SharedImageInterface* sii =
+        context_provider_wrapper->ContextProvider().SharedImageInterface();
+    DCHECK(sii);
+
+    // MLTensor represents data as an N-dimensional homogeneous buffer where
+    // each element has the same size—similar to textures. To represent tensors
+    // created from shared images, we convert the tensor shape into a 2D image:
+    // the height is the product of all dimensions except the last, which
+    // becomes the width. The total size of the tensor as a shared image becomes
+    // the product of its width and height. This scheme is required for CoreML
+    // which validates if a MLMultiArray based MLTensor can import a shared
+    // image backed CVPixelBuffer which requires the size to match the shape.
+    auto format_result =
+        OperandDataTypeToSharedImageFormat(validated_descriptor.data_type());
+    if (!format_result.has_value()) {
+      exception_state.ThrowTypeError(format_result.error());
+      return EmptyPromise();
+    }
+
+    auto size_result = ShapeToSharedImageSize(validated_descriptor.shape());
+    if (!size_result.has_value()) {
+      exception_state.ThrowTypeError(size_result.error());
+      return EmptyPromise();
+    }
+
+    shared_image = sii->CreateSharedImageForMLTensor(
+        kTensorLabel, format_result.value(), size_result.value(),
+        OperandUsageToSharedImageUsageSet(usage));
+    CHECK(shared_image);
+
+    shared_image_create_finished_token = sii->GenVerifiedSyncToken();
+  }
+
   auto tensor_info =
       webnn::mojom::blink::TensorInfo::New(validated_descriptor, usage);
 
@@ -1076,16 +1205,20 @@ ScriptPromise<MLTensor> MLContext::createTensor(
   pending_resolvers_.insert(resolver);
 
   // Use `WebNNContext` to create `WebNNTensor` message pipe.
-  if (descriptor->exportableToGPU()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Not implemented");
-    return EmptyPromise();
+  if (shared_image) {
+    context_remote_->CreateTensorFromMailbox(
+        std::move(tensor_info), shared_image->mailbox(),
+        shared_image_create_finished_token,
+        blink::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
+                        std::move(scoped_trace), WrapPersistent(resolver),
+                        std::move(validated_descriptor), usage, shared_image));
   } else {
     context_remote_->CreateTensor(
         std::move(tensor_info), mojo_base::BigBuffer(0),
         blink::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
                         std::move(scoped_trace), WrapPersistent(resolver),
-                        std::move(validated_descriptor), usage));
+                        std::move(validated_descriptor), usage,
+                        /*shared_image=*/nullptr));
   }
 
   return resolver->Promise();
@@ -1163,7 +1296,8 @@ ScriptPromise<MLTensor> MLContext::createConstantTensor(
       std::move(tensor_info), bytes,
       WTF::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
-                    std::move(validated_descriptor), usage));
+                    std::move(validated_descriptor), usage,
+                    /*shared_image=*/nullptr));
 
   return resolver->Promise();
 }
@@ -1283,6 +1417,7 @@ void MLContext::DidCreateWebNNTensor(
     ScriptPromiseResolver<blink::MLTensor>* resolver,
     webnn::OperandDescriptor validated_descriptor,
     webnn::MLTensorUsage usage,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     webnn::mojom::blink::CreateTensorResultPtr result) {
   pending_resolvers_.erase(resolver);
 
@@ -1301,7 +1436,8 @@ void MLContext::DidCreateWebNNTensor(
 
   auto* tensor = MakeGarbageCollected<MLTensor>(
       resolver->GetExecutionContext(), this, std::move(validated_descriptor),
-      usage, std::move(result->get_success()), base::PassKey<MLContext>());
+      usage, std::move(shared_image), std::move(result->get_success()),
+      base::PassKey<MLContext>());
   tensors_.insert(tensor);
 
   resolver->Resolve(tensor);
