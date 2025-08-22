@@ -14,7 +14,6 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "clobber",
                   "mb"
                 ],
                 "build_config": "Debug",
