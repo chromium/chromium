@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "llguidance"
-version = "1.1.2"
+version = "1.2.0"
 build = "build.rs"
 autolib = false
 autobins = false
@@ -95,7 +95,7 @@ version = "1.0.138"
 features = ["preserve_order"]
 
 [dependencies.toktrie]
-version = "1.1.2"
+version = "1.2.0"
 
 [dev-dependencies.regex]
 version = "1.11.1"

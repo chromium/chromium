@@ -279,7 +279,7 @@ pub fn lex_lark(input: &str) -> Result<Vec<Lexeme>> {
     while idx <= input_bytes.len() {
         let mut b = b'\n';
         let res = if idx == input_bytes.len() {
-            lexer.force_lexeme_end(state)
+            lexer.try_lexeme_end(state)
         } else {
             b = input_bytes[idx];
             lexer.advance(state, b, false)

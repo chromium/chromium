@@ -69,7 +69,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "llguidance"
   cargo_pkg_description = "Super-fast Structured Outputs"
   cargo_pkg_repository = "https://github.com/guidance-ai/llguidance"
-  cargo_pkg_version = "1.1.2"
+  cargo_pkg_version = "1.2.0"
 
   allow_unsafe = true
 
