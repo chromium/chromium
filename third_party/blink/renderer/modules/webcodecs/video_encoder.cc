@@ -1565,6 +1565,7 @@ void VideoEncoder::CallOutputCallback(
 void VideoEncoder::ResetInternal(DOMException* ex) {
   Base::ResetInternal(ex);
   active_encodes_ = 0;
+  last_output_color_space_ = {};
 }
 
 void VideoEncoder::OnNewEncode(InputType* input,
