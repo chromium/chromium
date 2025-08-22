@@ -2295,8 +2295,7 @@ protocol::Response InspectorNetworkAgent::enable(
     std::optional<int> total_buffer_size,
     std::optional<int> resource_buffer_size,
     std::optional<int> max_post_data_size,
-    std::optional<bool> report_direct_socket_traffic,
-    std::optional<bool> enable_durable_messages) {
+    std::optional<bool> report_direct_socket_traffic) {
   total_buffer_size_.Set(total_buffer_size.value_or(kDefaultTotalBufferSize));
   resource_buffer_size_.Set(
       resource_buffer_size.value_or(kDefaultResourceBufferSize));
