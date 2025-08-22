@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+enum class DownloadFilterType;
+
 // Protocol for download list data operations.
 // This protocol encapsulates the data manipulation responsibilities.
 @protocol DownloadListMutator <NSObject>
@@ -16,6 +18,9 @@
 
 // Syncs download records if needed.
 - (void)syncRecordsIfNeeded;
+
+// Filters the download records based on the filter type.
+- (void)filterRecordsWithType:(DownloadFilterType)type;
 
 @end
 
