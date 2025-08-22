@@ -4,8 +4,12 @@
 
 #include "services/on_device_model/android/model_downloader_android.h"
 
+#include <optional>
+
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "services/on_device_model/android/on_device_model_bridge_native_unittest_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,7 +32,31 @@ class ModelDownloaderAndroidTest : public testing::Test {
   ~ModelDownloaderAndroidTest() override = default;
 
  protected:
+  void VerifyHistograms(
+      base::expected<void, DownloadFailureReason> failure_reason) {
+    bool success = failure_reason.has_value();
+    histogram_tester_.ExpectUniqueSample(
+        "OnDeviceModel.Android.IsModelDownloadSuccessful", success, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "OnDeviceModel.Android.IsModelDownloadSuccessful.ScamDetection",
+        success, 1);
+    if (success) {
+      histogram_tester_.ExpectTotalCount(
+          "OnDeviceModel.Android.ModelDownloadFailureReason", 0);
+      histogram_tester_.ExpectTotalCount(
+          "OnDeviceModel.Android.ModelDownloadFailureReason.ScamDetection", 0);
+    } else {
+      histogram_tester_.ExpectUniqueSample(
+          "OnDeviceModel.Android.ModelDownloadFailureReason",
+          failure_reason.error(), 1);
+      histogram_tester_.ExpectUniqueSample(
+          "OnDeviceModel.Android.ModelDownloadFailureReason.ScamDetection",
+          failure_reason.error(), 1);
+    }
+  }
+
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   OnDeviceModelBridgeNativeUnitTestHelper java_helper_;
 };
 
@@ -39,6 +67,8 @@ TEST_F(ModelDownloaderAndroidTest, DefaultDownloader) {
   downloader->StartDownload(future.GetCallback());
   EXPECT_EQ(future.Get(),
             base::unexpected(DownloadFailureReason::kApiNotAvailable));
+
+  VerifyHistograms(base::unexpected(DownloadFailureReason::kApiNotAvailable));
 }
 
 TEST_F(ModelDownloaderAndroidTest, DownloadAvailable) {
@@ -53,6 +83,8 @@ TEST_F(ModelDownloaderAndroidTest, DownloadAvailable) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->name, "test_model");
   EXPECT_EQ(result->version, "123");
+
+  VerifyHistograms(base::ok());
 }
 
 TEST_F(ModelDownloaderAndroidTest, DownloadUnavailable) {
@@ -66,6 +98,8 @@ TEST_F(ModelDownloaderAndroidTest, DownloadUnavailable) {
       DownloadFailureReason::kUnknownError);
   EXPECT_EQ(future.Get(),
             base::unexpected(DownloadFailureReason::kUnknownError));
+
+  VerifyHistograms(base::unexpected(DownloadFailureReason::kUnknownError));
 }
 
 TEST_F(ModelDownloaderAndroidTest, DownloadAvailableOnDifferentThread) {
@@ -83,6 +117,8 @@ TEST_F(ModelDownloaderAndroidTest, DownloadAvailableOnDifferentThread) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->name, "test_model");
   EXPECT_EQ(result->version, "123");
+
+  VerifyHistograms(base::ok());
 }
 
 TEST_F(ModelDownloaderAndroidTest, DownloadUnavailableOnDifferentThread) {
@@ -99,6 +135,8 @@ TEST_F(ModelDownloaderAndroidTest, DownloadUnavailableOnDifferentThread) {
 
   EXPECT_EQ(future.Get(),
             base::unexpected(DownloadFailureReason::kUnknownError));
+
+  VerifyHistograms(base::unexpected(DownloadFailureReason::kUnknownError));
 }
 
 TEST_F(ModelDownloaderAndroidTest, NativeDownloaderDeletionIsSafe) {

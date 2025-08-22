@@ -27,10 +27,13 @@ class ModelDownloaderAndroid {
   };
 
   // The reason for a download failure.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.on_device_model
   enum class DownloadFailureReason {
     kUnknownError = 0,
     kApiNotAvailable = 1,
+    kMaxValue = kApiNotAvailable,
   };
 
   using OnDownloadCompleteCallback = base::OnceCallback<void(
@@ -57,6 +60,9 @@ class ModelDownloaderAndroid {
 
   base::android::ScopedJavaGlobalRef<jobject> java_downloader_;
   OnDownloadCompleteCallback on_download_complete_callback_;
+
+  // The feature for which this downloader was created.
+  const optimization_guide::proto::ModelExecutionFeature feature_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   SequenceCheckerHelper sequence_checker_helper_;

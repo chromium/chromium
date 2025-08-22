@@ -82,6 +82,11 @@ histograms-xml-to-struct.py script to generate enums for histograms.
   <int value="2" label="ApiNotAvailable"/>
 </enum>
 
+<enum name="OnDeviceModelAndroidModelDownloadFailureReason">
+  <int value="0" label="UnknownError"/>
+  <int value="1" label="ApiNotAvailable"/>
+</enum>
+
 <enum name="VeryLowPerformanceReason">
   <int value="0" label="Low RAM"/>
   <int value="1" label="Slow output"/>

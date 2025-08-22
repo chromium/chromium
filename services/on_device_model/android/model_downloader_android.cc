@@ -7,7 +7,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "services/on_device_model/android/on_device_model_bridge.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -15,9 +18,38 @@
 
 namespace on_device_model {
 
+namespace {
+
+void LogModelDownloadResult(
+    optimization_guide::proto::ModelExecutionFeature feature,
+    base::expected<void, ModelDownloaderAndroid::DownloadFailureReason>
+        failure_reason) {
+  bool success = failure_reason.has_value();
+  base::UmaHistogramBoolean("OnDeviceModel.Android.IsModelDownloadSuccessful",
+                            success);
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"OnDeviceModel.Android.IsModelDownloadSuccessful.",
+           optimization_guide::GetStringNameForModelExecutionFeature(feature)}),
+      success);
+  if (!success) {
+    base::UmaHistogramEnumeration(
+        "OnDeviceModel.Android.ModelDownloadFailureReason",
+        failure_reason.error());
+    base::UmaHistogramEnumeration(
+        base::StrCat({"OnDeviceModel.Android.ModelDownloadFailureReason.",
+                      optimization_guide::GetStringNameForModelExecutionFeature(
+                          feature)}),
+        failure_reason.error());
+  }
+}
+
+}  // namespace
+
 ModelDownloaderAndroid::ModelDownloaderAndroid(
     optimization_guide::proto::ModelExecutionFeature feature)
-    : java_downloader_(OnDeviceModelBridge::CreateModelDownloader(feature)) {
+    : java_downloader_(OnDeviceModelBridge::CreateModelDownloader(feature)),
+      feature_(feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
@@ -43,15 +75,16 @@ void ModelDownloaderAndroid::OnAvailable(
     const std::string& base_model_name,
     const std::string& base_model_version) {
   sequence_checker_helper_.PostTask(
-      FROM_HERE, base::BindOnce(&ModelDownloaderAndroid::OnAvailableOnSequence,
-                                weak_ptr_, base_model_name,
-                                base_model_version));
+      FROM_HERE,
+      base::BindOnce(&ModelDownloaderAndroid::OnAvailableOnSequence, weak_ptr_,
+                     base_model_name, base_model_version));
 }
 
 void ModelDownloaderAndroid::OnAvailableOnSequence(
     const std::string& base_model_name,
     const std::string& base_model_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LogModelDownloadResult(feature_, base::ok());
   std::move(on_download_complete_callback_)
       .Run(BaseModelSpec{.name = base_model_name,
                          .version = base_model_version});
@@ -61,13 +94,14 @@ void ModelDownloaderAndroid::OnUnavailable(
     DownloadFailureReason failure_reason) {
   sequence_checker_helper_.PostTask(
       FROM_HERE,
-      base::BindOnce(&ModelDownloaderAndroid::OnUnavailableOnSequence, weak_ptr_,
-                     failure_reason));
+      base::BindOnce(&ModelDownloaderAndroid::OnUnavailableOnSequence,
+                     weak_ptr_, failure_reason));
 }
 
 void ModelDownloaderAndroid::OnUnavailableOnSequence(
     DownloadFailureReason failure_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LogModelDownloadResult(feature_, base::unexpected(failure_reason));
   std::move(on_download_complete_callback_)
       .Run(base::unexpected(failure_reason));
 }
