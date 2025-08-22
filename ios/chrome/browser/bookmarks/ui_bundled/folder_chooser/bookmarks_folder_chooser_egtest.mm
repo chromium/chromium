@@ -1353,15 +1353,23 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
 - (void)testCreateNewFolderWithContextBarSignedOut {
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kSignedOut];
 }
+
 - (void)testCreateNewFolderWithContextBarLocal {
+  // TODO(crbug.com/440572503): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kLocal];
 }
+
 // TODO(crbug.com/326425036): New folder can’t be renamed in account model.
 - (void)DISABLE_testCreateNewFolderWithContextBarAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kAccount];
 }
+
 - (void)util_testCreateNewFolderWithContextBar:(KindOfTest)kindOfTest {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];

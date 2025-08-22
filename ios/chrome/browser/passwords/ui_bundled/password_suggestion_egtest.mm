@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -218,6 +219,11 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 // Tests that the bottom sheet does not show after it has been
 // dismissed three consecutive times.
 - (void)testSilenceProactiveBottomSheet {
+  // TODO(crbug.com/439743829): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   // Dismiss #1
   [self loadSignupPage];
   [self openAndDismissBottomSheet];
