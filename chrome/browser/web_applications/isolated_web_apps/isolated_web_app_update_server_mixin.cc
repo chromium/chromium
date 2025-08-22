@@ -47,7 +47,7 @@ base::Value::Dict
 IsolatedWebAppUpdateServerMixin::CreateForceInstallPolicyEntry(
     const web_package::SignedWebBundleId& web_bundle_id,
     const std::optional<UpdateChannel>& update_channel,
-    const std::optional<base::Version>& pinned_version,
+    const std::optional<IwaVersion>& pinned_version,
     const bool allow_downgrades) const {
   return test::CreateForceInstallIwaPolicyEntry(
       web_bundle_id, GetUpdateManifestUrl(web_bundle_id), update_channel,
@@ -67,7 +67,7 @@ void IsolatedWebAppUpdateServerMixin::AddBundle(
 
 void IsolatedWebAppUpdateServerMixin::RemoveBundle(
     const web_package::SignedWebBundleId& web_bundle_id,
-    const base::Version& version) {
+    const IwaVersion& version) {
   storage_.RemoveBundle(web_bundle_id, version);
 }
 

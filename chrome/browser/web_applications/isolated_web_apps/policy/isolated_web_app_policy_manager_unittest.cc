@@ -251,7 +251,7 @@ TEST_F(IsolatedWebAppPolicyManagerTest, AppInstalled) {
 }
 
 TEST_F(IsolatedWebAppPolicyManagerTest, AppInstalledAtPinnedVersion) {
-  const base::Version pinned_version = base::Version("1.0.0");
+  const IwaVersion pinned_version = *IwaVersion::Create("1.0.0");
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_1());
 
@@ -270,13 +270,13 @@ TEST_F(IsolatedWebAppPolicyManagerTest, AppInstalledAtPinnedVersion) {
   const WebApp* web_app =
       provider().registrar_unsafe().GetAppById(url_info.app_id());
   ASSERT_THAT(web_app, NotNull());
-  ASSERT_EQ(web_app->isolation_data()->version(), pinned_version);
+  ASSERT_EQ(web_app->isolation_data()->version(), pinned_version.version());
   EXPECT_THAT(web_app->GetSources(),
               Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
 }
 
 TEST_F(IsolatedWebAppPolicyManagerTest, AppNotInstalledIncorrectPinnedVersion) {
-  const base::Version pinned_version = base::Version("1.9.0");
+  const IwaVersion pinned_version = *IwaVersion::Create("1.9.0");
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_1());
 

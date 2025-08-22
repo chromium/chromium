@@ -14,10 +14,6 @@
 
 class Profile;
 
-namespace base {
-class Version;
-}  // namespace base
-
 namespace web_app {
 
 class IsolatedWebAppInstallSource;

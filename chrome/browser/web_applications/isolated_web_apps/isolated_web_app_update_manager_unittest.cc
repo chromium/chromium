@@ -508,7 +508,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       test_update_server().CreateForceInstallPolicyEntry(
           GetIwa1WebBundleId(),
           /*update_channel=*/std::nullopt,
-          /*pinned_version=*/base::Version("2.0.0")));
+          /*pinned_version=*/*IwaVersion::Create("2.0.0")));
 
   test_update_server().AddBundle(CreateIwa1Bundle("2.0.0"));
 
@@ -549,7 +549,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
         test_update_server().CreateForceInstallPolicyEntry(
             GetIwa1WebBundleId(),
             /*update_channel=*/std::nullopt,
-            /*pinned_version=*/base::Version("2.0.0")));
+            /*pinned_version=*/*IwaVersion::Create("2.0.0")));
 
     web_app::WebAppTestInstallObserver(profile()).BeginListeningAndWait(
         {GetAppId(GetIwa1WebBundleId())});
@@ -576,7 +576,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       test_update_server().CreateForceInstallPolicyEntry(
           GetIwa1WebBundleId(),
           /*update_channel=*/std::nullopt,
-          /*pinned_version=*/base::Version("5.0.0")));
+          /*pinned_version=*/*IwaVersion::Create("5.0.0")));
 
   // New version appears, it is still lower than the `pinned_version`.
   test_update_server().AddBundle(CreateIwa1Bundle("3.0.0"));
@@ -590,10 +590,11 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   // Pin IWA to lower version than the current one (downgrading by setting
   // `pinned_version` without setting `allow_downgrades` to true is impossible.
   test::AddForceInstalledIwaToPolicy(
-      profile()->GetPrefs(), test_update_server().CreateForceInstallPolicyEntry(
-                                 GetIwa1WebBundleId(),
-                                 /*update_channel=*/std::nullopt,
-                                 /*pinned_version=*/base::Version("0.5.0")));
+      profile()->GetPrefs(),
+      test_update_server().CreateForceInstallPolicyEntry(
+          GetIwa1WebBundleId(),
+          /*update_channel=*/std::nullopt,
+          /*pinned_version=*/*IwaVersion::Create("0.5.0")));
 
   task_environment().FastForwardBy(
       *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
@@ -620,7 +621,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       test_update_server().CreateForceInstallPolicyEntry(
           GetIwa1WebBundleId(),
           /*update_channel=*/std::nullopt,
-          /*pinned_version=*/base::Version("1.0.0"),
+          /*pinned_version=*/*IwaVersion::Create("1.0.0"),
           /*allow_downgrades=*/true));
 
   test_update_server().AddBundle(CreateIwa1Bundle("1.0.0"));

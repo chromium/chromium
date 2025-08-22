@@ -67,6 +67,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/common/content_features.h"
@@ -88,7 +89,7 @@ const web_package::SignedWebBundleId kWebBundleId2 =
         kPublicKeyPair2.public_key);
 
 const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
-const base::Version kPinnedVersion = base::Version("1.0.0");
+constexpr std::string kPinnedVersion = "1.0.0";
 
 constexpr char kUserMail[] = "dla@example.com";
 constexpr char kDisplayName[] = "display name";
@@ -274,10 +275,11 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
   }
 
   void SetPolicyWithOneAppWithPinnedVersion(
-      base::Version pinned_version = kPinnedVersion) {
+      std::string pinned_version = kPinnedVersion) {
     SetIWAForceInstallPolicy(base::Value::List().Append(
         update_server_mixin_.CreateForceInstallPolicyEntry(
-            kWebBundleId1, /*update_channel=*/std::nullopt, pinned_version)));
+            kWebBundleId1, /*update_channel=*/std::nullopt,
+            *IwaVersion::Create(pinned_version))));
   }
 
   void SetPolicyWithBetaChannelApp(
@@ -519,7 +521,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
 
   ASSERT_EQ(provider().registrar_unsafe().GetInstallState(kAppId1),
             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-  EXPECT_EQ(GetIsolatedWebAppVersion(kAppId1), kPinnedVersion);
+  EXPECT_EQ(GetIsolatedWebAppVersion(kAppId1), base::Version(kPinnedVersion));
 }
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,

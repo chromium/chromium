@@ -31,6 +31,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -145,7 +146,7 @@ class IwaInstallerBaseTest : public IsolatedWebAppTest {
       base::Value::List& log,
       base::test::TestFuture<IwaInstallerResult>& future,
       const std::optional<UpdateChannel>& update_channel = std::nullopt,
-      const std::optional<base::Version>& pinned_version = std::nullopt) {
+      const std::optional<IwaVersion>& pinned_version = std::nullopt) {
     IsolatedWebAppExternalInstallOptions install_options =
         IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
             test_update_server().CreateForceInstallPolicyEntry(
@@ -161,7 +162,7 @@ class IwaInstallerBaseTest : public IsolatedWebAppTest {
       const SignedWebBundleId& bundle_id,
       base::Value::List& log,
       base::test::TestFuture<IwaInstallerResult>& future,
-      const base::Version& pinned_version) {
+      const IwaVersion& pinned_version) {
     return CreateIwaInstaller(bundle_id, log, future,
                               /*update_channel=*/std::nullopt, pinned_version);
   }
@@ -169,7 +170,7 @@ class IwaInstallerBaseTest : public IsolatedWebAppTest {
   IwaInstallerResult::Type RunInstallerAndWaitForResult(
       const SignedWebBundleId& bundle_id,
       const std::optional<UpdateChannel>& update_channel = std::nullopt,
-      const std::optional<base::Version>& pinned_version = std::nullopt) {
+      const std::optional<IwaVersion>& pinned_version = std::nullopt) {
     base::test::TestFuture<IwaInstallerResult> future;
     base::Value::List log;
     std::unique_ptr<IwaInstaller> installer = CreateIwaInstaller(
@@ -180,7 +181,7 @@ class IwaInstallerBaseTest : public IsolatedWebAppTest {
 
   IwaInstallerResult::Type RunInstallerAndWaitForResult(
       const SignedWebBundleId& bundle_id,
-      const base::Version& pinned_version) {
+      const IwaVersion& pinned_version) {
     return RunInstallerAndWaitForResult(
         bundle_id, /*update_channel=*/std::nullopt, pinned_version);
   }
@@ -336,7 +337,7 @@ TEST_P(IwaInstallerTest, InstallPinnedVersion) {
                             /*update_install_page=*/false);
 
   ASSERT_EQ(RunInstallerAndWaitForResult(
-                kBundleId, /*pinned_version=*/base::Version(kVersion2)),
+                kBundleId, /*pinned_version=*/*IwaVersion::Create(kVersion2)),
             IwaInstallerResult::Type::kSuccess);
   AssertAppInstalledAtVersion(kBundleId, kVersion2);
 }
@@ -346,7 +347,7 @@ TEST_P(IwaInstallerTest, NoPinnedVersionInUpdateManifest) {
   CreateAndPublishIwaBundle(kBundleId, kVersion3);
 
   ASSERT_EQ(RunInstallerAndWaitForResult(
-                kBundleId, /*pinned_version=*/base::Version(kVersion2)),
+                kBundleId, /*pinned_version=*/*IwaVersion::Create(kVersion2)),
             IwaInstallerResult::Type::kErrorWebBundleUrlCantBeDetermined);
 }
 
@@ -357,10 +358,10 @@ TEST_P(IwaInstallerTest, InstallPinnedVersionFromBetaChannel) {
   CreateAndPublishIwaBundle(kBundleId, kVersion3, kBetaChannel,
                             /*update_install_page=*/false);
 
-  ASSERT_EQ(
-      RunInstallerAndWaitForResult(kBundleId, UpdateChannel(kBetaChannel),
-                                   /*pinned_version=*/base::Version(kVersion2)),
-      IwaInstallerResult::Type::kSuccess);
+  ASSERT_EQ(RunInstallerAndWaitForResult(
+                kBundleId, UpdateChannel(kBetaChannel),
+                /*pinned_version=*/*IwaVersion::Create(kVersion2)),
+            IwaInstallerResult::Type::kSuccess);
   AssertAppInstalledAtVersion(kBundleId, kVersion2);
 }
 
@@ -369,10 +370,10 @@ TEST_P(IwaInstallerTest, PinnedVersionIsAvailableInWrongChannel) {
   CreateAndPublishIwaBundle(kBundleId, kVersion1);
   CreateAndPublishIwaBundle(kBundleId, kVersion2);
 
-  ASSERT_EQ(
-      RunInstallerAndWaitForResult(kBundleId, UpdateChannel(kBetaChannel),
-                                   /*pinned_version=*/base::Version(kVersion1)),
-      IwaInstallerResult::Type::kErrorWebBundleUrlCantBeDetermined);
+  ASSERT_EQ(RunInstallerAndWaitForResult(
+                kBundleId, UpdateChannel(kBetaChannel),
+                /*pinned_version=*/*IwaVersion::Create(kVersion1)),
+            IwaInstallerResult::Type::kErrorWebBundleUrlCantBeDetermined);
 }
 
 // Checks enabling caching does not break the installation.
