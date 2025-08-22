@@ -306,7 +306,7 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
       !GetValuablesTable()->SetLoyaltyCards(std::move(loyalty_cards))) {
     return syncer::ModelError(
         FROM_HERE,
-        syncer::ModelError::Type::kAutofillValuableFailedToSetLoyaltyCards);
+        syncer::ModelError::Type::kAutofillValuableFailedToWriteToDatabase);
   }
 
   // Commits changes through CommitChanges(...) or through the scoped

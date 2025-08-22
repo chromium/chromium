@@ -61,7 +61,7 @@ class ModelError {
     kAutofillValuableFailedToLoadDatabase = 37,
     kAutofillValuableFailedToLoadMetadata = 38,
     kAutofillValuableFailedToReadMetadata = 39,
-    kAutofillValuableFailedToSetLoyaltyCards = 40,
+    kAutofillValuableFailedToWriteToDatabase = 40,
     kAutofillValuableUnsupportedActionType = 41,
     kAutofillWalletFailedToLoadBenefitsFromTable = 42,
     kAutofillWalletFailedToLoadDatabase = 43,

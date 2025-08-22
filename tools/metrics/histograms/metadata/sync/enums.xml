@@ -1174,7 +1174,7 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="kAutofillValuableFailedToLoadDatabase"/>
   <int value="38" label="kAutofillValuableFailedToLoadMetadata"/>
   <int value="39" label="kAutofillValuableFailedToReadMetadata"/>
-  <int value="40" label="kAutofillValuableFailedToSetLoyaltyCards"/>
+  <int value="40" label="kAutofillValuableFailedToWriteToDatabase"/>
   <int value="41" label="kAutofillValuableUnsupportedActionType"/>
   <int value="42" label="kAutofillWalletFailedToLoadBenefitsFromTable"/>
   <int value="43" label="kAutofillWalletFailedToLoadDatabase"/>
