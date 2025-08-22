@@ -143,6 +143,13 @@ public class TileGroup implements MostVisitedSites.Observer {
          */
         void onCustomTileCreation(Tile tile);
 
+        /**
+         * Called on Custom Tile reorder.
+         *
+         * @param newPos The new position of the selected tile that was moved.
+         */
+        void onCustomTileReorder(int newPos);
+
         /** Called on Custom Tile add, pin, unpin, unpin-undo, update. */
         void onCustomTileNonReorderChange();
     }
@@ -753,10 +760,15 @@ public class TileGroup implements MostVisitedSites.Observer {
         private boolean reorderCustomLinkAndUpdateOnSuccess(
                 GURL url, int newPos, Runnable onSuccessCallback) {
             // On success, onSiteSuggestionsAvailable() triggers.
+            Runnable newOnSuccessCallback =
+                    () -> {
+                        onSuccessCallback.run();
+                        mObserver.onCustomTileReorder(newPos);
+                    };
+            mPendingChanges.taskToRunAfterTileReload.add(newOnSuccessCallback);
             boolean success = mTileGroupDelegate.reorderCustomLink(url, newPos);
-            mPendingChanges.taskToRunAfterTileReload.add(onSuccessCallback);
             if (!success) {
-                mPendingChanges.taskToRunAfterTileReload.removeLastOccurrence(onSuccessCallback);
+                mPendingChanges.taskToRunAfterTileReload.removeLastOccurrence(newOnSuccessCallback);
             }
             return success;
         }

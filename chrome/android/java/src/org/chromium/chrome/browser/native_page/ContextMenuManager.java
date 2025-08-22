@@ -74,9 +74,11 @@ public class ContextMenuManager {
         int PIN_THIS_SHORTCUT = 10;
         int EDIT_SHORTCUT = 11;
         int UNPIN = 12;
-        int HIDE_ALL = 13;
+        int MOVE_UP = 13;
+        int MOVE_DOWN = 14;
+        int HIDE_ALL = 15;
 
-        int NUM_ENTRIES = 14;
+        int NUM_ENTRIES = 16;
     }
 
     private final NativePageNavigationDelegate mNavigationDelegate;
@@ -113,6 +115,12 @@ public class ContextMenuManager {
 
         /** Edits the current item. */
         void editItem();
+
+        /** Moves the current item up. */
+        void moveItemUp();
+
+        /** Moves the current item down. */
+        void moveItemDown();
 
         /**
          * @return the URL of the current item for saving offline, or null if the item can't be
@@ -171,6 +179,12 @@ public class ContextMenuManager {
 
         @Override
         public void editItem() {}
+
+        @Override
+        public void moveItemUp() {}
+
+        @Override
+        public void moveItemDown() {}
 
         @Override
         public @Nullable GURL getUrl() {
@@ -348,6 +362,8 @@ public class ContextMenuManager {
                 }
             case ContextMenuItemId.EDIT_SHORTCUT: // Fall through.
             case ContextMenuItemId.UNPIN:
+            case ContextMenuItemId.MOVE_UP:
+            case ContextMenuItemId.MOVE_DOWN:
                 return true;
             case ContextMenuItemId.ADD_TO_MY_APPS:
                 return false;
@@ -386,6 +402,10 @@ public class ContextMenuManager {
                 return R.string.contextmenu_edit_shortcut;
             case ContextMenuItemId.UNPIN:
                 return R.string.contextmenu_unpin;
+            case ContextMenuItemId.MOVE_UP:
+                return R.string.menu_item_move_up;
+            case ContextMenuItemId.MOVE_DOWN:
+                return R.string.menu_item_move_down;
             case ContextMenuItemId.HIDE_ALL:
                 return R.string.recent_tabs_hide_menu_option;
         }
@@ -445,6 +465,14 @@ public class ContextMenuManager {
             case ContextMenuItemId.UNPIN:
                 delegate.unpinItem();
                 RecordUserAction.record(mUserActionPrefix + ".ContextMenu.UnpinItem");
+                return true;
+            case ContextMenuItemId.MOVE_UP:
+                delegate.moveItemUp();
+                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.MoveItemUp");
+                return true;
+            case ContextMenuItemId.MOVE_DOWN:
+                delegate.moveItemDown();
+                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.MoveItemDown");
                 return true;
             case ContextMenuItemId.HIDE_ALL:
                 delegate.hideAllItems();

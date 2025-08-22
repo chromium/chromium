@@ -43,6 +43,7 @@ class TileInteractionDelegateImpl
     private final TileDragDelegate mTileDragDelegate;
     private final TileGroup.CustomTileModificationDelegate mCustomTileModificationDelegate;
     private final Tile mTile;
+    private final View mView;
     private final AndroidPrerenderManager mAndroidPrerenderManager;
 
     private @Nullable Runnable mOnClickRunnable;
@@ -63,11 +64,12 @@ class TileInteractionDelegateImpl
         mTileDragDelegate = tileDragDelegate;
         mCustomTileModificationDelegate = customTileModificationDelegate;
         mTile = tile;
+        mView = view;
 
-        view.setOnClickListener(this);
-        view.setOnKeyListener(this);
-        view.setOnLongClickListener(this);
-        view.setOnTouchListener(this);
+        mView.setOnClickListener(this);
+        mView.setOnKeyListener(this);
+        mView.setOnLongClickListener(this);
+        mView.setOnTouchListener(this);
 
         mAndroidPrerenderManager = AndroidPrerenderManager.getAndroidPrerenderManager();
 
@@ -220,6 +222,16 @@ class TileInteractionDelegateImpl
     }
 
     @Override
+    public void moveItemUp() {
+        mTileDragDelegate.swapTiles(mView, -1, this);
+    }
+
+    @Override
+    public void moveItemDown() {
+        mTileDragDelegate.swapTiles(mView, 1, this);
+    }
+
+    @Override
     public void editItem() {
         mCustomTileModificationDelegate.edit(mTile.getData());
     }
@@ -254,6 +266,12 @@ class TileInteractionDelegateImpl
             case ContextMenuItemId.EDIT_SHORTCUT: // Fall through.
             case ContextMenuItemId.UNPIN:
                 return isCustomizationItemSupported(/* matchIsCustomLink= */ true);
+            case ContextMenuItemId.MOVE_UP:
+                return isCustomizationItemSupported(/* matchIsCustomLink= */ true)
+                        && !mTileDragDelegate.isFirstDraggableTile(mView);
+            case ContextMenuItemId.MOVE_DOWN:
+                return isCustomizationItemSupported(/* matchIsCustomLink= */ true)
+                        && !mTileDragDelegate.isLastDraggableTile(mView);
             default:
                 return false;
         }

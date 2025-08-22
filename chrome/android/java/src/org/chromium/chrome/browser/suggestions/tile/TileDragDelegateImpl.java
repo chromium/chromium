@@ -254,6 +254,19 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
         mTileMovementForSwap = null;
     }
 
+    @Override
+    public boolean isFirstDraggableTile(View tileView) {
+        List<TileView> draggableTiles = getDraggableTileViews();
+        return !draggableTiles.isEmpty() && draggableTiles.get(0) == tileView;
+    }
+
+    @Override
+    public boolean isLastDraggableTile(View tileView) {
+        List<TileView> draggableTiles = getDraggableTileViews();
+        return !draggableTiles.isEmpty()
+                && draggableTiles.get(draggableTiles.size() - 1) == tileView;
+    }
+
     // TileDragSession.Delegate implementation.
     @Override
     public boolean isAutoScrollEnabled() {

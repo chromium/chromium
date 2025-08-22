@@ -50717,6 +50717,9 @@ should be able to be added at any place in this file.
   <suffix name="DownloadItem" label="Download a suggested item."/>
   <suffix name="EditItem" label="Open a modal dialog to edit a custom item."/>
   <suffix name="LearnMore" label="Open the learn more link for product help."/>
+  <suffix name="MoveItemDown" label="Move a custom item to the next position."/>
+  <suffix name="MoveItemUp"
+      label="Move a custom item to the previous position."/>
   <suffix name="OpenItemInIncognitoTab"
       label="Open a suggested item in an incognito tab."/>
   <suffix name="OpenItemInNewTab" label="Open a suggested item in a new tab."/>
