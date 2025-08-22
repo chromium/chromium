@@ -281,25 +281,27 @@ found in the LICENSE file.
         <item name="android:textSize">20sp</item>
     </style>
 
-    <style name="ReaderModeFontStyleButton" parent="Widget.Material3Expressive.Button.IconButton.Tonal">
+    <style name="ReaderModeFontStyleButton"
+        parent="Widget.Material3Expressive.Button.IconButton.Tonal">
         <item name="android:textAppearance">
             @style/TextAppearance.ReaderModeFontStyleButton
         </item>
     </style>
 
-    <style name="TextAppearance.ReaderModeFontStyleButton" parent="TextAppearance.Button.Text.Filled">
+    <style name="TextAppearance.ReaderModeFontStyleButton"
+        parent="TextAppearance.Button.Text.Filled">
         <item name="android:textColor">
             @color/reader_mode_prefs_font_style_button_text_color
         </item>
     </style>
 
-    <style name="TextAppearance.ReaderModePrefsFontStyleSignifier" tools:ignore="UnusedResources">
+    <style name="TextAppearance.ReaderModePrefsFontStyleSignifier">
         <item name="android:textSize">
             @dimen/reader_mode_prefs_font_style_signifier_text_size
         </item>
     </style>
 
-    <style name="TextAppearance.ReaderModePrefsFontStyleName" tools:ignore="UnusedResources">
+    <style name="TextAppearance.ReaderModePrefsFontStyleName">
         <item name="android:textSize">
             @dimen/reader_mode_prefs_font_style_name_text_size
         </item>

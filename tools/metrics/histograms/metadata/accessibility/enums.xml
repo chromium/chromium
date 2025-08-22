@@ -2308,6 +2308,18 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//components/dom_distiller/content/browser/uma_helper.h:ReaderModeEntryPoint) -->
 
+<enum name="ReaderModePrefsFontStyle">
+  <int value="0" label="Sans serif"/>
+  <int value="1" label="Serif"/>
+  <int value="2" label="Monospace"/>
+</enum>
+
+<enum name="ReaderModePrefsTheme">
+  <int value="0" label="Light"/>
+  <int value="1" label="Dark"/>
+  <int value="2" label="Sepia"/>
+</enum>
+
 <!-- LINT.IfChange(SodaLanguageCode) -->
 
 <enum name="SodaLanguageCode">

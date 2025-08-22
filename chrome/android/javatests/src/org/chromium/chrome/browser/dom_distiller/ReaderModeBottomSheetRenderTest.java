@@ -51,8 +51,8 @@ public class ReaderModeBottomSheetRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_READER_MODE)
-                    .setRevision(3)
-                    .setDescription("Added icon to the title and adjusted padding")
+                    .setRevision(4)
+                    .setDescription("Updated to use new prefs UI in the bottom sheet")
                     .build();
 
     private ReaderModeBottomSheetCoordinator mCoordinator;

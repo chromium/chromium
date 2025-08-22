@@ -11,7 +11,6 @@ import androidx.appcompat.app.AlertDialog;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -70,7 +69,7 @@ public final class DomDistillerUiUtils {
         Activity activity = ActivityUtils.getActivityFromWebContents(webContents);
         if (activity == null) return;
 
-        RecordUserAction.record("DomDistiller.Android.DistilledPagePrefsOpened");
+        ReaderModeMetrics.reportReaderModePrefsOpened();
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(activity, R.style.ThemeOverlay_BrowserUI_AlertDialog);
         builder.setView(

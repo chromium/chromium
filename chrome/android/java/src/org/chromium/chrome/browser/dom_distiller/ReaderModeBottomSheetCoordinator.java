@@ -51,8 +51,7 @@ public class ReaderModeBottomSheetCoordinator {
         mPropertyModel = new PropertyModel(ReaderModeBottomSheetProperties.ALL_KEYS);
         mPropertyModel.set(
                 ReaderModeBottomSheetProperties.CONTENT_VIEW,
-                DistilledPagePrefsView.create(
-                        mContext, mDomDistillerService.getDistilledPagePrefs()));
+                ReaderModePrefsView.create(mContext, mDomDistillerService.getDistilledPagePrefs()));
         mReaderModeBottomSheetView =
                 (ReaderModeBottomSheetView)
                         LayoutInflater.from(mContext)
@@ -80,6 +79,7 @@ public class ReaderModeBottomSheetCoordinator {
                 mBottomSheetController.getCurrentSheetContent()
                         instanceof ReaderModeBottomSheetContent;
         if (!showing) {
+            ReaderModeMetrics.reportReaderModePrefsOpened();
             showing =
                     mBottomSheetController.requestShowContent(
                             mBottomSheetContent, /* animate= */ true);
@@ -165,8 +165,7 @@ public class ReaderModeBottomSheetCoordinator {
 
         @Override
         public int getPeekHeight() {
-            return mContentView.findViewById(R.id.drag_handle).getHeight()
-                    + mContentView.findViewById(R.id.title).getHeight();
+            return ((ReaderModeBottomSheetView) mContentView).getPeekHeight();
         }
 
         @Override

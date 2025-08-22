@@ -13,6 +13,8 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,6 +25,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
@@ -41,16 +45,24 @@ public class ReaderModeBottomSheetCoordinatorTest {
 
     private ReaderModeBottomSheetCoordinator mCoordinator;
     private Activity mActivity;
+    private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mDomDistillerService.getDistilledPagePrefs()).thenReturn(mDistilledPagePrefs);
         when(mDomDistillerServiceFactoryJni.getForProfile(any())).thenReturn(mDomDistillerService);
         DomDistillerServiceFactoryJni.setInstanceForTesting(mDomDistillerServiceFactoryJni);
         mCoordinator =
                 new ReaderModeBottomSheetCoordinator(mActivity, mProfile, mBottomSheetController);
+        mUserActionTester = new UserActionTester();
+    }
+
+    @After
+    public void tearDown() {
+        mUserActionTester.tearDown();
     }
 
     @Test
@@ -59,6 +71,9 @@ public class ReaderModeBottomSheetCoordinatorTest {
 
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
         verify(mBottomSheetController, times(0)).expandSheet();
+        Assert.assertEquals(
+                1,
+                mUserActionTester.getActionCount("DomDistiller.Android.DistilledPagePrefsOpened"));
     }
 
     @Test
@@ -68,6 +83,9 @@ public class ReaderModeBottomSheetCoordinatorTest {
 
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
         verify(mBottomSheetController).expandSheet();
+        Assert.assertEquals(
+                1,
+                mUserActionTester.getActionCount("DomDistiller.Android.DistilledPagePrefsOpened"));
     }
 
     @Test
@@ -81,5 +99,8 @@ public class ReaderModeBottomSheetCoordinatorTest {
 
         // Verify that the sheet was expanded
         verify(mBottomSheetController).expandSheet();
+        Assert.assertEquals(
+                0,
+                mUserActionTester.getActionCount("DomDistiller.Android.DistilledPagePrefsOpened"));
     }
 }

@@ -23,7 +23,6 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -163,7 +162,7 @@ public class DistilledPagePrefsView extends LinearLayout
                     public void onItemSelected(
                             AdapterView<?> parent, View view, int family, long id) {
                         if (FontFamily.isKnownValue(family)) {
-                            RecordUserAction.record("DomDistiller.Android.FontFamilyChanged");
+                            ReaderModeMetrics.reportReaderModePrefsFontFamilyChanged(family);
                             mDistilledPagePrefs.setFontFamily(family);
                         }
                     }
@@ -245,7 +244,7 @@ public class DistilledPagePrefsView extends LinearLayout
         float newValue = (progress / 20f + .5f);
         setFontScaleTextView(newValue);
         if (fromUser) {
-            RecordUserAction.record("DomDistiller.Android.FontScalingChanged");
+            ReaderModeMetrics.reportReaderModePrefsFontScalingChanged(newValue);
             mDistilledPagePrefs.setFontScaling(newValue);
         }
     }
@@ -264,7 +263,7 @@ public class DistilledPagePrefsView extends LinearLayout
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        RecordUserAction.record("DomDistiller.Android.ThemeChanged");
+                        ReaderModeMetrics.reportReaderModePrefsThemeChanged(theme);
                         mDistilledPagePrefs.setUserPrefTheme(theme);
                     }
                 });

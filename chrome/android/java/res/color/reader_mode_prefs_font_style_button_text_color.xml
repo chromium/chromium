@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_checked="true" android:color="?attr/colorOnSecondaryContainer" />
+    <item android:state_checked="true"
+        android:color="?attr/colorOnSecondaryContainer" />
     <item android:state_checked="false" android:color="?attr/colorOnSurface" />
 </selector>

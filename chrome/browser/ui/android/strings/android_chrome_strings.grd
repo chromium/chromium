@@ -2992,14 +2992,23 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SANS_SERIF" desc="Title of the selector button that will change the typeface of distilled pages to use a SansSerif font.">
         Sans Serif
       </message>
+      <message name="IDS_SANS_SERIF_LOWERCASE" desc="Title of the font style selection button in reader mode preferences. Differs in capitalization from IDS_SANS_SERIF. No translation needed since this is a proper noun.">
+        Sans serif
+      </message>
       <message name="IDS_SERIF" desc="Title of the selector button that will change the typeface of distilled pages to use a Serif font.">
         Serif
       </message>
       <message name="IDS_MONOSPACE" desc="Title of the selector button that will change the typeface of distilled pages to use a Monospace font.">
         Monospace
       </message>
+      <message name="IDS_MONOSPACE_SHORTENED" desc="A shortened version of IDS_MONOSPACE, for use in UI buttons where space is limited. No translation needed since this is a proper noun.">
+        Mono
+      </message>
       <message name="IDS_TEXT_SIZE_SIGNIFIER" desc="A typical letter of the alphabet.  This is drawn on either end of a slider bar that allows the user to change the font size.  On one end, it is drawn smaller and on the other end larger.">
         A
+      </message>
+      <message name="IDS_FONT_STYLE_SIGNIFIER" desc="Uppercase and lowercase string of a typical letter of the alphabet.  This is drawn to demonstrate different font styles within the reader mode prefs. No translation needed.">
+        Aa
       </message>
 
       <!-- Add to Home screen strings -->
