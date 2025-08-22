@@ -2492,7 +2492,8 @@ using UserFeedbackDataCallback =
     // Currently displaying.
     return;
   }
-  CHECK(ShouldShowSafariImportWorkflow());
+  CHECK(ShouldShowSafariImportWorkflow(
+      self.currentInterface.browser->GetProfile()));
   SafariDataImportMainCoordinator* safariDataImportCoordinator =
       [[SafariDataImportMainCoordinator alloc]
               initFromEntryPoint:entryPoint

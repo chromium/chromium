@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/passwords/model/features.h"
 
 #import "base/feature_list.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 BASE_FEATURE(kImportPasswordsFromSafari,
              "ImportPasswordsFromSafari",
@@ -14,7 +16,17 @@ BASE_FEATURE(kPasswordManagerEnableCrowdsourcingUploads,
              "PasswordManagerEnableCrowdsourcingUploads",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool ShouldShowSafariImportWorkflow() {
+bool ShouldShowSafariImportWorkflow(ProfileIOS* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  // For the time being, managed users are not eligible for Safari Import.
+  ProfilePolicyConnector* connector = profile->GetPolicyConnector();
+  if (connector && connector->IsManaged()) {
+    return false;
+  }
+
   // Safari export is not available on iOS versions earlier than 18.2.
   if (@available(iOS 18.2, *)) {
     return base::FeatureList::IsEnabled(kImportPasswordsFromSafari);

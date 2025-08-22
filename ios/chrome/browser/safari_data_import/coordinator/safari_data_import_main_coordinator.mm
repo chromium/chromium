@@ -53,7 +53,7 @@
 }
 
 - (void)start {
-  CHECK(ShouldShowSafariImportWorkflow());
+  CHECK(ShouldShowSafariImportWorkflow(self.profile));
   _viewController = [[SafariDataImportEntryPointViewController alloc] init];
   _viewController.showReminderButton =
       _entryPoint != SafariDataImportEntryPoint::kSetting;
