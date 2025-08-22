@@ -358,6 +358,9 @@ const base::FeatureParam<bool> kSkiaGraphiteDawnBackendDebugLabels{
 const base::FeatureParam<int> kSkiaGraphiteMaxPendingRecordings{
     &kSkiaGraphite, "max_pending_recordings", 100};
 
+const base::FeatureParam<int> kSkiaGraphiteMinPathSizeForMsaa{
+    &kSkiaGraphite, "min_path_size_for_msaa", 0};
+
 #if BUILDFLAG(IS_WIN)
 // Whether the we should DumpWithoutCrashing when D3D related errors are detected.
 const base::FeatureParam<bool> kSkiaGraphiteDawnDumpWCOnD3DError{
