@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "toktrie"
-version = "1.1.2"
+version = "1.2.0"
 build = false
 autolib = false
 autobins = false
