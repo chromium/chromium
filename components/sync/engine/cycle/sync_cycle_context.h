@@ -27,7 +27,7 @@ class DataTypeRegistry;
 class ServerConnectionManager;
 
 // Default number of items a client can commit in a single message.
-static const int kDefaultMaxCommitBatchSize = 25;
+constexpr int kDefaultMaxCommitBatchSize = 25;
 
 // SyncCycleContext encapsulates the contextual information and engine
 // components specific to a SyncCycle.  Unlike the SyncCycle, the context
