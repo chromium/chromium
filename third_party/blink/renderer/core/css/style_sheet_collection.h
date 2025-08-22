@@ -128,6 +128,18 @@ class CORE_EXPORT StyleSheetCollection
   ActiveStyleSheetVector active_style_sheets_;
   ActiveStyleSheetVector pending_active_style_sheets_;
   MixinMap mixins_;
+
+  // Every time a stylesheet regenerates its list of mixins (and it is
+  // nonempty), we increment this counter. This allows us to know when
+  // we must regenerate mixin-dependent RuleSets. The special value of
+  // zero is the initial state, where the MixinMap is empty.
+  //
+  // We do not have fine-grained invalidation of mixins at this time;
+  // if any mixin changes, or if the MixinMap for any mixin-defining
+  // stylesheet is generated for another reason, all mixin-dependent
+  // RuleSets are regenerated.
+  uint64_t mixin_generation_ = 0;
+
   bool sheet_list_dirty_ = true;
   const bool is_shadow_tree_;
 };

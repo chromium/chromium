@@ -209,8 +209,10 @@ void StyleSheetCollection::PrepareUpdateActiveStyleSheets(
 
   mixins_ = MixinMap();
   for (auto& [css_sheet, rule_set] : new_active_style_sheets) {
-    mixins_.Merge(css_sheet->Contents()->ExtractMixins(medium));
+    mixins_.Merge(
+        css_sheet->Contents()->ExtractMixins(medium, mixin_generation_));
   }
+  mixins_.generation = mixin_generation_;
 
   DCHECK(pending_active_style_sheets_.empty());
   pending_active_style_sheets_ = std::move(new_active_style_sheets);

@@ -863,9 +863,10 @@ static bool ExtractMixinsFromRules(
   return found;
 }
 
-static void ExtractMixinsFromSheet(const StyleSheetContents& contents,
+static bool ExtractMixinsFromSheet(const StyleSheetContents& contents,
                                    const MediaQueryEvaluator& medium,
                                    MixinMap& mixins) {
+  bool found = false;
   for (const StyleRuleImport* import_rule : contents.ImportRules()) {
     if (!import_rule->GetStyleSheet()) {
       continue;
@@ -878,28 +879,43 @@ static void ExtractMixinsFromSheet(const StyleSheetContents& contents,
                              mixins.media_query_set_results)) {
       continue;
     }
-    ExtractMixinsFromSheet(*import_rule->GetStyleSheet(), medium, mixins);
+    found |=
+        ExtractMixinsFromSheet(*import_rule->GetStyleSheet(), medium, mixins);
   }
-  ExtractMixinsFromRules(contents.ChildRules(), medium, mixins);
+  found |= ExtractMixinsFromRules(contents.ChildRules(), medium, mixins);
+  return found;
 }
 
-MixinMap& StyleSheetContents::ExtractMixins(const MediaQueryEvaluator& medium) {
+MixinMap& StyleSheetContents::ExtractMixins(const MediaQueryEvaluator& medium,
+                                            uint64_t& mixin_generation) {
   if (has_cached_mixins_ &&
       !medium.DidResultsChange(mixins_.media_query_set_results)) {
     return mixins_;
   }
+  const bool used_to_have_at_least_one_mixin = !mixins_.mixins.empty();
   mixins_ = MixinMap();
   has_cached_mixins_ = true;
-  ExtractMixinsFromSheet(*this, medium, mixins_);
+  if (ExtractMixinsFromSheet(*this, medium, mixins_)) {
+    // We have at least one mixin.
+    ++mixin_generation;
+  } else if (used_to_have_at_least_one_mixin) {
+    // The last mixin was deleted, which is a change in itself.
+    ++mixin_generation;
+  }
   return mixins_;
 }
 
 RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium,
                                            const MixinMap& mixins) {
+  if (rule_set_ && rule_set_->DependingOnOutdatedMixins(mixins.generation)) {
+    rule_set_ = nullptr;
+    if (rule_set_diff_) {
+      rule_set_diff_->MarkUnrepresentable();
+    }
+  }
   if (rule_set_ && rule_set_->DidMediaQueryResultsChange(medium)) {
     rule_set_ = nullptr;
   }
-  // TODO(sesse): Check if mixins changed, somehow.
   if (rule_set_diff_) {
     rule_set_diff_->NewRuleSetCleared();
   }
@@ -945,7 +961,6 @@ void StyleSheetContents::StartMutation() {
 void StyleSheetContents::ClearRuleSet() {
   if (has_cached_mixins_) {
     has_cached_mixins_ = false;
-    mixins_ = MixinMap();
   }
 
   if (StyleSheetContents* parent_sheet = ParentStyleSheet()) {
@@ -954,6 +969,15 @@ void StyleSheetContents::ClearRuleSet() {
 
   if (!rule_set_) {
     return;
+  }
+
+  if (rule_set_->DependingOnMixins()) {
+    // We don't track which rules depend on mixins, and the rules
+    // themselves don't change when mixins do, so we need to disable
+    // ruleset diffing entirely in this case.
+    if (rule_set_diff_) {
+      rule_set_diff_->MarkUnrepresentable();
+    }
   }
 
   rule_set_.Clear();

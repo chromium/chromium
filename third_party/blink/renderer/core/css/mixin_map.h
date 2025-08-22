@@ -33,8 +33,13 @@ struct MixinMap {
   MediaQueryResultFlags media_query_result_flags;
   HeapVector<MediaQuerySetResult> media_query_set_results;
 
+  // See StyleSheetCollection::mixin_generation_. This is only
+  // set for the final (merged) MixinMaps for an entire scope,
+  // not when extracting mixins from a single stylesheet.
+  uint64_t generation = 0;
+
   // Add everything from “other” to this map, overwriting
-  // any mixins that may already exist.
+  // any mixins that may already exist. Does not touch “generation”.
   void Merge(const MixinMap& other);
 
   void Trace(Visitor* visitor) const {

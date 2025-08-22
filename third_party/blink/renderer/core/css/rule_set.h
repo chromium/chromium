@@ -585,6 +585,14 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   bool DidMediaQueryResultsChange(const MediaQueryEvaluator& evaluator) const;
 
+  bool DependingOnMixins() const {
+    return based_on_mixin_generation_ != std::numeric_limits<uint64_t>::max();
+  }
+  bool DependingOnOutdatedMixins(uint64_t current_mixin_generation) const {
+    return based_on_mixin_generation_ != std::numeric_limits<uint64_t>::max() &&
+           based_on_mixin_generation_ != current_mixin_generation;
+  }
+
   // We use a vector of Interval<T> to represent that rules with positions
   // between start_position (inclusive) and the next Interval<T>'s
   // start_position (exclusive) share some property:
@@ -819,6 +827,12 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // It is stored here so that we can have a variable number of them
   // (without the overhead of a Vector in each RuleData).
   Vector<uint16_t> bloom_hash_backing_;
+
+  // When creating the RuleSet, which generation of mixins (see
+  // StyleSheetContents) we used. The special initial value means that we did
+  // not see any @apply rules and thus do not need invalidation when mixins
+  // change.
+  uint64_t based_on_mixin_generation_ = std::numeric_limits<uint64_t>::max();
 
 #if DCHECK_IS_ON()
   HeapVector<RuleData> all_rules_;

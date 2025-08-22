@@ -1048,6 +1048,14 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
         features_.MutableMediaQueryResultFlags().Add(
             mixins.media_query_result_flags);
         media_query_set_results_.AppendVector(mixins.media_query_set_results);
+
+        // Mark that we are using some mixin, and which generation of mixin map
+        // it came from, so that we can invalidate if anything should change.
+        if (based_on_mixin_generation_ !=
+            std::numeric_limits<uint64_t>::max()) {
+          CHECK_EQ(based_on_mixin_generation_, mixins.generation);
+        }
+        based_on_mixin_generation_ = mixins.generation;
       }
     } else if (auto* contents_rule =
                    DynamicTo<StyleRuleContentsStatement>(rule)) {
@@ -1101,6 +1109,8 @@ void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
       GetOrAddSubLayer(cascade_layer, name);
     }
   }
+
+  based_on_mixin_generation_ = std::numeric_limits<uint64_t>::max();
 
   const HeapVector<Member<StyleRuleImport>>& import_rules =
       sheet->ImportRules();
