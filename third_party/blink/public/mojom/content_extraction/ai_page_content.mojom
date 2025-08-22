@@ -360,6 +360,12 @@ struct AIPageContentSelectOption {
   bool disabled;
 };
 
+enum AIPageContentRedactionDecision {
+  kNoRedactionNecessary,  // No redaction necessary for this input type.
+  kUnredacted_EmptyPassword,  // Empty password inputs are not redacted.
+  kRedacted_HasBeenPassword  // Is a password input or was in the past.
+};
+
 struct AIPageContentFormControlData {
   // The type of control for this form field.
   FormControlType form_control_type;
@@ -381,6 +387,9 @@ struct AIPageContentFormControlData {
 
   // Whether the field is required.
   bool is_required;
+
+// Redaction decision for form fields.
+  AIPageContentRedactionDecision redaction_decision;
 };
 
 struct AIPageContentAttributes {

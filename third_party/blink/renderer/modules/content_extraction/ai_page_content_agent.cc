@@ -324,6 +324,45 @@ bool ShouldSkipSubtree(const LayoutObject& object) {
   return false;
 }
 
+bool ShouldSkipDescendants(
+    const mojom::blink::AIPageContentNodePtr& content_node) {
+  if (!content_node) {
+    return false;
+  }
+  // If the child is an iframe, it does its own tree walk.
+  // TODO(crbug.com/405173553): Moving ProcessIframe here might simplify
+  // tree construction and keep stack depth counting in one place.
+  if (content_node->content_attributes->attribute_type ==
+      mojom::blink::AIPageContentAttributeType::kIframe) {
+    return true;
+  }
+
+  // We don't capture the SVG layout internally so there's no need to
+  // walk their tree.
+  if (content_node->content_attributes->attribute_type ==
+      mojom::blink::AIPageContentAttributeType::kSVG) {
+    return true;
+  }
+
+  // There's no layout nodes under a canvas, the content is just the
+  // canvas buffer.
+  if (content_node->content_attributes->attribute_type ==
+      mojom::blink::AIPageContentAttributeType::kCanvas) {
+    return true;
+  }
+
+  // Ensure that password editor subtrees are skipped even when the password
+  // is revealed.
+  if (content_node->content_attributes->form_control_data &&
+      content_node->content_attributes->form_control_data->redaction_decision ==
+          mojom::blink::AIPageContentRedactionDecision::
+              kRedacted_HasBeenPassword) {
+    return true;
+  }
+
+  return false;
+}
+
 void ProcessTextNode(const LayoutText& layout_text,
                      mojom::blink::AIPageContentAttributes& attributes,
                      const ComputedStyle& document_style) {
@@ -465,11 +504,28 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
   form_control_data->form_control_type = form_control_element.FormControlType();
   form_control_data->field_name = form_control_element.GetName();
   form_control_data->is_required = form_control_element.IsRequired();
+
+  // Set the default value for redaction, and override below as appropriate.
+  form_control_data->redaction_decision =
+      mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary;
+
   if (const auto* text_control_element =
           DynamicTo<TextControlElement>(form_control_element)) {
     // Don't include password values as they are sensitive.
-    if (form_control_data->form_control_type !=
-        mojom::blink::FormControlType::kInputPassword) {
+    if (const auto* input_element =
+            DynamicTo<HTMLInputElement>(text_control_element)) {
+      if (input_element->HasBeenPasswordField()) {
+        form_control_data->redaction_decision =
+            input_element->Value().empty()
+                ? mojom::blink::AIPageContentRedactionDecision::
+                      kUnredacted_EmptyPassword
+                : mojom::blink::AIPageContentRedactionDecision::
+                      kRedacted_HasBeenPassword;
+      }
+    }
+    if (form_control_data->redaction_decision !=
+        mojom::blink::AIPageContentRedactionDecision::
+            kRedacted_HasBeenPassword) {
       form_control_data->field_value = text_control_element->Value();
     }
     form_control_data->placeholder =
@@ -936,21 +992,7 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
     bool child_has_visible_content = false;
     auto child_content_node =
         MaybeGenerateContentNode(*child, child_recursion_data);
-    if (child_content_node &&
-        // If the child is an iframe, it does its own tree walk.
-        // TODO(crbug.com/405173553): Moving ProcessIframe here might simplify
-        // tree construction and keep stack depth counting in one place.
-        (child_content_node->content_attributes->attribute_type ==
-             mojom::blink::AIPageContentAttributeType::kIframe ||
-         // We don't capture the SVG layout internally so there's no need to
-         // walk their tree.
-         child_content_node->content_attributes->attribute_type ==
-             mojom::blink::AIPageContentAttributeType::kSVG ||
-         // There's no layout nodes under a canvas, the content is just the
-         // canvas buffer.
-         child_content_node->content_attributes->attribute_type ==
-             mojom::blink::AIPageContentAttributeType::kCanvas)) {
-    } else {
+    if (!ShouldSkipDescendants(child_content_node)) {
       if (child_content_node) {
         child_recursion_data.stack_depth++;
       }
