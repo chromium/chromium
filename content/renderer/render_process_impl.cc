@@ -169,10 +169,6 @@ RenderProcessImpl::RenderProcessImpl()
                           "--wasm-dynamic-tiering",
                           "--no-wasm-dynamic-tiering");
 
-    SetV8FlagIfOverridden(blink::features::kWebAssemblyJSStringBuiltins,
-                          "--experimental-wasm-imported-strings",
-                          "--no-experimental-wasm-imported-strings");
-
     SetV8FlagIfOverridden(blink::features::kJavaScriptSourcePhaseImports,
                           "--js-source-phase-imports",
                           "--no-js-source-phase-imports");

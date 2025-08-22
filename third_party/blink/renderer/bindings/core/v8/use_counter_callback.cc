@@ -351,6 +351,9 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kWasmImportedStrings:
       blink_feature = WebFeature::kV8WebAssemblyJSStringBuiltins;
       break;
+    case v8::Isolate::kWasmCustomDescriptors:
+      blink_feature = WebFeature::kV8WasmCustomDescriptors;
+      break;
     case v8::Isolate::kSourceMappingUrlMagicCommentAtSign:
       blink_feature = WebFeature::kSourceMappingUrlMagicCommentAtSign;
       break;

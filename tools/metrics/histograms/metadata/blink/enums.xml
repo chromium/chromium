@@ -6283,6 +6283,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5648" label="ComputedColumnRuleWidthWithNoneOrHiddenStyle"/>
   <int value="5649" label="ComputedOutlineWidthWithNoneOrHiddenStyle"/>
   <int value="5650" label="NavigationNavigateJavaScriptURL"/>
+  <int value="5651" label="V8WasmCustomDescriptors"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -8437,6 +8438,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="394" label="HtmlWrapperMethods"/>
   <int value="395" label="RegexpStaticProperties"/>
   <int value="396" label="JsonModules"/>
+  <int value="397" label="DRAFT_WasmCustomDescriptors"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

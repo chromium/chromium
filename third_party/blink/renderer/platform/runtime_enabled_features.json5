@@ -5337,17 +5337,19 @@
       base_feature: "WebAppEnableTranslations",
     },
     {
+      // https://chromestatus.com/feature/6024844719947776
+      name: "WebAssemblyCustomDescriptors",
+      origin_trial_feature_name: "WebAssemblyCustomDescriptors",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       // WebAssembly JS Promise Integration,
       // https://github.com/WebAssembly/js-promise-integration/blob/main/proposals/js-promise-integration
       name: "WebAssemblyJSPromiseIntegration",
       origin_trial_feature_name: "WebAssemblyJSPromiseIntegration",
       status: "experimental",
       base_feature: "none",
-    },
-    {
-      name: "WebAssemblyJSStringBuiltins",
-      origin_trial_feature_name: "WebAssemblyJSStringBuiltins",
-      status: "stable",
     },
     {
       // https://chromestatus.com/feature/5077691662073856
