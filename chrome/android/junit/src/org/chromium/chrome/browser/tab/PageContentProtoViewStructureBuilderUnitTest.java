@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.optimization_guide.PageContentProtoProviderBridge;
 import org.chromium.chrome.browser.optimization_guide.PageContentProtoProviderBridgeJni;
 import org.chromium.components.autofill.TestViewStructure;
@@ -51,6 +52,9 @@ public class PageContentProtoViewStructureBuilderUnitTest {
     @Mock private PageContentProtoProviderBridge.Natives mMockNatives;
     @Mock private WebContents mWebContents;
 
+    private static final String HISTOGRAM_NAME =
+            "Android.PageContentProtoViewStructureBuilder.Result";
+
     @Before
     public void setUp() throws Exception {
         PageContentProtoProviderBridgeJni.setInstanceForTesting(mMockNatives);
@@ -61,9 +65,12 @@ public class PageContentProtoViewStructureBuilderUnitTest {
         PageContentProtoViewStructureBuilder builder = new PageContentProtoViewStructureBuilder();
         setEmptyNativePageContentResult();
         TestViewStructure structure = new TestViewStructure();
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_NAME, false);
+
         builder.provideVirtualStructureForWebContents(structure, mWebContents);
 
         assertEquals(0, structure.getChildCount());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -84,6 +91,7 @@ public class PageContentProtoViewStructureBuilderUnitTest {
         pageContentBuilder.setRootNode(rootNode);
         setNativePageContentResult(pageContentBuilder.build());
         TestViewStructure structure = new TestViewStructure();
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_NAME, true);
 
         builder.provideVirtualStructureForWebContents(structure, mWebContents);
 
@@ -97,6 +105,7 @@ public class PageContentProtoViewStructureBuilderUnitTest {
         // set TEXT_STYLE_BOLD.
         assertEquals(ViewNode.TEXT_STYLE_BOLD, textStructureNode.getTextStyleFlags());
         assertEquals("android.widget.TextView", textStructureNode.getClassName());
+        histogramWatcher.assertExpected();
     }
 
     @Test

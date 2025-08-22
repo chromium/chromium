@@ -4217,6 +4217,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.PageContentProtoViewStructureBuilder.Result"
+    enum="BooleanSuccess" expires_after="2025-11-19">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records whether the PageContentProtoViewStructureBuilder was successful in
+    getting the page content proto and populating the virtual structure.
+    Recorded when onProvideVirtualStructure is called on ContentView when the
+    AnnotatedPageContentsVirtualStructure feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Android.PartnerCustomization.HomepageCustomizationOutcome"
     enum="PartnerCustomizationsHomepage" expires_after="2025-02-02">
   <owner>donnd@chromium.org</owner>
