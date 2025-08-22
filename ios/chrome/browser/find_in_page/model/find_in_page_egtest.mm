@@ -300,6 +300,11 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 
 // Tests that Native Find in Page works as expected for PDF documents.
 - (void)testFindInPagePDF {
+  // TODO(crbug.com/437314322): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [_helper helperTestFindInPagePDF];
 }
 

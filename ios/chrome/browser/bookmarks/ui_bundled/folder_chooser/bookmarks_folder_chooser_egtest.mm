@@ -948,6 +948,11 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testMoveFunctionalityOnMultipleFolder:KindOfTest::kLocal];
 }
 - (void)testMoveFunctionalityOnMultipleFolderAccount {
+  // TODO(crbug.com/440475697): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveFunctionalityOnMultipleFolder:KindOfTest::kAccount];
 }
@@ -1250,9 +1255,19 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
 // Tests the new folder name is committed when name editing is interrupted by
 // navigating away.
 - (void)testNewFolderNameCommittedOnNavigatingAwaySignedOut {
+  // TODO(crbug.com/440485616): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [self util_testNewFolderNameCommittedOnNavigatingAway:KindOfTest::kSignedOut];
 }
 - (void)testNewFolderNameCommittedOnNavigatingAwayLocal {
+  // TODO(crbug.com/440475041): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNewFolderNameCommittedOnNavigatingAway:KindOfTest::kLocal];
 }
