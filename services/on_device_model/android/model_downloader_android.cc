@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/functional/bind.h"
 #include "base/types/expected.h"
 #include "services/on_device_model/android/on_device_model_bridge.h"
 
@@ -16,15 +17,20 @@ namespace on_device_model {
 
 ModelDownloaderAndroid::ModelDownloaderAndroid(
     optimization_guide::proto::ModelExecutionFeature feature)
-    : java_downloader_(OnDeviceModelBridge::CreateModelDownloader(feature)) {}
+    : java_downloader_(OnDeviceModelBridge::CreateModelDownloader(feature)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  weak_ptr_ = weak_factory_.GetWeakPtr();
+}
 
 ModelDownloaderAndroid::~ModelDownloaderAndroid() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AiCoreModelDownloaderWrapper_onNativeDestroyed(env, java_downloader_);
 }
 
 void ModelDownloaderAndroid::StartDownload(
     OnDownloadCompleteCallback on_download_complete_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!on_download_complete_callback_)
       << "StartDownload() can only be called once.";
   on_download_complete_callback_ = std::move(on_download_complete_callback);
@@ -36,6 +42,16 @@ void ModelDownloaderAndroid::StartDownload(
 void ModelDownloaderAndroid::OnAvailable(
     const std::string& base_model_name,
     const std::string& base_model_version) {
+  sequence_checker_helper_.PostTask(
+      FROM_HERE, base::BindOnce(&ModelDownloaderAndroid::OnAvailableOnSequence,
+                                weak_ptr_, base_model_name,
+                                base_model_version));
+}
+
+void ModelDownloaderAndroid::OnAvailableOnSequence(
+    const std::string& base_model_name,
+    const std::string& base_model_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(on_download_complete_callback_)
       .Run(BaseModelSpec{.name = base_model_name,
                          .version = base_model_version});
@@ -43,6 +59,15 @@ void ModelDownloaderAndroid::OnAvailable(
 
 void ModelDownloaderAndroid::OnUnavailable(
     DownloadFailureReason failure_reason) {
+  sequence_checker_helper_.PostTask(
+      FROM_HERE,
+      base::BindOnce(&ModelDownloaderAndroid::OnUnavailableOnSequence, weak_ptr_,
+                     failure_reason));
+}
+
+void ModelDownloaderAndroid::OnUnavailableOnSequence(
+    DownloadFailureReason failure_reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(on_download_complete_callback_)
       .Run(base::unexpected(failure_reason));
 }

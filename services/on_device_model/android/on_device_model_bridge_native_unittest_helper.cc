@@ -66,6 +66,13 @@ void OnDeviceModelBridgeNativeUnitTestHelper::ResumeOnCompleteCallback() {
       env, java_helper_);
 }
 
+void OnDeviceModelBridgeNativeUnitTestHelper::
+    SetDownloaderCallbackOnDifferentThread() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_setDownloaderCallbackOnDifferentThread(
+      env, java_helper_);
+}
+
 void OnDeviceModelBridgeNativeUnitTestHelper::TriggerDownloaderOnUnavailable(
     ModelDownloaderAndroid::DownloadFailureReason reason) {
   JNIEnv* env = base::android::AttachCurrentThread();

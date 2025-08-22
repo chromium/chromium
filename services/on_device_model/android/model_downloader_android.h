@@ -7,8 +7,11 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "services/on_device_model/android/sequence_checker_helper.h"
 
 namespace on_device_model {
 
@@ -42,14 +45,25 @@ class ModelDownloaderAndroid {
   // available or when the download fails.
   void StartDownload(OnDownloadCompleteCallback on_download_complete_callback);
 
-  // Methods called from Java.
+  // Methods called from Java (can be called on any thread).
   void OnAvailable(const std::string& base_model_name,
                    const std::string& base_model_version);
   void OnUnavailable(DownloadFailureReason failure_reason);
 
  private:
+  void OnAvailableOnSequence(const std::string& base_model_name,
+                             const std::string& base_model_version);
+  void OnUnavailableOnSequence(DownloadFailureReason failure_reason);
+
   base::android::ScopedJavaGlobalRef<jobject> java_downloader_;
   OnDownloadCompleteCallback on_download_complete_callback_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  SequenceCheckerHelper sequence_checker_helper_;
+
+  // The weak pointer created on the main sequence.
+  base::WeakPtr<ModelDownloaderAndroid> weak_ptr_;
+  base::WeakPtrFactory<ModelDownloaderAndroid> weak_factory_{this};
 };
 
 }  // namespace on_device_model

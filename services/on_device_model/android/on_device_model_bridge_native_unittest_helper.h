@@ -32,6 +32,7 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
   void SetCompleteAsync();
   void SetCallbackOnDifferentThread();
   void ResumeOnCompleteCallback();
+  void SetDownloaderCallbackOnDifferentThread();
 
   void TriggerDownloaderOnUnavailable(
       ModelDownloaderAndroid::DownloadFailureReason reason);

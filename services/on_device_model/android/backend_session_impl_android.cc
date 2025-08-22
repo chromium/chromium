@@ -19,7 +19,6 @@
 #include "base/notimplemented.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/on_device_model/android/on_device_model_bridge.h"
@@ -38,8 +37,7 @@ BackendSessionImplAndroid::BackendSessionImplAndroid(
     on_device_model::mojom::SessionParamsPtr params)
     : java_session_(
           OnDeviceModelBridge::CreateSession(feature, std::move(params))),
-      feature_(feature),
-      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
+      feature_(feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
@@ -136,14 +134,10 @@ void BackendSessionImplAndroid::AsrAddAudioChunk(
 }
 
 void BackendSessionImplAndroid::OnResponse(const std::string& response) {
-  if (task_runner_->RunsTasksInCurrentSequence()) {
-    OnResponseOnSequence(response);
-  } else {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BackendSessionImplAndroid::OnResponseOnSequence,
-                       weak_ptr_, response));
-  }
+  sequence_checker_helper_.PostTask(
+      FROM_HERE,
+      base::BindOnce(&BackendSessionImplAndroid::OnResponseOnSequence, weak_ptr_,
+                     response));
 }
 
 void BackendSessionImplAndroid::OnResponseOnSequence(
@@ -155,14 +149,10 @@ void BackendSessionImplAndroid::OnResponseOnSequence(
 }
 
 void BackendSessionImplAndroid::OnComplete(GenerateResult generate_result) {
-  if (task_runner_->RunsTasksInCurrentSequence()) {
-    OnCompleteOnSequence(generate_result);
-  } else {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BackendSessionImplAndroid::OnCompleteOnSequence,
-                       weak_ptr_, generate_result));
-  }
+  sequence_checker_helper_.PostTask(
+      FROM_HERE,
+      base::BindOnce(&BackendSessionImplAndroid::OnCompleteOnSequence, weak_ptr_,
+                     generate_result));
 }
 
 void BackendSessionImplAndroid::OnCompleteOnSequence(

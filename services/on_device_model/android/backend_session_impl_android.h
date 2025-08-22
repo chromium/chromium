@@ -8,16 +8,12 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/backend_session.h"
-
-namespace base {
-class SequencedTaskRunner;
-}  // namespace base
+#include "services/on_device_model/android/sequence_checker_helper.h"
 
 namespace on_device_model {
 
@@ -86,9 +82,8 @@ class BackendSessionImplAndroid : public BackendSession {
   // The feature for which this session was created.
   const optimization_guide::proto::ModelExecutionFeature feature_;
 
-  // Task runner for the sequence that this object is created.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
+  SequenceCheckerHelper sequence_checker_helper_;
 
   // The weak pointer created on the main sequence.
   base::WeakPtr<BackendSessionImplAndroid> weak_ptr_;

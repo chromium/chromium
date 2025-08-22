@@ -6,7 +6,9 @@ package org.chromium.on_device_model;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** A responder for the backend to send download status. */
+/**
+ * A responder for the backend to send download status. The functions can be called from any thread.
+ */
 @NullMarked
 public interface DownloaderResponder {
     /**

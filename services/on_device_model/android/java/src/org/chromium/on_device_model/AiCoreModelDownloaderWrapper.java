@@ -18,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 class AiCoreModelDownloaderWrapper {
     private final AiCoreModelDownloaderBackend mBackend;
+    private final JniSafeCallback mJniSafeCallback = new JniSafeCallback();
 
     public AiCoreModelDownloaderWrapper(AiCoreModelDownloaderBackend backend) {
         mBackend = backend;
@@ -33,17 +34,25 @@ class AiCoreModelDownloaderWrapper {
                 new DownloaderResponder() {
                     @Override
                     public void onAvailable(String baseModelName, String baseModelVersion) {
-                        AiCoreModelDownloaderWrapperJni.get()
-                                .onAvailable(
-                                        nativeModelDownloaderAndroid,
-                                        baseModelName,
-                                        baseModelVersion);
+                        mJniSafeCallback.run(
+                                () -> {
+                                    AiCoreModelDownloaderWrapperJni.get()
+                                            .onAvailable(
+                                                    nativeModelDownloaderAndroid,
+                                                    baseModelName,
+                                                    baseModelVersion);
+                                });
                     }
 
                     @Override
                     public void onUnavailable(@DownloadFailureReason int downloadFailureReason) {
-                        AiCoreModelDownloaderWrapperJni.get()
-                                .onUnavailable(nativeModelDownloaderAndroid, downloadFailureReason);
+                        mJniSafeCallback.run(
+                                () -> {
+                                    AiCoreModelDownloaderWrapperJni.get()
+                                            .onUnavailable(
+                                                    nativeModelDownloaderAndroid,
+                                                    downloadFailureReason);
+                                });
                     }
                 };
         mBackend.startDownload(responder);
@@ -52,7 +61,7 @@ class AiCoreModelDownloaderWrapper {
     /** Called when the native downloader is destroyed. */
     @CalledByNative
     void onNativeDestroyed() {
-        mBackend.onNativeDestroyed();
+        mJniSafeCallback.onNativeDestroyed(() -> mBackend.onNativeDestroyed());
     }
 
     @NativeMethods

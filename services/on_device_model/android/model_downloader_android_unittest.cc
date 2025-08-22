@@ -68,6 +68,39 @@ TEST_F(ModelDownloaderAndroidTest, DownloadUnavailable) {
             base::unexpected(DownloadFailureReason::kUnknownError));
 }
 
+TEST_F(ModelDownloaderAndroidTest, DownloadAvailableOnDifferentThread) {
+  java_helper_.SetMockAiCoreFactory();
+
+  base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
+      future;
+  auto downloader = std::make_unique<ModelDownloaderAndroid>(kFeature);
+  java_helper_.SetDownloaderCallbackOnDifferentThread();
+
+  downloader->StartDownload(future.GetCallback());
+  java_helper_.TriggerDownloaderOnAvailable("test_model", "123");
+
+  auto result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->name, "test_model");
+  EXPECT_EQ(result->version, "123");
+}
+
+TEST_F(ModelDownloaderAndroidTest, DownloadUnavailableOnDifferentThread) {
+  java_helper_.SetMockAiCoreFactory();
+
+  base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
+      future;
+  auto downloader = std::make_unique<ModelDownloaderAndroid>(kFeature);
+  java_helper_.SetDownloaderCallbackOnDifferentThread();
+
+  downloader->StartDownload(future.GetCallback());
+  java_helper_.TriggerDownloaderOnUnavailable(
+      DownloadFailureReason::kUnknownError);
+
+  EXPECT_EQ(future.Get(),
+            base::unexpected(DownloadFailureReason::kUnknownError));
+}
+
 TEST_F(ModelDownloaderAndroidTest, NativeDownloaderDeletionIsSafe) {
   java_helper_.SetMockAiCoreFactory();
 
