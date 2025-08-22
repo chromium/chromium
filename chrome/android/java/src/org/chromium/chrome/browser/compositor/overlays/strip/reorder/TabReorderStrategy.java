@@ -264,6 +264,11 @@ public class TabReorderStrategy extends ReorderStrategyBase {
                         : StripLayoutUtils.notRelatedAndEitherTabInGroup(
                                 mTabGroupModelFilter, curTab, adjTab);
 
+        // Do not allow reorder between pinned and unpinned tabs.
+        boolean curTabPinned = curTab != null && curTab.getIsPinned();
+        boolean adjTabPinned = adjTab != null && adjTab.getIsPinned();
+        if (curTabPinned != adjTabPinned) return false;
+
         // Case A: Not interacting with tab groups.
         if (!mayDragInOrOutOfGroup) {
             if (adjTab == null || Math.abs(offset) <= getTabSwapThreshold()) return false;
