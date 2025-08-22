@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/public/provider/chrome/browser/glow_effect/glow_effect_api.h"
 
 namespace {
 /// The reuse identifier for the image cells in the carousel.
@@ -76,6 +77,10 @@ const CGFloat kAIMButtonSymbolPointSize = 12.0f;
 const CGFloat kGenericButtonWidth = 24.0f;
 /// The height of the buttons created with `createButtonWithImage:`.
 const CGFloat kGenericButtonHeight = 32.0f;
+/// The duration for the glow effect.
+const CGFloat kGlowEffectDuration = 1.0f;
+/// The width of the glow effect border.
+const CGFloat kGlowEffectWidth = 4.0f;
 }
 
 @interface AIMPrototypeViewController () <UITextViewDelegate>
@@ -104,6 +109,8 @@ const CGFloat kGenericButtonHeight = 32.0f;
   UIButton* _aimButton;
   /// Whether the AI mode is enabled.
   BOOL _aiModeEnabled;
+  /// The glow effect around the input plate container.
+  UIView<GlowEffect>* _glowEffectView;
 }
 
 /// AIMPrototypeAnimationContextProvider
@@ -139,6 +146,16 @@ const CGFloat kGenericButtonHeight = 32.0f;
   _inputPlateContainerView.layer.shadowRadius = kInputPlateShadowRadius;
   _inputPlateContainerView.layer.shadowOffset = CGSizeZero;
   [self.view addSubview:_inputPlateContainerView];
+
+  _glowEffectView = ios::provider::CreateGlowEffect(
+      CGRectZero, kInputPlateCornerRadius, kGlowEffectWidth);
+  if (_glowEffectView) {
+    _glowEffectView.translatesAutoresizingMaskIntoConstraints = NO;
+    _glowEffectView.userInteractionEnabled = NO;
+    [self.view insertSubview:_glowEffectView
+                belowSubview:_inputPlateContainerView];
+    AddSameConstraints(_inputPlateContainerView, _glowEffectView);
+  }
 
   // Text view
   _textView = [[UITextView alloc] init];
@@ -456,6 +473,16 @@ const CGFloat kGenericButtonHeight = 32.0f;
   _aiModeEnabled = !_aiModeEnabled;
   [self updateAIMButtonAppearance];
   [self.mutator setAIModeEnabled:_aiModeEnabled];
+
+  if (_aiModeEnabled && _glowEffectView) {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                             selector:@selector(stopGlowEffect)
+                                               object:nil];
+    [_glowEffectView startGlow];
+    [self performSelector:@selector(stopGlowEffect)
+               withObject:nil
+               afterDelay:kGlowEffectDuration];
+  }
 }
 
 - (void)plusButtonTouchDown {
@@ -468,6 +495,10 @@ const CGFloat kGenericButtonHeight = 32.0f;
 
 - (void)sendButtonTapped {
   [self.mutator sendText:_textView.text];
+}
+
+- (void)stopGlowEffect {
+  [_glowEffectView stopGlow];
 }
 
 #pragma mark - Private
