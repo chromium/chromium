@@ -971,7 +971,7 @@ TEST_F(MdnsResponderTest, AnnouncementRetriedAfterSendFailure) {
         sockets->push_back(std::move(socket));
       };
   EXPECT_CALL(failing_socket_factory_, CreateSockets(_))
-      .WillOnce(Invoke(create_send_failing_socket));
+      .WillOnce(create_send_failing_socket);
   Reset(true /* use_failing_socket_factory */);
   const auto& addr = kPublicAddrs[0];
   std::string expected_announcement =
@@ -1331,7 +1331,7 @@ TEST_F(MdnsResponderTest, ManagerCanRestartAfterAllSocketHandlersFailToRead) {
         sockets->push_back(std::move(socket));
       };
   EXPECT_CALL(failing_socket_factory_, CreateSockets(_))
-      .WillOnce(Invoke(create_read_failing_socket));
+      .WillOnce(create_read_failing_socket);
   Reset(true /* use_failing_socket_factory */);
   // Called when the manager restarts. The mocked CreateSockets() by default
   // returns an empty vector of sockets, thus failing the restart again.
@@ -1358,7 +1358,7 @@ TEST_F(MdnsResponderTest, IncompleteSendBlocksFollowingSends) {
         sockets->push_back(std::move(socket));
       };
   EXPECT_CALL(failing_socket_factory_, CreateSockets(_))
-      .WillOnce(Invoke(create_send_blocking_socket));
+      .WillOnce(create_send_blocking_socket);
   Reset(true /* use_failing_socket_factory */);
 
   const auto& addr1 = kPublicAddrs[0];

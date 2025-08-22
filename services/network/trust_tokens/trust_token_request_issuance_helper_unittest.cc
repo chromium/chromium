@@ -44,7 +44,6 @@ namespace {
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::Property;

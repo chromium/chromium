@@ -32,7 +32,6 @@
 
 using testing::_;
 using testing::AnyNumber;
-using testing::Invoke;
 using testing::Return;
 
 using base::trace_event::MemoryAllocatorDump;
@@ -83,10 +82,8 @@ class MockMemoryDumpProvider : public MemoryDumpProvider {
 
   MockMemoryDumpProvider() : enable_mock_destructor(false) {
     ON_CALL(*this, OnMemoryDump(_, _))
-        .WillByDefault(
-            Invoke([](const MemoryDumpArgs&, ProcessMemoryDump* pmd) -> bool {
-              return true;
-            }));
+        .WillByDefault([](const MemoryDumpArgs&,
+                          ProcessMemoryDump* pmd) -> bool { return true; });
   }
 
   ~MockMemoryDumpProvider() override {
@@ -317,14 +314,14 @@ TEST_F(MemoryTracingIntegrationTest, TestBackgroundTracingSetup) {
     testing::InSequence sequence;
     EXPECT_CALL(*mdp, OnMemoryDump(IsBackgroundDump(), _))
         .Times(3)
-        .WillRepeatedly(Invoke(
-            [](const MemoryDumpArgs&, ProcessMemoryDump*) { return true; }));
+        .WillRepeatedly(
+            [](const MemoryDumpArgs&, ProcessMemoryDump*) { return true; });
     EXPECT_CALL(*mdp, OnMemoryDump(IsBackgroundDump(), _))
-        .WillOnce(Invoke([test_task_runner, quit_closure](const MemoryDumpArgs&,
-                                                          ProcessMemoryDump*) {
+        .WillOnce([test_task_runner, quit_closure](const MemoryDumpArgs&,
+                                                   ProcessMemoryDump*) {
           test_task_runner->PostTask(FROM_HERE, quit_closure);
           return true;
-        }));
+        });
     EXPECT_CALL(*mdp, OnMemoryDump(IsBackgroundDump(), _)).Times(AnyNumber());
   }
 
@@ -437,11 +434,11 @@ TEST_F(MemoryTracingIntegrationTest, PeriodicDumpingWithMultipleModes) {
   EXPECT_CALL(*mdp, OnMemoryDump(IsDetailedDump(), _));
   EXPECT_CALL(*mdp, OnMemoryDump(IsLightDump(), _)).Times(kHeavyDumpRate - 2);
   EXPECT_CALL(*mdp, OnMemoryDump(IsLightDump(), _))
-      .WillOnce(Invoke([test_task_runner, quit_closure](const MemoryDumpArgs&,
-                                                        ProcessMemoryDump*) {
+      .WillOnce([test_task_runner, quit_closure](const MemoryDumpArgs&,
+                                                 ProcessMemoryDump*) {
         test_task_runner->PostTask(FROM_HERE, quit_closure);
         return true;
-      }));
+      });
 
   // Swallow all the final spurious calls until tracing gets disabled.
   EXPECT_CALL(*mdp, OnMemoryDump(_, _)).Times(AnyNumber());

@@ -26,7 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::Mock;
 using testing::SaveArg;
@@ -545,11 +544,11 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 
   {
     EXPECT_CALL(mock_device_, DoGetPhotoState(_))
-        .WillOnce(Invoke(
+        .WillOnce(
             [](media::VideoCaptureDevice::GetPhotoStateCallback* callback) {
               media::mojom::PhotoStatePtr state = mojo::CreateEmptyPhotoState();
               std::move(*callback).Run(std::move(state));
-            }));
+            });
     base::RunLoop run_loop;
     subscription_1_->GetPhotoState(base::BindOnce(
         [](base::RunLoop* run_loop, media::mojom::PhotoStatePtr state) {
@@ -562,12 +561,12 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 
   {
     EXPECT_CALL(mock_device_, DoSetPhotoOptions(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [](media::mojom::PhotoSettingsPtr* settings,
                media::VideoCaptureDevice::SetPhotoOptionsCallback* callback) {
               media::mojom::BlobPtr blob = media::mojom::Blob::New();
               std::move(*callback).Run(true);
-            }));
+            });
     media::mojom::PhotoSettingsPtr settings =
         media::mojom::PhotoSettings::New();
     base::RunLoop run_loop;
@@ -583,11 +582,10 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 
   {
     EXPECT_CALL(mock_device_, DoTakePhoto(_))
-        .WillOnce(
-            Invoke([](media::VideoCaptureDevice::TakePhotoCallback* callback) {
-              media::mojom::BlobPtr blob = media::mojom::Blob::New();
-              std::move(*callback).Run(std::move(blob));
-            }));
+        .WillOnce([](media::VideoCaptureDevice::TakePhotoCallback* callback) {
+          media::mojom::BlobPtr blob = media::mojom::Blob::New();
+          std::move(*callback).Run(std::move(blob));
+        });
     base::RunLoop run_loop;
     subscription_1_->TakePhoto(
         base::BindOnce([](base::RunLoop* run_loop,
@@ -604,11 +602,11 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 
   {
     EXPECT_CALL(mock_device_, DoGetPhotoState(_))
-        .WillOnce(Invoke(
+        .WillOnce(
             [](media::VideoCaptureDevice::GetPhotoStateCallback* callback) {
               media::mojom::PhotoStatePtr state = mojo::CreateEmptyPhotoState();
               std::move(*callback).Run(std::move(state));
-            }));
+            });
     base::RunLoop run_loop;
     subscription_1_->GetPhotoState(base::BindOnce(
         [](base::RunLoop* run_loop, media::mojom::PhotoStatePtr state) {
@@ -621,12 +619,12 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 
   {
     EXPECT_CALL(mock_device_, DoSetPhotoOptions(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [](media::mojom::PhotoSettingsPtr* settings,
                media::VideoCaptureDevice::SetPhotoOptionsCallback* callback) {
               media::mojom::BlobPtr blob = media::mojom::Blob::New();
               std::move(*callback).Run(true);
-            }));
+            });
     media::mojom::PhotoSettingsPtr settings =
         media::mojom::PhotoSettings::New();
     base::RunLoop run_loop;
@@ -642,11 +640,10 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 
   {
     EXPECT_CALL(mock_device_, DoTakePhoto(_))
-        .WillOnce(
-            Invoke([](media::VideoCaptureDevice::TakePhotoCallback* callback) {
-              media::mojom::BlobPtr blob = media::mojom::Blob::New();
-              std::move(*callback).Run(std::move(blob));
-            }));
+        .WillOnce([](media::VideoCaptureDevice::TakePhotoCallback* callback) {
+          media::mojom::BlobPtr blob = media::mojom::Blob::New();
+          std::move(*callback).Run(std::move(blob));
+        });
     base::RunLoop run_loop;
     subscription_1_->TakePhoto(
         base::BindOnce([](base::RunLoop* run_loop,
@@ -658,11 +655,11 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 
   {
     EXPECT_CALL(mock_device_, DoGetPhotoState(_))
-        .WillOnce(Invoke(
+        .WillOnce(
             [](media::VideoCaptureDevice::GetPhotoStateCallback* callback) {
               media::mojom::PhotoStatePtr state = mojo::CreateEmptyPhotoState();
               std::move(*callback).Run(std::move(state));
-            }));
+            });
     base::RunLoop run_loop;
     subscription_2_->GetPhotoState(base::BindOnce(
         [](base::RunLoop* run_loop, media::mojom::PhotoStatePtr state) {
@@ -675,12 +672,12 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 
   {
     EXPECT_CALL(mock_device_, DoSetPhotoOptions(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [](media::mojom::PhotoSettingsPtr* settings,
                media::VideoCaptureDevice::SetPhotoOptionsCallback* callback) {
               media::mojom::BlobPtr blob = media::mojom::Blob::New();
               std::move(*callback).Run(true);
-            }));
+            });
     media::mojom::PhotoSettingsPtr settings =
         media::mojom::PhotoSettings::New();
     base::RunLoop run_loop;
@@ -696,11 +693,10 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 
   {
     EXPECT_CALL(mock_device_, DoTakePhoto(_))
-        .WillOnce(
-            Invoke([](media::VideoCaptureDevice::TakePhotoCallback* callback) {
-              media::mojom::BlobPtr blob = media::mojom::Blob::New();
-              std::move(*callback).Run(std::move(blob));
-            }));
+        .WillOnce([](media::VideoCaptureDevice::TakePhotoCallback* callback) {
+          media::mojom::BlobPtr blob = media::mojom::Blob::New();
+          std::move(*callback).Run(std::move(blob));
+        });
     base::RunLoop run_loop;
     subscription_2_->TakePhoto(
         base::BindOnce([](base::RunLoop* run_loop,

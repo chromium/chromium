@@ -20,7 +20,6 @@
 
 using testing::_;
 using testing::AtLeast;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 
 namespace video_capture {
@@ -159,11 +158,10 @@ TEST_F(FakeVideoCaptureDeviceTest, BuffersGetRetiredWhenDeviceIsStopped) {
   MockVideoFrameHandler video_frame_handler(
       handler_remote.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(video_frame_handler, DoOnNewBuffer(_, _))
-      .WillRepeatedly(
-          Invoke([&known_buffer_ids](int32_t buffer_id,
-                                     media::mojom::VideoBufferHandlePtr*) {
-            known_buffer_ids.push_back(buffer_id);
-          }));
+      .WillRepeatedly([&known_buffer_ids](int32_t buffer_id,
+                                          media::mojom::VideoBufferHandlePtr*) {
+        known_buffer_ids.push_back(buffer_id);
+      });
   EXPECT_CALL(video_frame_handler, DoOnFrameReadyInBuffer(_, _, _))
       .WillRepeatedly(
           InvokeWithoutArgs([&wait_for_frames_loop, &num_frames_arrived]() {
@@ -191,15 +189,15 @@ TEST_F(FakeVideoCaptureDeviceTest, BuffersGetRetiredWhenDeviceIsStopped) {
 
   base::RunLoop wait_for_on_stopped_loop;
   EXPECT_CALL(video_frame_handler, DoOnBufferRetired(_))
-      .WillRepeatedly(Invoke([&known_buffer_ids](int32_t buffer_id) {
+      .WillRepeatedly([&known_buffer_ids](int32_t buffer_id) {
         auto iter = std::ranges::find(known_buffer_ids, buffer_id);
         ASSERT_TRUE(iter != known_buffer_ids.end());
         known_buffer_ids.erase(iter);
-      }));
+      });
 
   EXPECT_CALL(video_frame_handler, OnStopped())
-      .WillOnce(Invoke(
-          [&wait_for_on_stopped_loop]() { wait_for_on_stopped_loop.Quit(); }));
+      .WillOnce(
+          [&wait_for_on_stopped_loop]() { wait_for_on_stopped_loop.Quit(); });
 
   // Stop the device
   subscription.reset();

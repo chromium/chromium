@@ -61,7 +61,6 @@ using ::base::trace_event::TraceLog;
 using ::perfetto::protos::TracePacket;
 using ::testing::_;
 using ::testing::AtLeast;
-using ::testing::Invoke;
 using ::testing::Return;
 using PacketVector =
     std::vector<std::unique_ptr<perfetto::protos::TracePacket>>;
@@ -330,11 +329,11 @@ TEST_F(TracingSampleProfilerTest, SampleLoaderLockOnMainThread) {
   bool lock_held = false;
   size_t call_count = 0;
   EXPECT_CALL(mock_loader_lock_sampler_, IsLoaderLockHeld())
-      .WillRepeatedly(Invoke([&lock_held, &call_count]() {
+      .WillRepeatedly([&lock_held, &call_count]() {
         ++call_count;
         lock_held = !lock_held;
         return lock_held;
-      }));
+      });
 
   auto profiler = TracingSamplerProfiler::CreateOnMainThread();
   BeginTrace();

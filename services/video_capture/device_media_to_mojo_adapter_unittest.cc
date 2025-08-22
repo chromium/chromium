@@ -16,7 +16,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Invoke;
 using testing::_;
 
 namespace video_capture {
@@ -64,13 +63,13 @@ TEST_F(DeviceMediaToMojoAdapterTest,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_device_ptr_, DoAllocateAndStart(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [](const media::VideoCaptureParams& params,
                std::unique_ptr<media::VideoCaptureDevice::Client>* client) {
               (*client)->OnStarted();
-            }));
+            });
     EXPECT_CALL(*mock_video_frame_handler_, OnStarted())
-        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
 
     const media::VideoCaptureParams kArbitrarySettings;
     adapter_->Start(kArbitrarySettings, std::move(video_frame_handler_));
@@ -79,7 +78,7 @@ TEST_F(DeviceMediaToMojoAdapterTest,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_device_ptr_, DoStopAndDeAllocate())
-        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     mock_video_frame_handler_.reset();
     run_loop.Run();
   }
@@ -94,13 +93,13 @@ TEST_F(DeviceMediaToMojoAdapterTest,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_device_ptr_, DoAllocateAndStart(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [](const media::VideoCaptureParams& params,
                std::unique_ptr<media::VideoCaptureDevice::Client>* client) {
               (*client)->OnStarted();
-            }));
+            });
     EXPECT_CALL(*mock_video_frame_handler_, OnStarted())
-        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
 
     const media::VideoCaptureParams kArbitrarySettings;
     adapter_->Start(kArbitrarySettings, std::move(video_frame_handler_));
