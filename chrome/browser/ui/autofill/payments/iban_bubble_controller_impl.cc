@@ -7,11 +7,13 @@
 #include <string>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -23,6 +25,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -53,9 +56,27 @@ void IbanBubbleControllerImpl::OfferLocalSave(
     return;
   }
 
+  const bool bubble_manager_enabled = base::FeatureList::IsEnabled(
+      features::kAutofillShowBubblesBasedOnPriorities);
+
+  if (bubble_manager_enabled) {
+    auto* manager = BubbleManager::GetForWebContents(web_contents());
+    if (!manager || manager->HasPendingBubble(*this)) {
+      // Early return if a pre-existing of similar type is in the queue or the
+      // manager does not exist.
+      return;
+    }
+  }
+
   SetupLocalSave(iban, std::move(save_iban_prompt_callback));
   if (should_show_prompt) {
-    ShowBubble();
+    if (bubble_manager_enabled) {
+      if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
+        manager->RequestShowController(*this);
+      }
+    } else {
+      ShowBubble();
+    }
   } else {
     ShowIconOnly();
   }
@@ -72,10 +93,28 @@ void IbanBubbleControllerImpl::OfferUploadSave(
     return;
   }
 
+  const bool bubble_manager_enabled = base::FeatureList::IsEnabled(
+      features::kAutofillShowBubblesBasedOnPriorities);
+
+  if (bubble_manager_enabled) {
+    auto* manager = BubbleManager::GetForWebContents(web_contents());
+    if (!manager || manager->HasPendingBubble(*this)) {
+      // Early return if a pre-existing of similar type is in the queue or the
+      // manager does not exist.
+      return;
+    }
+  }
+
   SetupUploadSave(iban, std::move(legal_message_lines),
                   std::move(save_iban_prompt_callback));
   if (should_show_prompt) {
-    ShowBubble();
+    if (bubble_manager_enabled) {
+      if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
+        manager->RequestShowController(*this);
+      }
+    } else {
+      ShowBubble();
+    }
   } else {
     ShowIconOnly();
   }
