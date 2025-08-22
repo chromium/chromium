@@ -41,7 +41,7 @@
 <translation id="1306130176943817227">يتعذر الحذف. العنصر قيد الاستخدام.</translation>
 <translation id="1307931752636661898">‏يتعذّر عرض ملفات نظام التشغيل Linux</translation>
 <translation id="1313405956111467313">ضبط تلقائي للخادم الوكيل</translation>
-<translation id="134645005685694099">لا تتوفّر مساحة تخزين كافية على جهازك لتظل مزامنة الملفات مفعّلة. ولن تتم مزامنة الملفات الجديدة تلقائيًا.</translation>
+<translation id="134645005685694099">لا تتوفّر مساحة تخزين كافية على جهازك لإبقاء مزامنة الملفات مفعّلة. ولن تتم مزامنة الملفات الجديدة تلقائيًا.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">الملف أو الدليل غير قابل للاستخدام.</translation>
 <translation id="1363028406613469049">تتبّع</translation>
@@ -257,7 +257,7 @@
 <translation id="3083975830683400843">‏أجهزة Chromebit</translation>
 <translation id="3085752524577180175">‏مضيف SOCKS</translation>
 <translation id="3104793765551262433">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة %<ph name="SIGNAL_STRENGTH" />، تم حظر هذه الشبكة من قِبَل المشرف، التفاصيل</translation>
-<translation id="3113592018909187986">يتبقى لديك محاولة واحدة. لن تتمكّن من استخدام هذه الشبكة إلى أن يتم إعداد رقم تعريف شخصي جديد.</translation>
+<translation id="3113592018909187986">يتبقى لديك محاولة واحدة. لن يُسمح لك باستخدام هذه الشبكة إلى أن يتم إعداد رقم تعريف شخصي جديد.</translation>
 <translation id="3124404833828281817">شخص مستغرق في أحلام اليقظة</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">رقم التعريف الشخصي غير صحيح. يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
@@ -844,7 +844,7 @@
 <translation id="7547780573915868306">الليتوانية</translation>
 <translation id="7547811415869834682">الهولندية</translation>
 <translation id="7551643184018910560">تثبيت في الرف</translation>
-<translation id="7553492409867692754">‏يمكنك منح التطبيقات التي تعمل بنظام التشغيل Linux الإذن للوصول إلى الملفات في مجلد <ph name="FOLDER_NAME" />.</translation>
+<translation id="7553492409867692754">‏يمكنك منح التطبيقات التي تعمل بنظام التشغيل Linux الإذن للوصول إلى الملفات في مجلد <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">جهازك غير متصل بالإنترنت حاليًا. سيتم استئناف مزامنة الملفات بعدما يتصل جهازك بالإنترنت.</translation>
 <translation id="7589661784326793847">انتظر قليلاً</translation>
 <translation id="7600126690270271294">الصربية</translation>
@@ -938,7 +938,7 @@
 <translation id="8175799081768705361">‏جارٍ مزامنة <ph name="NUMBER_OF_FILES_SYNCING" /> ملف على Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">طراز الجهاز</translation>
-<translation id="8223479393428528563">لحفظ هذه الملفات بلا اتصال، عليك العودة للاتصال انقر بزر الماوس الأيمن على الملفات، وحدد خيار <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8223479393428528563">لحفظ هذه الملفات لاستخدامها بلا إنترنت، يمكنك الاتصال بالإنترنت مجددًا والنقر بزر الماوس الأيمن على الملفات ثم تحديد الخيار "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
 <translation id="8241139360630443550">عرض مساحة التخزين</translation>
 <translation id="8249296373107784235">إلغاء</translation>
 <translation id="8250690786522693009">اللاتينية</translation>
@@ -984,7 +984,7 @@
 <translation id="8463494891489624050">‏الفيتنامية باستخدام لوحة مفاتيح VIQR</translation>
 <translation id="8475647382427415476">‏تعذر على Google Drive مزامنة "<ph name="FILENAME" />" في الوقت الحالي. وسيعيد Google Drive المحاولة لاحقًا.</translation>
 <translation id="8477649328507734757">دوران</translation>
-<translation id="8484284835977497781">اختَر صورة مِن بين صورك الأخيرة.</translation>
+<translation id="8484284835977497781">يمكنك اختيار صورة مِن بين صورك الأخيرة.</translation>
 <translation id="8487700953926739672">التوفر بلا إنترنت</translation>
 <translation id="8492972329130824181">الشبكة المنزلية غير متوفّرة. وللاتصال بالشبكة، يجب تفعيل ميزة تجوال بيانات الجوَّال.</translation>
 <translation id="8499098729323186194">جارٍ استخراج <ph name="NUMBER_OF_ITEMS" /> عنصر...</translation>
@@ -1086,7 +1086,7 @@
 <translation id="954194396377670556">تمنع سياسة المشرف ما يلي:</translation>
 <translation id="965477715979482472">الإنجليزية (جنوب أفريقيا)</translation>
 <translation id="976666271385981812">جارٍ نقل <ph name="NUMBER_OF_ITEMS" /> عنصر إلى "المهملات"…</translation>
-<translation id="981121421437150478">بلا اتصال</translation>
+<translation id="981121421437150478">بلا إنترنت</translation>
 <translation id="988685240266037636">يتوفَّر ملف باسم "<ph name="FILE_NAME" />" مسبقًا. هل تريد استبداله؟</translation>
 <translation id="992401651319295351">يتبقى لديك <ph name="RETRIES" /> محاولة. لن يُسمح لك باستخدام هذه الشبكة إلى أن يتم إعداد رقم تعريف شخصي جديد.</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> ميغابايت</translation>

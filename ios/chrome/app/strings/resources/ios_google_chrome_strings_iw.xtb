@@ -8,7 +8,7 @@
 <translation id="1158134713295836892">‏‫Gemini ב-Chrome</translation>
 <translation id="1166460004393506534">‏מחיקה של נתוני הגלישה ב-Chrome</translation>
 <translation id="1179527450541388808">‏אפשר לגשת מהר יותר ל-Chrome דרך ה-Dock במסך הבית של האייפד.</translation>
-<translation id="1180362651362502943">‏המשך השימוש בנתוני Chrome בחשבון Google שלך</translation>
+<translation id="1180362651362502943">‏המשך את השימוש בנתוני Chrome בחשבון Google שלך</translation>
 <translation id="1200396280085622191">‏שימוש ב-Chrome בכל פעם שלוחצים על קישורים בהודעות ובאפליקציות אחרות.</translation>
 <translation id="1229222343402087523">‏חיפוש ${searchPhrase} ב-Chrome</translation>
 <translation id="1237769345474105984">‏מ-Chrome</translation>
@@ -65,7 +65,7 @@
 <translation id="2427791862912929107">‏דפדפן Chrome כולל תכונות שעוזרות לנהל את נתוני האינטרנט ואת מהירות הטעינה של דפי אינטרנט.
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chrome במשך דקה ({THRESHOLD}). זה יכול לכלול את נתוני ההיסטוריה והמילוי האוטומטי.}one{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chrome במשך {THRESHOLD} דקות. זה יכול לכלול את נתוני ההיסטוריה והמילוי האוטומטי.}two{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chrome במשך {THRESHOLD} דקות. זה יכול לכלול את נתוני ההיסטוריה והמילוי האוטומטי.}other{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chrome במשך {THRESHOLD} דקות. זה יכול לכלול את נתוני ההיסטוריה והמילוי האוטומטי.}}</translation>
-<translation id="2561231791489583059">‏כדאי להשתמש ב-Chrome כדפדפן ברירת המחדל כדי ליהנות מהגנה מפני אתרים מסוכנים ולשמור על אבטחת הסיסמאות</translation>
+<translation id="2561231791489583059">‏מגדירים את Chrome כדפדפן ברירת המחדל ונהנים מהגנה מאתרים מסוכנים ושמירה על הסיסמאות מאובטחות</translation>
 <translation id="2574249610672786438">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome, צריך להיכנס לחשבון בכל המכשירים</translation>
 <translation id="2576431527583832481">‏‫Chrome ממשיך להשתפר! קיימת גירסה חדשה.</translation>
 <translation id="257708665678654955">‏האם ברצונך ש-Google Chrome יציע בפעם הבאה לתרגם דפים ב-<ph name="LANGUAGE_NAME" /> מאתר זה?</translation>
@@ -142,7 +142,7 @@
 <translation id="4819268619367838612">‏כדי לעזור בשיפור האפליקציה, Chrome ישלח נתוני שימוש וקריסות אל Google. <ph name="BEGIN_LINK" />ניהול<ph name="END_LINK" /></translation>
 <translation id="4830799082179398588">‏להגדיר את Chrome כדפדפן ברירת המחדל?</translation>
 <translation id="484033449593719797">‏אין תמיכה ב-Chrome בטא</translation>
-<translation id="4840404732697892756">‏למנהל הסיסמאות של Google יש אפשרות לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
+<translation id="4840404732697892756">‏למנהל הסיסמאות של Google יש אפשרות לבדוק את הסיסמאות שלך כשנכנסים באמצעות חשבון Google.</translation>
 <translation id="4903674399067644695">‏בכרטיס הזה מוצגות הצעות שיעזרו לך ליהנות מהמיטב של Chrome.</translation>
 <translation id="49200511069271369">‏הארגון שלך, <ph name="DOMAIN" />, מנהל את החשבון שבחרת להיכנס אליו ואת אופן השימוש ב-Chrome. לאדמין יש אפשרות להגדיר תכונות מסוימות או להגביל אותן.</translation>
 <translation id="4925322001044117929">‏שימוש ב-Chrome באייפד כברירת מחדל</translation>

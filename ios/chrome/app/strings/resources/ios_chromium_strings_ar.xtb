@@ -43,7 +43,7 @@
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">‏"خرائط Google" في Chromium</translation>
 <translation id="1867772173333403444">‏4- اختيار Chromium</translation>
-<translation id="2006345422933397527">‏تعذّر على Chromium البحث عن تحديثات. يُرجى التحقُّق من اتصال الإنترنت.</translation>
+<translation id="2006345422933397527">‏تعذّر على Chromium البحث عن تحديثات. يُرجى التحقق من الاتصال بالإنترنت.</translation>
 <translation id="2042889939382983733">‏عرض سجلّ Chromium</translation>
 <translation id="2052320862053429062">‏يتحقَّق Chromium بانتظام من كلمات مرورك ويقارنها بقوائم تم نشرها على الإنترنت. أثناء هذه العملية، يتم تشفير كلمات المرور وأسماء المستخدمين حتى لا يتمكّن أي طرف آخر من الاطّلاع عليها، بما في ذلك Google.</translation>
 <translation id="2059365270911640413">‏إنهاء عملية إعداد Chromium</translation>
@@ -150,7 +150,7 @@
 <translation id="4578500311756617174">‏نصيحة من Chromium: اضبط Chromium كمتصفِّح تلقائي</translation>
 <translation id="458786853569524949">‏يمكنك الآن استخدام Chromium في أي وقت تنقر فيه على الروابط في الرسائل الإلكترونية والمستندات والتطبيقات الأخرى.</translation>
 <translation id="4633738821577273991">‏يمكنك الاستفادة من ميزة "الحماية المحسّنة للتصفّح الآمن" لهذا الملف الشخصي على Chromium أيضًا.</translation>
-<translation id="4654936625574199632">‏للمساعدة على تحسين التطبيق، يرسل متصفِّح Chromium بيانات الاستخدام والتعطُّل إلى Google. <ph name="BEGIN_LINK" />إدارة<ph name="END_LINK" /></translation>
+<translation id="4654936625574199632">‏للمساعدة على تحسين التطبيق، يُرسل متصفِّح Chromium بيانات الاستخدام والتعطُّل إلى Google. <ph name="BEGIN_LINK" />إدارة<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">‏تفعيل الماسح الضوئي في Chromium</translation>
 <translation id="4685611756167369067">‏فتح علامة تبويب في وضع التصفّح المتخفي في Chromium</translation>
 <translation id="4736424910885271643">‏سيتم محو بيانات Chromium المخزَّنة على هذا الجهاز لأنّ حسابك تتم إدارته من خلال <ph name="HOSTED_DOMAIN" /></translation>

@@ -65,7 +65,7 @@
 <translation id="1299774449519412690">أزرق سماوي فاتح</translation>
 <translation id="1303806948938513162">‏النقر بأربعة أصابع للدخول إلى قوائم ChromeVox</translation>
 <translation id="1304162325618937178">اضغط على مفتاح المسافة</translation>
-<translation id="1313373992684326101">الانتقال إلى القسم السابق تتضمّن الأمثلة "شريط الحالة" و"مشغّل التطبيقات".</translation>
+<translation id="1313373992684326101">الانتقال إلى القسم السابق. تتضمّن الأمثلة "شريط الحالة" و"مشغّل التطبيقات".</translation>
 <translation id="1315077335264761176">إرشادات حول وظيفة اللمس</translation>
 <translation id="1325363694295259631">تم إلغاء اختيار الزر الخاص باختيار عنصر القائمة <ph name="NAME" />.</translation>
 <translation id="1325946044405407859">أسمر مصفر</translation>
@@ -206,7 +206,7 @@
 <translation id="2267538686624070261">جارٍ تجاهل الخطأ الإملائي</translation>
 <translation id="2267945578749931355">الحرف التالي</translation>
 <translation id="2278490101488436824">التمرير السريع بثلاثة أصابع إلى يمين الشاشة</translation>
-<translation id="228059581448666199">النقر بزر الماوس الأيسر</translation>
+<translation id="228059581448666199">يمكنك النقر بزر الماوس الأيسر</translation>
 <translation id="2303873575703885770">تفعيل أحد العناصر</translation>
 <translation id="2305942658236913680">ليس هناك عنوان تالٍ.</translation>
 <translation id="2311237334957139798">الانتقال إلى السابق بدقة</translation>
@@ -671,7 +671,7 @@
 <translation id="5290220123487191192">لنبدأ ببعض الإيماءات التي ستستخدمها بانتظام. إذا وصلت إلى عنصر تريد تفعيله، انقر مرّتين على الشاشة بإصبع واحد. للمتابعة، انقر مرّتين الآن.</translation>
 <translation id="5291860916305032607">استئناف ميزة "التحكّم بالوجه"</translation>
 <translation id="5302089807023311274">مرجع قائمة مراجع</translation>
-<translation id="530391007967514163">جرِّب الانتقال السريع بين العناوين للتنقُّل بين النصوص أدناه.</translation>
+<translation id="530391007967514163">يمكنك الانتقال بسرعة بين العناوين للتنقُّل بين النصوص أدناه.</translation>
 <translation id="5304943142864553931">علامة التبويب <ph name="TITLE" /></translation>
 <translation id="5308380583665731573">اتصال</translation>
 <translation id="5310788376443009632">تمت إزالة:</translation>
@@ -783,7 +783,7 @@
 <translation id="5921587111466148855">فصل</translation>
 <translation id="5923780477617566089">التاريخ الحالي</translation>
 <translation id="5926889058434275234">للحصول على قائمة كاملة بالإيماءات، انتقِل إلى مركز المساعدة.</translation>
-<translation id="5947651424015173580">النقر مرّتين على الماوس</translation>
+<translation id="5947651424015173580">يمكنك النقر مرّتين على الماوس</translation>
 <translation id="5948123859135882163">تبديل تفسير مصطلحات الرياضيات بين البنيوية والدلالية</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">مربع حوار</translation>
@@ -815,7 +815,7 @@
 <translation id="6158882249329863701">الصف <ph name="TABLECELLROWINDEX" /> العمود <ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="6164829606128959761">متر</translation>
 <translation id="6166362019018438352">تم إيقاف تسميات برايل التوضيحية.</translation>
-<translation id="6186305613600865047">انتقال إلى أسفل الصفحة</translation>
+<translation id="6186305613600865047">الانتقال إلى أسفل الصفحة</translation>
 <translation id="6187190722927752226">أزرق مخضر</translation>
 <translation id="6197361807490522975">أزرق داكن</translation>
 <translation id="6218813441317556731">استبدال "<ph name="DELETE_PHRASE" />" بـ "<ph name="INSERT_PHRASE" />"</translation>
@@ -993,7 +993,7 @@
 <translation id="7465123027577412805">هل تريد استخدام الصوت الطبيعي؟</translation>
 <translation id="7491962110804786152">علامة تبويب</translation>
 <translation id="7492497529767769458">الانتقال إلى القسم التالي تتضمّن الأمثلة "شريط الحالة" و"مشغّل التطبيقات".</translation>
-<translation id="7505149250476994901">قُل "حرف كبير" قبل كتابة الحرف</translation>
+<translation id="7505149250476994901">يسمح بقول "حرف كبير" قبل كتابة الحرف</translation>
 <translation id="7533226154149229506">أصفر ذهبي فاتح</translation>
 <translation id="7543255924852002459">تجاهُل التصنيف</translation>
 <translation id="7552432549459840808">‏اختصارات Chrome المفيدة</translation>
@@ -1100,7 +1100,7 @@
 <translation id="8186185314313222077">تبديل وضع ملء الشاشة</translation>
 <translation id="8199231515320852133">الإعلان عن عناوين الخلية الحالية</translation>
 <translation id="8202174735952881587">أزرق سماوي</translation>
-<translation id="820469951249669083">انتقِل إلى الصف التالي.</translation>
+<translation id="820469951249669083">الانتقال إلى الصف التالي</translation>
 <translation id="8205922869661890178">فتح صفحة سجلّ مطوّر البرامج</translation>
 <translation id="8212109599554677485">تغيير نمط العرض إلى "جنبًا إلى جنب"</translation>
 <translation id="8215202828671303819">تحديد متعدد</translation>
@@ -1129,7 +1129,7 @@
 <translation id="8448196839635577295">‏ما مِن تركيز حالي على ChromeVox. يُرجى لمس "استكشاف" للبحث عن عناصر.</translation>
 <translation id="8455868257606149352">الحد الأقصى <ph name="X" /></translation>
 <translation id="84575901236241018">لديه مفتاح دخول، <ph name="KEY" /></translation>
-<translation id="8463645336674919227">جارٍ تجاهل الخطأ النحوي</translation>
+<translation id="8463645336674919227">يتم تجاهل الخطأ النحوي</translation>
 <translation id="8465573210279050749">حذف الكلمة السابقة</translation>
 <translation id="847040613207937740">ليس هناك مربع اختيار تالٍ.</translation>
 <translation id="8473540203671727883">قول النص أسفل الماوس</translation>
