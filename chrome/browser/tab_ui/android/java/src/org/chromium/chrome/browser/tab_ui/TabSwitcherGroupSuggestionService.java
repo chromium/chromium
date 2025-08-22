@@ -172,6 +172,7 @@ public class TabSwitcherGroupSuggestionService {
 
     public void destroy() {
         mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
+        mSuggestionLifecycleObserverHandler.onSuggestionIgnored();
     }
 
     private void onTabGroupModelFilterChanged(
