@@ -27,7 +27,7 @@
 <translation id="2320166752086256636">إخفاء لوحة المفاتيح</translation>
 <translation id="2329392777730037872">تعذّر فتح <ph name="URL" /> على الجهاز العميل.</translation>
 <translation id="2359808026110333948">متابعة</translation>
-<translation id="2366718077645204424">يتعذر الوصول إلى المضيف. ربما يرجع ذلك إلى إعداد الشبكة التي تستخدمها.</translation>
+<translation id="2366718077645204424">يتعذّر الوصول إلى المضيف. وقد يعود ذلك إلى إعداد الشبكة المُستخدمة.</translation>
 <translation id="242591256144136845">‏جميع حقوق الطبع والنشر محفوظة لصالح شركة Google LLC لعام 2025.</translation>
 <translation id="2504109125669302160">منح إذن "أدوات تمكين الوصول" إلى <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">متصل بـ <ph name="HOSTNAME" /></translation>
@@ -39,9 +39,9 @@
 <translation id="2699970397166997657">‏التوافق مع نظام التشغيل Chrome</translation>
 <translation id="2758123043070977469">حدثت مشكلة أثناء المصادقة، يُرجى إعادة تسجيل الدخول.</translation>
 <translation id="2803375539583399270">أدخل رقم التعريف الشخصي</translation>
-<translation id="2919669478609886916">أنت تشارك هذا الجهاز حاليًا مع مستخدم آخر. هل تريد فعلًا متابعة المشاركة؟</translation>
+<translation id="2919669478609886916">تتم مشاركة هذا الجهاز حاليًا مع مستخدم آخر. هل المطلوب فعلاً متابعة المشاركة؟</translation>
 <translation id="2929683002824598593">مشاركة الجهاز</translation>
-<translation id="2939145106548231838">مصادقة للاستضافة</translation>
+<translation id="2939145106548231838">المصادقة للاستضافة</translation>
 <translation id="3027681561976217984">وضع اللمس</translation>
 <translation id="3106379468611574572">الكمبيوتر البعيد لا يستجيب لطلبات الاتصال. يُرجى التحقق من اتصاله بالإنترنت وإعادة المحاولة.</translation>
 <translation id="3150823315463303127">تعذّر المضيف في قراءة السياسة.</translation>
@@ -55,7 +55,7 @@
 <translation id="3581045510967524389">تعذر الاتصال بالشبكة. يُرجى التحقق من اتصال الجهاز بالإنترنت.</translation>
 <translation id="3596628256176442606">‏تمكن هذه الخدمة الاتصالات الواردة من عملاء التوافق مع نظام التشغيل Chrome.</translation>
 <translation id="3695446226812920698">تعرَّف على كيفية إجراء ذلك</translation>
-<translation id="3776024066357219166">‏انتهت جلسة سطح المكتب البعيد من Chrome.</translation>
+<translation id="3776024066357219166">‏انتهت جلسة الاتصال بجهازك عن بعد من Chrome.</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3897092660631435901">قائمة</translation>
 <translation id="3905196214175737742">نطاق مالك المضيف غير صالح.</translation>
@@ -193,5 +193,5 @@
 <translation id="9213184081240281106">إعداد المضيف غير صالح.</translation>
 <translation id="981121421437150478">بلا إنترنت</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="992215271654996353"><ph name="HOSTNAME" /> (آخر دخول على الإنترنت في تمام <ph name="DATE_OR_TIME" />)</translation>
+<translation id="992215271654996353">‏‫<ph name="HOSTNAME" /> (آخر دخول على الإنترنت في تمام ‎<ph name="DATE_OR_TIME" />)</translation>
 </translationbundle>

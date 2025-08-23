@@ -299,7 +299,7 @@
 <translation id="338691029516748599">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، الاتصال</translation>
 <translation id="3408072735282270043">تفعيل، <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">‏الألمانية (ألمانيا) باستخدام لوحة مفاتيح Neo 2</translation>
-<translation id="3414856743105198592">يؤدي تنسيق الوسائط القابلة للإزالة إلى مسح جميع البيانات. هل تريد المتابعة؟</translation>
+<translation id="3414856743105198592">يؤدي تنسيق الوسائط القابلة للإزالة إلى محو جميع البيانات. هل المطلوب المتابعة؟</translation>
 <translation id="3437801641691368414">وقت الإنشاء</translation>
 <translation id="343907260260897561">كاميرا فورية</translation>
 <translation id="3455931012307786678">الإستونية</translation>
@@ -600,7 +600,7 @@
 <translation id="5625294776298156701">‏التاميلية باستخدام لوحة مفاتيح Tamil99</translation>
 <translation id="5633226425545095130">يؤدي نقل هذا الملف إلى مشاركته مع جميع المستخدمين الذين يمكنهم الاطّلاع على المجلد المشترك "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">استماع</translation>
-<translation id="5650895901941743674">‏تحقَّق من إعدادات اسم نقطة الوصول (APN)</translation>
+<translation id="5650895901941743674">‏يجب التحقق من إعدادات اسم نقطة الوصول (APN)</translation>
 <translation id="5669691691057771421">إدخال رقم التعريف الشخصي الجديد</translation>
 <translation id="5678784840044122290">‏سيكون تطبيق Linux متاحًا ضمن الوحدة الطرفية وقد يعرض أيضًا رمزًا في مشغِّل التطبيقات.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />لا يمكن قطع الاتصال من أرشيف أو قرص افتراضي<ph name="END_BOLD" />
@@ -645,7 +645,7 @@
 <translation id="5948255720516436063">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي الشبكات البالغ عددها <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />"، يمكنك تفعيل الشبكة بعد إعداد الجهاز</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> من العناصر</translation>
 <translation id="5957366693331451795">‏أجهزة Chromebox</translation>
-<translation id="5982621672636444458">خيارات التصنيف</translation>
+<translation id="5982621672636444458">خيارات الترتيب</translation>
 <translation id="6011074160056912900">شبكة إيثرنت</translation>
 <translation id="60357267506638014">‏تخطيط QWERTY للتشيكية</translation>
 <translation id="603895874132768835">لن تتمكّن من استخدام هذه الشبكة إلى أن يتم إعداد رقم تعريف شخصي جديد.</translation>
@@ -721,7 +721,7 @@
 <translation id="6594855146910089723">‏تمّت مشاركة هذا المجلد مع نظامَي التشغيل Linux وParallels Desktop.</translation>
 <translation id="6607272825297743757">معلومات الملف</translation>
 <translation id="6609332149380188670">‏تمّت مشاركة <ph name="NUMBER_OF_ITEMS" /> مجلد مع نظام Parallels Desktop.</translation>
-<translation id="6629518321609546825">يُرجى إدخال 4 أرقام على الأقل.</translation>
+<translation id="6629518321609546825">يُرجى إدخال 4 أرقام على الأقل</translation>
 <translation id="6643016212128521049">محو</translation>
 <translation id="6650726141019353908">فراشة وردية</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
@@ -1082,7 +1082,7 @@
 <translation id="939736085109172342">مجلد جديد</translation>
 <translation id="943972244133411984">تم التعديل بواسطة</translation>
 <translation id="945522503751344254">إرسال ملاحظات</translation>
-<translation id="947144732524271678">تم اختيار مجموعة من <ph name="ENTRY_COUNT" /> إدخال من <ph name="FROM_ENTRY_NAME" /> إلى <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="947144732524271678">تم اختيار مجموعة من <ph name="ENTRY_COUNT" /> إدخالات من <ph name="FROM_ENTRY_NAME" /> إلى <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">تمنع سياسة المشرف ما يلي:</translation>
 <translation id="965477715979482472">الإنجليزية (جنوب أفريقيا)</translation>
 <translation id="976666271385981812">جارٍ نقل <ph name="NUMBER_OF_ITEMS" /> عنصر إلى "المهملات"…</translation>

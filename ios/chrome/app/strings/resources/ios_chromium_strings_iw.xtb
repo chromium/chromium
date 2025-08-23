@@ -6,7 +6,7 @@
 <translation id="1047130070405668746">‏בוחרים באפשרות Chromium</translation>
 <translation id="1086486568852410168">‏חיפוש באמצעות Google Lens</translation>
 <translation id="1091252999271033193">‏כלומר, Chromium תמיד יבקש את האתר לנייד.</translation>
-<translation id="1115463765356382667">‏השלמת הפעולות המוצעות הבאות תעזור לך להשתמש ב-Chromium בדרך היעילה ביותר.</translation>
+<translation id="1115463765356382667">‏צריך להשלים את הפעולות המוצעות האלה כדי להשתמש ב-Chromium בדרך היעילה ביותר.</translation>
 <translation id="1140315115515116765">‏כדאי להגדיר את Chromium כדפדפן ברירת המחדל כדי לקבל את מדדי המחירים בקלות</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1257458525759135959">‏כדי לשמור תמונות לחצו על "הגדרות" על מנת לאפשר ל-Chromium להוסיף תמונות לגלריה שלך</translation>
@@ -54,7 +54,7 @@
 <translation id="22313767259766852">‏הכתובת הזו שמורה ב-Chromium. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">‏כלומר, Chromium תמיד יבקש את האתר למחשב.</translation>
 <translation id="2270466829363945454">קניות</translation>
-<translation id="2313870531055795960">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chromium. אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chromium עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים.</translation>
+<translation id="2313870531055795960">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chromium. אם אתר מנסה לגנוב את הסיסמה שלך, או אם המערכת מזהה שהורדת קובץ מזיק, Chromium עשוי גם לשלוח כתובות URL לבדיקה באמצעות "גלישה בטוחה". הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים.</translation>
 <translation id="2314220608288760290">‏‫Chromium פותח באופן אוטומטי קישורים פרטיים של YouTube במצב פרטי.</translation>
 <translation id="231828342043114302">‏כדי לקבל תוכן בהתאמה אישית על סמך תחומי העניין שלך, עליך להיכנס אל Chromium.</translation>
 <translation id="2326738825692478496">‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון Google.
@@ -161,7 +161,7 @@
 <translation id="4962295957157529683">‏יש לסיים את הפעילות בחלון Chromium הפתוח הנוסף.</translation>
 <translation id="4985291216379576555">‏אופליין, Chromium לא יכול לחפש עדכונים</translation>
 <translation id="4996471330284142407">‏Chromium מאפשר לך להספיק יותר באופן פשוט, מאובטח ומהיר מאי פעם.</translation>
-<translation id="4999538639245140991">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chromium שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
+<translation id="4999538639245140991">‏מכיוון שבחרת לצאת מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" />, נתוני Chromium שלך יימחקו מהמכשיר הזה. הם יישארו בחשבון Google שלך.</translation>
 <translation id="5042011327527167688">‏לוחצים על 'הצגה במפות Google ב-Chromium'.</translation>
 <translation id="5044871537677053278">‏מערכת Chromium מזהה כתובות ונעזרת במפות Google כדי לספק מסלולים ומידע מקומי.</translation>
 <translation id="5048140766121299007">‏בהגדרות של "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", מפעילים את "Chromium"</translation>

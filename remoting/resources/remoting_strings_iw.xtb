@@ -11,7 +11,7 @@
 <translation id="1546934824884762070">אירעה שגיאה לא צפויה. דיווח על בעיה זו למפתחים.</translation>
 <translation id="1697532407822776718">הכול מוכן!</translation>
 <translation id="1742469581923031760">ההתחברות מתבצעת…</translation>
-<translation id="177040763384871009">כדי שקישורים שנלחצים במכשיר מרוחק ייפתחו בדפדפן הלקוח, צריך להחליף את דפדפן האינטרנט של המערכת ולהתקין במקומו את "<ph name="URL_FORWARDER_NAME" />".</translation>
+<translation id="177040763384871009">כדי שקישורים שלוחצים עליהם במכשיר מרוחק ייפתחו בדפדפן הלקוח, צריך להחליף את דפדפן האינטרנט של המערכת ולהתקין במקומו את "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">‏IP הערוץ של הלקוח: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' ערוץ='<ph name="CHANNEL_TYPE" />' חיבור='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">מחיקה</translation>
 <translation id="2009755455353575666">החיבור נכשל</translation>
