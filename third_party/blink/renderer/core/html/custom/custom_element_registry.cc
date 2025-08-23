@@ -411,4 +411,52 @@ void CustomElementRegistry::AssociatedWith(Document& document) {
   associated_documents_->insert(&document);
 }
 
+// Entry point of "Custom Element Registry initialization".
+// https://html.spec.whatwg.org/multipage/custom-elements.html#dom-customelementregistry-initialize
+void CustomElementRegistry::initialize(Node* root,
+                                       ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  // 1. If this's is scoped is false and either root is a Document node or
+  // root's node document's custom element registry is not this, then throw a
+  // "NotSupportedError" DOMException.
+  if (IsGlobalRegistry() &&
+      (root->IsDocumentTypeNode() ||
+       root->GetDocument().customElementRegistry() != this)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Global custom element registry can't be initialized on a document or "
+        "a node with a document that's not associated with the global"
+        " registry.");
+  }
+
+  // 2. If root is a Document node whose custom element registry is null, then
+  // set root's custom element registry to this.
+  // 3. Otherwise, if root is a ShadowRoot node whose custom element registry is
+  // null, then set root's custom element registry to this.
+  if (auto* document = DynamicTo<Document>(root);
+      document && !document->customElementRegistry()) {
+    document->SetCustomElementRegistry(this);
+  } else if (auto* shadow_root = DynamicTo<ShadowRoot>(root);
+             shadow_root && !shadow_root->customElementRegistry()) {
+    shadow_root->SetCustomElementRegistry(this);
+  }
+
+  // 4. For each inclusive descendant inclusiveDescendant of root: if
+  // inclusiveDescendant is an Element node whose custom element registry is
+  // null:
+  for (Node& descendant : NodeTraversal::InclusiveDescendantsOf(*root)) {
+    Element* descendant_element = DynamicTo<Element>(descendant);
+    if (!descendant_element || descendant_element->customElementRegistry()) {
+      continue;
+    }
+    // 4-1. Set inclusiveDescendant's custom element registry to this.
+    descendant_element->SetCustomElementRegistry(this);
+    // 4-2. If this's is scoped is true, then append inclusiveDescendant's
+    // node document to this's scoped document set.
+    if (!this->IsGlobalRegistry()) {
+      this->AssociatedWith(descendant_element->GetDocument());
+    }
+  }
+}
+
 }  // namespace blink

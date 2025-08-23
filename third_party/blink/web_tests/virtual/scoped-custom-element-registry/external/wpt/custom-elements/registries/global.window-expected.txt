@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] initialize() of global registry should throw for nodes from another document
-  assert_throws_dom: function "() => customElements.initialize(contentDocument)" threw object "TypeError: Failed to execute 'initialize' on 'CustomElementRegistry': The provided value is not of type '(Element or ShadowRoot)'." that is not a DOMException NotSupportedError: property "code" is equal to undefined, expected 9
+  assert_throws_dom: function "() => customElements.initialize(contentDocument.createElement("x"))" did not throw
 [FAIL] createElement() should throw with global registry from another document
   assert_throws_dom: function "() => contentDocument.createElement("div", { customElementRegistry: customElements })" did not throw
 [FAIL] createElementNS() should throw with global registry from another document

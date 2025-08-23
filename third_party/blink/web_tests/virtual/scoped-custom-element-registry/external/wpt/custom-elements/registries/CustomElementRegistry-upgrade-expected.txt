@@ -1,6 +1,5 @@
 This is a testharness.js-based test.
-[FAIL] upgrade should upgrade a candidate element when called on a shadow root with an association
-  assert_equals: expected "ABElement" but got "HTMLElement"
 [FAIL] upgrade should not upgrade a candidate element not associated with a registry
-  assert_equals: expected "ScopedABElement" but got "HTMLElement"
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
 Harness: the test ran to completion.
+

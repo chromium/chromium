@@ -13,7 +13,7 @@ interface CustomElementRegistry {
     [CallWith=ScriptState,RaisesException] Promise<CustomElementConstructor> whenDefined(DOMString name);
     [CEReactions] void upgrade(Node root);
 
-    [RuntimeEnabled=ScopedCustomElementRegistry] void initialize((Element or ShadowRoot) root);
+    [RuntimeEnabled=ScopedCustomElementRegistry, RaisesException] void initialize(Node root);
 };
 
 callback CustomElementConstructor = any ();
