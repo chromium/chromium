@@ -536,7 +536,10 @@ group("native_widget_types") {
 source_set("native_widget_types_sources") {
   visibility = [ ":*" ]  # Depend on through ":native_widget_types".
 
-  public = [ "native_widget_types.h" ]
+  public = [
+    "native_widget_types.h",
+    "native_window_types.h",
+  ]
 
   public_deps = [ "//base" ]
 
@@ -545,7 +548,7 @@ source_set("native_widget_types_sources") {
   deps = [ "//build:blink_buildflags" ]
 
   if (is_mac) {
-    sources = [ "native_widget_types_mac.mm" ]
+    sources = [ "native_window_types_mac.mm" ]
     frameworks = [ "AppKit.framework" ]
   }
 }

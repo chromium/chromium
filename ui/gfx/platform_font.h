@@ -15,7 +15,7 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_render_params.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 
 namespace gfx {
 
