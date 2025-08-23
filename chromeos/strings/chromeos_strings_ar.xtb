@@ -60,7 +60,7 @@
 <translation id="1199355487114804640">التشغيل/الإيقاف المؤقت</translation>
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1204296502688602597">وقت استجابة نظام أسماء النطاقات</translation>
-<translation id="1207734034680156868">تستند الاقتراحات إلى الوصف الذي أضفته.</translation>
+<translation id="1207734034680156868">تستند الاقتراحات إلى الوصف الذي أضفته</translation>
 <translation id="121090498480012229">تشغيل الوسائط أو إيقافها مؤقتًا</translation>
 <translation id="1216675364136048456">إغلاق</translation>
 <translation id="1223498995510244364">تلخيص</translation>
@@ -474,7 +474,7 @@
 <translation id="3078740164268491126">جدول</translation>
 <translation id="3081652522083185657">فاتحة</translation>
 <translation id="3083667275341675831">بيانات تشخيص الاتصال</translation>
-<translation id="3084958266922136097">إيقاف شاشة التوقف</translation>
+<translation id="3084958266922136097">إيقاف شاشة الاستراحة</translation>
 <translation id="3091839911843451378">تعذَّرت الطباعة - توقّفت الطابعة</translation>
 <translation id="3102119246920354026">ذاكرة التخزين المؤقت</translation>
 <translation id="3103783611481501187">صورة سريالية</translation>
@@ -542,7 +542,7 @@
 <translation id="3382806462014639823">تتم مشاهدة شاشتك من قِبل "<ph name="TEACHER_NAME" />"</translation>
 <translation id="3383623117265110236">مجموعة حصرية</translation>
 <translation id="3404249063913988450">تفعيل شاشة التوقف</translation>
-<translation id="3413935475507503304">لمواصلة عملية التحديث، انقر على "التالي".</translation>
+<translation id="3413935475507503304">لمواصلة عملية التحديث، يرجى النقر على "التالي".</translation>
 <translation id="3416709353545797224">تسجيل كلّ الأصوات المشغّلة على <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">خارجي</translation>
 <translation id="3428971106895559033">باستيل</translation>
@@ -620,7 +620,7 @@
 <translation id="3771694256347217732">‏بنود خدمة Google</translation>
 <translation id="3772164567520167489">يتعذّر إنشاء عناوين تسجيلات للغة الطلب الصوتي هذه</translation>
 <translation id="3780740315729837296">تخصيص أحد مفاتيح لوحة المفاتيح</translation>
-<translation id="3784455785234192852">قفل</translation>
+<translation id="3784455785234192852">القفل</translation>
 <translation id="3785643128701396311">فن البكسل</translation>
 <translation id="3799381533888781854">غير مفعّل - يدير المشرف هذا الإعداد.</translation>
 <translation id="380097101658023925">‏عناصر التحكُّم في ألوان الأحمر والأخضر والأزرق (RGB) للإضاءة الخلفية</translation>
@@ -735,7 +735,7 @@
 <translation id="4252261480746798874">‏عند اختيار "إنشاء خلفيتك الخاصة"، يمكنك كتابة طلب مخصَّص، أو النقر على "اختيار مظهر" ثم اختيار الكلمات التي تحتها خط لتخصيص خلفيتك القائمة على الذكاء الاصطناعي.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          للحصول على صور فريدة ومتنوعة تستند إلى الذكاء الاصطناعي، انقر على "أريد أفكارًا جديدة".
+          للحصول على صور فريدة ومتنوعة تستند إلى الذكاء الاصطناعي، يمكنك النقر على "أريد أفكارًا جديدة".
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           عند إنشاء خلفية خاصة بك، يتم إرسال الطلب إلى خوادم Google لإنشاء الصور وتحسين المنتج، ويتم إجراء ذلك مع مراعاة <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />بنود الخدمة وسياسة الخصوصية الساريتَين في Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. يُرجى عدم تضمين أي معلومات شخصية أو حسّاسة أو سرية.
@@ -777,7 +777,7 @@
 <translation id="4395835743215824109">تخصيص لوحة المفاتيح</translation>
 <translation id="439946595190720558">تم إنشاء هذه الخلفية بواسطة الذكاء الاصطناعي باستخدام النص التالي: "<ph name="PROMPT" />".</translation>
 <translation id="4415951057168511744">الأفاتار الحالي</translation>
-<translation id="4417830657741848074">لقد ضبط مشرفك بعض التطبيقات لبدء تشغيلها تلقائيًا. ولا يمكنك إغلاقها.</translation>
+<translation id="4417830657741848074">لقد ضبَط المشرف بعض التطبيقات لبدء تشغيلها تلقائيًا. ولا يمكنك إغلاق البعض منها.</translation>
 <translation id="4422041425070339732">سهم متّجه للأسفل</translation>
 <translation id="4425149324548788773">ملفاتي</translation>
 <translation id="4428374560396076622">شبكة<ph name="NETWORK_NAME" /> متوقّفة</translation>
@@ -896,7 +896,7 @@
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
 <translation id="491791267030419270">نصائح حول كتابة الملاحظات والآراء</translation>
 <translation id="4921665434385737356">تم شحن <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
-<translation id="4930320165497208503">لإعداد اتصال أو تعديله، انتقِل إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
+<translation id="4930320165497208503">لإعداد اتصال أو تعديله، يمكنك الانتقال إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">التاريخ</translation>
 <translation id="493637535592633700">متلألئة حيويًا</translation>
 <translation id="494102685638938793"><ph name="LINK_TEXT" /> (يفتح هذا الرابط في علامة تبويب جديدة)</translation>
@@ -911,7 +911,7 @@
 <translation id="497421865427891073">انتقال للأمام</translation>
 <translation id="4981003703840817201">الأزرق والوردي</translation>
 <translation id="498186245079027698">يجب التحقُّق من جهاز "المسح الضوئي" ثم إعادة المحاولة. ويجب التأكّد من توفّر مساحة على الجهاز لحفظ الملفات التي تم "مسحها ضوئيًا".</translation>
-<translation id="4982627662315910959">‏هذا الاختصار غير متاح. اضغط على اختصار جديد باستخدام مفتاح Shift مع مفتاح تعديل واحد آخر (Ctrl أو Alt أو مفتاح <ph name="META_KEY" />).</translation>
+<translation id="4982627662315910959">‏هذا الاختصار غير متاح. يمكنك الضغط على اختصار جديد باستخدام مفتاح Shift مع مفتاح تعديل واحد آخر (Ctrl أو Alt أو مفتاح <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">تشغيل</translation>
 <translation id="4987769320337599931">جدار الحماية</translation>
 <translation id="4988526792673242964">الصفحات</translation>
@@ -1123,7 +1123,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">عدم عرض بطاقة الترحيب مرة أخرى</translation>
 <translation id="5975130252842127517">مرجاني</translation>
-<translation id="5982621672636444458">خيارات التصنيف</translation>
+<translation id="5982621672636444458">خيارات الترتيب</translation>
 <translation id="5984145644188835034">خلفية تلقائية</translation>
 <translation id="5996832681196460718">الحرير</translation>
 <translation id="6016750809509395299">العناوين التي تم إنشاؤها:</translation>
@@ -1162,7 +1162,7 @@
 <translation id="6136285399872347291">مسافة للخلف</translation>
 <translation id="6137614725462089991">الخيال العلمي المستقبلي</translation>
 <translation id="6137767437444130246">شهادة المستخدم</translation>
-<translation id="6146993107019042706">يُرجى إدخال كلمة مرور جديدة لإنهاء الإجراء.</translation>
+<translation id="6146993107019042706">يجب إدخال كلمة مرور جديدة لإنهاء الإجراء</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">يتعذّر الاتصال بالإنترنت.</translation>
 <translation id="6156030503438652198">الأحمر الداكن والوردي</translation>
@@ -1253,7 +1253,7 @@
 <translation id="6526200165918397681">مطابقة درجات لون الخلفية</translation>
 <translation id="6527081081771465939">‏بروتوكول حماية شبكة Wi-Fi غير معروف.</translation>
 <translation id="6531528791584205545">الإدراج السريع</translation>
-<translation id="6535178685492749208">لا يتوفّر اتصال بالإنترنت. سيتم إرسال التعليقات لاحقًا.</translation>
+<translation id="6535178685492749208">جهازك غير متصل بالإنترنت. سيتم إرسال التعليقات لاحقًا.</translation>
 <translation id="6543412779435705598">تاكو</translation>
 <translation id="6550369542114086980">يوم الخميس</translation>
 <translation id="6551839203326557324">تفاح</translation>
@@ -1452,7 +1452,7 @@
 <translation id="7344788170842919262">ترابية</translation>
 <translation id="7346768383111016081">خصِّص لكل إجراء في اللعبة مفتاحًا معيّنًا لتلعب باستخدام لوحة المفاتيح</translation>
 <translation id="7352651011704765696">حدث خطأ ما</translation>
-<translation id="7353413232959255829">‏نتيجة البحث <ph name="LIST_POSITION" /> من <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. اضغط على مفتاح Enter للانتقال إلى الاختصار.</translation>
+<translation id="7353413232959255829">‏نتيجة البحث <ph name="LIST_POSITION" /> من <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. يمكنك الضغط على مفتاح Enter للانتقال إلى الاختصار.</translation>
 <translation id="7359657277149375382">نوع الملف</translation>
 <translation id="73631062356239394">مشاركة بيانات التشخيص</translation>
 <translation id="7369648056634183167">صورة قريبة لزهر زنبق مائي مليء بالتفاصيل مغطى بالندى في المطر، مع التركيز على البتلات الرقيقة وقطرات الماء التي تعكس الضوء بألوان الباستيل الناعمة على خلفية زرقاء. تم التقاط الصورة من مستوى العين بإضاءة طبيعية.</translation>
@@ -1614,9 +1614,9 @@
 <translation id="8082366717211101304">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS) من تطبيقات Android.</translation>
 <translation id="8082644724189923105">منطقة لوحة المفاتيح</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
-<translation id="8088963492174775412">اضغط لبدء التسجيل</translation>
+<translation id="8088963492174775412">الضغط لبدء التسجيل</translation>
 <translation id="8094062939584182041">‏السماح بتلقّي رسائل إلكترونية من Google حول هذه المشكلة</translation>
-<translation id="8104083085214006426">أنت تستخدم شبكةً مفتوحة وغير آمنة.</translation>
+<translation id="8104083085214006426">يتم استخدام شبكة مفتوحة وغير آمنة</translation>
 <translation id="8108879170356113798">بعد عدد <ph name="NUM_SECONDS" /> من الثواني، لن يكون استخدام أي تطبيق ممكنًا سوى "أدوات الدراسة"</translation>
 <translation id="811820734797650957">‏(نظام التشغيل Android) اختبار إمكانية فحص اتصال البوابة</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>

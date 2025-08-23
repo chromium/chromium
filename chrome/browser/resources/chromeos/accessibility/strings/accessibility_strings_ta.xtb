@@ -1187,7 +1187,7 @@
 <translation id="8909819899961392044">.input {$$COUNT :number} .match $$COUNT 1{{left brace}} *{{{$$COUNT} left braces}}</translation>
 <translation id="8910180774920883033">செயல்கள் உள்ளன. அவற்றைப் பார்க்க, Search+Ctrl+A விசைகளை அழுத்தவும்</translation>
 <translation id="8937112856099038376">intlnk</translation>
-<translation id="8940925288729953902">மாற்றி விசைகள்</translation>
+<translation id="8940925288729953902">நிலைமாற்றும் பட்டன்கள்</translation>
 <translation id="8943282376843390568">சுண்ணாம்பு நிறம்</translation>
 <translation id="8944511129464116546">கலந்து தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="8946628535652548639"><ph name="TABLECELLROWINDEX" />வரி.<ph name="TABLECELLCOLUMNINDEX" />நெடு.</translation>

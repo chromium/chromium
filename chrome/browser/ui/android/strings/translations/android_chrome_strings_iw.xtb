@@ -51,7 +51,7 @@
 <translation id="1206892813135768548">העתקת טקסט קישור</translation>
 <translation id="1209206284964581585">להסתיר בינתיים</translation>
 <translation id="1227058898775614466">היסטוריית ניווט</translation>
-<translation id="123724288017357924">טעינה מחדש של הדף הנוכחי, תוך התעלמות מתוכן שמאוחסן בקובץ השמור</translation>
+<translation id="123724288017357924">טעינה מחדש של הדף הנוכחי, תוך התעלמות מתוכן שנשמר במטמון</translation>
 <translation id="1239792311949352652">שיתוף הדף הזה במהירות. ניתן לערוך את קיצור הדרך הזה ב'הגדרות'.</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> בטעינה</translation>
 <translation id="124116460088058876">שפות נוספות</translation>
@@ -1183,7 +1183,7 @@
 <translation id="6461962085415701688">לא ניתן לפתוח את הקובץ</translation>
 <translation id="6464977750820128603">‏אפשר לראות אתרים שמבקרים בהם ב-Chrome ולהגדיר להם טיימרים.\n\nהמידע על האתרים שמוגדרים להם טיימרים ומשך הגלישה בהם נשלחים ל-Google. המידע עוזר לשפר את "שימוש חכם בדיגיטל".</translation>
 <translation id="6468703991511753953">סרגל הכתובות נמצא כרגע בחלק התחתון</translation>
-<translation id="6470181189905173055">‏הדפים שפתחת ב-Chrome בזמן השימוש ב-<ph name="APP_LABEL" /> יופיעו כאן.</translation>
+<translation id="6470181189905173055">‏הדפים שפתחת ב-Chrome כשהשתמשת באפליקציה-<ph name="APP_LABEL" /> יופיעו כאן.</translation>
 <translation id="6473086018775716761">רשימת אפשרויות השיתוף נפתחה בחצי הגובה.</translation>
 <translation id="6475951671322991020">הורדת סרטון</translation>
 <translation id="6477928892249167417">נראה שהאתרים האלה חשובים לך:</translation>
@@ -1197,7 +1197,7 @@
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="652948702951888897">‏היסטוריה של Chrome</translation>
 <translation id="6532866250404780454">‏כניסות לאתרים ב-Chrome לא יופיעו. כל הטיימרים של האתרים יימחקו.</translation>
-<translation id="6539092367496845964">משהו השתבש. יש לנסות שוב מאוחר יותר.</translation>
+<translation id="6539092367496845964">משהו השתבש. צריך לנסות שוב אחר כך.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{התבצעה בדיקה לפני שעה אחת}one{התבצעה בדיקה לפני # שעות}two{התבצעה בדיקה לפני שעתיים}other{התבצעה בדיקה לפני # שעות}}</translation>
 <translation id="6545017243486555795">ניקוי של כל הנתונים</translation>
 <translation id="6546511553472444032">הקובץ עלול להזיק</translation>
@@ -1206,7 +1206,7 @@
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{הכרטיסייה <ph name="TAB_TITLE" /> וכרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) נוספת ייסגרו}one{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}two{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}other{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}}</translation>
 <translation id="6560414384669816528">‏שימוש ב-Sogou לחיפוש</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
-<translation id="6564820424018738527">‏במכשיר Android מופיעה הגדרה דומה. אם האפשרות "מדידת ביצועים של מודעות" מופעלת ב-Chrome ובמכשיר Android, יכול להיות שתהיה לחברה מסוימת הרשאה למדוד את רמת האפקטיביות של מודעה כלשהי באתרים שבהם מבקרים ובאפליקציות שבהן משתמשים.</translation>
+<translation id="6564820424018738527">‏במכשיר Android עשויה להיות הגדרה דומה. אם האפשרות "מדידת ביצועים של מודעות" מופעלת ב-Chrome ובמכשיר Android, יכול להיות שתהיה לחברה מסוימת הרשאה למדוד את רמת האפקטיביות של מודעה כלשהי באתרים שבהם ביקרת ובאפליקציות שבהן השתמשת.</translation>
 <translation id="6565959834589222080">‏המכשיר יתחבר לרשת Wi-Fi כאשר תהיה זמינה</translation>
 <translation id="6569373978618239158">‏בפתיחת כרטיסייה חדשה, יוצגו לך סטוריז מהאתר <ph name="SITE_NAME" />. אתרים שנמצאים במעקב נשמרים בחשבון Google שלך. יש לך אפשרות לנהל אותם בהגדרות של Discover.</translation>
 <translation id="657177046675873214">כדי שהסימניות יופיעו בכל המכשירים, צריך להפעיל את האפשרות "סימניות" בהגדרות</translation>
@@ -1252,7 +1252,7 @@
 <translation id="6754359471209693699">התחלת חיפוש חדש</translation>
 <translation id="6756507620369789050">שיתוף משוב</translation>
 <translation id="6762511428368667596"><ph name="NAME" />,‏ <ph name="EMAIL" />.</translation>
-<translation id="676305334223455055">צריך להיכנס לחשבון כדי לקבל תוכן שמותאם לתחומי העניין שלך</translation>
+<translation id="676305334223455055">כדי לקבל תוכן שמותאם לתחומי העניין שלך צריך להיכנס לחשבון</translation>
 <translation id="6764137532716892442">פעילות חדשה בקבוצת הכרטיסיות המשותפת "<ph name="GROUP_TITLE" />"</translation>
 <translation id="6767294960381293877">רשימת המכשירים שאפשר לשתף איתם כרטיסייה נפתחה בחצי גובה המסך.</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{כרטיסיית מצב פרטי אחת (<ph name="INCOGNITO_TAB_COUNT" />) וכרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) נוספת ייסגרו}one{כרטיסיית מצב פרטי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}two{כרטיסיית מצב פרטי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}other{כרטיסיית מצב פרטי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}}</translation>
@@ -1390,7 +1390,7 @@
 <translation id="7290209999329137901">לא ניתן היה לשנת את השם מפני שהפריט לא זמין</translation>
 <translation id="7291910923717764901">נוספו תיאורי תמונות בדף זה</translation>
 <translation id="7293429513719260019">בחירת שפה</translation>
-<translation id="7304072650267745798">‏במכשיר Android עשויה להופיע הגדרה דומה. אם ההגדרה הזו מופעלת ב-Chrome ובמכשיר Android, חברות עשויות לקבל הרשאות למדוד את רמת האפקטיביות של המודעות שלהן באתרים שבהם מבקרים ובאפליקציות שבהן משתמשים.</translation>
+<translation id="7304072650267745798">‏במכשיר Android עשויה להיות הגדרה דומה. אם ההגדרה הזו מופעלת ב-Chrome ובמכשיר Android, יכול להיות שחברות יקבלו הרשאות למדוד את רמת האפקטיביות של המודעות שלהן באתרים שביקרת בהם ובאפליקציות שהשתמשת בהן.</translation>
 <translation id="7313188324932846546">יש ללחוץ כדי להגדיר סנכרון</translation>
 <translation id="7314734791127433392">לא ניתן לבדוק את הסיסמאות</translation>
 <translation id="7324354302972299151">‏שליחה של בקשת Do Not Track</translation>
@@ -1455,7 +1455,7 @@
 <translation id="7573665567024262965">בחירת האפליקציות שיוגדרו כברירות המחדל</translation>
 <translation id="7577900504646297215">ניהול תחומי עניין</translation>
 <translation id="757855969265046257">{FILES,plural, =1{הורדת קובץ אחד (<ph name="FILES_DOWNLOADED_ONE" />)}one{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}two{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}other{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}}</translation>
-<translation id="7581273696622423628">השתתף בסקר</translation>
+<translation id="7581273696622423628">השתתפות בסקר</translation>
 <translation id="7583262514280211622">רשימת הקריאה זמינה כאן</translation>
 <translation id="758603037873046260">צריך להיכנס לחשבון כדי לשמור את הדף הזה</translation>
 <translation id="7588219262685291874">עיצוב כהה מופעל כשהמכשיר עובר לחיסכון בסוללה</translation>
@@ -1478,7 +1478,7 @@
 <translation id="7656862631699126784">הפעלה של נעילת הכרטיסיות הפרטיות</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7663320421139257046">כדי להמשיך, פרטים מסוימים (<ph name="FIELDS_STRING" />) ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה. <ph name="BEGIN_LINK1" />כאן מפורטת מדיניות הפרטיות<ph name="END_LINK1" /> של האתר הזה.</translation>
-<translation id="766587987807204883">כאן יוצגו מאמרים, ואפשר לקרוא אותם גם במצב אונליין</translation>
+<translation id="766587987807204883">כאן יופיעו מאמרים שאפשר לקרוא גם במצב לא מקוון</translation>
 <translation id="7666185984446444960">‫<ph name="TAB_GROUPS_AND_TABS_PART" /> נסגרו</translation>
 <translation id="7682724950699840886">אפשר לנסות את הטיפים הבאים: צריך לוודא שיש מספיק מקום פנוי במכשיר ואז לנסות לייצא שוב.</translation>
 <translation id="7686086654630106285">מידע נוסף על הצעות למודעות באתרים</translation>
@@ -1571,7 +1571,7 @@
 <translation id="8066816452984416180">הוספה מהירה של הדף הזה לסימניות. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
 <translation id="8073388330009372546">פתיחת התמונה בכרטיסייה חדשה</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
-<translation id="8078096376109663956">יש לשתף טקסט בלבד</translation>
+<translation id="8078096376109663956">שיתוף טקסט בלבד</translation>
 <translation id="8078348702936632821">הצמדת קיצור הדרך הזה</translation>
 <translation id="8084285576995584326">‏שלטו בנתונים שבחשבון Google שלכם</translation>
 <translation id="8084864785646838999">‏יכול להיות שחלק מההיסטוריה שלך לא מופיע כאן. צריך לפתוח את ההיסטוריה המלאה ב-Chrome כדי לראות את הכול. אולי אפשר גם לראות סוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -1666,7 +1666,7 @@
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{ההרשאות הוסרו מאתר אחד}one{ההרשאות הוסרו מ-# אתרים}two{ההרשאות הוסרו מ-# אתרים}other{ההרשאות הוסרו מ-# אתרים}}</translation>
 <translation id="8453310803815879010">‏הפעלת המשחק Dino</translation>
 <translation id="8455675988389029454">יש לך אפשרות לקבל גישה לסימניות, לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>
-<translation id="8458413889418591446">אחרי סנכרון ההיסטוריה והכרטיסיות אפשר יהיה לחזור במהירות לאתרים שביקרת בהם</translation>
+<translation id="8458413889418591446">רוצה לחזור במהירות לאתרים שביקרת בהם? צריך קודם לסנכרן את ההיסטוריה ואת הכרטיסיות</translation>
 <translation id="84594714173170813">‏המשך השימוש בנתוני Chrome בחשבון Google שלך</translation>
 <translation id="8460448946170646641">בדיקה של אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
@@ -1837,7 +1837,7 @@
 <translation id="930124987204876019">‏מחיקת ההיסטוריה, קובצי ה-Cookie, נתוני האתרים, המטמון…</translation>
 <translation id="938850635132480979">שגיאה: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>
-<translation id="95817756606698420">‏דפדפן Chrome יכול להשתמש ב-<ph name="BEGIN_BOLD" />Sogou‏<ph name="END_BOLD" /> כדי לבצע חיפוש מסין. אפשר לשנות את ההעדפה הזאת ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
+<translation id="95817756606698420">‏דפדפן Chrome יכול להשתמש ב-<ph name="BEGIN_BOLD" />Sogou‏<ph name="END_BOLD" /> כדי לבצע חיפוש בסין. אפשר לשנות את ההעדפה הזאת ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">מחיקת נתוני הגלישה</translation>
 <translation id="963246339335003378">פתיחת מנהל המשימות</translation>
 <translation id="966131775676567255">נתוני החשבון נמחקים</translation>

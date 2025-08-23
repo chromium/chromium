@@ -33,7 +33,7 @@
         وإلغاء اختيار "<ph name="NO_PREFETCH_DESCRIPTION" />."
         في حال لم يتم حلّ المشكلة، نوصي بتحديد هذا الخيار
         مرة أخرى لتحسين الأداء.</translation>
-<translation id="6855094794438142393">‏انتقل إلى
+<translation id="6855094794438142393">‏يجب النقر على
           قائمة Chrome &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -41,8 +41,8 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          إعدادات الشبكة المحلية
-          وألغ اختيار "استخدام خادم وكيل لشبكة الاتصال المحلية".</translation>
+          إعدادات LAN
+          وإلغاء اختيار "استخدام خادم وكيل لشبكة الاتصال المحلية".</translation>
 <translation id="7230956101631259640">‏أنت تعرض صفحة Chrome آمنة.</translation>
 <translation id="8232971017369963250">‏أصبح Chrome متاحًا من خلال مشروع <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> المفتوح المصدر.</translation>
 <translation id="8279509328145658601">‏أصبح Chrome متاحًا أيضًا من خلال <ph name="BEGIN_LINK_OSS" />برنامج آخر مفتوح المصدر<ph name="END_LINK_OSS" />.</translation>
