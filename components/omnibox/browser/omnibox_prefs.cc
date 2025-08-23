@@ -19,10 +19,6 @@
 
 namespace omnibox {
 
-namespace {
-constexpr int kAIModeAllowed = 0;
-}  // namespace
-
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       kKeywordSpaceTriggeringEnabled, true,
@@ -51,7 +47,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kShownCountHistoryScopePromo, 0);
   registry->RegisterIntegerPref(kShownCountHistoryEmbeddingsScopePromo, 0);
   registry->RegisterIntegerPref(kFocusedSrpWebCount, 0);
-  registry->RegisterIntegerPref(omnibox::kAIModeSettings, kAIModeAllowed);
 }
 
 void SetUserPreferenceForZeroSuggestCachedResponse(
@@ -83,10 +78,6 @@ std::string GetUserPreferenceForZeroSuggestCachedResponse(
       prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL);
   auto* value_ptr = dictionary.FindString(page_url);
   return value_ptr ? *value_ptr : std::string();
-}
-
-bool IsAimAllowedByPolicy(const PrefService* prefs) {
-  return prefs->GetInteger(omnibox::kAIModeSettings) == omnibox::kAIModeAllowed;
 }
 
 }  // namespace omnibox

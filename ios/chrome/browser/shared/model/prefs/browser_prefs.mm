@@ -1063,8 +1063,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(prefs::kIosSyncInfobarErrorLastDismissedTimestamp,
                              base::Time());
 
-  registry->RegisterIntegerPref(omnibox::kAIModeSettings, 0);
-
   registry->RegisterIntegerPref(prefs::kGeminiEnabledByPolicy, 0);
 
   // Deprecated 09/2024 (migrated to localState prefs).
