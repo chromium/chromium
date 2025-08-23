@@ -413,10 +413,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [self updateItemsInProgressState];
 
-  [self reconfigureCellsForItems:@[
+  NSMutableArray* items = [NSMutableArray arrayWithArray:@[
     self.cardLastDigitsItem, self.cardholderNameItem, self.expirationMonthItem,
-    self.expirationYearItem, self.cardCvcItem, self.saveCardButtonItem
+    self.expirationYearItem, self.saveCardButtonItem
   ]];
+  if (self.cardCvcItem) {
+    [items addObject:self.cardCvcItem];
+  }
+  [self reconfigureCellsForItems:items];
 }
 
 #pragma mark - UITableViewDelegate
