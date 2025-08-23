@@ -302,7 +302,10 @@ void CustomElement::TryToUpgrade(Element& element) {
   DCHECK_EQ(element.GetCustomElementState(), CustomElementState::kUndefined);
 
   CustomElementRegistry* registry =
-      element.GetTreeScope().customElementRegistry();
+      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
+          ? element.customElementRegistry()
+          : element.GetTreeScope().customElementRegistry();
+
   if (!registry)
     return;
   const AtomicString& is_value = element.IsValue();
