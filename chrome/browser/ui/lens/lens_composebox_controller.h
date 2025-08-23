@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -29,7 +30,8 @@ class LensComposeboxHandler;
 class LensComposeboxController {
  public:
   explicit LensComposeboxController(
-      LensSearchController* lens_search_controller);
+      LensSearchController* lens_search_controller,
+      Profile* profile);
   ~LensComposeboxController();
 
   // This method is used to set up communication between this instance and the
@@ -67,6 +69,9 @@ class LensComposeboxController {
 
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;
+
+  // Guarantee to outlive this.
+  const raw_ptr<Profile> profile_;
 
   // The remote UI's capabilities.
   std::set<lens::FeatureCapability> remote_ui_capabilities_;
