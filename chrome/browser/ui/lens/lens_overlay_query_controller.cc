@@ -262,6 +262,8 @@ LenOverlayEntryPointFromInvocationSource(
       return lens::LensOverlayClientLogs::IMAGE_CONTEXT_MENU;
     case lens::LensOverlayInvocationSource::kContentAreaContextMenuText:
       return lens::LensOverlayClientLogs::TEXT_CONTEXT_MENU;
+    case lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo:
+      return lens::LensOverlayClientLogs::VIDEO_CONTEXT_MENU;
     case lens::LensOverlayInvocationSource::kOmnibox:
       return lens::LensOverlayClientLogs::OMNIBOX_BUTTON;
     case lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion:

@@ -77,6 +77,8 @@ inline constexpr char kInvocationSourceImageSearchContextMenu[] =
     "chrome.cr.ctxi";
 inline constexpr char kInvocationSourceTextSearchContextMenu[] =
     "chrome.cr.ctxt";
+inline constexpr char kInvocationSourceVideoSearchContextMenu[] =
+    "chrome.cr.ctxv";
 inline constexpr char kInvocationSourceFindInPage[] = "chrome.cr.find";
 inline constexpr char kInvocationSourceToolbarIcon[] = "chrome.cr.tbic";
 inline constexpr char kInvocationSourceOmniboxIcon[] = "chrome.cr.obic";
@@ -235,6 +237,9 @@ GURL AppendInvocationSourceParamToURL(
       break;
     case lens::LensOverlayInvocationSource::kContentAreaContextMenuText:
       param_value = kInvocationSourceTextSearchContextMenu;
+      break;
+    case lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo:
+      param_value = kInvocationSourceVideoSearchContextMenu;
       break;
     case lens::LensOverlayInvocationSource::kToolbar:
       param_value = kInvocationSourceToolbarIcon;

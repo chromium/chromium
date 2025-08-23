@@ -50,6 +50,8 @@ std::string InvocationSourceToString(
       return "FREPromo";
     case LensOverlayInvocationSource::kContentAreaContextMenuText:
       return "ContentAreaContextMenuText";
+    case LensOverlayInvocationSource::kContentAreaContextMenuVideo:
+      return "ContentAreaContextMenuVideo";
   }
 }
 
@@ -445,6 +447,11 @@ void RecordTimeToFirstInteraction(
     case lens::LensOverlayInvocationSource::kContentAreaContextMenuText:
       event.SetContentAreaContextMenuText(
           time_to_first_interaction.InMilliseconds());
+      break;
+    case lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo:
+      // Not recorded since the video context menu entry point results in a
+      // search without the user having to interact with the overlay. Time to
+      // first interaction in this case is essentially zero.
       break;
   }
   event.SetFirstInteractionType(static_cast<int64_t>(first_interaction_type))

@@ -672,6 +672,14 @@ TEST_F(LensOverlayUrlBuilderTest,
   EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
                 base_url, lens::LensOverlayInvocationSource::kOmnibox),
             expected_omnibox_url);
+
+  std::string expected_context_menu_video_url =
+      base::StringPrintf("%s?source=chrome.cr.ctxv", kResultsSearchBaseUrl);
+  EXPECT_EQ(
+      lens::AppendInvocationSourceParamToURL(
+          base_url,
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo),
+      expected_context_menu_video_url);
 }
 
 TEST_F(LensOverlayUrlBuilderTest,
