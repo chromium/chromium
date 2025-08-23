@@ -268,6 +268,10 @@ class LensOverlaySidePanelCoordinator
   // Notifies the side panel WebUI that the AIM handshake has been received.
   virtual void AimHandshakeReceived();
 
+  // Notifies the side panel WebUI that the results have moved to/from the AIM
+  // UI. `on_aim` is true if the results are now in the AIM UI.
+  virtual void AimResultsChanged(bool on_aim);
+
  private:
   // Data class for constructing the side panel and storing side panel state for
   // kSuspended state.
