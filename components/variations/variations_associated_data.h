@@ -38,7 +38,11 @@ typedef int VariationID;
 class COMPONENT_EXPORT(VARIATIONS) TimeWindow {
  public:
   TimeWindow() = default;
-  TimeWindow(base::Time start, base::Time end);
+  // Creates a TimeWindow with the given `start` and `end` times. The `start`
+  // time must be strictly less than the `end` time, otherwise the TimeWindow
+  // is empty/invalid (i.e. has zero duration).
+  TimeWindow(base::Time start, base::Time end)
+      : start_(start), end_(end) {}
 
   // Copyable and moveable.
   TimeWindow(const TimeWindow& other) = default;
@@ -46,8 +50,20 @@ class COMPONENT_EXPORT(VARIATIONS) TimeWindow {
   TimeWindow& operator=(const TimeWindow& other) = default;
   TimeWindow& operator=(TimeWindow&& other) = default;
 
+  // Returns the start and end times of the TimeWindow. These times are
+  // best-effort network times.
   base::Time start() const { return start_; }
   base::Time end() const { return end_; }
+
+  // Returns true if the TimeWindow is valid (i.e. the start time is less than
+  // the end time).
+  bool IsValid() const { return start_ < end_; }
+
+  // Returns true if the `time` is within the TimeWindow and the TimeWindow is
+  // valid (non-empty).
+  bool Contains(base::Time time) const {
+    return (start_ <= time) && (time <= end_) && (start_ < end_);
+  }
 
  private:
   base::Time start_ = base::Time::Min();
