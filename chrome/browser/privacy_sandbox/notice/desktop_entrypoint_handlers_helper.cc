@@ -4,9 +4,9 @@
 #include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers_helper.h"
 
 #include "chrome/browser/search/search.h"
-#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/webui_url_constants.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 
 namespace {
 

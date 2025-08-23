@@ -219,6 +219,10 @@
     // "desktop_android" is not supported.
     "platforms": ["chromeos", "linux", "mac", "win"]
   },
+  "devtools": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"]
+  },
   "diagnostics": [
     {
       "channel": "dev",

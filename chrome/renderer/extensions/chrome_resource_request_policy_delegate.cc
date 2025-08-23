@@ -4,8 +4,8 @@
 
 #include "chrome/renderer/extensions/chrome_resource_request_policy_delegate.h"
 
-#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/url_constants.h"
+#include "extensions/common/manifest_handlers/devtools_page_handler.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 
 namespace extensions {

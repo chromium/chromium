@@ -115,6 +115,20 @@
       "75C7F4B720314B6CB1B5817CD86089DB95CD2461"  // http://crbug.com/899052
     ]
   }],
+  "chrome_url_overrides": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"]
+  },
+  "chrome_url_overrides.activationmessage": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"],
+    "platforms": ["chromeos"]
+  },
+  "chrome_url_overrides.keyboard": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"],
+    "platforms": ["chromeos"]
+  },
   "commands": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"]
@@ -166,6 +180,10 @@
   "description": {
     "channel": "stable",
     "extension_types": "all"
+  },
+  "devtools_page": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"]
   },
   "differential_fingerprint": {
     "channel": "stable",

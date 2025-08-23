@@ -241,10 +241,6 @@
         "5F57A9AE8DFF5D6BB09DF8606270402612E871E5"  // http://crbug.com/422624
     ]
   },
-  "devtools": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
-  },
   "declarativeContent": {
     "channel": "stable",
     "extension_types": ["extension"]

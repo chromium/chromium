@@ -131,11 +131,11 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/manifest_handlers/devtools_page_handler.h"
 #include "extensions/common/permissions/permissions_data.h"
 #endif
 

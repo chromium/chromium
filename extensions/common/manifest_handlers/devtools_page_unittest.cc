@@ -5,11 +5,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
-#include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/devtools_page_handler.h"
 #include "extensions/common/manifest_test.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,7 +17,7 @@ namespace extensions {
 
 namespace {
 
-using DevToolsPageManifestTest = ChromeManifestTest;
+using DevToolsPageManifestTest = ManifestTest;
 
 TEST_F(DevToolsPageManifestTest, DevToolsExtensions) {
   LoadAndExpectError("devtools_extension_url_invalid_type.json",

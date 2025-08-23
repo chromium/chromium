@@ -18,11 +18,13 @@
 #include "extensions/common/manifest_handlers/app_display_info.h"
 #include "extensions/common/manifest_handlers/automation.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/cross_origin_isolation_info.h"
 #include "extensions/common/manifest_handlers/csp_info.h"
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
+#include "extensions/common/manifest_handlers/devtools_page_handler.h"
 #include "extensions/common/manifest_handlers/extension_action_handler.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
@@ -68,6 +70,7 @@ void RegisterCommonManifestHandlers() {
       std::make_unique<declarative_net_request::DNRManifestHandler>());
   registry->RegisterHandler(std::make_unique<DeclarativeManifestHandler>());
   registry->RegisterHandler(std::make_unique<DefaultLocaleHandler>());
+  registry->RegisterHandler(std::make_unique<DevToolsPageHandler>());
   registry->RegisterHandler(std::make_unique<ExternallyConnectableHandler>());
   registry->RegisterHandler(std::make_unique<ExtensionActionHandler>());
   registry->RegisterHandler(std::make_unique<FileHandlersParser>());
@@ -91,6 +94,7 @@ void RegisterCommonManifestHandlers() {
   registry->RegisterHandler(std::make_unique<SocketsManifestHandler>());
   registry->RegisterHandler(std::make_unique<TrialTokensHandler>());
   registry->RegisterHandler(std::make_unique<UpdateURLHandler>());
+  registry->RegisterHandler(std::make_unique<URLOverridesHandler>());
   registry->RegisterHandler(std::make_unique<UsbPrinterManifestHandler>());
   registry->RegisterHandler(std::make_unique<WebAccessibleResourcesHandler>());
   registry->RegisterHandler(std::make_unique<WebviewHandler>());

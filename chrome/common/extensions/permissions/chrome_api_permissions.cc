@@ -206,10 +206,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagImpliesFullURLAccess |
          APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagRequiresManagementUIWarning},
-    {APIPermissionID::kDevtools, "devtools",
-     APIPermissionInfo::kFlagImpliesFullURLAccess |
-         APIPermissionInfo::kFlagCannotBeOptional |
-         APIPermissionInfo::kFlagInternal},
     {APIPermissionID::kPageCapture, "pageCapture",
      APIPermissionInfo::kFlagImpliesFullURLAccess},
     {APIPermissionID::kProxy, "proxy",

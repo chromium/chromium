@@ -170,11 +170,7 @@ chrome_extensions_types_only_schema_sources =
     get_path_info(types_only_schema_sources_, "abspath")
 
 chrome_extensions_manifest_only_schema_sources =
-    get_path_info([
-                    "manifest_types.json",
-                    "chrome_url_overrides.idl",
-                  ],
-                  "abspath")
+    get_path_info([ "manifest_types.json" ], "abspath")
 
 chrome_extensions_api_uncompiled_sources =
     get_path_info(uncompiled_sources_, "abspath")

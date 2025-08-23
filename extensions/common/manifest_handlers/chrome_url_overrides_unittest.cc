@@ -4,17 +4,22 @@
 
 #include <algorithm>
 
+#include "base/files/scoped_temp_dir.h"
+#include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
-#include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "extensions/common/error_utils.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
+#include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
 namespace errors = manifest_errors;
 
-using URLOverridesManifestTest = ChromeManifestTest;
+using URLOverridesManifestTest = ManifestTest;
 
 TEST_F(URLOverridesManifestTest, Override) {
   RunTestcase(
@@ -50,6 +55,28 @@ TEST_F(URLOverridesManifestTest, Override) {
 #else
   EXPECT_TRUE(URLOverrides::GetChromeURLOverrides(extension.get()).empty());
 #endif
+}
+
+TEST(ChromeURLOverridesHandlerTest, TestFileMissing) {
+  auto manifest = base::Value::Dict()
+                      .Set("name", "ntp override")
+                      .Set("version", "1.0")
+                      .Set("manifest_version", 3)
+                      .Set("chrome_url_overrides",
+                           base::Value::Dict().Set("newtab", "newtab.html"));
+  std::string error;
+  std::vector<InstallWarning> warnings;
+  base::ScopedTempDir dir;
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  scoped_refptr<Extension> extension =
+      Extension::Create(dir.GetPath(), mojom::ManifestLocation::kInternal,
+                        manifest, Extension::NO_FLAGS, std::string(), &error);
+  ASSERT_TRUE(extension);
+  EXPECT_FALSE(
+      file_util::ValidateExtension(extension.get(), &error, &warnings));
+  EXPECT_EQ(ErrorUtils::FormatErrorMessage(manifest_errors::kFileNotFound,
+                                           "newtab.html"),
+            error);
 }
 
 }  // namespace extensions
