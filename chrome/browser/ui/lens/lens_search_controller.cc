@@ -331,6 +331,24 @@ void LensSearchController::HideOverlay(
   }
 }
 
+void LensSearchController::HideOverlay() {
+  if (state() == State::kOff) {
+    return;
+  }
+
+  // This method should only be called when the side panel is open.
+  DCHECK(lens_overlay_side_panel_coordinator_->state() !=
+         lens::LensOverlaySidePanelCoordinator::State::kOff);
+
+  // If the overlay is showing, the overlay needs to fade out. Play the fade out
+  // animation and then clean up the rest of the UI afterwards.
+  if (lens_overlay_controller_->state() != LensOverlayController::State::kOff) {
+    lens_overlay_controller_->TriggerOverlayFadeOutAnimation(
+        base::BindOnce(&LensSearchController::OnOverlayHidden,
+                       weak_ptr_factory_.GetWeakPtr(), std::nullopt));
+  }
+}
+
 void LensSearchController::MaybeLaunchSurvey() {
   if (!base::FeatureList::IsEnabled(lens::features::kLensOverlaySurvey)) {
     return;
@@ -619,11 +637,20 @@ void LensSearchController::CloseLensPart2(
 }
 
 void LensSearchController::OnOverlayHidden(
-    lens::LensOverlayDismissalSource dismissal_source) {
+    std::optional<lens::LensOverlayDismissalSource> dismissal_source) {
   // If the side panel is not open, end the session.
   if (lens_overlay_side_panel_coordinator_->state() ==
       lens::LensOverlaySidePanelCoordinator::State::kOff) {
-    CloseLensPart2(dismissal_source);
+    // The caller should not have called this function without a dismissal
+    // source if the side panel is not open, because it would leave the Lens
+    // session in an inconsistent state.
+    // TODO(crbug.com/440608864): Make this a CHECK once this is verified.
+    if (!dismissal_source.has_value()) {
+      // Exit early to avoid a crash.
+      DCHECK(dismissal_source.has_value());
+      return;
+    }
+    CloseLensPart2(dismissal_source.value());
     return;
   }
 

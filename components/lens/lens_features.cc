@@ -594,6 +594,9 @@ constexpr base::FeatureParam<bool> kSidePanelGhostLoaderDisabledForAim{
 constexpr base::FeatureParam<bool> kContextualizeOnFocus{
     &kLensSearchAimM3, "contextualize-on-focus", false};
 
+constexpr base::FeatureParam<bool> kCloseOverlayOnAimTransition{
+    &kLensSearchAimM3, "close-overlay-on-aim-transition", true};
+
 const base::FeatureParam<int> kLensOverlayEntrypointLabelAltId{
     &kLensOverlayEntrypointLabelAlt, "id", 0};
 
@@ -1116,6 +1119,11 @@ bool GetSidePanelGhostLoaderDisabledForAim() {
 bool GetShouldComposeboxContextualizeOnFocus() {
   return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
          kContextualizeOnFocus.Get();
+}
+
+bool ShouldCloseOverlayOnAimTransition() {
+  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
+         kCloseOverlayOnAimTransition.Get();
 }
 
 bool ShouldUseAltLoadingHintWeb() {

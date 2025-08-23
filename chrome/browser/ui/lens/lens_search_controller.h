@@ -157,6 +157,10 @@ class LensSearchController {
   // is open without the side panel, this will end the Lens session.
   void HideOverlay(lens::LensOverlayDismissalSource dismissal_source);
 
+  // Same as above, but does not close the session when the overlay is closed.
+  // Can only be called when the side panel is open.
+  void HideOverlay();
+
   // Launches the survey if the user has not already seen it.
   void MaybeLaunchSurvey();
 
@@ -280,7 +284,7 @@ class LensSearchController {
 
   // The final step for closing the overlay. This is called after the lens
   // overlay has faded out.
-  void OnOverlayHidden(lens::LensOverlayDismissalSource dismissal_source);
+  void OnOverlayHidden(std::optional<lens::LensOverlayDismissalSource> dismissal_source);
 
   // Called before the lens results panel begins hiding. This is called before
   // any side panel closing animations begin.
