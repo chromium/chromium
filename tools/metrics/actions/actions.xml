@@ -50776,6 +50776,8 @@ should be able to be added at any place in this file.
       label="Move a custom item to the previous position."/>
   <suffix name="OpenItemInIncognitoTab"
       label="Open a suggested item in an incognito tab."/>
+  <suffix name="OpenItemInIncognitoWindow"
+      label="Open a suggested item in an incognito window."/>
   <suffix name="OpenItemInNewTab" label="Open a suggested item in a new tab."/>
   <suffix name="OpenItemInNewTabInGroup"
       label="Open a suggested item in a new tab in group."/>

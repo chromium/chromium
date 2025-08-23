@@ -39,6 +39,7 @@ class ChromeContextMenuItem {
         Item.OPEN_IN_BROWSER_ID,
         Item.OPEN_IN_NEW_TAB,
         Item.OPEN_IN_INCOGNITO_TAB,
+        Item.OPEN_IN_INCOGNITO_WINDOW,
         Item.OPEN_IN_OTHER_WINDOW,
         Item.OPEN_IN_NEW_WINDOW,
         Item.SHOW_INTEREST_IN_ELEMENT,
@@ -88,50 +89,51 @@ class ChromeContextMenuItem {
         int OPEN_IN_NEW_TAB = 3;
         int OPEN_IN_NEW_TAB_IN_GROUP = 4;
         int OPEN_IN_INCOGNITO_TAB = 5;
-        int OPEN_IN_OTHER_WINDOW = 6;
-        int OPEN_IN_NEW_WINDOW = 7;
-        int SHOW_INTEREST_IN_ELEMENT = 8;
-        int OPEN_IN_EPHEMERAL_TAB = 9;
-        int COPY_LINK_ADDRESS = 10;
-        int COPY_LINK_TEXT = 11;
-        int SAVE_LINK_AS = 12;
-        int SHARE_LINK = 13;
-        int DIRECT_SHARE_LINK = 14;
-        int READ_LATER = 15;
+        int OPEN_IN_INCOGNITO_WINDOW = 6;
+        int OPEN_IN_OTHER_WINDOW = 7;
+        int OPEN_IN_NEW_WINDOW = 8;
+        int SHOW_INTEREST_IN_ELEMENT = 9;
+        int OPEN_IN_EPHEMERAL_TAB = 10;
+        int COPY_LINK_ADDRESS = 11;
+        int COPY_LINK_TEXT = 12;
+        int SAVE_LINK_AS = 13;
+        int SHARE_LINK = 14;
+        int DIRECT_SHARE_LINK = 15;
+        int READ_LATER = 16;
         // Image Group
-        int LOAD_ORIGINAL_IMAGE = 16;
-        int SAVE_IMAGE = 17;
-        int OPEN_IMAGE = 18;
-        int OPEN_IMAGE_IN_NEW_TAB = 19;
-        int OPEN_IMAGE_IN_EPHEMERAL_TAB = 20;
-        int COPY_IMAGE = 21;
-        int SEARCH_BY_IMAGE = 22;
-        int SEARCH_WITH_GOOGLE_LENS = 23;
-        int SHOP_IMAGE_WITH_GOOGLE_LENS = 24;
-        int SHARE_IMAGE = 25;
-        int DIRECT_SHARE_IMAGE = 26;
+        int LOAD_ORIGINAL_IMAGE = 17;
+        int SAVE_IMAGE = 18;
+        int OPEN_IMAGE = 19;
+        int OPEN_IMAGE_IN_NEW_TAB = 20;
+        int OPEN_IMAGE_IN_EPHEMERAL_TAB = 21;
+        int COPY_IMAGE = 22;
+        int SEARCH_BY_IMAGE = 23;
+        int SEARCH_WITH_GOOGLE_LENS = 24;
+        int SHOP_IMAGE_WITH_GOOGLE_LENS = 25;
+        int SHARE_IMAGE = 26;
+        int DIRECT_SHARE_IMAGE = 27;
         // Message Group
-        int CALL = 27;
-        int SEND_MESSAGE = 28;
-        int ADD_TO_CONTACTS = 29;
-        int COPY = 30;
+        int CALL = 28;
+        int SEND_MESSAGE = 29;
+        int ADD_TO_CONTACTS = 30;
+        int COPY = 31;
         // Video Group
-        int SAVE_VIDEO = 31;
-        int PICTURE_IN_PICTURE = 32;
+        int SAVE_VIDEO = 32;
+        int PICTURE_IN_PICTURE = 33;
         // Other
-        int OPEN_IN_CHROME = 33;
+        int OPEN_IN_CHROME = 34;
         // Shared Highlighting options
-        int SHARE_HIGHLIGHT = 34;
-        int REMOVE_HIGHLIGHT = 35;
-        int LEARN_MORE = 36;
+        int SHARE_HIGHLIGHT = 35;
+        int REMOVE_HIGHLIGHT = 36;
+        int LEARN_MORE = 37;
         // Page Group
-        int SAVE_PAGE = 37;
-        int SHARE_PAGE = 38;
-        int PRINT_PAGE = 39;
+        int SAVE_PAGE = 38;
+        int SHARE_PAGE = 39;
+        int PRINT_PAGE = 40;
         // Developer Group
-        int INSPECT_ELEMENT = 40;
+        int INSPECT_ELEMENT = 41;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 41;
+        int NUM_ENTRIES = 42;
     }
 
     /** Mapping from {@link Item} to the ID found in the ids.xml. */
@@ -142,6 +144,7 @@ class ChromeContextMenuItem {
         R.id.contextmenu_open_in_new_tab, // Item.OPEN_IN_NEW_TAB
         R.id.contextmenu_open_in_new_tab_in_group, // Item.OPEN_IN_NEW_TAB_IN_GROUP
         R.id.contextmenu_open_in_incognito_tab, // Item.OPEN_IN_INCOGNITO_TAB
+        R.id.contextmenu_open_in_incognito_window, // Item.OPEN_IN_INCOGNITO_WINDOW
         R.id.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW
         R.id.contextmenu_open_in_new_window, // Item.OPEN_IN_NEW_WINDOW
         R.id.contextmenu_show_interest_in_element, // Item.SHOW_INTEREST_IN_ELEMENT
@@ -187,6 +190,7 @@ class ChromeContextMenuItem {
         R.string.contextmenu_open_in_new_tab, // Item.OPEN_IN_NEW_TAB:
         R.string.contextmenu_open_in_new_tab_group, // Item.OPEN_IN_NEW_TAB_IN_GROUP
         R.string.contextmenu_open_in_incognito_tab, // Item.OPEN_IN_INCOGNITO_TAB:
+        R.string.contextmenu_open_in_incognito_window, // Item.OPEN_IN_INCOGNITO_TAB:
         R.string.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW:
         R.string.contextmenu_open_in_new_window, // Item.OPEN_IN_NEW_WINDOW:
         R.string.contextmenu_show_interest_in_element, // Item.SHOW_INTEREST_IN_ELEMENT

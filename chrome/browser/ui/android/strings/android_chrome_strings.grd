@@ -2871,6 +2871,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_OPEN_IN_INCOGNITO_TAB" desc="Context sensitive menu item to open the selected link in a new Incognito tab. [CHAR_LIMIT=30]">
         Open in Incognito tab
       </message>
+      <message name="IDS_CONTEXTMENU_OPEN_IN_INCOGNITO_WINDOW" desc="Context sensitive menu item to open the selected link in a new Incognito window. [CHAR_LIMIT=30]">
+        Open in Incognito window
+      </message>
       <message name="IDS_CONTEXTMENU_CALL" desc="Context sensitive menu for calling phone number. [CHAR_LIMIT=30]">
         Call
       </message>

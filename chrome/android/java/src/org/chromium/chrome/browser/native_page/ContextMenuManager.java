@@ -13,6 +13,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.tile.TileUtils;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
@@ -45,6 +46,7 @@ public class ContextMenuManager {
         ContextMenuItemId.OPEN_IN_NEW_TAB,
         ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP,
         ContextMenuItemId.OPEN_IN_INCOGNITO_TAB,
+        ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW,
         ContextMenuItemId.OPEN_IN_NEW_WINDOW,
         ContextMenuItemId.OPEN_ALL,
         ContextMenuItemId.SAVE_FOR_OFFLINE,
@@ -65,20 +67,21 @@ public class ContextMenuManager {
         int OPEN_IN_NEW_TAB = 1;
         int OPEN_IN_NEW_TAB_IN_GROUP = 2;
         int OPEN_IN_INCOGNITO_TAB = 3;
-        int OPEN_IN_NEW_WINDOW = 4;
-        int OPEN_ALL = 5;
-        int SAVE_FOR_OFFLINE = 6;
-        int ADD_TO_MY_APPS = 7;
-        int REMOVE = 8;
-        int REMOVE_ALL = 9;
-        int PIN_THIS_SHORTCUT = 10;
-        int EDIT_SHORTCUT = 11;
-        int UNPIN = 12;
-        int MOVE_UP = 13;
-        int MOVE_DOWN = 14;
-        int HIDE_ALL = 15;
+        int OPEN_IN_INCOGNITO_WINDOW = 4;
+        int OPEN_IN_NEW_WINDOW = 5;
+        int OPEN_ALL = 6;
+        int SAVE_FOR_OFFLINE = 7;
+        int ADD_TO_MY_APPS = 8;
+        int REMOVE = 9;
+        int REMOVE_ALL = 10;
+        int PIN_THIS_SHORTCUT = 11;
+        int EDIT_SHORTCUT = 12;
+        int UNPIN = 13;
+        int MOVE_UP = 14;
+        int MOVE_DOWN = 15;
+        int HIDE_ALL = 16;
 
-        int NUM_ENTRIES = 16;
+        int NUM_ENTRIES = 17;
     }
 
     private final NativePageNavigationDelegate mNavigationDelegate;
@@ -341,7 +344,11 @@ public class ContextMenuManager {
             case ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP:
                 return mNavigationDelegate.isOpenInNewTabInGroupEnabled();
             case ContextMenuItemId.OPEN_IN_INCOGNITO_TAB:
-                return mNavigationDelegate.isOpenInIncognitoEnabled();
+                return mNavigationDelegate.isOpenInIncognitoEnabled()
+                        && !IncognitoUtils.shouldOpenIncognitoAsWindow();
+            case ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW:
+                return mNavigationDelegate.isOpenInIncognitoEnabled()
+                        && IncognitoUtils.shouldOpenIncognitoAsWindow();
             case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
                 return mNavigationDelegate.isOpenInNewWindowEnabled();
             case ContextMenuItemId.OPEN_ALL:
@@ -386,6 +393,8 @@ public class ContextMenuManager {
                 return R.string.contextmenu_open_in_new_tab_group;
             case ContextMenuItemId.OPEN_IN_INCOGNITO_TAB:
                 return R.string.contextmenu_open_in_incognito_tab;
+            case ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW:
+                return R.string.contextmenu_open_in_incognito_window;
             case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
                 return R.string.contextmenu_open_in_other_window;
             case ContextMenuItemId.OPEN_ALL:
@@ -433,6 +442,11 @@ public class ContextMenuManager {
             case ContextMenuItemId.OPEN_IN_INCOGNITO_TAB:
                 delegate.openItem(WindowOpenDisposition.OFF_THE_RECORD);
                 RecordUserAction.record(mUserActionPrefix + ".ContextMenu.OpenItemInIncognitoTab");
+                return true;
+            case ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW:
+                delegate.openItem(WindowOpenDisposition.OFF_THE_RECORD);
+                RecordUserAction.record(
+                        mUserActionPrefix + ".ContextMenu.OpenItemInIncognitoWindow");
                 return true;
             case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
                 delegate.openItem(WindowOpenDisposition.NEW_WINDOW);

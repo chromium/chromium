@@ -13,6 +13,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
@@ -230,7 +231,9 @@ class TileInteractionDelegateImpl
             case ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP:
                 return true;
             case ContextMenuItemId.OPEN_IN_INCOGNITO_TAB:
-                return true;
+                return !IncognitoUtils.shouldOpenIncognitoAsWindow();
+            case ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW:
+                return IncognitoUtils.shouldOpenIncognitoAsWindow();
             case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
                 return true;
             case ContextMenuItemId.SAVE_FOR_OFFLINE:
