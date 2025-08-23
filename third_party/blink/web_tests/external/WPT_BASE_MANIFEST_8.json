@@ -193915,6 +193915,19 @@
           ],
           {}
          ]
+        ],
+        "shape-outside-linear-gradient-horizontal-rtl.html": [
+         "35e224eceff01b3716f55a15afffcf57efead011",
+         [
+          null,
+          [
+           [
+            "/css/css-shapes/shape-outside/shape-image/gradients/reference/shape-outside-linear-gradient-horizontal-rtl-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
         ]
        },
        "shape-image-000.html": [
@@ -278772,7 +278785,7 @@
       ]
      ],
      "text-combine-upright-sideways-001.html": [
-      "8fa22a7df8b1419546102ce214acf4d9774bd932",
+      "20417d9d5152b2de48ef7f88f932389f119dcf23",
       [
        null,
        [
@@ -278781,7 +278794,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            50
+           ],
+           [
+            0,
+            6
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "text-combine-upright-sideways-002.html": [
@@ -369830,6 +369859,10 @@
          "shape-outside-linear-gradient-004-ref.html": [
           "7a021199817c5356650585a60a9daa4911531491",
           []
+         ],
+         "shape-outside-linear-gradient-horizontal-rtl-ref.html": [
+          "a5750089015ebdafee111c4ba7002b101058e6a4",
+          []
          ]
         }
        },
@@ -435404,7 +435437,7 @@
       []
      ],
      "sandboxed-iframe-allow-storage-access.html": [
-      "4df0de7719d94eda471f751ed7dcc687d19db9b3",
+      "4510b8f83fca991a7a58b6847330ed8838724a48",
       []
      ],
      "sandboxed-iframe-no-storage-access.html": [
@@ -731024,7 +731057,7 @@
      ]
     ],
     "requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.js": [
-     "c163245ce36b9bab244730253948ec4d7902d5fb",
+     "faff38daf9b122116c169108cf889eb48a59a560",
      [
       "storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html",
       {
