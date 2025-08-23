@@ -5849,6 +5849,7 @@
     "prefix": "xslt-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
+      "fast/css/dumpAsText/xml-stylesheet-pi-not-in-prolog.xml",
       "fast/parser",
       "fast/xsl",
       "external/wpt/dom/xslt",
