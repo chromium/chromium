@@ -13,6 +13,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/plus_addresses",
+    "//components/plus_addresses/core/browser",
     "//components/plus_addresses/core/browser/metrics",
     "//components/plus_addresses/core/browser/settings",
     "//components/plus_addresses/resources/strings",

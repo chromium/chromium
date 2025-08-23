@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_UI_UTILS_H_
-#define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_UI_UTILS_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_UI_UTILS_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_UI_UTILS_H_
 
 #include <string>
 
@@ -24,4 +24,4 @@ std::u16string GetOriginForDisplay(const url::Origin& main_frame_origin);
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_UI_UTILS_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_UI_UTILS_H_

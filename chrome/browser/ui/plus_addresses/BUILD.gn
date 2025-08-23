@@ -109,6 +109,7 @@ source_set("impl") {
       "//chrome/browser/ui/plus_addresses/android:jni_headers",
       "//components/autofill/content/browser",
       "//components/plus_addresses",
+      "//components/plus_addresses/core/browser",
       "//components/plus_addresses/core/browser/settings",
       "//components/plus_addresses/core/common:features",
       "//components/plus_addresses/core/common:prefs",

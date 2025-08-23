@@ -12,8 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/plus_addresses/android/all_plus_addresses_bottom_sheet_controller.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_ui_utils.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/plus_address_ui_utils.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 

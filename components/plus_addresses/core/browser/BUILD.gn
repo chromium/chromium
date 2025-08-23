@@ -24,3 +24,19 @@ if (is_android) {
     sources = [ "plus_address_types.h" ]
   }
 }
+
+source_set("browser") {
+  sources = [
+    "plus_address_ui_utils.cc",
+    "plus_address_ui_utils.h",
+  ]
+  deps = [
+    "//components/affiliations/core/browser:affiliations",
+    "//components/url_formatter",
+  ]
+  public_deps = [
+    "//base",
+    "//components/plus_addresses/core/browser:types",
+    "//url",
+  ]
+}
