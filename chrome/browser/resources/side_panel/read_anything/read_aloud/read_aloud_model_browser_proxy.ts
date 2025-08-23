@@ -5,17 +5,28 @@
 // TODO: crbug.com/440400392- Add a TestModelBrowserProxyImpl to replace
 // FakeReadingMode.
 
+// Wrapper class to represent a node used by read aloud. The type of node
+// could be either a DOM node or an AXNode depending on what type of text
+// segmentation method is used.
+export abstract class ReadAloudNode {}
+
+export class AxReadAloudNode extends ReadAloudNode {
+  constructor(public readonly axNodeId: number) {
+    super();
+  }
+}
+
 // Proxy class used to wrap text segmentation calls. This can be used to use
 // different text segmentation approaches via feature flag, such as an
 // implementation in C++ and an implementation in TypeScript.
 export interface ReadAloudModelBrowserProxy {
   // TODO: crbug.com/440400392- Ensure all methods have documentation once
   // the structure is finalized.
-  getCurrentText(): number[];
+  getCurrentText(): ReadAloudNode[];
   getHighlightForCurrentSegmentIndex(index: number, phrases: boolean):
-      Array<{nodeId: number, start: number, length: number}>;
-  getCurrentTextStartIndex(nodeId: number): number;
-  getCurrentTextEndIndex(nodeId: number): number;
+      Array<{node: ReadAloudNode, start: number, length: number}>;
+  getCurrentTextStartIndex(node: ReadAloudNode): number;
+  getCurrentTextEndIndex(node: ReadAloudNode): number;
   getAccessibleBoundary(text: string, maxSpeechLength: number): number;
 
   // Handle speech positioning.
@@ -27,27 +38,35 @@ export interface ReadAloudModelBrowserProxy {
   // are tied to the V8 implementation. Investigation how these could be
   // tied into other more generic methods instead.
   isSpeechTreeInitialized(): boolean;
-  onFirstTextNode(textNodeId: number): void;
+  onFirstTextNode(textNode: ReadAloudNode): void;
 }
 
 class V8ModelImpl implements ReadAloudModelBrowserProxy {
-
-  getCurrentText(): number[] {
-    return chrome.readingMode.getCurrentText();
+  getCurrentText(): ReadAloudNode[] {
+    return chrome.readingMode.getCurrentText().map(
+        id => new AxReadAloudNode(id));
   }
 
   getHighlightForCurrentSegmentIndex(index: number, phrases: boolean):
-      Array<{nodeId: number, start: number, length: number}> {
-    return chrome.readingMode.getHighlightForCurrentSegmentIndex(
-        index, phrases);
+      Array<{node: ReadAloudNode, start: number, length: number}> {
+    return chrome.readingMode.getHighlightForCurrentSegmentIndex(index, phrases)
+        .map(
+            ({nodeId, start, length}) =>
+                ({node: new AxReadAloudNode(nodeId), start, length}));
   }
 
-  getCurrentTextStartIndex(nodeId: number): number {
-    return chrome.readingMode.getCurrentTextStartIndex(nodeId);
+  getCurrentTextStartIndex(node: ReadAloudNode): number {
+    if (!(node instanceof AxReadAloudNode)) {
+      return -1;
+    }
+    return chrome.readingMode.getCurrentTextStartIndex(node.axNodeId);
   }
 
-  getCurrentTextEndIndex(nodeId: number): number {
-    return chrome.readingMode.getCurrentTextEndIndex(nodeId);
+  getCurrentTextEndIndex(node: ReadAloudNode): number {
+    if (!(node instanceof AxReadAloudNode)) {
+      return -1;
+    }
+    return chrome.readingMode.getCurrentTextEndIndex(node.axNodeId);
   }
 
   resetSpeechToBeginning(): void {
@@ -62,8 +81,11 @@ class V8ModelImpl implements ReadAloudModelBrowserProxy {
     return chrome.readingMode.isSpeechTreeInitialized;
   }
 
-  onFirstTextNode(textNodeId: number) {
-    chrome.readingMode.initAxPositionWithNode(textNodeId);
+  onFirstTextNode(textNode: ReadAloudNode) {
+    if (!(textNode instanceof AxReadAloudNode)) {
+      return;
+    }
+    chrome.readingMode.initAxPositionWithNode(textNode.axNodeId);
   }
 
   moveSpeechForward() {

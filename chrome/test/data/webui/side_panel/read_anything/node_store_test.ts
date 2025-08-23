@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, ESTIMATED_WORDS_PER_MS, getWordCount, MIN_MS_TO_READ, NodeStore} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AxReadAloudNode, BrowserProxy, ESTIMATED_WORDS_PER_MS, getWordCount, MIN_MS_TO_READ, NodeStore} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
@@ -15,6 +15,11 @@ suite('NodeStore', () => {
   let nodeStore: NodeStore;
   let readingMode: FakeReadingMode;
   let now: number;
+
+  function areNodesAllHidden(axNodeIds: number[]): boolean {
+    return nodeStore.areNodesAllHidden(
+        axNodeIds.map(id => new AxReadAloudNode(id)));
+  }
 
   setup(() => {
     // Clearing the DOM should always be done first.
@@ -96,7 +101,7 @@ suite('NodeStore', () => {
   test('hideImageNode', () => {
     const id = 216;
     nodeStore.hideImageNode(id);
-    assertTrue(nodeStore.areNodesAllHidden([id]));
+    assertTrue(areNodesAllHidden([id]));
   });
 
   test('areNodesAllHidden', () => {
@@ -106,9 +111,9 @@ suite('NodeStore', () => {
     nodeStore.hideImageNode(id1);
     nodeStore.hideImageNode(id2);
 
-    assertFalse(nodeStore.areNodesAllHidden([id1, id2, id3]));
-    assertTrue(nodeStore.areNodesAllHidden([id1, id2]));
-    assertFalse(nodeStore.areNodesAllHidden([id1, id3]));
+    assertFalse(areNodesAllHidden([id1, id2, id3]));
+    assertTrue(areNodesAllHidden([id1, id2]));
+    assertFalse(areNodesAllHidden([id1, id3]));
   });
 
   test('addImageToFetch', () => {

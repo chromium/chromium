@@ -6,8 +6,8 @@ import {assert} from '//resources/js/assert.js';
 
 import {getCurrentSpeechRate, isRectVisible} from '../common.js';
 import {NodeStore} from '../node_store.js';
-import type {ReadAloudModelBrowserProxy} from '../read_aloud/read_aloud_model_browser_proxy.js';
-import {getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
+import {AxReadAloudNode, getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
+import type {ReadAloudModelBrowserProxy, ReadAloudNode} from '../read_aloud/read_aloud_model_browser_proxy.js';
 import {isEspeak} from '../voice_language_util.js';
 
 import {VoiceLanguageController} from './voice_language_controller.js';
@@ -64,7 +64,7 @@ export class ReadAloudHighlighter {
   }
 
   highlightCurrentGranularity(
-      axNodeIds: number[], scrollIntoView: boolean,
+      nodes: ReadAloudNode[], scrollIntoView: boolean,
       shouldUpdateSentenceHighlight: boolean): void {
     const highlightGranularity = this.getEffectiveHighlightingGranularity_();
     switch (highlightGranularity) {
@@ -78,7 +78,7 @@ export class ReadAloudHighlighter {
       // highlights have already been calculated.
       case chrome.readingMode.sentenceHighlighting:
         if (shouldUpdateSentenceHighlight) {
-          this.highlightCurrentSentence_(axNodeIds, scrollIntoView);
+          this.highlightCurrentSentence_(nodes, scrollIntoView);
         }
         break;
       case chrome.readingMode.wordHighlighting:
@@ -251,10 +251,14 @@ export class ReadAloudHighlighter {
     let accumulatedHighlightLength = 0;
     let didApplyHighlight = false;
     for (const segment of highlightSegments) {
-      const {nodeId, start, length: segmentLength} = segment;
+      const {node, start, length: segmentLength} = segment;
+      if (!(node instanceof AxReadAloudNode)) {
+        continue;
+      }
+      const nodeId = node.axNodeId;
 
-      const node = this.nodeStore_.getDomNode(nodeId);
-      if (!node) {
+      const domNode = this.nodeStore_.getDomNode(nodeId);
+      if (!domNode) {
         continue;
       }
 
@@ -273,12 +277,13 @@ export class ReadAloudHighlighter {
       }
 
       const endIndex = start + highlightLength;
-      const textContent = node.textContent?.substring(start, endIndex).trim();
+      const textContent =
+          domNode.textContent?.substring(start, endIndex).trim();
       // If the remaining text is just punctuation, don't show it as a current
       // highlight, but do fade it out as 'before the current highlight.'
       const previousHighlightOnly =
           this.isInvalidHighlightForWordHighlighting(textContent);
-      const element = node as HTMLElement;
+      const element = domNode as HTMLElement;
       const highlightedNode = this.highlightCurrentText_(
           start, endIndex, element, previousHighlightOnly);
       this.nodeStore_.replaceDomNode(element, highlightedNode);
@@ -295,17 +300,21 @@ export class ReadAloudHighlighter {
   }
 
   private highlightCurrentSentence_(
-      nodeIds: number[], scrollIntoView: boolean,
+      nodes: ReadAloudNode[], scrollIntoView: boolean,
       previousHighlightOnly: boolean = false) {
-    if (!nodeIds.length) {
+    if (!nodes.length) {
       return;
     }
 
     this.resetPreviousHighlight();
-    for (const nodeId of nodeIds) {
+    for (const node of nodes) {
+      if (!(node instanceof AxReadAloudNode)) {
+        continue;
+      }
+      const nodeId = node.axNodeId;
       const element = this.nodeStore_.getDomNode(nodeId) as HTMLElement;
       const highlighted =
-          this.highlightCurrentElement_(nodeId, previousHighlightOnly, element);
+          this.highlightCurrentElement_(node, previousHighlightOnly, element);
       if (highlighted) {
         this.nodeStore_.replaceDomNode(element, highlighted);
       }
@@ -317,13 +326,13 @@ export class ReadAloudHighlighter {
   }
 
   private highlightCurrentElement_(
-      nodeId: number, previousHighlightOnly = false,
+      node: ReadAloudNode, previousHighlightOnly = false,
       element?: HTMLElement): HTMLElement|undefined {
     if (!element) {
       return undefined;
     }
-    const start = this.readAloudModel_.getCurrentTextStartIndex(nodeId);
-    const end = this.readAloudModel_.getCurrentTextEndIndex(nodeId);
+    const start = this.readAloudModel_.getCurrentTextStartIndex(node);
+    const end = this.readAloudModel_.getCurrentTextEndIndex(node);
     if ((start < 0) || (end < 0)) {
       // If the start or end index is invalid, don't use this node.
       return undefined;

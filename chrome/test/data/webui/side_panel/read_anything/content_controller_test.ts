@@ -7,7 +7,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {ContentController, HIGHLIGHTED_LINK_CLASS, NodeStore, previousReadHighlightClass, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AxReadAloudNode, ContentController, HIGHLIGHTED_LINK_CLASS, NodeStore, previousReadHighlightClass, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -434,7 +434,7 @@ suite('ContentController', () => {
 
       assertEquals('none', canvas.style.display);
       assertEquals('none', figure.style.display);
-      assertTrue(nodeStore.areNodesAllHidden([textId]));
+      assertTrue(nodeStore.areNodesAllHidden([new AxReadAloudNode(textId)]));
     });
 
     test('shows images and clears hidden nodes when enabled', async () => {

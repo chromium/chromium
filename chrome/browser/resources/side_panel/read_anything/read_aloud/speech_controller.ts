@@ -6,8 +6,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {getCurrentSpeechRate, getWordCount, playFromSelectionTimeout} from '../common.js';
 import {NodeStore} from '../node_store.js';
-import type {ReadAloudModelBrowserProxy} from '../read_aloud/read_aloud_model_browser_proxy.js';
-import {getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
+import {AxReadAloudNode, getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
+import type {ReadAloudModelBrowserProxy, ReadAloudNode} from '../read_aloud/read_aloud_model_browser_proxy.js';
 import {ReadAnythingLogger} from '../read_anything_logger.js';
 import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
@@ -174,7 +174,7 @@ export class SpeechController {
 
     // TODO: crbug.com/40927698 - This step should be skipped on migrating to
     // a non-AXPosition-based text segmentation strategy.
-    this.readAloudModel_.onFirstTextNode(firstTextNode);
+    this.readAloudModel_.onFirstTextNode(new AxReadAloudNode(firstTextNode));
   }
 
   onSelectionChange() {
@@ -419,21 +419,19 @@ export class SpeechController {
   private highlightAndPlayMessage_(
       isInterrupted: boolean = false,
       isMovingBackward: boolean = false): boolean {
-    // getCurrentText gets the AX Node IDs of text that should be spoken and
-    // highlighted.
-    const axNodeIds: number[] = this.readAloudModel_.getCurrentText();
+    const nodes: ReadAloudNode[] = this.readAloudModel_.getCurrentText();
 
     // If there aren't any valid ax node ids returned by getCurrentText,
     // speech should stop.
-    if (axNodeIds.length === 0) {
+    if (nodes.length === 0) {
       return false;
     }
 
-    if (this.nodeStore_.areNodesAllHidden(axNodeIds)) {
+    if (this.nodeStore_.areNodesAllHidden(nodes)) {
       return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
     }
 
-    const utteranceText = this.extractTextOf_(axNodeIds);
+    const utteranceText = this.extractTextOf_(nodes);
     // If node ids were returned but they don't exist in the Reading Mode panel,
     // there's been a mismatch between Reading Mode and Read Aloud. In this
     // case, we should move to the next Read Aloud node and attempt to continue
@@ -464,7 +462,7 @@ export class SpeechController {
       this.playText_(utteranceText);
     }
 
-    this.highlightCurrentGranularity_(axNodeIds);
+    this.highlightCurrentGranularity_(nodes);
     return true;
   }
 
@@ -597,11 +595,16 @@ export class SpeechController {
     }
   }
 
-  private extractTextOf_(axNodeIds: number[]): string {
+  private extractTextOf_(nodes: ReadAloudNode[]): string {
     let utteranceText: string = '';
-    for (const nodeId of axNodeIds) {
-      const startIndex = this.readAloudModel_.getCurrentTextStartIndex(nodeId);
-      const endIndex = this.readAloudModel_.getCurrentTextEndIndex(nodeId);
+    for (const node of nodes) {
+      if (!(node instanceof AxReadAloudNode)) {
+        continue;
+      }
+      const nodeId = node.axNodeId;
+
+      const startIndex = this.readAloudModel_.getCurrentTextStartIndex(node);
+      const endIndex = this.readAloudModel_.getCurrentTextEndIndex(node);
       const element = this.nodeStore_.getDomNode(nodeId);
       if (!element || startIndex < 0 || endIndex < 0) {
         continue;
@@ -858,39 +861,47 @@ export class SpeechController {
   }
 
   private movePlaybackToNode_(nodeId: number, offset: number): void {
-    let currentTextIds = this.readAloudModel_.getCurrentText();
-    let hasCurrentText = currentTextIds.length > 0;
+    let currentTextNodes = this.readAloudModel_.getCurrentText();
+    let hasCurrentText = currentTextNodes.length > 0;
     // Since a node could spread across multiple granularities, we use the
     // offset to determine if the selected text is in this granularity or if
     // we have to move to the next one.
-    let startOfSelectionIsInCurrentText = currentTextIds.includes(nodeId) &&
-        this.readAloudModel_.getCurrentTextEndIndex(nodeId) > offset;
+    let nodeForSelection = currentTextNodes.find(
+        n => n instanceof AxReadAloudNode && n.axNodeId === nodeId);
+    let startOfSelectionIsInCurrentText = !!nodeForSelection &&
+        this.readAloudModel_.getCurrentTextEndIndex(nodeForSelection) > offset;
     while (hasCurrentText && !startOfSelectionIsInCurrentText) {
       this.highlightCurrentGranularity_(
-          currentTextIds, /*scrollIntoView=*/ false,
+          currentTextNodes, /*scrollIntoView=*/ false,
           /*shouldUpdateSentenceHighlight=*/ true,
           /*shouldSetLastReadingPos=*/ false);
       this.moveToNextGranularity_();
-      currentTextIds = this.readAloudModel_.getCurrentText();
-      hasCurrentText = currentTextIds.length > 0;
-      startOfSelectionIsInCurrentText = currentTextIds.includes(nodeId) &&
-          this.readAloudModel_.getCurrentTextEndIndex(nodeId) > offset;
+      currentTextNodes = this.readAloudModel_.getCurrentText();
+      hasCurrentText = currentTextNodes.length > 0;
+      nodeForSelection = currentTextNodes.find(
+          n => n instanceof AxReadAloudNode && n.axNodeId === nodeId);
+      startOfSelectionIsInCurrentText = !!nodeForSelection &&
+          this.readAloudModel_.getCurrentTextEndIndex(nodeForSelection) >
+              offset;
     }
   }
 
   // Highlights or rehighlights the current granularity, sentence or word.
   private highlightCurrentGranularity_(
-      axNodeIds: number[], scrollIntoView: boolean = true,
+      nodes: ReadAloudNode[], scrollIntoView: boolean = true,
       shouldUpdateSentenceHighlight: boolean = true,
       shouldSetLastReadingPos: boolean = true) {
-    if (shouldSetLastReadingPos && axNodeIds.length && axNodeIds[0]) {
-      this.model_.setLastPosition({
-        nodeId: axNodeIds[0],
-        offset: this.readAloudModel_.getCurrentTextStartIndex(axNodeIds[0]),
-      });
+    if (shouldSetLastReadingPos && nodes.length && nodes[0]) {
+      const firstNode = nodes[0];
+      if (firstNode instanceof AxReadAloudNode) {
+        this.model_.setLastPosition({
+          nodeId: firstNode.axNodeId,
+          offset: this.readAloudModel_.getCurrentTextStartIndex(firstNode),
+        });
+      }
     }
     this.highlighter_.highlightCurrentGranularity(
-        axNodeIds, scrollIntoView, shouldUpdateSentenceHighlight);
+        nodes, scrollIntoView, shouldUpdateSentenceHighlight);
   }
 
   private isTextTooLong_(text: string): boolean {

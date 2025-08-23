@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, NodeStore, previousReadHighlightClass, ReadAloudHighlighter, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AxReadAloudNode, BrowserProxy, NodeStore, previousReadHighlightClass, ReadAloudHighlighter, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -78,7 +78,7 @@ suite('Highlighter', () => {
         text1.length + text2.length;
 
     highlighter.highlightCurrentGranularity(
-        [id], /*scrollIntoView=*/ false,
+        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
     assertTrue(highlighter.hasCurrentHighlights());
@@ -106,7 +106,8 @@ suite('Highlighter', () => {
         text1.length + text2.length;
 
     highlighter.highlightCurrentGranularity(
-        [id1, id2], /*scrollIntoView=*/ false,
+        [new AxReadAloudNode(id1), new AxReadAloudNode(id2)],
+        /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
     assertTrue(highlighter.hasCurrentHighlights());
@@ -128,7 +129,7 @@ suite('Highlighter', () => {
     chrome.readingMode.getCurrentTextEndIndex = () => text.length;
 
     highlighter.highlightCurrentGranularity(
-        [id], /*scrollIntoView=*/ false,
+        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
     assertTrue(highlighter.hasCurrentHighlights());
@@ -148,7 +149,7 @@ suite('Highlighter', () => {
     nodeStore.setDomNode(sentence, id);
 
     highlighter.highlightCurrentGranularity(
-        [id], /*scrollIntoView=*/ false,
+        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
     assertTrue(highlighter.hasCurrentHighlights());
@@ -178,7 +179,7 @@ suite('Highlighter', () => {
         chrome.readingMode.getCurrentTextEndIndex = () => text.length;
 
         highlighter.highlightCurrentGranularity(
-            [id], /*scrollIntoView=*/ false,
+            [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
             /*shouldUpdateSentenceHighlight=*/ true);
         highlighter.onWillMoveToNextGranularity();
 
@@ -214,7 +215,8 @@ suite('Highlighter', () => {
         text1.length + text2.length;
 
     highlighter.highlightCurrentGranularity(
-        [id1, id2], /*scrollIntoView=*/ false,
+        [new AxReadAloudNode(id1), new AxReadAloudNode(id2)],
+        /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
     assertTrue(highlighter.hasCurrentHighlights());
@@ -245,7 +247,7 @@ suite('Highlighter', () => {
     nodeStore.setDomNode(sentence, id);
 
     highlighter.highlightCurrentGranularity(
-        [id], /*scrollIntoView=*/ false,
+        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
     // There should be no "current" highlight on the page.
@@ -270,7 +272,7 @@ suite('Highlighter', () => {
     nodeStore.setDomNode(sentence, id);
 
     highlighter.highlightCurrentGranularity(
-        [id], /*scrollIntoView=*/ false,
+        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
     assertTrue(highlighter.hasCurrentHighlights());
@@ -300,7 +302,7 @@ suite('Highlighter', () => {
         chrome.readingMode.getCurrentTextEndIndex = () => text.length;
 
         highlighter.highlightCurrentGranularity(
-            [id], /*scrollIntoView=*/ false,
+            [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
             /*shouldUpdateSentenceHighlight=*/ true);
         highlighter.onWillMoveToNextGranularity();
 
@@ -331,7 +333,8 @@ suite('Highlighter', () => {
          {nodeId: id2, start: 0, length: 23}];
 
     highlighter.highlightCurrentGranularity(
-        [id1, id2], /*scrollIntoView=*/ false,
+        [new AxReadAloudNode(id1), new AxReadAloudNode(id2)],
+        /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
 
@@ -362,7 +365,7 @@ suite('Highlighter', () => {
         nodeStore.setDomNode(sentence, id);
 
         highlighter.highlightCurrentGranularity(
-            [id], /*scrollIntoView=*/ false,
+            [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
             /*shouldUpdateSentenceHighlight=*/ true);
 
         assertTrue(highlighter.hasCurrentHighlights());
@@ -387,7 +390,7 @@ suite('Highlighter', () => {
         text1.length + text2.length;
 
     highlighter.highlightCurrentGranularity(
-        [id], /*scrollIntoView=*/ false,
+        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
     highlighter.removeCurrentHighlight();
 
@@ -410,7 +413,7 @@ suite('Highlighter', () => {
         text1.length + text2.length;
 
     highlighter.highlightCurrentGranularity(
-        [id], /*scrollIntoView=*/ false,
+        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
     highlighter.resetPreviousHighlight();
 
@@ -433,7 +436,7 @@ suite('Highlighter', () => {
         text1.length + text2.length;
 
     highlighter.highlightCurrentGranularity(
-        [id], /*scrollIntoView=*/ false,
+        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
     highlighter.clearHighlightFormatting();
 

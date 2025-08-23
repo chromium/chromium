@@ -5,6 +5,8 @@
 import {assert} from '//resources/js/assert.js';
 
 import {getWordCount, isRectMostlyVisible} from './common.js';
+import type {ReadAloudNode} from './read_aloud/read_aloud_model_browser_proxy.js';
+import {AxReadAloudNode} from './read_aloud/read_aloud_model_browser_proxy.js';
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
@@ -210,8 +212,12 @@ export class NodeStore {
     this.hiddenImageNodesIds_.add(nodeId);
   }
 
-  areNodesAllHidden(nodeIds: number[]): boolean {
-    return nodeIds.every(id => this.hiddenImageNodesIds_.has(id));
+  // TODO: crbug.com/440400392- Handle hidden image node ids for read aloud
+  // when non-AXNode-based read aloud nodes are used.
+  areNodesAllHidden(nodes: ReadAloudNode[]): boolean {
+    return nodes.every(
+        node => node instanceof AxReadAloudNode &&
+            this.hiddenImageNodesIds_.has(node.axNodeId));
   }
 
   addImageToFetch(nodeId: number): void {

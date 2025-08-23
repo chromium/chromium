@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, currentReadHighlightClass, previousReadHighlightClass, ReadAloudHighlighter, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AxReadAloudNode, BrowserProxy, currentReadHighlightClass, previousReadHighlightClass, ReadAloudHighlighter, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -74,13 +74,15 @@ suite('UpdateContentSelectionWithHighlights', () => {
     let i = 0;
     while (textNodeIds[i]! !== id) {
       fakeTree.highlightNode(textNodeIds[i]!);
-      highlighter.highlightCurrentGranularity([textNodeIds[i]!], false, true);
+      highlighter.highlightCurrentGranularity(
+          [new AxReadAloudNode(textNodeIds[i]!)], false, true);
       i++;
     }
 
     // highlight given node
     fakeTree.highlightNode(id);
-    highlighter.highlightCurrentGranularity([id], false, true);
+    highlighter.highlightCurrentGranularity(
+        [new AxReadAloudNode(id)], false, true);
     return microtasksFinished();
   }
 
@@ -90,7 +92,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
     let i = 0;
     while (fromId !== textNodeIds[i]!) {
       fakeTree.highlightNode(textNodeIds[i]!);
-      highlighter.highlightCurrentGranularity([textNodeIds[i]!], false, true);
+      highlighter.highlightCurrentGranularity(
+          [new AxReadAloudNode(textNodeIds[i]!)], false, true);
       i++;
     }
 
@@ -100,7 +103,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
     if (toId !== fromId) {
       nodeIds.push(toId);
     }
-    highlighter.highlightCurrentGranularity(nodeIds, false, true);
+    highlighter.highlightCurrentGranularity(
+        nodeIds.map(id => new AxReadAloudNode(id)), false, true);
     return microtasksFinished();
   }
 
