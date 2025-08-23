@@ -193681,7 +193681,7 @@
          ]
         ],
         "shape-outside-linear-gradient-005.html": [
-         "6d0fc21361bd3dd36b7b7f96659f9eed8c4dffab",
+         "2f6823ac6dba382f2e647764b48df78777dbb26c",
          [
           null,
           [
@@ -193690,11 +193690,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               7600,
+               8700
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-linear-gradient-006.html": [
-         "68243e0ab8f8848a6da29e78b69acda56f878e76",
+         "e0a180d6877cdb6c306954402d42b7e792261b46",
          [
           null,
           [
@@ -193703,11 +193719,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               7600,
+               8700
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-linear-gradient-007.html": [
-         "4ef0b6b5dfeaec318dc7f612d52073a8c3f12e39",
+         "1eca566a0b459bb4f4008cab2ee702f3b4d5c989",
          [
           null,
           [
@@ -193716,7 +193748,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               7600,
+               8700
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-linear-gradient-008.html": [
@@ -193733,7 +193781,7 @@
          ]
         ],
         "shape-outside-linear-gradient-009.html": [
-         "50c80d0ac76e2a98a60cd40a5b82fa017e0f8a7a",
+         "e3ebf3c29d626f9d58a9589b2d26f1c30e7518a7",
          [
           null,
           [
@@ -193742,11 +193790,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               7600,
+               8700
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-linear-gradient-010.html": [
-         "1e245cb285c465383253232cf005cd88de070b97",
+         "ca24c1a01473c50895e028179132a259d2e9a56a",
          [
           null,
           [
@@ -193755,7 +193819,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               7600,
+               8700
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-linear-gradient-011.html": [
@@ -194852,7 +194932,7 @@
          ]
         ],
         "shape-outside-circle-052.html": [
-         "d8c462a563d07d6332925cd6684ac6a2f5b64376",
+         "d9242d7a118902e7c93a3eafc9799706423fdf66",
          [
           null,
           [
@@ -194861,11 +194941,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               2
+              ],
+              [
+               3,
+               3
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-circle-053.html": [
-         "4ee2f880fa0264ebf59eeb249571591a174d7c05",
+         "77849f2f6ee4974fec8aed451cd01c1fe5864f02",
          [
           null,
           [
@@ -194874,7 +194970,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               2
+              ],
+              [
+               1,
+               3
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-circle-054.html": [
@@ -195540,7 +195652,7 @@
          ]
         ],
         "shape-outside-ellipse-050.html": [
-         "18890072a7f414022c29f247212a45899def0faf",
+         "d31a7f677ea39a435f9018e1eb4ff3e0e93c7037",
          [
           null,
           [
@@ -195549,11 +195661,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               2
+              ],
+              [
+               2,
+               2
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-ellipse-051.html": [
-         "764406a0bbcfabb06271e9c1c4eb028692f21d20",
+         "d379b935aa31f39e55a95c572189462efcd9308e",
          [
           null,
           [
@@ -195562,7 +195690,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               2
+              ],
+              [
+               1,
+               2
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-ellipse-052.html": [
@@ -277615,7 +277759,7 @@
       ]
      ],
      "table-cell-valign-001.html": [
-      "f3026810dd58cd04f87df5f3ae2ad474d5c289db",
+      "b54ad1efbde40b3280db215940e0784c64bdccaf",
       [
        null,
        [
@@ -277624,11 +277768,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            64
+           ],
+           [
+            0,
+            1
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "table-cell-valign-002.html": [
-      "d9440e4b299c74e4484ab68c8fa4a5cfca404f01",
+      "344c3078515c8b417d051f557d8c6132b6f68624",
       [
        null,
        [
@@ -277637,11 +277797,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            64
+           ],
+           [
+            0,
+            1
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "table-cell-valign-003.html": [
-      "aaaea9bd0fe669860d8a874f7d34ee4f51425c1e",
+      "9274588c7eb4a5552020b17f7c50d2a0a3bb6784",
       [
        null,
        [
@@ -277650,11 +277826,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            64
+           ],
+           [
+            0,
+            1
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "table-cell-valign-004.html": [
-      "9ccf09b6fb47631a2960e5e4b3943e5de6a67ad2",
+      "7a183c5279fec5a5209d6f5e52492d2171da2641",
       [
        null,
        [
@@ -277663,7 +277855,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            64
+           ],
+           [
+            0,
+            1
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "table-column-order-002.xht": [
@@ -279200,12 +279408,12 @@
       ]
      ],
      "vertical-alignment-slr-029.xht": [
-      "f14078f6c62eb1355a9b6ceba654a5420975fb3d",
+      "d2e523404baa1d5eca4d75a498dadcf1144fef93",
       [
        null,
        [
         [
-         "/css/css-writing-modes/vertical-alignment-008-ref.xht",
+         "/css/css-writing-modes/vertical-alignment-slr-029-ref.xht",
          "=="
         ]
        ],
@@ -279213,12 +279421,12 @@
       ]
      ],
      "vertical-alignment-slr-031.xht": [
-      "e578a7177e70c95b1533f65b2ef206a10672a08f",
+      "360be5f4e1ea46f6eea52fbf416f857146387221",
       [
        null,
        [
         [
-         "/css/css-writing-modes/vertical-alignment-006-ref.xht",
+         "/css/css-writing-modes/vertical-alignment-slr-031-ref.xht",
          "=="
         ]
        ],
@@ -279226,12 +279434,12 @@
       ]
      ],
      "vertical-alignment-slr-033.xht": [
-      "a832bb960e05ed4c2d9864a375e63c1a2411fc95",
+      "94c5db95a840f3d01346eac6acb929ac5aff9f9a",
       [
        null,
        [
         [
-         "/css/css-writing-modes/vertical-alignment-004-ref.xht",
+         "/css/css-writing-modes/vertical-alignment-slr-033-ref.xht",
          "=="
         ]
        ],
@@ -279239,12 +279447,12 @@
       ]
      ],
      "vertical-alignment-slr-035.xht": [
-      "e6a7f2378a79f49e608719d186f5c28df2736520",
+      "ea64c4aed9e2432e703cc358a9a9dfe6e97b65bc",
       [
        null,
        [
         [
-         "/css/css-writing-modes/vertical-alignment-002-ref.xht",
+         "/css/css-writing-modes/vertical-alignment-slr-035-ref.xht",
          "=="
         ]
        ],
@@ -330961,6 +331169,14 @@
      ]
     },
     "reporting": {
+     "link-preload-from-header-report-only-nonce.sub.html.sub.headers": [
+      "f9f981b1c91c36ad15ee281f6c2b5e89ddeee143",
+      []
+     ],
+     "link-preload-report-only-nonce.sub.html.sub.headers": [
+      "0a1b3943608f35bc272992d22b0dffad9afade34",
+      []
+     ],
      "multiple-report-policies.html.sub.headers": [
       "485b6832e7f3e0113cc48eb109fce40eed3f28cf",
       []
@@ -331681,6 +331897,10 @@
      },
      "nonce-should-be-blocked.js": [
       "501f7a92088ec4dfd5197c5378e207d9007abe2f",
+      []
+     ],
+     "pass.js": [
+      "2e3702c685a226411ab3a54567cde0aca20d6dc9",
       []
      ],
      "pass.png": [
@@ -384759,6 +384979,22 @@
      ],
      "vertical-alignment-008-ref.xht": [
       "0eab9b6df9191a08fec49e20ace29838aa0b8fb2",
+      []
+     ],
+     "vertical-alignment-slr-029-ref.xht": [
+      "a3ff3ab7855a67961567a774b89cd9412b574fd0",
+      []
+     ],
+     "vertical-alignment-slr-031-ref.xht": [
+      "d46cde2af2dd726c8d4c40f4071e45183ed50e69",
+      []
+     ],
+     "vertical-alignment-slr-033-ref.xht": [
+      "cc75c7f5fba0b95a3054c223414d7069d05b8e9b",
+      []
+     ],
+     "vertical-alignment-slr-035-ref.xht": [
+      "1458c6b2ce27065ae5398c83e89b4b528fc170c0",
       []
      ],
      "vertical-alignment-slr-049-ref.xht": [
@@ -496110,6 +496346,20 @@
      ]
     },
     "reporting": {
+     "link-preload-from-header-report-only-nonce.sub.html": [
+      "b06604dba3ec0a7cda0273c399850343387e11b7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "link-preload-report-only-nonce.sub.html": [
+      "7ed3123d291f2eb3d3595e5e385f9fb55d36a3e7",
+      [
+       null,
+       {}
+      ]
+     ],
      "multiple-report-policies.html": [
       "c28e9ae44a51c85ea614d86c6b18eda8bdffcaa6",
       [
@@ -691471,14 +691721,15 @@
      ]
     ],
     "AbsoluteOrientationSensor-iframe-access.https.html": [
-     "599bff7b4a3b0cd23af16bdca765abdfe89fc39b",
+     "5446e73c523b609e1981d44c3b9a6667c26ad2b4",
      [
       null,
       {
        "testdriver": true,
        "testdriver_features": [
         "bidi"
-       ]
+       ],
+       "timeout": "long"
       }
      ]
     ],
@@ -767223,7 +767474,7 @@
        ]
       ],
       "sub-sample-buffer-stitching.html": [
-       "3700bfa8ce806a57a4df6c050a9d299d9274edea",
+       "7b6fbf19775533e0c10daf1e787769e679e2fd28",
        [
         null,
         {}
@@ -768443,7 +768694,7 @@
        ]
       ],
       "no-dezippering.html": [
-       "6326d00dfb78efefd8a179e87dc53b531584895d",
+       "f6bb8299b2a3388b15497a51d00389d818bd803d",
        [
         null,
         {}
@@ -768817,7 +769068,7 @@
        ]
       ],
       "waveshaper.html": [
-       "5e6ed24e9ea30f20d8a0342f958a9f52a1785a0a",
+       "d0725f4b7a761dd35659c7df0fa6c492b09610a8",
        [
         null,
         {}
