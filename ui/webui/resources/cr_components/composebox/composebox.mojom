@@ -42,6 +42,8 @@ interface PageHandler {
               bool ctrl_key,
               bool meta_key,
               bool shift_key);
+  // Called when the user enters/loses focus into the composebox.
+  FocusChanged(bool focused);
 
   // File management.
   // Upload a file to the server. Handler will create a token for identifying

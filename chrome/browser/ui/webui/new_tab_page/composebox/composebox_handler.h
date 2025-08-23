@@ -52,6 +52,7 @@ class ComposeboxHandler
                    bool ctrl_key,
                    bool meta_key,
                    bool shift_key) override;
+  void FocusChanged(bool focused) override;
   void AddFile(composebox::mojom::SelectedFileInfoPtr file_info,
                mojo_base::BigBuffer file_bytes,
                AddFileCallback callback) override;

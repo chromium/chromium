@@ -46,6 +46,9 @@ class LensComposeboxController {
   // session query.
   void IssueComposeboxQuery(const std::string& query_text);
 
+  // Called when the focus state of the composebox changes.
+  void OnFocusChanged(bool focused);
+
   // Cleans up any any state associated with this UI instance.
   void CloseUI();
 

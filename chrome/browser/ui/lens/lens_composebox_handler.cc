@@ -52,6 +52,10 @@ void LensComposeboxHandler::SubmitQuery(const std::string& query_text,
   lens_composebox_controller_->IssueComposeboxQuery(query_text);
 }
 
+void LensComposeboxHandler::FocusChanged(bool focused) {
+  lens_composebox_controller_->OnFocusChanged(focused);
+}
+
 void LensComposeboxHandler::AddFile(
     composebox::mojom::SelectedFileInfoPtr file_info_mojom,
     mojo_base::BigBuffer file_bytes,
