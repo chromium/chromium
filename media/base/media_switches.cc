@@ -943,6 +943,10 @@ BASE_FEATURE(AutoplayDisableSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(AVDColorSpaceChanges, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// Allows the enhanced picture-in-picture transition animation that depend on
+// the sourceRectHint PictureInPictureParam.
+BASE_FEATURE(AllowEnhancedPipTransition, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Should we allow video playback to use an overlay if it's not needed for
 // security?  Normally, we'd always want to allow this, except as part of the
 // power testing A/B experiment.  https://crbug.com/1081346 .

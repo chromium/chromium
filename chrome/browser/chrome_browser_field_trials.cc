@@ -195,6 +195,9 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/403851785): Remove when the feature is verified to be stable
   // on desktop Android.
   feature_overrides.EnableFeature(media::kContextMenuPictureInPictureAndroid);
+  // Disables the enhanced pip transition and uses the default animation.
+  // TODO(crbug.com/440384447): Remove when enhanced pip transition is fixed.
+  feature_overrides.DisableFeature(media::kAllowEnhancedPipTransition);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
