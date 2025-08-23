@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/lens/lens_composebox_user_action.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -53,6 +54,20 @@ struct ContextualSearchboxSessionEndMetrics {
 
   // Whether the contextual searchbox should be shown in the session.
   bool searchbox_shown_ = false;
+};
+
+struct AimSessionEndMetrics {
+  // Indicates whether the AIM searchbox was shown in the session.
+  bool composebox_shown_ = false;
+
+  // Indicates whether the AIM handshake was received in the session.
+  bool handshake_completed_ = false;
+
+  // Indicates whether the AIM searchbox was focused in the session.
+  bool composebox_focused_ = false;
+
+  // Indicates whether a query was issued in the session.
+  bool query_issued_ = false;
 };
 
 // LINT.IfChange(LensOverlayTextDirectiveResult)
@@ -112,6 +127,12 @@ void RecordContextualSearchboxSessionEndMetrics(
     ContextualSearchboxSessionEndMetrics session_end_metrics,
     lens::MimeType page_content_type,
     lens::MimeType document_content_type);
+
+// Records the end of sessions metrics for the AIM searchbox.
+void RecordAimSessionEndMetrics(AimSessionEndMetrics aim_session_end_metrics);
+
+// Records user action in the AIM composebox.
+void RecordAimComposeboxUserAction(LensComposeboxUserAction user_action);
 
 // Records the time in foreground of a lens overlay. Both sliced and unsliced.
 void RecordSessionForegroundDuration(

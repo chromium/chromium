@@ -17,6 +17,7 @@ buildflag_header("buildflags") {
 
 static_library("lens") {
   sources = [
+    "lens_composebox_user_action.h",
     "lens_constants.h",
     "lens_entrypoints.h",
     "lens_metadata.cc",
