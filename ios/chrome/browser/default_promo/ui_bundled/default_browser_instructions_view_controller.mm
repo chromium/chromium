@@ -250,18 +250,27 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
   // The view can have either instruction steps or subtitles.
   if (hasSteps) {
-    // TODO(crbug.com/435722549): Add strings for steps for the new Default Apps
-    // destination, and use thme heere if useDefaultAppsDestination is YES.
-    // Remove the CHECK when done.
-    CHECK(!useDefaultAppsDestination);
-    NSArray* defaultBrowserSteps = @[
-      l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
-      l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
-      l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)
-    ];
+    NSMutableArray* defaultBrowserSteps = [[NSMutableArray alloc] init];
+    if (useDefaultAppsDestination) {
+      [defaultBrowserSteps
+          addObject:
+              l10n_util::GetNSString(
+                  IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_FIRST_STEP)];
+      [defaultBrowserSteps
+          addObject:
+              l10n_util::GetNSString(
+                  IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_SECOND_STEP)];
+    } else {
+      [defaultBrowserSteps
+          addObject:l10n_util::GetNSString(
+                        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP)];
+      [defaultBrowserSteps
+          addObject:l10n_util::GetNSString(
+                        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP)];
+    }
+    [defaultBrowserSteps
+        addObject:l10n_util::GetNSString(
+                      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)];
 
     UIView* instructionView =
         [[InstructionView alloc] initWithList:defaultBrowserSteps];

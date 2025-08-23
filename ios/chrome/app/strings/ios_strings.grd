@@ -2598,6 +2598,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FIRST_FOLLOW_TITLE" desc="The title of the first follow surface.">
         You're following <ph name="CHANNEL_NAME">$1<ex>ESPN</ex></ph>
       </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_FIRST_STEP" desc="Text of the row indicating the first step of setting the default browser [iOS only]">
+        Open <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Default Apps<ph name="END_BOLD">END_BOLD</ph> settings in iOS
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_SECOND_STEP" desc="Text of the row indicating the second step of setting the default browser [iOS only]">
+        Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Browser App<ph name="END_BOLD">END_BOLD</ph>
+      </message>
       <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP" desc="Text of the row indicating the first step of setting the default browser [iOS only]">
         Open <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Settings<ph name="END_BOLD">END_BOLD</ph>
       </message>
