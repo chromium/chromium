@@ -6,7 +6,7 @@
 <translation id="1047130070405668746">‏בוחרים באפשרות Chromium</translation>
 <translation id="1086486568852410168">‏חיפוש באמצעות Google Lens</translation>
 <translation id="1091252999271033193">‏כלומר, Chromium תמיד יבקש את האתר לנייד.</translation>
-<translation id="1115463765356382667">‏השלמת הפעולות המוצעות הבאות תעזור לך להשתמש ב-Chromium בדרך היעילה ביותר.</translation>
+<translation id="1115463765356382667">‏צריך להשלים את הפעולות המוצעות האלה כדי להשתמש ב-Chromium בדרך היעילה ביותר.</translation>
 <translation id="1140315115515116765">‏כדאי להגדיר את Chromium כדפדפן ברירת המחדל כדי לקבל את מדדי המחירים בקלות</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1257458525759135959">‏כדי לשמור תמונות לחצו על "הגדרות" על מנת לאפשר ל-Chromium להוסיף תמונות לגלריה שלך</translation>
@@ -22,7 +22,7 @@
 <translation id="1472013873724362412">‏החשבון שלך לא פועל ב-Chromium. יש לפנות אל מנהל הדומיין או להשתמש בחשבון Google רגיל כדי להיכנס לחשבון.</translation>
 <translation id="148576268809812097">‏שמירת הסיסמאות ב-Chromium</translation>
 <translation id="1501302548410882220">‏אפשר להשתמש ב-Chromium בכל מקום</translation>
-<translation id="1503199973012840174">‏‫Chromium לא מעודכן. צריך לעדכן אותו כדי לשמור על הבטיחות.</translation>
+<translation id="1503199973012840174">‏ה-Chromium שלך לא מעודכן. צריך לעדכן אותו כדי לשמור על הבטיחות.</translation>
 <translation id="1515748263297244785">‏שימוש ב-Chromium באייפד כברירת מחדל</translation>
 <translation id="1531155317299575425">‏יוצגו הודעות לצורך כניסה אל Chromium.</translation>
 <translation id="1553657876656159572">פיד מותאם אישית שנוצר במיוחד בשבילך. כולל חדשות, ספורט ומזג אוויר.</translation>
@@ -54,7 +54,7 @@
 <translation id="22313767259766852">‏הכתובת הזו שמורה ב-Chromium. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">‏כלומר, Chromium תמיד יבקש את האתר למחשב.</translation>
 <translation id="2270466829363945454">קניות</translation>
-<translation id="2313870531055795960">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chromium. אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chromium עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים.</translation>
+<translation id="2313870531055795960">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chromium. אם אתר מנסה לגנוב את הסיסמה שלך, או אם המערכת מזהה שהורדת קובץ מזיק, Chromium עשוי גם לשלוח כתובות URL לבדיקה באמצעות "גלישה בטוחה". הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים.</translation>
 <translation id="2314220608288760290">‏‫Chromium פותח באופן אוטומטי קישורים פרטיים של YouTube במצב פרטי.</translation>
 <translation id="231828342043114302">‏כדי לקבל תוכן בהתאמה אישית על סמך תחומי העניין שלך, עליך להיכנס אל Chromium.</translation>
 <translation id="2326738825692478496">‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון Google.
@@ -63,7 +63,7 @@
 <translation id="2337722506862731008">‏שיתוף של Chromium</translation>
 <translation id="2340423701577464731">‏הוספת פריט מרשימת הקריאה ל-Chromium</translation>
 <translation id="2374627437126809292">‏בעזרת מפות Google, אפשר לקבל ב-Chromium מסלולים ומידע מקומי על כתובות שהמערכת מזהה.</translation>
-<translation id="2386292341327187942">‏בתיבה לחיפוש ווידג'טים, מזינים 'Chromium'</translation>
+<translation id="2386292341327187942">‏בתיבה לחיפוש ווידג'טים, צריך להזין "Chromium"</translation>
 <translation id="2426113998523353159">‏לפי דרישת הארגון שלך, עליך להיכנס לחשבון כדי להשתמש ב-Chromium.</translation>
 <translation id="2450140762465183767">‏עכשיו משתמשים ב-Chromium בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="2459183986985456602">‏פתיחת הכרטיסייה האחרונה שלי ב-Chromium</translation>
@@ -161,7 +161,7 @@
 <translation id="4962295957157529683">‏יש לסיים את הפעילות בחלון Chromium הפתוח הנוסף.</translation>
 <translation id="4985291216379576555">‏אופליין, Chromium לא יכול לחפש עדכונים</translation>
 <translation id="4996471330284142407">‏Chromium מאפשר לך להספיק יותר באופן פשוט, מאובטח ומהיר מאי פעם.</translation>
-<translation id="4999538639245140991">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chromium שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
+<translation id="4999538639245140991">‏מכיוון שבחרת לצאת מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" />, נתוני Chromium שלך יימחקו מהמכשיר הזה. הם יישארו בחשבון Google שלך.</translation>
 <translation id="5042011327527167688">‏לוחצים על 'הצגה במפות Google ב-Chromium'.</translation>
 <translation id="5044871537677053278">‏מערכת Chromium מזהה כתובות ונעזרת במפות Google כדי לספק מסלולים ומידע מקומי.</translation>
 <translation id="5048140766121299007">‏בהגדרות של "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", מפעילים את "Chromium"</translation>
@@ -268,13 +268,13 @@
 <translation id="7531461704633548377">‏מ-Chromium</translation>
 <translation id="7554983317097061001">‏טיפ ל-Chromium: כדאי להעביר את Chromium ל-Dock</translation>
 <translation id="7576863740961052505">‏ניהול של הגדרות Chromium</translation>
-<translation id="7674213385180944843">‏יש לעבור אל 'הגדרות' &gt; 'פרטיות' &gt; 'מצלמה' &gt; Chromium ולהפעיל את המצלמה.</translation>
+<translation id="7674213385180944843">‏עברו אל הגדרות &gt; פרטיות &gt; מצלמה &gt; Chromium והפעילו את המצלמה.</translation>
 <translation id="7733418656985455268">‏טיפ ל-Chromium: חיפוש באמצעות Lens</translation>
 <translation id="7747820849741499258">‏חיפוש ב-Chromium</translation>
 <translation id="7753923083404296545">‏נפתח במצב פרטי ב-Chromium</translation>
 <translation id="7762622637388462191">‏ניתן לנעול את הכרטיסיות הפרטיות כשיוצאים מ-Chromium או עוברים לאפליקציה אחרת.</translation>
 <translation id="7763454117143368771">‏כדאי להשתמש ב-Chromium כדפדפן ברירת המחדל כדי ליהנות מהגנה מפני אתרים מסוכנים ולשמור על אבטחת הסיסמאות</translation>
-<translation id="7784950022329154821">‏נעילת הכרטיסיות הפרטיות כשסוגרים את Chromium</translation>
+<translation id="7784950022329154821">‏נעילת הכרטיסיות הפרטיות לאחר סגירת Chromium</translation>
 <translation id="78025249032851484">‏Chromium לא מעודכן.</translation>
 <translation id="7811371919871579588">‏אפשר לבחור ב-Chromium למילוי אוטומטי כדי לגשת בקלות לסיסמאות השמורות שלך באפליקציות אחרות.</translation>
 <translation id="7859018312476869945">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chromium שולח את הטקסט הזה למנוע החיפוש שמוגדר כברירת מחדל כדי לקבל הצעות טובות יותר. האפשרות הזו מושבתת במצב הפרטי.</translation>

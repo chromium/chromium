@@ -13,7 +13,7 @@
 <translation id="43113324827158664">يجب ملء هذا الحقل</translation>
 <translation id="4376888869070172068">لم يتم التعرف على تنسيق الرمز البريدي هذا.</translation>
 <translation id="4518701284698680367">يجب عليك تقديم الرمز البريدي، على سبيل المثال <ph name="EXAMPLE" />. إذا لم تكن على دراية بالرمز البريدي، يمكنك التعرف عليه <ph name="BEGIN_LINK" />هنا<ph name="END_LINK" />.</translation>
-<translation id="5089810972385038852">الولاية</translation>
+<translation id="5089810972385038852">الحالة</translation>
 <translation id="5095208057601539847">المقاطعة</translation>
 <translation id="5327248766486351172">الاسم</translation>
 <translation id="5937097533660449554">مقاطعة</translation>
@@ -26,7 +26,7 @@
 <translation id="6403469950615936250">لم يتم التعرف على تنسيق الرمز البريدي هذا. مثال الرمز البريدي الصالح: <ph name="EXAMPLE" />. إذا لم تكن على دراية بالرمز البريدي، يمكنك التعرف عليه <ph name="BEGIN_LINK" />هنا<ph name="END_LINK" />.</translation>
 <translation id="6735419622867539268"><ph name="FIELD_VALUE" /> لم يتم التعرف عليه كقيمة معروفة لهذا الحقل.</translation>
 <translation id="6768780634682399515">الرمز البريدي في أيرلندا</translation>
-<translation id="6777217372746654521">يبدو أن هذا العنوان يحتوي على صندوق بريد. يُرجى استخدام عنوان شارع أو عنوان مبنى.</translation>
+<translation id="6777217372746654521">يحتوي سطر العنوان هذا على صندوق بريد. يُرجى استخدام عنوان شارع أو عنوان مبنى.</translation>
 <translation id="6839929833149231406">المنطقة</translation>
 <translation id="684852933191805996">بلدة</translation>
 <translation id="6970216967273061347">حي</translation>

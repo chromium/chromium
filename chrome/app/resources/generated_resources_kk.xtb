@@ -1576,7 +1576,7 @@
 <translation id="2090165459409185032">Аккаунт ақпаратын қалпына келтіру үшін мына сілтемеге өтіңіз: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Кірген кезде автоматты түрде қосылады.</translation>
 <translation id="2090876986345970080">Жүйелік қауіпсіздік параметрі</translation>
-<translation id="2091523941449737894">Сенсорлық тақтадағы жылдамырақ қозғалыстар курсорды алыстатады.</translation>
+<translation id="2091523941449737894">Сенсорлық тақтада саусақты жылдамырақ қозғалтса, курсор алысырақ жылжиды.</translation>
 <translation id="2091887806945687916">Дыбыс</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Ақау түзету функциялары<ph name="END_H3" />
       <ph name="BR" />
@@ -3773,7 +3773,7 @@
 <translation id="3635353578505343390">Google-ға пікір жіберу</translation>
 <translation id="3635960017746711110">Crostini жүйесіндегі USB параметрлері</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – <ph name="TIME" /> қалды</translation>
-<translation id="3636940436873918441">Қалаулы тілдер</translation>
+<translation id="3636940436873918441">Таңдаулы тілдер</translation>
 <translation id="3637203148990213388">Қосымша аккаунттар</translation>
 <translation id="3640347231390550691">Құпия сөздеріңізді фишингтен қорғаңыз</translation>
 <translation id="3640613767643722554">Assistant қолданбасын дауысыңызды тануға үйретіңіз</translation>
@@ -6981,7 +6981,7 @@
 <translation id="5927132638760172455">Белгісіз қабылдаушыға трансляциялануда</translation>
 <translation id="592740088639760830">Бұл контейнерді тоқтату</translation>
 <translation id="592880897588170157">PDF файлдарын Chrome браузерінде автоматты ашудың орнына оларды жүктеп алыңыз</translation>
-<translation id="5930567261594625340">Түңгі аспан</translation>
+<translation id="5930567261594625340">Түнгі аспан</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> дереккөзі <ph name="DEVICE_TYPE" /> құрылғысын дереу жаңартуды талап етеді.</translation>
 <translation id="5932224571077948991">Сайтта мазалайтын не жалған ақпаратты жарнамалар көрсетіледі</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> ұсынған USB құрылғысы</translation>
@@ -11184,7 +11184,7 @@
 <translation id="8893928184421379330">Кешіріңіз, <ph name="DEVICE_LABEL" /> құрылғысын анықтау мүмкін емес.</translation>
 <translation id="8894761918470382415">Сыртқы жабдықтардағы деректерді пайдалануды қорғау</translation>
 <translation id="8895454554629927345">Бетбелгілер тізімі</translation>
-<translation id="8896830132794747524">Тінтуірмен жылдамырақ қозғалыстар курсорды алыстатады.</translation>
+<translation id="8896830132794747524">Тінтуірді жылдамырақ қозғалтса, курсор алысырақ жылжиды.</translation>
 <translation id="8897537894864195436">Осы QR кодын <ph name="APP_NAME" /> қолданбасына арналған кіру кілті бар құрылғы камерасымен сканерлеңіз.</translation>
 <translation id="8898786835233784856">Келесі қойындыны таңдау</translation>
 <translation id="8898790559170352647">Microsoft аккаунтын қосыңыз</translation>

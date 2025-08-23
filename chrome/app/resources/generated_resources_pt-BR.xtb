@@ -9119,7 +9119,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7450926666485653189">Envia apenas uma parte ofuscada do URL ao Google por um servidor de privacidade que oculta seu endereço IP</translation>
 <translation id="7453008956351770337">Ao selecionar esta impressora, você concede permissão para acessar sua impressora à seguinte extensão:</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="7454744349230173024">Sua organização desativou o salvamento de senhas</translation>
+<translation id="7454744349230173024">Sua organização desativou a opção de salvar senhas</translation>
 <translation id="7455730275746867420">Gerenciar contêineres extras</translation>
 <translation id="7455988709578031708">Com base no seu histórico de navegação. Esta configuração está ativada.</translation>
 <translation id="7456142309650173560">dev</translation>
@@ -10521,7 +10521,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8414396119627470038">Fazer login em <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (estojo)</translation>
 <translation id="8417065541337558100">Visualização da sua câmera</translation>
-<translation id="8417548266957501132">Senha do familiar resp.</translation>
+<translation id="8417548266957501132">Senha do familiar responsável</translation>
 <translation id="8418445294933751433">&amp;Mostrar como guia</translation>
 <translation id="8418675848396538775">Adicionar o <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8419098111404128271">Resultados de pesquisa para "<ph name="SEARCH_TEXT" />"</translation>

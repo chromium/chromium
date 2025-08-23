@@ -573,7 +573,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3627893290277153986">옵션을 열어 페이지 저장</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />에 공유하는 중</translation>
 <translation id="363484704507524488">도난 방지 설정에서 신원 확인을 관리할 수 있습니다. <ph name="BEGIN_LINK" />설정으로 이동<ph name="END_LINK" /></translation>
-<translation id="3635073343384702370">비밀번호를 저장하면 Chrome에서 확인할 수 있습니다</translation>
+<translation id="3635073343384702370">비밀번호를 저장하면 Chrome에서 확인할 수 있습니다.</translation>
 <translation id="363596933471559332">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 인증 요청 메시지가 표시됩니다.</translation>
 <translation id="3636940436873918441">기본 언어</translation>
 <translation id="3637744895182738742">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
@@ -1443,7 +1443,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7439467816829380878">그룹으로 탭 이동</translation>
 <translation id="7453810262525006706">사이드뷰로 축소</translation>
 <translation id="7454641608352164238">저장공간 부족</translation>
-<translation id="7454744349230173024">조직에서 비밀번호 저장을 사용 중지했습니다</translation>
+<translation id="7454744349230173024">조직에서 비밀번호 저장을 사용 중지했습니다.</translation>
 <translation id="7455988709578031708">방문 기록을 기반으로 추천됩니다. 이 설정을 사용하고 있습니다.</translation>
 <translation id="7456774706094330779">확장된 미리 로드</translation>
 <translation id="7466328545712777810">사이트에서 가격이 인하되면 알림을 받게 됩니다.</translation>
@@ -1536,7 +1536,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7819605256207059717">조직에서 차단함</translation>
 <translation id="7821130663268546430">탭 전환 도구에서 열려 있는 모든 탭을 확인할 수 있습니다.</translation>
 <translation id="7822705602465980873">사용자가 로그인하면 이 데이터는 사용자의 Google 계정에 연결되어 Google 서비스 전반에서 사용자를 보호합니다(예: 보안 사고 발생 후 Gmail의 보안 강화).</translation>
-<translation id="7824665136384946951">조직에서 세이프 브라우징을 사용 중지했습니다</translation>
+<translation id="7824665136384946951">조직에서 세이프 브라우징을 사용 중지했습니다.</translation>
 <translation id="7844171778363018843">동기화할 데이터 선택 안됨</translation>
 <translation id="7846161022626028328">오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="7846296061357476882">Google 서비스</translation>

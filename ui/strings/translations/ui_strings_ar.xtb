@@ -44,7 +44,7 @@
 <translation id="2168039046890040389">صفحة  إلى أعلى</translation>
 <translation id="2190355936436201913">(فارغ)</translation>
 <translation id="2192232475740621500">استخدام كثافة منخفضة</translation>
-<translation id="2267918077332197517">حظر جميع الإشعارات الواردة من هذا الموقع</translation>
+<translation id="2267918077332197517">حظر جميع الإشعارات القادمة من هذا الموقع</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">انقر على أهداف اللمس على شاشتك.</translation>
 <translation id="2295140143284145483">الاستطلاع</translation>
@@ -52,7 +52,7 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{لا يمكن تحديد مكان الإضافة التي تتضمّن المعرّف: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}zero{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}two{لا يمكن تحديد مكان الإضافتَين اللتَين تتضمّنَان المعرّفَين: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}few{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}many{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}other{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}}</translation>
 <translation id="2353636109065292463">التحقُّق من اتصال الإنترنت</translation>
 <translation id="2359808026110333948">متابعة</translation>
-<translation id="2388990488038464401">هل تريد الاتصال بهذا الرقم من هاتفك؟</translation>
+<translation id="2388990488038464401">هل المطلوب الاتصال بهذا الرقم من هاتفك؟</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="24452542372838207">توسيع الإشعار</translation>
 <translation id="2445449901874883781">استخدام كثافة عالية</translation>
@@ -85,7 +85,7 @@
 <translation id="3295886253693811851">إجراء اتصال باستخدام</translation>
 <translation id="3306688585798492231">عرض مُضمَّن</translation>
 <translation id="335581015389089642">الحديث</translation>
-<translation id="3372635229069101468">النقر على <ph name="BEGIN_BOLD" />التفاصيل<ph name="END_BOLD" /></translation>
+<translation id="3372635229069101468">يمكنك النقر على <ph name="BEGIN_BOLD" />التفاصيل<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">النص كبير جدًا</translation>
 <translation id="3406306243914553062">‏محتوى HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{يتبقى يوم واحد}zero{يتبقى عدد # من الأيام}two{يتبقى يومان (#)}few{يتبقى # أيام}many{يتبقى # يومًا}other{يتبقى # من الأيام}}</translation>

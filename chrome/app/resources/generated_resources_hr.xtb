@@ -1581,7 +1581,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2090165459409185032">Za oporavak podataka o računu otvorite: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Automatski se povezuje kad se prijavite</translation>
 <translation id="2090876986345970080">Postavka sigurnosti sustava</translation>
-<translation id="2091523941449737894">Brzi pokreti na dodirnoj podlozi dalje će pomaknuti pokazivač</translation>
+<translation id="2091523941449737894">Brži pokreti na dodirnoj podlozi dalje će pomaknuti pokazivač</translation>
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Značajke za otklanjanje pogrešaka<ph name="END_H3" />
     <ph name="BR" />
@@ -5522,7 +5522,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4847742514726489375">Smanjeno kretanje</translation>
 <translation id="4848191975108266266">"Ok Google" za Google asistenta</translation>
 <translation id="4849286518551984791">Koordinirano svjetsko vrijeme (UTC/GMT)</translation>
-<translation id="4849517651082200438">Ne instaliraj</translation>
+<translation id="4849517651082200438">Nemoj instalirati</translation>
 <translation id="4849731766219625109">Upotrijebite račun za <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Postavljanje sinkronizacije obavijesti nije uspjelo</translation>
 <translation id="4850548109381269495">Na oba uređaja provjerite internetsku vezu i uključite Bluetooth. Zatim pokušajte ponovno.</translation>

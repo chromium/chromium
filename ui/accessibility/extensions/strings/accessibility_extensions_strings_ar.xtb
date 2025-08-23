@@ -19,7 +19,7 @@
 <translation id="2648340354586434750">‏اضغط مع الاستمرار على &lt;span class='key'&gt;Option&lt;/span&gt; للتنقل خلال الكلمات.</translation>
 <translation id="2795227192542594043">هذه الإضافة تتيح لك مؤشرًا متحركًا في صفحة الويب، مما يسمح لك بتحديد النص باستخدام لوحة المفاتيح.</translation>
 <translation id="2808027189040546825">الخطوة الأولى: تحدد الصف مع النجوم الأضعف:</translation>
-<translation id="2965611304828530558">‏&lt;p&gt;عندما تصل إلى رابط أو عنصر تحكم فإنه يتم التركيز عليه تلقائيًا. انقر على &lt;span class='key'&gt;Enter&lt;/span&gt; للنقر على رابط أو زر. &lt;/ P&gt; &lt;p&gt; عندما يقوم عنصر تحكم مُركز عليه بالتقاط مفاتيح الأسهم (مثل مربع نص أو مربع قائمة)، اضغط على &lt;span class='key'&gt;Esc&lt;/span&gt; SPAN&gt; تليها السهم الأيمن أو الأيسر لمواصلة التصفح النصي بالمؤشر &lt;/ P&gt; &lt;P&gt; وبدلاً من ذلك، اضغط &lt;span class='key'&gt;Tab&lt;/span&gt; للانتقال إلى عنصر التحكم التالي القابل للتركيز عليه &lt;/ P&gt;</translation>
+<translation id="2965611304828530558">‏&lt;p&gt;عند الوصول إلى رابط أو عنصر تحكّم، يتم التركيز عليه تلقائيًا. يمكنك الضغط على &lt;span class='key'&gt;Enter&lt;/span&gt; للنقر على رابط أو زر. &lt;/ P&gt; &lt;p&gt; عندما يقوم عنصر التحكّم هذا بالتقاط مفاتيح الأسهم (مثل مربع نص أو مربع قائمة). يجب الضغط على &lt;span class='key'&gt;Esc&lt;/span&gt; SPAN&gt; ومن ثم النقر على السهم الأيمن أو الأيسر لمواصلة التصفح النصي بالمؤشر &lt;/ P&gt; &lt;P&gt;. إليك طريقة أخرى: يمكنك الضغط على &lt;span class='key'&gt;Tab&lt;/span&gt; للانتقال إلى عنصر التحكّم التالي &lt;/ P&gt;</translation>
 <translation id="3252573918265662711">الإعداد</translation>
 <translation id="3410969471888629217">إلغاء تخصيصات الموقع الإلكتروني</translation>
 <translation id="3435896845095436175">تفعيل الإضافات</translation>
@@ -30,9 +30,9 @@
 <translation id="4388820049312272371">أبرز موضع المؤشر بومضة سريعة.</translation>
 <translation id="4394049700291259645">إيقاف</translation>
 <translation id="4769065380738716500">تم استبدال الصور بواسطة النص البديل</translation>
-<translation id="4896660567607030658">لا توجد تعليقات، فقط أعرض المؤشر.</translation>
+<translation id="4896660567607030658">لا توجد تعليقات، يُرجى فقط عرض المؤشر.</translation>
 <translation id="4937901943818762779">السماح بالصور المتحركة، ولكن لمرة واحدة فقط.</translation>
-<translation id="4949131196216960195">‏اضغط على &lt;span class='key'&gt;Search&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (مفتاح "زيادة السطوع" أو F7) لتفعيل التصفح النصي بالمؤشر. ولإيقافه، اضغط عليه مرة أخرى.</translation>
+<translation id="4949131196216960195">‏يمكنك الضغط على &lt;span class='key'&gt;Search&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (مفتاح "زيادة السطوع" أو F7) لتفعيل ميزة التصفح النصي بالمؤشر. ولإيقافه، يمكنك الضغط عليه مرة أخرى.</translation>
 <translation id="4954450790315188152">عندما يتم تفعيل التصفح النصي بالمؤشر.</translation>
 <translation id="5041932793799765940">تعديل اللون</translation>
 <translation id="5094574508723441140">زيادة التباين</translation>

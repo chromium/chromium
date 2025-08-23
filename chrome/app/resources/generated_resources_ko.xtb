@@ -7564,7 +7564,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6325191661371220117">자동 실행 사용 안함</translation>
 <translation id="632524945411480350">창 크기를 아래쪽으로 조정함</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
-<translation id="6326855256003666642">프로그램 사용자 수</translation>
+<translation id="6326855256003666642">연결 유지 활동 수</translation>
 <translation id="6327065839080961103"><ph name="FEATURE_NAME" /> 데이터 사용량</translation>
 <translation id="6327785803543103246">웹 프록시 자동검색</translation>
 <translation id="6329916384047371874"><ph name="DOMAIN" />에 <ph name="PASSWORD_DOMAIN" /> 비밀번호를 사용하게 됩니다. <ph name="DOMAIN" />을(를) 신뢰하는 경우에만 해당 비밀번호를 사용하세요.</translation>
@@ -9115,7 +9115,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7450926666485653189">IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다.</translation>
 <translation id="7453008956351770337">이 프린터를 선택하면 다음 확장 프로그램에 내 프린터에 액세스할 수 있는 권한을 부여하게 됩니다.</translation>
 <translation id="7454548535253569100">포털: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="7454744349230173024">조직에서 비밀번호 저장을 사용 중지했습니다</translation>
+<translation id="7454744349230173024">조직에서 비밀번호 저장을 사용 중지했습니다.</translation>
 <translation id="7455730275746867420">추가 컨테이너 관리</translation>
 <translation id="7455988709578031708">방문 기록을 기반으로 추천됩니다. 이 설정을 사용하고 있습니다.</translation>
 <translation id="7456142309650173560">개발자</translation>
@@ -9652,7 +9652,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7820400255539998692">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제하세요.</translation>
 <translation id="7820561748632634942">추가 스위치를 할당하시겠습니까?</translation>
 <translation id="782057141565633384">동영상 주소 복사(&amp;O)</translation>
-<translation id="7824665136384946951">조직에서 세이프 브라우징을 사용 중지했습니다</translation>
+<translation id="7824665136384946951">조직에서 세이프 브라우징을 사용 중지했습니다.</translation>
 <translation id="7824864914877854148">오류로 인해 백업을 완료할 수 없습니다.</translation>
 <translation id="7825289983414309119">산</translation>
 <translation id="782590969421016895">현재 페이지 사용</translation>

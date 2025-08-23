@@ -157,7 +157,7 @@
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> פריטים יימחקו. להמשיך?</translation>
 <translation id="2230062665678605299">לא ניתן ליצור את התיקייה "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">אדם עם קפה</translation>
-<translation id="2247561763838186830">התנתקת מהחשבון</translation>
+<translation id="2247561763838186830">התנתקתם מהחשבון</translation>
 <translation id="2251368349685848079">שחזור מהאשפה</translation>
 <translation id="2278133026967558505">‏גישה לקובץ מכל האתרים וכתובות ה-URL</translation>
 <translation id="2282155092769082568">כתובת אתר של תצורה אוטומטית:</translation>
@@ -208,7 +208,7 @@
 <translation id="2614589611416690597">קובץ וידאו בפורמט <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">‏לא ניתן להגיע אל Google Drive בשלב זה.</translation>
 <translation id="2621713457727696555">מאובטחת</translation>
-<translation id="2638942478653899953">‏לא ניתן היה להגיע אל Google Drive‏. <ph name="BEGIN_LINK" />יש לצאת<ph name="END_LINK" /> ואז להתחבר שוב.</translation>
+<translation id="2638942478653899953">‏לא ניתן היה להגיע ל-Google Drive‏. מומלץ<ph name="BEGIN_LINK" />להתנתק<ph name="END_LINK" /> ואז להתחבר שוב.</translation>
 <translation id="2649120831653069427">דג</translation>
 <translation id="2653059201992392941">נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="2663066752008346276">‏בורמזית/מיאנמר עם מקלדת Myansan</translation>
@@ -554,7 +554,7 @@
     <ph name="MARKUP_7" />לשתף, ליצור ולעבוד במשותף<ph name="MARKUP_8" />
     על קבצים עם אנשים נוספים - הכול במקום אחד.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">‏קבצים ששוחזרו מ-Google Drive</translation>
-<translation id="5278111733643988471">כדי לשחזר את הפריט הזה, גוררים אותו לתיקייה חדשה מחוץ לאשפה. התיקייה המקורית '<ph name="PARENT_FOLDER_NAME" />' של הפריט הזה נמחקה.</translation>
+<translation id="5278111733643988471">כדי לשחזר את הפריט הזה, צריך לגרור אותו לתיקייה חדשה מחוץ לאשפה. "<ph name="PARENT_FOLDER_NAME" />", התיקייה המקורית של הפריט הזה, נמחקה.</translation>
 <translation id="5288441970121584418">המבורגר</translation>
 <translation id="5293615890992542006">בהתאם למדיניות האדמין, העברת הקובץ הזה חסומה</translation>
 <translation id="5305688511332277257">לא מותקנים אישורים</translation>
@@ -866,7 +866,7 @@
 <translation id="770015031906360009">יוונית</translation>
 <translation id="7705251383879779343">ההעתקה של <ph name="FILE_NAME" /> הסתיימה.</translation>
 <translation id="7707941139430559579">לא ניתן להעביר את הקובץ. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="7708271999969613024">‏כדי להשתמש ברשת הזו, עליך להזין את המפתח האישי לביטול החסימה (PUK) בן 8 הספרות שמקבלים מהספק.</translation>
+<translation id="7708271999969613024">‏כדי להשתמש ברשת הזו, עליך להזין את המפתח האישי לביטול החסימה (PUK) בן 8 הספרות שקיבלת מהספק.</translation>
 <translation id="7711920809702896782">פרטי התמונה</translation>
 <translation id="7724603315864178912">חיתוך</translation>
 <translation id="7732111077498238432">הרשת כפופה למדיניות</translation>
@@ -878,9 +878,9 @@
 <translation id="7774365994322694683">ציפור</translation>
 <translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> פריטים שוחזרו</translation>
 <translation id="7781829728241885113">אתמול</translation>
-<translation id="7788080748068240085">כדי לשמור את "<ph name="FILE_NAME" />" באופן לא מקוון, יש לפנות נפח נוסף של <ph name="TOTAL_FILE_SIZE" /> :<ph name="MARKUP_1" />
-        <ph name="MARKUP_2" />ניתן לבטל הצמדה של קבצים שאין צורך לגשת אליהם יותר במצב אופליין<ph name="MARKUP_3" />
-        <ph name="MARKUP_4" />ניתן למחוק קבצים מהתיקייה 'הורדות'<ph name="MARKUP_5" /></translation>
+<translation id="7788080748068240085">כדי לשמור את "<ph name="FILE_NAME" />" אופליין, צריך לפנות נפח אחסון נוסף של <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
+        <ph name="MARKUP_2" />צריך לבטל הצמדה של קבצים שאין לך צורך לגשת אליהם אופליין<ph name="MARKUP_3" />
+        <ph name="MARKUP_4" />צריך למחוק קבצים מתיקיית ההורדות<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">פרמוט המכשיר</translation>
 <translation id="7799329977874311193">‏מסמך HTML</translation>
 <translation id="7801354353640549019">‏מכשירי Chromebook</translation>

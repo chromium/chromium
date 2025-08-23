@@ -11,7 +11,7 @@
 <translation id="1546934824884762070">אירעה שגיאה לא צפויה. דיווח על בעיה זו למפתחים.</translation>
 <translation id="1697532407822776718">הכול מוכן!</translation>
 <translation id="1742469581923031760">ההתחברות מתבצעת…</translation>
-<translation id="177040763384871009">כדי שקישורים שנלחצים במכשיר מרוחק ייפתחו בדפדפן הלקוח, צריך להחליף את דפדפן האינטרנט של המערכת ולהתקין במקומו את "<ph name="URL_FORWARDER_NAME" />".</translation>
+<translation id="177040763384871009">כדי שקישורים שלוחצים עליהם במכשיר מרוחק ייפתחו בדפדפן הלקוח, צריך להחליף את דפדפן האינטרנט של המערכת ולהתקין במקומו את "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">‏IP הערוץ של הלקוח: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' ערוץ='<ph name="CHANNEL_TYPE" />' חיבור='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">מחיקה</translation>
 <translation id="2009755455353575666">החיבור נכשל</translation>
@@ -41,7 +41,7 @@
 <translation id="2803375539583399270">הזנת קוד אימות</translation>
 <translation id="2919669478609886916">שיתפת את המחשב הזה עם משתמש אחר. האם ברצונך להמשיך את השיתוף?</translation>
 <translation id="2929683002824598593">שיתוף המכשיר</translation>
-<translation id="2939145106548231838">יש לאמת מול המארח</translation>
+<translation id="2939145106548231838">צריך לאמת כדי לארח</translation>
 <translation id="3027681561976217984">מצב מסך מגע</translation>
 <translation id="3106379468611574572">המחשב המרוחק לא מגיב לבקשות החיבור. צריך לוודא שהוא מחובר לאינטרנט ולנסות שוב.</translation>
 <translation id="3150823315463303127">המארח לא הצליח לקרוא את המדיניות.</translation>
@@ -108,7 +108,7 @@
 <translation id="5708869785009007625">שולחן העבודה שלך משותף כעת עם <ph name="USER" />.</translation>
 <translation id="579702532610384533">התחברות מחדש</translation>
 <translation id="5810269635982033450">המסך פועל כמשטח מגע</translation>
-<translation id="5823554426827907568">התקבלה בקשת גישה מאת <ph name="CLIENT_USERNAME" /> לצפייה במסך שלך ולשליטה במקלדת ובעכבר. צריך להקיש על "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" אם לא ציפית לבקשה הזו. אחרת, עליך להקיש על "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" כדי לאפשר את החיבור כשהכול מוכן.</translation>
+<translation id="5823554426827907568">התקבלה בקשת גישה מאת <ph name="CLIENT_USERNAME" /> לצפייה במסך שלך ולשליטה במקלדת ובעכבר. צריך ללחוץ על "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" אם לא ציפית לבקשה הזו. אחרת, עליך ללחוץ על "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" כדי לאפשר את החיבור.</translation>
 <translation id="5823658491130719298">‏במחשב שאליו רוצים לגשת מרחוק, יש לפתוח את Chrome ולהיכנס אל <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">אפשרויות תצוגה</translation>
 <translation id="6033507038939587647">אפשרויות מקלדת</translation>

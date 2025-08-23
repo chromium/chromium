@@ -1326,7 +1326,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3266367459139339908">Estamos lançando novas formas de limitar o que os sites podem saber sobre você ao mostrar anúncios personalizados, por exemplo:</translation>
 <translation id="3266793032086590337">Valor (conflitante)</translation>
 <translation id="3268451620468152448">Guias abertas</translation>
-<translation id="3270041629388773465">Finalize compras rapidamente se os CVCs estiverem salvos</translation>
+<translation id="3270041629388773465">Finalize suas compras mais rápido com os CVCs salvos</translation>
 <translation id="3270847123878663523">&amp;Desfazer reordenar</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> deseja se conectar</translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -1656,7 +1656,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3799805948399000906">Fonte solicitada</translation>
 <translation id="3801297763951514916">Você visita com frequência</translation>
 <translation id="380329542618494757">Nome</translation>
-<translation id="3803481123869276674">Ao fazer compras no Chrome, veja a carteira digital como opção</translation>
+<translation id="3803481123869276674">Mostrar a carteira digital como opção para pagamento ao fazer compras no Chrome</translation>
 <translation id="3803801106042434208">Estes mecanismos são famosos na sua região</translation>
 <translation id="380666903981445943">Salve uma forma de pagamento na sua Conta do Google para que ela seja preenchida automaticamente em compras feitas no Chrome</translation>
 <translation id="3807366285948165054">Mudança X da imagem</translation>
@@ -3464,7 +3464,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6917873303492266709">Para compartilhar, participar e colaborar em grupos de guias, abra as configurações e ative a opção "Permitir login no Chrome"</translation>
 <translation id="6921197121276419421">Instalação de apps da Web permitida</translation>
 <translation id="69238565902785824">Manter sua conta vinculada ajuda a pagar mais rapidamente com o <ph name="BNPL_ISSUER_NAME" />, mas você pode desvincular a conta em <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" />.</translation>
-<translation id="6924013822850225188">Escolha se você quer conferir os benefícios do seu cartão no pagamento. Sujeito aos termos do banco</translation>
+<translation id="6924013822850225188">Escolha se você quer ver os benefícios do seu cartão durante o pagamento (sujeito aos termos do banco)</translation>
 <translation id="6925267999184670015">B+ (América do Norte)</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>

@@ -1206,7 +1206,7 @@
 <translation id="3076865167425975822">운영체제</translation>
 <translation id="3080254622891793721">그래픽</translation>
 <translation id="3082007635241601060">Google이 내 장바구니를 사용하여 나에게 맞는 할인을 찾을 수 있도록 허용합니다.</translation>
-<translation id="3086269988715347183">이전에 <ph name="BLOCKED_URL" /> 주소를 승인하지 않았습니다</translation>
+<translation id="3086269988715347183">이전에 <ph name="BLOCKED_URL" /> 사이트를 승인하지 않았습니다</translation>
 <translation id="3086579638707268289">웹상의 활동이 모니터링되고 있음</translation>
 <translation id="3087734570205094154">맨 아래</translation>
 <translation id="3090667236485488075">광택</translation>
@@ -3077,7 +3077,7 @@
 <translation id="6254436959401408446">페이지를 열기 위한 메모리가 충분하지 않음</translation>
 <translation id="625463612687472648">권한 허용 중지</translation>
 <translation id="6259156558325130047">재정렬 다시 실행(&amp;R)</translation>
-<translation id="6259282549512536479">이전에 <ph name="BLOCKED_URL" /> 주소를 차단했습니다</translation>
+<translation id="6259282549512536479">이전에 <ph name="BLOCKED_URL" /> 사이트를 차단했습니다</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> 북마크</translation>
 <translation id="6264376385120300461">무시하고 다운로드</translation>
 <translation id="6264485186158353794">안전한 페이지로 돌아가기</translation>

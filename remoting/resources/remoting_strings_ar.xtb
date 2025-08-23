@@ -27,7 +27,7 @@
 <translation id="2320166752086256636">إخفاء لوحة المفاتيح</translation>
 <translation id="2329392777730037872">تعذّر فتح <ph name="URL" /> على الجهاز العميل.</translation>
 <translation id="2359808026110333948">متابعة</translation>
-<translation id="2366718077645204424">يتعذر الوصول إلى المضيف. ربما يرجع ذلك إلى إعداد الشبكة التي تستخدمها.</translation>
+<translation id="2366718077645204424">يتعذّر الوصول إلى المضيف. وقد يعود ذلك إلى إعداد الشبكة المُستخدمة.</translation>
 <translation id="242591256144136845">‏جميع حقوق الطبع والنشر محفوظة لصالح شركة Google LLC لعام 2025.</translation>
 <translation id="2504109125669302160">منح إذن "أدوات تمكين الوصول" إلى <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">متصل بـ <ph name="HOSTNAME" /></translation>
@@ -39,9 +39,9 @@
 <translation id="2699970397166997657">‏التوافق مع نظام التشغيل Chrome</translation>
 <translation id="2758123043070977469">حدثت مشكلة أثناء المصادقة، يُرجى إعادة تسجيل الدخول.</translation>
 <translation id="2803375539583399270">أدخل رقم التعريف الشخصي</translation>
-<translation id="2919669478609886916">أنت تشارك هذا الجهاز حاليًا مع مستخدم آخر. هل تريد فعلًا متابعة المشاركة؟</translation>
+<translation id="2919669478609886916">تتم مشاركة هذا الجهاز حاليًا مع مستخدم آخر. هل المطلوب فعلاً متابعة المشاركة؟</translation>
 <translation id="2929683002824598593">مشاركة الجهاز</translation>
-<translation id="2939145106548231838">مصادقة للاستضافة</translation>
+<translation id="2939145106548231838">المصادقة للاستضافة</translation>
 <translation id="3027681561976217984">وضع اللمس</translation>
 <translation id="3106379468611574572">الكمبيوتر البعيد لا يستجيب لطلبات الاتصال. يُرجى التحقق من اتصاله بالإنترنت وإعادة المحاولة.</translation>
 <translation id="3150823315463303127">تعذّر المضيف في قراءة السياسة.</translation>
@@ -55,7 +55,7 @@
 <translation id="3581045510967524389">تعذر الاتصال بالشبكة. يُرجى التحقق من اتصال الجهاز بالإنترنت.</translation>
 <translation id="3596628256176442606">‏تمكن هذه الخدمة الاتصالات الواردة من عملاء التوافق مع نظام التشغيل Chrome.</translation>
 <translation id="3695446226812920698">تعرَّف على كيفية إجراء ذلك</translation>
-<translation id="3776024066357219166">‏انتهت جلسة سطح المكتب البعيد من Chrome.</translation>
+<translation id="3776024066357219166">‏انتهت جلسة الاتصال بجهازك عن بعد من Chrome.</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3897092660631435901">قائمة</translation>
 <translation id="3905196214175737742">نطاق مالك المضيف غير صالح.</translation>
@@ -92,7 +92,7 @@
 <translation id="4985296110227979402">تحتاج أولاً إلى إعداد جهاز الكمبيوتر لإتاحة الدخول عن بُعد</translation>
 <translation id="4987330545941822761">‏لا يمكن لميزة "الوصول إلى الكمبيوتر المكتبي عن بُعد من Chrome" تحديد المتصفّح الذي يجب استخدامه لفتح عناوين URL على الجهاز. يُرجى اختيار المتصفّح من القائمة أدناه.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (في وضع عدم اتصال)</translation>
-<translation id="507204348399810022">هل تريد فعلًا إيقاف الاتصالات عن بُعد بـ <ph name="HOSTNAME" />؟</translation>
+<translation id="507204348399810022">هل المطلوب فعلاً إيقاف الاتصالات عن بُعد بـ <ph name="HOSTNAME" />؟</translation>
 <translation id="5095424396646120601">إعداد تقارير الأعطال</translation>
 <translation id="5170982930780719864">رقم تعريف المضيف غير صالح.</translation>
 <translation id="5204575267916639804">الأسئلة الشائعة</translation>
@@ -165,7 +165,7 @@
 <translation id="806699900641041263">جارٍ الاتصال بـ <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">‏لاستخدام سطح المكتب البعيد من Chrome، يجب إضافة حساب في Google إلى جهازك.</translation>
 <translation id="809687642899217504">أجهزة الكمبيوتر الخاصة بي</translation>
-<translation id="8116630183974937060">حدث خطأ في الشبكة. يُرجى التحقق من اتصال الجهاز بالإنترنت ثم إعادة المحاولة.</translation>
+<translation id="8116630183974937060">حدث خطأ في الشبكة. يُرجى التحقق من اتصال جهازك بالإنترنت وإعادة المحاولة.</translation>
 <translation id="8295077433896346116">‏لاستخدام <ph name="PRODUCT_NAME" />، عليك منح إذن "أدوات تمكين الوصول" لكي يصل الطلب من الجهاز البعيد إلى جهاز Mac هذا.
 
 لمنح هذا الإذن، يُرجى النقر على "<ph name="BUTTON_NAME" />" أدناه لفتح لوحة إعدادات "أدوات تمكين الوصول" المفضّلة ثم وضع علامة في المربّع بجانب "<ph name="SERVICE_SCRIPT_NAME" />".
@@ -191,7 +191,7 @@
 <translation id="916856682307586697">‏إطلاق جلسة Xsession التلقائية</translation>
 <translation id="9187628920394877737">منح إذن "تسجيل الشاشة" إلى <ph name="PRODUCT_NAME" /></translation>
 <translation id="9213184081240281106">إعداد المضيف غير صالح.</translation>
-<translation id="981121421437150478">بلا اتصال</translation>
+<translation id="981121421437150478">بلا إنترنت</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="992215271654996353"><ph name="HOSTNAME" /> (آخر دخول على الإنترنت في تمام <ph name="DATE_OR_TIME" />)</translation>
+<translation id="992215271654996353">‏‫<ph name="HOSTNAME" /> (آخر دخول على الإنترنت في تمام ‎<ph name="DATE_OR_TIME" />)</translation>
 </translationbundle>

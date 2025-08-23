@@ -5041,7 +5041,7 @@
 <translation id="4500647907053779331">Перекласти вибраний фрагмент такою мовою: <ph name="LANGUAGE" /></translation>
 <translation id="450099669180426158">Значок знака оклику</translation>
 <translation id="4501530680793980440">Підтвердити видалення</translation>
-<translation id="4502423230170890588">Видалити з цього пристрою</translation>
+<translation id="4502423230170890588">Видалити із цього пристрою</translation>
 <translation id="4502477450742595012">Натисніть правою кнопкою миші на вкладці й виберіть "Додати вкладку в нову групу"</translation>
 <translation id="4503748371388753124">Ваш комп’ютер оснащено пристроєм Trusted Platform Module (TPM), який виконує багато важливих функцій безпеки в ОС Chrome Flex. Щоб дізнатися більше, відвідайте Довідковий центр Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Файли cookie дозволено}=1{Файли cookie дозволено, 1 виняток}one{Файли cookie дозволено, {COUNT} виняток}few{Файли cookie дозволено, {COUNT} винятки}many{Файли cookie дозволено, {COUNT} винятків}other{Файли cookie дозволено, {COUNT} винятку}}</translation>

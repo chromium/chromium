@@ -57,7 +57,7 @@
 <translation id="1206892813135768548">העתקת טקסט קישור</translation>
 <translation id="1209206284964581585">להסתיר בינתיים</translation>
 <translation id="1227058898775614466">היסטוריית ניווט</translation>
-<translation id="123724288017357924">טעינה מחדש של הדף הנוכחי, תוך התעלמות מתוכן שמאוחסן בקובץ השמור</translation>
+<translation id="123724288017357924">טעינה מחדש של הדף הנוכחי, תוך התעלמות מתוכן שנשמר במטמון</translation>
 <translation id="1239792311949352652">שיתוף הדף הזה במהירות. ניתן לערוך את קיצור הדרך הזה ב'הגדרות'.</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> בטעינה</translation>
 <translation id="124116460088058876">שפות נוספות</translation>
@@ -98,7 +98,7 @@
 <translation id="1386674309198842382">פעילות אחרונה: לפני <ph name="LAST_UPDATED" /> ימים</translation>
 <translation id="1390418506739274310">‏יכול להיות שתוצג היסטוריה מאפליקציות אחרות שפותחות קישורים ב-Chrome. בחשבון שלך ב-Google יכולים להיות עוד סוגים של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">הגיליון התחתון של מדדי המחירים נפתח בגובה מלא</translation>
-<translation id="1397811292916898096">חיפוש באמצעות <ph name="PRODUCT_NAME" /></translation>
+<translation id="1397811292916898096">חיפוש ב-<ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">‏אפשר <ph name="BEGIN_LINK1" />לקבוע אילו נתונים מ-Chrome יישמרו<ph name="END_LINK1" /> בחשבון שלך ב-Google.
 
 כדי לראות אילו הגדרות נוספות מתבססות על נתונים לצורך שיפור חוויית השימוש ב-Chrome, ניתן לעבור אל <ph name="BEGIN_LINK2" />שירותי Google<ph name="END_LINK2" />.</translation>
@@ -458,7 +458,7 @@
 <translation id="3066573403916685335">רד למטה</translation>
 <translation id="3067505415088964188">המחיר נמוך</translation>
 <translation id="3070005020161560471">יש לתרגם אוטומטית</translation>
-<translation id="3072980200212375806">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />. גם <ph name="BEGIN_LINK3" />מדיניות הפרטיות<ph name="END_LINK3" /> חלה.</translation>
+<translation id="3072980200212375806">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך השימוש באפליקציה ייחשב כהסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />. גם <ph name="BEGIN_LINK3" />מדיניות הפרטיות<ph name="END_LINK3" /> תחול.</translation>
 <translation id="3080525922482950719">ניתן לשמור דפים לקריאה במועד מאוחר יותר או במצב אופליין</translation>
 <translation id="3087734570205094154">תחתית</translation>
 <translation id="3091010850649238832">הצגת התוכן שבלוח</translation>
@@ -516,7 +516,7 @@
 <translation id="3374023511497244703">‏הסימניות, ההיסטוריה, הסיסמאות ונתונים אחרים ב-Chrome כבר לא יסונכרנו עם חשבון Google</translation>
 <translation id="3384347053049321195">שיתוף תמונה</translation>
 <translation id="3387650086002190359">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאות במערכת הקבצים.</translation>
-<translation id="3398320232533725830">פתיחת מנהל הסימניות</translation>
+<translation id="3398320232533725830">פתיחת ניהול הסימניות</translation>
 <translation id="3414952576877147120">גודל:</translation>
 <translation id="3421726884497337397">‏אפשר לקבוע מתי קובצי cookie של צד שלישי ייחסמו</translation>
 <translation id="3430670036890315772">השבתה של נעילת הפרופיל תגרום להסרת המידע השמור</translation>
@@ -619,7 +619,7 @@
 <translation id="3845098929839618392">לפתיחה בכרטיסיית מצב אנונימי</translation>
 <translation id="3847319713229060696">סיוע לשיפור האבטחה באינטרנט לטובת כולם</translation>
 <translation id="385051799172605136">חזרה</translation>
-<translation id="3856096718352044181">יש לאמת שהספק הזה חוקי או לנסות שוב מאוחר יותר</translation>
+<translation id="3856096718352044181">צריך לאמת שהספק הזה חוקי או לנסות שוב אחר כך</translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="3863527519275151528">הודעה על עיבוד</translation>
 <translation id="3866863539038222107">בדוק</translation>
@@ -726,13 +726,13 @@
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">סיכום אמצעי הבטיחות</translation>
 <translation id="4378154925671717803">טלפון</translation>
-<translation id="4380055775103003110">אם הבעיה נמשכת, אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4380055775103003110">אם הבעיה לא נפתרת, אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">‏שימוש ב-Sogou לחיפוש</translation>
 <translation id="4387647248986092471">יצירה של נעילת פרופיל ברכב</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ההורדה מתבצעת…</translation>
 <translation id="4404568932422911380">ללא סימניות</translation>
 <translation id="4405224443901389797">העברה אל…</translation>
-<translation id="4405636711880428279">להסיר את הכרטיס הווירטואלי?</translation>
+<translation id="4405636711880428279">להסיר את הכרטיס הווירטואלי שלכם?</translation>
 <translation id="4409014848144759297">‫<ph name="WEBSITE_TITLE" /> ו-<ph name="TAB_COUNT" /> כרטיסיות נוספות</translation>
 <translation id="4414179633735763985">בוצעה מחיקה של <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">‏לניהול החשבון שלך ב-Google</translation>
@@ -799,7 +799,7 @@
 <translation id="4710167854527459075">מיון לפי החדש ביותר</translation>
 <translation id="4718044610319080485">‏הפעלת עוזר אישי מבוסס-AI</translation>
 <translation id="4719927025381752090">הצגת הצעות לתרגום</translation>
-<translation id="4720556299488643018">ביטול הרשמה</translation>
+<translation id="4720556299488643018">לביטול ההרשמה</translation>
 <translation id="4732120983431207637">מודול התרת מחסניות</translation>
 <translation id="4736934858538408121">כרטיס וירטואלי</translation>
 <translation id="473775607612524610">עדכון</translation>
@@ -872,7 +872,7 @@
 <translation id="4987271110129728827">לא ניתן למצוא את הדף הזה. צריך לוודא שהאיות נכון או לנסות לבצע חיפוש באינטרנט.</translation>
 <translation id="4988526792673242964">דפים</translation>
 <translation id="4991110219272367918">האפשרות לאשר או לא לאשר אתר נסגרה</translation>
-<translation id="4996095658297597226">להשתמש בסיסמה המוצעת?</translation>
+<translation id="4996095658297597226">שנשתמש בסיסמה המוצעת?</translation>
 <translation id="5001388021414335527">אפשר לעקוב אחרי האתר הזה כאן</translation>
 <translation id="5004416275253351869">‏בקרת הפעילות בחשבון Google</translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
@@ -909,7 +909,7 @@
 <translation id="5161254044473106830">יש להזין כותרת</translation>
 <translation id="5161262286013276579">גיליון האישור של מפתח הגישה פתוח</translation>
 <translation id="5163361352003913350">החשבון הנוכחי: <ph name="NAME" />. עליך לבחור חשבון.</translation>
-<translation id="5167637873777016814">כדי לצאת מהמצב הפרטי, לוחצים לחיצה כפולה ולוחצים לחיצה ארוכה</translation>
+<translation id="5167637873777016814">כדי לצאת מהמצב הפרטי לחצו לחיצה כפולה והחזיקו</translation>
 <translation id="5169102789680486565">יש פעילות חדשה בקבוצת הכרטיסיות "<ph name="TAB_GROUP_TITLE" />"</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5171045022955879922">טקסט או כתובת אתר לחיפוש</translation>
@@ -977,7 +977,7 @@
 <translation id="5458366071038729214">כאן יוצגו האתרים שיתווספו למעקב</translation>
 <translation id="5468068603361015296">רוצה להוריד את <ph name="FILE_NAME" /> בכל זאת?</translation>
 <translation id="5471273988133666918">לא ניתן להעביר את הכרטיסייה <ph name="TAB_TITLE" /></translation>
-<translation id="548278423535722844">פתיחה באפליקציית מפות</translation>
+<translation id="548278423535722844">לפתיחה באפליקציית מפות</translation>
 <translation id="5492637351392383067">הצפנה במכשיר</translation>
 <translation id="549660026907543296">הצטרפות בתור <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">הסיסמאות בכל המכשירים נפתחו בחצי מגובה המסך</translation>
@@ -995,7 +995,7 @@
 <translation id="5561549206367097665">בהמתנה לרשת…</translation>
 <translation id="5568069709869097550">אי אפשר להיכנס</translation>
 <translation id="557018954714092179">יצירת תיקייה חדשה</translation>
-<translation id="5578795271662203820">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
+<translation id="5578795271662203820">חיפוש של התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5599455543593328020">מצב אנונימי</translation>
 <translation id="5601180634394228718">‏כדי לראות אילו הגדרות נוספות מתבססות על נתונים לצורך שיפור חוויית השימוש ב-Chrome, אפשר לעבור אל <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
@@ -1008,7 +1008,7 @@
 <translation id="5628604359369369630">לא נקראו – זמינים במצב אופליין</translation>
 <translation id="5631483240431073854">ניהול הכרטיסיות הפתוחות</translation>
 <translation id="564121214411935612">‏נכנסת לחשבון בתור <ph name="USER_NAME" />. שגיאה בחשבון Google. ההגדרות ייפתחו.</translation>
-<translation id="5641456720590409793">‏<ph name="BEGIN_LINK1" />היסטוריית החיפושים<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />סוגי פעילות אחרים<ph name="END_LINK2" /> עשויים להישמר בחשבון Google.</translation>
+<translation id="5641456720590409793">‏<ph name="BEGIN_LINK1" />היסטוריית החיפושים<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />סוגי פעילות אחרים<ph name="END_LINK2" /> ישמרו בחשבון Google.</translation>
 <translation id="5648166631817621825">מהשבוע האחרון</translation>
 <translation id="5655963694829536461">חיפוש ההורדות שלך</translation>
 <translation id="5657871969392618475">המידע שלך מאובטח באמצעות נעילת פרופיל</translation>
@@ -1066,7 +1066,7 @@
 <translation id="587735546353481577">‏כדי לעקוב אחר אתר כלשהו, עוברים אליו, פותחים את תפריט Chrome ולוחצים על "מעקב".</translation>
 <translation id="5883855034004058011">האימות הביומטרי נכשל יותר מדי פעמים. צריך לנעול את המכשיר ולבטל את הנעילה שלו כדי לנסות שוב.</translation>
 <translation id="5885378508678660271">‏התראות <ph name="SEPARATOR" /> Chrome הסיר את ההרשאות האלה כי האתר הזה מסוכן</translation>
-<translation id="5895834791314695851">‏יכול להיות שהסיסמאות יפסיקו לפעול במכשיר הזה בקרוב. כדי להמשיך להשתמש בסיסמאות, צריך לעדכן את Google Play Services. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="5895834791314695851">‏הסיסמאות במכשיר הזה יפסיקו לפעול בקרוב. כדי שתוכלו להמשיך להשתמש בסיסמאות שלכם, עדכנו אתGoogle Play Services. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">אין גיליון של מפתחות גישה שנסגר</translation>
 <translation id="5907542076239273525">הסימנייה נשמרה בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">פועל</translation>
@@ -1110,7 +1110,7 @@
 <translation id="610630277578876674">פתיחת קישורים בהודעות במהירות ועוד</translation>
 <translation id="6108923351542677676">ההגדרה מתבצעת…</translation>
 <translation id="6112702117600201073">רענון הדף מתבצע</translation>
-<translation id="6122831415929794347">להשבית את 'גלישה בטוחה'?</translation>
+<translation id="6122831415929794347">להשבית את "גלישה בטוחה"?</translation>
 <translation id="6124936178263837501">דיווח כהודעה שהיא לא ספאם</translation>
 <translation id="6125202119952209826">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />פרטים נוספים<ph name="END_LINK" /></translation>
@@ -1202,9 +1202,9 @@
 <translation id="6452534462676960500">פעילות חדשה</translation>
 <translation id="6459045781120991510">סקרים</translation>
 <translation id="6461962085415701688">לא ניתן לפתוח את הקובץ</translation>
-<translation id="6464977750820128603">‏אפשר לראות אתרים שמבקרים בהם ב-Chrome ולהגדיר טיימרים בשבילם.\n\n‏Google מקבלת מידע על האתרים שמוגדרים בשבילם טיימרים ומשך השהייה שלך באתרים האלה. המידע עוזר לשפר את 'שימוש חכם בדיגיטל'.</translation>
+<translation id="6464977750820128603">‏אפשר לראות אתרים שמבקרים בהם ב-Chrome ולהגדיר להם טיימרים.\n\nהמידע על האתרים שמוגדרים להם טיימרים ומשך הגלישה בהם נשלחים ל-Google. המידע עוזר לשפר את "שימוש חכם בדיגיטל".</translation>
 <translation id="6468703991511753953">סרגל הכתובות נמצא כרגע בחלק התחתון</translation>
-<translation id="6470181189905173055">‏הדפים שפתחת ב-Chrome בזמן השימוש ב-<ph name="APP_LABEL" /> יופיעו כאן.</translation>
+<translation id="6470181189905173055">‏הדפים שפתחת ב-Chrome כשהשתמשת באפליקציה-<ph name="APP_LABEL" /> יופיעו כאן.</translation>
 <translation id="6473086018775716761">רשימת אפשרויות השיתוף נפתחה בחצי הגובה.</translation>
 <translation id="6475951671322991020">הורדת סרטון</translation>
 <translation id="6477928892249167417">נראה שהאתרים האלה חשובים לך:</translation>
@@ -1217,8 +1217,8 @@
 <translation id="6518133107902771759">אימות</translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="652948702951888897">‏היסטוריה של Chrome</translation>
-<translation id="6532866250404780454">‏אתרים שנכנסים אליהם ב-Chrome לא יופיעו. כל הטיימרים של האתרים יימחקו.</translation>
-<translation id="6539092367496845964">משהו השתבש. יש לנסות שוב מאוחר יותר.</translation>
+<translation id="6532866250404780454">‏כניסות לאתרים ב-Chrome לא יופיעו. כל הטיימרים של האתרים יימחקו.</translation>
+<translation id="6539092367496845964">משהו השתבש. צריך לנסות שוב אחר כך.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{התבצעה בדיקה לפני שעה אחת}one{התבצעה בדיקה לפני # שעות}two{התבצעה בדיקה לפני שעתיים}other{התבצעה בדיקה לפני # שעות}}</translation>
 <translation id="6545017243486555795">ניקוי של כל הנתונים</translation>
 <translation id="6546511553472444032">הקובץ עלול להזיק</translation>
@@ -1226,7 +1226,7 @@
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{הכרטיסייה <ph name="TAB_TITLE" /> וכרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) נוספת ייסגרו}one{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}two{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}other{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}}</translation>
 <translation id="6560414384669816528">‏שימוש ב-Sogou לחיפוש</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
-<translation id="6564820424018738527">‏במכשיר Android מופיעה הגדרה דומה. אם האפשרות "מדידת ביצועים של מודעות" מופעלת ב-Chrome ובמכשיר Android, יכול להיות שתהיה לחברה מסוימת הרשאה למדוד את רמת האפקטיביות של מודעה כלשהי באתרים שבהם מבקרים ובאפליקציות שבהן משתמשים.</translation>
+<translation id="6564820424018738527">‏במכשיר Android עשויה להיות הגדרה דומה. אם האפשרות "מדידת ביצועים של מודעות" מופעלת ב-Chrome ובמכשיר Android, יכול להיות שתהיה לחברה מסוימת הרשאה למדוד את רמת האפקטיביות של מודעה כלשהי באתרים שבהם ביקרת ובאפליקציות שבהן השתמשת.</translation>
 <translation id="6565959834589222080">‏המכשיר יתחבר לרשת Wi-Fi כאשר תהיה זמינה</translation>
 <translation id="6569373978618239158">‏בפתיחת כרטיסייה חדשה, יוצגו לך סטוריז מהאתר <ph name="SITE_NAME" />. אתרים שנמצאים במעקב נשמרים בחשבון Google שלך. יש לך אפשרות לנהל אותם בהגדרות של Discover.</translation>
 <translation id="657177046675873214">כדי שהסימניות יופיעו בכל המכשירים, צריך להפעיל את האפשרות "סימניות" בהגדרות</translation>
@@ -1235,7 +1235,7 @@
 <translation id="6583199322650523874">סימון הדף הנוכחי בסימנייה</translation>
 <translation id="6588043302623806746">‏שימוש ב-DNS מאובטח</translation>
 <translation id="6590471736817333463">חיסכון של עד 60% בשימוש בחבילת הגלישה</translation>
-<translation id="6590680911007613645">יש לוודא שהסיסמה שנשמרת זהה לסיסמה שלך עבור <ph name="SITE" /></translation>
+<translation id="6590680911007613645">צריך לוודא שהסיסמה שבחרת לשמור זהה לסיסמה ל-<ph name="SITE" /></translation>
 <translation id="6593061639179217415">אתר מותאם למחשב</translation>
 <translation id="6594347733515723558">אפשרויות למיון ולהצגה</translation>
 <translation id="6595046016124923392">‏התמונות נשלחות אל Google כדי לשפר את התיאורים לנוחיותך.</translation>
@@ -1270,11 +1270,11 @@
 <translation id="6734310707649923383">בדף ההיסטוריה אפשר לראות או למחוק את הדפים שנכנסת אליהם</translation>
 <translation id="6738867403308150051">ההורדה מתבצעת...</translation>
 <translation id="674388916582496364">‏בהרבה אתרים נהוג לשמור את תחומי העניין של המבקרים כדי להתאים אישית את חוויית הגלישה. בנוסף, אתרים יכולים לשמור מידע ב-Chrome לגבי תחומי העניין האלה.</translation>
-<translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
+<translation id="6746338529702829275">בדיקת הנתונים החשבון</translation>
 <translation id="6751521182688001123">פתיחת כרטיסייה חדשה במהירות. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
 <translation id="6756507620369789050">שיתוף משוב</translation>
 <translation id="6762511428368667596"><ph name="NAME" />,‏ <ph name="EMAIL" />.</translation>
-<translation id="676305334223455055">צריך להיכנס לחשבון כדי לקבל תוכן שמותאם לתחומי העניין שלך</translation>
+<translation id="676305334223455055">כדי לקבל תוכן שמותאם לתחומי העניין שלך צריך להיכנס לחשבון</translation>
 <translation id="6764137532716892442">פעילות חדשה בקבוצת הכרטיסיות המשותפת "<ph name="GROUP_TITLE" />"</translation>
 <translation id="6767294960381293877">רשימת המכשירים שאפשר לשתף איתם כרטיסייה נפתחה בחצי גובה המסך.</translation>
 <translation id="6785476624617658922">‏תנאים והגבלות נוספים של Chrome ושל ChromeOS</translation>
@@ -1409,8 +1409,8 @@
 <translation id="7291910923717764901">נוספו תיאורי תמונות בדף זה</translation>
 <translation id="7293429513719260019">בחירת שפה</translation>
 <translation id="729975465115245577">אין במכשיר אפליקציה לאחסון קובץ הסיסמאות.</translation>
-<translation id="7304072650267745798">‏במכשיר Android עשויה להופיע הגדרה דומה. אם ההגדרה הזו מופעלת ב-Chrome ובמכשיר Android, חברות עשויות לקבל הרשאות למדוד את רמת האפקטיביות של המודעות שלהן באתרים שבהם מבקרים ובאפליקציות שבהן משתמשים.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{‏סיסמה אחת שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, עליך לשמור אותה בחשבון Google עם הכתובת <ph name="ACCOUNT_EMAIL" />.}one{‏‫# סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת <ph name="ACCOUNT_EMAIL" />.}two{‏‫# סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת <ph name="ACCOUNT_EMAIL" />.}other{‏‫# סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת <ph name="ACCOUNT_EMAIL" />.}}</translation>
+<translation id="7304072650267745798">‏במכשיר Android עשויה להיות הגדרה דומה. אם ההגדרה הזו מופעלת ב-Chrome ובמכשיר Android, יכול להיות שחברות יקבלו הרשאות למדוד את רמת האפקטיביות של המודעות שלהן באתרים שביקרת בהם ובאפליקציות שהשתמשת בהן.</translation>
+<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{‏המכשיר הזה שומר סיסמה אחת בלבד. כדי להשתמש בה במכשירים אחרים, אתם צריכים לשמור אותה בחשבון Google שלכם <ph name="ACCOUNT_EMAIL" />.}one{‏במכשיר הזה שמורות רק ‫# סיסמאות. כדי להשתמש בהן במכשירים אחרים, אתם צריכים לשמור אותן בחשבון Google שלכם עם הכתובת <ph name="ACCOUNT_EMAIL" />.}two{‏במכשיר הזה שמורות רק ‫# סיסמאות . כדי להשתמש בהן במכשירים אחרים, אתם צריכים לשמור אותן בחשבון Google שלכם <ph name="ACCOUNT_EMAIL" />.}other{‏במכשיר הזה שמורות רק ‫# סיסמאות . כדי להשתמש בהן במכשירים אחרים, אתם צריכים לשמור אותן בחשבון Google שלכם עם הכתובת <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7304873321153398381">‏אין חיבור לאינטרנט. ל-Chrome אין אפשרות לבדוק את הסיסמאות שלך.</translation>
 <translation id="7313188324932846546">יש ללחוץ כדי להגדיר סנכרון</translation>
 <translation id="7314734791127433392">לא ניתן לבדוק את הסיסמאות</translation>
@@ -1476,18 +1476,18 @@
 <translation id="7573665567024262965">בחירת האפליקציות שיוגדרו כברירות המחדל</translation>
 <translation id="7577900504646297215">ניהול תחומי עניין</translation>
 <translation id="757855969265046257">{FILES,plural, =1{הורדת קובץ אחד (<ph name="FILES_DOWNLOADED_ONE" />)}one{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}two{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}other{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}}</translation>
-<translation id="7581273696622423628">השתתף בסקר</translation>
+<translation id="7581273696622423628">השתתפות בסקר</translation>
 <translation id="7583262514280211622">רשימת הקריאה זמינה כאן</translation>
 <translation id="758603037873046260">צריך להיכנס לחשבון כדי לשמור את הדף הזה</translation>
 <translation id="7588219262685291874">עיצוב כהה מופעל כשהמכשיר עובר לחיסכון בסוללה</translation>
 <translation id="7592322927044331376">‏קודם כול, צריך לייצא את הסיסמאות מ-Chrome ולמחוק אותן</translation>
-<translation id="7594687499944811403">צריך לאפשר ל-<ph name="EMBEDDED_ORIGIN" /> לאמת את זהותך עבור <ph name="TOP_ORIGIN" /></translation>
+<translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> יכול לאמת את הזהות שלכם בשביל<ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">מערכת הפעלה</translation>
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{כרטיסייה רגילה אחת (<ph name="TABS_COUNT_ONE" />)}one{‫<ph name="TABS_COUNT_MANY" /> כרטיסיות רגילות}two{‫<ph name="TABS_COUNT_MANY" /> כרטיסיות רגילות}other{‫<ph name="TABS_COUNT_MANY" /> כרטיסיות רגילות}}</translation>
 <translation id="7603168929588204083">התאריך לא תקין</translation>
 <translation id="7605594153474022051">הסנכרון לא עובד</translation>
 <translation id="7612619742409846846">‏התחברת ל-Google בשם</translation>
-<translation id="7612989789287281429">מתבצעת כניסה לחשבון…</translation>
+<translation id="7612989789287281429">מתחברים לחשבון…</translation>
 <translation id="7619072057915878432">הורדת <ph name="FILE_NAME" /> נכשלה עקב כשלים ברשת.</translation>
 <translation id="762537095495606755">הסיסמאות יפסיקו לפעול במכשיר הזה</translation>
 <translation id="7626032353295482388">‏ברוך בואך אל Chrome</translation>
@@ -1501,12 +1501,12 @@
 <translation id="7656862631699126784">הפעלה של נעילת הכרטיסיות הפרטיות</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7663320421139257046">כדי להמשיך, פרטים מסוימים (<ph name="FIELDS_STRING" />) ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה. <ph name="BEGIN_LINK1" />כאן מפורטת מדיניות הפרטיות<ph name="END_LINK1" /> של האתר הזה.</translation>
-<translation id="766587987807204883">כאן יוצגו מאמרים, ואפשר לקרוא אותם גם במצב אונליין</translation>
+<translation id="766587987807204883">כאן יופיעו מאמרים שאפשר לקרוא גם במצב לא מקוון</translation>
 <translation id="7666185984446444960">‫<ph name="TAB_GROUPS_AND_TABS_PART" /> נסגרו</translation>
 <translation id="7682724950699840886">אפשר לנסות את הטיפים הבאים: צריך לוודא שיש מספיק מקום פנוי במכשיר ואז לנסות לייצא שוב.</translation>
 <translation id="7686086654630106285">מידע נוסף על הצעות למודעות באתרים</translation>
 <translation id="7690596512217303514">‏לא ניתן לפתוח את Chrome במכשיר. כדי לפתור את הבעיה, עליך להוריד את העדכון האחרון של Chrome מחנות האפליקציות.</translation>
-<translation id="7691043218961417207">אפשרויות לתוכן למעקב</translation>
+<translation id="7691043218961417207">אפשרויות תוכן למעקב</translation>
 <translation id="7692761875510935111">פתיחה מהירה בדפדפן. כדי לערוך את קיצור הדרך הזה, לוחצים לחיצה ארוכה.</translation>
 <translation id="7697383401610880082">נקודת אחיזה לגרירה</translation>
 <translation id="7698359219371678927">רוצה ליצור אימייל ב-<ph name="APP_NAME" />?</translation>
@@ -1548,7 +1548,7 @@
 <translation id="7875915731392087153">הודעת אימייל חדשה</translation>
 <translation id="7876243839304621966">הסרת הכול</translation>
 <translation id="7886917304091689118">‏פועל ב-Chrome</translation>
-<translation id="7887174313503389866">סיור מודרך באמצעי הבקרה החשובים ביותר על פרטיות ואבטחה. לאפשרויות נוספות, יש לעבור להגדרות ספציפיות.</translation>
+<translation id="7887174313503389866">רוצה להכיר את אמצעי הבקרה הכי חשובים לשמירה על פרטיות ואבטחה? לאפשרויות נוספות, יש לעבור להגדרות ספציפיות.</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{הורדה אחת נחסמה על ידי הארגון שלך}one{‫# הורדות נחסמו על ידי הארגון שלך}two{‫# הורדות נחסמו על ידי הארגון שלך}other{‫# הורדות נחסמו על ידי הארגון שלך}}</translation>
 <translation id="7914399737746719723">האפליקציה הותקנה</translation>
@@ -1571,7 +1571,7 @@
 <translation id="7968982339740310781">הצגת פרטים</translation>
 <translation id="7971136598759319605">פעילות אחרונה: לפני יום אחד</translation>
 <translation id="7975379999046275268">הצגת הדף בתצוגה מקדימה<ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
-<translation id="7977451675950311423">מקבלים אזהרה אם משתמשים בסיסמה שנחשפה בפרצה באבטחת מידע.</translation>
+<translation id="7977451675950311423">אזהרה אם משתמשים בסיסמה שנחשפה בפרצה באבטחת מידע.</translation>
 <translation id="7986497153528221272">כדי להציג סיסמאות, תחילה יש להגדיר נעילת מסך במכשיר</translation>
 <translation id="7987499071758862048">‏‫<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome הסיר את ההרשאות האלה כי לא נכנסת לאחרונה</translation>
 <translation id="7995059495660416932">תוכן יוצג לך ברגע שיהיה זמין</translation>
@@ -1597,11 +1597,11 @@
 <translation id="806745655614357130">שמירת הנתונים שלי בנפרד</translation>
 <translation id="8073388330009372546">פתיחת התמונה בכרטיסייה חדשה</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
-<translation id="8078096376109663956">יש לשתף טקסט בלבד</translation>
+<translation id="8078096376109663956">שיתוף טקסט בלבד</translation>
 <translation id="8078348702936632821">הצמדת קיצור הדרך הזה</translation>
 <translation id="8084114998886531721">סיסמה שמורה</translation>
 <translation id="8084285576995584326">‏שלטו בנתונים שבחשבון Google שלכם</translation>
-<translation id="8084864785646838999">‏יכול להיות שחלק מההיסטוריה שלך לא תופיע כאן. צריך לפתוח את ההיסטוריה המלאה ב-Chrome כדי לראות את כולה. כמו כן, יכול להיות שאפשר יהיה לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8084864785646838999">‏יכול להיות שחלק מההיסטוריה שלך לא מופיע כאן. צריך לפתוח את ההיסטוריה המלאה ב-Chrome כדי לראות את הכול. אולי אפשר גם לראות סוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8088176524274673045">‏כדי לשתף עם אנשים בקרבת מקום, הם צריכים לסרוק את קוד ה-QR הזה</translation>
 <translation id="8090732854597034573">אם צריך עזרה, אפשר לבקש עזרה מהורה</translation>
 <translation id="8101414242770404289">לא יסגרו כרטיסיות במסגרת <ph name="TIME_PERIOD" /></translation>
@@ -1661,9 +1661,9 @@
 <translation id="831192587911042850">הוספת אתר האינטרנט שפתוח כרגע לרשימת אתרי האינטרנט שבמעקב.</translation>
 <translation id="8320212361750431956">פעילות אחרונה</translation>
 <translation id="832514020744584629">‫<ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
-<translation id="8342727528718219152">‏‫Chrome יודיע לך על אתרים שעלולים לשלוח יותר מדי התראות</translation>
+<translation id="8342727528718219152">‏‫Chrome יודיע לך על אתרים ששולחים יותר מדי התראות</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
-<translation id="8348430946834215779">‏יש להשתמש ב-HTTPS כשאפשר, ולקבל אזהרה לפני שטוענים אתרים שלא תומכים ב-HTTPS</translation>
+<translation id="8348430946834215779">‏שימוש ב-HTTPS כשאפשר וקבלת אזהרה לפני טעינת אתרים שלא תומכים ב-HTTPS</translation>
 <translation id="8354977102499939946">חיפוש מהיר באמצעות הקול. ניתן לערוך את קיצור הדרך הזה ב'הגדרות'.</translation>
 <translation id="8361737703487394103">מעבר לכרטיסייה ספציפית (1-8)</translation>
 <translation id="8368001212524806591">מעקב אחר המחיר</translation>
@@ -1694,7 +1694,7 @@
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{ההרשאות הוסרו מאתר אחד}one{ההרשאות הוסרו מ-# אתרים}two{ההרשאות הוסרו מ-# אתרים}other{ההרשאות הוסרו מ-# אתרים}}</translation>
 <translation id="8453310803815879010">‏הפעלת המשחק Dino</translation>
 <translation id="8455675988389029454">יש לך אפשרות לקבל גישה לסימניות, לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>
-<translation id="8458413889418591446">אחרי סנכרון ההיסטוריה והכרטיסיות אפשר יהיה לחזור במהירות לאתרים שביקרת בהם</translation>
+<translation id="8458413889418591446">רוצה לחזור במהירות לאתרים שביקרת בהם? צריך קודם לסנכרן את ההיסטוריה ואת הכרטיסיות</translation>
 <translation id="84594714173170813">‏המשך השימוש בנתוני Chrome בחשבון Google שלך</translation>
 <translation id="8460448946170646641">בדיקה של אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
@@ -1749,7 +1749,7 @@
 <translation id="8693232767599693749">להציג את מצב הקריאה?</translation>
 <translation id="8697753151306746444">שיתוף של חלון או מסך במקום זאת</translation>
 <translation id="869891660844655955">תאריך תפוגה</translation>
-<translation id="8699120352855309748">לא להציע לי לתרגם את השפות האלה</translation>
+<translation id="8699120352855309748">אני לא רוצה לתרגם את השפות האלה</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8715286883001906001">‏חיזוק הסיסמאות בחשבון Google</translation>
 <translation id="8723453889042591629">תרגום מהיר של הדף הזה. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
@@ -1768,7 +1768,7 @@
 <translation id="879027982257117598">לדוגמה, אם ביקרת באתר למכירת נעלי ריצה למרחקים ארוכים, האתר עשוי להעריך שריצות מרתון מעניינות אותך. לאחר מכן, יכול להיות שבביקור באתר שונה תוצג מודעה לנעלי ריצה לפי הצעה מהאתר הראשון.</translation>
 <translation id="8798449543960971550">נקראו</translation>
 <translation id="8803526663383843427">במצב מופעל</translation>
-<translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{‏הפריט נשמר בחשבון Google עם הכתובת <ph name="ACCOUNT_EMAIL" />.}one{‏הפריטים נשמרו בחשבון Google עם הכתובת <ph name="ACCOUNT_EMAIL" />.}two{‏הפריטים נשמרו בחשבון Google עם הכתובת <ph name="ACCOUNT_EMAIL" />.}other{‏הפריטים נשמרו בחשבון Google עם הכתובת <ph name="ACCOUNT_EMAIL" />.}}</translation>
+<translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{‏הפריט נשמר בחשבון Google שלך, <ph name="ACCOUNT_EMAIL" />.}one{‏הפריטים נשמרו בחשבון Google שלך, <ph name="ACCOUNT_EMAIL" />.}two{‏הפריטים נשמרו בחשבון Google שלך, <ph name="ACCOUNT_EMAIL" />.}other{‏הפריטים נשמרו בחשבון Google שלך, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">שמירת הקבוצה</translation>
 <translation id="8812260976093120287">באתרים מסוימים ניתן לשלם דרך המכשיר באמצעות אפליקציות התשלום הנתמכות שמופיעות למעלה.</translation>
 <translation id="8816556050903368450">הקישור המכיל: <ph name="ORIGIN" /></translation>
@@ -1853,7 +1853,7 @@
 <translation id="9148126808321036104">כניסה חוזרת</translation>
 <translation id="9157212632995922070">בחירת חשבון להמשך השימוש ב-<ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">שיתוף התוכן בלבד</translation>
-<translation id="9161172953291434881">האם לדעתך הנתונים שלך יהיו בטוחים באתר הזה?</translation>
+<translation id="9161172953291434881">האם לדעתך הנתונים שלך בטוחים באתר הזה?</translation>
 <translation id="9168847423516963845">העברת סרגל הכתובות לתחתית</translation>
 <translation id="9169507124922466868">היסטוריית הניווט פתוחה למחצה</translation>
 <translation id="918419812064856259">‏Chrome בטא</translation>
@@ -1875,7 +1875,7 @@
 <translation id="930124987204876019">‏מחיקת ההיסטוריה, קובצי ה-Cookie, נתוני האתרים, המטמון…</translation>
 <translation id="938850635132480979">שגיאה: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>
-<translation id="95817756606698420">‏דפדפן Chrome יכול להשתמש ב-<ph name="BEGIN_BOLD" />Sogou‏<ph name="END_BOLD" /> כדי לבצע חיפוש מסין. אפשר לשנות את ההעדפה הזאת ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
+<translation id="95817756606698420">‏דפדפן Chrome יכול להשתמש ב-<ph name="BEGIN_BOLD" />Sogou‏<ph name="END_BOLD" /> כדי לבצע חיפוש בסין. אפשר לשנות את ההעדפה הזאת ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">מחיקת נתוני הגלישה</translation>
 <translation id="963246339335003378">פתיחת מנהל המשימות</translation>
 <translation id="966131775676567255">נתוני החשבון נמחקים</translation>

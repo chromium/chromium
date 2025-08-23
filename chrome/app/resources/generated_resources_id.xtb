@@ -1832,7 +1832,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="225716114209817872">Maksimum</translation>
 <translation id="2261323523305321874">Administrator Anda telah melakukan perubahan di seluruh sistem yang menonaktifkan sebagian profil lama.</translation>
 <translation id="22614517036276112">Dokumen ini atau perangkat Anda tidak memenuhi beberapa kebijakan keamanan organisasi Anda. Hubungi admin Anda untuk mengetahui hal yang perlu diperbaiki.</translation>
-<translation id="2262477216570151239">Tunda sebelum mengulangi</translation>
+<translation id="2262477216570151239">Penundaan sebelum pengulangan</translation>
 <translation id="2263189956353037928">Logout &amp; login kembali</translation>
 <translation id="2263371730707937087">Rasio refresh layar</translation>
 <translation id="2263679799334060788">Masukan Anda membantu kami meningkatkan Google Cast dan kami menghargainya.
@@ -7845,7 +7845,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6542417422899025860">Otomatis hapus sebagian besar informasi pribadi secara otomatis</translation>
 <translation id="6542521951477560771">Transmisikan ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">tombol lampu latar keyboard</translation>
-<translation id="6545665334409411530">Tingkat pengulangan</translation>
+<translation id="6545665334409411530">Kecepatan pengulangan</translation>
 <translation id="6546856949879953071">Untuk informasi mendetail tentang upgrade, log telah disimpan di File &gt; File saya &gt; <ph name="LOG_FILE" /></translation>
 <translation id="6547354035488017500">Kosongkan ruang penyimpanan minimal 512 MB atau perangkat tidak akan merespons. Untuk mengosongkan ruang penyimpanan, hapus file dari penyimpanan perangkat.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Layanan lokasi Google menggunakan sumber seperti Wi-Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat Anda.<ph name="END_PARAGRAPH1" />

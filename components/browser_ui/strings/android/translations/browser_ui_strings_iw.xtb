@@ -6,7 +6,7 @@
 ההגנה המתקדמת שולטת בהגדרות האלה של Chrome:
 ‫• האפשרות "להשתמש תמיד בחיבורים מאובטחים" מופעלת.
 ‫• כלי האופטימיזציה של JavaScript מושבת. <ph name="BEGIN_LINK2" />ניהול החריגים של האתר<ph name="END_LINK2" /></translation>
-<translation id="1006017844123154345">פתיחת גרסה אונליין</translation>
+<translation id="1006017844123154345">פתיחה באינטרנט</translation>
 <translation id="1036348656032585052">כיבוי</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
 <translation id="1070329623210597193">קבצים שהאתר יכול לראות או לערוך</translation>
@@ -93,7 +93,7 @@
 <translation id="2148716181193084225">היום</translation>
 <translation id="216989819110952009">אפילו שהרכיבו משקפיים ירוקות שהגנו על עיניהם, דורותי וחבריה נדהמו כשהגיעו לראשונה</translation>
 <translation id="2176704795966505152">הצגת האפשרות לשינוי מרחק התצוגה בתפריט הראשי</translation>
-<translation id="2182457891543959921">תוצג שאלה לפני מתן הרשאה לאתרים ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה (מומלץ)</translation>
+<translation id="2182457891543959921">תוצג שאלה לפני מתן הרשאה לאתרים ליצור מפה בתלת-ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה (מומלץ)</translation>
 <translation id="2185965788978862351">‏הפעולה הזו תגרום למחיקת <ph name="DATASIZE" /> של נתונים וקובצי Cookie שאוחסנו על ידי אתרים ואפליקציות במסך הבית.</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
 <translation id="2215727959747642672">עריכת קובץ</translation>
@@ -451,7 +451,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}one{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}two{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">הביקור האחרון התבצע לפני <ph name="NUM_DAYS" /> ימים</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
-<translation id="6561560012278703671">הצגת התראות שקטה יותר (למניעת הקפצה של חלוניות מפריעות)</translation>
+<translation id="6561560012278703671">הצגת התראות שקטה יותר (לחסימת תצוגת התראות שיכולה לפעמים להפריע)</translation>
 <translation id="6593061639179217415">אתר מותאם למחשב</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{‏קובצי cookie מותרים לאתר אחד (<ph name="RWS_MEMBERS_COUNT" />) של <ph name="RWS_OWNER" />}one{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}two{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}other{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>
@@ -475,7 +475,7 @@
 <translation id="6842868554183332230">לרוב, אתרים יכולים לזהות מתי המכשיר הזה משמש אותך באופן פעיל כדי להגדיר את הזמינות שלך באפליקציות צ'אט</translation>
 <translation id="6864395892908308021">‏NFC לא נתמך במכשיר הזה</translation>
 <translation id="6870169401250095575">הסתרת הכרטיס 'טיימר לדיווח על מצב מסוכן'</translation>
-<translation id="6900883974539674431">אפשר ליצור קבוצות של כרטיסיות שנשמרות באופן אוטומטי ומתעדכנות בכל המכשירים</translation>
+<translation id="6900883974539674431">יצירת קבוצות של כרטיסיות שנשמרות באופן אוטומטי ושמתעדכנות בכל המכשירים</translation>
 <translation id="6912998170423641340">חסימת היכולת של אתרים לקרוא טקסט ותמונות מלוח העריכה</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6950072572526089586">אתר שמבקרים בו יכול לשמור מידע על הפעולות שמבצעים בו כדי לפעול כצפוי. למשל, כדי להשאיר את החשבון מחובר לאתר או לשמור פריטים בעגלת הקניות. לרוב, אתרים שומרים את המידע הזה במכשיר באופן זמני.</translation>
@@ -519,7 +519,7 @@
 <translation id="7553211568594248088">יציאה מהחיפוש ברכזת</translation>
 <translation id="7554752735887601236">אתר כלשהו משתמש במיקרופון שלך</translation>
 <translation id="7561196759112975576">תמיד</translation>
-<translation id="7573594921350120855">אתרים משתמשים בדרך כלל במצלמת הווידאו כדי לתמוך בתכונות תקשורת כמו וידאו צ'אט</translation>
+<translation id="7573594921350120855">אתרים משתמשים בדרך כלל במצלמת הווידאו בשביל תכונות תקשורת כמו וידאו צ'אט</translation>
 <translation id="757524316907819857">חסימה של הפעלת תוכן מוגן על-ידי אתרים</translation>
 <translation id="7594634374516752650">‏האתר מחובר למכשיר Bluetooth</translation>
 <translation id="7617547684249261169">‏אפשר למחוק חלק מההיסטוריה, קובצי ה-Cookie, נתוני האתרים ונתונים נוספים. אפשר גם לבחור למחוק את הכול.</translation>
@@ -632,7 +632,7 @@
 <translation id="8874790741333031443">‏אפשר להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו כצפוי.</translation>
 <translation id="8889294078294184559">‏במהלך הגלישה, אתרים אחרים יכולים לבדוק ב-Chrome ולאמת שסביר להניח שמדובר באדם אמיתי, לפי פרטים שנשמרו בביקור באתר קודם.</translation>
 <translation id="8899807382908246773">מודעות שמפריעות</translation>
-<translation id="8903921497873541725">התקרבות לתצוגה</translation>
+<translation id="8903921497873541725">הגדלת התצוגה</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">אין לשאול שוב</translation>
 <translation id="8926666909099850184">‏קישוריות ה-NFC מושבתת במכשיר הזה. ניתן להפעיל אותה דרך <ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
