@@ -97,7 +97,7 @@
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />‏ (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">איתור טלפון</translation>
 <translation id="1287002645302686982">כבר קיים שולחן עבודה וירטואלי בשם <ph name="DESK_TEMPLATE_NAME" /></translation>
-<translation id="1288276784862223576">הגדרת ההצגה של המדיה והתמונות שבטלפון מהזמן האחרון</translation>
+<translation id="1288276784862223576">הגדרת הצפייה במדיה ותמונות שבטלפון מהזמן האחרון</translation>
 <translation id="1289185460362160437">אפשר לחזור ביום <ph name="COME_BACK_DAY_OF_WEEK" /> בשעה <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">אות חלש</translation>
 <translation id="1290982764014248209">העברת <ph name="DRAGGED_APP" /> אל התיקייה <ph name="FOLDER_NAME" />.</translation>
@@ -461,7 +461,7 @@
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">הפעלה או השבתה של הגלישה באמצעות סמן הטקסט</translation>
 <translation id="2531025035050312891">המכשיר איטי</translation>
-<translation id="2531107890083353124">הקשה על <ph name="KEY_ONE" /> תוך כדי גרירת הכרטיסייה</translation>
+<translation id="2531107890083353124">לחיצה על <ph name="KEY_ONE" /> תוך כדי גרירת הכרטיסייה</translation>
 <translation id="2532199152994248594">צריך לגרור או ללחוץ על מקש הרווח כדי לבחור אזור לצילום</translation>
 <translation id="2545334090614121435">‏רוצה להשתמש במקש Home? שימוש במקש</translation>
 <translation id="254900897760075745">העתקת התוכן שנבחר ללוח</translation>
@@ -643,7 +643,7 @@
 <translation id="315116470104423982">נתוני נייד</translation>
 <translation id="3151786313568798007">כיוון</translation>
 <translation id="3153444934357957346">אפשר לכלול עד <ph name="MULTI_PROFILE_USER_LIMIT" /> חשבונות בכניסה עם מספר חשבונות.</translation>
-<translation id="3154351730702813399">ייתכן שמנהל המכשיר עוקב אחרי פעילות הגלישה שלך.</translation>
+<translation id="3154351730702813399">יכול להיות שהאדמין של המכשיר עוקב אחרי פעילות הגלישה שלך.</translation>
 <translation id="316086887565479535">האפליקציות בתבנית לא נתמכות</translation>
 <translation id="3160929076476941240">שעתיים</translation>
 <translation id="316356270129335934">ה-<ph name="DEVICE_TYPE" /> יוחזר לגרסה הקודמת על ידי <ph name="MANAGER" />. המכשיר יעבור איפוס וכל הנתונים שבו יימחקו.</translation>
@@ -850,7 +850,7 @@
 <translation id="3804737937830804242">כיווץ המצלמה</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{אמוג'י אחד. אין תוצאות נוספות.}one{‫# סמלי אמוג'י. אין תוצאות נוספות.}two{‫# סמלי אמוג'י. אין תוצאות אחרות.}other{‫# סמלי אמוג'י. אין תוצאות אחרות.}}</translation>
 <translation id="3822403841174077928">לא הצלחנו להעתיק עם העיצוב</translation>
-<translation id="3824784079442479685">הפעולה הזו תאפשר גישה למצלמה לאפליקציה <ph name="APP_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
+<translation id="3824784079442479685">הפעולה הזו תאפשר גישה למצלמה לאפליקציה <ph name="APP_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה. יכול להיות שיהיה צורך לרענן את דף האינטרנט או לפתוח מחדש את האפליקציה.</translation>
 <translation id="3826099427150913765">מעבר לסיסמה</translation>
 <translation id="383058930331066723">מצב חיסכון בסוללה מופעל</translation>
 <translation id="3831226344927851293">יציאה מתצוגת המדריך</translation>
@@ -916,7 +916,7 @@
 <translation id="4028481283645788203">יש להזין סיסמה כדי לענות על דרישות האבטחה המוגברות</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + חץ שמאלה</translation>
-<translation id="4039699481424758547">‏צריך להקיש על Enter כדי לצלם את המסך של החלון: <ph name="WINDOW_TITLE" /></translation>
+<translation id="4039699481424758547">‏צריך ללחוץ על Enter כדי לצלם את המסך של החלון: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">המסך שלך משותף</translation>
 <translation id="404437169852192935">העדכונים הסתיימו</translation>
 <translation id="4049230407053723315">הגדרות מהירות</translation>
@@ -1107,7 +1107,7 @@
 <translation id="4623167406982293031">יש לאמת את החשבון</translation>
 <translation id="4628757576491864469">מכשירים</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, דירוג כוכבים: <ph name="RATING_SCORE" /></translation>
-<translation id="4633636853437260449">‏כדי למחוק, מקישים על Ctrl+W.</translation>
+<translation id="4633636853437260449">‏כדי למחוק צריך ללחוץ על Ctrl+W.</translation>
 <translation id="4635501805800894201">{0,plural, =0{עליך לעדכן את המכשיר לגרסה הקודמת עכשיו}=1{עליך לעדכן את המכשיר לגרסה הקודמת בתוך שנייה}one{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שניות}two{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שניות}other{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שניות}}</translation>
 <translation id="4642092649622328492">צילום מסך חלקי</translation>
 <translation id="4644727592819780893">האזור קטן מדי ואי אפשר להציג אותו במצלמה</translation>
@@ -1145,7 +1145,7 @@
 <translation id="4740516757091333363">למחוק את שולחן העבודה השמור?</translation>
 <translation id="4746798685375253449">{0,plural, =1{עליך לעדכן את המכשיר לגרסה הקודמת בתוך יום אחד}one{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # ימים}two{עליך לעדכן את המכשיר לגרסה הקודמת בתוך יומיים (#)}other{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # ימים}}</translation>
 <translation id="4747410141429390146">צריך לבטל את הנעילה כדי להציג את ההתראות</translation>
-<translation id="4752784485658729358">ניתן לשמור רק 6 שולחנות עבודה וירטואליים. צריך להסיר שולחן עבודה וירטואלי כדי לשמור אחד חדש.</translation>
+<translation id="4752784485658729358">ניתן לשמור רק 6 שולחנות עבודה וירטואליים. כדי לשמור אחד חדש, צריך קודם כול להסיר שולחן עבודה וירטואלי אחר ששמרת בעבר.</translation>
 <translation id="4759238208242260848">הורדות</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + חץ למעלה</translation>
 <translation id="4762573482154983647">הסתרת אפליקציות</translation>
@@ -1470,7 +1470,7 @@
 <translation id="5759522586053040964">ככה הקול שלך נשמע כדי להפסיק, לוחצים על סמל הבדיקה או סוגרים את החלונית של שיחת הווידאו.</translation>
 <translation id="5760866832697883462">חיבור של <ph name="NAME" /></translation>
 <translation id="5762420912707163638">אפשר להחליף את המצב של כלי הסימון. <ph name="STATE_TEXT" /> אפשר להשתמש במשטח המגע, במסך המגע או בסטיילוס כדי לשרטט במסך.</translation>
-<translation id="576341972084747908">הורדת קובץ (<ph name="FILENAME" />) מסוכן</translation>
+<translation id="576341972084747908">הורדת קובץ <ph name="FILENAME" /> מסוכן</translation>
 <translation id="576453121877257266">תאורת הלילה פועלת.</translation>
 <translation id="5764569119212455782">מעבר לשפה האחרונה שנבחרה</translation>
 <translation id="5767730327234918501">‏האדמין שלך השבית את הנקודה לשיתוף אינטרנט (Hotspot).</translation>
@@ -1694,7 +1694,7 @@
 <translation id="6485086611007560630">תחזית מזג האוויר (לא זמינה)</translation>
 <translation id="6490471652906364588">‏מכשיר עם יציאת USB-C (יציאה ימנית)</translation>
 <translation id="649452524636452238">קוד האימות של הכרטיס החכם</translation>
-<translation id="6495322433318104734">מוצג שומר מסך. כדי לצאת צריך להקיש על מקש כלשהו.</translation>
+<translation id="6495322433318104734">תצוגת שומר מסך. כדי לצאת צריך ללחוץ על כל כפתור שהוא.</translation>
 <translation id="6495400115277918834">‏הופעלה התכונה 'תמונה בתוך תמונה'. מקישים על Alt+Shift+V כדי להתמקד</translation>
 <translation id="6497418457565568043">המצב 'נא לא להפריע' מופעל</translation>
 <translation id="6501401484702599040">העברת המסך אל <ph name="RECEIVER_NAME" /> מתבצעת</translation>
@@ -1737,7 +1737,7 @@
 <translation id="6612889377159412215">תת-משימה</translation>
 <translation id="6613765291890844037">נפח אחסון בשימוש: <ph name="STORAGE_IN_USE_SIZE" /> ‏| <ph name="STORAGE_TOTAL_SIZE" /> סה"כ</translation>
 <translation id="6614169507485700968">מסך הפרטיות פועל</translation>
-<translation id="6622679827379792051">הגדרת ההצגה של האפליקציות שבטלפון</translation>
+<translation id="6622679827379792051">הגדרת התצוגה של האפליקציות שבטלפון</translation>
 <translation id="662279009180869175">אפשר לשנות את גודל המסך המפוצל בעזרת שימוש בחצים ימינה או שמאלה</translation>
 <translation id="6624493541160101248">שולחן העבודה הווירטואלי הנוכחי: <ph name="DESK_NAME" />. שולחן עבודה וירטואלי <ph name="DESK_INDEX" /> מתוך <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">ההתראות מהאפליקציות <ph name="APP_1_TITLE" /> וכן <ph name="APP_2_TITLE" /> ומאפליקציות נוספות מוסתרות כי מופעלת הגנה על תצוגה</translation>
@@ -1750,7 +1750,7 @@
 <translation id="6649641931981131786">כוונו את המצלמה כדי שתופיעו במרכז המסך.</translation>
 <translation id="6650072551060208490">כדי להתחבר ל-<ph name="ORIGIN_NAME" /> צריך לאמת זהות</translation>
 <translation id="6650742588569439432">לא ניתן לטעון את הפריטים.</translation>
-<translation id="6650933572246256093">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לביצוע התאמה. יש להזין את מפתח הסיסמה הבא במכשיר הזה: <ph name="PASSKEY" /></translation>
+<translation id="6650933572246256093">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה. צריך להזין את מפתח הגישה הזה במכשיר הזה: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="666343722268997814">פתיחת תפריט הלחיצה הימנית של הפריט המודגש</translation>
 <translation id="6665545700722362599">לאפשר לאתרים, לאפליקציות ולתוספים לקבל הרשאה להשתמש במיקום, במצלמה, במיקרופון ובשאר תכונות המכשיר של המשתמש</translation>
@@ -1824,7 +1824,7 @@
 <translation id="6879454869409141992">‏הפעלת Caps Lock</translation>
 <translation id="6883768636838842873">מקשי קיצור, טיפים לשימוש במכשיר ועוד</translation>
 <translation id="6884665277231944629">חזרה להיום</translation>
-<translation id="6886172995547742638">‏ייתכן שהביצועים של <ph name="DEVICE_TYPE" /> יהיו נמוכים יותר. יש להשתמש במתאם מתח מאושר בהספק של <ph name="PREFERRED_MINIMUM_POWER" /> ואט לפחות, או מסוג USB-C.</translation>
+<translation id="6886172995547742638">‏ייתכן שהביצועים של <ph name="DEVICE_TYPE" /> יהיו נמוכים יותר. צריך להשתמש במתאם מתח USB-C מאושר בהספק של <ph name="PREFERRED_MINIMUM_POWER" />W או יותר.</translation>
 <translation id="688631446150864480">יש להקיש על מקש החץ למטה כדי לעבור בין חלונות</translation>
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6912841030378044227">התמקדות בסרגל הכתובות</translation>

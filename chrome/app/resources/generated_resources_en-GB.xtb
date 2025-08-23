@@ -3717,6 +3717,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3561201631376780358">Open side panel to see all Bookmarks</translation>
 <translation id="3562423906127931518">This process may take a few minutes. Setting up the Linux container.</translation>
 <translation id="3562655211539199254">View recent Chrome tabs from your phone</translation>
+<translation id="356268274299520831">Change it on the site</translation>
 <translation id="3563392617245068355">Mood</translation>
 <translation id="3563432852173030730">Kiosk application could not be downloaded.</translation>
 <translation id="3563558822383875692">Configuring DLC.</translation>
@@ -4815,6 +4816,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4298660926525614540">Removable Storage Names</translation>
 <translation id="4299022904780065004">New &amp;Incognito window</translation>
 <translation id="4300272766492248925">Open app</translation>
+<translation id="4301231341924904092">Change it for me</translation>
 <translation id="4301671483919369635">This page is allowed to edit files</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# contact is not available. To use <ph name="FEATURE_NAME" /> with them, add the email address associated with their Google Account to your contacts.}other{# contacts are not available. To use <ph name="FEATURE_NAME" /> with them, add the email addresses associated with their Google Accounts to your contacts.}}</translation>
 <translation id="4303079906735388947">Set up a new PIN for your security key</translation>

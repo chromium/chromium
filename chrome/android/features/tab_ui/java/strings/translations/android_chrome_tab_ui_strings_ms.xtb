@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab dihimpunkan</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="1909810060368225529">Notis: Perubahan kepada Kumpulan Tab kongsi ini dapat dilihat oleh semua orang. Semua orang boleh membuat perubahan pada kumpulan tab dikongsi anda</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Sematkan tab}other{Sematkan tab}}</translation>
 <translation id="1982637982196732906">Alihkan kepada bahagian tidak aktif</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Tandai halaman <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Tandai halaman <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="2055057176188061528">Pilih kumpulan tab atau buat kumpulan tab baharu</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Lak. kecil pratntn helaian kongsi.</translation>
 <translation id="3810973564298564668">Urus</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Nyahsematkan tab}other{Nyahsematkan tab}}</translation>
 <translation id="3940195383040445971">Jejaki harga pada tab</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab baharu, <ph name="ANY_CLOSED" /> ditutup}other{<ph name="MANY_ADDED" /> tab baharu, <ph name="ANY_CLOSED" /> ditutup}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Himpunkan tab}other{Himpunkan tab}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Tutup <ph name="TABS_COUNT_ONE" /> item yang dipilih}other{Tutup <ph name="TABS_COUNT_MANY" /> item yang dipilih}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Alihkan kumpulan kepada tetingkap baharu}other{Alihkan kumpulan kepada tetingkap lain}}</translation>
 <translation id="6228793724645064692">(rating kedai)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Alih keluar tab daripada kumpulan}other{Alih keluar tab daripada kumpulan}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tambahkan tab pada kumpulan baharu}other{Tambahkan tab pada kumpulan baharu}}</translation>
 <translation id="6333260925957816943">Maklumat tentang kedai ini</translation>
 <translation id="6381032505162537930">Anda akan menemukan kumpulan tab anda di sini</translation>

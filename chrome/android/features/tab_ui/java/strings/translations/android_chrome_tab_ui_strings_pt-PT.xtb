@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> separador agrupado</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
 <translation id="1909810060368225529">Aviso: as alterações a este grupo de separadores partilhado são visíveis para todos. Todos podem fazer alterações aos seus grupos de separadores partilhados</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Fixar separador}other{Fixar separadores}}</translation>
 <translation id="1982637982196732906">Mova para a secção inativa</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador selecionado aos marcadores}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores selecionados aos marcadores}}</translation>
 <translation id="2055057176188061528">Selecione um grupo de separadores ou crie um novo grupo de separadores</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniat. pré-visual. folha partilha</translation>
 <translation id="3810973564298564668">Administrar</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Desafixar separador}other{Desafixar separadores}}</translation>
 <translation id="3940195383040445971">Acompanhe os preços nos separadores</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> novo separador, <ph name="ANY_CLOSED" /> fechado}other{<ph name="MANY_ADDED" /> novos separadores, <ph name="ANY_CLOSED" /> fechados}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupar separador}other{Agrupar separadores}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> item selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> itens selecionados}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo para nova janela}other{Mover grupo para outra janela}}</translation>
 <translation id="6228793724645064692">(classificação da loja)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Remover separador do grupo}other{Remover separadores do grupo}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Adicionar separador a novo grupo}other{Adicionar separadores a novo grupo}}</translation>
 <translation id="6333260925957816943">Informações acerca desta loja</translation>
 <translation id="6381032505162537930">Os seus grupos de separadores vão ser apresentados aqui</translation>

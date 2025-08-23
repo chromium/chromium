@@ -440,6 +440,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1719838434204287058">24 x 30 pol.</translation>
 <translation id="1720941539803966190">Fechar tutorial</translation>
 <translation id="1721424275792716183">* Campo de preenchimento obrigatório</translation>
+<translation id="1723636263173393300">Esta política não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> atalhos.</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">O certificado é válido</translation>
 <translation id="1728677426644403582">Está a ver a fonte de uma página Web</translation>
@@ -1047,6 +1048,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="271663710482723385">Prima |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para sair do ecrã inteiro</translation>
 <translation id="2717336592027046789">Rolo</translation>
 <translation id="2718207025093645426">O dispositivo ou o utilizador gerido não tem uma política carregada.</translation>
+<translation id="2719233594187778789">URL duplicado ignorado: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Pedido com êxito</translation>
 <translation id="2722622039067384533">Mobiliário de sala de estar</translation>
 <translation id="2723669454293168317">Execute uma verificação de segurança nas definições do Chrome</translation>
@@ -2007,6 +2009,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4298000214066716287">Investimentos</translation>
 <translation id="4298148761711700950">Faça pagamentos instantâneos sem carregar códigos QR</translation>
 <translation id="4298925811540301889">Os cookies deste site são sincronizados nos seus dispositivos com ChromeOS. Para gerir o que sincroniza, aceda a <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">O nome do atalho excede o comprimento máximo permitido de <ph name="MAX_LENGTH" /> carateres.</translation>
 <translation id="4300272766492248925">Abrir aplicação</translation>
 <translation id="4300675098767811073">Perfuração múltipla à direita</translation>
 <translation id="4302514097724775343">Toque no dinossauro para jogar.</translation>
@@ -2708,6 +2711,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
     Experimente contactar o gestor do sistema.</translation>
 <translation id="5496804587179176046">Guardar códigos de segurança, não existem códigos de segurança guardados atualmente</translation>
 <translation id="550365051221576010">Preencher todos os campos</translation>
+<translation id="5506286895894263601">A lista não contém atalhos válidos.</translation>
 <translation id="5508443345185481044">Máquinas fotográficas e câmaras de vídeo</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Marcadores geridos</translation>
@@ -3627,6 +3631,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7014741021609395734">Nível de zoom</translation>
 <translation id="7016992613359344582">Estas cobranças podem ser únicas ou recorrentes e podem não ser óbvias.</translation>
 <translation id="701757816833614688">Educação em artes visuais e design</translation>
+<translation id="7020464868401003526">O URL do atalho excede o comprimento máximo permitido de <ph name="MAX_LENGTH" /> carateres.</translation>
 <translation id="702275896380648118">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites. Este site também obtém os seus tópicos de anúncios do Chrome para lhe mostrar anúncios mais relevantes.</translation>
 <translation id="7023162328967545559">Aviso para administradores</translation>
 <translation id="7023765275461720661">Associar a conta e fazer pagamentos com a <ph name="BNPL_ISSUER_NAME" />?</translation>

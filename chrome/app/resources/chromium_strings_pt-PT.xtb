@@ -82,6 +82,7 @@
 <translation id="2008474315282236005">Esta ação elimina 1 item deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Falha ao instalar. Tente novamente.</translation>
 <translation id="2020032459870799438">Para verificar se as suas outras palavras-passe estão protegidas contra violação de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />inicie sessão no Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Definições.</translation>
 <translation id="2049376729098081731">Escolha se quer incluir o histórico do Chromium para obter mais experiências personalizadas nos serviços Google</translation>
 <translation id="2054039611381840095">Para receber atualizações futuras do Chromium, precisa do macOS 12 ou posterior. Este computador está a usar o macOS 11.</translation>
 <translation id="2086476982681781442">O Chromium bloqueou esta transferência porque o ficheiro é fraudulento e pode fazer alterações inesperadas ao seu dispositivo</translation>
@@ -314,6 +315,7 @@
 <translation id="5123973130450702873">O Chromium precisa de autorização para monitorizar as suas mãos</translation>
 <translation id="5141988424377517949">Não visitou o site recentemente. O Chromium removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Normalmente, bloqueia as notificações. Para permitir que este site lhe apresente notificações, clique no ícone de notificação no canto direito da barra de localização.</translation>
+<translation id="5174983315706567306">Não existe espaço suficiente em disco.</translation>
 <translation id="5187123684706427865">A conta do Chromium requer a reautenticação</translation>
 <translation id="5224391634244552924">Não existem palavras-passe guardadas. O Chromium consegue verificar as suas palavras-passe quando as guarda.</translation>
 <translation id="5231355151045086930">Terminar sessão no Chromium</translation>
@@ -441,6 +443,7 @@
 <translation id="6598877126913850652">Aceder às definições de notificação do Chromium</translation>
 <translation id="6600016381025017075">Pesquise qualquer conteúdo nesta página</translation>
 <translation id="6613594504749178791">As alterações serão aplicadas da próxima vez que reiniciar o Chromium.</translation>
+<translation id="6648212540664651655">Continue a partir de onde ficou: o Chromium restaurou os separadores da sua última sessão. Pode desativar esta opção nas</translation>
 <translation id="665732753414869868">O Chromium necessita da autorização da câmara para criar um mapa 3D do ambiente à sua volta</translation>
 <translation id="6669284030132180248">Se também guardar os marcadores na sua Conta Google, pode monitorizar os preços dos produtos no Chromium e receber uma notificação quando o preço descer.</translation>
 <translation id="6676384891291319759">Aceder à Internet</translation>
@@ -505,6 +508,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="7376384068949534168">Não visitou o site recentemente. O Chromium removeu <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Esta extensão já não é suportada. O Chromium recomenda que a remova.</translation>
+<translation id="7413153308467572558">Continue a partir de onde ficou: o Chromium restaura os seus separadores sempre que reinicia. Para desativar esta opção, aceda às</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Texto copiado</translation>
 <translation id="7451052299415159299">O Chromium necessita de autorização de acesso à câmara para este site.</translation>
@@ -610,6 +614,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8747073452963259673">canto inferior esquerdo da área de pesquisa: esquerda <ph name="LEFT" />%, parte inferior <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Erro de instalação: o administrador da rede aplicou uma política de grupo que impede a instalação: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">O Chromium necessita de autorização de acesso à câmara e ao microfone para este site.</translation>
+<translation id="880560872634367429">A validar a transferência…</translation>
 <translation id="8818550178040858407">Iniciar sessão no Chromium?</translation>
 <translation id="8826492472752484139">Clique em "Gestor de Palavras-passe"</translation>
 <translation id="8833697763442816810">Sistema ChromiumOS</translation>
@@ -636,6 +641,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="911206726377975832">Eliminar também os seus dados de navegação?</translation>
 <translation id="9134482777260927479">Ajuda nos trabalhos de casa</translation>
 <translation id="9148058034647219655">Sair</translation>
+<translation id="9155105544013854680">Continue a partir de onde ficou: o Chromium pode restaurar os seus separadores sempre que reiniciar. Para ativar esta opção, aceda às</translation>
 <translation id="9158494823179993217">O administrador do sistema configurou o Chromium para abrir um navegador alternativo, de modo a aceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Reiniciar para atualizar o &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

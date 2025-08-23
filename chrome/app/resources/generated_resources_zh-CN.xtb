@@ -3694,6 +3694,7 @@
 <translation id="3561201631376780358">打开侧边栏即可查看所有书签</translation>
 <translation id="3562423906127931518">此过程可能需要几分钟的时间。正在设置 Linux 容器。</translation>
 <translation id="3562655211539199254">查看您手机中最近打开的 Chrome 标签页</translation>
+<translation id="356268274299520831">在网站上更改</translation>
 <translation id="3563392617245068355">情感基调</translation>
 <translation id="3563432852173030730">无法下载自助服务终端应用。</translation>
 <translation id="3563558822383875692">正在配置 DLC。</translation>
@@ -4791,6 +4792,7 @@
 <translation id="4298660926525614540">可移动存储设备名称</translation>
 <translation id="4299022904780065004">打开新的无痕式窗口(&amp;I)</translation>
 <translation id="4300272766492248925">打开应用</translation>
+<translation id="4301231341924904092">帮我更改</translation>
 <translation id="4301671483919369635">此页面可修改文件</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{有 # 个联系人不可用。如需使用“<ph name="FEATURE_NAME" />”功能与这个联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。}other{有 # 个联系人不可用。如需使用“<ph name="FEATURE_NAME" />”功能与这些联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。}}</translation>
 <translation id="4303079906735388947">为您的安全密钥设置一个新 PIN 码</translation>

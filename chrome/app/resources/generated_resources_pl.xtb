@@ -3686,6 +3686,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3561201631376780358">Otwórz panel boczny, aby zobaczyć wszystkie zakładki</translation>
 <translation id="3562423906127931518">Może to potrwać kilka minut. Konfiguruję kontener Linuxa.</translation>
 <translation id="3562655211539199254">Wyświetlaj ostatnio przeglądane karty Chrome z telefonu</translation>
+<translation id="356268274299520831">Zmień w witrynie</translation>
 <translation id="3563392617245068355">Nastrój</translation>
 <translation id="3563432852173030730">Nie można pobrać aplikacji kiosku.</translation>
 <translation id="3563558822383875692">Konfiguruję DLC.</translation>
@@ -4782,6 +4783,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4298660926525614540">Nazwy wymiennych urządzeń pamięci</translation>
 <translation id="4299022904780065004">Nowe okno &amp;incognito</translation>
 <translation id="4300272766492248925">Otwórz aplikację</translation>
+<translation id="4301231341924904092">Zmień za mnie</translation>
 <translation id="4301671483919369635">Ta strona ma zezwolenie na edytowanie plików</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# kontakt jest niedostępny. Aby skorzystać z funkcji <ph name="FEATURE_NAME" />, dodaj do kontaktów adres e-mail powiązany z kontem Google tej osoby.}few{# kontakty są niedostępne. Aby skorzystać z funkcji <ph name="FEATURE_NAME" />, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}many{# kontaktów jest niedostępnych. Aby skorzystać z funkcji <ph name="FEATURE_NAME" />, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}other{# kontaktu jest niedostępne. Aby skorzystać z funkcji <ph name="FEATURE_NAME" />, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}}</translation>
 <translation id="4303079906735388947">Ustaw nowy kod PIN klucza bezpieczeństwa</translation>

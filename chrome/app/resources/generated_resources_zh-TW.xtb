@@ -96,6 +96,7 @@
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{請輸入新的 PIN 碼。PIN 碼必須包含至少一個字元，可以使用英文字母、數字和其他字元。}other{請輸入新的 PIN 碼。PIN 碼必須包含至少 # 個字元，可以使用英文字母、數字和其他字元。}}</translation>
 <translation id="1059484610606223931">超文字安全傳輸通訊協定 (HTTPS)</translation>
 <translation id="1059944192885972544">找到 <ph name="NUM" /> 個與「<ph name="SEARCH_TEXT" />」相符的分頁</translation>
+<translation id="1060172044035704924">與右側檢視畫面交換</translation>
 <translation id="1060570945511946595">管理票證</translation>
 <translation id="1061130374843955397">歡迎使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">為這個連結建立 QR 圖碼</translation>
@@ -117,6 +118,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">於 <ph name="COUNTDOWN_SECONDS" /> 秒後在替代瀏覽器中開啟</translation>
+<translation id="1071661533099313342">取消分割檢視畫面</translation>
 <translation id="1071917609930274619">資料編密</translation>
 <translation id="1072700771426194907">偵測到 USB 裝置</translation>
 <translation id="107278043869924952">使用 PIN 碼和密碼</translation>
@@ -373,6 +375,7 @@
 <translation id="1241066500170667906">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態</translation>
 <translation id="124116460088058876">更多語言</translation>
 <translation id="1241381048229838873">顯示所有書籤</translation>
+<translation id="1241968867980182121">關閉上方檢視畫面</translation>
 <translation id="1242044645101871359">重新登入</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> 要求重設您的設定。</translation>
 <translation id="1243002225871118300">變更顯示和文字大小</translation>
@@ -1293,6 +1296,7 @@
 <translation id="1878477879455105085">已開啟</translation>
 <translation id="1878885068166344708">當你移動焦點時，系統會醒目顯示該項目。按下 Tab 鍵或選取項目即可變更焦點。</translation>
 <translation id="1879000426787380528">登入身分</translation>
+<translation id="1880214489933905933">對調檢視畫面</translation>
 <translation id="1880618477732738742">將地理位置、麥克風、攝影機、Cookie 等功能存取權授予你所有的網站和擴充功能 (包括這項擴充功能)，以及變更這些存取權。</translation>
 <translation id="1881445033931614352">鍵盤配置</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{項目}other{# 個項目}}</translation>
@@ -1684,6 +1688,7 @@
 <translation id="2147402320887035428">這個檔案可能有惡意軟體。<ph name="LINE_BREAK" />Google 安全瀏覽功能正在檢查這個檔案是否安全，掃描程序通常需要幾秒鐘的時間。</translation>
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /> 鍵</translation>
 <translation id="2148219725039824548">掛接共用裝置時發生錯誤。在網路上找不到指定的共用裝置。</translation>
+<translation id="2148248734299717598">關閉左側檢視畫面</translation>
 <translation id="2148756636027685713">格式化完成</translation>
 <translation id="2148892889047469596">投放分頁</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
@@ -2779,6 +2784,7 @@
 <translation id="2891922230654533301">要從這部裝置登入「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="2893168226686371498">預設瀏覽器</translation>
 <translation id="2893180576842394309">Google 可能會使用你的歷史記錄，為你提供個人化的 Google 搜尋和其他服務</translation>
+<translation id="2893318819023133318">對調檢視畫面</translation>
 <translation id="2893701697603065178">受管理的開發環境</translation>
 <translation id="2894757982205307093">在群組中新增分頁</translation>
 <translation id="289695669188700754">金鑰識別碼：<ph name="KEY_ID" /></translation>
@@ -3695,6 +3701,7 @@
 <translation id="3561201631376780358">開啟側邊面板可查看所有書籤</translation>
 <translation id="3562423906127931518">這個過程可能需要幾分鐘的時間。正在設定 Linux 容器。</translation>
 <translation id="3562655211539199254">查看最近透過手機開啟的 Chrome 分頁</translation>
+<translation id="356268274299520831">前往該網站變更</translation>
 <translation id="3563392617245068355">情境</translation>
 <translation id="3563432852173030730">無法下載 Kiosk 應用程式。</translation>
 <translation id="3563558822383875692">正在設定 DLC。</translation>
@@ -3981,6 +3988,7 @@
 <translation id="3745306754941902605">廚房</translation>
 <translation id="3747077776423672805">如要移除應用程式，請依序前往 [設定] &gt; [Google Play 商店] &gt; [管理 Android 偏好設定] &gt; [應用程式] 或 [應用程式管理員]，然後輕觸你要解除安裝的應用程式 (你可能需要向左或向右滑動才能找出所需應用程式)。接著，輕觸 [解除安裝] 或 [停用]。</translation>
 <translation id="3748424433435232460">這個帳戶的密碼已儲存在這部裝置上</translation>
+<translation id="3748466028423001972">與下方檢視畫面交換</translation>
 <translation id="3748706263662799310">回報錯誤</translation>
 <translation id="3749724428455457489">進一步瞭解網站建議廣告</translation>
 <translation id="3752115502500640407">分享「<ph name="WEBSITE" />」的密碼副本</translation>
@@ -4055,6 +4063,7 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 項擴充功能</translation>
 <translation id="3794792524918736965">開啟 Windows Hello</translation>
 <translation id="379509625511193653">關閉</translation>
+<translation id="3795436270513738622">在分割檢視畫面開啟連結</translation>
 <translation id="3796215473395753611">alt + 向上鍵</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />，點選播放按鈕可試聽語音</translation>
 <translation id="3796648294839530037">慣用的網路：</translation>
@@ -4152,6 +4161,7 @@
 <translation id="3847319713229060696">協助我們改善所有人的網路安全性</translation>
 <translation id="3847734730889093333"><ph name="RATE" /> 倍</translation>
 <translation id="3848547754896969219">在無痕視窗中開啟(&amp;I)</translation>
+<translation id="3848688783623004960">在分割檢視畫面中開啟</translation>
 <translation id="3850172593216628215">安全性更新已終止，購買新款 Chromebook 可省下 $50 美元以上</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3850989673553106152">密碼已變更</translation>
@@ -4470,6 +4480,7 @@
 <translation id="406213378265872299">自訂設定</translation>
 <translation id="4062561150282203854">同步處理 <ph name="DEVICE_TYPE" /> 的應用程式和設定等資料</translation>
 <translation id="4065876735068446555">目前使用的網路 (<ph name="NETWORK_ID" />) 可能會要求您造訪登入網頁。</translation>
+<translation id="4065910654823040256">關閉右側檢視畫面</translation>
 <translation id="4065931125325392744">系統可能會在近期內停止支援這項擴充功能</translation>
 <translation id="4066207411788646768">如要查看網路中的可用印表機，請檢查你的連線狀態</translation>
 <translation id="4067839975993712852">將目前的分頁標示為已讀取</translation>
@@ -4555,6 +4566,7 @@
 <translation id="4130199216115862831">裝置記錄</translation>
 <translation id="4130750466177569591">我同意</translation>
 <translation id="4130877444234883490">按下「m」表示按住滑鼠按鍵</translation>
+<translation id="4130948219446157616">關閉下方檢視畫面</translation>
 <translation id="413121957363593859">元件</translation>
 <translation id="4131283654370308898">允許在這個網站上執行 <ph name="EXTENSION_NAME" /></translation>
 <translation id="4131410914670010031">黑白</translation>
@@ -4787,6 +4799,7 @@
 <translation id="4298660926525614540">卸除式儲存裝置名稱</translation>
 <translation id="4299022904780065004">新增無痕視窗(&amp;I)</translation>
 <translation id="4300272766492248925">開啟應用程式</translation>
+<translation id="4301231341924904092">幫我變更</translation>
 <translation id="4301671483919369635">這個頁面具有檔案編輯權限</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{無法與 # 位聯絡人連線。如要使用<ph name="FEATURE_NAME" />功能分享內容，請在聯絡人中新增對方 Google 帳戶的關聯電子郵件地址。}other{無法與 # 位聯絡人連線。如要使用<ph name="FEATURE_NAME" />功能分享內容，請在聯絡人中新增對方 Google 帳戶的關聯電子郵件地址。}}</translation>
 <translation id="4303079906735388947">為安全金鑰設定新的 PIN 碼</translation>
@@ -6503,6 +6516,7 @@
 <translation id="5532223876348815659">通用</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> 要求下列權限</translation>
 <translation id="5533343601674003130">PDF 服務</translation>
+<translation id="5535769176698670170">與上方檢視畫面交換</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="5539070192556911367">無法連上 Google</translation>
 <translation id="5541091577812545428">密碼未變更</translation>
@@ -6853,6 +6867,7 @@
 <translation id="579915268381781820">你的安全金鑰已移除。</translation>
 <translation id="5799478978078236781">現在可以取得 <ph name="DEVICE_TYPE" /> 的實用提示、優惠資訊與最新消息，並提供意見回饋。</translation>
 <translation id="5799508265798272974">Linux 虛擬機器：<ph name="LINUX_VM_NAME" /></translation>
+<translation id="5799638114236977894">與右側檢視畫面交換</translation>
 <translation id="5800020978570554460">上次下載之後，目標檔案已遭截斷或移除。</translation>
 <translation id="5800290746557538611">啟用即時無線基地台</translation>
 <translation id="5800703268655655701">選取淺色或深色主題</translation>
@@ -7227,6 +7242,7 @@
 <translation id="6066649679804058181">將群組轉換為書籤資料夾</translation>
 <translation id="6066794465984119824">未設定映像檔雜湊</translation>
 <translation id="6069464830445383022">你的 Google 帳戶就是你用來登入 Chromebook 的帳戶</translation>
+<translation id="6069799426896362048">取消分割檢視畫面</translation>
 <translation id="6071181508177083058">確認密碼</translation>
 <translation id="6071576563962215370">系統無法鎖定裝置安裝時的屬性。</translation>
 <translation id="6071938745001252305">已節省 <ph name="MEMORY_VALUE" /> 的記憶體</translation>
@@ -7999,6 +8015,7 @@
 <translation id="6621391692573306628">如要將這個分頁傳送到其他裝置，請在這兩部裝置上登入 Chrome</translation>
 <translation id="6622980291894852883">繼續封鎖圖片</translation>
 <translation id="6624036901798307345">在平板電腦模式中，輕觸分頁計數器的工具列按鈕即可開啟新的分頁列，當中會顯示各分頁的縮圖。</translation>
+<translation id="6624538059730609162">關閉右側檢視畫面</translation>
 <translation id="6624687053722465643">小蛋糕</translation>
 <translation id="6626581113916585374">特效模式</translation>
 <translation id="6627743754845412571">禁止追蹤手勢</translation>
@@ -8133,6 +8150,7 @@
 <translation id="6716798148881908873">網路連線已中斷。請檢查網路連線，或改用其他 Wi-Fi 網路。</translation>
 <translation id="6718849325281682232">Chrome 主題顏色已更新，更能滿足個別需求，深色和淺色模式使用起來更順暢</translation>
 <translation id="671928215901716392">鎖定螢幕</translation>
+<translation id="6719839880830057298">檔案上傳完畢</translation>
 <translation id="6721744718589119342">我們可能會透過電子郵件要求提供更多資訊，或告知最新消息</translation>
 <translation id="6721770155320398589">充電上限</translation>
 <translation id="6721972322305477112">檔案(&amp;F)</translation>
@@ -8166,6 +8184,7 @@
 <translation id="6739943577740687354">這項功能採用 AI 技術，執行的結果不一定符合需求</translation>
 <translation id="6740234557573873150">已暫停下載 <ph name="FILE_NAME" /></translation>
 <translation id="6743841972744298686">同步處理設定</translation>
+<translation id="6744397361782514824">與左側檢視畫面交換</translation>
 <translation id="6745592621698551453">立即更新</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="67465227497040338">顯示 <ph name="DOMAIN" /> 的密碼</translation>
@@ -9122,6 +9141,7 @@
 <translation id="7412226954991670867">GPU 記憶體</translation>
 <translation id="741370456693729525">以日常用語搜尋瀏覽記錄，找出造訪過的網站</translation>
 <translation id="7414464185801331860">18 倍</translation>
+<translation id="7414622565840501288">關閉左側檢視畫面</translation>
 <translation id="7415454883318062233">設定完成</translation>
 <translation id="7415884723030194001">甜點</translation>
 <translation id="7415997299997664304">辨識視覺版面配置語義</translation>
@@ -9731,6 +9751,7 @@
 <translation id="7826174860695147464">舊版瀏覽器支援 (LBS) 功能 - 內部設定</translation>
 <translation id="7826249772873145665">已停用 ADB 偵錯</translation>
 <translation id="7826254698725248775">裝置 ID 發生衝突。</translation>
+<translation id="7826838152281937785">關閉下方檢視畫面</translation>
 <translation id="7828642077514646543">錯誤：無法將憑證解碼</translation>
 <translation id="7829877209233347340">請要求家長登入，授予新增學校帳戶的權限</translation>
 <translation id="7830276128493844263">系統設定中的定位服務為關閉狀態</translation>
@@ -10045,6 +10066,7 @@
 <translation id="8032569120109842252">追蹤中</translation>
 <translation id="8033827949643255796">已選取</translation>
 <translation id="8033958968890501070">逾時</translation>
+<translation id="8034697324150621782">與上方檢視畫面交換</translation>
 <translation id="8035059678007243127">無痕模式往返快取頁面：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">協助改善自動填入功能</translation>
 <translation id="8036504271468642248">上一句</translation>
@@ -10476,6 +10498,7 @@
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>
 <translation id="8327386430364625757">數學字型</translation>
 <translation id="8327490658947427005">所選內容不是<ph name="LANGUAGE" /></translation>
+<translation id="8327544198829180337">關閉這個檢視畫面</translation>
 <translation id="8327676037044516220">權限和內容設定</translation>
 <translation id="8328228852664998535">如果繼續操作，你的密碼、密碼金鑰和其他資料會從 <ph name="BRAND" />中永久刪除。你為網站或應用程式建立的帳戶不會遭到刪除。</translation>
 <translation id="8328777765163860529">關閉全部</translation>
@@ -10749,6 +10772,7 @@
 <translation id="8515580632187889788">選擇繼續，即表示你允許第三方可在這個網路上驗證這部裝置的識別資訊。如果不想讓第三方存取裝置資訊，可以<ph name="BEGIN_LINK" />手動<ph name="END_LINK" />設定 eSIM 設定檔。</translation>
 <translation id="8516472100141530292">在群組上按一下滑鼠右鍵</translation>
 <translation id="8517759303731677493">編輯…</translation>
+<translation id="8518809011298357036">關閉上方檢視畫面</translation>
 <translation id="8518942514525208851">隱藏不雅用語</translation>
 <translation id="8523493869875972733">保留變更</translation>
 <translation id="8523849605371521713">依政策新增</translation>
@@ -10844,6 +10868,7 @@
 <translation id="859246725979739260">已禁止這個網站存取你的位置資訊。</translation>
 <translation id="8593450223647418235">設定完成後，你才能在 Microsoft 365 中開啟檔案。</translation>
 <translation id="8593686980889923154">你無法在 <ph name="DEVICE_TYPE" /> 上使用「<ph name="APP_NAME" />」</translation>
+<translation id="8594912907680633924">在分割檢視畫面開啟連結</translation>
 <translation id="8596400097994526901">更多可對「<ph name="SEARCH_ENGINE_NAME" />」執行的動作</translation>
 <translation id="8596540852772265699">自訂檔</translation>
 <translation id="8597845839771543242">屬性格式：</translation>
@@ -10855,6 +10880,7 @@
 <translation id="8601206103050338563">TLS WWW 用戶端驗證</translation>
 <translation id="8602674530529411098">應用程式 (Beta 版)</translation>
 <translation id="8602851771975208551">電腦中其他程式所新增的應用程式可能會變更 Chrome 的運作方式。</translation>
+<translation id="860399903490378651">關閉這個檢視畫面</translation>
 <translation id="8605428685123651449">SQLite 記憶體使用量</translation>
 <translation id="8607171490667464784">處於閒置狀態且以電池供電時</translation>
 <translation id="8607661817136110841">你的分頁群組</translation>
@@ -11214,6 +11240,7 @@
 <translation id="8836360711089151515"><ph name="MANAGER" /> 要求你備份自己的資料，並且在 1 週內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{退出群組}other{退出群組}}</translation>
 <translation id="8836782447513334597">繼續</translation>
+<translation id="8837573527470979311">與下方檢視畫面交換</translation>
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">漢堡</translation>
@@ -11830,6 +11857,7 @@
 <translation id="957960681186851048">這個網站試圖自動下載多個檔案</translation>
 <translation id="958571289841636277">使用滑動手勢瀏覽上一個或下一個頁面</translation>
 <translation id="960987915827980018">剩下約 1 個小時</translation>
+<translation id="961010578115289982">與左側檢視畫面交換</translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>
 <translation id="962802172452141067">書籤資料夾樹狀結構</translation>
 <translation id="963000966785016697">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>

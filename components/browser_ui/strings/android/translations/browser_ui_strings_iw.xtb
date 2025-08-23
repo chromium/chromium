@@ -494,7 +494,7 @@
 <translation id="6554732001434021288">הביקור האחרון התבצע לפני <ph name="NUM_DAYS" /> ימים</translation>
 <translation id="6557290421156335491">קיצורי הדרך שלי</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
-<translation id="6561560012278703671">הצגת התראות שקטה יותר (למניעת הקפצה של חלוניות מפריעות)</translation>
+<translation id="6561560012278703671">הצגת התראות שקטה יותר (לחסימת תצוגת התראות שיכולה לפעמים להפריע)</translation>
 <translation id="6565144332292237355">אתרים יכולים להשתמש בתכונה הזו כדי לחפש מכשירים ברשת המקומית ולהתחבר אליהם</translation>
 <translation id="6593061639179217415">אתר מותאם למחשב</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{‏קובצי cookie מותרים לאתר אחד (<ph name="RWS_MEMBERS_COUNT" />) של <ph name="RWS_OWNER" />}one{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}two{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}other{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}}</translation>
@@ -566,7 +566,7 @@
 <translation id="7553211568594248088">יציאה מהחיפוש ברכזת</translation>
 <translation id="7554752735887601236">אתר כלשהו משתמש במיקרופון שלך</translation>
 <translation id="7561196759112975576">תמיד</translation>
-<translation id="7573594921350120855">אתרים משתמשים בדרך כלל במצלמת הווידאו כדי לתמוך בתכונות תקשורת כמו וידאו צ'אט</translation>
+<translation id="7573594921350120855">אתרים משתמשים בדרך כלל במצלמת הווידאו בשביל תכונות תקשורת כמו וידאו צ'אט</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{לפני חודש (<ph name="NUM_MONTHS_ONE" />)}one{לפני <ph name="NUM_MONTHS_MANY" /> חודשים}two{לפני חודשיים (<ph name="NUM_MONTHS_MANY" />)}other{לפני <ph name="NUM_MONTHS_MANY" /> חודשים}}</translation>
 <translation id="757524316907819857">חסימה של הפעלת תוכן מוגן על-ידי אתרים</translation>
 <translation id="7586676035079382730">אין הרשאת גישה להתראות</translation>

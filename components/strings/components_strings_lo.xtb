@@ -440,6 +440,7 @@
 <translation id="1719838434204287058">24 x 30 ນິ້ວ</translation>
 <translation id="1720941539803966190">ປິດສອນການນຳໃຊ້</translation>
 <translation id="1721424275792716183">* ຊ່ອງໃ່ສ່ຂໍ້ມູນທີ່ຕ້ອງຕື່ມຂໍ້ມູນ</translation>
+<translation id="1723636263173393300">ນະໂຍບາຍນີ້ຕ້ອງມີບໍ່ເກີນ <ph name="MAX_ITEMS_LIMIT" /> ທາງລັດ.</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">ໃບຮັບຮອງຖືກຕ້ອງ</translation>
 <translation id="1728677426644403582">ທ່ານກຳລັງເບິ່ງແຫຼ່ງທີ່ມາຂອງໜ້າເວັບ</translation>
@@ -1047,6 +1048,7 @@
 <translation id="271663710482723385">ກົດ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ເພື່ອອອກໂໝດຈາກເຕັມຈໍ</translation>
 <translation id="2717336592027046789">ກໍ້ເຈ້ຍ</translation>
 <translation id="2718207025093645426">ຜູ້ໃຊ້ ຫຼື ອຸປະກອນທີ່ມີການຈັດການນັ້ນບໍ່ໄດ້ໂຫຼດນະໂຍບາຍໄວ້.</translation>
+<translation id="2719233594187778789">URL ທີ່ບໍ່ຊ້ຳກັນທີ່ຖືກລະເວັ້ນ: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">ການ​ຮ້ອງ​ຂໍ​ສໍາ​ເລັດ</translation>
 <translation id="2722622039067384533">ເຟີນິເຈີຫ້ອງຮັບແຂກ</translation>
 <translation id="2723669454293168317">ເປີດໃຊ້ການກວດສອບຄວາມປອດໄພໃນການຕັ້ງຄ່າ Chrome</translation>
@@ -2007,6 +2009,7 @@
 <translation id="4298000214066716287">ການລົງທຶນ</translation>
 <translation id="4298148761711700950">ຈ່າຍເງິນທັນທີໂດຍບໍ່ຕ້ອງອັບໂຫຼດ QR</translation>
 <translation id="4298925811540301889">ຄຸກກີ້ສຳລັບເວັບໄຊນີ້ຈະຊິ້ງໃນທົ່ວທຸກອຸປະກອນ ChromeOS ຂອງທ່ານ. ເພື່ອຈັດການສິ່ງທີ່ທ່ານຊິ້ງ, ໃຫ້ເຂົ້າໄປ <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">ຊື່ຂອງທາງລັດເກີນຄວາມຍາວສູງສຸດທີ່ອະນຸຍາດ <ph name="MAX_LENGTH" /> ຕົວອັກສອນ.</translation>
 <translation id="4300272766492248925">ເປີດແອັບ</translation>
 <translation id="4300675098767811073">ເຈາະຮູເບື້ອງຂວາຫຼາຍຮູ</translation>
 <translation id="4302514097724775343">ແຕະ dino ເພື່ອຫຼິ້ນ</translation>
@@ -2708,6 +2711,7 @@
     ໃຫ້ລອງຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="5496804587179176046">ບັນທຶກລະຫັດຄວາມປອດໄພ, ບໍ່ມີລະຫັດຄວາມປອດໄພທີ່ບັນທຶກໄວ້ໃນປັດຈຸບັນ</translation>
 <translation id="550365051221576010">ຕື່ມຂໍ້ມູນທຸກຢ່າງ</translation>
+<translation id="5506286895894263601">ລາຍຊື່ມີທາງລັດທີ່ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="5508443345185481044">ກ້ອງຖ່າຍຮູບ ແລະ ກ້ອງຖ່າຍວິດີໂອ</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">ບຸກມາກສ໌ທີ່ຄຸ້ມຄອງ:</translation>
@@ -3627,6 +3631,7 @@
 <translation id="7014741021609395734">ລະດັບການຊູມ</translation>
 <translation id="7016992613359344582">ການເກັບເງິນເຫຼົ່ານີ້ອາດຈະເກັບຄັ້ງດຽວ ຫຼື ເປັນປະຈຳຫຼາຍຄັ້ງ ແລະ ອາດຈະບໍ່ເຫັນໄດ້ຈະແຈ້ງ.</translation>
 <translation id="701757816833614688">ທັດສະນະສິນ ແລະ ການສຶກສາການອອກແບບ</translation>
+<translation id="7020464868401003526">URL ຂອງທາງລັດເກີນຄວາມຍາວສູງສຸດທີ່ອະນຸຍາດ <ph name="MAX_LENGTH" /> ຕົວອັກສອນ.</translation>
 <translation id="702275896380648118">ເວັບໄຊນີ້ຈະລະບຸສິ່ງທີ່ທ່ານມັກແລ້ວແນະນຳໂຄສະນາໃນເວັບໄຊອື່ນ. ເວັບໄຊນີ້ຍັງຮັບຫົວຂໍ້ໂຄສະນາຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນນຳອີກ.</translation>
 <translation id="7023162328967545559">ຄຳເຕືອນຈາກຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="7023765275461720661">ລິ້ງບັນຊີ ແລະ ຈ່າຍເງິນດ້ວຍ <ph name="BNPL_ISSUER_NAME" /> ບໍ?</translation>

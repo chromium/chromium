@@ -3716,6 +3716,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3561201631376780358">Avaa sivupaneeli, niin näet kaikki kirjanmerkit</translation>
 <translation id="3562423906127931518">Tämä voi kestää muutaman minuutin. Linux-säilöä käynnistetään.</translation>
 <translation id="3562655211539199254">Katso viimeaikaiset Chrome-välilehdet puhelimeltasi</translation>
+<translation id="356268274299520831">Vaihda sivustolla</translation>
 <translation id="3563392617245068355">Mieliala</translation>
 <translation id="3563432852173030730">Kioskisovelluksen lataaminen ei onnistunut.</translation>
 <translation id="3563558822383875692">DLC:n määrittäminen.</translation>
@@ -4811,6 +4812,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4298660926525614540">Poistettavat tallennustilan nimet</translation>
 <translation id="4299022904780065004">Uusi &amp;incognito-ikkuna</translation>
 <translation id="4300272766492248925">Avaa sovellus</translation>
+<translation id="4301231341924904092">Vaihda se puolestani</translation>
 <translation id="4301671483919369635">Tämä sivu saa muokata tiedostoja</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# kontakti ei ole saatavilla. Jos haluat käyttää <ph name="FEATURE_NAME" /> ‑ominaisuutta hänen kanssaan, lisää hänen Google-tiliinsä liittyvä sähköpostiosoite kontakteihisi.}other{# kontaktia ei ole saatavilla. Jos haluat käyttää <ph name="FEATURE_NAME" /> ‑ominaisuutta heidän kanssaan, lisää heidän Google-tileihinsä liittyvät sähköpostiosoitteet kontakteihisi.}}</translation>
 <translation id="4303079906735388947">Aseta suojausavaimelle uusi PIN-koodi</translation>

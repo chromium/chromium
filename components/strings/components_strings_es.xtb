@@ -440,6 +440,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1719838434204287058">24x30 pulgadas</translation>
 <translation id="1720941539803966190">Cerrar tutorial</translation>
 <translation id="1721424275792716183">* El campo es obligatorio</translation>
+<translation id="1723636263173393300">Esta política no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> accesos directos.</translation>
 <translation id="1725591448053514783">Sobre You 6</translation>
 <translation id="1727613060316725209">El certificado es válido</translation>
 <translation id="1728677426644403582">Estás viendo el código fuente de una página web</translation>
@@ -1047,6 +1048,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="271663710482723385">Pulsa |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para salir de la pantalla completa</translation>
 <translation id="2717336592027046789">Rollo</translation>
 <translation id="2718207025093645426">El usuario o dispositivo gestionado no tiene ninguna política cargada.</translation>
+<translation id="2719233594187778789">URL no única ignorada: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Solicitud correcta</translation>
 <translation id="2722622039067384533">Muebles para sala de estar</translation>
 <translation id="2723669454293168317">Realiza una comprobación de seguridad en la configuración de Chrome</translation>
@@ -2007,6 +2009,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4298000214066716287">Inversiones</translation>
 <translation id="4298148761711700950">Paga al instante sin subir un QR</translation>
 <translation id="4298925811540301889">Las cookies de este sitio se sincronizan en todos tus dispositivos ChromeOS. Para gestionar lo que sincronizas, ve a <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">El nombre del acceso directo supera la longitud máxima permitida de <ph name="MAX_LENGTH" /> caracteres.</translation>
 <translation id="4300272766492248925">Abrir aplicación</translation>
 <translation id="4300675098767811073">Perforado múltiple en la parte derecha</translation>
 <translation id="4302514097724775343">Toca el dinosaurio para jugar</translation>
@@ -2708,6 +2711,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
     Ponte en contacto con el administrador del sistema.</translation>
 <translation id="5496804587179176046">Guardar códigos de seguridad (no hay ningún código de seguridad guardado en estos momentos)</translation>
 <translation id="550365051221576010">Rellenar todo</translation>
+<translation id="5506286895894263601">La lista no contiene accesos directos válidos.</translation>
 <translation id="5508443345185481044">Cámaras y videocámaras</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Marcadores administrados</translation>
@@ -3627,6 +3631,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7014741021609395734">Nivel de zoom</translation>
 <translation id="7016992613359344582">Estos cargos pueden ser únicos o periódicos, y es posible que no se indiquen de una forma evidente.</translation>
 <translation id="701757816833614688">Formación de artes visuales y diseño</translation>
+<translation id="7020464868401003526">La URL del acceso directo supera la longitud máxima permitida de <ph name="MAX_LENGTH" /> caracteres.</translation>
 <translation id="702275896380648118">Este sitio determina qué cosas te gustan y, después, ofrece sugerencias de anuncios a otros sitios. Este sitio también consulta tus temas de anuncios de Chrome para mostrarte anuncios más relevantes.</translation>
 <translation id="7023162328967545559">Advertencia del administrador</translation>
 <translation id="7023765275461720661">¿Vincular cuenta y pagar con <ph name="BNPL_ISSUER_NAME" />?</translation>

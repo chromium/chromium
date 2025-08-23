@@ -84,6 +84,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2008474315282236005">Se eliminará un elemento de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">No se ha podido realizar la instalación. Vuelve a intentarlo.</translation>
 <translation id="2020032459870799438">Para comprobar si tus otras contraseñas han sufrido quiebras de seguridad de datos u otros problemas de seguridad, <ph name="BEGIN_LINK" />inicia sesión en Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Configuración.</translation>
 <translation id="2049376729098081731">Indica si quieres incluir el historial de Chromium para ofrecer una experiencia más personalizada de los servicios de Google</translation>
 <translation id="2054039611381840095">Para recibir futuras actualizaciones de Chromium, necesitarás macOS 12 o una versión posterior. Este ordenador usa macOS 11.</translation>
 <translation id="2086476982681781442">Chromium ha bloqueado esta descarga porque el archivo es engañoso y podría hacer cambios inesperados en tu dispositivo</translation>
@@ -316,6 +317,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5123973130450702873">Chromium necesita permiso para hacer seguimiento de tus manos</translation>
 <translation id="5141988424377517949">No has visitado el sitio recientemente. Chromium ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Sueles bloquear las notificaciones. Para permitir que este sitio te envíe notificaciones, haz clic en el icono de notificación que aparece en la esquina derecha de la barra de direcciones.</translation>
+<translation id="5174983315706567306">No hay suficiente espacio en disco.</translation>
 <translation id="5187123684706427865">La cuenta de Chromium debe volver a autenticarse</translation>
 <translation id="5224391634244552924">No hay ninguna contraseña guardada. Chromium puede comprobar tus contraseñas si las guardas.</translation>
 <translation id="5231355151045086930">Cerrar sesión en Chromium</translation>
@@ -443,6 +445,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="6598877126913850652">Ir a los ajustes de notificaciones de Chromium</translation>
 <translation id="6600016381025017075">Busca cualquier elemento de esta página</translation>
 <translation id="6613594504749178791">Los cambios se aplicarán la próxima vez que reinicies Chromium.</translation>
+<translation id="6648212540664651655">Continúa por donde lo dejaste: Chromium ha restaurado las pestañas de tu última sesión. Puedes desactivar esta opción en</translation>
 <translation id="665732753414869868">Chromium necesita el permiso de la cámara para crear un mapa 3D de tu entorno</translation>
 <translation id="6669284030132180248">Si también guardas los marcadores en tu cuenta de Google, puedes hacer un seguimiento de los precios de los productos en Chromium y recibir una notificación cuando bajen</translation>
 <translation id="6676384891291319759">Accede a Internet.</translation>
@@ -507,6 +510,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7376384068949534168">No has visitado el sitio recientemente. Chromium ha eliminado <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Esta extensión ya no se admite. Chromium te recomienda que la elimines.</translation>
+<translation id="7413153308467572558">Continúa por donde lo dejaste: Chromium restaura tus pestañas cada vez que lo reinicies. Para desactivar esta opción, ve a</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> ‑ Chromium Dev</translation>
 <translation id="7450541714075000668">Texto copiado</translation>
 <translation id="7451052299415159299">Chromium necesita permiso para acceder a la cámara en este sitio web</translation>
@@ -612,6 +616,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8747073452963259673">esquina inferior izquierda del área de búsqueda: un <ph name="LEFT" /> % a la izquierda y un <ph name="BOTTOM" /> % abajo</translation>
 <translation id="878572486461146056">Error de instalación: tu administrador de red ha aplicado una política de grupo que impide la instalación: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium necesita permiso para acceder a la cámara y al micrófono en este sitio web</translation>
+<translation id="880560872634367429">Verificando la descarga...</translation>
 <translation id="8818550178040858407">¿Iniciar sesión en Chromium?</translation>
 <translation id="8826492472752484139">Haz clic en Gestor de contraseñas</translation>
 <translation id="8833697763442816810">Sistema ChromiumOS</translation>
@@ -638,6 +643,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="911206726377975832">¿Quieres borrar también los datos de navegación?</translation>
 <translation id="9134482777260927479">Ayuda con los deberes</translation>
 <translation id="9148058034647219655">Salir</translation>
+<translation id="9155105544013854680">Continúa por donde lo dejaste: Chromium puede restaurar tus pestañas cada vez que lo reinicies. Para activar esta opción, ve a</translation>
 <translation id="9158494823179993217">El administrador del sistema ha configurado Chromium para que abra otro navegador al acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Reiniciar para actualizar &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (tráfico mDNS entrante)</translation>

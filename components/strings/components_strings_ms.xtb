@@ -440,6 +440,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1719838434204287058">24 x 30 in</translation>
 <translation id="1720941539803966190">Tutup tutorial</translation>
 <translation id="1721424275792716183">* Medan perlu diisi</translation>
+<translation id="1723636263173393300">Dasar ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> pintasan.</translation>
 <translation id="1725591448053514783">Sampul You 6</translation>
 <translation id="1727613060316725209">Sijil sah</translation>
 <translation id="1728677426644403582">Anda sedang melihat sumber halaman web</translation>
@@ -1047,6 +1048,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="271663710482723385">Tekan |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| untuk keluar daripada skrin penuh</translation>
 <translation id="2717336592027046789">Gulungan</translation>
 <translation id="2718207025093645426">Pengguna atau peranti terurus tidak mempunyai dasar yang dimuatkan.</translation>
+<translation id="2719233594187778789">URL tidak unik yang diabaikan: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Permintaan berjaya</translation>
 <translation id="2722622039067384533">Perabot Ruang Tamu</translation>
 <translation id="2723669454293168317">Jalankan semakan keselamatan dalam tetapan Chrome</translation>
@@ -2008,6 +2010,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4298000214066716287">Pelaburan</translation>
 <translation id="4298148761711700950">Bayar dengan serta-merta tanpa muat naik QR</translation>
 <translation id="4298925811540301889">Kuki untuk laman ini disegerakkan merentas peranti ChromeOS. Untuk mengurus perkara yang anda segerakkan, akses <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Nama pintasan melebihi panjang maksimum <ph name="MAX_LENGTH" /> aksara yang dibenarkan.</translation>
 <translation id="4300272766492248925">Buka apl</translation>
 <translation id="4300675098767811073">Berbilang tebukan kanan</translation>
 <translation id="4302514097724775343">Ketik dinosaur itu untuk bermain</translation>
@@ -2709,6 +2712,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
     Cuba hubungi pentadbir sistem anda.</translation>
 <translation id="5496804587179176046">Simpan kod keselamatan, tiada kod keselamatan yang disimpan pada masa ini</translation>
 <translation id="550365051221576010">Isi semua maklumat</translation>
+<translation id="5506286895894263601">Senarai ini mengandungi pintasan yang tidak sah.</translation>
 <translation id="5508443345185481044">Kamera &amp; Kamkorder</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Penanda halaman terurus</translation>
@@ -3628,6 +3632,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7014741021609395734">Tahap zum</translation>
 <translation id="7016992613359344582">Caj ini mungkin caj sekali atau caj berulang dan mungkin tidak ketara.</translation>
 <translation id="701757816833614688">Pendidikan Seni Visual &amp; Reka Bentuk</translation>
+<translation id="7020464868401003526">URL pintasan melebihi panjang maksimum <ph name="MAX_LENGTH" /> aksara yang dibenarkan.</translation>
 <translation id="702275896380648118">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain. Laman ini juga mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda.</translation>
 <translation id="7023162328967545559">Amaran pentadbir</translation>
 <translation id="7023765275461720661">Pautkan akaun dan bayar dengan <ph name="BNPL_ISSUER_NAME" />?</translation>

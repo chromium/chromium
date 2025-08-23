@@ -28,6 +28,7 @@
 <translation id="1828808367831369073">ຈັດກຸ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບແລ້ວ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="1909810060368225529">ແຈ້ງການ: ການປ່ຽນແປງຕໍ່ກັບກຸ່ມແຖບທີ່ແບ່ງປັນແລ້ວນີ້ແມ່ນເຫັນໄດ້ໂດຍທຸກຄົນ. ທຸກຄົນສາມາດປ່ຽນແປງກຸ່ມແຖບທີ່ແບ່ງປັນຂອງທ່ານໄດ້</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{ປັກໝຸດແຖບ}other{ປັກໝຸດແຖບ}}</translation>
 <translation id="1982637982196732906">ຍ້າຍໄປໃສ່ພາກສ່ວນທີ່ບໍ່ເຄື່ອນໄຫວ</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ບຸກມາກແຖບທີ່ເລືອກໄວ້ <ph name="TABS_COUNT_ONE" /> ແຖບ}other{ບຸກມາກແຖບທີ່ເລືອກໄວ້ <ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="2055057176188061528">ເລືອກກຸ່ມແຖບ ຫຼື ສ້າງກຸ່ມແຖບໃໝ່</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ຮູບຫຍໍ້ຕົວຢ່າງຊີດທີ່ແບ່ງປັນ.</translation>
 <translation id="3810973564298564668">ຈັດການ</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{ຖອນປັກໝຸດແຖບ}other{ຖອນປັກໝຸດແຖບ}}</translation>
 <translation id="3940195383040445971">ຕິດຕາມລາຄາໃນແຖບ</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ແຖບໃໝ່, ປິດແລ້ວ <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> ແຖບໃໝ່, ປິດແລ້ວ <ph name="ANY_CLOSED" />}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ຈັດກຸ່ມແຖບ}other{ຈັດກຸ່ມແຖບ}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{ປິດລາຍການທີ່ເລືອກ <ph name="TABS_COUNT_ONE" /> ລາຍການ}other{ປິດລາຍການທີ່ເລືອກ <ph name="TABS_COUNT_MANY" /> ລາຍການ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ຍ້າຍກຸ່ມໄປໃສ່ໜ້າຈໍໃໝ່}other{ຍ້າຍກຸ່ມໄປໃສ່ໜ້າຈໍອື່ນ}}</translation>
 <translation id="6228793724645064692">(ຄະແນນຮ້ານຄ້າ)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{ລຶບແຖບອອກຈາກກຸ່ມ}other{ລຶບແຖບອອກຈາກກຸ່ມ}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}other{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}}</translation>
 <translation id="6333260925957816943">ຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້</translation>
 <translation id="6381032505162537930">ທ່ານຈະເຫັນກຸ່ມແຖບຂອງທ່ານບ່ອນນີ້</translation>
