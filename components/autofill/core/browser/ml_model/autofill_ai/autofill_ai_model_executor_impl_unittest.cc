@@ -245,7 +245,7 @@ TEST_F(AutofillAiModelExecutorImplTest, OngoingRequestWithSameSignature) {
   const FormData form2 =
       test::GetFormData({.fields = {{.name = u"First name"}}});
   AutofillAiTypeResponse response2;
-  response2.add_field_responses()->set_field_type(PASSPORT_NAME_TAG);
+  response2.add_field_responses()->set_field_type(NAME_FIRST);
 
   ASSERT_NE(CalculateFormSignature(form1), CalculateFormSignature(form2));
 

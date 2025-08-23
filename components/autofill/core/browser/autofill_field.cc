@@ -565,9 +565,7 @@ void AutofillField::MaybeAddServerPrediction(
   if (IsDefaultPrediction(prediction)) {
     server_predictions_.push_back(std::move(prediction));
   } else if (IsAutofillAiPrediction(prediction)) {
-    if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema) &&
-        (!IsTagType(field_type) ||
-         !base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes))) {
+    if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
       server_predictions_.push_back(std::move(prediction));
     }
   } else {

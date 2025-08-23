@@ -35,11 +35,6 @@ size_t DetermineExpirationYearLength(FieldType assumed_field_type);
 // Returns true if `type` is alternative name related.
 bool IsAlternativeNameType(FieldType type);
 
-// A tag type is a type that doesn't provide complete information about a field
-// on its own, and that instead needs a second type to complement its meaning.
-// TODO(crbug.com/422563282): Remove when cleaning up kAutofillAiNoTagTypes.
-bool IsTagType(FieldType type);
-
 // Indicates whether the FieldType's domain are dates (year, month, day).
 bool IsDateFieldType(FieldType field_type);
 

@@ -56,8 +56,6 @@ TEST(AutofillEntityInstanceTest, Attributes) {
 // subtype (as per AttributeType::field_subtypes()) and defaults to the overall
 // type (AttributeType::field_type()).
 TEST(AutofillEntityInstanceTest, Attributes_NormalizedType) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAiNoTagTypes};
   AttributeInstance passport_name((AttributeType(kPassportName)));
   passport_name.SetInfo(NAME_FULL, u"John Doe",
                         /*app_locale=*/"", /*format_string=*/u"",

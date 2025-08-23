@@ -78,11 +78,6 @@ class AttributeType final {
 
   // There are three kinds of AttributeType / FieldType associations:
   // - `field_type()` is the one that best describes the full attribute.
-  //   If kAutofillAiNoTagTypes is disabled:
-  //   The `field_type()` uniquely identifies the AttributeType except for
-  //   the name attributes of National Id Card, Known Traveler Number, and
-  //   Redress Number.
-  //   If kAutofillAiNoTagTypes is enabled:
   //   Except for name types, the `field_type()` uniquely identifies the
   //   AttributeType.
   // - `field_subtypes()` additionally include more fine-granular ones.
@@ -90,9 +85,7 @@ class AttributeType final {
   //   For name types, `field_subtypes()` includes `NAME_FIRST` etc.
   // - `storable_field_types()` are the ones that may be physically stored in
   //   the database.
-  FieldType field_type() const;
-  constexpr FieldType field_type_with_tag_types() const;
-  constexpr FieldType field_type_without_tag_types() const;
+  constexpr FieldType field_type() const;
   constexpr FieldTypeSet field_subtypes() const;
   FieldTypeSet storable_field_types(base::PassKey<EntityTable> pass_key) const;
 
@@ -164,10 +157,10 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
   NOTREACHED();
 }
 
-constexpr FieldType AttributeType::field_type_with_tag_types() const {
+constexpr FieldType AttributeType::field_type() const {
   switch (name_) {
     case AttributeTypeName::kDriversLicenseName:
-      return DRIVERS_LICENSE_NAME_TAG;
+      return NAME_FULL;
     case AttributeTypeName::kDriversLicenseState:
       return DRIVERS_LICENSE_REGION;
     case AttributeTypeName::kDriversLicenseNumber:
@@ -196,7 +189,7 @@ constexpr FieldType AttributeType::field_type_with_tag_types() const {
       return NATIONAL_ID_CARD_EXPIRATION_DATE;
 
     case AttributeTypeName::kPassportName:
-      return PASSPORT_NAME_TAG;
+      return NAME_FULL;
     case AttributeTypeName::kPassportNumber:
       return PASSPORT_NUMBER;
     case AttributeTypeName::kPassportCountry:
@@ -212,7 +205,7 @@ constexpr FieldType AttributeType::field_type_with_tag_types() const {
       return NAME_FULL;
 
     case AttributeTypeName::kVehicleOwner:
-      return VEHICLE_OWNER_TAG;
+      return NAME_FULL;
     case AttributeTypeName::kVehiclePlateNumber:
       return VEHICLE_LICENSE_PLATE;
     case AttributeTypeName::kVehicleVin:
@@ -229,18 +222,11 @@ constexpr FieldType AttributeType::field_type_with_tag_types() const {
   NOTREACHED();
 }
 
-constexpr FieldType AttributeType::field_type_without_tag_types() const {
-  if (data_type() == DataType::kName) {
-    return NAME_FULL;
-  }
-  return field_type_with_tag_types();
-}
-
 constexpr FieldTypeSet AttributeType::field_subtypes() const {
   if (data_type() == DataType::kName) {
     return FieldTypesOfGroup(FieldTypeGroup::kName);
   }
-  return {field_type_without_tag_types()};
+  return {field_type()};
 }
 
 template <>

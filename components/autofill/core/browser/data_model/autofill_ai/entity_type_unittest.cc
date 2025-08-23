@@ -18,8 +18,6 @@ using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
 TEST(AutofillAttributeTypeTest, Relationships) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAiNoTagTypes};
   AttributeType a = AttributeType(AttributeTypeName::kPassportName);
   EXPECT_EQ(a.entity_type(), EntityType(EntityTypeName::kPassport));
   EXPECT_THAT(a.field_subtypes(),

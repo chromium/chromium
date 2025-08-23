@@ -250,8 +250,8 @@ TEST(ServerPredictionOverridesTest, Json) {
       },
       "67890": {
         "123": [
-          { "predictions": ["NAME_FIRST", "PASSPORT_NAME_TAG"] },
-          { "predictions": ["NAME_LAST", "PASSPORT_NAME_TAG"] }
+          { "predictions": ["NAME_FIRST", "PASSPORT_NUMBER"] },
+          { "predictions": ["NAME_LAST", "PASSPORT_NUMBER"] }
         ],
         "456": [
           { "predictions": ["ADDRESS_HOME_COUNTRY", 170] }
@@ -284,11 +284,11 @@ TEST(ServerPredictionOverridesTest, Json) {
           Pair(form_and_field(67890, 123),
                ElementsAre(AllOf(HasPredictions(ElementsAre(
                                      EqualsPrediction(NAME_FIRST),
-                                     EqualsPrediction(PASSPORT_NAME_TAG))),
+                                     EqualsPrediction(PASSPORT_NUMBER))),
                                  HasFormatString(Eq(std::nullopt))),
                            AllOf(HasPredictions(ElementsAre(
                                      EqualsPrediction(NAME_LAST),
-                                     EqualsPrediction(PASSPORT_NAME_TAG))),
+                                     EqualsPrediction(PASSPORT_NUMBER))),
                                  HasFormatString(Eq(std::nullopt))))),
           Pair(form_and_field(67890, 456),
                ElementsAre(

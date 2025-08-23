@@ -79,8 +79,7 @@ std::u16string GetFillValueForEntity(
   // propagate to the name field.
   for (AutofillFieldWithAttributeType& field_and_type : fields_and_types) {
     if (field_and_type.field->Type().GetGroups().contains(
-            FieldTypeGroup::kName) &&
-        base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
+            FieldTypeGroup::kName)) {
       auto attribute_type = [&entity]() -> std::optional<AttributeType> {
         switch (entity.type().name()) {
           case EntityTypeName::kDriversLicense:
@@ -126,11 +125,6 @@ std::u16string GetFillValueForEntity(
 class GetFieldsFillableByAutofillAiTest : public testing::Test {
  public:
   GetFieldsFillableByAutofillAiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillAiWithDataSchema,
-                              features::kAutofillAiNoTagTypes},
-        /*disabled_features=*/{});
-
     client().set_entity_data_manager(std::make_unique<EntityDataManager>(
         helper_.autofill_webdata_service(), /*history_service=*/nullptr,
         /*strike_database=*/nullptr));
@@ -154,7 +148,8 @@ class GetFieldsFillableByAutofillAiTest : public testing::Test {
   FieldGlobalId field(size_t i) const { return form_.fields()[i]->global_id(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillAiWithDataSchema};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_environment_;
@@ -209,16 +204,9 @@ TEST_F(GetFieldsFillableByAutofillAiTest, FillingUnavailable) {
 }
 
 class GetFillValueForEntityTest : public testing::Test {
- public:
-  GetFillValueForEntityTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillAiWithDataSchema,
-                              features::kAutofillAiNoTagTypes},
-        /*disabled_features=*/{});
-  }
-
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillAiWithDataSchema};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 

@@ -139,8 +139,7 @@ class AutofillAiImportUtilsTest : public testing::Test {
  public:
   AutofillAiImportUtilsTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillAiWithDataSchema,
-                              features::kAutofillAiNoTagTypes},
+        /*enabled_features=*/{features::kAutofillAiWithDataSchema},
         /*disabled_features=*/{});
   }
 

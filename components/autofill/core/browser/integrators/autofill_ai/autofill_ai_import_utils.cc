@@ -124,8 +124,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
           continue;
         }
         DCHECK_EQ(entity, attribute_type.entity_type());
-        const FieldType field_type =
-            field->Type().GetAutofillAiTypeAndResolveTagTypes(entity);
+        const FieldType field_type = field->Type().GetAutofillAiType(entity);
         const ValueAndFormatString value =
             GetValueAndFormatString(*field, attribute_type);
 

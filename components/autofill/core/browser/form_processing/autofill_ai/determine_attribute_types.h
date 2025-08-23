@@ -65,9 +65,6 @@ class DetermineAttributeTypesPassKey {
 // We only propagate between pairs of fields that are in the same section and
 // whose distance is at most 5.
 //
-// Dynamic types are only determined if `features::kAutofillAiNoTagTypes` is
-// enabled.
-//
 // Invisible non-<select> fields are ignored; they're not assigned any type.
 //
 // The overloads are just specializations of one another for performance

@@ -84,7 +84,6 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
   AutofillAiSuggestionGeneratorTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAiWithDataSchema,
-                              features::kAutofillAiNoTagTypes,
                               features::kAutofillAiServerModel},
         /*disabled_features=*/{});
     autofill_client_.GetPersonalDataManager().SetPrefService(

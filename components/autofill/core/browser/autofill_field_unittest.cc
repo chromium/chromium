@@ -229,13 +229,8 @@ TEST_F(AutofillFieldTest, UnionTypesFromServerTypes) {
     // Conflict resolution: when there are multiple predictions from the same
     // entities, we take the longest prefix that satisfies the AutofillType
     // constraints.
-    if (base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-      EXPECT_THAT(f(NAME_FULL, DRIVERS_LICENSE_NUMBER),
-                  UnorderedElementsAre(NAME_FULL));
-    } else {
-      EXPECT_THAT(f(NAME_FULL, DRIVERS_LICENSE_NUMBER),
-                  UnorderedElementsAre(NAME_FULL, DRIVERS_LICENSE_NUMBER));
-    }
+    EXPECT_THAT(f(NAME_FULL, DRIVERS_LICENSE_NUMBER),
+                UnorderedElementsAre(NAME_FULL));
     EXPECT_THAT(
         f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_REGION,
           VEHICLE_LICENSE_PLATE),
@@ -789,15 +784,15 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_source = AutofillPredictionSource::kHeuristics},
         AutofillLocalHeuristicsOverridesParams{
             .html_field_type = HtmlFieldType::kUnspecified,
-            .server_type = PASSPORT_NAME_TAG,
+            .server_type = NAME_FULL,
             .heuristic_type = NAME_FIRST,
-            .expected_result = PASSPORT_NAME_TAG,
+            .expected_result = NAME_FULL,
             .expected_source = AutofillPredictionSource::kServerCrowdsourcing},
         AutofillLocalHeuristicsOverridesParams{
             .html_field_type = HtmlFieldType::kUnspecified,
-            .server_type = PASSPORT_NAME_TAG,
+            .server_type = NAME_FULL,
             .heuristic_type = UNKNOWN_TYPE,
-            .expected_result = PASSPORT_NAME_TAG,
+            .expected_result = NAME_FULL,
             .expected_source = AutofillPredictionSource::kServerCrowdsourcing},
         AutofillLocalHeuristicsOverridesParams{
             .html_field_type = HtmlFieldType::kName,

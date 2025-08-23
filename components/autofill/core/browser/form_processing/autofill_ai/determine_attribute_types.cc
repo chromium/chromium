@@ -47,38 +47,15 @@ static_assert(!kNonInjectiveFieldTypes.contains_any(
 static_assert(!kNonInjectiveFieldTypes.contains_any(
     {DRIVERS_LICENSE_EXPIRATION_DATE, PASSPORT_NUMBER, VEHICLE_MODEL}));
 
-// If kAutofillAiNoTagTypes is disabled:
-// AttributeType::field_type() must be injective: distinct AttributeTypes must
-// be mapped to distinct FieldTypes.
-static_assert(
-    std::ranges::all_of(DenseSet<AttributeType>::all(), [](AttributeType a) {
-      return std::ranges::all_of(
-          DenseSet<AttributeType>::all(), [&a](AttributeType b) {
-            FieldType a_field_type = a.field_type_with_tag_types();
-            FieldType b_field_type = b.field_type_with_tag_types();
-            // NAME_FULL is used for the name attributes of National ID card,
-            // Known Traveler Number, and Redress Number.
-            const bool name_type_present =
-                a_field_type == NAME_FULL || b_field_type == NAME_FULL;
-            return a == b || name_type_present ||
-                   (a_field_type != b_field_type);
-          });
-    }));
-
-// If kAutofillAiNoTagTypes is enabled:
 // AttributeType::field_type() must be mostly injective: distinct AttributeTypes
 // other than `kNonInjectiveFieldTypes` must be mapped to distinct FieldTypes.
 static_assert(
     std::ranges::all_of(DenseSet<AttributeType>::all(), [](AttributeType a) {
       return std::ranges::all_of(
           DenseSet<AttributeType>::all(), [&a](AttributeType b) {
-            return a == b ||
-                   a.field_type_without_tag_types() !=
-                       b.field_type_without_tag_types() ||
-                   kNonInjectiveFieldTypes.contains(
-                       a.field_type_without_tag_types()) ||
-                   kNonInjectiveFieldTypes.contains(
-                       b.field_type_without_tag_types());
+            return a == b || a.field_type() != b.field_type() ||
+                   kNonInjectiveFieldTypes.contains(a.field_type()) ||
+                   kNonInjectiveFieldTypes.contains(b.field_type());
           });
     }));
 
@@ -90,28 +67,13 @@ std::optional<AttributeType> GetStaticAttributeType(FieldType ft) {
     return at && at->entity_type().enabled() ? at : std::nullopt;
   };
 
-  if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-    static constexpr auto kTable = []() {
-      std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
-      for (AttributeType at : DenseSet<AttributeType>::all()) {
-        if (at.field_type_with_tag_types() != NAME_FULL) {
-          arr[at.field_type_with_tag_types()] = at;
-        }
-      }
-      return arr;
-    }();
-    return 0 <= ft && ft < kTable.size() ? if_enabled(kTable[ft])
-                                         : std::nullopt;
-  }
-
   // This lookup table is the inverse of AttributeType::field_type(), except
   // for the `kNonInjectiveFieldTypes`.
   static auto kTable = []() {
     std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
     for (AttributeType at : DenseSet<AttributeType>::all()) {
-      if (!kNonInjectiveFieldTypes.contains(
-              at.field_type_without_tag_types())) {
-        arr[at.field_type_without_tag_types()] = at;
+      if (!kNonInjectiveFieldTypes.contains(at.field_type())) {
+        arr[at.field_type()] = at;
       }
     }
     return arr;
@@ -164,9 +126,6 @@ void AddDynamicAttributeTypes(
   DCHECK_EQ(fields.size(), attributes_by_field.size());
   DCHECK(!std::ranges::all_of(attributes_by_field,
                               &DenseSet<AttributeType>::empty));
-  if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-    return;
-  }
 
   // Propagates the applicable EntityTypes in `last_seen` to the `attributes` of
   // `field`.

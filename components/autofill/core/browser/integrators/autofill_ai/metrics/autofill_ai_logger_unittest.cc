@@ -122,25 +122,23 @@ class BaseAutofillAiTest : public testing::Test {
   [[nodiscard]] std::unique_ptr<FormStructure> CreatePassportForm(
       std::string url = std::string(kDefaultUrl)) {
     std::unique_ptr<FormStructure> form = CreateFormStructure(
-        {PASSPORT_NAME_TAG, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER},
-        std::move(url));
+        {NAME_FULL, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER}, std::move(url));
     return form;
   }
 
   [[nodiscard]] std::unique_ptr<FormStructure> CreateVehicleForm(
       std::string url = std::string(kDefaultUrl)) {
-    std::unique_ptr<FormStructure> form = CreateFormStructure(
-        {VEHICLE_OWNER_TAG, VEHICLE_LICENSE_PLATE}, std::move(url));
+    std::unique_ptr<FormStructure> form =
+        CreateFormStructure({NAME_FULL, VEHICLE_LICENSE_PLATE}, std::move(url));
     return form;
   }
 
   [[nodiscard]] std::unique_ptr<FormStructure> CreateDriversLicenseForm(
       std::string url = std::string(kDefaultUrl)) {
-    std::unique_ptr<FormStructure> form =
-        CreateFormStructure({DRIVERS_LICENSE_NAME_TAG, DRIVERS_LICENSE_NUMBER,
-                             DRIVERS_LICENSE_REGION, DRIVERS_LICENSE_ISSUE_DATE,
-                             DRIVERS_LICENSE_EXPIRATION_DATE},
-                            std::move(url));
+    std::unique_ptr<FormStructure> form = CreateFormStructure(
+        {NAME_FULL, DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_REGION,
+         DRIVERS_LICENSE_ISSUE_DATE, DRIVERS_LICENSE_EXPIRATION_DATE},
+        std::move(url));
     return form;
   }
 

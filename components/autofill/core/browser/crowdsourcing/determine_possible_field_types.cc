@@ -242,13 +242,6 @@ void FindAndSetPossibleCvcFieldTypes(
 
 // Returns the FieldTypes for which the given EntityInstance defines a non-empty
 // value.
-//
-// If kAutofillAiNoTagTypes is disabled:
-// This may not just include Autofill AI types like PASSPORT_NUMBER but
-// also tag types like PASSPORT_NAME_TAG together with the refined type like
-// NAME_FIRST.
-// TODO(crbug.com/422563282): Remove comment when cleaning up
-// kAutofillAiNoTagTypes.
 FieldTypeSet GetAvailableAutofillAiFieldTypes(
     base::span<const EntityInstance> entities,
     const std::string& app_locale) {
@@ -260,9 +253,6 @@ FieldTypeSet GetAvailableAutofillAiFieldTypes(
         bool is_empty = normalization::HasOnlySkippableCharacters(
             attribute.GetInfo(field_type, app_locale, std::nullopt));
         if (!is_empty) {
-          if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-            types.insert(attribute.type().field_type());
-          }
           types.insert(field_type);
         }
       }
@@ -274,13 +264,6 @@ FieldTypeSet GetAvailableAutofillAiFieldTypes(
 // Scans the given `entities` for values that match `value_u16`. It adds the
 // matching `FieldType` to `PossibleTypes::types` and, if applicable, a format
 // string to `PossibleTypes::format`.
-//
-// If kAutofillAiNoTagTypes is disabled:
-// This may not just include Autofill AI types like PASSPORT_NUMBER but
-// also tag types like PASSPORT_NAME_TAG together with the refined type like
-// NAME_FIRST.
-// TODO(crbug.com/422563282): Remove comment when cleaning up
-// kAutofillAiNoTagTypes.
 void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
                                 std::u16string_view value_u16,
                                 const std::string& app_locale,
@@ -303,9 +286,6 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
         bool full_match =
             AutofillProfileComparator::Compare(value_in_field, value_on_file);
         if (full_match) {
-          if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-            pt.types.insert(attribute.type().field_type());
-          }
           pt.types.insert(field_type);
           if (IsAffixFormatStringEnabledForType(field_type) &&
               base::FeatureList::IsEnabled(

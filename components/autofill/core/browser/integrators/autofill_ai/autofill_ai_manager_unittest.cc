@@ -127,7 +127,6 @@ class AutofillAiManagerTest : public testing::Test {
   AutofillAiManagerTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAiWithDataSchema,
-                              features::kAutofillAiNoTagTypes,
                               features::kAutofillAiServerModel},
         /*disabled_features=*/{});
     autofill_client().GetPersonalDataManager().SetPrefService(

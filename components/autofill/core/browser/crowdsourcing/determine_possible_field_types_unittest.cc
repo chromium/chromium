@@ -404,7 +404,7 @@ class DeterminePossibleFieldTypesForUploadTest : public ::testing::Test {
  public:
   DeterminePossibleFieldTypesForUploadTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillAiWithDataSchema, features::kAutofillAiNoTagTypes,
+        {features::kAutofillAiWithDataSchema,
          features::kAutofillAiVoteForFormatStringsForAffixes,
          features::kAutofillEnableLoyaltyCardsFilling},
         {});
@@ -1212,7 +1212,6 @@ class DetermineAvailableFieldTypesTest : public ::testing::Test {
   DetermineAvailableFieldTypesTest() {
     features_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAiWithDataSchema,
-                              features::kAutofillAiNoTagTypes,
                               features::kAutofillEnableLoyaltyCardsFilling,
                               features::
                                   kAutofillEnableEmailOrLoyaltyCardsFilling},

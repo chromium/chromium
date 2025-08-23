@@ -16,12 +16,6 @@
 
 namespace autofill {
 
-FieldType AttributeType::field_type() const {
-  return base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)
-             ? field_type_without_tag_types()
-             : field_type_with_tag_types();
-}
-
 FieldTypeSet AttributeType::storable_field_types(
     base::PassKey<EntityTable> pass_key) const {
   if (data_type() == DataType::kName) {

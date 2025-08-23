@@ -1589,8 +1589,8 @@ TEST_F(FormFillerTest, FillPassportEntity) {
         AutofillField::FormatStringSource::kServer);
   };
   set_server_type(0, PASSPORT_NUMBER);
-  set_server_type(1, NAME_FIRST, PASSPORT_NAME_TAG);
-  set_server_type(2, NAME_LAST, PASSPORT_NAME_TAG);
+  set_server_type(1, NAME_FIRST);
+  set_server_type(2, NAME_LAST);
   set_server_type(3, PASSPORT_ISSUING_COUNTRY);
   set_server_type(4, PASSPORT_ISSUE_DATE);
   set_format_string(4, "M/YY");

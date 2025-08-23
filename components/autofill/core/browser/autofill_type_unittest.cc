@@ -113,10 +113,7 @@ TEST(AutofillTypeTest, TestConstraints) {
   EXPECT_FALSE(tc({NAME_FIRST, NAME_LAST}));
   EXPECT_FALSE(tc({NAME_FIRST, NAME_FULL}));
   EXPECT_FALSE(tc({CREDIT_CARD_NUMBER, CREDIT_CARD_NAME_FULL}));
-  {
-    EXPECT_EQ(tc({NAME_FULL, PASSPORT_NUMBER}),
-              !base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes));
-  }
+  EXPECT_FALSE(tc({NAME_FULL, PASSPORT_NUMBER}));
   EXPECT_FALSE(tc({EMAIL_ADDRESS, LOYALTY_MEMBERSHIP_ID}));
   EXPECT_FALSE(tc({USERNAME, PASSWORD}));
   EXPECT_FALSE(tc({PHONE_HOME_WHOLE_NUMBER, PASSWORD}));
@@ -150,8 +147,8 @@ TEST(AutofillTypeTest, GetTypes) {
               HasTypes(CREDIT_CARD_NUMBER, PASSPORT_NUMBER));
   EXPECT_THAT(AutofillType({ADDRESS_HOME_ZIP, DRIVERS_LICENSE_REGION}),
               HasTypes(ADDRESS_HOME_ZIP, DRIVERS_LICENSE_REGION));
-  EXPECT_THAT(AutofillType({DRIVERS_LICENSE_REGION, PASSPORT_NAME_TAG}),
-              HasTypes(DRIVERS_LICENSE_REGION, PASSPORT_NAME_TAG));
+  EXPECT_THAT(AutofillType(DRIVERS_LICENSE_REGION),
+              HasTypes(DRIVERS_LICENSE_REGION));
 }
 
 // Tests that GetGroups() maps to the right FieldTypeGroups and filters
@@ -175,8 +172,7 @@ TEST(AutofillTypeTest, GetGroups) {
               HasGroups(kCreditCard, kAutofillAi));
   EXPECT_THAT(AutofillType({ADDRESS_HOME_ZIP, DRIVERS_LICENSE_REGION}),
               HasGroups(kAddress, kAutofillAi));
-  EXPECT_THAT(AutofillType({DRIVERS_LICENSE_REGION, PASSPORT_NAME_TAG}),
-              HasGroups(kAutofillAi));
+  EXPECT_THAT(AutofillType(DRIVERS_LICENSE_REGION), HasGroups(kAutofillAi));
 }
 
 // Tests that GetFormTypes() maps to the right FormTypes and filters
@@ -201,8 +197,7 @@ TEST(AutofillTypeTest, GetFormTypes) {
               HasFormTypes(kCreditCardForm));
   EXPECT_THAT(AutofillType({ADDRESS_HOME_ZIP, DRIVERS_LICENSE_REGION}),
               HasFormTypes(kAddressForm));
-  EXPECT_THAT(AutofillType({DRIVERS_LICENSE_REGION, PASSPORT_NAME_TAG}),
-              HasFormTypes());
+  EXPECT_THAT(AutofillType(DRIVERS_LICENSE_REGION), HasFormTypes());
 }
 
 // This test confirms that the documentation of AutofillType::GetGroups() and
@@ -215,8 +210,6 @@ TEST(AutofillTypeTest, SurprisingMappings_UpdateDocumentationIfThisTestFails) {
   //   `bool has_autofill_ai_type = !t.GetAutofillAiTypes().empty()`
   //   `bool has_autofill_ai_group = t.GetGroups().contains(kAutofillAi)`
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(features::kAutofillAiNoTagTypes);
     AutofillType t = AutofillType(NAME_FIRST);
     EXPECT_THAT(t.GetAutofillAiTypes(), Not(IsEmpty()));
     EXPECT_THAT(t.GetGroups(), Not(Contains(FieldTypeGroup::kAutofillAi)));
@@ -285,7 +278,6 @@ TEST(AutofillTypeTest, GetAddressType) {
   EXPECT_EQ(get_type(UNKNOWN_TYPE), UNKNOWN_TYPE);
   EXPECT_EQ(get_type(NAME_FULL), NAME_FULL);
   EXPECT_EQ(get_type(CREDIT_CARD_NAME_FULL), UNKNOWN_TYPE);
-  EXPECT_EQ(get_type(PASSPORT_NAME_TAG), UNKNOWN_TYPE);
   EXPECT_EQ(get_type(ADDRESS_HOME_ZIP), ADDRESS_HOME_ZIP);
   for (FieldType field_type : kAllFieldTypes) {
     SCOPED_TRACE(testing::Message()
@@ -300,64 +292,13 @@ TEST(AutofillTypeTest, GetAddressType) {
 // the Autofill AI's concept of "dynamic type assignment".
 TEST(AutofillTypeTest, GetAutofillAiType) {
   constexpr EntityType kPassport = EntityType(EntityTypeName::kPassport);
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(features::kAutofillAiNoTagTypes);
-    EXPECT_EQ(AutofillType(PASSPORT_NUMBER).GetAutofillAiType(kPassport),
-              PASSPORT_NUMBER);
-    EXPECT_EQ(AutofillType(NAME_FIRST).GetAutofillAiType(kPassport),
-              NAME_FIRST);
-    EXPECT_EQ(AutofillType({NAME_FIRST, USERNAME}).GetAutofillAiType(kPassport),
-              NAME_FIRST);
-
-    // Test that `*_TAG` types are ignored.
-    EXPECT_EQ(AutofillType(PASSPORT_NAME_TAG).GetAutofillAiType(kPassport),
-              UNKNOWN_TYPE);
-    EXPECT_EQ(AutofillType({NAME_FIRST, PASSPORT_NAME_TAG})
-                  .GetAutofillAiType(kPassport),
-              NAME_FIRST);
-    EXPECT_THAT(AutofillType(PASSPORT_NAME_TAG).GetAutofillAiTypes(),
-                IsEmpty());
-    EXPECT_THAT(
-        AutofillType({NAME_FIRST, PASSPORT_NAME_TAG}).GetAutofillAiTypes(),
-        ElementsAre(NAME_FIRST));
-  }
+  EXPECT_EQ(AutofillType(PASSPORT_NUMBER).GetAutofillAiType(kPassport),
+            PASSPORT_NUMBER);
+  EXPECT_EQ(AutofillType(NAME_FIRST).GetAutofillAiType(kPassport), NAME_FIRST);
+  EXPECT_EQ(AutofillType({NAME_FIRST, USERNAME}).GetAutofillAiType(kPassport),
+            NAME_FIRST);
 
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(features::kAutofillAiNoTagTypes);
-    // Test that `NAME_*` types are not ignored if `*_TAG` types are enabled.
-    EXPECT_EQ(AutofillType(PASSPORT_NAME_TAG).GetAutofillAiType(kPassport),
-              PASSPORT_NAME_TAG);
-    EXPECT_EQ(AutofillType({NAME_FIRST, PASSPORT_NAME_TAG})
-                  .GetAutofillAiType(kPassport),
-              PASSPORT_NAME_TAG);
-    EXPECT_THAT(AutofillType(PASSPORT_NAME_TAG).GetAutofillAiTypes(),
-                ElementsAre(PASSPORT_NAME_TAG));
-    EXPECT_THAT(
-        AutofillType({NAME_FIRST, PASSPORT_NAME_TAG}).GetAutofillAiTypes(),
-        ElementsAre(PASSPORT_NAME_TAG));
-  }
-
-  {
-    // Test that GetAutofillAiTypes() is the union of GetAutofillAiType().
-    FieldTypeSet hit1;
-    FieldTypeSet hit2;
-    for (EntityType entity : DenseSet<EntityType>::all()) {
-      for (FieldType field_type : kAllFieldTypes) {
-        AutofillType type = AutofillType(field_type);
-        if (type.GetAutofillAiType(entity) != UNKNOWN_TYPE) {
-          hit1.insert(field_type);
-        }
-        hit2.insert_all(type.GetAutofillAiTypes());
-      }
-    }
-    EXPECT_EQ(hit1, hit2);
-  }
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(features::kAutofillAiNoTagTypes);
     // Test that GetAutofillAiTypes() is the union of GetAutofillAiType().
     FieldTypeSet hit1;
     FieldTypeSet hit2;
@@ -510,10 +451,6 @@ TEST(AutofillTypeTest, AlmostAllFieldTypesAreCovered) {
                            SEARCH_TERM,         PRICE,
                            IBAN_VALUE,          NUMERIC_QUANTITY,
                            MAX_VALID_FIELD_TYPE};
-  if (base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-    kNotCovered.insert_all(
-        {DRIVERS_LICENSE_NAME_TAG, PASSPORT_NAME_TAG, VEHICLE_OWNER_TAG});
-  }
 
   for (FieldType field_type : kAllFieldTypes) {
     SCOPED_TRACE(testing::Message()

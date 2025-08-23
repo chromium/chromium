@@ -897,7 +897,7 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
   if (options.name) {
     attributes.emplace_back(AttributeType(kPassportName));
     attributes.back().SetInfo(
-        PASSPORT_NAME_TAG, options.name, std::string(options.app_locale),
+        NAME_FULL, options.name, std::string(options.app_locale),
         /*format_string=*/u"", VerificationStatus::kNoStatus);
     attributes.back().FinalizeInfo();
   }
@@ -937,7 +937,7 @@ EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
   if (options.name) {
     attributes.emplace_back(AttributeType(kDriversLicenseName));
     attributes.back().SetInfo(
-        DRIVERS_LICENSE_NAME_TAG, options.name, std::string(options.app_locale),
+        NAME_FULL, options.name, std::string(options.app_locale),
         /*format_string=*/u"", VerificationStatus::kNoStatus);
     attributes.back().FinalizeInfo();
   }
@@ -1027,7 +1027,7 @@ EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
   if (options.name) {
     attributes.emplace_back(AttributeType(kVehicleOwner));
     attributes.back().SetInfo(
-        VEHICLE_OWNER_TAG, options.name, std::string(options.app_locale),
+        NAME_FULL, options.name, std::string(options.app_locale),
         /*format_string=*/u"", VerificationStatus::kNoStatus);
     attributes.back().FinalizeInfo();
   }

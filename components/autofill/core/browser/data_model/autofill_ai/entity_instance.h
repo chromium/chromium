@@ -45,31 +45,6 @@ class EntityTable;
 // An attribute instance is a typed string value with additional metadata.
 // It is associated with an EntityInstance. Attributes are used in order to fill
 // fields with information of certain types.
-//
-// If kAutofillAiNoTagTypes is disabled:
-// Note that there are two concepts of types that are relevant here:
-// - AttributeType: This is the type of the attribute itself and determines the
-//   structure of the attribute.
-// - FieldType: This is the type of data that can be requested by consumers from
-//   the attribute.
-//
-// If kAutofillAiNoTagTypes is disabled:
-// `AutofillField` computes two types for the field: One is available through
-// `AutofillField::GetAutofillAiServerTypePredictions()` and represents the
-// type used in order to figure out the appropriate AttributeInstance to fill
-// the field. The other is available through `AutofillField::Type()` and
-// represents the general classification of the field (through Autofill server
-// and heuristic prediction logic).
-//
-// If kAutofillAiNoTagTypes is disabled:
-// It could happen that these two types are totally unrelated (e.g., the former
-// returns PASSPORT_NAME_TAG and the latter returns PHONE_HOME_WHOLE_NUMBER)
-// or that the two types are equal (e.g., both return PASSPORT_NAME_TAG). This
-// is a small problem for setter/getter API that (1) assumes that the provided
-// field type to a given method is supported and (2) doesn't have support for
-// `FieldType`s of group `FieldTypeGroup::kAutofillAi`. See
-// `AttributeInstance::GetNormalizedType()` and the getter/setter methods for
-// how this problem is handled.
 class AttributeInstance final {
  public:
   // Transparent less-than relation based on the AttributeType.

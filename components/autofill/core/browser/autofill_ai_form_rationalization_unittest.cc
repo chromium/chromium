@@ -158,10 +158,9 @@ TEST_F(
 TEST_F(
     AutofillAiFormRationalizationTest,
     GetRelevantEntitiesForFormsAi_ReturnsEntitiesWhenAutofillAiFieldsMatchRequirements) {
-  std::vector<std::unique_ptr<AutofillField>> fields =
-      CreateFields({VEHICLE_MAKE, VEHICLE_MODEL, NAME_FIRST, VEHICLE_OWNER_TAG,
-                    NAME_MIDDLE, NAME_LAST, DRIVERS_LICENSE_NAME_TAG,
-                    DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_EXPIRATION_DATE});
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields(
+      {VEHICLE_MAKE, VEHICLE_MODEL, NAME_FIRST, NAME_MIDDLE, NAME_LAST,
+       DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_EXPIRATION_DATE});
   EXPECT_EQ(
       GetRelevantEntityTypesForFields(fields),
       (DenseSet<EntityType>{EntityType(EntityTypeName::kVehicle),
@@ -173,7 +172,7 @@ TEST_F(
 TEST_F(AutofillAiFormRationalizationTest,
        GetRelevantEntitiesForFormsAi_ReturnsEmptyWhenOnlyNameFieldsArePresent) {
   std::vector<std::unique_ptr<AutofillField>> fields =
-      CreateFields({PASSPORT_NAME_TAG});
+      CreateFields({NAME_FULL});
   EXPECT_TRUE(GetRelevantEntityTypesForFields(fields).empty());
 }
 

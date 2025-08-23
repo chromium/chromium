@@ -500,9 +500,9 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
     EntityInstance::AreAttributesReadOnly are_attributes_read_only) const {
   // An attribute's field type must never be UNKNOWN_TYPE - otherwise we will
   // discard its value here.
-  static_assert(!FieldTypeSet(DenseSet<AttributeType>::all(),
-                              &AttributeType::field_type_with_tag_types)
-                     .contains(UNKNOWN_TYPE));
+  static_assert(
+      !FieldTypeSet(DenseSet<AttributeType>::all(), &AttributeType::field_type)
+           .contains(UNKNOWN_TYPE));
 
   std::optional<EntityType> entity_type =
       StringToEntityType(/*pass_key=*/{}, type_name);

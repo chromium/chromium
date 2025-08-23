@@ -7232,15 +7232,11 @@ class BrowserAutofillManagerTest_AutofillAi
       add_predictions(
           form.fields()[0],
           {CreateFieldPrediction(NAME_FIRST,
-                                 FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
-           CreateFieldPrediction(PASSPORT_NAME_TAG,
-                                 FieldPrediction::SOURCE_AUTOFILL_AI)});
+                                 FieldPrediction::SOURCE_AUTOFILL_DEFAULT)});
       add_predictions(
           form.fields()[1],
           {CreateFieldPrediction(NAME_LAST,
-                                 FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
-           CreateFieldPrediction(PASSPORT_NAME_TAG,
-                                 FieldPrediction::SOURCE_AUTOFILL_AI)});
+                                 FieldPrediction::SOURCE_AUTOFILL_DEFAULT)});
       add_predictions(
           form.fields()[2],
           {CreateFieldPrediction(PASSPORT_NUMBER,
@@ -7302,12 +7298,12 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-// Tests that if a field has an Autofill AI TAG type and the EntityDataManager
-// can serve that TAG type (e.g., PASSPORT_NAME_TAG) but not the specific type
-// of the field (e.g., NAME_MIDDLE), there are no suggestions shown on that
-// specific field. In particular, even if there are matching address
-// suggestions, these are ignored. See crbug.com/402397312 for a concrete
-// example.
+// Tests that if a name field is dynamically assigned to an Autofill AI entity
+// but the EntityDataManager cannot fill that specific field, there are no
+// suggestions shown on that specific field.
+//
+// In particular, even if there are matching address suggestions, these are
+// ignored. See crbug.com/402397312 for a concrete example.
 TEST_F(BrowserAutofillManagerTest_AutofillAi, ShowNoSuggestionsIfCollision) {
   SeeForm(/*may_run_model=*/false);
 
@@ -7518,12 +7514,10 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel, CacheResultUsed) {
   // Check that we set predictions on the form.
   const FormStructure* const fs = manager().FindCachedFormById(form_id);
   ASSERT_TRUE(fs);
-  if (base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-    EXPECT_THAT(fs->field(0)->Type().GetAutofillAiTypes(),
-                ElementsAre(NAME_FIRST));
-    EXPECT_THAT(fs->field(1)->Type().GetAutofillAiTypes(),
-                ElementsAre(NAME_LAST));
-  }
+  EXPECT_THAT(fs->field(0)->Type().GetAutofillAiTypes(),
+              ElementsAre(NAME_FIRST));
+  EXPECT_THAT(fs->field(1)->Type().GetAutofillAiTypes(),
+              ElementsAre(NAME_LAST));
   EXPECT_THAT(fs->field(2)->Type().GetAutofillAiTypes(),
               ElementsAre(PASSPORT_NUMBER));
   EXPECT_THAT(fs->field(3)->Type().GetAutofillAiTypes(),

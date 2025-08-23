@@ -476,7 +476,7 @@ enum FieldType {
   // *TAG field types are merely placeholder tagging that the type belongs to
   // the passport entity, but that the existing Autofill classification or logic
   // should be used.
-  PASSPORT_NAME_TAG = 168,
+  // PASSPORT_NAME_TAG = 168 is deprecated
   PASSPORT_NUMBER = 169,
   PASSPORT_ISSUING_COUNTRY = 170,
   PASSPORT_EXPIRATION_DATE = 171,
@@ -490,7 +490,7 @@ enum FieldType {
 
   // Types corresponding to the "Car" entity from
   // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
-  VEHICLE_OWNER_TAG = 175,
+  // VEHICLE_OWNER_TAG = 175 is deprecated
   VEHICLE_LICENSE_PLATE = 176,
   VEHICLE_VIN = 177,
   VEHICLE_MAKE = 178,
@@ -498,7 +498,7 @@ enum FieldType {
 
   // Types corresponding to the "Drivers license" entity from
   // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
-  DRIVERS_LICENSE_NAME_TAG = 180,
+  // DRIVERS_LICENSE_NAME_TAG = 180 is deprecated
   DRIVERS_LICENSE_REGION = 181,
   DRIVERS_LICENSE_NUMBER = 182,
   DRIVERS_LICENSE_EXPIRATION_DATE = 183,
@@ -654,7 +654,7 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            (130 <= t && t <= 132) || t == 134 || (137 <= t && t <= 139) ||
            (147 <= t && t <= 149) || t == 155 || t == 159 || t == 161 ||
            // Deprecated Autofill AI types.
-           t == 162 ||
+           t == 162 || t == 168 || t == 175 || t == 180 ||
            // Types for the country for driver's license and vehicle are not
            // used yet, but will likely be added in the future.
            (187 <= t && t <= 188) ||
@@ -802,19 +802,16 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case COMPANY_NAME:
       return FieldTypeGroup::kCompany;
 
-    case PASSPORT_NAME_TAG:
     case PASSPORT_NUMBER:
     case PASSPORT_ISSUING_COUNTRY:
     case PASSPORT_EXPIRATION_DATE:
     case PASSPORT_ISSUE_DATE:
-    case VEHICLE_OWNER_TAG:
     case VEHICLE_LICENSE_PLATE:
     case VEHICLE_VIN:
     case VEHICLE_MAKE:
     case VEHICLE_MODEL:
     case VEHICLE_YEAR:
     case VEHICLE_PLATE_STATE:
-    case DRIVERS_LICENSE_NAME_TAG:
     case DRIVERS_LICENSE_REGION:
     case DRIVERS_LICENSE_NUMBER:
     case DRIVERS_LICENSE_EXPIRATION_DATE:
