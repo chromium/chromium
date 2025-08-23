@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/branding_buildflags.h"
 
 namespace lens::features {
 
@@ -109,7 +110,11 @@ BASE_FEATURE(kLensOverlayCornerSliders,
 
 BASE_FEATURE(kLensSearchProtectedPage,
              "LensSearchProtectedPage",
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
              base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 BASE_FEATURE(kLensOverlayEduActionChip,
              "LensOverlayEduActionChip",
