@@ -114,8 +114,20 @@ INSTANTIATE_TEST_SUITE_P(ManifestV3,
                          SwitchAccessTest,
                          ::testing::Values(ManifestVersion::kThree));
 
-// TODO(crbug.com/432170984): Re-enable this test.
-IN_PROC_BROWSER_TEST_P(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
+// TODO(crbug.com/431933537): Disabled on MSAN due to a renderer crash. The
+// crash is caused by a use-of-uninitialized-value in
+// blink::CSSParserImpl::ParseStyleSheet when parsing default stylesheets,
+// indicating an underlying Blink issue rather than a problem with the test
+// logic.
+//
+// A separate bug (crbug.com/431933537) is filed to specifically track the
+// blink::CSSParserImpl::ParseStyleSheet issue.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ConsumesKeyEvents DISABLED_ConsumesKeyEvents
+#else
+#define MAYBE_ConsumesKeyEvents ConsumesKeyEvents
+#endif
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, MAYBE_ConsumesKeyEvents) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
   AutomationTestUtils test_utils(extension_misc::kSwitchAccessExtensionId);
