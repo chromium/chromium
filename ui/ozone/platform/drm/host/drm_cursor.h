@@ -16,6 +16,8 @@
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/gfx/geometry/rect.h"
 
+class SkBitmap;
+
 namespace base {
 class TimeDelta;
 }

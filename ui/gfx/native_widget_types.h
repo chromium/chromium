@@ -100,7 +100,6 @@ class WindowAndroid;
 class ViewAndroid;
 }  // namespace ui
 #endif
-class SkBitmap;
 
 #if BUILDFLAG(IS_LINUX)
 extern "C" {
@@ -206,19 +205,19 @@ using NativeViewId = intptr_t;
 // AcceleratedWidget provides a surface to compositors to paint pixels.
 #if BUILDFLAG(IS_WIN)
 using AcceleratedWidget = HWND;
-constexpr AcceleratedWidget kNullAcceleratedWidget = nullptr;
+inline constexpr AcceleratedWidget kNullAcceleratedWidget = nullptr;
 #elif BUILDFLAG(IS_IOS)
 using AcceleratedWidget = uint64_t;
-constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
+inline constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
 #elif BUILDFLAG(IS_MAC)
 using AcceleratedWidget = uint64_t;
-constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
+inline constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
 #elif BUILDFLAG(IS_ANDROID)
 using AcceleratedWidget = ANativeWindow*;
 constexpr AcceleratedWidget kNullAcceleratedWidget = nullptr;
 #elif BUILDFLAG(IS_OZONE)
 using AcceleratedWidget = uint32_t;
-constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
+inline constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
 #else
 #error unknown platform
 #endif

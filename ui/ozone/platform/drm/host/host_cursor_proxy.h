@@ -12,6 +12,8 @@
 #include "ui/ozone/platform/drm/host/drm_cursor.h"
 #include "ui/ozone/platform/drm/mojom/device_cursor.mojom.h"
 
+class SkBitmap;
+
 namespace ui {
 
 // Ozone requires a IPC from the browser (or mus-ws) process to the gpu (or
