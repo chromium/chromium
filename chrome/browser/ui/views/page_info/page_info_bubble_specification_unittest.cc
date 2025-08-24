@@ -9,7 +9,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #include "url/gurl.h"
 
 using PageInfoBubbleSpecificationTest = ChromeRenderViewHostTestHarness;

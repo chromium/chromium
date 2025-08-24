@@ -8,7 +8,7 @@
 #include "components/page_info/page_info_ui.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace content {

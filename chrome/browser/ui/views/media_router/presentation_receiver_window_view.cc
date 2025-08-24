@@ -57,7 +57,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

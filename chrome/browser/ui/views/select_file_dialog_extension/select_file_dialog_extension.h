@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "ui/color/color_provider_source_observer.h"
-#include "ui/gfx/native_widget_types.h"  // gfx::NativeWindow
+#include "ui/gfx/native_window_types.h"  // gfx::NativeWindow
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
