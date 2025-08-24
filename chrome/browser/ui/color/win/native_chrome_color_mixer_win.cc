@@ -50,7 +50,8 @@ class FrameColorHelper {
   color_utils::HSL GetTint(int id, const ui::ColorProviderKey& key) const;
 
   // Callback executed when the accent color is updated. This re-reads the
-  // accent color and updates |dwm_frame_color_|.
+  // accent color and updates |dwm_frame_color_| and
+  // |dwm_inactive_frame_color_|.
   void OnAccentColorUpdated();
 
   // Re-reads the accent colors and updates member variables.
@@ -63,6 +64,9 @@ class FrameColorHelper {
 
   // The frame color when active. If empty the default colors should be used.
   std::optional<SkColor> dwm_frame_color_;
+
+  // The frame color when inactive. If empty the default colors should be used.
+  std::optional<SkColor> dwm_inactive_frame_color_;
 
   // The DWM accent border color, if available; white otherwise.
   SkColor dwm_accent_border_color_ = SK_ColorWHITE;
@@ -120,7 +124,9 @@ void FrameColorHelper::AddNativeChromeColors(
   if (auto color = get_theme_color(TP::COLOR_FRAME_INACTIVE)) {
     inactive_frame_transform = {color.value()};
   } else if (use_native_colors) {
-    if (dwm_frame_color_) {
+    if (dwm_inactive_frame_color_) {
+      inactive_frame_transform = {dwm_inactive_frame_color_.value()};
+    } else if (dwm_frame_color_) {
       inactive_frame_transform =
           ui::HSLShift({dwm_frame_color_.value()},
                        GetTint(ThemeProperties::TINT_FRAME_INACTIVE, key));
@@ -222,6 +228,7 @@ void FrameColorHelper::FetchAccentColors() {
   if (!accent_color_observer->use_dwm_frame_color()) {
     dwm_accent_border_color_ = SK_ColorWHITE;
     dwm_frame_color_.reset();
+    dwm_inactive_frame_color_.reset();
     return;
   }
 
@@ -229,6 +236,7 @@ void FrameColorHelper::FetchAccentColors() {
       accent_color_observer->accent_border_color().value_or(SK_ColorWHITE);
 
   dwm_frame_color_ = accent_color;
+  dwm_inactive_frame_color_ = accent_color_observer->accent_color_inactive();
 }
 
 ui::ColorTransform GetCaptionForegroundColor(
