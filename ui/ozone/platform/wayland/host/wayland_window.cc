@@ -1137,7 +1137,7 @@ bool WaylandWindow::CommitOverlays(
   }
 
   // Wayland submits from front to back. A simple reverse can avoid a full sort.
-  std::reverse(overlays.begin(), overlays.end());
+  std::ranges::reverse(overlays);
   if (!std::is_sorted(overlays.begin(), overlays.end(),
                       OverlayStackOrderCompare)) {
     // |overlays| is sorted from bottom to top.

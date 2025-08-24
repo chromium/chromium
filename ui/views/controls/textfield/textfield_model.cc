@@ -71,9 +71,9 @@ class Edit {
     // Insertions must be applied in order of increasing indices since |Redo|
     // applies them in decreasing order.
     auto insertion_texts = old_texts_;
-    std::reverse(insertion_texts.begin(), insertion_texts.end());
+    std::ranges::reverse(insertion_texts);
     auto insertion_text_starts = old_text_starts_;
-    std::reverse(insertion_text_starts.begin(), insertion_text_starts.end());
+    std::ranges::reverse(insertion_text_starts);
     model->ModifyText({{static_cast<uint32_t>(new_text_start_),
                         static_cast<uint32_t>(new_text_end())}},
                       insertion_texts, insertion_text_starts,

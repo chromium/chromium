@@ -184,7 +184,7 @@ void WindowReorderer::ReorderChildWindows() {
       layers.push_back(window->layer());
     } else {
       layers = view->GetLayersInOrder();
-      std::reverse(layers.begin(), layers.end());
+      std::ranges::reverse(layers);
     }
 
     DCHECK(!layers.empty());
@@ -196,7 +196,7 @@ void WindowReorderer::ReorderChildWindows() {
       children_layer_order.emplace_back(layer);
     }
   }
-  std::reverse(children_layer_order.begin(), children_layer_order.end());
+  std::ranges::reverse(children_layer_order);
   parent_window.layer()->StackChildrenAtBottom(children_layer_order);
 }
 

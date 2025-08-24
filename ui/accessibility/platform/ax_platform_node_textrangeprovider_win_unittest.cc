@@ -323,7 +323,7 @@ class AXPlatformNodeTextRangeProviderTest : public AXPlatformNodeWinTest {
         word_end_offsets.push_back(i);
       previous_char = text[i - 1];
     }
-    std::reverse(word_end_offsets.begin(), word_end_offsets.end());
+    std::ranges::reverse(word_end_offsets);
   }
 
   AXTreeUpdate BuildTextDocument(
