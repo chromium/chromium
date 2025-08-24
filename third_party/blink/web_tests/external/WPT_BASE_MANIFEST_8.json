@@ -190475,6 +190475,19 @@
        {}
       ]
      ],
+     "ruby-overhang-dynamic.html": [
+      "cd138bbca3d9255acac79c34733257ad68e72b67",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/ruby-overhang-dynamic-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "ruby-overhang.html": [
       "5c8cfd1685427b32dcc08e12c45a257f6aa7fbec",
       [
@@ -368964,6 +368977,10 @@
      ],
      "ruby-no-transform-ref.html": [
       "1c075de18fab1951de3a809e2d85cd2f2d6c3827",
+      []
+     ],
+     "ruby-overhang-dynamic-ref.html": [
+      "6106d56faf758a77c4329a8b00c7863ae0f844f2",
       []
      ],
      "ruby-overhang-ref.html": [
