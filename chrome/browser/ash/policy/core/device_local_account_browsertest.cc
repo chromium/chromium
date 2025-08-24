@@ -8,8 +8,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ash/policy/core/device_local_account.h"
-
 #include <stddef.h>
 
 #include <map>
@@ -75,6 +73,7 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_test_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -106,7 +105,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -118,6 +116,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
@@ -419,11 +418,35 @@ void EnableUrlKeyedAnonymizedDataCollection(Profile* profile) {
   }
 }
 
+class WindowDestroyedObserver : public aura::WindowObserver {
+ public:
+  explicit WindowDestroyedObserver(aura::Window* window) {
+    CHECK(window);
+    window_observation_.Observe(window);
+  }
+
+  void Wait() {
+    if (window_observation_.IsObserving()) {
+      run_loop_.Run();
+    }
+  }
+
+  // aura::WindowObserver:
+  void OnWindowDestroyed(aura::Window* window) override {
+    window_observation_.Reset();
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+};
+
 }  // namespace
 
 class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
                                public user_manager::UserManager::Observer,
-                               public BrowserListObserver,
                                public extensions::AppWindowRegistry::Observer {
  public:
   DeviceLocalAccountTest(const DeviceLocalAccountTest&) = delete;
@@ -475,7 +498,6 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
 
   void SetUpOnMainThread() override {
     DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    BrowserList::AddObserver(this);
 
     initial_locale_ = g_browser_process->GetApplicationLocale();
     initial_language_ = l10n_util::GetLanguage(initial_locale_);
@@ -502,11 +524,6 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     session_manager_test_api.SetShouldObtainTokenHandleInTests(false);
   }
 
-  void TearDownOnMainThread() override {
-    BrowserList::RemoveObserver(this);
-    DevicePolicyCrosBrowserTest::TearDownOnMainThread();
-  }
-
   // user_manager::UserManager::Observer:
   void LocalStateChanged(user_manager::UserManager* user_manager) override {
     if (local_state_changed_run_loop_) {
@@ -514,11 +531,12 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     }
   }
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override {
-    if (run_loop_) {
-      run_loop_->Quit();
-    }
+  // Waits for the Browser to close and its NativeWidget to be destroyed.
+  void WaitForBrowserDestruction(Browser* browser) {
+    WindowDestroyedObserver window_destroyed_observer(
+        browser->window()->GetNativeWindow());
+    ui_test_utils::WaitForBrowserToClose(browser);
+    window_destroyed_observer.Wait();
   }
 
   // extensions::AppWindowRegistry::Observer:
@@ -1620,10 +1638,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   ASSERT_TRUE(browser);
   BrowserWindow* browser_window = browser->window();
   ASSERT_TRUE(browser_window);
-  run_loop_ = std::make_unique<base::RunLoop>();
   browser_window->Close();
+  WaitForBrowserDestruction(browser);
   browser_window = nullptr;
-  run_loop_->Run();
   browser = nullptr;
   EXPECT_TRUE(browser_list->empty());
 
@@ -1653,10 +1670,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   // Close the first browser window.
   browser_window = first_browser->window();
   ASSERT_TRUE(browser_window);
-  run_loop_ = std::make_unique<base::RunLoop>();
   browser_window->Close();
+  WaitForBrowserDestruction(first_browser);
   browser_window = nullptr;
-  run_loop_->Run();
   first_browser = nullptr;
   EXPECT_EQ(1U, browser_list->size());
 
@@ -1667,10 +1683,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   // Close the second browser window.
   browser_window = second_browser->window();
   ASSERT_TRUE(browser_window);
-  run_loop_ = std::make_unique<base::RunLoop>();
   browser_window->Close();
+  WaitForBrowserDestruction(second_browser);
   browser_window = nullptr;
-  run_loop_->Run();
   second_browser = nullptr;
   EXPECT_TRUE(browser_list->empty());
 
@@ -1690,10 +1705,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   // Close the browser window.
   browser_window = browser->window();
   ASSERT_TRUE(browser_window);
-  run_loop_ = std::make_unique<base::RunLoop>();
   browser_window->Close();
+  WaitForBrowserDestruction(browser);
   browser_window = nullptr;
-  run_loop_->Run();
   browser = nullptr;
   EXPECT_TRUE(browser_list->empty());
 
