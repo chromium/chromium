@@ -879,7 +879,7 @@
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> でログインしています。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをパーソナライズすることがあります。</translation>
 <translation id="4502423230170890588">このデバイスから削除</translation>
 <translation id="4508750114462689118">ログイン プロモーションを閉じる</translation>
-<translation id="4509345063551561634">場所:</translation>
+<translation id="4509345063551561634">地域:</translation>
 <translation id="4517684186578051919">デバイス情報</translation>
 <translation id="4520798012560649652">シークレット モードの詳細を表示します</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} 個のブックマーク}other{{count} 個のブックマーク}}</translation>

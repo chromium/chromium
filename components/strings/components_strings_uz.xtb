@@ -243,6 +243,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hech qanday ma’lumot yubormadi.</translation>
 <translation id="1393071644879491291">Siz ochayotgan saytda firibgarlar sizni aldab, parollaringiz, telefon yoki kredit karta raqamlaringizni oʻgʻirlashi yoki oʻchirishi mumkin zararli dasurni oʻrnatishi mumkin. Chrome xavfsizlik maqsadida zudlik bilan joriy sahifadan ortga qaytishni tavsiya qiladi. <ph name="BEGIN_LEARN_MORE_LINK" />Bu ogohlantirish haqida batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">Och yashil</translation>
+<translation id="1406370515365284486">Toʻlov usulingiz baribir saqlanadi</translation>
 <translation id="1406500794671479665">Tekshirilmoqda...</translation>
 <translation id="1406812885827747674">Bu safar ruxsat berish</translation>
 <translation id="14070772729708640">Fayllar <ph name="CLOUD_PROVIDER" /> omboridagi <ph name="FOLDER_NAME" /> jildiga yuklandi</translation>
@@ -439,6 +440,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1719838434204287058">24 x 30 in</translation>
 <translation id="1720941539803966190">Qoʻllanmani yopish</translation>
 <translation id="1721424275792716183">* Bu maydoncha kiritilishi shart</translation>
+<translation id="1723636263173393300">Bu siyosat uchun ruxsat etilgan yorliqlar soni: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">Sertifikat yaroqli</translation>
 <translation id="1728677426644403582">Siz veb-sahifa kodini ko‘rmoqdasiz.</translation>
@@ -1046,6 +1048,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="271663710482723385">Butun ekran rejimidan chiqish uchun |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| tugmalarini bosing</translation>
 <translation id="2717336592027046789">Oʻram</translation>
 <translation id="2718207025093645426">Boshqariladigan foydalanuvchi yoki qurilmada qoidalar yuklanmagan.</translation>
+<translation id="2719233594187778789">Nounikal URL sharti inkor etilgan: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">So‘rov bajarildi</translation>
 <translation id="2722622039067384533">Mehmonlar xonasi mebellari</translation>
 <translation id="2723669454293168317">Chrome sozlamalari orqali xavfsizlik tekshiruvini bajaring</translation>
@@ -2002,6 +2005,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4298000214066716287">Investitsiya</translation>
 <translation id="4298148761711700950">QR yuklamasdan darhol toʻlang</translation>
 <translation id="4298925811540301889">Bu sayt cookie fayllari barcha ChromeOS qurilmalarida sinxronlanadi. Sinxronlanadigan maʼlumotlarni boshqarish uchun <ph name="SYNC_SETTINGS" /> sahifasini oching.</translation>
+<translation id="4299919199185766032">Yorqlining nomi juda uzun. Ruxsat etilgan belgilar soni: <ph name="MAX_LENGTH" />.</translation>
 <translation id="4300272766492248925">Ilovani ochish</translation>
 <translation id="4300675098767811073">Oʻngdan bir necha teshik ochish</translation>
 <translation id="4302514097724775343">Boshlash uchun dinozavrni bosing</translation>
@@ -2703,6 +2707,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 	Tarmoq administratori bilan bog‘lanib ko‘ring.</translation>
 <translation id="5496804587179176046">Xavfsizlik kodlarini saqlash, hozirda saqlanmagan</translation>
 <translation id="550365051221576010">Barchasini kiritish</translation>
+<translation id="5506286895894263601">Roʻyxatda yaroqli yorliqlar mavjud emas.</translation>
 <translation id="5508443345185481044">Kameralar va videokameralar</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Boshqariladigan xatcho‘plar</translation>
@@ -3621,6 +3626,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7014741021609395734">Masshtab</translation>
 <translation id="7016992613359344582">To‘lov bir martalik, qayta bo‘lishi yoki umuman bo‘lmasligi ham mumkin.</translation>
 <translation id="701757816833614688">Vizual sanʼat va dizayn taʼlimi</translation>
+<translation id="7020464868401003526">Yorliqning URL manzili juda uzun. Ruxsat etilgan belgilar soni:<ph name="MAX_LENGTH" />.</translation>
 <translation id="702275896380648118">Bu sayt sizga qiziq narsalarni aniqlashi va boshqa saytlarga taklif qilishi mumkin. Bu sayt ham mos reklamalarni chiqarish uchun reklamadagi mavzular haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>
 <translation id="7023162328967545559">Administrator ogohlantirishi</translation>
 <translation id="7023765275461720661">Hisob ulanib, <ph name="BNPL_ISSUER_NAME" /> bilan toʻlasinmi?</translation>
