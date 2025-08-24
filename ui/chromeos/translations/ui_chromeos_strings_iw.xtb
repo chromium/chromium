@@ -194,7 +194,7 @@
 <translation id="2500392669976258912">גוג'ראטית פונטית</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">סריקה</translation>
-<translation id="252641322760726369">כדי לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ארוכה על קובץ, ללחוץ על <ph name="ICON" /> ולבחור באפשרות '<ph name="PIN_COMMAND" />'.</translation>
+<translation id="252641322760726369">כדי לגשת במהירות לקבצים שבמדף, צריך ללחוץ לחיצה ארוכה על קובץ, ללחוץ על <ph name="ICON" /> ולבחור באפשרות "<ph name="PIN_COMMAND" />".</translation>
 <translation id="2534460670861217804">‏שרת proxy של Secure HTTP</translation>
 <translation id="2541377937973966830">התכנים בתיקייה הזו הם לקריאה בלבד. לא ניתן לבצע פעולות מסוימות.</translation>
 <translation id="2542049655219295786">‏טבלה של Google</translation>
@@ -1051,7 +1051,7 @@
 <translation id="9007990314804111233">‏כניסה לחשבון Microsoft</translation>
 <translation id="9017798300203431059">רוסית פונטית</translation>
 <translation id="9034924485347205037">‏קובצי Linux</translation>
-<translation id="9035012421917565900">לא ניתן להחזיר את הפריטים אל '<ph name="DESTINATION_NAME" />', ולא ניתן לבטל את הפעולה.</translation>
+<translation id="9035012421917565900">אי אפשר להחזיר את הפריטים אל "<ph name="DESTINATION_NAME" />", ולכן גם לא לבטל את הפעולה.</translation>
 <translation id="9035689366572880647">יש להזין את קוד האימות הנוכחי</translation>
 <translation id="9038620279323455325">הקובץ שנקרא "<ph name="FILE_NAME" />" כבר קיים. יש לבחור שם אחר.</translation>
 <translation id="9046895021617826162">החיבור נכשל</translation>
