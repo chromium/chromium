@@ -273,9 +273,11 @@ void BrowserFrameAsh::OnWidgetDestroyed(views::Widget* widget) {
 // BrowserFrameAsh, private:
 
 void BrowserFrameAsh::SetWindowAutoManaged() {
+  if (!browser_view_) {
+    return;
+  }
   // For browser window in Chrome OS, we should only enable the auto window
   // management logic for tabbed browser.
-  CHECK(browser_view_);
   if (browser_view_->browser()->is_type_normal()) {
     GetNativeWindow()->SetProperty(ash::kWindowPositionManagedTypeKey, true);
   }
