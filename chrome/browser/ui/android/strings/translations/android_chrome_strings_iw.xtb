@@ -171,7 +171,7 @@
 <translation id="1757620656501361327">‏עדכון במנהל הסיסמאות של Google</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{דפים, דף אחד ברשימה}one{דפים, # דפים ברשימה}two{דפים, # דפים ברשימה}other{דפים, # דפים ברשימה}}</translation>
 <translation id="1771929606532798550">‏מידע על אופן השימוש שלך ב-Chrome נשלח אל Google, אבל הוא לא משויך אליך\n\nאם Chrome קורס, הפרטים שקשורים לקריסה עשויים להכיל גם פרטים אישיים\n\nאם ההיסטוריה מסונכרנת עם חשבון Google, יכול להיות שהמדדים יכללו גם מידע על כתובות ה-URL שביקרת בהן</translation>
-<translation id="1778457539567749232">סימון ככרטיסייה שלא נקראה</translation>
+<translation id="1778457539567749232">סימון כ"א נקרא"</translation>
 <translation id="1779766957982586368">סגירת חלון</translation>
 <translation id="1780023393214832643">הסיסמאות נשמרו בחשבון <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">מותקן</translation>
@@ -539,7 +539,7 @@
 <translation id="3478363558367712427">אתם יכולים לבחור את מנוע החיפוש שלכם</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3482805106082349287">חיפוש בהקלדה, בקול, במצב פרטי או בעזרת המצלמה</translation>
-<translation id="3487903178221457900">‏יכול להיות שאנשים אחרים יוכלו לגשת לקובץ המיובא, כולל אפליקציות. לאחר הייצוא, הסיסמאות שלך יימחקו מ-Chrome.</translation>
+<translation id="3487903178221457900">‏הקובץ המיוצא עלול להיות נגיש לאחרים, כולל אפליקציות. לאחר הייצוא, הסיסמאות שלך יימחקו מ-Chrome.</translation>
 <translation id="3488199663160411179">שם</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על הצעות לתוכן</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -592,7 +592,7 @@
 <translation id="3699022356773522638">להוריד את הקובץ?</translation>
 <translation id="3701167022068948696">לפתרון הבעיה</translation>
 <translation id="3701515417135397388">הצגת אזהרה אם סיסמה נחשפה בפרצה באבטחת מידע</translation>
-<translation id="3703166520839776970">אם הבעיה לא נפתרה, ניתן לבחור באפשרות 'פרטים נוספים' למטה כדי לעיין במידע נוסף מ-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="3703166520839776970">אם הבעיה לא נפתרה, אפשר ללחוץ על "פרטים נוספים" למטה כדי לקבל מידע מ-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3708100450779900829">כשהמכשיר מקופל, אפשר לבחור מהאפשרויות למטה או ללחוץ לחיצה ארוכה על סרגל הכתובות כדי לשנות את המיקום שלו</translation>
 <translation id="3710501561113687889">כדי להמשיך, הפרטים '<ph name="FIELDS_STRING" />' ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה.</translation>
 <translation id="3710560693796335511">שיתוף פעולה</translation>
@@ -755,7 +755,7 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{סימנייה אחת}one{‫# סימניות}two{‫# סימניות}other{‫# סימניות}}</translation>
 <translation id="4478161224666880173">אפשר להשתמש בחשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> באתר הזה. כדי להמשיך עליך להיכנס אל <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">‏מתבצעת התקנה של <ph name="MODULE" /> ל-Chrome…</translation>
-<translation id="4484496141267039529">אין חיבור. כדאי לנסות שוב מאוחר יותר.</translation>
+<translation id="4484496141267039529">אין חיבור. כדאי לנסות שוב עוד מעט.</translation>
 <translation id="4487967297491345095">‏כל נתוני היישומים של Chrome יימחקו לצמיתות, כולל כל הקבצים, ההגדרות, החשבונות, מסדי הנתונים וכו'</translation>
 <translation id="4494315997125191493">כדי לראות את כל החלונות, צריך לבחור באפשרות "ניהול"</translation>
 <translation id="4494806687727322324">האפשרות לשמור סיסמאות הופעלה על ידי האדמין</translation>
@@ -1452,7 +1452,7 @@
 <translation id="7364103838544876661">אפשרויות נוספות למחיקה של נתוני הגלישה</translation>
 <translation id="7365073365123878797">‏צריך לעדכן את Google Play Services כדי להתחיל לשמור סיסמאות ולהשתמש בהן עם מנהל הסיסמאות של Google</translation>
 <translation id="7375125077091615385">סוג:</translation>
-<translation id="7376560087009844242">אם כוללים כמה שיותר מהטקסט שמופיע בדף, יכול להיות שיתקבלו תוצאות טובות יותר כשמשתמשים בחיפוש בהקשה. יש לך אפשרות לשנות זאת בכל שלב ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
+<translation id="7376560087009844242">ככל שמכללים יותר טקסט מהדף, מתקבלות תוצאות טובות יותר בחיפוש בהקשה. אפשר לשנות זאת בכל שלב ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">העיצוב הכהה זמין לאתרים</translation>
 <translation id="7388615499319468910">האתרים והמפרסמים יכולים להבין את רמת הביצועים של המודעות. ההגדרה הזו מושבתת.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{סוג אחר, קובץ אחד ברשימה}one{סוג אחר, # קבצים ברשימה}two{סוג אחר, # קבצים ברשימה}other{סוג אחר, # קבצים ברשימה}}</translation>

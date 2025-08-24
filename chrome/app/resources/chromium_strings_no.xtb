@@ -233,7 +233,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisasjonen din lukker Chromium-nettleseren automatisk når den ikke har vært i bruk på ett minutt. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}other{Organisasjonen din lukker Chromium-nettleseren automatisk når den ikke har vært i bruk på # minutter. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}}</translation>
 <translation id="4118474109249235144">Chromium Inkognito</translation>
 <translation id="4122186850977583290">Gå til Om Chromium-siden</translation>
-<translation id="4148957013307229264">Installerer …</translation>
+<translation id="4148957013307229264">Installerer ...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – nettverkspålogging – Chromium</translation>
 <translation id="421369550622382712">Oppdag flotte apper, spill, utvidelser og temaer for Chromium.</translation>
 <translation id="4217080900579554343">For å få denne utvidelsen med flere på alle datamaskinene dine, logg på Chromium</translation>

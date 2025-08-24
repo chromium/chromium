@@ -27,7 +27,7 @@
 <translation id="2320166752086256636">הסתרת מקלדת</translation>
 <translation id="2329392777730037872">לא ניתן היה לפתוח את <ph name="URL" /> במכשיר הלקוח.</translation>
 <translation id="2359808026110333948">המשך</translation>
-<translation id="2366718077645204424">לא ניתן להשיג את המארח. הסיבה לכך יכולה להיות תצורת הרשת שבה נעשה שימוש.</translation>
+<translation id="2366718077645204424">לא ניתן להשיג את המארח, כנראה בגלל תצורת הרשת שבשימוש.</translation>
 <translation id="242591256144136845">‏זכויות יוצרים 2025‏ Google LLC. כל הזכויות שמורות.</translation>
 <translation id="2504109125669302160">מתן הרשאת 'נגישות' ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">בוצעה התחברות אל <ph name="HOSTNAME" /></translation>
@@ -131,7 +131,7 @@
 <translation id="6939719207673461467">הצגה/הסתרה של המקלדת.</translation>
 <translation id="6963936880795878952">החיבורים למחשב המרוחק חסומים באופן זמני משום שמישהו ניסה להתחבר אליו עם קוד אימות לא חוקי. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="6965382102122355670">אישור</translation>
-<translation id="6985691951107243942">ברצונך באמת להשבית את החיבורים המרוחקים אל <ph name="HOSTNAME" />? אם דעתך תשתנה, יהיה עליך להיכנס למחשב זה כדי להפעיל מחדש את החיבורים.</translation>
+<translation id="6985691951107243942">בטוח רוצה להשבית את החיבורים מרחוק אל <ph name="HOSTNAME" />? אם משתנה דעתך, צריך להיכנס למחשב הזה ולהפעיל את החיבורים מחדש.</translation>
 <translation id="7019153418965365059">שגיאת מארח לא מזוהה: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">סיוע מרחוק</translation>
 <translation id="7026930240735156896">יש להגדיר את המחשב לגישה מרחוק בהתאם להוראות</translation>
