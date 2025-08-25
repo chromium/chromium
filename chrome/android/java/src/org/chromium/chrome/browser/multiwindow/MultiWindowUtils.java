@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION.SDK_INT_FULL;
+
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
@@ -17,6 +20,8 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
+import android.os.Build.VERSION_CODES_FULL;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
@@ -453,6 +458,29 @@ public class MultiWindowUtils implements ActivityStateListener {
             IntentUtils.addTrustedIntentExtras(intent);
         }
         return intent;
+    }
+
+    /**
+     * @param intent The {@link Intent} to determine whether creation of a new instance is
+     *     preferred.
+     * @return {@code true} if creation of a new instance from {@code intent} is preferred, {@code
+     *     false} otherwise.
+     */
+    public static boolean getExtraPreferNewFromIntent(Intent intent) {
+        // Default to creating a new instance when FLAG_ACTIVITY_MULTIPLE_TASK is set. This is
+        // required to fulfill new window creation requests initiated for MAIN intents from the OS.
+        // This logic is gated behind the OS version that includes a fix that this assumption is
+        // dependent on, see crbug.com/436477060 for more details.
+        int flags = intent.getFlags();
+        boolean preferNew = false;
+        if (SDK_INT >= VERSION_CODES.BAKLAVA) {
+            preferNew =
+                    SDK_INT_FULL > VERSION_CODES_FULL.BAKLAVA
+                            && Intent.ACTION_MAIN.equals(intent.getAction())
+                            && (flags & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0
+                            && (flags & Intent.FLAG_ACTIVITY_NEW_TASK) != 0;
+        }
+        return IntentUtils.safeGetBooleanExtra(intent, IntentHandler.EXTRA_PREFER_NEW, preferNew);
     }
 
     /**
