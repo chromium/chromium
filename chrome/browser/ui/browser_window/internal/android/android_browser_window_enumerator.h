@@ -14,12 +14,15 @@
 
 class BrowserWindowInterface;
 
-// Enumerates each android browser window in the system in a way that is
-// resilient to additions and removals during iteration.
+// Enumerates each android browser window in the system in activation order in a
+// way that is resilient to additions and removals during iteration. Note that
+// any windows added during iteration (if |enumerate_new_browser_windows| is
+// true) will be added to the end of the list, even if that is not the correct
+// activation order.
 //
-// This is the Android equivalent of chrome/browser/ui/browser_list_enumerator.h
-// and the interface and implementation is heavily based on
-// BrowserListEnumerator.
+// This is roughly the Android equivalent of
+// chrome/browser/ui/browser_list_enumerator.h and the interface and
+// implementation is heavily based on BrowserListEnumerator.
 //
 // This class is only safe to use as a thread-local variable.
 class AndroidBrowserWindowEnumerator {

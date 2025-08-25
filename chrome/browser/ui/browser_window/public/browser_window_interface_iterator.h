@@ -50,6 +50,9 @@ GetBrowserWindowInterfacesOrderedByActivation();
 // lambda to be deleted before being used.
 void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
     base::FunctionRef<bool(BrowserWindowInterface*)> on_browser);
+
+// Note here that any windows added during iteration may not remain in
+// activation order.
 void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
     base::FunctionRef<bool(BrowserWindowInterface*)> on_browser);
 

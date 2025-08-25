@@ -28,7 +28,11 @@ void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
   // Make a copy of the BrowserList to simplify the case where we need to
   // add or remove a Browser during the loop.
   constexpr bool kEnumerateNewBrowser = false;
-  BrowserListEnumerator browser_list_copy(kEnumerateNewBrowser);
+  BrowserListEnumerator browser_list_copy(
+      BrowserList::BrowserVector(
+          BrowserList::GetInstance()->begin_browsers_ordered_by_activation(),
+          BrowserList::GetInstance()->end_browsers_ordered_by_activation()),
+      kEnumerateNewBrowser);
   while (!browser_list_copy.empty()) {
     if (!on_browser(browser_list_copy.Next())) {
       break;
@@ -41,7 +45,11 @@ void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
   // Make a copy of the BrowserList to simplify the case where we need to
   // add or remove a Browser during the loop.
   constexpr bool kEnumerateNewBrowser = true;
-  BrowserListEnumerator browser_list_copy(kEnumerateNewBrowser);
+  BrowserListEnumerator browser_list_copy(
+      BrowserList::BrowserVector(
+          BrowserList::GetInstance()->begin_browsers_ordered_by_activation(),
+          BrowserList::GetInstance()->end_browsers_ordered_by_activation()),
+      kEnumerateNewBrowser);
   while (!browser_list_copy.empty()) {
     if (!on_browser(browser_list_copy.Next())) {
       break;

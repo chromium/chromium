@@ -16,13 +16,18 @@
 class Browser;
 
 // Enumerates each browser in the system, accounting for browsers that are
-// removed or added while enumerating. Added browsers will be included.
+// removed or added while enumerating. Added browsers will be included if
+// |enumerate_new_browser| is true. Note that the newly-added browsers will be
+// added at the end of the list, regardless of the original ordering.
 //
 // Use to iterate through browsers and perform operations that might add or
 // remove browsers.
 class BrowserListEnumerator : public BrowserListObserver {
  public:
   explicit BrowserListEnumerator(bool enumerate_new_browser = false);
+  BrowserListEnumerator(BrowserList::BrowserVector browser_list,
+                        bool enumerate_new_browser);
+
   BrowserListEnumerator(const BrowserListEnumerator&) = delete;
   BrowserListEnumerator& operator=(const BrowserListEnumerator&) = delete;
   ~BrowserListEnumerator() override;
