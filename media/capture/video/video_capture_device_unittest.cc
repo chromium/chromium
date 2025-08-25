@@ -365,25 +365,9 @@ class VideoCaptureDeviceTest
       DLOG(WARNING) << "No camera found";
       return std::nullopt;
     }
-#if BUILDFLAG(IS_ANDROID)
-    for (const auto& device : devices_info_) {
-      // Android deprecated/legacy devices capture on a single thread, which is
-      // occupied by the tests, so nothing gets actually delivered.
-      // TODO(mcasas): use those devices' test mode to deliver frames in a
-      // background thread, https://crbug.com/626857
-      if (!VideoCaptureDeviceFactoryAndroid::IsLegacyOrDeprecatedDevice(
-              device.descriptor.device_id)) {
-        DLOG(INFO) << "Using camera " << device.descriptor.GetNameAndModel();
-        return device;
-      }
-    }
-    DLOG(WARNING) << "No usable camera found";
-    return std::nullopt;
-#else
     auto device = devices_info_.front();
     DLOG(INFO) << "Using camera " << device.descriptor.GetNameAndModel();
     return device;
-#endif
   }
 
   const VideoCaptureFormat& last_format() const { return last_format_; }

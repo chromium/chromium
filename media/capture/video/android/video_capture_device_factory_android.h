@@ -37,8 +37,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 
-  static bool IsLegacyOrDeprecatedDevice(const std::string& device_id);
-
   // Configures all subsequent CreateDevice()s in test mode.
   void ConfigureForTesting() { test_mode_ = true; }
 
