@@ -118,8 +118,8 @@ ScriptPromise<IDLBoolean> StorageManager::persist(
   GetPermissionService(window)->RequestPermission(
       CreatePermissionDescriptor(PermissionName::DURABLE_STORAGE),
       LocalFrame::HasTransientUserActivation(window->GetFrame()),
-      WTF::BindOnce(&StorageManager::PermissionRequestComplete,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&StorageManager::PermissionRequestComplete, WrapPersistent(this),
+               WrapPersistent(resolver)));
 
   return promise;
 }
@@ -143,8 +143,8 @@ ScriptPromise<IDLBoolean> StorageManager::persisted(
   GetPermissionService(ExecutionContext::From(script_state))
       ->HasPermission(
           CreatePermissionDescriptor(PermissionName::DURABLE_STORAGE),
-          WTF::BindOnce(&StorageManager::PermissionRequestComplete,
-                        WrapPersistent(this), WrapPersistent(resolver)));
+          BindOnce(&StorageManager::PermissionRequestComplete,
+                   WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -170,7 +170,7 @@ ScriptPromise<StorageEstimate> StorageManager::estimate(
   auto promise = resolver->Promise();
 
   auto callback = resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&QueryStorageUsageAndQuotaCallback));
+      BindOnce(&QueryStorageUsageAndQuotaCallback));
   GetQuotaHost(execution_context)
       ->QueryStorageUsageAndQuota(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(callback), mojom::blink::QuotaStatusCode::kErrorAbort, 0, 0,
@@ -192,8 +192,8 @@ PermissionService* StorageManager::GetPermissionService(
         permission_service_.BindNewPipeAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
     permission_service_.set_disconnect_handler(
-        WTF::BindOnce(&StorageManager::PermissionServiceConnectionError,
-                      WrapWeakPersistent(this)));
+        BindOnce(&StorageManager::PermissionServiceConnectionError,
+                 WrapWeakPersistent(this)));
   }
   return permission_service_.get();
 }

@@ -42,7 +42,7 @@ constexpr IdentifiableSurface kGetKeyboardLayoutMapSurface =
         WebFeature::kKeyboardApiGetLayoutMap);
 
 IdentifiableToken ComputeLayoutValue(
-    const WTF::HashMap<WTF::String, WTF::String>& layout_map) {
+    const HashMap<String, String>& layout_map) {
   IdentifiableTokenBuilder builder;
   for (const auto& kv : layout_map) {
     builder.AddToken(IdentifiabilityBenignStringToken(kv.key));
@@ -97,7 +97,7 @@ ScriptPromise<KeyboardLayoutMap> KeyboardLayout::GetKeyboardLayoutMap(
       MakeGarbageCollected<ScriptPromiseResolver<KeyboardLayoutMap>>(
           script_state, exception_state.GetContext());
   service_->GetKeyboardLayoutMap(
-      script_promise_resolver_->WrapCallbackInScriptScope(WTF::BindOnce(
+      script_promise_resolver_->WrapCallbackInScriptScope(BindOnce(
           &KeyboardLayout::GotKeyboardLayoutMap, WrapPersistent(this))));
   return script_promise_resolver_->Promise();
 }

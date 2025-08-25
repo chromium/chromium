@@ -861,14 +861,14 @@ ScriptPromise<XRAnchor> XRSession::CreateAnchorHelper(
     xr_->xrEnvironmentProviderRemote()->CreatePlaneAnchor(
         native_origin_information->Clone(),
         *maybe_native_origin_from_anchor_pose, *maybe_plane_id,
-        resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-            &XRSession::OnCreateAnchorResult, WrapPersistent(this))));
+        resolver->WrapCallbackInScriptScope(
+            BindOnce(&XRSession::OnCreateAnchorResult, WrapPersistent(this))));
   } else {
     xr_->xrEnvironmentProviderRemote()->CreateAnchor(
         native_origin_information->Clone(),
         *maybe_native_origin_from_anchor_pose,
-        resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-            &XRSession::OnCreateAnchorResult, WrapPersistent(this))));
+        resolver->WrapCallbackInScriptScope(
+            BindOnce(&XRSession::OnCreateAnchorResult, WrapPersistent(this))));
   }
 
   create_anchor_promises_.insert(resolver);
@@ -1043,7 +1043,7 @@ ScriptPromise<XRHitTestSource> XRSession::requestHitTestSource(
 
   xr_->xrEnvironmentProviderRemote()->SubscribeToHitTest(
       maybe_native_origin->Clone(), entity_types, std::move(ray_mojo),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &XRSession::OnSubscribeToHitTestResult, WrapPersistent(this))));
   request_hit_test_source_promises_.insert(resolver);
 
@@ -1111,8 +1111,8 @@ XRSession::requestHitTestSourceForTransientInput(
   xr_->xrEnvironmentProviderRemote()->SubscribeToHitTestForTransientInput(
       options_init->profile(), entity_types, std::move(ray_mojo),
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&XRSession::OnSubscribeToHitTestForTransientInputResult,
-                        WrapPersistent(this))));
+          BindOnce(&XRSession::OnSubscribeToHitTestForTransientInputResult,
+                   WrapPersistent(this))));
   request_hit_test_source_promises_.insert(resolver);
 
   return promise;
@@ -1199,7 +1199,7 @@ void XRSession::EnsureEnvironmentErrorHandler() {
   if (!environment_error_handler_subscribed_ &&
       xr_->xrEnvironmentProviderRemote()) {
     environment_error_handler_subscribed_ = true;
-    xr_->AddEnvironmentProviderErrorHandler(WTF::BindOnce(
+    xr_->AddEnvironmentProviderErrorHandler(BindOnce(
         &XRSession::OnEnvironmentProviderError, WrapWeakPersistent(this)));
   }
 }
@@ -1523,7 +1523,7 @@ void XRSession::ForceEnd(ShutdownPolicy shutdown_policy) {
   }
 
   xr_->ExitPresent(
-      WTF::BindOnce(&XRSession::OnExitPresent, WrapWeakPersistent(this)));
+      BindOnce(&XRSession::OnExitPresent, WrapWeakPersistent(this)));
 
   if (wait_for_response) {
     waiting_for_shutdown_ = true;

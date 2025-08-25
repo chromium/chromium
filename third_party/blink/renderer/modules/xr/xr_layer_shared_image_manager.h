@@ -41,7 +41,7 @@ class XRLayerSharedImageManager {
 
  private:
   XRLayerSharedImages empty_shared_images_;
-  WTF::HashMap<uint32_t, XRLayerSharedImages> layer_shared_images_;
+  HashMap<uint32_t, XRLayerSharedImages> layer_shared_images_;
 };
 
 }  // namespace blink

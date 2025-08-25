@@ -29,12 +29,12 @@ class XRCubeMap {
 
  private:
   uint32_t width_and_height_ = 0;
-  WTF::Vector<uint16_t> positive_x_;
-  WTF::Vector<uint16_t> negative_x_;
-  WTF::Vector<uint16_t> positive_y_;
-  WTF::Vector<uint16_t> negative_y_;
-  WTF::Vector<uint16_t> positive_z_;
-  WTF::Vector<uint16_t> negative_z_;
+  Vector<uint16_t> positive_x_;
+  Vector<uint16_t> negative_x_;
+  Vector<uint16_t> positive_y_;
+  Vector<uint16_t> negative_y_;
+  Vector<uint16_t> positive_z_;
+  Vector<uint16_t> negative_z_;
 };
 
 }  // namespace blink

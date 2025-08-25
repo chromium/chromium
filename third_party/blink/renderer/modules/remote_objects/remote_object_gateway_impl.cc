@@ -24,7 +24,7 @@ RemoteObjectGatewayImpl* RemoteObjectGatewayImpl::From(LocalFrame& frame) {
   return Supplement<LocalFrame>::From<RemoteObjectGatewayImpl>(frame);
 }
 
-void RemoteObjectGatewayImpl::InjectNamed(const WTF::String& object_name,
+void RemoteObjectGatewayImpl::InjectNamed(const String& object_name,
                                           int32_t object_id) {
   ScriptState* script_state = ToScriptStateForMainWorld(GetSupplementable());
   ScriptState::Scope scope(script_state);
@@ -95,14 +95,13 @@ void RemoteObjectGatewayImpl::Trace(Visitor* visitor) const {
   Supplement<LocalFrame>::Trace(visitor);
 }
 
-void RemoteObjectGatewayImpl::AddNamedObject(const WTF::String& name,
-                                             int32_t id) {
+void RemoteObjectGatewayImpl::AddNamedObject(const String& name, int32_t id) {
   // Added objects only become available after page reload, so here they
   // are only added into the internal map.
   named_objects_.insert(name, id);
 }
 
-void RemoteObjectGatewayImpl::RemoveNamedObject(const WTF::String& name) {
+void RemoteObjectGatewayImpl::RemoveNamedObject(const String& name) {
   // Removal becomes in effect on next reload. We simply remove the entry
   // from the map here.
   auto iter = named_objects_.find(name);

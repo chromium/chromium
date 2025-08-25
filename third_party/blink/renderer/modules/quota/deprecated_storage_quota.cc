@@ -112,11 +112,10 @@ void DeprecatedStorageQuota::EnqueueStorageErrorCallback(
 
   ExecutionContext::From(script_state)
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
-      ->PostTask(
-          FROM_HERE,
-          WTF::BindOnce(&V8StorageErrorCallback::InvokeAndReportException,
-                        WrapPersistent(error_callback), nullptr,
-                        WrapPersistent(DOMError::Create(exception_code))));
+      ->PostTask(FROM_HERE,
+                 BindOnce(&V8StorageErrorCallback::InvokeAndReportException,
+                          WrapPersistent(error_callback), nullptr,
+                          WrapPersistent(DOMError::Create(exception_code))));
 }
 
 DeprecatedStorageQuota::DeprecatedStorageQuota(
@@ -142,9 +141,9 @@ void DeprecatedStorageQuota::queryUsageAndQuota(
     return;
   }
 
-  auto callback = WTF::BindOnce(&DeprecatedQueryStorageUsageAndQuotaCallback,
-                                WrapPersistent(success_callback),
-                                WrapPersistent(error_callback));
+  auto callback = BindOnce(&DeprecatedQueryStorageUsageAndQuotaCallback,
+                           WrapPersistent(success_callback),
+                           WrapPersistent(error_callback));
   GetQuotaHost(execution_context)
       ->QueryStorageUsageAndQuota(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(callback), mojom::blink::QuotaStatusCode::kErrorAbort, 0, 0,
@@ -161,9 +160,9 @@ void DeprecatedStorageQuota::requestQuota(
   // attribute, so the kQuotaRead use counter must be explicitly updated.
   UseCounter::Count(execution_context, WebFeature::kQuotaRead);
 
-  auto callback = WTF::BindOnce(
-      &RequestStorageQuotaCallback, WrapPersistent(success_callback),
-      WrapPersistent(error_callback), new_quota_in_bytes);
+  auto callback =
+      BindOnce(&RequestStorageQuotaCallback, WrapPersistent(success_callback),
+               WrapPersistent(error_callback), new_quota_in_bytes);
 
   if (execution_context->GetSecurityOrigin()->IsOpaque()) {
     // Unique origins cannot store persistent state.

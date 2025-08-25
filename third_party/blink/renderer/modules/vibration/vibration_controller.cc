@@ -199,7 +199,7 @@ void VibrationController::DoVibrate(TimerBase* timer) {
     is_calling_vibrate_ = true;
     vibration_manager_->Vibrate(
         pattern_[0],
-        WTF::BindOnce(&VibrationController::DidVibrate, WrapPersistent(this)));
+        BindOnce(&VibrationController::DidVibrate, WrapPersistent(this)));
   }
 }
 
@@ -231,7 +231,7 @@ void VibrationController::Cancel() {
   if (is_running_ && !is_calling_cancel_ && vibration_manager_.is_bound()) {
     is_calling_cancel_ = true;
     vibration_manager_->Cancel(
-        WTF::BindOnce(&VibrationController::DidCancel, WrapPersistent(this)));
+        BindOnce(&VibrationController::DidCancel, WrapPersistent(this)));
   }
 
   is_running_ = false;

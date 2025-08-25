@@ -57,7 +57,7 @@ void WebLaunchServiceImpl::Trace(Visitor* visitor) const {
 }
 
 void WebLaunchServiceImpl::SetLaunchFiles(
-    WTF::Vector<mojom::blink::FileSystemAccessEntryPtr> entries) {
+    Vector<mojom::blink::FileSystemAccessEntryPtr> entries) {
   HeapVector<Member<FileSystemHandle>> files;
   for (auto& entry : entries) {
     files.push_back(FileSystemHandle::CreateFromMojoEntry(

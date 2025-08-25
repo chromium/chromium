@@ -103,17 +103,17 @@ void XRFrameProvider::OnSessionStarted(
         std::move(session_ptr->data_provider),
         xr_->GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
     immersive_data_provider_.set_disconnect_handler(
-        WTF::BindOnce(&XRFrameProvider::OnProviderConnectionError,
-                      WrapWeakPersistent(this), WrapWeakPersistent(session)));
+        BindOnce(&XRFrameProvider::OnProviderConnectionError,
+                 WrapWeakPersistent(this), WrapWeakPersistent(session)));
 
     immersive_presentation_provider_.Bind(
         std::move(session_ptr->submit_frame_sink->provider),
         xr_->GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
     immersive_presentation_provider_.set_disconnect_handler(
-        WTF::BindOnce(&XRFrameProvider::OnProviderConnectionError,
-                      WrapWeakPersistent(this), WrapWeakPersistent(session)));
+        BindOnce(&XRFrameProvider::OnProviderConnectionError,
+                 WrapWeakPersistent(this), WrapWeakPersistent(session)));
 
-    frame_transport_->RegisterFrameRenderedCallback(WTF::BindRepeating(
+    frame_transport_->RegisterFrameRenderedCallback(BindRepeating(
         &XRFrameProvider::OnRenderComplete, WrapWeakPersistent(this)));
 
     frame_transport_->BindSubmitFrameClient(
@@ -124,10 +124,9 @@ void XRFrameProvider::OnSessionStarted(
 
     last_frame_statistics_sent_time_ = base::TimeTicks::Now();
 
-
     repeating_timer_.Start(FROM_HERE, base::Seconds(1),
-                           WTF::BindRepeating(&XRFrameProvider::SendFrameData,
-                                              WrapWeakPersistent(this)));
+                           BindRepeating(&XRFrameProvider::SendFrameData,
+                                         WrapWeakPersistent(this)));
   } else {
     // If a non-immersive session doesn't have a data provider, we don't
     // need to store a reference to it.
@@ -141,8 +140,8 @@ void XRFrameProvider::OnSessionStarted(
         std::move(session_ptr->data_provider),
         xr_->GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
     data_provider.set_disconnect_handler(
-        WTF::BindOnce(&XRFrameProvider::OnProviderConnectionError,
-                      WrapWeakPersistent(this), WrapWeakPersistent(session)));
+        BindOnce(&XRFrameProvider::OnProviderConnectionError,
+                 WrapWeakPersistent(this), WrapWeakPersistent(session)));
 
     non_immersive_data_providers_.insert(
         session, WrapDisallowNew(std::move(data_provider)));
@@ -265,8 +264,8 @@ void XRFrameProvider::ScheduleImmersiveFrame(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("xr", "RequestImmersiveFrame",
                                     TRACE_ID_LOCAL(this));
   immersive_data_provider_->GetFrameData(
-      std::move(options), WTF::BindOnce(&XRFrameProvider::OnImmersiveFrameData,
-                                        WrapWeakPersistent(this)));
+      std::move(options), BindOnce(&XRFrameProvider::OnImmersiveFrameData,
+                                   WrapWeakPersistent(this)));
 }
 
 void XRFrameProvider::ScheduleNonImmersiveFrame(
@@ -371,11 +370,10 @@ void XRFrameProvider::OnImmersiveFrameData(
   // Used kInternalMedia since 1) this is not spec-ed and 2) this is media
   // related then tasks should not be throttled or frozen in background tabs.
   window->GetTaskRunner(blink::TaskType::kInternalMedia)
-      ->PostTask(
-          FROM_HERE,
-          WTF::BindOnce(&XRFrameProvider::ProcessScheduledFrame,
-                        WrapWeakPersistent(this), std::move(data),
-                        high_res_now_ms, ScheduledFrameType::kImmersive));
+      ->PostTask(FROM_HERE,
+                 BindOnce(&XRFrameProvider::ProcessScheduledFrame,
+                          WrapWeakPersistent(this), std::move(data),
+                          high_res_now_ms, ScheduledFrameType::kImmersive));
 }
 
 void XRFrameProvider::OnNonImmersiveVSync(double high_res_now_ms) {
@@ -394,9 +392,9 @@ void XRFrameProvider::OnNonImmersiveVSync(double high_res_now_ms) {
 
   window->GetTaskRunner(blink::TaskType::kInternalMedia)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&XRFrameProvider::ProcessScheduledFrame,
-                               WrapWeakPersistent(this), nullptr,
-                               high_res_now_ms, ScheduledFrameType::kInline));
+                 BindOnce(&XRFrameProvider::ProcessScheduledFrame,
+                          WrapWeakPersistent(this), nullptr, high_res_now_ms,
+                          ScheduledFrameType::kInline));
 }
 
 void XRFrameProvider::OnNonImmersiveFrameData(
@@ -461,8 +459,8 @@ void XRFrameProvider::RequestNonImmersiveFrameData(XRSession* session) {
 
     data_provider->GetFrameData(
         std::move(options),
-        WTF::BindOnce(&XRFrameProvider::OnNonImmersiveFrameData,
-                      WrapWeakPersistent(this), WrapWeakPersistent(session)));
+        BindOnce(&XRFrameProvider::OnNonImmersiveFrameData,
+                 WrapWeakPersistent(this), WrapWeakPersistent(session)));
   }
 }
 
@@ -533,12 +531,13 @@ void XRFrameProvider::ProcessScheduledFrame(
     // createAnchor promises get a chance to run - the presentation frame state
     // is already updated.
     window->GetTaskRunner(blink::TaskType::kInternalMedia)
-        ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&XRSession::OnFrame,
-                                 WrapWeakPersistent(immersive_session_.Get()),
-                                 high_res_now_ms, buffer_shared_image_,
-                                 buffer_sync_token_, camera_image_shared_image_,
-                                 camera_image_sync_token_));
+        ->PostTask(
+            FROM_HERE,
+            blink::BindOnce(&XRSession::OnFrame,
+                            WrapWeakPersistent(immersive_session_.Get()),
+                            high_res_now_ms, buffer_shared_image_,
+                            buffer_sync_token_, camera_image_shared_image_,
+                            camera_image_sync_token_));
   } else {
     // In the process of fulfilling the frame requests for each session they are
     // extremely likely to request another frame. Work off of a separate list
@@ -575,11 +574,10 @@ void XRFrameProvider::ProcessScheduledFrame(
       // a helper method who can determine if the state requirements are still
       // met that would allow the frame to be served.
       window->GetTaskRunner(blink::TaskType::kInternalMedia)
-          ->PostTask(
-              FROM_HERE,
-              WTF::BindOnce(&XRFrameProvider::OnPreDispatchInlineFrame,
-                            WrapWeakPersistent(this),
-                            WrapWeakPersistent(session), high_res_now_ms));
+          ->PostTask(FROM_HERE,
+                     BindOnce(&XRFrameProvider::OnPreDispatchInlineFrame,
+                              WrapWeakPersistent(this),
+                              WrapWeakPersistent(session), high_res_now_ms));
     }
   }
 }
