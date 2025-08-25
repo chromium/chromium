@@ -1,7 +1,7 @@
 Name: wire-runtime
 Short Name: wire-runtime-jvm
 URL: https://github.com/square/wire/
-Version: 5.2.1
+Version: 5.3.11
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

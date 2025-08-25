@@ -617,7 +617,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("io_grpc_grpc_api_java") {
-      jar_path = "autorolled/cipd/libs/io_grpc_grpc_api/grpc-api-1.74.0.jar"
+      jar_path = "autorolled/cipd/libs/io_grpc_grpc_api/grpc-api-1.75.0.jar"
       output_name = "io_grpc_grpc_api"
       supports_android = true
       requires_android = true
@@ -632,7 +632,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     android_aar_prebuilt("io_grpc_grpc_binder_java") {
       aar_path =
-          "autorolled/cipd/libs/io_grpc_grpc_binder/grpc-binder-1.74.0.aar"
+          "autorolled/cipd/libs/io_grpc_grpc_binder/grpc-binder-1.75.0.aar"
       info_path = "autorolled/committed/libs/io_grpc_grpc_binder/io_grpc_grpc_binder.info"
       enable_bytecode_checks = false
       deps = [
@@ -647,7 +647,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("io_grpc_grpc_protobuf_lite_java") {
-      jar_path = "autorolled/cipd/libs/io_grpc_grpc_protobuf_lite/grpc-protobuf-lite-1.74.0.jar"
+      jar_path = "autorolled/cipd/libs/io_grpc_grpc_protobuf_lite/grpc-protobuf-lite-1.75.0.jar"
       output_name = "io_grpc_grpc_protobuf_lite"
       supports_android = true
       requires_android = true
@@ -662,7 +662,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("io_grpc_grpc_stub_java") {
-      jar_path = "autorolled/cipd/libs/io_grpc_grpc_stub/grpc-stub-1.74.0.jar"
+      jar_path = "autorolled/cipd/libs/io_grpc_grpc_stub/grpc-stub-1.75.0.jar"
       output_name = "io_grpc_grpc_stub"
       supports_android = true
       requires_android = true
@@ -1320,7 +1320,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("com_squareup_wire_wire_runtime_jvm_java") {
-      jar_path = "autorolled/cipd/libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-5.2.1.jar"
+      jar_path = "autorolled/cipd/libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-5.3.11.jar"
       output_name = "com_squareup_wire_wire_runtime_jvm"
       supports_android = true
       requires_android = true
@@ -1342,7 +1342,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("io_grpc_grpc_context_java") {
       jar_path =
-          "autorolled/cipd/libs/io_grpc_grpc_context/grpc-context-1.74.0.jar"
+          "autorolled/cipd/libs/io_grpc_grpc_context/grpc-context-1.75.0.jar"
       output_name = "io_grpc_grpc_context"
       supports_android = true
       requires_android = true
@@ -1359,7 +1359,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("io_grpc_grpc_core_java") {
-      jar_path = "autorolled/cipd/libs/io_grpc_grpc_core/grpc-core-1.74.0.jar"
+      jar_path = "autorolled/cipd/libs/io_grpc_grpc_core/grpc-core-1.75.0.jar"
       output_name = "io_grpc_grpc_core"
       supports_android = true
       requires_android = true

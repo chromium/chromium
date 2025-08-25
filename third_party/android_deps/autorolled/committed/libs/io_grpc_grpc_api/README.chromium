@@ -1,7 +1,7 @@
 Name: io.grpc:grpc-api
 Short Name: grpc-api
 URL: https://github.com/grpc/grpc-java
-Version: 1.74.0
+Version: 1.75.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

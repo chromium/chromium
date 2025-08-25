@@ -1110,11 +1110,6 @@
         "version": "1.15.0-SNAPSHOT"
     },
     {
-        "name": "extensions",
-        "group": "androidx.window.extensions",
-        "version": "1.5.0-SNAPSHOT"
-    },
-    {
         "name": "sidecar",
         "group": "androidx.window.sidecar",
         "version": "1.0.0-SNAPSHOT"
@@ -1133,6 +1128,11 @@
         "name": "window-core-android",
         "group": "androidx.window",
         "version": "1.5.0-SNAPSHOT"
+    },
+    {
+        "name": "window-extensions",
+        "group": "androidx.window",
+        "version": "1.0.0-alpha01"
     },
     {
         "name": "arcore",
@@ -1512,12 +1512,12 @@
     {
         "name": "wire-runtime",
         "group": "com.squareup.wire",
-        "version": "5.2.1"
+        "version": "5.3.11"
     },
     {
         "name": "wire-runtime-jvm",
         "group": "com.squareup.wire",
-        "version": "5.2.1"
+        "version": "5.3.11"
     },
     {
         "name": "javapoet",
@@ -1532,32 +1532,32 @@
     {
         "name": "grpc-api",
         "group": "io.grpc",
-        "version": "1.74.0"
+        "version": "1.75.0"
     },
     {
         "name": "grpc-binder",
         "group": "io.grpc",
-        "version": "1.74.0"
+        "version": "1.75.0"
     },
     {
         "name": "grpc-context",
         "group": "io.grpc",
-        "version": "1.74.0"
+        "version": "1.75.0"
     },
     {
         "name": "grpc-core",
         "group": "io.grpc",
-        "version": "1.74.0"
+        "version": "1.75.0"
     },
     {
         "name": "grpc-protobuf-lite",
         "group": "io.grpc",
-        "version": "1.74.0"
+        "version": "1.75.0"
     },
     {
         "name": "grpc-stub",
         "group": "io.grpc",
-        "version": "1.74.0"
+        "version": "1.75.0"
     },
     {
         "name": "perfmark-api",
