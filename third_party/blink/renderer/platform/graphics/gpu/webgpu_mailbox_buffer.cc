@@ -54,6 +54,10 @@ WebGPUMailboxBuffer::WebGPUMailboxBuffer(
 gpu::SyncToken WebGPUMailboxBuffer::Dissociate() {
   gpu::SyncToken finished_access_token;
 #if BUILDFLAG(USE_DAWN)
+  if (!dawn_control_client_->GetContextProviderWeakPtr()) {
+    shared_image_.reset();
+    return finished_access_token;
+  }
   if (scoped_access_) {
     finished_access_token =
         gpu::WebGPUBufferScopedAccess::EndAccess(std::move(scoped_access_));
