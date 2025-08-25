@@ -820,6 +820,10 @@ extern const char kReaderModeDefaultBrowserPromoDescription[];
 extern const char kRefactorToolbarsSizeName[];
 extern const char kRefactorToolbarsSizeDescription[];
 
+// Title and description for the flag to remove autofill badges.
+extern const char kRemoveAutofillBadgesName[];
+extern const char kRemoveAutofillBadgesDescription[];
+
 extern const char kRemoveExcessNTPsExperimentName[];
 extern const char kRemoveExcessNTPsExperimentDescription[];
 

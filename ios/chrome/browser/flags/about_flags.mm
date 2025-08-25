@@ -93,6 +93,7 @@
 #import "crypto/features.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/aim/prototype/public/features.h"
+#import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
@@ -2882,6 +2883,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kMobilePromoOnDesktop,
                                     kMobilePromoOnDesktopVariations,
                                     "MobilePromoOnDesktop")},
+    {"remove-autofill-badges", flag_descriptions::kRemoveAutofillBadgesName,
+     flag_descriptions::kRemoveAutofillBadgesDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAutofillBadgeRemoval)},
+
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
