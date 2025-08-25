@@ -1568,7 +1568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.FilesAppOpenTimedOut" enum="Boolean"
-    expires_after="2025-09-28">
+    expires_after="2026-03-28">
   <owner>aidazolic@google.com</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
