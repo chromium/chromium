@@ -516,10 +516,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadAppleWalletOrderFileUI"
-    enum="DownloadAppleWalletOrderFileUI" expires_after="2026-02-10">
+    enum="DownloadAppleWalletOrderFileUI" expires_after="2026-08-21">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Result when the warning alert is presented before downloading a .order file
     on iOS. Values indicate if the user has continued the download workflow
@@ -530,29 +530,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadARModelState.USDZ"
-    enum="DownloadARModelState" expires_after="2025-09-18">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+    enum="DownloadARModelState" expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged at different stages of downloading a USDZ MIME type AR model on iOS.
   </summary>
 </histogram>
 
 <histogram name="Download.IOSDownloadBundledPassKitResult"
-    enum="DownloadPassKitResult" expires_after="2025-09-18">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
+    enum="DownloadPassKitResult" expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Recorded when a user attempts to download a bundled PassKit file on iOS.
   </summary>
 </histogram>
 
 <histogram name="Download.IOSDownloadCalendarFileUI"
-    enum="DownloadCalendarFileUI" expires_after="2025-09-18">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
+    enum="DownloadCalendarFileUI" expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Result when the warning alert is presented before downloading a .ics file on
     iOS. Values indicate if the user has continued the download workflow after
@@ -561,10 +562,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadedFileAction" enum="DownloadedFileAction"
-    expires_after="2025-12-28">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+    expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     The action that a user takes on a file after it has been successfully
     downloaded on iOS.
@@ -572,10 +573,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadedFileNetError" enum="NetErrorCodes"
-    expires_after="2025-09-18">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+    expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Positive net error codes that happen in the case of download content fetch
     failure.
@@ -583,10 +584,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileInBackground"
-    enum="DownloadFileInBackground" expires_after="2025-12-28">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+    enum="DownloadFileInBackground" expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged when the download is completed (successfully or not) or in-progress
     download was cancelled because of the app termination. This histogram
@@ -596,18 +597,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileResult" enum="DownloadFileResult"
-    expires_after="2025-12-28">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+    expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>Result when a user attempts to download a file on iOS.</summary>
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUI" enum="DownloadFileUI"
-    expires_after="2025-12-14">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+    expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Result when a user attempts to present the download UI on iOS. Looged when
     download is created.
@@ -615,10 +616,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUIGoogleDrive"
-    enum="DownloadFileUIGoogleDrive" expires_after="2025-12-28">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+    enum="DownloadFileUIGoogleDrive" expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Result when the download UI is prexsented on iOS. Values indicate if Google
     Drive is installed and whether or not Install Google Drive promo was shown.
@@ -627,10 +628,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadMimeType" enum="DownloadMimeTypeResult"
-    expires_after="2025-12-14">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+    expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     MIME type of a download response. Logged when the download UI was offered by
     the browser to the user.
@@ -638,10 +639,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadMobileConfigFileUI"
-    enum="DownloadMobileConfigFileUI" expires_after="2025-09-18">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
+    enum="DownloadMobileConfigFileUI" expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Result when the warning alert is presented before downloading a
     .mobileconfig file on iOS. Values indicate if the user has continued the
@@ -650,19 +651,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadPassKitResult"
-    enum="DownloadPassKitResult" expires_after="2025-09-18">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
+    enum="DownloadPassKitResult" expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Recorded when a user attempts to download a PassKit file on iOS.
   </summary>
 </histogram>
 
 <histogram name="Download.IOSDownloadReplaced" enum="BooleanReplaced"
-    expires_after="2025-09-18">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+    expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     The user discarded in-progress download and replaced with the new one. Only
     recorded after the user interacts with a dialog offering the choice between
@@ -672,18 +674,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSPresentAddPassesDialogResult"
-    enum="PresentAddPassesDialogResult" expires_after="2025-09-18">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+    enum="PresentAddPassesDialogResult" expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>Result of an attempt to present Add Passes dialog on iOS.</summary>
 </histogram>
 
 <histogram name="Download.IOSPresentQLPreviewControllerResult"
-    enum="PresentQLPreviewController" expires_after="2025-09-18">
-  <owner>sdefresne@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+    enum="PresentQLPreviewController" expires_after="2026-08-21">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Result when a user attempts to present a USDZ MIME type AR model on iOS.
   </summary>
