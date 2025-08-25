@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -204,6 +205,7 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    @RequiresRestart("Removing the last tab has divergent behavior on tablet and phone.")
     public void testRemoveTab_LastTab() throws Exception {
         assertEquals(1, getCount());
         Tab tab0 = getCurrentTab();
@@ -540,6 +542,7 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    @RequiresRestart("Removing the last tab has divergent behavior on tablet and phone.")
     public void testCloseTabs_All() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1447,6 +1450,7 @@ public class TabCollectionTabModelImplTest {
     public void testCloseTabGroup_VisualDataRemoved() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
+        Tab tab2 = createTab();
         mergeListOfTabsToGroup(List.of(tab0, tab1), tab0);
         Token groupId = tab0.getTabGroupId();
         assertNotNull(groupId);
@@ -2680,6 +2684,7 @@ public class TabCollectionTabModelImplTest {
     public void testCloseTab_UndoLastTabInGroup_VisualDataRestored() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
+        Tab tab2 = createTab();
         mergeListOfTabsToGroup(List.of(tab0, tab1), tab0);
         Token tabGroupId = tab0.getTabGroupId();
         assertNotNull(tabGroupId);
@@ -2695,7 +2700,7 @@ public class TabCollectionTabModelImplTest {
                                     .allowUndo(true)
                                     .build());
                 });
-        assertEquals(0, getCount());
+        assertEquals(1, getCount());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2704,8 +2709,8 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(title, mCollectionModel.getTabGroupTitle(tabGroupId));
                     assertEquals(color, mCollectionModel.getTabGroupColor(tabGroupId));
                 });
-        assertEquals(2, getCount());
-        assertTabsInOrderAre(List.of(tab0, tab1));
+        assertEquals(3, getCount());
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
         assertEquals(tabGroupId, getTabAt(0).getTabGroupId());
         assertEquals(tabGroupId, getTabAt(1).getTabGroupId());
     }
@@ -2713,6 +2718,7 @@ public class TabCollectionTabModelImplTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    @RequiresRestart("Removing the last tab has divergent behavior on tablet and phone.")
     public void testCloseTab_UndoLastTab() throws Exception {
         assertEquals(1, getCount());
         Tab tab0 = getCurrentTab();
@@ -2979,16 +2985,17 @@ public class TabCollectionTabModelImplTest {
     public void testCloseTabs_CommitMultiple() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
-        createTab();
+        Tab tab2 = createTab();
         List<Tab> tabsToClose = List.of(tab0, tab1);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mCollectionModel.closeTabs(TabClosureParams.closeTabs(tabsToClose).build());
+                    mCollectionModel.closeTabs(TabClosureParams.closeTabs(tabsToClose).allowUndo(true).build());
                     assertTrue(mCollectionModel.isClosurePending(tab0.getId()));
                     assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
                 });
-        assertEquals(1, getCount());
+        assertTabsInOrderAre(List.of(tab2));
 
         CallbackHelper onTabClosureCommitted = new CallbackHelper();
         TabModelObserver observer =
@@ -3014,6 +3021,8 @@ public class TabCollectionTabModelImplTest {
                 });
         assertTrue(tab0.isDestroyed());
         assertTrue(tab1.isDestroyed());
+        assertEquals(1, getCount());
+        assertTabsInOrderAre(List.of(tab2));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
     }
@@ -3021,6 +3030,7 @@ public class TabCollectionTabModelImplTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    @RequiresRestart("Removing the last tab has divergent behavior on tablet and phone.")
     public void testCloseAllTabs_Undo() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Tab tab0 = getTabAt(0);
@@ -3394,10 +3404,12 @@ public class TabCollectionTabModelImplTest {
     public void testCloseTabGroup_HidingDisabled() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
+        Tab tab2 = createTab();
         List<Tab> groupTabs = List.of(tab0, tab1);
         mergeListOfTabsToGroup(groupTabs, tab0);
         Token tabGroupId = tab0.getTabGroupId();
         assertNotNull(tabGroupId);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
 
         CallbackHelper willCloseTabGroupHelper = new CallbackHelper();
         // Should get reset to false.
@@ -3436,5 +3448,7 @@ public class TabCollectionTabModelImplTest {
 
                     mCollectionModel.removeTabGroupObserver(groupObserver);
                 });
+        assertEquals(1, getCount());
+        assertTabsInOrderAre(List.of(tab2));
     }
 }
