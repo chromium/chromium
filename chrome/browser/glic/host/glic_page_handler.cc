@@ -502,8 +502,7 @@ class GlicWebClientHandler
         receiver_(this, std::move(receiver)),
         annotation_manager_(
             std::make_unique<GlicAnnotationManager>(glic_service_)),
-        journal_handler_(profile_),
-        page_metadata_manager_(&web_client_) {
+        journal_handler_(profile_) {
     active_state_calculator_.AddObserver(this);
   }
 
@@ -523,6 +522,9 @@ class GlicWebClientHandler
     web_client_.Bind(std::move(web_client));
     web_client_.set_disconnect_handler(base::BindOnce(
         &GlicWebClientHandler::WebClientDisconnected, base::Unretained(this)));
+
+    page_metadata_manager_ =
+        std::make_unique<PageMetadataManager>(web_client_.get());
 
     // Listen for changes to prefs.
     pref_change_registrar_.Init(pref_service_);
@@ -1314,7 +1316,7 @@ class GlicWebClientHandler
       int32_t tab_id,
       const std::vector<std::string>& names,
       SubscribeToPageMetadataCallback callback) override {
-    page_metadata_manager_.SubscribeToPageMetadata(tab_id, names,
+    page_metadata_manager_->SubscribeToPageMetadata(tab_id, names,
                                                     std::move(callback));
   }
 
@@ -1335,6 +1337,7 @@ class GlicWebClientHandler
  private:
 
   void Uninstall() {
+    page_metadata_manager_.reset();
     SetAudioDucking(false, base::DoNothing());
     glic_service_->host().SetWebClient(page_handler_, nullptr);
     pref_change_registrar_.Reset();
@@ -1457,7 +1460,7 @@ class GlicWebClientHandler
       system_permission_settings_observation_;
   JournalHandler journal_handler_;
   std::unique_ptr<DebouncerDeduper> debouncer_deduper_;
-  PageMetadataManager page_metadata_manager_;
+  std::unique_ptr<PageMetadataManager> page_metadata_manager_;
 };
 
 GlicPageHandler::GlicPageHandler(

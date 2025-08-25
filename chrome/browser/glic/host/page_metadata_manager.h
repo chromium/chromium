@@ -35,8 +35,7 @@ namespace glic {
 // client. It also handles caching of metadata when the Glic panel is inactive.
 class PageMetadataManager {
  public:
-  explicit PageMetadataManager(
-      mojo::Remote<glic::mojom::WebClient>* web_client);
+  explicit PageMetadataManager(glic::mojom::WebClient* web_client);
   ~PageMetadataManager();
 
   PageMetadataManager(const PageMetadataManager&) = delete;
@@ -61,7 +60,7 @@ class PageMetadataManager {
                                  blink::mojom::PageMetadataPtr page_metadata);
 
   // Unowned. The client is owned by the owner of this PageMetadataManager.
-  const raw_ptr<mojo::Remote<glic::mojom::WebClient>> web_client_;
+  const raw_ptr<glic::mojom::WebClient> web_client_;
 
   absl::flat_hash_map<int32_t, PageMetadataSubscription>
       tab_id_to_page_metadata_subscriptions_;

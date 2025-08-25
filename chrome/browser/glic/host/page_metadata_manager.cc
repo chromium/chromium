@@ -48,8 +48,7 @@ PageMetadataManager::PageMetadataSubscription&
 PageMetadataManager::PageMetadataSubscription::operator=(
     PageMetadataSubscription&&) = default;
 
-PageMetadataManager::PageMetadataManager(
-    mojo::Remote<glic::mojom::WebClient>* web_client)
+PageMetadataManager::PageMetadataManager(glic::mojom::WebClient* web_client)
     : web_client_(web_client) {}
 
 PageMetadataManager::~PageMetadataManager() = default;
@@ -147,8 +146,7 @@ void PageMetadataManager::OnTabWillDetach(
 void PageMetadataManager::NotifyPageMetadataChanged(
     int32_t tab_id,
     blink::mojom::PageMetadataPtr page_metadata) {
-  web_client_->get()->NotifyPageMetadataChanged(tab_id,
-                                                std::move(page_metadata));
+  web_client_->NotifyPageMetadataChanged(tab_id, std::move(page_metadata));
 }
 
 }  // namespace glic
