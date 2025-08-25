@@ -56,14 +56,12 @@ EventReaderLibevdevCros::EventReaderLibevdevCros(
   // This class assumes it does not deal with internal keyboards.
   CHECK(!has_keyboard_ || type() != INPUT_DEVICE_INTERNAL);
 
-  UNSAFE_TODO(memset(&evdev_, 0, sizeof(evdev_)));
   evdev_.log = OnLogMessage;
   evdev_.log_udata = this;
   evdev_.syn_report = OnSynReport;
   evdev_.syn_report_udata = this;
   evdev_.fd = fd.release();
 
-  UNSAFE_TODO(memset(&evstate_, 0, sizeof(evstate_)));
   evdev_.evstate = &evstate_;
   Event_Init(&evdev_);
 

@@ -129,10 +129,10 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
   bool has_caps_lock_led_;
 
   // Libevdev state.
-  Evdev evdev_;
+  Evdev evdev_ = {};
 
   // Event state.
-  EventStateRec evstate_;
+  EventStateRec evstate_ = {};
 
   // Path to input device.
   base::FilePath path_;

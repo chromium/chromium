@@ -238,8 +238,7 @@ void WindowImpl::Init(HWND parent, const Rect& bounds) {
     base::debug::Alias(&got_create);
     bool got_valid_hwnd = got_valid_hwnd_;
     base::debug::Alias(&got_valid_hwnd);
-    WNDCLASSEX class_info;
-    UNSAFE_TODO(memset(&class_info, 0, sizeof(WNDCLASSEX)));
+    WNDCLASSEX class_info = {};
     class_info.cbSize = sizeof(WNDCLASSEX);
     BOOL got_class =
         GetClassInfoEx(GetModuleHandle(nullptr),

@@ -149,8 +149,7 @@ void WaylandDrm::Authenticate(const char* drm_device_path) {
     return;
   }
 
-  drm_magic_t magic;
-  UNSAFE_TODO(memset(&magic, 0, sizeof(magic)));
+  drm_magic_t magic = {};
   if (drmGetMagic(drm_fd.get(), &magic)) {
     HandleDrmFailure("Failed to get drm magic");
     return;

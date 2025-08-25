@@ -248,8 +248,7 @@ void SetUseOSWindowFrame(x11::Window window, bool use_os_window_frame) {
     uint32_t status;
   } MotifWmHints;
 
-  MotifWmHints motif_hints;
-  UNSAFE_TODO(memset(&motif_hints, 0, sizeof(motif_hints)));
+  MotifWmHints motif_hints = {};
   // Signals that the reader of the _MOTIF_WM_HINTS property should pay
   // attention to the value of |decorations|.
   motif_hints.flags = (1u << 1);

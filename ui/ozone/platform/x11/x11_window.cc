@@ -1035,8 +1035,7 @@ void X11Window::SetShape(std::unique_ptr<ShapeRects> native_shape,
 }
 
 void X11Window::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
-  x11::SizeHints size_hints;
-  UNSAFE_TODO(memset(&size_hints, 0, sizeof(size_hints)));
+  x11::SizeHints size_hints = {};
 
   connection_->GetWmNormalHints(xwindow_, &size_hints);
   // Unforce aspect ratio is parameter length is 0, otherwise set normally.
@@ -1924,8 +1923,7 @@ void X11Window::CloseXWindow() {
 void X11Window::Map(bool inactive) {
   // Before we map the window, set size hints. Otherwise, some window managers
   // will ignore toplevel XMoveWindow commands.
-  x11::SizeHints size_hints;
-  UNSAFE_TODO(memset(&size_hints, 0, sizeof(size_hints)));
+  x11::SizeHints size_hints = {};
   connection_->GetWmNormalHints(xwindow_, &size_hints);
   size_hints.flags |= x11::SIZE_HINT_P_POSITION;
   size_hints.x = GetBoundsInPixels().x();
@@ -2038,8 +2036,7 @@ void X11Window::SetFlashFrameHint(bool flash_frame) {
     return;
   }
 
-  x11::WmHints hints;
-  UNSAFE_TODO(memset(&hints, 0, sizeof(hints)));
+  x11::WmHints hints = {};
   connection_->GetWmHints(xwindow_, &hints);
 
   if (flash_frame) {
@@ -2066,8 +2063,7 @@ void X11Window::UpdateMinAndMaxSize() {
   min_size_in_pixels_ = minimum_in_pixels.value();
   max_size_in_pixels_ = maximum_in_pixels.value();
 
-  x11::SizeHints hints;
-  UNSAFE_TODO(memset(&hints, 0, sizeof(hints)));
+  x11::SizeHints hints = {};
   connection_->GetWmNormalHints(xwindow_, &hints);
 
   if (min_size_in_pixels_.IsEmpty()) {
