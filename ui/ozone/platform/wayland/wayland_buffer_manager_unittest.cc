@@ -185,7 +185,7 @@ class WaylandBufferManagerTest : public WaylandTest {
       EXPECT_CALL(*callback, Run(_))
           .Times(1)
           .WillRepeatedly(
-              ::testing::Invoke([this, callback](std::string error_string) {
+              [this, callback](std::string error_string) {
                 channel_destroyed_error_message_ = error_string;
 
                 manager_host_->OnChannelDestroyed();
@@ -204,7 +204,7 @@ class WaylandBufferManagerTest : public WaylandTest {
                     /*supports_acquire_fence=*/false,
                     /*supports_overlays=*/true,
                     /*supports_single_pixel_buffer=*/true);
-              }));
+              });
     }
   }
 

@@ -25,7 +25,6 @@
 
 using ::testing::_;
 using ::testing::AtLeast;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace ui {
@@ -90,10 +89,10 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
       .WillRepeatedly(Return(mock_systemd_proxy.get()));
   EXPECT_CALL(*mock_systemd_proxy, DoCallMethod(_, _, _))
       .Times(AtLeast(0))
-      .WillRepeatedly(Invoke([](dbus::MethodCall*, int,
-                                dbus::ObjectProxy::ResponseCallback* callback) {
+      .WillRepeatedly([](dbus::MethodCall*, int,
+                         dbus::ObjectProxy::ResponseCallback* callback) {
         std::move(*callback).Run(nullptr);
-      }));
+      });
 
   EXPECT_CALL(*mock_bus, AssertOnOriginThread()).WillRepeatedly([] {});
 
@@ -114,8 +113,8 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
   EXPECT_CALL(
       *mock_dbus_proxy,
       DoCallMethod(MatchMethod(DBUS_INTERFACE_DBUS, "NameHasOwner"), _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback* callback) {
         dbus::MessageReader reader(method_call);
         std::string service_name;
         EXPECT_TRUE(reader.PopString(&service_name));
@@ -125,9 +124,9 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
         dbus::MessageWriter writer(response.get());
         writer.AppendBool(true);
         std::move(*callback).Run(response.get());
-      }))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+      })
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback* callback) {
         dbus::MessageReader reader(method_call);
         std::string service_name;
         EXPECT_TRUE(reader.PopString(&service_name));
@@ -138,7 +137,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
         dbus::MessageWriter writer(response.get());
         writer.AppendBool(true);
         std::move(*callback).Run(response.get());
-      }));
+      });
 
   // Activated signal
   dbus::ObjectProxy::SignalCallback activated_callback;
@@ -146,7 +145,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
               DoConnectToSignal(
                   GlobalAcceleratorListenerLinux::kGlobalShortcutsInterface,
                   GlobalAcceleratorListenerLinux::kSignalActivated, _, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& interface_name, const std::string& signal_name,
               dbus::ObjectProxy::SignalCallback signal_callback,
               dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
@@ -156,7 +155,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
 
             // Save the signal callback for later use
             activated_callback = signal_callback;
-          }));
+          });
 
   auto global_shortcut_listener =
       std::make_unique<GlobalAcceleratorListenerLinux>(mock_bus, kSessionToken);
@@ -191,11 +190,11 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
               GlobalAcceleratorListenerLinux::kPortalServiceName, object_path);
       EXPECT_CALL(*create_session_request_proxy, DoConnectToSignal(_, _, _, _))
           .WillOnce(
-              Invoke([&](const std::string& interface_name,
-                         const std::string& signal_name,
-                         dbus::ObjectProxy::SignalCallback signal_callback,
-                         dbus::ObjectProxy::OnConnectedCallback*
-                             on_connected_callback) {
+              [&](const std::string& interface_name,
+                  const std::string& signal_name,
+                  dbus::ObjectProxy::SignalCallback signal_callback,
+                  dbus::ObjectProxy::OnConnectedCallback*
+                      on_connected_callback) {
                 EXPECT_EQ(interface_name, "org.freedesktop.portal.Request");
                 EXPECT_EQ(signal_name, "Response");
 
@@ -210,7 +209,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
                     DbusString(session_proxy->object_path().value()))
                     .Write(&writer);
                 signal_callback.Run(&signal);
-              }));
+              });
       return create_session_request_proxy.get();
     };
 
@@ -224,11 +223,11 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
               GlobalAcceleratorListenerLinux::kPortalServiceName, object_path);
       EXPECT_CALL(*list_shortcuts_request_proxy, DoConnectToSignal(_, _, _, _))
           .WillOnce(
-              Invoke([&](const std::string& interface_name,
-                         const std::string& signal_name,
-                         dbus::ObjectProxy::SignalCallback signal_callback,
-                         dbus::ObjectProxy::OnConnectedCallback*
-                             on_connected_callback) {
+              [&](const std::string& interface_name,
+                  const std::string& signal_name,
+                  dbus::ObjectProxy::SignalCallback signal_callback,
+                  dbus::ObjectProxy::OnConnectedCallback*
+                      on_connected_callback) {
                 EXPECT_EQ(interface_name, "org.freedesktop.portal.Request");
                 EXPECT_EQ(signal_name, "Response");
 
@@ -241,7 +240,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
                 // Simulate empty list of shortcuts
                 MakeDbusDictionary("shortcuts", DbusShortcuts()).Write(&writer);
                 signal_callback.Run(&signal);
-              }));
+              });
       return list_shortcuts_request_proxy.get();
     };
 
@@ -255,11 +254,11 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
               GlobalAcceleratorListenerLinux::kPortalServiceName, object_path);
       EXPECT_CALL(*bind_shortcuts_request_proxy, DoConnectToSignal(_, _, _, _))
           .WillOnce(
-              Invoke([&](const std::string& interface_name,
-                         const std::string& signal_name,
-                         dbus::ObjectProxy::SignalCallback signal_callback,
-                         dbus::ObjectProxy::OnConnectedCallback*
-                             on_connected_callback) {
+              [&](const std::string& interface_name,
+                  const std::string& signal_name,
+                  dbus::ObjectProxy::SignalCallback signal_callback,
+                  dbus::ObjectProxy::OnConnectedCallback*
+                      on_connected_callback) {
                 EXPECT_EQ(interface_name, "org.freedesktop.portal.Request");
                 EXPECT_EQ(signal_name, "Response");
 
@@ -271,17 +270,17 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
                 writer.AppendUint32(kResponseSuccess);
                 DbusDictionary().Write(&writer);
                 signal_callback.Run(&signal);
-              }));
+              });
       return bind_shortcuts_request_proxy.get();
     };
 
     EXPECT_CALL(
         *mock_bus,
         GetObjectProxy(GlobalAcceleratorListenerLinux::kPortalServiceName, _))
-        .WillOnce(Invoke(get_object_proxy_session))
-        .WillOnce(Invoke(get_object_proxy_create_session))
-        .WillOnce(Invoke(get_object_proxy_list_shortcuts))
-        .WillOnce(Invoke(get_object_proxy_bind_shortcuts));
+        .WillOnce(get_object_proxy_session)
+        .WillOnce(get_object_proxy_create_session)
+        .WillOnce(get_object_proxy_list_shortcuts)
+        .WillOnce(get_object_proxy_bind_shortcuts);
 
     // CreateSession request
     EXPECT_CALL(
@@ -292,8 +291,8 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
                 GlobalAcceleratorListenerLinux::kMethodCreateSession),
             _, _))
         .WillOnce(
-            Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+            [&](dbus::MethodCall* method_call, int timeout_ms,
+                dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
               dbus::MessageReader reader(method_call);
               DbusDictionary options;
               EXPECT_TRUE(options.Read(&reader));
@@ -310,7 +309,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
               writer.AppendObjectPath(
                   create_session_request_proxy->object_path());
               std::move(*callback).Run(response.get(), nullptr);
-            }));
+            });
 
     // ListShortcuts request
     EXPECT_CALL(
@@ -320,21 +319,19 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
                 GlobalAcceleratorListenerLinux::kGlobalShortcutsInterface,
                 GlobalAcceleratorListenerLinux::kMethodListShortcuts),
             _, _))
-        .WillOnce(
-            Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
-              dbus::MessageReader reader(method_call);
-              dbus::ObjectPath session_path;
-              EXPECT_TRUE(reader.PopObjectPath(&session_path));
-              DbusDictionary options;
-              EXPECT_TRUE(options.Read(&reader));
+        .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                      dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+          dbus::MessageReader reader(method_call);
+          dbus::ObjectPath session_path;
+          EXPECT_TRUE(reader.PopObjectPath(&session_path));
+          DbusDictionary options;
+          EXPECT_TRUE(options.Read(&reader));
 
-              auto response = dbus::Response::CreateEmpty();
-              dbus::MessageWriter writer(response.get());
-              writer.AppendObjectPath(
-                  list_shortcuts_request_proxy->object_path());
-              std::move(*callback).Run(response.get(), nullptr);
-            }));
+          auto response = dbus::Response::CreateEmpty();
+          dbus::MessageWriter writer(response.get());
+          writer.AppendObjectPath(list_shortcuts_request_proxy->object_path());
+          std::move(*callback).Run(response.get(), nullptr);
+        });
 
     // BindShortcuts request
     EXPECT_CALL(
@@ -344,23 +341,21 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
                 GlobalAcceleratorListenerLinux::kGlobalShortcutsInterface,
                 GlobalAcceleratorListenerLinux::kMethodBindShortcuts),
             _, _))
-        .WillOnce(
-            Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
-              dbus::MessageReader reader(method_call);
-              dbus::ObjectPath session_path;
-              EXPECT_TRUE(reader.PopObjectPath(&session_path));
-              DbusShortcuts shortcuts;
-              EXPECT_TRUE(shortcuts.Read(&reader));
-              DbusString parent_window;
-              EXPECT_TRUE(parent_window.Read(&reader));
+        .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                      dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+          dbus::MessageReader reader(method_call);
+          dbus::ObjectPath session_path;
+          EXPECT_TRUE(reader.PopObjectPath(&session_path));
+          DbusShortcuts shortcuts;
+          EXPECT_TRUE(shortcuts.Read(&reader));
+          DbusString parent_window;
+          EXPECT_TRUE(parent_window.Read(&reader));
 
-              auto response = dbus::Response::CreateEmpty();
-              dbus::MessageWriter writer(response.get());
-              writer.AppendObjectPath(
-                  bind_shortcuts_request_proxy->object_path());
-              std::move(*callback).Run(response.get(), nullptr);
-            }));
+          auto response = dbus::Response::CreateEmpty();
+          dbus::MessageWriter writer(response.get());
+          writer.AppendObjectPath(bind_shortcuts_request_proxy->object_path());
+          std::move(*callback).Run(response.get(), nullptr);
+        });
 
     global_shortcut_listener->OnCommandsChanged(kExtensionId, kProfileId,
                                                 commands, observer.get());

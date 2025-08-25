@@ -276,22 +276,22 @@ TEST_F(ViewFactoryTest, TestOrderOfOperations) {
     // not guaranteed by the builder.
     EXPECT_CALL(custom_configure_callback, Run(testing::Pointer(view)))
         .Times(2)
-        .WillRepeatedly(testing::Invoke([](views::View* view) {
+        .WillRepeatedly([](views::View* view) {
           // Properties should be set *before* but children shouldn't be added
           // until *after* custom callbacks are run.
           EXPECT_EQ(view->GetID(), 1);
           EXPECT_EQ(view->children().size(), 0u);
-        }));
+        });
 
     // Expect that two after build callbacks will be run *after* any custom
     // configure callbacks. The order of the after build callbacks is not
     // guaranteed by the builder.
     EXPECT_CALL(after_build_callback, Run(testing::Pointer(view)))
         .Times(2)
-        .WillRepeatedly(testing::Invoke([](views::View* view) {
+        .WillRepeatedly([](views::View* view) {
           // Children should be added *before* after build callbacks are run.
           EXPECT_EQ(view->children().size(), 1u);
-        }));
+        });
   }
 
   // Build the view and verify order of operations.
