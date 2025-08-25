@@ -704,6 +704,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_SCHEDULER_LOOP_QUARANTINE,
                 "Enables PartitionAlloc's FreeFlags::kSchedulerLoopQuarantine"),
+        Flag.baseFeature("PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread"),
         Flag.baseFeature(
                 BaseFeatures.POST_POWER_MONITOR_BROADCAST_RECEIVER_INIT_TO_BACKGROUND,
                 "If enabled, it posts PowerMonitor broadcast receiver init to a background"
