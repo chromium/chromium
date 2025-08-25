@@ -634,9 +634,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (button) {
       button.ironIcon = chrome.readingMode.linksEnabled ? LINKS_ENABLED_ICON :
                                                           LINKS_DISABLED_ICON;
-      button.title = chrome.readingMode.linksEnabled ?
+      const linkStatusLabel = chrome.readingMode.linksEnabled ?
           loadTimeData.getString('disableLinksLabel') :
           loadTimeData.getString('enableLinksLabel');
+      button.title = linkStatusLabel;
+      button.ariaLabel = linkStatusLabel;
     }
   }
 
@@ -646,9 +648,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (button) {
       button.ironIcon = chrome.readingMode.imagesEnabled ? IMAGES_ENABLED_ICON :
                                                            IMAGES_DISABLED_ICON;
-      button.title = chrome.readingMode.imagesEnabled ?
+      const imageStatusLabel = chrome.readingMode.imagesEnabled ?
           loadTimeData.getString('disableImagesLabel') :
           loadTimeData.getString('enableImagesLabel');
+      button.title = imageStatusLabel;
+      button.ariaLabel = imageStatusLabel;
     }
   }
 

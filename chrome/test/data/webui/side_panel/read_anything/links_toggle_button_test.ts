@@ -36,6 +36,7 @@ suite('LinksToggle', () => {
     assertEquals(LINKS_ENABLED_ICON, menuButton.ironIcon);
     assertTrue(chrome.readingMode.linksEnabled);
     assertStringContains('disable links', menuButton.title.toLowerCase());
+    assertStringContains('disable links', menuButton.ariaLabel!.toLowerCase());
     assertFalse(menuButton.disabled);
   });
 
@@ -49,6 +50,7 @@ suite('LinksToggle', () => {
       assertEquals(LINKS_DISABLED_ICON, menuButton.ironIcon);
       assertFalse(chrome.readingMode.linksEnabled);
       assertStringContains('enable links', menuButton.title.toLowerCase());
+      assertStringContains('enable links', menuButton.ariaLabel!.toLowerCase());
     });
 
     test('event is propagated', () => {
@@ -77,6 +79,8 @@ suite('LinksToggle', () => {
         assertEquals(LINKS_ENABLED_ICON, menuButton.ironIcon);
         assertTrue(chrome.readingMode.linksEnabled);
         assertStringContains('disable links', menuButton.title.toLowerCase());
+        assertStringContains(
+            'disable links', menuButton.ariaLabel!.toLowerCase());
       });
 
       test('event is propagated', () => {

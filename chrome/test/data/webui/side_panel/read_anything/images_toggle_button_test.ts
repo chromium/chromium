@@ -37,6 +37,7 @@ suite('ImageToggle', () => {
     assertEquals(IMAGES_DISABLED_ICON, menuButton.ironIcon);
     assertFalse(chrome.readingMode.imagesEnabled);
     assertStringContains('enable images', menuButton.title.toLowerCase());
+    assertStringContains('enable images', menuButton.ariaLabel!.toLowerCase());
     assertFalse(menuButton.disabled);
   });
 
@@ -50,6 +51,8 @@ suite('ImageToggle', () => {
       assertEquals(IMAGES_ENABLED_ICON, menuButton.ironIcon);
       assertTrue(chrome.readingMode.imagesEnabled);
       assertStringContains('disable images', menuButton.title.toLowerCase());
+      assertStringContains(
+          'disable images', menuButton.ariaLabel!.toLowerCase());
     });
 
     test('event is propagated', () => {
@@ -78,6 +81,8 @@ suite('ImageToggle', () => {
         assertEquals(IMAGES_DISABLED_ICON, menuButton.ironIcon);
         assertFalse(chrome.readingMode.imagesEnabled);
         assertStringContains('enable images', menuButton.title.toLowerCase());
+        assertStringContains(
+            'enable images', menuButton.ariaLabel!.toLowerCase());
       });
 
       test('event is propagated', () => {
