@@ -446,6 +446,12 @@ export declare interface GlicBrowserHost {
   getClosedCaptioningSetting?(): ObservableValue<boolean>;
 
   /**
+   * Returns the state of the default tab context permission for new sessions.
+   * The returned observable will be updated when the setting changes.
+   */
+  getDefaultTabContextPermissionState?(): ObservableValue<boolean>;
+
+  /**
    * Set the state of the microphone permission in settings. Returns a promise
    * that resolves when the browser has stored the new pref value.
    */

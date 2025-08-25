@@ -120,6 +120,12 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.getTabContextPermissionState().assignAndSignal(payload.enabled);
   }
 
+  glicWebClientNotifyDefaultTabContextPermissionStateChanged(payload: {
+    enabled: boolean,
+  }) {
+    this.host.defaultTabContextPermission.assignAndSignal(payload.enabled);
+  }
+
   glicWebClientNotifyOsLocationPermissionStateChanged(payload: {
     enabled: boolean,
   }) {
@@ -236,6 +242,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private permissionStateLocation = ObservableValueImpl.withNoValue<boolean>();
   private permissionStateTabContext =
       ObservableValueImpl.withNoValue<boolean>();
+  defaultTabContextPermission = ObservableValueImpl.withNoValue<boolean>();
   private permissionStateOsLocation =
       ObservableValueImpl.withNoValue<boolean>();
   closedCaptioningState = ObservableValueImpl.withNoValue<boolean>();
@@ -306,6 +313,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         state.locationPermissionEnabled);
     this.permissionStateTabContext.assignAndSignal(
         state.tabContextPermissionEnabled);
+    this.defaultTabContextPermission.assignAndSignal(
+        state.defaultTabContextSettingEnabled);
     this.permissionStateOsLocation.assignAndSignal(
         state.osLocationPermissionEnabled);
     this.canAttachPanelValue.assignAndSignal(state.canAttach);
@@ -343,6 +352,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.enableZeroStateSuggestions) {
       this.getZeroStateSuggestionsForFocusedTab = undefined;
       this.getZeroStateSuggestions = undefined;
+    }
+
+    if (!state.enableDefaultTabContextSettingFeature) {
+      this.getDefaultTabContextPermissionState = undefined;
     }
 
     if (!state.enableClosedCaptioningFeature) {
@@ -592,6 +605,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getTabContextPermissionState(): ObservableValueImpl<boolean> {
     return this.permissionStateTabContext;
+  }
+
+  getDefaultTabContextPermissionState?(): ObservableValueImpl<boolean> {
+    return this.defaultTabContextPermission;
   }
 
   getOsLocationPermissionState(): ObservableValueImpl<boolean> {

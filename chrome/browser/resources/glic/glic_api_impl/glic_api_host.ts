@@ -257,6 +257,13 @@ class WebClientImpl implements WebClientInterface {
         });
   }
 
+  notifyDefaultTabContextPermissionStateChanged(enabled: boolean) {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyDefaultTabContextPermissionStateChanged', {
+          enabled: enabled,
+        });
+  }
+
   notifyFocusedTabChanged(focusedTabData: (FocusedTabDataMojo)): void {
     const extras = new ResponseExtras();
     this.sender.sendLatestWhenActive(

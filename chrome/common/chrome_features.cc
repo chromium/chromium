@@ -597,6 +597,10 @@ BASE_FEATURE(GlicUserStatusCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(GlicClosedCaptioning, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicDefaultTabContextSetting,
+             "GlicDefaultTabContextSetting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(GlicUnloadOnClose, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(GlicApiActivationGating, base::FEATURE_ENABLED_BY_DEFAULT);

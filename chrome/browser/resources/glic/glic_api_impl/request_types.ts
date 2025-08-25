@@ -487,6 +487,12 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientNotifyDefaultTabContextPermissionStateChanged: {
+    request: {
+      enabled: boolean,
+    },
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyOsLocationPermissionStateChanged: {
     request: {
       enabled: boolean,

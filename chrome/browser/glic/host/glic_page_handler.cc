@@ -74,8 +74,8 @@
 #include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sessions/core/session_id.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -542,6 +542,10 @@ class GlicWebClientHandler
         prefs::kGlicClosedCaptioningEnabled,
         base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
                             base::Unretained(this)));
+    pref_change_registrar_.Add(
+        prefs::kGlicDefaultTabContextEnabled,
+        base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
+                            base::Unretained(this)));
     glic_service_->window_controller().AddStateObserver(this);
 
     if (base::FeatureList::IsEnabled(
@@ -649,6 +653,10 @@ class GlicWebClientHandler
         base::BindRepeating(&GlicWebClientHandler::OnLocalStatePrefChanged,
                             base::Unretained(this)));
     state->hotkey = GetHotkeyString();
+    state->enable_default_tab_context_setting_feature =
+        base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting);
+    state->default_tab_context_setting_enabled =
+        pref_service_->GetBoolean(prefs::kGlicDefaultTabContextEnabled);
     state->enable_closed_captioning_feature =
         base::FeatureList::IsEnabled(features::kGlicClosedCaptioning);
     state->closed_captioning_setting_enabled =
@@ -1351,6 +1359,8 @@ class GlicWebClientHandler
       web_client_->NotifyTabContextPermissionStateChanged(is_enabled);
     } else if (pref_name == prefs::kGlicClosedCaptioningEnabled) {
       web_client_->NotifyClosedCaptioningSettingChanged(is_enabled);
+    } else if (pref_name == prefs::kGlicDefaultTabContextEnabled) {
+      web_client_->NotifyDefaultTabContextPermissionStateChanged(is_enabled);
     } else {
       DCHECK(false) << "Unknown Glic permission pref changed: " << pref_name;
     }
