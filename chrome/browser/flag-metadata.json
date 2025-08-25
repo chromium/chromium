@@ -411,6 +411,14 @@
     "expiry_milestone": 145
   },
   {
+    "name": "android-use-correct-window-bounds",
+    "owners": [
+      "chominskib@google.com",
+      "lt-web-apps-team@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-web-app-launch-handler",
     "owners": [ "sselyvon@google.com", "tkachenkoo@google.com", "lt-web-apps-team@google.com" ],
     "expiry_milestone": 145

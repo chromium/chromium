@@ -12651,6 +12651,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid, FEATURE_VALUE_TYPE(ui::kAndroidUseCorrectDisplayWorkArea)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-use-correct-window-bounds",
+     flag_descriptions::kAndroidUseCorrectWindowBoundsName,
+     flag_descriptions::kAndroidUseCorrectWindowBoundsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(ui::kAndroidUseCorrectWindowBounds)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
     {"enable-site-search-allow-user-override-policy",

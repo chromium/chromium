@@ -3575,6 +3575,9 @@ extern const char kAndroidMinimalUiLargeScreenDescription[];
 extern const char kAndroidUseCorrectDisplayWorkAreaName[];
 extern const char kAndroidUseCorrectDisplayWorkAreaDescription[];
 
+extern const char kAndroidUseCorrectWindowBoundsName[];
+extern const char kAndroidUseCorrectWindowBoundsDescription[];
+
 extern const char kAndroidWindowManagementWebApiName[];
 extern const char kAndroidWindowManagementWebApiDescription[];
 

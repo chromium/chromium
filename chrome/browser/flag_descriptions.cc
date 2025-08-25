@@ -6193,6 +6193,13 @@ const char kAndroidUseCorrectDisplayWorkAreaDescription[] =
     "availLeft / availTop / availHeight / availWidth accurately reflect the "
     "accessible content display area.";
 
+const char kAndroidUseCorrectWindowBoundsName[] =
+    "Use accurate top-level browser window bounds reported by Android.";
+const char kAndroidUseCorrectWindowBoundsDescription[] =
+    "Use Android WindowManager as the data source for top-level browser window "
+    "bounds in Blink. Impacts values reported by the window.screenX, "
+    "window.screenY, window.outerWidth, and window.outerHeight web APIs.";
+
 const char kAndroidWindowManagementWebApiName[] = "Window Management Web API";
 const char kAndroidWindowManagementWebApiDescription[] =
     "Enable Window Management Web API. Websites can obtain information about "

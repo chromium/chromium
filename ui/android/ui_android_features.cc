@@ -13,6 +13,10 @@ BASE_FEATURE(kAndroidUseCorrectDisplayWorkArea,
              "AndroidUseCorrectDisplayWorkArea",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidUseCorrectWindowBounds,
+             "AndroidUseCorrectWindowBounds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAndroidWindowManagementWebApi,
              "AndroidWindowManagementWebApi",
              base::FEATURE_DISABLED_BY_DEFAULT);

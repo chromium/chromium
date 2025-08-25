@@ -23,6 +23,10 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidHDR);
 // availWidth/availHeight/availTop/availLeft.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidUseCorrectDisplayWorkArea);
 
+// Use Android WindowManager's WindowMetrics as the data source for top-level
+// browser window bounds in Blink.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidUseCorrectWindowBounds);
+
 // TODO(crbug.com/401215712): Clean up the flag after making sure tha the Window
 // Management Web API works well.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidWindowManagementWebApi);
