@@ -122,6 +122,7 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.BinaryStatePermissionPreference;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
+import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
 import org.chromium.components.browser_ui.site_settings.RwsCookieInfo;
 import org.chromium.components.browser_ui.site_settings.RwsCookieSettings;
@@ -144,6 +145,7 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.nfc.NfcSystemLevelSetting;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
@@ -265,9 +267,10 @@ public class SiteSettingsTest {
                     });
         }
 
-        // Clean up default content setting and system settings.
+        CallbackHelper helper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    // Clean up default content setting and system settings.
                     for (int t = 0; t < SiteSettingsCategory.Type.NUM_ENTRIES; t++) {
                         if (SiteSettingsCategory.contentSettingsType(t) >= 0) {
                             WebsitePreferenceBridge.setDefaultContentSetting(
@@ -276,7 +279,15 @@ public class SiteSettingsTest {
                                     ContentSettingValues.DEFAULT);
                         }
                     }
+                    // Clean up content setting exceptions.
+                    BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
+                            .clearBrowsingData(
+                                    helper::notifyCalled,
+                                    new int[] {BrowsingDataType.SITE_SETTINGS},
+                                    TimePeriod.ALL_TIME);
                 });
+        helper.waitForCallback(0);
+
         LocationUtils.setFactory(null);
         LocationProviderOverrider.setLocationProviderImpl(null);
         ContextUtils.getAppSharedPreferences()
@@ -2663,6 +2674,81 @@ public class SiteSettingsTest {
                         false)
                 .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
+    }
+
+    void setGeolocationSetting(GeolocationSetting setting) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        WebsitePreferenceBridgeJni.get()
+                                .setGeolocationSettingForOrigin(
+                                        getBrowserContextHandle(),
+                                        ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
+                                        "https://example.com",
+                                        "*",
+                                        setting.mApproximate,
+                                        setting.mPrecise));
+    }
+
+    GeolocationSetting getGeolocationSetting() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        WebsitePreferenceBridgeJni.get()
+                                .getGeolocationSettingForOrigin(
+                                        getBrowserContextHandle(),
+                                        ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
+                                        "https://example.com",
+                                        "https://example.com"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
+        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION
+    })
+    public void testRemoveGeolocationWithOptions() {
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        var allowSetting =
+                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.ALLOW);
+        setGeolocationSetting(allowSetting);
+        SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
+        assertEquals(allowSetting, getGeolocationSetting());
+
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withText("https://example.com")).check(matches(isDisplayed())).perform(click());
+        onView(withText("Remove")).perform(click());
+        assertEquals(
+                new GeolocationSetting(ContentSettingValues.ASK, ContentSettingValues.ASK),
+                getGeolocationSetting());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
+        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION
+    })
+    public void testChangeGeolocationWithOptions() {
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        var allowSetting =
+                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.ALLOW);
+        setGeolocationSetting(allowSetting);
+        SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
+        assertEquals(allowSetting, getGeolocationSetting());
+
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withText("https://example.com")).check(matches(isDisplayed())).perform(click());
+        onView(withText("Approximate")).perform(click());
+        assertEquals(
+                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.BLOCK),
+                getGeolocationSetting());
+
+        onView(withText("Block")).perform(click());
+        assertEquals(
+                new GeolocationSetting(ContentSettingValues.BLOCK, ContentSettingValues.BLOCK),
+                getGeolocationSetting());
     }
 
     @Test
