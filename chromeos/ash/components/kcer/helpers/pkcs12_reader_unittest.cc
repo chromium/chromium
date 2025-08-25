@@ -643,15 +643,15 @@ TEST_F(Pkcs12ReaderTest, EnrichKeyDataCommonErrors) {
 }
 
 TEST_F(Pkcs12ReaderTest, EnrichRsaKeyData) {
-  // RSA is NULL. Operation will fail.
+  // RSA is present, but empty. Operation will fail.
   {
     KeyData key_data;
     key_data.key = GenerateRsaKey();
-    EVP_PKEY_assign_RSA(key_data.key.get(), nullptr);
+    EVP_PKEY_assign_RSA(key_data.key.get(), RSA_new());
 
     Pkcs12ReaderStatusCode result = pkcs12Reader_->EnrichKeyData(key_data);
 
-    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kRsaKeyExtractionFailed);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12RsaModulusEmpty);
   }
 
   // Normal RSA key, operation will succeed.
@@ -666,17 +666,6 @@ TEST_F(Pkcs12ReaderTest, EnrichRsaKeyData) {
 }
 
 TEST_F(Pkcs12ReaderTest, EnrichEcKeyData) {
-  // EC in key_data is NULL. Operation will fail.
-  {
-    KeyData key_data;
-    key_data.key = GenerateEcKey();
-    EVP_PKEY_assign_EC_KEY(key_data.key.get(), nullptr);
-
-    Pkcs12ReaderStatusCode result = pkcs12Reader_->EnrichKeyData(key_data);
-
-    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kEcKeyExtractionFailed);
-  }
-
   // EC is present, but empty. Operation will fail.
   {
     KeyData key_data;
@@ -815,20 +804,6 @@ TEST_F(Pkcs12ReaderTest, CheckRelationRsaKey) {
 }
 
 TEST_F(Pkcs12ReaderTest, CheckRelationEcKey) {
-  // EC key is null in key_data, operation will fail.
-  {
-    KeyData key_data = BuildEcKeyData();
-    EVP_PKEY_assign_EC_KEY(key_data.key.get(), nullptr);
-    ScopedX509 cert = BuildScopedX509AndSetPublicKey(GenerateEcKey());
-    bool is_related = true;
-
-    Pkcs12ReaderStatusCode result =
-        pkcs12Reader_->CheckRelation(key_data, cert.get(), is_related);
-
-    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkeyComparisonFailure);
-    EXPECT_FALSE(is_related);
-  }
-
   // EC key is empty in key_data, operation will fail.
   {
     KeyData key_data = BuildEcKeyData();
