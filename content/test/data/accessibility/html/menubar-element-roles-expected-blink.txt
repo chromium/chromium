@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++menuBar horizontal
+++++++++menuItem name='File'
+++++++++++staticText name='File'
+++++++++++++inlineTextBox name='File'
+++++++++menuItem name='Edit'
+++++++++++staticText name='Edit'
+++++++++++++inlineTextBox name='Edit'

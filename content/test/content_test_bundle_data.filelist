@@ -4915,6 +4915,12 @@ data/accessibility/html/menu-expected-mac.txt
 data/accessibility/html/menu-expected-uia-win.txt
 data/accessibility/html/menu-expected-win.txt
 data/accessibility/html/menu.html
+data/accessibility/html/menubar-element-roles-expected-auralinux.txt
+data/accessibility/html/menubar-element-roles-expected-blink.txt
+data/accessibility/html/menubar-element-roles.html
+data/accessibility/html/menulist-popover-expected-auralinux.txt
+data/accessibility/html/menulist-popover-expected-blink.txt
+data/accessibility/html/menulist-popover.html
 data/accessibility/html/meta-expected-android.txt
 data/accessibility/html/meta-expected-fuchsia.txt
 data/accessibility/html/meta-expected-mac.txt

@@ -89,6 +89,9 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable layout of canvas children with the layoutsubtree attribute.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "CanvasDrawElement");
+  // Enable MenuElements so that the new menu elements are recognized.
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "MenuElements");
 }
 
 void DumpAccessibilityTreeTest::SetUpOnMainThread() {
@@ -1487,6 +1490,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaMeter) {
   RunAriaTest(FILE_PATH_LITERAL("aria-meter.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityMenuBarElementRoles) {
+  RunHtmlTest(FILE_PATH_LITERAL("menubar-element-roles.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityMenuListPopover) {
+  RunHtmlTest(FILE_PATH_LITERAL("menulist-popover.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

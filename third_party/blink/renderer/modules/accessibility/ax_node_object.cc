@@ -106,7 +106,10 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_li_element.h"
 #include "third_party/blink/renderer/core/html/html_map_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html/html_meter_element.h"
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/html/html_paragraph_element.h"
@@ -2232,6 +2235,18 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
 
   if (IsA<HTMLPermissionElement>(node)) {
     return ax::mojom::blink::Role::kButton;
+  }
+
+  if (IsA<HTMLMenuBarElement>(node)) {
+    return ax::mojom::blink::Role::kMenuBar;
+  }
+
+  if (IsA<HTMLMenuItemElement>(node)) {
+    return ax::mojom::blink::Role::kMenuItem;
+  }
+
+  if (IsA<HTMLMenuListElement>(node)) {
+    return ax::mojom::blink::Role::kMenu;
   }
 
   // Anything that needs to be exposed but doesn't have a more specific role
@@ -6347,7 +6362,6 @@ bool AXNodeObject::CanHaveChildren() const {
       // model in the HTML spec.
       break;
     case ax::mojom::blink::Role::kCheckBox:
-    case ax::mojom::blink::Role::kMenuItem:
     case ax::mojom::blink::Role::kMenuItemCheckBox:
     case ax::mojom::blink::Role::kMenuItemRadio:
     case ax::mojom::blink::Role::kProgressIndicator:
@@ -6363,6 +6377,7 @@ bool AXNodeObject::CanHaveChildren() const {
                       << "\n* Aria role: " << RawAriaRole();
       break;
     case ax::mojom::blink::Role::kComboBoxSelect:
+    case ax::mojom::blink::Role::kMenuItem:
     case ax::mojom::blink::Role::kPopUpButton:
     case ax::mojom::blink::Role::kStaticText:
       // Note: these can have AXInlineTextBox children, but when adding them, we
