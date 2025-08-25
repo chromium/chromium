@@ -334,6 +334,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_forward_arrow_black_24dp.xml",
   "java/res/drawable/ic_fullscreen_enter.xml",
   "java/res/drawable/ic_fullscreen_exit.xml",
+  "java/res/drawable/ic_google_services_24dp.xml",
   "java/res/drawable/ic_google_services_48dp.xml",
   "java/res/drawable/ic_google_services_48dp_containment.xml",
   "java/res/drawable/ic_google_services_48dp_with_bg.xml",

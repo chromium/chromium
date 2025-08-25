@@ -121,6 +121,7 @@ android_library("unit_device_javatests") {
   testonly = true
   sources = [
     "javatests/src/org/chromium/components/browser_ui/settings/SettingsStylingControllerTest.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/CardWithButtonPreferenceRenderTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/CardWithButtonPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBaseCheckBoxPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceTest.java",
@@ -148,6 +149,7 @@ android_library("unit_device_javatests") {
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.components.browser_ui.settings.test"
 }
