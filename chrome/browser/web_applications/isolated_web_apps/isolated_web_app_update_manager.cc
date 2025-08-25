@@ -28,6 +28,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -72,7 +73,7 @@ IsolatedWebAppUpdateOptions::IsolatedWebAppUpdateOptions(
     const GURL& update_manifest_url,
     UpdateChannel update_channel,
     bool allow_downgrades,
-    const std::optional<base::Version>& pinned_version)
+    const std::optional<IwaVersion>& pinned_version)
     : update_manifest_url(update_manifest_url),
       update_channel(update_channel),
       allow_downgrades(allow_downgrades),
@@ -167,12 +168,18 @@ IwaBundleIdToUpdateOptionsMap GetForceInstalledPolicyIsolatedWebApps(
 
   for (const auto& install_options :
        IsolatedWebAppPolicyManager::GetIwaInstallForceList(*profile)) {
-    result.emplace(
-        install_options.web_bundle_id(),
-        IsolatedWebAppUpdateOptions(install_options.update_manifest_url(),
-                                    install_options.update_channel(),
-                                    install_options.allow_downgrades(),
-                                    install_options.pinned_version()));
+    // TODO(crbug.com/437038363): Adjust to IwaVersion.
+    std::optional<IwaVersion> pinned_version;
+    if (install_options.pinned_version().has_value()) {
+      pinned_version = base::OptionalFromExpected(
+          IwaVersion::Create(install_options.pinned_version()->components()));
+    }
+
+    result.emplace(install_options.web_bundle_id(),
+                   IsolatedWebAppUpdateOptions(
+                       install_options.update_manifest_url(),
+                       install_options.update_channel(),
+                       install_options.allow_downgrades(), pinned_version));
   }
 
   return result;
@@ -184,12 +191,19 @@ IwaBundleIdToUpdateOptionsMap GetKioskPolicyIsolatedWebApps() {
   std::optional<ash::KioskIwaUpdateData> kiosk_iwa_policy_data =
       ash::GetCurrentKioskIwaUpdateData();
   if (kiosk_iwa_policy_data) {
+    // TODO(crbug.com/437038363): Adjust to IwaVersion.
+    std::optional<IwaVersion> pinned_version;
+    if (kiosk_iwa_policy_data->pinned_version.has_value()) {
+      pinned_version = base::OptionalFromExpected(IwaVersion::Create(
+          kiosk_iwa_policy_data->pinned_version->components()));
+    }
+
     result.emplace(
         kiosk_iwa_policy_data->web_bundle_id,
         IsolatedWebAppUpdateOptions(kiosk_iwa_policy_data->update_manifest_url,
                                     kiosk_iwa_policy_data->update_channel,
                                     kiosk_iwa_policy_data->allow_downgrades,
-                                    kiosk_iwa_policy_data->pinned_version));
+                                    pinned_version));
   }
   return result;
 }
@@ -473,7 +487,7 @@ void IsolatedWebAppUpdateManager::DiscoverUpdatesForApp(
     const GURL& update_manifest_url,
     const UpdateChannel& update_channel,
     bool allow_downgrades,
-    const std::optional<base::Version>& pinned_version,
+    const std::optional<IwaVersion>& pinned_version,
     bool dev_mode) {
   task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
       IwaUpdateDiscoveryTaskParams(update_manifest_url, update_channel,
@@ -505,8 +519,7 @@ void IsolatedWebAppUpdateManager::DiscoverApplyAndPrioritizeLocalDevModeUpdate(
                      std::move(callback)));
 }
 
-void IsolatedWebAppUpdateManager::OnComponentUpdateSuccess(
-    bool is_preloaded) {
+void IsolatedWebAppUpdateManager::OnComponentUpdateSuccess(bool is_preloaded) {
   // The corresponding observer is added during `Start()`.
   CHECK(has_started_);
 
@@ -614,10 +627,10 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
   }
 
   if (update_options->pinned_version &&
-      !ShouldProceedWithVersionChange(update_options->pinned_version.value(),
-                                      update_options->allow_downgrades,
-                                      url_info.web_bundle_id(),
-                                      isolation_data.value())) {
+      !ShouldProceedWithVersionChange(
+          update_options->pinned_version.value().version(),
+          update_options->allow_downgrades, url_info.web_bundle_id(),
+          isolation_data.value())) {
     // By default, pinning an app to a lower version than the current one is
     // impossible.
     // The same version updates can only be performed when allowed by key

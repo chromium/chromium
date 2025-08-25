@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -120,7 +121,7 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
 
   void UpdateManifestInstalledIsolatedWebApp(
       const webapps::AppId& app_id,
-      std::optional<base::Version> pinned_version,
+      std::optional<IwaVersion> pinned_version,
       bool allow_downgrades,
       Handler::UpdateManifestInstalledIsolatedWebAppCallback callback) {
     if (base::Contains(update_requests_, app_id)) {
@@ -582,9 +583,13 @@ void IwaInternalsHandler::UpdateManifestInstalledIsolatedWebApp(
         "WebAppProvider is not available for the current profile.");
     return;
   }
+  // TODO(crbug.com/437038363): Adjust to IwaVersion.
+  std::optional<IwaVersion> pinned_version;
+  if (auto* version = base::FindOrNull(pinned_versions_, app_id)) {
+    pinned_version =
+        base::OptionalFromExpected(IwaVersion::Create(version->components()));
+  }
 
-  std::optional<base::Version> pinned_version =
-      base::OptionalFromPtr(base::FindOrNull(pinned_versions_, app_id));
   bool allow_downgrades = app_ids_allowing_downgrades_.contains(app_id);
 
   update_handler_->UpdateManifestInstalledIsolatedWebApp(

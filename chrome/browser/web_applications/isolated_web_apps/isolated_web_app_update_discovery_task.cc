@@ -26,7 +26,6 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "base/version.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -113,7 +112,7 @@ IwaUpdateDiscoveryTaskParams::IwaUpdateDiscoveryTaskParams(
     const GURL& update_manifest_url,
     const UpdateChannel& update_channel,
     bool allow_downgrades,
-    const std::optional<base::Version>& pinned_version,
+    const std::optional<IwaVersion>& pinned_version,
     const IsolatedWebAppUrlInfo& url_info,
     bool dev_mode)
     : update_manifest_url_(update_manifest_url),
@@ -257,10 +256,8 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
 
   std::optional<UpdateManifest::VersionEntry> version_entry;
   if (task_params_.pinned_version().has_value()) {
-    // TODO(crbug.com/437038363): Adjust to IwaVersion.
-    version_entry = update_manifest.GetVersion(
-        IwaVersion::Create(task_params_.pinned_version()->components()).value(),
-        task_params_.update_channel());
+    version_entry = update_manifest.GetVersion(*task_params_.pinned_version(),
+                                               task_params_.update_channel());
     if (!version_entry) {
       FailWith(Error::kPinnedVersionNotFoundInUpdateManifest);
       return;
@@ -297,9 +294,12 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
       GetIsolatedWebAppById(*registrar_, task_params_.url_info().app_id()),
       [&](const std::string&) { FailWith(Error::kIwaNotInstalled); });
   const auto& isolation_data = *iwa.isolation_data();
-  currently_installed_version_ = isolation_data.version();
+  //  TODO(crbug.com/437038363): Adjust to IwaVersion after migrating isolation
+  //  data.
+  currently_installed_version_ =
+      IwaVersion::Create(isolation_data.version().components()).value();
   debug_log_.Set("currently_installed_version",
-                 currently_installed_version_.GetString());
+                 currently_installed_version_->GetString());
 
   const auto& pending_update = isolation_data.pending_update_info();
 
@@ -345,7 +345,8 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
   // the mentioned command will re-check that the new version can be applied.
   VersionChangeValidationResult validation_result =
       ValidateVersionChangeFeasibility(
-          version_entry->version().version(), currently_installed_version_,
+          version_entry->version().version(),
+          currently_installed_version_.value().version(),
           task_params_.allow_downgrades(),
           same_version_update_allowed_by_key_rotation);
 
@@ -414,12 +415,11 @@ void IsolatedWebAppUpdateDiscoveryTask::OnTempFileCreated(
   bundle_downloader_->DownloadSignedWebBundle(
       version_entry.src(), bundle_.path(), kWebBundleDownloadTrafficAnnotation,
       base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded,
-                     weak_factory_.GetWeakPtr(),
-                     version_entry.version().version()));
+                     weak_factory_.GetWeakPtr(), version_entry.version()));
 }
 
 void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
-    const base::Version& expected_version,
+    const IwaVersion& expected_version,
     int32_t net_error) {
   if (net_error != net::OK) {
     debug_log_.Set("bundle_download_error", net::ErrorToString(net_error));
@@ -435,11 +435,11 @@ void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
           ? IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
                 IwaSourceBundleDevModeWithFileOp(
                     bundle_.path(), IwaSourceBundleDevFileOp::kMove),
-                expected_version, task_params_.allow_downgrades())
+                expected_version.version(), task_params_.allow_downgrades())
           : IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
                 IwaSourceBundleProdModeWithFileOp(
                     bundle_.path(), IwaSourceBundleProdFileOp::kMove),
-                expected_version, task_params_.allow_downgrades());
+                expected_version.version(), task_params_.allow_downgrades());
 
   command_scheduler_->PrepareAndStoreIsolatedWebAppUpdate(
       update_info, task_params_.url_info(), std::move(keep_alive_),
@@ -461,10 +461,10 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateDryRunDone(
   Success success_type = Success::kUpdateFoundAndSavedInDatabase;
 
   if (task_params_.pinned_version() &&
-      result->update_version == task_params_.pinned_version()) {
+      result->update_version == task_params_.pinned_version()->version()) {
     success_type = Success::kPinnedVersionUpdateFoundAndSavedInDatabase;
   }
-  if (result->update_version < currently_installed_version_) {
+  if (result->update_version < currently_installed_version_.value().version()) {
     success_type = Success::kDowngradeVersionFoundAndSavedInDatabase;
   }
 

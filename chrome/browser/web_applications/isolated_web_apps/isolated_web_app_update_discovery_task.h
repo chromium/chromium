@@ -13,13 +13,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
-#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_prepare_and_store_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/download/bundle_downloader.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "net/base/net_errors.h"
 
@@ -29,13 +29,12 @@ class WebAppRegistrar;
 
 class IwaUpdateDiscoveryTaskParams {
  public:
-  IwaUpdateDiscoveryTaskParams(
-      const GURL& update_manifest_url,
-      const UpdateChannel& update_channel,
-      bool allow_downgrades,
-      const std::optional<base::Version>& pinned_version,
-      const IsolatedWebAppUrlInfo& url_info,
-      bool dev_mode);
+  IwaUpdateDiscoveryTaskParams(const GURL& update_manifest_url,
+                               const UpdateChannel& update_channel,
+                               bool allow_downgrades,
+                               const std::optional<IwaVersion>& pinned_version,
+                               const IsolatedWebAppUrlInfo& url_info,
+                               bool dev_mode);
 
   IwaUpdateDiscoveryTaskParams(IwaUpdateDiscoveryTaskParams&& other);
   ~IwaUpdateDiscoveryTaskParams();
@@ -43,7 +42,7 @@ class IwaUpdateDiscoveryTaskParams {
   const GURL& update_manifest_url() const { return update_manifest_url_; }
   const UpdateChannel& update_channel() const { return update_channel_; }
   bool allow_downgrades() const { return allow_downgrades_; }
-  const std::optional<base::Version>& pinned_version() const {
+  const std::optional<IwaVersion>& pinned_version() const {
     return pinned_version_;
   }
   const IsolatedWebAppUrlInfo& url_info() const { return url_info_; }
@@ -53,7 +52,7 @@ class IwaUpdateDiscoveryTaskParams {
   GURL update_manifest_url_;
   UpdateChannel update_channel_;
   bool allow_downgrades_;
-  std::optional<base::Version> pinned_version_;
+  std::optional<IwaVersion> pinned_version_;
   IsolatedWebAppUrlInfo url_info_;
   bool dev_mode_;
 };
@@ -144,7 +143,7 @@ class IsolatedWebAppUpdateDiscoveryTask {
   void OnTempFileCreated(UpdateManifest::VersionEntry version_entry,
                          ScopedTempWebBundleFile bundle);
 
-  void OnWebBundleDownloaded(const base::Version& expected_version,
+  void OnWebBundleDownloaded(const IwaVersion& expected_version,
                              int32_t net_error);
 
   void OnUpdateDryRunDone(
@@ -165,7 +164,7 @@ class IsolatedWebAppUpdateDiscoveryTask {
   const raw_ref<Profile> profile_;
 
   ScopedTempWebBundleFile bundle_;
-  base::Version currently_installed_version_;
+  std::optional<IwaVersion> currently_installed_version_;
 
   std::unique_ptr<UpdateManifestFetcher> update_manifest_fetcher_;
   std::unique_ptr<IsolatedWebAppDownloader> bundle_downloader_;
