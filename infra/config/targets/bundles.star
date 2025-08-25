@@ -5436,56 +5436,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "ios_m1_simulator_tests",
-    targets = [
-        targets.bundle(
-            targets = "ios_common_tests",
-            variants = [
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_2",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_cq_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-                "record_failed_tests",
-            ],
-            variants = [
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
-                "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_2",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-                "record_failed_tests",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_2",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_screen_size_dependent_tests",
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_14_PRO_MAX_17_5",
-                "SIM_IPHONE_15_18_2",
-                "SIM_IPHONE_15_PRO_MAX_18_2",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
     name = "ios_passing_eg2_cq_tests",
     targets = [
         "ios_web_shell_eg2tests_module",
