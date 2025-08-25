@@ -1421,7 +1421,8 @@ void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
     intelligent_scan_info.set_no_info_reason(
         IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
   }
-  if (response.model_version > 0) {
+  if (response.model_version != IntelligentScanDelegate::IntelligentScanResult::
+                                    kModelVersionUnavailable) {
     intelligent_scan_info.set_model_version(response.model_version);
   }
   *verdict->mutable_intelligent_scan_info() = std::move(intelligent_scan_info);
