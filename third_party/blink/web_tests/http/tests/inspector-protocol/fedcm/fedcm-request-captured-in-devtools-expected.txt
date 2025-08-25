@@ -26,7 +26,7 @@ msg.params: {
     ]
     dialogId : <string>
     dialogType : AccountChooser
-    title : Sign in
+    title : Sign in to devtools.test
 }
 token: 1234
 urls loaded

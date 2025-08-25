@@ -54,21 +54,21 @@ void WebTestFedCmManager::GetDialogType(
   std::move(callback).Run(type_string);
 }
 
-void WebTestFedCmManager::GetFedCmDialogTitle(
+void WebTestFedCmManager::GetFedCmDialogTitleAndSubtitle(
     blink::test::mojom::FederatedAuthRequestAutomation::
-        GetFedCmDialogTitleCallback callback) {
+        GetFedCmDialogTitleAndSubtitleCallback callback) {
   FederatedAuthRequestImpl* auth_request = GetAuthRequestImpl();
   if (!auth_request) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
   IdentityRequestDialogController* controller =
       auth_request->GetDialogController();
   if (!controller) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
-  std::move(callback).Run(controller->GetTitle());
+  std::move(callback).Run(controller->GetTitle(), controller->GetSubtitle());
 }
 
 void WebTestFedCmManager::SelectFedCmAccount(

@@ -1019,6 +1019,27 @@
     "expires": "Aug 1, 2026"
   },
   {
+    "prefix": "fedcm-third-party-iframe",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/fedcm/third-party-iframe/"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=FedCmIframeOrigin"
+    ],
+    "owners": [
+      "cbiesinger@chromium.org",
+      "npm@chromium.org",
+      "goto@chromium.org"
+    ],
+    "expires": "Aug 1, 2026"
+  },
+  {
     "prefix": "fedcm-register",
     "platforms": [
       "Linux",

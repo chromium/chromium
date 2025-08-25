@@ -377,8 +377,7 @@
   }
 
   window.test_driver_internal.get_fedcm_dialog_title = async function() {
-    // TODO(crbug.com/331237005): Return a subtitle, if we have one.
-    return {title: await internals.getFedCmTitle()};
+    return internals.getFedCmTitleAndSubtitle();
   }
 
   window.test_driver_internal.select_fedcm_account = async function(account_index) {

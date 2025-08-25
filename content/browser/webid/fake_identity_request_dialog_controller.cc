@@ -5,6 +5,7 @@
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 
 #include "base/functional/callback.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "content/public/browser/page_navigator.h"
@@ -51,6 +52,12 @@ bool FakeIdentityRequestDialogController::ShowAccountsDialog(
       title_ = "Continue";
       break;
   };
+  if (!rp_data.iframe_for_display.empty()) {
+    title_ += " to " + base::UTF16ToUTF8(rp_data.iframe_for_display);
+    subtitle_ = "on " + base::UTF16ToUTF8(rp_data.rp_for_display);
+  } else {
+    title_ += " to " + base::UTF16ToUTF8(rp_data.rp_for_display);
+  }
 
   // Use the provided account, if any. Otherwise do not run the callback right
   // away.
@@ -75,6 +82,7 @@ bool FakeIdentityRequestDialogController::ShowFailureDialog(
     DismissCallback dismiss_callback,
     LoginToIdPCallback login_callback) {
   title_ = "Confirm IDP Login";
+  subtitle_ = "";
   did_show_ui_ = true;
   return true;
 }
@@ -105,6 +113,7 @@ bool FakeIdentityRequestDialogController::ShowLoadingDialog(
     blink::mojom::RpMode rp_mode,
     DismissCallback dismiss_callback) {
   title_ = "Loading";
+  subtitle_ = "";
   return true;
 }
 
@@ -118,12 +127,21 @@ bool FakeIdentityRequestDialogController::ShowVerifyingDialog(
   title_ = sign_in_mode == content::IdentityRequestAccount::SignInMode::kAuto
                ? "Signing you in"
                : "Verifying";
+  subtitle_ = "";
   did_show_ui_ = true;
   return true;
 }
 
 std::string FakeIdentityRequestDialogController::GetTitle() const {
   return title_;
+}
+
+std::optional<std::string> FakeIdentityRequestDialogController::GetSubtitle()
+    const {
+  if (subtitle_.empty()) {
+    return std::nullopt;
+  }
+  return subtitle_;
 }
 
 void FakeIdentityRequestDialogController::ShowUrl(LinkType link_type,

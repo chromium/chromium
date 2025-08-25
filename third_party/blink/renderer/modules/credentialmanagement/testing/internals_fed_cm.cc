@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dialog_button.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_fed_cm_title_and_subtitle.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -67,7 +68,7 @@ ScriptPromise<IDLString> InternalsFedCm::getFedCmDialogType(
 }
 
 // static
-ScriptPromise<IDLString> InternalsFedCm::getFedCmTitle(
+ScriptPromise<FedCmTitleAndSubtitle> InternalsFedCm::getFedCmTitleAndSubtitle(
     ScriptState* script_state,
     Internals&) {
   mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>
@@ -75,26 +76,34 @@ ScriptPromise<IDLString> InternalsFedCm::getFedCmTitle(
           CreateFedAuthRequestAutomation(script_state);
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<FedCmTitleAndSubtitle>>(
+          script_state);
   auto promise = resolver->Promise();
   // Get the interface so `federated_auth_request_automation` can be moved
   // below.
   test::mojom::blink::FederatedAuthRequestAutomation*
       raw_federated_auth_request_automation =
           federated_auth_request_automation.get();
-  raw_federated_auth_request_automation->GetFedCmDialogTitle(BindOnce(
-      // While we only really need |resolver|, we also take the
-      // mojo::Remote<> so that it remains alive after this function exits.
-      [](ScriptPromiseResolver<IDLString>* resolver,
-         mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>,
-         const String& title) {
-        if (!title.empty()) {
-          resolver->Resolve(title);
-        } else {
-          resolver->Reject();
-        }
-      },
-      WrapPersistent(resolver), std::move(federated_auth_request_automation)));
+  raw_federated_auth_request_automation->GetFedCmDialogTitleAndSubtitle(
+      BindOnce(
+          // While we only really need |resolver|, we also take the
+          // mojo::Remote<> so that it remains alive after this function exits.
+          [](ScriptPromiseResolver<FedCmTitleAndSubtitle>* resolver,
+             mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>,
+             const String& title, const String& subtitle) {
+            if (!title.empty()) {
+              FedCmTitleAndSubtitle* ret = FedCmTitleAndSubtitle::Create();
+              ret->setTitle(title);
+              if (!subtitle.empty()) {
+                ret->setSubtitle(subtitle);
+              }
+              resolver->Resolve(ret);
+            } else {
+              resolver->Reject();
+            }
+          },
+          WrapPersistent(resolver),
+          std::move(federated_auth_request_automation)));
   return promise;
 }
 

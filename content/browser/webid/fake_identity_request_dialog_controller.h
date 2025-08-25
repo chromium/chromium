@@ -79,6 +79,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       AccountsDisplayedCallback accounts_displayed_callback) override;
 
   std::string GetTitle() const override;
+  std::optional<std::string> GetSubtitle() const override;
 
   void ShowUrl(LinkType link_type, const GURL& url) override;
 
@@ -102,6 +103,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
 
   std::optional<std::string> selected_account_;
   std::string title_;
+  std::string subtitle_;
   // The caller ensures that this object does not outlive the web_contents_.
   raw_ptr<WebContents> web_contents_;
   // We observe WebContentsDestroyed to ensure that this pointer is valid.
