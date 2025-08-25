@@ -97,9 +97,15 @@ const base::flat_set<std::string> FetchHandlerBypassedHashStrings();
 bool IsEligibleForSyntheticResponse(BrowserContext* browser_context,
                                     const GURL& client_url);
 CONTENT_EXPORT bool IsEligibleForSyntheticResponseForTesting(  // IN-TEST
+    BrowserContext* browser_context,
     const GURL& client_url,
     const std::string& allowed_url,
     const std::string& denied_url_params);
+bool IsEligibleForSyntheticResponseInternal(
+    BrowserContext* browser_context,
+    const GURL& client_url,
+    const std::string& allowed_url,
+    const base::flat_set<std::string>& denied_url_params);
 
 }  // namespace service_worker_loader_helpers
 
