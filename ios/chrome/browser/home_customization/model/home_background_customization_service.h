@@ -16,6 +16,7 @@
 #import "components/sync/protocol/theme_specifics_ios.pb.h"
 #import "components/sync/protocol/theme_types.pb.h"
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
+#import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
 #import "third_party/skia/include/core/SkColor.h"
 
 class GURL;
@@ -113,7 +114,8 @@ class HomeBackgroundCustomizationService : public KeyedService {
  public:
   explicit HomeBackgroundCustomizationService(
       PrefService* pref_service,
-      UserUploadedImageManager* user_image_manager);
+      UserUploadedImageManager* user_image_manager,
+      HomeBackgroundImageService* home_background_image_service);
 
   HomeBackgroundCustomizationService(
       const HomeBackgroundCustomizationService&) = delete;
@@ -230,7 +232,8 @@ class HomeBackgroundCustomizationService : public KeyedService {
 
   // Adds the provided `recent_background` to the list of recently used
   // backgrounds. The list has the newest items at the front, and also a max
-  // size. The oldest item is removed when the size is exceeded.
+  // size. The oldest item is removed when the size is exceeded. Does not
+  // persist the list to disk.
   void AddToRecentlyUsedBackgroundsList(
       RecentlyUsedBackgroundInternal&& recent_background);
 
@@ -242,6 +245,10 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // Deletes the listed image from disk.
   void DeleteUserBackgroundImage(
       HomeUserUploadedBackground user_background_image);
+
+  // Handles the loaded images.
+  void DefaultRecentlyUsedBackgroundsLoaded(
+      const HomeBackgroundImageService::CollectionImageMap& collection_map);
 
   sync_pb::ThemeSpecificsIos current_theme_;
 
@@ -257,7 +264,12 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // Image manager used for interacting with the filesystem.
   raw_ptr<UserUploadedImageManager> user_image_manager_;
 
+  // Service used to load lists of recently used images.
+  raw_ptr<HomeBackgroundImageService> home_background_image_service_;
+
   base::ObserverList<HomeBackgroundCustomizationServiceObserver> observers_;
+
+  base::WeakPtrFactory<HomeBackgroundCustomizationService> weak_ptr_factory_;
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_BACKGROUND_CUSTOMIZATION_SERVICE_H_

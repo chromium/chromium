@@ -7,6 +7,7 @@
 #import "base/no_destructor.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -29,6 +30,7 @@ HomeBackgroundCustomizationServiceFactory::
     HomeBackgroundCustomizationServiceFactory()
     : ProfileKeyedServiceFactoryIOS("HomeBackgroundCustomizationService") {
   DependsOn(UserUploadedImageManagerFactory::GetInstance());
+  DependsOn(HomeBackgroundImageServiceFactory::GetInstance());
 }
 
 HomeBackgroundCustomizationServiceFactory::
@@ -40,7 +42,8 @@ HomeBackgroundCustomizationServiceFactory::BuildServiceInstanceFor(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<HomeBackgroundCustomizationService>(
       profile->GetPrefs(),
-      UserUploadedImageManagerFactory::GetForProfile(profile));
+      UserUploadedImageManagerFactory::GetForProfile(profile),
+      HomeBackgroundImageServiceFactory::GetForProfile(profile));
 }
 
 void HomeBackgroundCustomizationServiceFactory::RegisterBrowserStatePrefs(
