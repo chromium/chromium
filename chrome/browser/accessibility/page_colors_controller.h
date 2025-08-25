@@ -8,35 +8,29 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/native_theme/native_theme.h"
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
+class PrefRegistrySimple;
+class PrefService;
 
-// Manages the page colors feature, which simulates forced colors mode at the
-// browser level. This tracks the per-profile preference and OS preferred
-// contrast state from NativeTheme to update the WebContents Page Colors state
-// based on any changes.
+// Manages the page colors feature, which allows overriding the web theme's
+// forced colors.
 class PageColorsController : public KeyedService,
                              public ui::NativeThemeObserver {
  public:
   explicit PageColorsController(PrefService* profile_prefs);
   PageColorsController(const PageColorsController&) = delete;
   PageColorsController& operator=(const PageColorsController&) = delete;
-
   ~PageColorsController() override;
 
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  void Init();
+  // ui::NativeThemeObserver:
+  void OnPreferredContrastChanged() override;
 
  private:
-  friend class PageColorsControllerFactory;
-
   // Handles when page colors preferences change.
   void OnPageColorsChanged();
 
@@ -45,16 +39,10 @@ class PageColorsController : public KeyedService,
   // calculate the used page colors.
   ui::NativeTheme::PageColors CalculatePageColors();
 
-  // ui::NativeThemeObserver
-  void OnPreferredContrastChanged() override;
-
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
-
   PrefChangeRegistrar pref_change_registrar_;
-
   raw_ptr<PrefService> profile_prefs_;
-
   base::WeakPtrFactory<PageColorsController> weak_factory_{this};
 };
 

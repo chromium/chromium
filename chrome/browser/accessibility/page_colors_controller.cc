@@ -7,9 +7,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync_preferences/pref_service_syncable.h"
 #include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -20,12 +19,23 @@
 PageColorsController::PageColorsController(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+
+  pref_change_registrar_.Init(profile_prefs_);
+  pref_change_registrar_.Add(
+      prefs::kPageColors,
+      base::BindRepeating(&PageColorsController::OnPageColorsChanged,
+                          weak_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      prefs::kApplyPageColorsOnlyOnIncreasedContrast,
+      base::BindRepeating(&PageColorsController::OnPageColorsChanged,
+                          weak_factory_.GetWeakPtr()));
+  OnPreferredContrastChanged();
 }
+
 PageColorsController::~PageColorsController() = default;
 
 // static
-void PageColorsController::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
+void PageColorsController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kPageColors,
       /*default_value=*/ui::NativeTheme::PageColors::kOff);
@@ -41,17 +51,39 @@ void PageColorsController::RegisterProfilePrefs(
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-void PageColorsController::Init() {
-  pref_change_registrar_.Init(profile_prefs_);
-  pref_change_registrar_.Add(
-      prefs::kPageColors,
-      base::BindRepeating(&PageColorsController::OnPageColorsChanged,
-                          weak_factory_.GetWeakPtr()));
-  pref_change_registrar_.Add(
-      prefs::kApplyPageColorsOnlyOnIncreasedContrast,
-      base::BindRepeating(&PageColorsController::OnPageColorsChanged,
-                          weak_factory_.GetWeakPtr()));
-  OnPreferredContrastChanged();
+void PageColorsController::OnPreferredContrastChanged() {
+#if BUILDFLAG(IS_WIN)
+  ui::NativeTheme::PageColors page_colors =
+      static_cast<ui::NativeTheme::PageColors>(
+          profile_prefs_->GetInteger(prefs::kPageColors));
+
+  // Validating the page colors variable.
+  DCHECK_GE(page_colors, ui::NativeTheme::PageColors::kOff);
+  DCHECK_LE(page_colors, ui::NativeTheme::PageColors::kMaxValue);
+
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  if (native_theme->UserHasContrastPreference()) {
+    // If increased contrast just got turned on and page colors is 'Off', the
+    // used value of Page Colors should be set to the default value which is
+    // either 'Off' or 'High Contrast'.
+    if (page_colors == ui::NativeTheme::PageColors::kOff) {
+      ui::NativeTheme::PageColors default_page_colors_on_high_contrast =
+          profile_prefs_->GetBoolean(prefs::kIsDefaultPageColorsOnHighContrast)
+              ? ui::NativeTheme::PageColors::kHighContrast
+              : ui::NativeTheme::PageColors::kOff;
+      profile_prefs_->SetInteger(prefs::kPageColors,
+                                 default_page_colors_on_high_contrast);
+    }
+  } else {
+    // If increased contrast just got turned off and page colors was 'High
+    // Contrast', the used value of Page Colors should be 'Off'.
+    if (page_colors == ui::NativeTheme::PageColors::kHighContrast) {
+      profile_prefs_->SetInteger(prefs::kPageColors,
+                                 ui::NativeTheme::PageColors::kOff);
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
+  OnPageColorsChanged();
 }
 
 void PageColorsController::OnPageColorsChanged() {
@@ -110,39 +142,4 @@ ui::NativeTheme::PageColors PageColorsController::CalculatePageColors() {
   }
 
   return used_page_colors;
-}
-
-void PageColorsController::OnPreferredContrastChanged() {
-#if BUILDFLAG(IS_WIN)
-  ui::NativeTheme::PageColors page_colors =
-      static_cast<ui::NativeTheme::PageColors>(
-          profile_prefs_->GetInteger(prefs::kPageColors));
-
-  // Validating the page colors variable.
-  DCHECK_GE(page_colors, ui::NativeTheme::PageColors::kOff);
-  DCHECK_LE(page_colors, ui::NativeTheme::PageColors::kMaxValue);
-
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  if (native_theme->UserHasContrastPreference()) {
-    // If increased contrast just got turned on and page colors is 'Off', the
-    // used value of Page Colors should be set to the default value which is
-    // either 'Off' or 'High Contrast'.
-    if (page_colors == ui::NativeTheme::PageColors::kOff) {
-      ui::NativeTheme::PageColors default_page_colors_on_high_contrast =
-          profile_prefs_->GetBoolean(prefs::kIsDefaultPageColorsOnHighContrast)
-              ? ui::NativeTheme::PageColors::kHighContrast
-              : ui::NativeTheme::PageColors::kOff;
-      profile_prefs_->SetInteger(prefs::kPageColors,
-                                 default_page_colors_on_high_contrast);
-    }
-  } else {
-    // If increased contrast just got turned off and page colors was 'High
-    // Contrast', the used value of Page Colors should be 'Off'.
-    if (page_colors == ui::NativeTheme::PageColors::kHighContrast) {
-      profile_prefs_->SetInteger(prefs::kPageColors,
-                                 ui::NativeTheme::PageColors::kOff);
-    }
-  }
-#endif  // BUILDFLAG(IS_WIN)
-  OnPageColorsChanged();
 }
