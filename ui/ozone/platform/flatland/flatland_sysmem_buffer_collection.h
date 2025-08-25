@@ -17,6 +17,7 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
+#include "ui/ozone/public/native_pixmap_usage.h"
 
 namespace gfx {
 class NativePixmap;
@@ -38,6 +39,8 @@ class FlatlandSysmemBufferCollection
  public:
   static bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                             gfx::BufferUsage usage);
+  static bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
+                                            NativePixmapUsageSet usage);
 
   FlatlandSysmemBufferCollection();
   FlatlandSysmemBufferCollection(const FlatlandSysmemBufferCollection&) =
@@ -59,13 +62,13 @@ class FlatlandSysmemBufferCollection
                   zx::channel sysmem_token,
                   gfx::Size size,
                   gfx::BufferFormat format,
-                  gfx::BufferUsage usage,
+                  NativePixmapUsageSet usage,
                   VkDevice vk_device,
                   size_t min_buffer_count,
                   bool register_with_flatland_allocator);
 
   // Does minimum initialization needed for tests based on |usage|.
-  void InitializeForTesting(zx::eventpair handle, gfx::BufferUsage usage);
+  void InitializeForTesting(zx::eventpair handle, NativePixmapUsageSet usage);
 
   // Creates a NativePixmap with the specified handle. The handle must reference
   // a buffer in this collection.
@@ -111,10 +114,7 @@ class FlatlandSysmemBufferCollection
   void InitializeImageCreateInfo(VkImageCreateInfo* vk_image_info,
                                  gfx::Size size);
 
-  bool is_mappable() const {
-    return usage_ == gfx::BufferUsage::SCANOUT_CPU_READ_WRITE ||
-           usage_ == gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
-  }
+  bool is_mappable() const { return usage_.Has(NativePixmapUsage::kCpuRead); }
 
   // base::MessagePumpForIO::ZxHandleWatcher implementation.
   void OnZxHandleSignalled(zx_handle_t handle, zx_signals_t signals) override;
@@ -131,7 +131,7 @@ class FlatlandSysmemBufferCollection
   gfx::Size min_size_;
 
   gfx::BufferFormat format_ = gfx::BufferFormat::RGBA_8888;
-  gfx::BufferUsage usage_ = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
+  NativePixmapUsageSet usage_ = NativePixmapBufferUsage::kGpuReadCpuReadWrite;
 
   fuchsia::sysmem2::BufferCollectionSyncPtr collection_;
   fuchsia::sysmem2::BufferCollectionInfo buffers_info_;

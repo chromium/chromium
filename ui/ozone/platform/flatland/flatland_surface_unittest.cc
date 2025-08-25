@@ -127,7 +127,7 @@ scoped_refptr<FlatlandSysmemNativePixmap> CreateFlatlandSysmemNativePixmap(
   zx::eventpair::create(0, &service_handle, &handle.buffer_collection_handle);
   auto collection = base::MakeRefCounted<FlatlandSysmemBufferCollection>();
   collection->InitializeForTesting(std::move(service_handle),
-                                   gfx::BufferUsage::SCANOUT);
+                                   NativePixmapBufferUsage::kScanout);
   return base::MakeRefCounted<FlatlandSysmemNativePixmap>(
       collection, std::move(handle), gfx::Size(image_size, image_size));
 }

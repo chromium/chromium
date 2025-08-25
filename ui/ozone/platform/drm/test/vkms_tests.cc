@@ -133,12 +133,12 @@ TEST_F(VKMSTest, SinglePlanePageFlip) {
   // ui/gfx/linux/drm_util_linux.cc
   std::unique_ptr<ui::GbmBuffer> buffer;
   scoped_refptr<ui::DrmFramebuffer> framebuffer;
-  ui::NativePixmapUsageSet native_pixmap_usage = {
+  ui::NativePixmapUsageSet scanout_cpu_usage = {
       ui::NativePixmapUsage::kScanout, ui::NativePixmapUsage::kTexturing,
       ui::NativePixmapUsage::kCpuRead};
   drm_thread_proxy_->CreateBuffer(
       kWidget, kWindowRect.size(), kWindowRect.size(),
-      gfx::BufferFormat::BGRX_8888, native_pixmap_usage,
+      gfx::BufferFormat::BGRX_8888, scanout_cpu_usage,
       /*flags=*/0, &buffer, &framebuffer);
 
   auto planes = std::vector<ui::DrmOverlayPlane>();

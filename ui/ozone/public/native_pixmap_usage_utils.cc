@@ -12,38 +12,29 @@ namespace ui {
 NativePixmapUsageSet BufferUsageToNativePixmapUsage(gfx::BufferUsage usage) {
   switch (usage) {
     case gfx::BufferUsage::GPU_READ:
-      return {NativePixmapUsage::kTexturing};
+      return NativePixmapBufferUsage::kGpuRead;
     case gfx::BufferUsage::SCANOUT:
-      return {NativePixmapUsage::kScanout, NativePixmapUsage::kTexturing,
-              NativePixmapUsage::kRendering};
+      return NativePixmapBufferUsage::kScanout;
     case gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE:
-      return {NativePixmapUsage::kScanout, NativePixmapUsage::kTexturing,
-              NativePixmapUsage::kCpuRead, NativePixmapUsage::kCamera};
+      return NativePixmapBufferUsage::kScanoutCameraCpuReadWrite;
     case gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE:
-      return {NativePixmapUsage::kCpuRead, NativePixmapUsage::kCamera};
+      return NativePixmapBufferUsage::kCameraCpuReadWrite;
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
-      return {NativePixmapUsage::kScanout, NativePixmapUsage::kTexturing,
-              NativePixmapUsage::kCpuRead};
+      return NativePixmapBufferUsage::kScanoutCpuReadWrite;
     case gfx::BufferUsage::SCANOUT_VDA_WRITE:
-      return {NativePixmapUsage::kScanout, NativePixmapUsage::kTexturing,
-              NativePixmapUsage::kHWVideoDecoder};
+      return NativePixmapBufferUsage::kScanoutVDAWrite;
     case gfx::BufferUsage::PROTECTED_SCANOUT:
-      return {NativePixmapUsage::kScanout, NativePixmapUsage::kProtected};
+      return NativePixmapBufferUsage::kProtectedScanout;
     case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
-      return {NativePixmapUsage::kScanout, NativePixmapUsage::kProtected,
-              NativePixmapUsage::kHWVideoDecoder};
+      return NativePixmapBufferUsage::kProtectedScanoutVDAWrite;
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
-      return {NativePixmapUsage::kTexturing, NativePixmapUsage::kCpuRead};
+      return NativePixmapBufferUsage::kGpuReadCpuReadWrite;
     case gfx::BufferUsage::SCANOUT_VEA_CPU_READ:
-      return {NativePixmapUsage::kScanout, NativePixmapUsage::kTexturing,
-              NativePixmapUsage::kCpuRead, NativePixmapUsage::kHWVideoEncoder};
+      return NativePixmapBufferUsage::kScanoutVEACpuRead;
     case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
-      return {NativePixmapUsage::kTexturing, NativePixmapUsage::kCpuRead,
-              NativePixmapUsage::kCamera, NativePixmapUsage::kHWVideoEncoder,
-              NativePixmapUsage::kSWReadOften};
+      return NativePixmapBufferUsage::kVEAReadCameraCpuReadWrite;
     case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
-      return {NativePixmapUsage::kScanout, NativePixmapUsage::kTexturing,
-              NativePixmapUsage::kFrontRendering};
+      return NativePixmapBufferUsage::kScanoutFrontRendering;
   }
 }
 

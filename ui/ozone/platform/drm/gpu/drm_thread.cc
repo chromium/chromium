@@ -161,7 +161,7 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
   CreateBufferWithGbmFlags(drm, fourcc_format, size, framebuffer_size, flags,
                            modifiers, buffer, framebuffer);
 
-  // NativePixmapUsages corresponding to SCANOUT which is used to create buffers
+  // NativePixmapUsages corresponding to SCANOUT is used to create buffers
   // that will be explicitly set via kms on a CRTC (e.g: BufferQueue buffers).
   // Therefore allocation should fail if it's not possible to allocate a buffer
   // in that case.
@@ -169,7 +169,7 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
                                          NativePixmapUsage::kTexturing,
                                          NativePixmapUsage::kRendering};
   // Cannot fallback for PROTECTED usages. If there is any other usage than
-  // Scanout usages then we perform fallback.
+  // SCANOUT usages then we perform fallback.
   bool can_create_fallback = !usage.Has(NativePixmapUsage::kProtected) &&
                              !base::Difference(usage, scanout_usages).empty();
   // TODO(crbug.com/404958317): Historically, usages were checked

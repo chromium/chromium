@@ -43,6 +43,48 @@ using NativePixmapUsageSet =
                   NativePixmapUsage::kScanout,
                   NativePixmapUsage::kLastNativePixmapUsage>;
 
+// Define NativePixmapUsageSet constants corresponding to gfx::BufferUsage.
+// This will help make sure the usages match as we transition away from
+// gfx::BufferUsage.
+// TODO(crbug.com/404958317): Remove NativePixmapBufferUsage once migration to
+// SharedImageUsage is completed.
+class NativePixmapBufferUsage {
+ public:
+  static constexpr NativePixmapUsageSet kGpuRead = {
+      NativePixmapUsage::kTexturing};
+  static constexpr NativePixmapUsageSet kScanout = {
+      NativePixmapUsage::kScanout, NativePixmapUsage::kTexturing,
+      NativePixmapUsage::kRendering};
+  static constexpr NativePixmapUsageSet kScanoutCameraCpuReadWrite = {
+      NativePixmapUsage::kScanout, NativePixmapUsage::kTexturing,
+      NativePixmapUsage::kCpuRead, NativePixmapUsage::kCamera};
+  static constexpr NativePixmapUsageSet kCameraCpuReadWrite = {
+      NativePixmapUsage::kCpuRead, NativePixmapUsage::kCamera};
+  static constexpr NativePixmapUsageSet kScanoutCpuReadWrite = {
+      NativePixmapUsage::kScanout, NativePixmapUsage::kTexturing,
+      NativePixmapUsage::kCpuRead};
+  static constexpr NativePixmapUsageSet kScanoutVDAWrite = {
+      NativePixmapUsage::kScanout, NativePixmapUsage::kTexturing,
+      NativePixmapUsage::kHWVideoDecoder};
+  static constexpr NativePixmapUsageSet kProtectedScanout = {
+      NativePixmapUsage::kScanout, NativePixmapUsage::kProtected};
+  static constexpr NativePixmapUsageSet kProtectedScanoutVDAWrite = {
+      NativePixmapUsage::kScanout, NativePixmapUsage::kProtected,
+      NativePixmapUsage::kHWVideoDecoder};
+  static constexpr NativePixmapUsageSet kGpuReadCpuReadWrite = {
+      NativePixmapUsage::kTexturing, NativePixmapUsage::kCpuRead};
+  static constexpr NativePixmapUsageSet kScanoutVEACpuRead = {
+      NativePixmapUsage::kScanout, NativePixmapUsage::kTexturing,
+      NativePixmapUsage::kCpuRead, NativePixmapUsage::kHWVideoEncoder};
+  static constexpr NativePixmapUsageSet kVEAReadCameraCpuReadWrite = {
+      NativePixmapUsage::kTexturing, NativePixmapUsage::kCpuRead,
+      NativePixmapUsage::kCamera, NativePixmapUsage::kHWVideoEncoder,
+      NativePixmapUsage::kSWReadOften};
+  static constexpr NativePixmapUsageSet kScanoutFrontRendering = {
+      NativePixmapUsage::kScanout, NativePixmapUsage::kTexturing,
+      NativePixmapUsage::kFrontRendering};
+};
+
 }  // namespace ui
 
 #endif  // UI_OZONE_PUBLIC_NATIVE_PIXMAP_USAGE_H_
