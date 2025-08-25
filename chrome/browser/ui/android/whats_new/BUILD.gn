@@ -15,8 +15,7 @@ android_library("feature_list_java") {
   ]
   deps = [
     "//base:resetters_java",
-    "//chrome/android:chrome_app_java_resources",
-    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_jvm_java",
   ]
 }
 
