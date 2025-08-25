@@ -104,15 +104,23 @@ bool PendingAnimations::Update(
           waiting_for_start_time.push_back(animation.Get());
         }
       } else if (animation->PendingInternal()) {
-        DCHECK(animation->TimelineInternal()->IsActive() &&
-               animation->TimelineInternal()->CurrentTime() &&
-               animation->CurrentTimeInternal());
-        // A pending animation that is not waiting on a start time does not need
-        // to be synchronized with animations that are starting up. Nonetheless,
-        // it needs to notify the animation to resolve the ready promise and
-        // commit the pending state.
-        animation->NotifyReady(
-            animation->TimelineInternal()->CurrentTime().value());
+        if (!has_monotonic_timeline && !animation->CurrentTimeInternal()) {
+          // Animations attached to a scroll-timeline rely on a deferred start
+          // time to determine the initial animation progress. Until the
+          // animation has a current time, keep it in a pending state.
+          deferred.push_back(animation);
+        } else {
+          DCHECK(animation->TimelineInternal()->IsActive() &&
+                 animation->TimelineInternal()->CurrentTime() &&
+                 animation->CurrentTimeInternal());
+          // A pending animation that is not waiting on a start time does not
+          // need
+          // to be synchronized with animations that are starting up.
+          // Nonetheless, it needs to notify the animation to resolve the ready
+          // promise and commit the pending state.
+          animation->NotifyReady(
+              animation->TimelineInternal()->CurrentTime().value());
+        }
       }
     } else if (animation->CurrentTimeInternal()) {
       // TODO(crbug.com/397451098): We shouldn't need to push these on a

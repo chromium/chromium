@@ -87,6 +87,8 @@ class CORE_EXPORT DocumentAnimations final
     return timelines_;
   }
 
+  void UpdateAnimationTriggerAttachments();
+
   uint64_t current_transition_generation_;
   void Trace(Visitor*) const;
 

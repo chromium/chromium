@@ -141,6 +141,8 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
 
   const Animation* GetAnimationForTesting() const { return GetAnimation(); }
 
+  void SetPausedForTrigger(bool paused_for_trigger);
+
   void Trace(Visitor*) const override;
 
  protected:
@@ -187,6 +189,11 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   mutable bool needs_update_;
   mutable std::optional<AnimationTimeDelta> last_update_time_;
   mutable bool last_is_idle_ = false;
+  // This flag, together with |normalized_.*boundary_aligned|, indicates
+  // whether this AnimationEffect should be endpoint-exclusive.
+  // |normalized_.*boundary_aligned| is not sufficient for this purpose because
+  // it depends on the animation direction whereas paused_for_trigger does not.
+  bool paused_for_trigger_ = false;
   AnimationTimeDelta cancel_time_;
   const Timing::CalculatedTiming& EnsureCalculated() const;
   void EnsureNormalizedTiming() const;

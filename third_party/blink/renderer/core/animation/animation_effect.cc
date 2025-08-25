@@ -345,7 +345,8 @@ void AnimationEffect::UpdateInheritedTime(
   if (needs_update) {
     Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(
         inherited_time, is_idle, NormalizedTiming(), direction,
-        IsA<KeyframeEffect>(this), inherited_playback_rate);
+        IsA<KeyframeEffect>(this), inherited_playback_rate,
+        paused_for_trigger_);
 
     const bool was_canceled = calculated.phase != calculated_.phase &&
                               calculated.phase == Timing::kPhaseNone;
@@ -403,6 +404,10 @@ Animation* AnimationEffect::GetAnimation() {
 }
 const Animation* AnimationEffect::GetAnimation() const {
   return owner_ ? owner_->GetAnimation() : nullptr;
+}
+
+void AnimationEffect::SetPausedForTrigger(bool paused_for_trigger) {
+  paused_for_trigger_ = paused_for_trigger;
 }
 
 void AnimationEffect::Trace(Visitor* visitor) const {

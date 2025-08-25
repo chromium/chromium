@@ -186,12 +186,13 @@ Timing::CalculatedTiming Timing::CalculateTimings(
     const NormalizedTiming& normalized_timing,
     AnimationDirection animation_direction,
     bool is_keyframe_effect,
-    std::optional<double> playback_rate) const {
+    std::optional<double> playback_rate,
+    bool paused_for_trigger) const {
   const AnimationTimeDelta active_duration = normalized_timing.active_duration;
   const AnimationTimeDelta duration = normalized_timing.iteration_duration;
 
   Timing::Phase current_phase = TimingCalculations::CalculatePhase(
-      normalized_timing, local_time, animation_direction);
+      normalized_timing, local_time, animation_direction, paused_for_trigger);
 
   const std::optional<AnimationTimeDelta> active_time =
       TimingCalculations::CalculateActiveTime(

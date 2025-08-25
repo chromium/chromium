@@ -73,7 +73,8 @@ class CORE_EXPORT TimingCalculations {
   static Timing::Phase CalculatePhase(
       const Timing::NormalizedTiming& normalized,
       std::optional<AnimationTimeDelta>& local_time,
-      Timing::AnimationDirection direction);
+      Timing::AnimationDirection direction,
+      bool paused_for_trigger);
 
   // https://w3.org/TR/web-animations-1/#calculating-the-active-time
   static std::optional<AnimationTimeDelta> CalculateActiveTime(

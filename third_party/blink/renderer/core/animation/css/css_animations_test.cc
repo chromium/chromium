@@ -2104,9 +2104,11 @@ TEST_P(CSSAnimationsTriggerTest, ChangeTriggerName) {
         animation: stretch 1s;
       }
       .trigger1 {
+        animation-trigger: --trigger1;
         timeline-trigger: --trigger1 view() once contain 10% contain 90%;
       }
       .trigger2 {
+        animation-trigger: --trigger2;
         timeline-trigger: --trigger2 view() once contain 10% contain 90%;
       }
      .scroller {
@@ -2131,7 +2133,11 @@ TEST_P(CSSAnimationsTriggerTest, ChangeTriggerName) {
   )HTML");
   Element* target = GetDocument().getElementById(AtomicString("target"));
   Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  ElementAnimations* animations = target->GetElementAnimations();
+  CSSAnimation* animation =
+      DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
 
+  EXPECT_TRUE(animation->triggers_.empty());
   EXPECT_EQ(target->NamedTriggers(), nullptr);
   EXPECT_EQ(scroller->NamedTriggers(), nullptr);
 
@@ -2143,11 +2149,14 @@ TEST_P(CSSAnimationsTriggerTest, ChangeTriggerName) {
       TestTriggerAssociations(*target, *scroller, AtomicString("--trigger1"));
   EXPECT_EQ(target->NamedTriggers()->size(), 1);
   EXPECT_EQ(scroller->NamedTriggers(), nullptr);
+  EXPECT_TRUE(animation->triggers_.Contains(trigger1));
+  EXPECT_EQ(animation->triggers_.size(), 1);
 
   target->classList().Remove(AtomicString("trigger1"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(target->NamedTriggers()->empty());
   EXPECT_EQ(scroller->NamedTriggers(), nullptr);
+  EXPECT_EQ(animation->triggers_.size(), 0);
 
   target->classList().Add(AtomicString("trigger2"));
   UpdateAllLifecyclePhasesForTest();
@@ -2156,9 +2165,10 @@ TEST_P(CSSAnimationsTriggerTest, ChangeTriggerName) {
   AnimationTrigger* trigger2 =
       TestTriggerAssociations(*target, *scroller, AtomicString("--trigger2"));
   EXPECT_NE(trigger1, trigger2);
+  EXPECT_EQ(animation->triggers_.size(), 1);
+  EXPECT_FALSE(animation->triggers_.Contains(trigger1));
+  EXPECT_TRUE(animation->triggers_.Contains(trigger2));
 
-  // TODO(crbug.com/429392773): test that the animation is removed from
-  // trigger1.
   EXPECT_TRUE(target->NamedTriggers()->Contains(name2));
   EXPECT_FALSE(target->NamedTriggers()->Contains(name1));
   EXPECT_EQ(scroller->NamedTriggers(), nullptr);

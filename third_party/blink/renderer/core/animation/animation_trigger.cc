@@ -461,6 +461,7 @@ void AnimationTrigger::addAnimation(Animation* animation,
 
   animations_.insert(animation);
   animation->AddTrigger(this);
+  animation->UpdateIfNecessary();
 }
 
 void AnimationTrigger::removeAnimation(Animation* animation) {

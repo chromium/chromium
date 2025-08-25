@@ -156,6 +156,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   virtual void RemoveAnimationTrigger(AnimationTrigger* trigger);
   void ServiceAnimationTriggers();
 
+  void UpdateAnimationTriggerAttachments();
+
  protected:
   virtual PhaseAndTime CurrentPhaseAndTime() = 0;
 

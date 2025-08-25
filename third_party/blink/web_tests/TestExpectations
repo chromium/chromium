@@ -9527,13 +9527,6 @@ crbug.com/429440406 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backen
 # Gardener 2025-07-04
 crbug.com/429413927 [ Linux ] inspector-protocol/dom/dom-issue-disallowed-select-descendants-delayed-display.js [ Failure Pass ]
 
-# TODO(crbug.com/429392773): Enable animation-trigger tests. The
-# animation-trigger/parsing directory would inherit the failure expectations
-# from its parent animation-trigger directory, so we need to explicitly mark it
-# as [ Pass ] as the parsing tests should still pass.
-crbug.com/429392773 external/wpt/scroll-animations/animation-trigger/* [ Failure Timeout ]
-crbug.com/429392773 external/wpt/scroll-animations/animation-trigger/parsing/* [ Pass ]
-
 # Flaky Soft Navigation Heuristics tests
 crbug.com/1455262 virtual/threaded/external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html [ Crash Failure Pass Skip ]
 crbug.com/1455262 virtual/view-transition-mpa-serialization/external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html [ Crash Failure Pass Skip ]

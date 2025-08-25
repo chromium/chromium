@@ -297,4 +297,10 @@ void DocumentAnimations::RemoveReplacedAnimations(
   }
 }
 
+void DocumentAnimations::UpdateAnimationTriggerAttachments() {
+  for (const auto& timeline : timelines_) {
+    timeline->UpdateAnimationTriggerAttachments();
+  }
+}
+
 }  // namespace blink

@@ -468,63 +468,73 @@ TEST(AnimationTimingCalculationsTest, AlignmentHistogram) {
 
   EXPECT_EQ(Timing::kPhaseAfter, TimingCalculations::CalculatePhase(
                                      normalized_timing, local_time,
-                                     Timing::AnimationDirection::kForwards));
+                                     Timing::AnimationDirection::kForwards,
+                                     /*paused_for_trigger=*/false));
   histogram_tester.ExpectBucketCount(histogram_name, 0, 0);
 
   normalized_timing.is_start_boundary_aligned = true;
   EXPECT_EQ(Timing::kPhaseAfter, TimingCalculations::CalculatePhase(
                                      normalized_timing, local_time,
-                                     Timing::AnimationDirection::kForwards));
+                                     Timing::AnimationDirection::kForwards,
+                                     /*paused_for_trigger=*/false));
   histogram_tester.ExpectBucketCount(histogram_name, 0, 0);
 
   normalized_timing.is_end_boundary_aligned = true;
   EXPECT_EQ(Timing::kPhaseActive, TimingCalculations::CalculatePhase(
                                       normalized_timing, local_time,
-                                      Timing::AnimationDirection::kForwards));
+                                      Timing::AnimationDirection::kForwards,
+                                      /*paused_for_trigger=*/false));
   histogram_tester.ExpectBucketCount(histogram_name, 0, 0);
 
   local_time = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(1.003);
   EXPECT_EQ(Timing::kPhaseAfter, TimingCalculations::CalculatePhase(
                                      normalized_timing, local_time,
-                                     Timing::AnimationDirection::kForwards));
+                                     Timing::AnimationDirection::kForwards,
+                                     /*paused_for_trigger=*/false));
   histogram_tester.ExpectBucketCount(histogram_name, 3, 1);
 
   // Repeat and ensure the counter increments.
   EXPECT_EQ(Timing::kPhaseAfter, TimingCalculations::CalculatePhase(
                                      normalized_timing, local_time,
-                                     Timing::AnimationDirection::kForwards));
+                                     Timing::AnimationDirection::kForwards,
+                                     /*paused_for_trigger=*/false));
   histogram_tester.ExpectBucketCount(histogram_name, 3, 2);
 
   normalized_timing.is_end_boundary_aligned = false;
   EXPECT_EQ(Timing::kPhaseAfter, TimingCalculations::CalculatePhase(
                                      normalized_timing, local_time,
-                                     Timing::AnimationDirection::kForwards));
+                                     Timing::AnimationDirection::kForwards,
+                                     /*paused_for_trigger=*/false));
   // Value remains unchanged.
   histogram_tester.ExpectBucketCount(histogram_name, 3, 2);
 
   local_time = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0);
   EXPECT_EQ(Timing::kPhaseActive, TimingCalculations::CalculatePhase(
                                       normalized_timing, local_time,
-                                      Timing::AnimationDirection::kBackwards));
+                                      Timing::AnimationDirection::kBackwards,
+                                      /*paused_for_trigger=*/false));
   histogram_tester.ExpectBucketCount(histogram_name, 0, 0);
 
   normalized_timing.is_start_boundary_aligned = false;
   EXPECT_EQ(Timing::kPhaseBefore, TimingCalculations::CalculatePhase(
                                       normalized_timing, local_time,
-                                      Timing::AnimationDirection::kBackwards));
+                                      Timing::AnimationDirection::kBackwards,
+                                      /*paused_for_trigger=*/false));
   histogram_tester.ExpectBucketCount(histogram_name, 0, 0);
 
   normalized_timing.is_start_boundary_aligned = true;
   local_time = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(-0.005);
   EXPECT_EQ(Timing::kPhaseBefore, TimingCalculations::CalculatePhase(
                                       normalized_timing, local_time,
-                                      Timing::AnimationDirection::kBackwards));
+                                      Timing::AnimationDirection::kBackwards,
+                                      /*paused_for_trigger=*/false));
   histogram_tester.ExpectBucketCount(histogram_name, 5, 1);
 
   normalized_timing.is_start_boundary_aligned = false;
   EXPECT_EQ(Timing::kPhaseBefore, TimingCalculations::CalculatePhase(
                                       normalized_timing, local_time,
-                                      Timing::AnimationDirection::kBackwards));
+                                      Timing::AnimationDirection::kBackwards,
+                                      /*paused_for_trigger=*/false));
   // Value remains unchanged.
   histogram_tester.ExpectBucketCount(histogram_name, 5, 1);
 }
