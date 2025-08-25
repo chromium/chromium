@@ -22,6 +22,7 @@
 #include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/command_line.h"
+#include "base/scoped_observation.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
@@ -38,6 +39,8 @@
 #include "components/app_restore/restore_data.h"
 #include "content/public/test/browser_test.h"
 #include "gmock/gmock.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 
 namespace ash {
 namespace {
@@ -84,6 +87,31 @@ aura::Window* GetNativeWindowForSwa(SystemWebAppType swa_type) {
   return it == browsers->end() ? nullptr : (*it)->window()->GetNativeWindow();
 }
 
+class WindowDestroyedObserver : public aura::WindowObserver {
+ public:
+  explicit WindowDestroyedObserver(aura::Window* window) {
+    CHECK(window);
+    window_observation_.Observe(window);
+  }
+
+  void Wait() {
+    if (window_observation_.IsObserving()) {
+      run_loop_.Run();
+    }
+  }
+
+  // aura::WindowObserver:
+  void OnWindowDestroyed(aura::Window* window) override {
+    window_observation_.Reset();
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+};
+
 }  // namespace
 
 class CoralBrowserTest : public InProcessBrowserTest {
@@ -109,6 +137,13 @@ class CoralBrowserTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kForceBirchFakeCoralGroup);
+  }
+
+  void CloseBrowserAndNativeWindowSynchronously(Browser* browser) {
+    WindowDestroyedObserver window_destroyed_observer(
+        browser->window()->GetNativeWindow());
+    CloseBrowserSynchronously(browser);
+    window_destroyed_observer.Wait();
   }
 
  private:
@@ -466,33 +501,33 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseTabAppUpdateChip) {
   // Closing the first browser with the duplicated tab (https://youtube.com)
   // will not change the group.
   SelectFirstBrowser();
-  CloseBrowserSynchronously(browser());
+  CloseBrowserAndNativeWindowSynchronously(browser());
   EXPECT_EQ(group->entities.size(), 4u);
 
   // Closing the next browser will decrease the items in the group.
   SelectFirstBrowser();
-  CloseBrowserSynchronously(browser());
+  CloseBrowserAndNativeWindowSynchronously(browser());
   EXPECT_EQ(group->entities.size(), 2u);
 
   // Closing a duplicated window (file manager) will not change the group.
   SelectFirstBrowser();
   EXPECT_TRUE(
       browser()->window()->GetNativeWindow()->GetTitle().starts_with(u"Files"));
-  CloseBrowserSynchronously(browser());
+  CloseBrowserAndNativeWindowSynchronously(browser());
   EXPECT_EQ(group->entities.size(), 2u);
 
   // Closing a non-duplicated window will decrease the items in the group.
   SelectFirstBrowser();
   EXPECT_TRUE(
       browser()->window()->GetNativeWindow()->GetTitle().starts_with(u"Files"));
-  CloseBrowserSynchronously(browser());
+  CloseBrowserAndNativeWindowSynchronously(browser());
   EXPECT_EQ(group->entities.size(), 1u);
 
   // Closing the last app window in group will remove the chip.
   SelectFirstBrowser();
   EXPECT_TRUE(browser()->window()->GetNativeWindow()->GetTitle().starts_with(
       u"YouTube"));
-  CloseBrowserSynchronously(browser());
+  CloseBrowserAndNativeWindowSynchronously(browser());
 
   EXPECT_FALSE(GetBirchChipButton());
 }
@@ -548,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseWindowRemoveTwoChips) {
   // Closing the first browser with all items in groups.
   SelectFirstBrowser();
   EXPECT_EQ(8, browser()->tab_strip_model()->GetTabCount());
-  CloseBrowserSynchronously(browser());
+  CloseBrowserAndNativeWindowSynchronously(browser());
 
   // Two chips are removed.
   EXPECT_EQ(0u, GetBirchChipsNum());
