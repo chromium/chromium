@@ -193,6 +193,13 @@ void PrefHashFilter::ClearResetTime(PrefService* user_prefs) {
   user_prefs->ClearPref(user_prefs::kPreferenceResetTime);
 }
 
+// static
+void PrefHashFilter::SetResetTime(PrefService* user_prefs) {
+  user_prefs->SetString(
+      user_prefs::kPreferenceResetTime,
+      base::NumberToString(base::Time::Now().ToInternalValue()));
+}
+
 void PrefHashFilter::Initialize(base::Value::Dict& pref_store_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DictionaryHashStoreContents dictionary_contents(pref_store_contents);

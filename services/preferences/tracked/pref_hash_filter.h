@@ -101,6 +101,9 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   // preferences.
   static void ClearResetTime(PrefService* user_prefs);
 
+  // Sets the time of the last reset event to now.
+  static void SetResetTime(PrefService* user_prefs);
+
   // Initializes the PrefHashStore with hashes of the tracked preferences in
   // |pref_store_contents|. |pref_store_contents| will be the |storage| passed
   // to PrefHashStore::BeginTransaction().
