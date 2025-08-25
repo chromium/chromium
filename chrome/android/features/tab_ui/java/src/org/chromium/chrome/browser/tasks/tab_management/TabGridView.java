@@ -5,9 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.BASE_ANIMATION_DURATION_MS;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider.getTabCardHighlightBackgroundTintList;
-import static org.chromium.ui.animation.CommonAnimationsFactory.createFadeInAnimation;
-import static org.chromium.ui.animation.CommonAnimationsFactory.createFadeOutAnimation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -40,10 +37,9 @@ import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabCardHighlightState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
-import org.chromium.ui.UiUtils;
-import org.chromium.ui.animation.AnimationHandler;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -70,7 +66,7 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
         int NUM_ENTRIES = 3;
     }
 
-    private final AnimationHandler mHighlightAnimationHandler = new AnimationHandler();
+    private TabCardHighlightHandler mTabCardHighlightHandler;
     private boolean mIsAnimating;
     private @TabActionButtonType int mTabActionButtonType;
     private @TabActionState int mTabActionState = TabActionState.UNSET;
@@ -88,6 +84,9 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
     protected void onFinishInflate() {
         super.onFinishInflate();
         mActionButton = findViewById(R.id.action_button);
+        View cardWrapper = findViewById(R.id.card_wrapper);
+        assert cardWrapper != null;
+        mTabCardHighlightHandler = new TabCardHighlightHandler(cardWrapper);
     }
 
     /**
@@ -205,22 +204,8 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
         mActionButton.setImportantForAccessibility(accessibilityMode);
     }
 
-    void setIsHighlighted(boolean isHighlighted, boolean isIncognito) {
-        Drawable gridCardHighlightDrawable = null;
-        View cardWrapper = findViewById(R.id.card_wrapper);
-        if (isHighlighted) {
-            Context context = getContext();
-            gridCardHighlightDrawable =
-                    UiUtils.getTintedDrawable(
-                            context,
-                            R.drawable.tab_grid_card_highlight,
-                            getTabCardHighlightBackgroundTintList(context, isIncognito));
-        }
-        mHighlightAnimationHandler.startAnimation(
-                isHighlighted
-                        ? createFadeInAnimation(cardWrapper)
-                        : createFadeOutAnimation(cardWrapper));
-        cardWrapper.setBackground(gridCardHighlightDrawable);
+    void setIsHighlighted(@TabCardHighlightState int highlightState, boolean isIncognito) {
+        mTabCardHighlightHandler.maybeAnimateForHighlightState(highlightState, isIncognito);
     }
 
     void setMediaIndicator(@MediaState int mediaState) {
@@ -250,6 +235,10 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
 
         tabTitle.setLayoutParams(titleParams);
         tabMediaIndicator.setVisibility(mediaIndicatorVisibility);
+    }
+
+    void clearHighlight() {
+        mTabCardHighlightHandler.clearHighlight();
     }
 
     private void setTabActionButtonCloseDrawable() {

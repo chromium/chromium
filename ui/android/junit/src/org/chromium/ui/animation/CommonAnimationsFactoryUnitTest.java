@@ -5,6 +5,7 @@
 package org.chromium.ui.animation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -23,6 +24,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for {@link TranslationAnimatorFactory}. */
@@ -59,10 +62,10 @@ public class CommonAnimationsFactoryUnitTest {
 
     @Test
     public void testFadeOut() {
-        AtomicReference<Float> alpha = new AtomicReference<>(-1f);
+        List<Float> alphas = new ArrayList<>();
         doAnswer(
                         invocation -> {
-                            alpha.set(invocation.getArgument(0));
+                            alphas.add(invocation.getArgument(0));
                             return null;
                         })
                 .when(mView)
@@ -72,10 +75,13 @@ public class CommonAnimationsFactoryUnitTest {
         animator.setDuration(DURATION_MS);
         animator.start();
 
-        assertEquals(1f, alpha.get(), DELTA);
+        assertEquals(1f, alphas.get(0), DELTA);
 
         ShadowLooper.runUiThreadTasks();
-        assertEquals(0f, alpha.get(), DELTA);
+        for (int i = 1; i < alphas.size() - 2; i++) {
+            assertTrue(alphas.get(i) <= alphas.get(i - 1));
+        }
+        assertEquals(1f, alphas.get(alphas.size() - 1), DELTA);
         verify(mView).setVisibility(View.GONE);
     }
 }

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.animation.AnimationListeners.onAnimationEnd;
 
 import android.animation.Animator;
@@ -20,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.interpolators.Interpolators;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -188,11 +186,6 @@ public class TabListMergeAnimationManager {
 
         view.setTranslationX(0f);
         view.setTranslationY(0f);
-
-        PropertyModel model = viewHolder.model;
-        if (model != null && model.containsKeyEqualTo(IS_HIGHLIGHTED, true)) {
-            model.set(IS_HIGHLIGHTED, false);
-        }
     }
 
     private void cleanUp(Runnable onAnimationEnd) {
