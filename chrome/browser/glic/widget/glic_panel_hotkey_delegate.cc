@@ -31,20 +31,20 @@ static constexpr std::array kSupportedHotkeys = {
 #endif
 };
 
-// Implementation of ScopedHotkeyRegistration specifically for the Glic window.
+// Implementation of ScopedHotkeyRegistration specifically for the Glic panel.
 // It registers and unregisters accelerators directly with the GlicView.
-class GlicWindowScopedHotkeyRegistration
+class GlicPanelScopedHotkeyRegistration
     : public LocalHotkeyManager::ScopedHotkeyRegistration {
  public:
-  GlicWindowScopedHotkeyRegistration(ui::Accelerator accelerator,
-                                     base::WeakPtr<views::View> glic_view)
+  GlicPanelScopedHotkeyRegistration(ui::Accelerator accelerator,
+                                    base::WeakPtr<views::View> glic_view)
       : accelerator_(accelerator), glic_view_(glic_view) {
     CHECK(!accelerator.IsEmpty());
     CHECK(glic_view_);
     glic_view_->AddAccelerator(accelerator_);
   }
 
-  ~GlicWindowScopedHotkeyRegistration() override {
+  ~GlicPanelScopedHotkeyRegistration() override {
     if (!glic_view_) {
       return;
     }
@@ -80,12 +80,7 @@ bool GlicPanelHotkeyDelegate::AcceleratorPressed(
       window_controller_->Close();
       return true;
     case glic::LocalHotkeyManager::Hotkey::kFocusToggle:
-      if (window_controller_->IsAttached()) {
-        window_controller_->attached_browser()->window()->Activate();
-        return true;
-      }
-      if (auto* last_active = BrowserList::GetInstance()->GetLastActive()) {
-        last_active->window()->Activate();
+      if (window_controller_->ActivateBrowser()) {
         base::RecordAction(base::UserMetricsAction("Glic.FocusHotKey"));
         return true;
       }
@@ -107,7 +102,7 @@ GlicPanelHotkeyDelegate::CreateScopedHotkeyRegistration(
     ui::Accelerator accelerator,
     base::WeakPtr<ui::AcceleratorTarget> target) {
   CHECK(window_controller_);
-  return std::make_unique<GlicWindowScopedHotkeyRegistration>(
+  return std::make_unique<GlicPanelScopedHotkeyRegistration>(
       accelerator, window_controller_->GetGlicViewAsView());
 }
 

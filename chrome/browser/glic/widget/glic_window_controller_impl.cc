@@ -1134,6 +1134,20 @@ void GlicWindowControllerImpl::CloseWithReason(
   CloseInternal(std::nullopt);
 }
 
+bool GlicWindowControllerImpl::ActivateBrowser() {
+  if (IsAttached()) {
+    attached_browser()->window()->Activate();
+    return true;
+  }
+
+  if (auto* last_active = BrowserList::GetInstance()->GetLastActive()) {
+    last_active->window()->Activate();
+    return true;
+  }
+
+  return false;
+}
+
 void GlicWindowControllerImpl::Close() {
   CloseInternal(std::nullopt);
 }

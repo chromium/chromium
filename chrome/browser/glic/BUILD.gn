@@ -269,6 +269,7 @@ source_set("unit_tests") {
     "host/glic_cookie_synchronizer_unittest.cc",
     "host/guest_util_unittest.cc",
     "public/glic_enabling_unittest.cc",
+    "widget/glic_panel_hotkey_delegate_unittest.cc",
     "widget/local_hotkey_manager_unittest.cc",
   ]
   deps = [

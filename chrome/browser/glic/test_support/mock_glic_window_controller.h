@@ -45,6 +45,7 @@ class MockGlicWindowController
   MOCK_METHOD(void, SetMinimumWidgetSize, (const gfx::Size&), (override));
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(void, CloseWithReason, (views::Widget::ClosedReason), (override));
+  MOCK_METHOD(bool, ActivateBrowser, (), (override));
   MOCK_METHOD(void, ShowTitleBarContextMenuAt, (gfx::Point), (override));
   MOCK_METHOD(bool,
               ShouldStartDrag,

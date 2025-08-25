@@ -92,6 +92,7 @@ class GlicWindowControllerImpl
   void SetMinimumWidgetSize(const gfx::Size& size) override;
   void Close() override;
   void CloseWithReason(views::Widget::ClosedReason reason) override;
+  bool ActivateBrowser() override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
   bool ShouldStartDrag(const gfx::Point& initial_press_loc,
                        const gfx::Point& mouse_location) override;

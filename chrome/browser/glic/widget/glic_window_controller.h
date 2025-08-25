@@ -109,6 +109,12 @@ class GlicWindowController : public Host::Delegate {
   // Used when the native window is closed directly.
   virtual void CloseWithReason(views::Widget::ClosedReason reason) = 0;
 
+  // Activates the browser window that the glic panel is associated with. If
+  // the panel is not attached to a browser, it will attempt to activate the
+  // last active browser. Returns true if a browser was successfully
+  // activated.
+  virtual bool ActivateBrowser() = 0;
+
   // Displays a context menu when the user right clicks on the title bar.
   // This is probably Windows only.
   virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) = 0;
