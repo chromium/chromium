@@ -127,9 +127,13 @@ final class CodedOutputStreamWriter implements Writer {
     output.writeMessage(fieldNumber, (MessageLite) value);
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
   public void writeMessage(int fieldNumber, Object value, Schema schema) throws IOException {
-    output.writeMessage(fieldNumber, (MessageLite) value, schema);
+    AbstractMessageLite<?, ?> message = (AbstractMessageLite) value;
+    output.writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+    output.writeUInt32NoTag(message.getSerializedSize(schema));
+    schema.writeTo(message, this);
   }
 
   @Deprecated
@@ -1025,11 +1029,11 @@ final class CodedOutputStreamWriter implements Writer {
     switch (metadata.keyType) {
       case BOOL:
         V value;
-        if ((value = map.get(Boolean.FALSE)) != null) {
+        if ((value = map.get(false)) != null) {
           writeDeterministicBooleanMapEntry(
               fieldNumber, /* key= */ false, value, (MapEntryLite.Metadata<Boolean, V>) metadata);
         }
-        if ((value = map.get(Boolean.TRUE)) != null) {
+        if ((value = map.get(true)) != null) {
           writeDeterministicBooleanMapEntry(
               fieldNumber, /* key= */ true, value, (MapEntryLite.Metadata<Boolean, V>) metadata);
         }

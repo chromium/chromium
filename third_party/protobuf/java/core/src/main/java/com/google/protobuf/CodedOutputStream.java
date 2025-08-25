@@ -344,11 +344,6 @@ public abstract class CodedOutputStream extends ByteOutput {
   public abstract void writeMessage(final int fieldNumber, final MessageLite value)
       throws IOException;
 
-  /** Write an embedded message field, including tag, to the stream. */
-  // Abstract to avoid overhead of additional virtual method calls.
-  abstract void writeMessage(final int fieldNumber, final MessageLite value, Schema schema)
-      throws IOException;
-
   /**
    * Write a MessageSet extension field to the stream. For historical reasons, the wire format
    * differs from normal fields.
@@ -452,10 +447,6 @@ public abstract class CodedOutputStream extends ByteOutput {
   /** Write an embedded message field to the stream. */
   // Abstract to avoid overhead of additional virtual method calls.
   public abstract void writeMessageNoTag(final MessageLite value) throws IOException;
-
-  /** Write an embedded message field to the stream. */
-  // Abstract to avoid overhead of additional virtual method calls.
-  abstract void writeMessageNoTag(final MessageLite value, Schema schema) throws IOException;
 
   // =================================================================
 
@@ -639,15 +630,6 @@ public abstract class CodedOutputStream extends ByteOutput {
    */
   public static int computeMessageSize(final int fieldNumber, final MessageLite value) {
     return computeTagSize(fieldNumber) + computeMessageSizeNoTag(value);
-  }
-
-  /**
-   * Compute the number of bytes that would be needed to encode an embedded message field, including
-   * tag.
-   */
-  static int computeMessageSize(
-      final int fieldNumber, final MessageLite value, final Schema schema) {
-    return computeTagSize(fieldNumber) + computeMessageSizeNoTag(value, schema);
   }
 
   /**
@@ -859,11 +841,6 @@ public abstract class CodedOutputStream extends ByteOutput {
   /** Compute the number of bytes that would be needed to encode an embedded message field. */
   public static int computeMessageSizeNoTag(final MessageLite value) {
     return computeLengthDelimitedFieldSize(value.getSerializedSize());
-  }
-
-  /** Compute the number of bytes that would be needed to encode an embedded message field. */
-  static int computeMessageSizeNoTag(final MessageLite value, final Schema schema) {
-    return computeLengthDelimitedFieldSize(((AbstractMessageLite) value).getSerializedSize(schema));
   }
 
   static int computeLengthDelimitedFieldSize(int fieldLength) {
@@ -1287,14 +1264,6 @@ public abstract class CodedOutputStream extends ByteOutput {
     }
 
     @Override
-    final void writeMessage(final int fieldNumber, final MessageLite value, Schema schema)
-        throws IOException {
-      writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
-      writeUInt32NoTag(((AbstractMessageLite) value).getSerializedSize(schema));
-      schema.writeTo(value, wrapper);
-    }
-
-    @Override
     public final void writeMessageSetExtension(final int fieldNumber, final MessageLite value)
         throws IOException {
       writeTag(WireFormat.MESSAGE_SET_ITEM, WireFormat.WIRETYPE_START_GROUP);
@@ -1316,12 +1285,6 @@ public abstract class CodedOutputStream extends ByteOutput {
     public final void writeMessageNoTag(final MessageLite value) throws IOException {
       writeUInt32NoTag(value.getSerializedSize());
       value.writeTo(this);
-    }
-
-    @Override
-    final void writeMessageNoTag(final MessageLite value, Schema schema) throws IOException {
-      writeUInt32NoTag(((AbstractMessageLite) value).getSerializedSize(schema));
-      schema.writeTo(value, wrapper);
     }
 
     @Override
@@ -1629,13 +1592,6 @@ public abstract class CodedOutputStream extends ByteOutput {
     }
 
     @Override
-    void writeMessage(final int fieldNumber, final MessageLite value, Schema schema)
-        throws IOException {
-      writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
-      writeMessageNoTag(value, schema);
-    }
-
-    @Override
     public void writeMessageSetExtension(final int fieldNumber, final MessageLite value)
         throws IOException {
       writeTag(WireFormat.MESSAGE_SET_ITEM, WireFormat.WIRETYPE_START_GROUP);
@@ -1657,12 +1613,6 @@ public abstract class CodedOutputStream extends ByteOutput {
     public void writeMessageNoTag(final MessageLite value) throws IOException {
       writeUInt32NoTag(value.getSerializedSize());
       value.writeTo(this);
-    }
-
-    @Override
-    void writeMessageNoTag(final MessageLite value, Schema schema) throws IOException {
-      writeUInt32NoTag(((AbstractMessageLite) value).getSerializedSize(schema));
-      schema.writeTo(value, wrapper);
     }
 
     @Override
@@ -1962,12 +1912,6 @@ public abstract class CodedOutputStream extends ByteOutput {
     }
 
     @Override
-    void writeMessage(int fieldNumber, MessageLite value, Schema schema) throws IOException {
-      writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
-      writeMessageNoTag(value, schema);
-    }
-
-    @Override
     public void writeMessageSetExtension(int fieldNumber, MessageLite value) throws IOException {
       writeTag(WireFormat.MESSAGE_SET_ITEM, WireFormat.WIRETYPE_START_GROUP);
       writeUInt32(WireFormat.MESSAGE_SET_TYPE_ID, fieldNumber);
@@ -1987,12 +1931,6 @@ public abstract class CodedOutputStream extends ByteOutput {
     public void writeMessageNoTag(MessageLite value) throws IOException {
       writeUInt32NoTag(value.getSerializedSize());
       value.writeTo(this);
-    }
-
-    @Override
-    void writeMessageNoTag(MessageLite value, Schema schema) throws IOException {
-      writeUInt32NoTag(((AbstractMessageLite) value).getSerializedSize(schema));
-      schema.writeTo(value, wrapper);
     }
 
     @Override
@@ -2518,13 +2456,6 @@ public abstract class CodedOutputStream extends ByteOutput {
     }
 
     @Override
-    void writeMessage(final int fieldNumber, final MessageLite value, Schema schema)
-        throws IOException {
-      writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
-      writeMessageNoTag(value, schema);
-    }
-
-    @Override
     public void writeMessageSetExtension(final int fieldNumber, final MessageLite value)
         throws IOException {
       writeTag(WireFormat.MESSAGE_SET_ITEM, WireFormat.WIRETYPE_START_GROUP);
@@ -2546,12 +2477,6 @@ public abstract class CodedOutputStream extends ByteOutput {
     public void writeMessageNoTag(final MessageLite value) throws IOException {
       writeUInt32NoTag(value.getSerializedSize());
       value.writeTo(this);
-    }
-
-    @Override
-    void writeMessageNoTag(final MessageLite value, Schema schema) throws IOException {
-      writeUInt32NoTag(((AbstractMessageLite) value).getSerializedSize(schema));
-      schema.writeTo(value, wrapper);
     }
 
     @Override
@@ -2832,13 +2757,6 @@ public abstract class CodedOutputStream extends ByteOutput {
     }
 
     @Override
-    void writeMessage(final int fieldNumber, final MessageLite value, Schema schema)
-        throws IOException {
-      writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
-      writeMessageNoTag(value, schema);
-    }
-
-    @Override
     public void writeMessageSetExtension(final int fieldNumber, final MessageLite value)
         throws IOException {
       writeTag(WireFormat.MESSAGE_SET_ITEM, WireFormat.WIRETYPE_START_GROUP);
@@ -2860,12 +2778,6 @@ public abstract class CodedOutputStream extends ByteOutput {
     public void writeMessageNoTag(final MessageLite value) throws IOException {
       writeUInt32NoTag(value.getSerializedSize());
       value.writeTo(this);
-    }
-
-    @Override
-    void writeMessageNoTag(final MessageLite value, Schema schema) throws IOException {
-      writeUInt32NoTag(((AbstractMessageLite) value).getSerializedSize(schema));
-      schema.writeTo(value, wrapper);
     }
 
     @Override

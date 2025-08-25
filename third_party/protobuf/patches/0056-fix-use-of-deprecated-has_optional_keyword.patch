@@ -1,0 +1,13 @@
+diff --git a/src/google/protobuf/descriptor.cc b/src/google/protobuf/descriptor.cc
+index 515e7cff53233..a9237c0587bb6 100644
+--- a/src/google/protobuf/descriptor.cc
++++ b/src/google/protobuf/descriptor.cc
+@@ -3945,7 +3945,7 @@ void FieldDescriptor::DebugString(
+ 
+   // Label is omitted for maps, oneof, and plain proto3 fields.
+   if (is_map() || real_containing_oneof() ||
+-      (!is_required() && !is_repeated() && !has_optional_keyword())) {
++      (!is_required() && !is_repeated() && !has_presence())) {
+     label.clear();
+   }
+   // Label is omitted for optional and required fields under editions.

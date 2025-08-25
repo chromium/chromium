@@ -37,7 +37,7 @@ foreach(proto_file ${tests_protos})
     PROTOS ${proto_file}
     LANGUAGE cpp
     OUT_VAR pb_generated_files
-    IMPORT_DIRS ${protobuf_SOURCE_DIR}/src
+    IMPORT_DIRS ${protobuf_SOURCE_DIR}/src ${protobuf_SOURCE_DIR}/java/core/src/main/resources
   )
   set(tests_proto_files ${tests_proto_files} ${pb_generated_files})
 endforeach(proto_file)
@@ -198,7 +198,7 @@ add_test(NAME lazily-build-dependencies-test
 if (protobuf_BUILD_LIBUPB)
   set(upb_test_proto_genfiles)
   foreach(proto_file ${upb_test_protos_files} ${descriptor_proto_proto_srcs})
-    foreach(generator upb upbdefs)
+    foreach(generator upb upbdefs upb_minitable)
       protobuf_generate(
         PROTOS ${proto_file}
         LANGUAGE ${generator}
@@ -211,24 +211,13 @@ if (protobuf_BUILD_LIBUPB)
       )
       set(upb_test_proto_genfiles ${upb_test_proto_genfiles} ${pb_generated_files})
     endforeach()
-
-    # The minitable generator has a slightly different setup from the other upb
-    # generators, since it is built into protoc.
-    protobuf_generate(
-      PROTOS ${proto_file}
-      LANGUAGE upb_minitable
-      GENERATE_EXTENSIONS .upb_minitable.h .upb_minitable.c
-      OUT_VAR pb_generated_files
-      IMPORT_DIRS ${protobuf_SOURCE_DIR}/src
-      IMPORT_DIRS ${protobuf_SOURCE_DIR}
-    )
-    set(upb_test_proto_genfiles ${upb_test_proto_genfiles} ${pb_generated_files})
   endforeach(proto_file)
 
   add_executable(upb-test
     ${upb_test_files}
     ${upb_test_proto_genfiles}
-    ${upb_test_util_files})
+    ${upb_test_util_hdrs}
+    ${upb_test_util_srcs})
 
   target_link_libraries(upb-test
     ${protobuf_LIB_PROTOBUF}
@@ -259,7 +248,7 @@ file(GLOB_RECURSE _local_upb_hdrs
 
 # Exclude test library headers.
 list(APPEND _exclude_hdrs ${test_util_hdrs} ${lite_test_util_hdrs} ${common_test_hdrs}
-  ${compiler_test_utils_hdrs} ${upb_test_util_files} ${libprotoc_hdrs})
+  ${compiler_test_utils_hdrs} ${upb_test_util_hdrs} ${libprotoc_hdrs})
 foreach(_hdr ${_exclude_hdrs})
   list(REMOVE_ITEM _local_hdrs ${_hdr})
   list(REMOVE_ITEM _local_upb_hdrs ${_hdr})
