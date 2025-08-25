@@ -210,7 +210,8 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
                                                     VideoFrame* dst_frame);
 
 // Converts kRGBA_8888_SkColorType and kBGRA_8888_SkColorType to the appropriate
-// ARGB, XRGB, ABGR, or XBGR format.
+// ARGB, XRGB, ABGR, or XBGR format. Converts kRGBA_F16_SkColorType to RGBAF16,
+// |is_opaque| only matters for 8-bit formats.
 MEDIA_EXPORT VideoPixelFormat
 VideoPixelFormatFromSkColorType(SkColorType sk_color_type, bool is_opaque);
 

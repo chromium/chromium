@@ -195,6 +195,8 @@ std::optional<V8VideoPixelFormat> ToV8VideoPixelFormat(
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kBGRA);
     case media::PIXEL_FORMAT_XRGB:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kBGRX);
+    case media::PIXEL_FORMAT_RGBAF16:
+      return {};
     default:
       NOTREACHED();
   }
@@ -223,6 +225,7 @@ bool IsFormatEnabled(media::VideoPixelFormat fmt) {
     case media::PIXEL_FORMAT_YUV444P12:
     case media::PIXEL_FORMAT_I444A:
     case media::PIXEL_FORMAT_YUV444AP10:
+    case media::PIXEL_FORMAT_RGBAF16:
       return RuntimeEnabledFeatures::WebCodecsHBDFormatsEnabled();
     default:
       return false;
@@ -782,6 +785,17 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
+  if (sk_image_info.colorType() == kRGBA_F16_SkColorType &&
+      SkColorSpace::Equals(sk_color_space.get(),
+                           SkColorSpace::MakeSRGBLinear().get())) {
+    // TODO(crbug.com/438675262): |sk_color_type| converts to
+    // gfx::ColorSpace::TransferID::LINEAR while it should actually be
+    // gfx::ColorSpace::TransferID::LINEAR_HDR. Waiting for gfx::ColorSpace
+    // to be removed.
+    // Replace with SRGBLinear with LINEAR_HDR transfer ID.
+    gfx_color_space = gfx::ColorSpace::CreateSRGBLinear();
+  }
+
   const auto orientation = image->Orientation().Orientation();
   const gfx::Size coded_size(sk_image_info.width(), sk_image_info.height());
   const gfx::Rect default_visible_rect(coded_size);
@@ -902,6 +916,11 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   }
   frame->metadata().transformation =
       ImageOrientationToVideoTransformation(orientation).add(transformation);
+
+  if (gfx_color_space.IsHDR()) {
+    frame->set_hdr_metadata(paint_image.GetHDRMetadata());
+  }
+
   return MakeGarbageCollected<VideoFrame>(
       base::MakeRefCounted<VideoFrameHandle>(
           std::move(frame), std::move(sk_image),

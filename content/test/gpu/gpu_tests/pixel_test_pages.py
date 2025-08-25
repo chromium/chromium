@@ -718,6 +718,10 @@ class PixelTestPages():
       # we're effectively just making sure the color is correct.
       fixed_crop = ca.FixedRectCropAction(0, 0, 300, 300)
 
+      # For testing VideoFrame with HDR color space.
+      hdr_params = '?sourceType=hdr_canvas'
+      hdr_args = ['--enable-blink-features=CanvasHDR,WebCodecsHBDFormats']
+
       return [
           PixelTestPage('pixel_webgpu_import_video_frame.html' +
                         video_frame_query_params,
@@ -741,6 +745,10 @@ class PixelTestPages():
               base_name + '_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas',
               crop_action=standard_crop,
               browser_args=webgpu_args + [cba.DISABLE_ACCELERATED_2D_CANVAS]),
+          PixelTestPage('pixel_webgpu_import_video_frame_hdr.html' + hdr_params,
+                        base_name + '_WebGPUImportVideoFrameHDR',
+                        crop_action=standard_crop,
+                        browser_args=webgpu_args + hdr_args),
           PixelTestPage('pixel_webgpu_webgl_teximage2d.html',
                         base_name + '_WebGPUWebGLTexImage2D',
                         crop_action=standard_crop,

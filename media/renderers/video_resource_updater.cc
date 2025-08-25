@@ -972,8 +972,12 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
         hardware_resource->shared_image()->alpha_type() == kPremul_SkAlphaType
             ? true
             : false;
+
+    // TODO(crbug.com/436306672): support for directly uploading
+    // RGBA_F16 frames as F16 hardware resources in future.
     PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-        video_frame.get(), dest_ptr, bytes_per_row, premultiply_alpha);
+        video_frame.get(), dest_ptr, bytes_per_row, kN32_SkColorType,
+        premultiply_alpha);
     source_pixels = upload_pixels_[0].get();
   }
 

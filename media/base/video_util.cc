@@ -786,6 +786,8 @@ MEDIA_EXPORT SkColorType SkColorTypeForPlane(VideoPixelFormat format,
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_ARGB:
       return kBGRA_8888_SkColorType;
+    case PIXEL_FORMAT_RGBAF16:
+      return kRGBA_F16_SkColorType;
     default:
       NOTREACHED();
   }
@@ -798,8 +800,9 @@ VideoPixelFormatFromSkColorType(SkColorType sk_color_type, bool is_opaque) {
       return is_opaque ? PIXEL_FORMAT_XBGR : PIXEL_FORMAT_ABGR;
     case kBGRA_8888_SkColorType:
       return is_opaque ? PIXEL_FORMAT_XRGB : PIXEL_FORMAT_ARGB;
+    case kRGBA_F16_SkColorType:
+      return PIXEL_FORMAT_RGBAF16;
     default:
-      // TODO(crbug.com/40686604): Add F16 support.
       return PIXEL_FORMAT_UNKNOWN;
   }
 }

@@ -17,6 +17,8 @@
 
 #include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -24,6 +26,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
@@ -50,6 +53,7 @@
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/video_frame_yuv_converter.h"
+#include "third_party/fp16/src/include/fp16.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -288,11 +292,100 @@ size_t NumConvertVideoFrameToRGBPixelsTasks(const VideoFrame* video_frame) {
   return std::min<size_t>(n_tasks, base::SysInfo::NumberOfProcessors());
 }
 
+// Extracted helper for handling 8-bit RGBA family formats.
+void ConvertRGBA8FamilyToDest(uint8_t* pixels,
+                              size_t row_bytes,
+                              const uint8_t* src_data,
+                              size_t src_stride,
+                              int width,
+                              size_t rows,
+                              VideoPixelFormat format,
+                              bool premultiply_alpha) {
+  DCHECK_LE(width, static_cast<int>(row_bytes));
+
+  // Handle order swapping depending on the source and destination formats.
+  if ((OUTPUT_ARGB &&
+       (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB)) ||
+      (!OUTPUT_ARGB &&
+       (format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR))) {
+    const uint8_t* data = src_data;
+    uint8_t* dest = pixels;
+    for (size_t i = 0; i < rows; i++) {
+      memcpy(dest, data, width * 4);
+      dest += row_bytes;
+      data += src_stride;
+    }
+  } else {
+    LIBYUV_ABGR_TO_ARGB(src_data, src_stride, pixels, row_bytes, width, rows);
+  }
+
+  // Handle `premultiply_alpha` if the source format has alpha. This could
+  // be more efficient if combined with order swapping (in the case that no
+  // swap is performed).
+  if (premultiply_alpha &&
+      (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_ABGR)) {
+    libyuv::ARGBAttenuate(pixels, row_bytes, pixels, row_bytes, width, rows);
+  }
+}
+
+// Extracted helper for handling RGBAF16 format into kRGBA_F16_SkColorType.
+void ConvertRGBAF16ToDest(uint8_t* pixels,
+                          size_t row_bytes,
+                          const uint8_t* src_data,
+                          size_t src_stride,
+                          int width,
+                          size_t rows,
+                          bool premultiply_alpha,
+                          SkColorType dst_color_type) {
+  // Dest must be kRGBA_F16_SkColorType.
+  CHECK_LE(width, static_cast<int>(row_bytes));
+  CHECK_EQ(dst_color_type, kRGBA_F16_SkColorType);
+
+  auto data = base::span(src_data, src_stride * rows);
+  auto dest = base::span(pixels, row_bytes * rows);
+
+  for (size_t i = 0; i < rows; i++) {
+    auto bytes_len = static_cast<size_t>(width) * 8;
+    auto data_row = data.subspan(i * src_stride, bytes_len);
+    auto dest_row = dest.subspan(i * row_bytes, bytes_len);
+    if (premultiply_alpha) {
+      auto reader = base::SpanReader(data_row);
+      auto writer = base::SpanWriter(dest_row);
+      for (int w = 0; w < width; ++w) {
+        float r = fp16_ieee_to_fp32_value(
+            base::U16FromNativeEndian(*reader.Read<2>()));
+        float g = fp16_ieee_to_fp32_value(
+            base::U16FromNativeEndian(*reader.Read<2>()));
+        float b = fp16_ieee_to_fp32_value(
+            base::U16FromNativeEndian(*reader.Read<2>()));
+
+        uint16_t a_u16 = base::U16FromNativeEndian(*reader.Read<2>());
+        float a = fp16_ieee_to_fp32_value(a_u16);
+
+        // Apply premultiplied alpha
+        r *= a;
+        g *= a;
+        b *= a;
+
+        // Convert back to half-float
+        writer.WriteU16NativeEndian(fp16_ieee_from_fp32_value(r));
+        writer.WriteU16NativeEndian(fp16_ieee_from_fp32_value(g));
+        writer.WriteU16NativeEndian(fp16_ieee_from_fp32_value(b));
+        writer.WriteU16NativeEndian(a_u16);
+      }
+    } else {
+      // Direct copy when no alpha processing needed
+      dest_row.copy_from(data_row);
+    }
+  }
+}
+
 void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
                                       void* rgb_pixels,
                                       size_t row_bytes,
                                       bool premultiply_alpha,
                                       libyuv::FilterMode filter,
+                                      SkColorType dst_color_type,
                                       size_t task_index,
                                       size_t n_tasks,
                                       base::RepeatingClosure* done) {
@@ -345,37 +438,27 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
 
   if (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB ||
       format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR) {
-    DCHECK_LE(width, static_cast<int>(row_bytes));
-    const uint8_t* data = plane_meta[VideoFrame::Plane::kARGB].data;
-
-    // Handle order swapping depending on the source and destination formats.
-    if ((OUTPUT_ARGB &&
-         (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB)) ||
-        (!OUTPUT_ARGB &&
-         (format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR))) {
-      uint8_t* dest = pixels;
-      for (size_t i = 0; i < rows; i++) {
-        memcpy(dest, data, width * 4);
-        dest += row_bytes;
-        data += plane_meta[VideoFrame::Plane::kARGB].stride;
-      }
-    } else {
-      LIBYUV_ABGR_TO_ARGB(plane_meta[VideoFrame::Plane::kARGB].data,
-                          plane_meta[VideoFrame::Plane::kARGB].stride, pixels,
-                          row_bytes, width, rows);
-    }
-
-    // Handle `premultiply_alpha` if the source format has alpha. This could
-    // be more efficient if combined with order swapping (in the case that no
-    // swap is performed).
-    if (premultiply_alpha &&
-        (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_ABGR)) {
-      libyuv::ARGBAttenuate(pixels, row_bytes, pixels, row_bytes, width, rows);
-    }
+    ConvertRGBA8FamilyToDest(pixels, row_bytes,
+                             plane_meta[VideoFrame::Plane::kARGB].data,
+                             plane_meta[VideoFrame::Plane::kARGB].stride, width,
+                             rows, format, premultiply_alpha);
 
     done->Run();
     return;
   }
+
+  if (format == PIXEL_FORMAT_RGBAF16) {
+    ConvertRGBAF16ToDest(pixels, row_bytes,
+                         plane_meta[VideoFrame::Plane::kARGB].data,
+                         plane_meta[VideoFrame::Plane::kARGB].stride, width,
+                         rows, premultiply_alpha, dst_color_type);
+
+    done->Run();
+    return;
+  }
+
+  // At this point, the dest must be N32 for YUV formats to write.
+  CHECK_EQ(dst_color_type, kN32_SkColorType);
 
   // TODO(crbug.com/41380578): This should default to BT.709 color space.
   auto yuv_cs = kRec601_SkYUVColorSpace;
@@ -696,6 +779,17 @@ bool SupportsOneCopyUploadToGLTexture(VideoPixelFormat video_frame_format,
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+SkImageInfo GetVideoImageGeneratorSkImageInfo(
+    const scoped_refptr<VideoFrame>& frame) {
+  const auto frame_color_space = frame->CompatRGBColorSpace();
+  const auto color_type = frame->format() == PIXEL_FORMAT_RGBAF16
+                              ? kRGBA_F16_SkColorType
+                              : kN32_SkColorType;
+  return SkImageInfo::Make(
+      frame->visible_rect().width(), frame->visible_rect().height(), color_type,
+      kPremul_SkAlphaType, frame_color_space.ToSkColorSpace());
+}
+
 }  // anonymous namespace
 
 // Generates an RGB image from a VideoFrame. Convert YUV to RGB plain on GPU.
@@ -704,10 +798,7 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
   VideoImageGenerator() = delete;
 
   VideoImageGenerator(scoped_refptr<VideoFrame> frame)
-      : cc::PaintImageGenerator(SkImageInfo::MakeN32Premul(
-            frame->visible_rect().width(),
-            frame->visible_rect().height(),
-            frame->CompatRGBColorSpace().ToSkColorSpace())),
+      : cc::PaintImageGenerator(GetVideoImageGeneratorSkImageInfo(frame)),
         frame_(std::move(frame)) {
     DCHECK(!frame_->HasSharedImage());
   }
@@ -727,7 +818,8 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
 
     // If skia couldn't do the YUV conversion on GPU, we will on CPU.
     PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-        frame_.get(), dst_pixmap.writable_addr(), dst_pixmap.rowBytes());
+        frame_.get(), dst_pixmap.writable_addr(), dst_pixmap.rowBytes(),
+        dst_pixmap.colorType());
 
     if (!SkColorSpace::Equals(GetSkImageInfo().colorSpace(),
                               dst_pixmap.colorSpace())) {
@@ -1042,6 +1134,7 @@ void PaintCanvasVideoRenderer::Paint(
         video_frame->format() == PIXEL_FORMAT_XRGB ||
         video_frame->format() == PIXEL_FORMAT_ABGR ||
         video_frame->format() == PIXEL_FORMAT_XBGR ||
+        video_frame->format() == PIXEL_FORMAT_RGBAF16 ||
         video_frame->HasSharedImage())) {
     cc::PaintFlags black_with_alpha_flags;
     black_with_alpha_flags.setAlphaf(flags.getAlphaf());
@@ -1140,7 +1233,8 @@ void PaintCanvasVideoRenderer::Paint(
       info.colorType() == kBGRA_8888_SkColorType) {
     const size_t offset = info.computeOffset(origin.x(), origin.y(), row_bytes);
     void* const pixels_offset = reinterpret_cast<char*>(pixels) + offset;
-    ConvertVideoFrameToRGBPixels(video_frame.get(), pixels_offset, row_bytes);
+    ConvertVideoFrameToRGBPixels(video_frame.get(), pixels_offset, row_bytes,
+                                 kBGRA_8888_SkColorType);
   } else if (video_frame->HasSharedImage()) {
     DCHECK_EQ(video_frame->coded_size(),
               gfx::Size(image.width(), image.height()));
@@ -1384,6 +1478,7 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
     const VideoFrame* video_frame,
     void* rgb_pixels,
     size_t row_bytes,
+    SkColorType dst_color_type,
     bool premultiply_alpha,
     FilterMode filter,
     bool disable_threading) {
@@ -1431,14 +1526,14 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
   const libyuv::FilterMode libyuv_filter = ToLibyuvFilterMode(filter);
   for (size_t i = 1; i < n_tasks; ++i) {
     base::ThreadPool::PostTask(
-        FROM_HERE,
-        base::BindOnce(ConvertVideoFrameToRGBPixelsTask,
-                       base::Unretained(video_frame), rgb_pixels, row_bytes,
-                       premultiply_alpha, libyuv_filter, i, n_tasks, &barrier));
+        FROM_HERE, base::BindOnce(ConvertVideoFrameToRGBPixelsTask,
+                                  base::Unretained(video_frame), rgb_pixels,
+                                  row_bytes, premultiply_alpha, libyuv_filter,
+                                  dst_color_type, i, n_tasks, &barrier));
   }
   ConvertVideoFrameToRGBPixelsTask(video_frame, rgb_pixels, row_bytes,
-                                   premultiply_alpha, libyuv_filter, 0, n_tasks,
-                                   &barrier);
+                                   premultiply_alpha, libyuv_filter,
+                                   dst_color_type, 0, n_tasks, &barrier);
   {
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
     event.Wait();
