@@ -452,6 +452,8 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   const size_t max_uncommitted_frames_;
 
+  uint32_t last_sent_frame_token_ = 0;
+
   base::WeakPtrFactory<Surface> weak_factory_{this};
 };
 

@@ -14,6 +14,8 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/tick_clock.h"
@@ -623,8 +625,17 @@ void Surface::ActivateFrame(FrameData frame_data) {
   // Defer notifying the embedder of an updated token until the frame has been
   // completely processed.
   const auto& metadata = GetActiveFrameMetadata();
-  if (surface_client_ && metadata.send_frame_token_to_embedder)
+  if (surface_client_ && metadata.send_frame_token_to_embedder) {
+    if (!FrameTokenGT(metadata.frame_token, last_sent_frame_token_)) {
+      uint32_t current_token = metadata.frame_token;
+      uint32_t last_token = last_sent_frame_token_;
+      base::debug::Alias(&current_token);
+      base::debug::Alias(&last_token);
+      base::debug::DumpWithoutCrashing();
+    }
+    last_sent_frame_token_ = metadata.frame_token;
     surface_client_->OnFrameTokenChanged(metadata.frame_token);
+  }
 }
 
 FrameDeadline Surface::ResolveFrameDeadline(
