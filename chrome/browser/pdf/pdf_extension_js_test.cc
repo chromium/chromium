@@ -626,7 +626,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextAlignmentSelector) {
   RunTestsInJsModule("ink2_text_alignment_selector_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextBoxTest) {
+// TODO(crbug.com/440552067): Deflake and re-enable.
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, DISABLED_Ink2TextBoxTest) {
   RunTestsInJsModule("ink2_text_box_test.js", "test.pdf");
 }
 
