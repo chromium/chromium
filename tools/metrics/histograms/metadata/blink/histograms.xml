@@ -4375,7 +4375,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ResourceRequest.CompletionDelay2" units="ms"
+<histogram name="Blink.ResourceRequest.CompletionDelay3" units="ms"
     expires_after="2025-11-16">
   <owner>horo@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
@@ -4383,6 +4383,16 @@ chromium-metrics-reviews@google.com.
     Measures the time from when a resource request completes to when the
     renderer is notified. Logged for every resource request if the request has
     never been frozen.
+  </summary>
+</histogram>
+
+<histogram name="Blink.ResourceRequest.CompletionTimeOutOfRange"
+    enum="BooleanHit" expires_after="2025-12-06">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Whether the completion time of a resource request is out of range. Emitted
+    for every resource request when TimeTicks is consistent across processes.
   </summary>
 </histogram>
 

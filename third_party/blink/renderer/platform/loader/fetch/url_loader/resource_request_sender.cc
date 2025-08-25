@@ -619,26 +619,44 @@ void ResourceRequestSender::OnRequestComplete(
   ResourceRequestClient* client = request_info_->client.get();
 
   network::URLLoaderCompletionStatus renderer_status(status);
-  if (status.completion_time.is_null()) {
-    // No completion timestamp is provided, leave it as is.
-  } else if (request_info_->remote_request_start.is_null() ||
-             request_info_->load_timing_info.request_start.is_null()) {
-    // We cannot convert the remote time to a local time, let's use the current
-    // timestamp. This happens when
-    //  - We get an error before OnReceivedRedirect or OnReceivedResponse is
-    //    called, or
-    //  - Somehow such a timestamp was missing in the LoadTimingInfo.
-    renderer_status.completion_time = complete_ipc_arrival_time;
-  } else {
-    // We have already converted the request start timestamp, let's use that
-    // conversion information.
-    // Note: We cannot create a InterProcessTimeTicksConverter with
-    // (local_request_start, now, remote_request_start, remote_completion_time)
-    // as that may result in inconsistent timestamps.
-    renderer_status.completion_time =
-        std::min(status.completion_time - request_info_->remote_request_start +
-                     request_info_->load_timing_info.request_start,
-                 complete_ipc_arrival_time);
+
+  bool completion_time_out_of_range = true;
+  if (base::TimeTicks::IsConsistentAcrossProcesses()) {
+    // Normally, if TimeTicks is consistent across processes, completion_time
+    // should not be out of range, but this check is kept for robustness.
+    // TODO(https://crbug.com/433887078): Consider removing this logic based on
+    // metrics analysis.
+    completion_time_out_of_range =
+        !renderer_status.completion_time.is_null() &&
+        (renderer_status.completion_time < request_info_->local_request_start ||
+         renderer_status.completion_time > complete_ipc_arrival_time);
+
+    base::UmaHistogramBoolean("Blink.ResourceRequest.CompletionTimeOutOfRange",
+                              completion_time_out_of_range);
+  }
+
+  if (completion_time_out_of_range) {
+    if (status.completion_time.is_null()) {
+      // No completion timestamp is provided, leave it as is.
+    } else if (request_info_->remote_request_start.is_null() ||
+               request_info_->load_timing_info.request_start.is_null()) {
+      // We cannot convert the remote time to a local time, let's use the
+      // current timestamp. This happens when
+      //  - We get an error before OnReceivedRedirect or OnReceivedResponse is
+      //    called, or
+      //  - Somehow such a timestamp was missing in the LoadTimingInfo.
+      renderer_status.completion_time = complete_ipc_arrival_time;
+    } else {
+      // We have already converted the request start timestamp, let's use that
+      // conversion information.
+      // Note: We cannot create a InterProcessTimeTicksConverter with
+      // (local_request_start, now, remote_request_start,
+      // remote_completion_time) as that may result in inconsistent timestamps.
+      renderer_status.completion_time = std::min(
+          status.completion_time - request_info_->remote_request_start +
+              request_info_->load_timing_info.request_start,
+          complete_ipc_arrival_time);
+    }
   }
 
   if (!request_info_->ignore_for_histogram) {
@@ -650,7 +668,7 @@ void ResourceRequestSender::OnRequestComplete(
     }
     if (!renderer_status.completion_time.is_null()) {
       UmaHistogramTimes(
-          "Blink.ResourceRequest.CompletionDelay2",
+          "Blink.ResourceRequest.CompletionDelay3",
           complete_ipc_arrival_time - renderer_status.completion_time);
     }
   }
