@@ -16,7 +16,7 @@
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/framework_specific_registration_list.h"
 
 namespace user_education {
 

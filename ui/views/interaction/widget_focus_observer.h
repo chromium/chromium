@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/framework_specific_registration_list.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/views/widget/widget.h"
 

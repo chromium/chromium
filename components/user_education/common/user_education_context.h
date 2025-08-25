@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_CONTEXT_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_CONTEXT_H_
 
+#include "base/memory/ref_counted.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/framework_specific_implementation.h"

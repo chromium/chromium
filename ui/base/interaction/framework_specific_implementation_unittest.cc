@@ -26,44 +26,104 @@ class SingletonImpl2 : public SingletonBase {
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(SingletonImpl2)
 
+class SubClassImpl1 : public SingletonImpl1 {
+ public:
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+};
+
+DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(SubClassImpl1, SingletonImpl1)
+
+class SubClassImpl2 : public SingletonImpl1 {
+ public:
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+};
+
+DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(SubClassImpl2, SingletonImpl1)
+
+class SubClassImpl3 : public SingletonImpl2 {
+ public:
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+};
+
+DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(SubClassImpl3, SingletonImpl2)
+
+class SubSubClass : public SubClassImpl1 {
+ public:
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+};
+
+DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(SubSubClass, SubClassImpl1)
+
 }  // namespace
 
-TEST(FrameworkSpecificRegistrationListTest, MaybeRegister) {
-  FrameworkSpecificRegistrationList<SingletonBase> registration_list;
-  EXPECT_EQ(0U, registration_list.size());
+TEST(FrameworkSpecificImplementationTest, SubclassIsA) {
+  SubClassImpl1 sub1;
+  SubClassImpl2 sub2;
+  SubClassImpl3 sub3;
+  SubSubClass subsub;
 
-  registration_list.MaybeRegister<SingletonImpl1>();
-  EXPECT_EQ(1U, registration_list.size());
-  EXPECT_TRUE(registration_list[0].IsA<SingletonImpl1>());
+  EXPECT_TRUE(sub1.IsA<SingletonImpl1>());
+  EXPECT_FALSE(sub1.IsA<SingletonImpl2>());
+  EXPECT_TRUE(sub1.IsA<SubClassImpl1>());
+  EXPECT_FALSE(sub1.IsA<SubClassImpl2>());
+  EXPECT_FALSE(sub1.IsA<SubClassImpl3>());
+  EXPECT_FALSE(sub1.IsA<SubSubClass>());
+
+  EXPECT_TRUE(sub2.IsA<SingletonImpl1>());
+  EXPECT_FALSE(sub2.IsA<SingletonImpl2>());
+  EXPECT_FALSE(sub2.IsA<SubClassImpl1>());
+  EXPECT_TRUE(sub2.IsA<SubClassImpl2>());
+  EXPECT_FALSE(sub2.IsA<SubClassImpl3>());
+  EXPECT_FALSE(sub3.IsA<SubSubClass>());
+
+  EXPECT_FALSE(sub3.IsA<SingletonImpl1>());
+  EXPECT_TRUE(sub3.IsA<SingletonImpl2>());
+  EXPECT_FALSE(sub3.IsA<SubClassImpl1>());
+  EXPECT_FALSE(sub3.IsA<SubClassImpl2>());
+  EXPECT_TRUE(sub3.IsA<SubClassImpl3>());
+  EXPECT_FALSE(sub3.IsA<SubSubClass>());
+
+  EXPECT_TRUE(subsub.IsA<SingletonImpl1>());
+  EXPECT_FALSE(subsub.IsA<SingletonImpl2>());
+  EXPECT_TRUE(subsub.IsA<SubClassImpl1>());
+  EXPECT_FALSE(subsub.IsA<SubClassImpl2>());
+  EXPECT_FALSE(subsub.IsA<SubClassImpl3>());
+  EXPECT_TRUE(subsub.IsA<SubSubClass>());
 }
 
-TEST(FrameworkSpecificRegistrationListTest, MaybeRegister_Twice) {
-  FrameworkSpecificRegistrationList<SingletonBase> registration_list;
-  registration_list.MaybeRegister<SingletonImpl1>();
-  registration_list.MaybeRegister<SingletonImpl1>();
-  EXPECT_EQ(1U, registration_list.size());
-  EXPECT_TRUE(registration_list[0].IsA<SingletonImpl1>());
-}
+TEST(FrameworkSpecificImplementationTest, SubclassAsA) {
+  SubClassImpl1 sub1;
+  SubClassImpl2 sub2;
+  SubClassImpl3 sub3;
+  SubSubClass subsub;
 
-TEST(FrameworkSpecificRegistrationListTest, MaybeRegister_TwoDifferent) {
-  FrameworkSpecificRegistrationList<SingletonBase> registration_list;
-  registration_list.MaybeRegister<SingletonImpl1>();
-  registration_list.MaybeRegister<SingletonImpl2>();
-  EXPECT_EQ(2U, registration_list.size());
-  EXPECT_TRUE(registration_list[0].IsA<SingletonImpl1>());
-  EXPECT_TRUE(registration_list[1].IsA<SingletonImpl2>());
-}
+  EXPECT_EQ(&sub1, sub1.AsA<SingletonImpl1>());
+  EXPECT_EQ(nullptr, sub1.AsA<SingletonImpl2>());
+  EXPECT_EQ(&sub1, sub1.AsA<SubClassImpl1>());
+  EXPECT_EQ(nullptr, sub1.AsA<SubClassImpl2>());
+  EXPECT_EQ(nullptr, sub1.AsA<SubClassImpl3>());
+  EXPECT_EQ(nullptr, sub1.AsA<SubSubClass>());
 
-TEST(FrameworkSpecificRegistrationListTest, Iterator) {
-  FrameworkSpecificRegistrationList<SingletonBase> registration_list;
-  EXPECT_EQ(0U, registration_list.size());
+  EXPECT_EQ(&sub2, sub2.AsA<SingletonImpl1>());
+  EXPECT_EQ(nullptr, sub2.AsA<SingletonImpl2>());
+  EXPECT_EQ(nullptr, sub2.AsA<SubClassImpl1>());
+  EXPECT_EQ(&sub2, sub2.AsA<SubClassImpl2>());
+  EXPECT_EQ(nullptr, sub2.AsA<SubClassImpl3>());
+  EXPECT_EQ(nullptr, sub3.AsA<SubSubClass>());
 
-  registration_list.MaybeRegister<SingletonImpl1>();
-  registration_list.MaybeRegister<SingletonImpl2>();
-  auto it = registration_list.begin();
-  EXPECT_TRUE(it++->IsA<SingletonImpl1>());
-  EXPECT_TRUE(it->IsA<SingletonImpl2>());
-  EXPECT_TRUE(++it == registration_list.end());
+  EXPECT_EQ(nullptr, sub3.AsA<SingletonImpl1>());
+  EXPECT_EQ(&sub3, sub3.AsA<SingletonImpl2>());
+  EXPECT_EQ(nullptr, sub3.AsA<SubClassImpl1>());
+  EXPECT_EQ(nullptr, sub3.AsA<SubClassImpl2>());
+  EXPECT_EQ(&sub3, sub3.AsA<SubClassImpl3>());
+  EXPECT_EQ(nullptr, sub3.AsA<SubSubClass>());
+
+  EXPECT_EQ(&subsub, subsub.AsA<SingletonImpl1>());
+  EXPECT_EQ(nullptr, subsub.AsA<SingletonImpl2>());
+  EXPECT_EQ(&subsub, subsub.AsA<SubClassImpl1>());
+  EXPECT_EQ(nullptr, subsub.AsA<SubClassImpl2>());
+  EXPECT_EQ(nullptr, subsub.AsA<SubClassImpl3>());
+  EXPECT_EQ(&subsub, subsub.AsA<SubSubClass>());
 }
 
 }  // namespace ui
