@@ -321,13 +321,6 @@ void DrawEnterpriseWatermark(
     SkCanvas* canvas,
     SkSize size,
     const watermark::mojom::WatermarkBlockPtr& watermark_block);
-
-// Helper function to draw the watermark block without checking for feature
-// flags. Exposed for testing.
-void DrawWatermarkBlockForTesting(
-    SkCanvas* canvas,
-    SkSize size,
-    const watermark::mojom::WatermarkBlockPtr& watermark_block);
 #endif
 
 }  // namespace printing

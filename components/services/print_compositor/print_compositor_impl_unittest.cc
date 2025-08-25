@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
@@ -21,9 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-#include "base/test/scoped_feature_list.h"
-#include "cc/test/pixel_test_utils.h"                     // nogncheck
-#include "components/enterprise/watermarking/features.h"  // nogncheck
+#include "cc/test/pixel_test_utils.h"  // nogncheck
 #include "components/enterprise/watermarking/mojom/watermark.mojom.h"  // nogncheck
 #include "components/enterprise/watermarking/watermark.h"  // nogncheck
 #include "components/enterprise/watermarking/watermark_test_utils.h"
@@ -189,20 +186,9 @@ class PrintCompositorImplTest : public testing::Test {
 };
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-class PrintCompositorImplEnterpriseWatermarkTest
-    : public testing::TestWithParam<bool> {
+class PrintCompositorImplEnterpriseWatermarkTest : public testing::Test {
  public:
   PrintCompositorImplEnterpriseWatermarkTest() {
-    // Enable finch flag based on params.
-    bool is_watermark_enabled = GetParam();
-    if (is_watermark_enabled) {
-      feature_list_.InitAndEnableFeature(
-          enterprise_watermark::features::kEnablePrintWatermark);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          enterprise_watermark::features::kEnablePrintWatermark);
-    }
-
     // Create reference bitmap.
     reference_watermark_.allocN32Pixels(kWatermarkSize.fWidth,
                                         kWatermarkSize.fHeight);
@@ -210,48 +196,22 @@ class PrintCompositorImplEnterpriseWatermarkTest
     canvas.clear(SK_ColorBLACK);
     const auto watermark_block = enterprise_watermark::MakeTestWatermarkBlock(
         kWatermarkText, kWatermarkSize);
-    DrawWatermarkBlockForTesting(&canvas, kWatermarkSize, watermark_block);
+    DrawEnterpriseWatermark(&canvas, kWatermarkSize, watermark_block);
   }
 
   const SkBitmap& reference_watermark() const { return reference_watermark_; }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   SkBitmap reference_watermark_;
 };
 
-TEST_P(PrintCompositorImplEnterpriseWatermarkTest, EnterpriseWatermarkSet) {
+TEST_F(PrintCompositorImplEnterpriseWatermarkTest, EnterpriseWatermarkSet) {
   MockPrintCompositorImplEnterpriseWatermark compositor;
   compositor.DrawPage(nullptr, {});
 
-  // If the feature is enabled, the watermark will equal the reference.
-  bool enterprise_watermark_enabled = GetParam();
-  ASSERT_EQ(cc::MatchesBitmap(compositor.bitmap(), reference_watermark(),
-                              cc::ExactPixelComparator()),
-            enterprise_watermark_enabled);
+  ASSERT_TRUE(cc::MatchesBitmap(compositor.bitmap(), reference_watermark(),
+                                cc::ExactPixelComparator()));
 }
-TEST_P(PrintCompositorImplEnterpriseWatermarkTest,
-       IsPageBlankWhenWatermarkingDisabled) {
-  MockPrintCompositorImplEnterpriseWatermark compositor;
-  compositor.DrawPage(nullptr, {});
-  // If the feature is disabled, the page rendered will be blank.
-  bool enterprise_watermark_enabled = GetParam();
-  base::FilePath path =
-      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT);
-  path = path.AppendASCII("components")
-             .AppendASCII("services")
-             .AppendASCII("print_compositor")
-             .AppendASCII("test")
-             .AppendASCII("data")
-             .AppendASCII("blank.png");
-  ASSERT_NE(
-      cc::MatchesPNGFile(compositor.bitmap(), path, cc::ExactPixelComparator()),
-      enterprise_watermark_enabled);
-}
-
-INSTANTIATE_TEST_SUITE_P(WatermarkStateTest,
-                         PrintCompositorImplEnterpriseWatermarkTest,
-                         testing::Bool());
 
 #endif  //  BUILDFLAG(ENTERPRISE_WATERMARK)
 

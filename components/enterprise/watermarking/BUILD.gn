@@ -4,8 +4,6 @@
 
 source_set("watermarking") {
   sources = [
-    "features.cc",
-    "features.h",
     "watermark.cc",
     "watermark.h",
   ]
