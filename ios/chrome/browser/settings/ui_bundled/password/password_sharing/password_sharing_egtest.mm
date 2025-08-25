@@ -631,7 +631,17 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)testTappingShareInFirstRunExperienceView {
+// Test failing flakily on devices.
+// TODO(crbug.com/441013259): Re-enable this test on devices.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testTappingShareInFirstRunExperienceView \
+  DISABLED_testTappingShareInFirstRunExperienceView
+#else
+#define MAYBE_testTappingShareInFirstRunExperienceView \
+  testTappingShareInFirstRunExperienceView
+#endif
+
+- (void)MAYBE_testTappingShareInFirstRunExperienceView {
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
