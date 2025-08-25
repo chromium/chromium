@@ -1,9 +1,0 @@
-Tests that writing an ARIA attribute causes the accessibility node to be updated.
-
-=== Before attribute modification ===
-checkbox "ARIA checkbox" invalid="false" focusable="true" checked="true"
-=== After attribute modification ===
-checkbox "ARIA checkbox" invalid="false" focusable="true" checked="false"
-=== After role modification ===
-radio "ARIA checkbox" invalid="false" focusable="true" checked="false"
-
