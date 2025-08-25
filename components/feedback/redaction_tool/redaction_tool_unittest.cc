@@ -1095,4 +1095,28 @@ TEST_F(RedactionToolTest, RedactBlockDevices) {
   }
 }
 
+TEST_F(RedactionToolTest, RedactBluetoothDeviceName) {
+  // Test cases for user-defined Bluetooth device names.
+  const std::string bluetooth_log_with_pii = R"(
+[    7.494529] input: sof-rt5682 Headset Jack as /devices/pci0000:00/0000:00:1f.3/tgl_mx98373_rt5682/sound/card0/input12
+[   11.390985] input: MX 2S Keyboard as /devices/virtual/misc/uhid/0005:046D:B019.0004/input/input18
+[   11.391455] input: MX 2S Mouse as /devices/virtual/misc/uhid/0005:046D:B019.0004/input/input19
+[   11.929997] input: Edman Paes dos Anjos’s Keyboard as /devices/virtual/misc/uhid/0005:05AC:0255.000B/input/input29
+[   11.930845] apple 0005:05AC:0255.000B: input,hidraw8: BLUETOOTH HID v0.50 Keyboard [Edman Paes dos Anjos’s Keyboard] on (MAC OUI=c4:75:ab IFACE=24)
+[   12.345678] some_device: input,hidraw0: BLUETOOTH HID v1.11 Mouse [Jane Doe's Mouse] on (MAC OUI=12:34:56 IFACE=78)
+)";
+
+  // Expected output after redaction.
+  const std::string expected_redacted_log = R"(
+[    7.494529] input: sof-rt5682 Headset Jack as /devices/pci0000:00/0000:00:1f.3/tgl_mx98373_rt5682/sound/card0/input12
+[   11.390985] input: (Bluetooth HID Device: 1) as /devices/virtual/misc/uhid/0005:046D:B019.0004/input/input18
+[   11.391455] input: (Bluetooth HID Device: 2) as /devices/virtual/misc/uhid/0005:046D:B019.0004/input/input19
+[   11.929997] input: (Bluetooth HID Device: 3) as /devices/virtual/misc/uhid/0005:05AC:0255.000B/input/input29
+[   11.930845] apple 0005:05AC:0255.000B: input,hidraw8: BLUETOOTH HID v0.50 Keyboard [(Bluetooth HID Device: 3)] on (MAC OUI=c4:75:ab IFACE=24)
+[   12.345678] some_device: input,hidraw0: BLUETOOTH HID v1.11 Mouse [(Bluetooth HID Device: 4)] on (MAC OUI=12:34:56 IFACE=78)
+)";
+
+  EXPECT_EQ(redactor_.Redact(bluetooth_log_with_pii), expected_redacted_log);
+}
+
 }  // namespace redaction

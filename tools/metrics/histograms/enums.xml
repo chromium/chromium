@@ -22327,6 +22327,7 @@ Called by update_net_error_codes.py.-->
   <int value="16" label="International Bank Account Number"/>
   <int value="17" label="Crash ID identifying an uploaded crash report"/>
   <int value="18" label="Raw memory dump"/>
+  <int value="19" label="Bluetooth HID device name"/>
 </enum>
 
 <enum name="PipelineStatus">

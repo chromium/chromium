@@ -76,7 +76,9 @@ enum class PIIType {
   kCrashId = 17,
   // Raw memory. May contain anything.
   kMemory = 18,
-  kMaxValue = kMemory,
+  // Bluetooth HID device name that exposed through kernel logging.
+  kBluetoothHidDevice = 19,
+  kMaxValue = kBluetoothHidDevice,
 };
 
 }  // namespace redaction

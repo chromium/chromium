@@ -359,6 +359,21 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
      "(" IPV4ADDRESS ")"
      "([^-\\.0-9]|$)",
      PIIType::kIPAddress},
+
+    // Redacts PII from kernel logs for virtual input devices (e.g., Bluetooth).
+    // Matches lines like:
+    //   input: Edman Paes dos Anjos’s Keyboard as /devices/virtual/...
+    // Redacts the name part only.
+    {"Bluetooth HID Device",
+     "(input: )([^\\r\\n]+?)(\\s+as\\s+/devices/virtual/misc/uhid/.*?)",
+     PIIType::kBluetoothHidDevice},
+
+    // Redacts PII from kernel logs for explicit Bluetooth HID devices.
+    // Matches lines like:
+    //   ... [Edman Paes dos Anjos’s Keyboard] on ...
+    // Redacts the name part found inside the brackets.
+    {"Bluetooth HID Device", R"((BLUETOOTH HID.+?\[)([^\]]+)(\]))",
+     PIIType::kBluetoothHidDevice},
 };
 
 bool MaybeUnmapAddress(IPAddress* addr) {
