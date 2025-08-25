@@ -17,6 +17,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"

@@ -14,13 +14,13 @@
 #include <vector>
 
 #include "base/memory/stack_allocated.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "content/browser/devtools/devtools_device_request_prompt_info.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/interest_group/devtools_enums.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/global_routing_id.h"
@@ -29,9 +29,12 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/filter/source_stream_type.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/cookie_manager.mojom-forward.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
@@ -48,6 +51,8 @@ struct UserAgentMetadata;
 }
 
 namespace net {
+class HttpResponseHeaders;
+class SiteForCookies;
 class SSLInfo;
 class X509Certificate;
 struct WebTransportError;
@@ -57,6 +62,7 @@ namespace network {
 class URLLoaderFactoryBuilder;
 
 namespace mojom {
+class NetworkContextParams;
 class URLResponseHeadDevToolsInfo;
 }  // namespace mojom
 }  // namespace network
@@ -69,6 +75,7 @@ class DownloadUrlParameters;
 
 namespace content {
 class BackForwardCacheCanStoreDocumentResult;
+class BackForwardCacheCanStoreTreeResult;
 class BrowserContext;
 class DevToolsAgentHostImpl;
 class FencedFrame;
@@ -76,6 +83,7 @@ class FrameTree;
 class FrameTreeNode;
 class NavigationRequest;
 class NavigationThrottleRegistry;
+class RenderFrameHost;
 class RenderFrameHostImpl;
 class RenderProcessHost;
 class SharedWorkerHost;
