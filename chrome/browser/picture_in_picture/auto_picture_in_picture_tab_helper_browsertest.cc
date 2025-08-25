@@ -581,6 +581,26 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     content::MediaSession::FlushObserversForTesting(web_contents);
   }
 
+  void WaitForMediaSessionCameraState(
+      content::WebContents* web_contents,
+      media_session::mojom::CameraState wanted_state) {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *content::MediaSession::Get(web_contents));
+    observer.WaitForCameraState(wanted_state);
+    // Flush so that the tab helper has also found out about this.
+    content::MediaSession::FlushObserversForTesting(web_contents);
+  }
+
+  void WaitForMediaSessionMicrophoneState(
+      content::WebContents* web_contents,
+      media_session::mojom::MicrophoneState wanted_state) {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *content::MediaSession::Get(web_contents));
+    observer.WaitForMicrophoneState(wanted_state);
+    // Flush so that the tab helper has also found out about this.
+    content::MediaSession::FlushObserversForTesting(web_contents);
+  }
+
   void WaitForAudioFocusGained() {
     audio_focus_observer_->WaitForGainedEvent();
   }
@@ -3011,4 +3031,114 @@ IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
   WaitForWasRecentlyAudible(web_contents, /*expected_recently_audible=*/false);
 
   SwitchToNewTabAndDontExpectAutopip();
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
+                       DoesNotBrowserAutopip_WhenUsingCamera) {
+  // Load a page that does not register for autopip and start video playback.
+  LoadNotRegisteredPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
+
+  // Simulate camera usage.
+  ASSERT_TRUE(
+      ExecJs(web_contents, "navigator.mediaSession.setCameraActive(true)"));
+  WaitForMediaSessionCameraState(web_contents,
+                                 media_session::mojom::CameraState::kTurnedOn);
+
+  // Auto-pip should not take place.
+  SwitchToNewTabAndDontExpectAutopip();
+
+  // Switch back to tab.
+  SwitchToExistingTab(web_contents);
+
+  // Stop camera usage.
+  ASSERT_TRUE(
+      ExecJs(web_contents, "navigator.mediaSession.setCameraActive(false)"));
+  WaitForMediaSessionCameraState(web_contents,
+                                 media_session::mojom::CameraState::kTurnedOff);
+
+  // Auto-pip should take place.
+  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
+                                        /*should_document_pip=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
+                       DoesNotBrowserAutopip_WhenUsingMicrophone) {
+  // Load a page that does not register for autopip and start video playback.
+  LoadNotRegisteredPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
+
+  // Simulate microphone usage.
+  ASSERT_TRUE(
+      ExecJs(web_contents, "navigator.mediaSession.setMicrophoneActive(true)"));
+  WaitForMediaSessionMicrophoneState(
+      web_contents, media_session::mojom::MicrophoneState::kUnmuted);
+
+  // Auto-pip should not take place.
+  SwitchToNewTabAndDontExpectAutopip();
+
+  // Switch back to tab.
+  SwitchToExistingTab(web_contents);
+
+  // Stop microphone usage.
+  ASSERT_TRUE(ExecJs(web_contents,
+                     "navigator.mediaSession.setMicrophoneActive(false)"));
+  WaitForMediaSessionMicrophoneState(
+      web_contents, media_session::mojom::MicrophoneState::kMuted);
+
+  // Auto-pip should take place.
+  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
+                                        /*should_document_pip=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
+                       DoesNotBrowserAutopip_WhenUsingCameraAndMicrophone) {
+  // Load a page that does not register for autopip and start video playback.
+  LoadNotRegisteredPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
+
+  // Simulate camera and microphone usage.
+  ASSERT_TRUE(
+      ExecJs(web_contents, "navigator.mediaSession.setCameraActive(true)"));
+  ASSERT_TRUE(
+      ExecJs(web_contents, "navigator.mediaSession.setMicrophoneActive(true)"));
+  WaitForMediaSessionCameraState(web_contents,
+                                 media_session::mojom::CameraState::kTurnedOn);
+  WaitForMediaSessionMicrophoneState(
+      web_contents, media_session::mojom::MicrophoneState::kUnmuted);
+
+  // Auto-pip should not take place.
+  SwitchToNewTabAndDontExpectAutopip();
+
+  // Switch back to tab.
+  SwitchToExistingTab(web_contents);
+
+  // Stop camera usage and microphone.
+  ASSERT_TRUE(
+      ExecJs(web_contents, "navigator.mediaSession.setCameraActive(false)"));
+  ASSERT_TRUE(ExecJs(web_contents,
+                     "navigator.mediaSession.setMicrophoneActive(false)"));
+  WaitForMediaSessionCameraState(web_contents,
+                                 media_session::mojom::CameraState::kTurnedOff);
+  WaitForMediaSessionMicrophoneState(
+      web_contents, media_session::mojom::MicrophoneState::kMuted);
+
+  // Auto-pip should take place.
+  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
+                                        /*should_document_pip=*/false);
 }

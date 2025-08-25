@@ -545,6 +545,10 @@ class MediaSessionImpl : public MediaSession,
   CONTENT_EXPORT void SetShouldThrottleDurationUpdateForTest(
       bool should_throttle);
 
+  // True if `routed_service_` exists and either the camera or microphone are
+  // currently actively used, false otherwise.
+  bool IsActivelyUsingCameraOrMicrophone() const;
+
   // Returns true if there exists a single normal "playing" player with picture
   // in picture available, false otherwise.
   bool CouldEnterBrowserInitiatedAutomaticPictureInPicture() const;

@@ -1118,6 +1118,136 @@ TEST_F(MediaSessionImplTest,
   EXPECT_EQ(1, player_observer_->received_enter_picture_in_picture_calls());
 }
 
+TEST_F(MediaSessionImplTest,
+       DoesNotEnterBrowserInitiatedAutoPip_WhenUsingCamera) {
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+  FlushForTesting(GetMediaSession());
+
+  EXPECT_FALSE(base::Contains(observer.actions(),
+                              MediaSessionAction::kEnterAutoPictureInPicture));
+  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
+
+  int player = player_observer_->StartNewPlayer();
+  player_observer_->SetIsPictureInPictureAvailable(player, true);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player);
+  FlushForTesting(GetMediaSession());
+
+  // With no camera/microphone usage, auto-pip should be possible.
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kEnterAutoPictureInPicture));
+
+  // Set camera state to `kTurnedOn`.
+  mock_media_session_service().SetCameraState(
+      media_session::mojom::CameraState::kTurnedOn);
+  FlushForTesting(GetMediaSession());
+
+  // Auto-pip should not be possible.
+  EXPECT_FALSE(base::Contains(observer.actions(),
+                              MediaSessionAction::kEnterAutoPictureInPicture));
+  GetMediaSession()->EnterAutoPictureInPicture();
+  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
+
+  // Set camera state back to Unknown.
+  mock_media_session_service().SetCameraState(
+      media_session::mojom::CameraState::kUnknown);
+  FlushForTesting(GetMediaSession());
+
+  // Auto-pip should be possible.
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kEnterAutoPictureInPicture));
+  GetMediaSession()->EnterAutoPictureInPicture();
+  EXPECT_EQ(1, player_observer_->received_enter_picture_in_picture_calls());
+}
+
+TEST_F(MediaSessionImplTest,
+       DoesNotEnterBrowserInitiatedAutoPip_WhenUsingMicrophone) {
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+  FlushForTesting(GetMediaSession());
+
+  EXPECT_FALSE(base::Contains(observer.actions(),
+                              MediaSessionAction::kEnterAutoPictureInPicture));
+  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
+
+  int player = player_observer_->StartNewPlayer();
+  player_observer_->SetIsPictureInPictureAvailable(player, true);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player);
+  FlushForTesting(GetMediaSession());
+
+  // With no camera/microphone usage, auto-pip should be possible.
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kEnterAutoPictureInPicture));
+
+  // Set microphone state to `kUnmuted`.
+  mock_media_session_service().SetMicrophoneState(
+      media_session::mojom::MicrophoneState::kUnmuted);
+  FlushForTesting(GetMediaSession());
+
+  // Auto-pip should not be possible.
+  EXPECT_FALSE(base::Contains(observer.actions(),
+                              MediaSessionAction::kEnterAutoPictureInPicture));
+  GetMediaSession()->EnterAutoPictureInPicture();
+  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
+
+  // Set microphone state back to `kUnknown`.
+  mock_media_session_service().SetMicrophoneState(
+      media_session::mojom::MicrophoneState::kUnknown);
+  FlushForTesting(GetMediaSession());
+
+  // Auto-pip should be possible.
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kEnterAutoPictureInPicture));
+  GetMediaSession()->EnterAutoPictureInPicture();
+  EXPECT_EQ(1, player_observer_->received_enter_picture_in_picture_calls());
+}
+
+TEST_F(MediaSessionImplTest,
+       DoesNotEnterBrowserInitiatedAutoPip_WhenUsingCameraAndMicrophone) {
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+  FlushForTesting(GetMediaSession());
+
+  EXPECT_FALSE(base::Contains(observer.actions(),
+                              MediaSessionAction::kEnterAutoPictureInPicture));
+  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
+
+  int player = player_observer_->StartNewPlayer();
+  player_observer_->SetIsPictureInPictureAvailable(player, true);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player);
+  FlushForTesting(GetMediaSession());
+
+  // With no camera/microphone usage, auto-pip should be possible.
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kEnterAutoPictureInPicture));
+
+  // Set camera and microphone state to `kTurnedOn`/`kUnmuted`.
+  mock_media_session_service().SetCameraState(
+      media_session::mojom::CameraState::kTurnedOn);
+  mock_media_session_service().SetMicrophoneState(
+      media_session::mojom::MicrophoneState::kUnmuted);
+  FlushForTesting(GetMediaSession());
+
+  // Auto-pip should not be possible.
+  EXPECT_FALSE(base::Contains(observer.actions(),
+                              MediaSessionAction::kEnterAutoPictureInPicture));
+  GetMediaSession()->EnterAutoPictureInPicture();
+  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
+
+  // Set camera and microphone state back to `kUnknown`.
+  mock_media_session_service().SetCameraState(
+      media_session::mojom::CameraState::kUnknown);
+  mock_media_session_service().SetMicrophoneState(
+      media_session::mojom::MicrophoneState::kUnknown);
+  FlushForTesting(GetMediaSession());
+
+  // Auto-pip should be possible.
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kEnterAutoPictureInPicture));
+  GetMediaSession()->EnterAutoPictureInPicture();
+  EXPECT_EQ(1, player_observer_->received_enter_picture_in_picture_calls());
+}
+
 class MediaSessionImplWithMediaSessionClientTest : public MediaSessionImplTest {
  protected:
   TestMediaSessionClient client_;
