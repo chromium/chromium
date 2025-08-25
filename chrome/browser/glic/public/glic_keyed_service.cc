@@ -40,6 +40,7 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/widget/glic_panel_coordinator_impl.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/global_features.h"
@@ -100,14 +101,14 @@ GlicKeyedService::GlicKeyedService(
       fre_controller_(
           std::make_unique<GlicFreController>(profile, identity_manager)),
       host_(std::make_unique<Host>(profile)),
-      window_controller_(
-          std::make_unique<GlicWindowControllerImpl>(profile,
+      panel_controller_(
+          std::make_unique<GlicPanelCoordinatorImpl>(profile,
                                                      identity_manager,
                                                      this,
                                                      enabling_.get())),
       sharing_manager_(
           std::make_unique<GlicSharingManagerImpl>(profile,
-                                                   window_controller_.get(),
+                                                   panel_controller_.get(),
                                                    host_.get(),
                                                    metrics_.get())),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
@@ -115,17 +116,17 @@ GlicKeyedService::GlicKeyedService(
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
       occlusion_notifier_(
-          std::make_unique<GlicOcclusionNotifier>(*window_controller_)),
+          std::make_unique<GlicOcclusionNotifier>(*panel_controller_)),
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(
               sharing_manager_.get(),
-              window_controller_.get(),
+              panel_controller_.get(),
               contextual_cueing_service,
               host_.get())),
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
-  host_->Initialize(window_controller_.get());
-  metrics_->SetControllers(window_controller_.get(), sharing_manager_.get());
+  host_->Initialize(panel_controller_.get());
+  metrics_->SetControllers(panel_controller_.get(), sharing_manager_.get());
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&GlicKeyedService::OnMemoryPressure,
@@ -198,7 +199,7 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
     return;
   }
 
-  window_controller_->Toggle(bwi, prevent_close, source);
+  panel_controller_->Toggle(bwi, prevent_close, source);
 }
 
 void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
@@ -216,7 +217,7 @@ void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
 }
 
 void GlicKeyedService::CloseUI() {
-  window_controller_->Shutdown();
+  panel_controller_->Shutdown();
   host().Shutdown();
   fre_controller_->Shutdown();
 }
@@ -278,8 +279,8 @@ void GlicKeyedService::FetchZeroStateSuggestions(
 }
 
 GlicWindowController& GlicKeyedService::window_controller() {
-  CHECK(window_controller_);
-  return *window_controller_.get();
+  CHECK(panel_controller_);
+  return *panel_controller_.get();
 }
 
 GlicFreController& GlicKeyedService::fre_controller() {
@@ -296,15 +297,15 @@ void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
 }
 
 bool GlicKeyedService::IsWindowShowing() const {
-  return window_controller_->IsShowing();
+  return panel_controller_->IsShowing();
 }
 
 bool GlicKeyedService::IsWindowDetached() const {
-  return window_controller_->IsDetached();
+  return panel_controller_->IsDetached();
 }
 
 bool GlicKeyedService::IsWindowOrFreShowing() const {
-  return window_controller_->IsShowing() || fre_controller_->IsShowingDialog();
+  return panel_controller_->IsShowing() || fre_controller_->IsShowingDialog();
 }
 
 base::CallbackListSubscription
@@ -347,10 +348,9 @@ void GlicKeyedService::CreateTab(
 }
 
 void GlicKeyedService::ClosePanel() {
-  window_controller_->Close();
+  panel_controller_->Close();
   screenshot_capturer_->CloseScreenPicker();
 }
-
 
 void GlicKeyedService::SetContextAccessIndicator(bool show) {
   if (is_context_access_indicator_enabled_ == show) {
@@ -498,7 +498,7 @@ base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
 void GlicKeyedService::CaptureScreenshot(
     mojom::WebClientHandler::CaptureScreenshotCallback callback) {
   screenshot_capturer_->CaptureScreenshot(
-      window_controller_->GetHostNativeWindow(), std::move(callback));
+      panel_controller_->GetHostNativeWindow(), std::move(callback));
 }
 
 bool GlicKeyedService::IsContextAccessIndicatorShown(
@@ -609,7 +609,7 @@ void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
     return;
   }
 
-  window_controller_->Preload();
+  panel_controller_->Preload();
 }
 
 void GlicKeyedService::FinishPreloadFre(GlicPrewarmingFreSource source,

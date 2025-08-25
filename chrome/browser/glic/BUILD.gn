@@ -149,6 +149,8 @@ source_set("impl") {
     "widget/application_hotkey_delegate.h",
     "widget/browser_conditions.cc",
     "widget/browser_conditions.h",
+    "widget/glic_panel_coordinator_impl.cc",
+    "widget/glic_panel_coordinator_impl.h",
     "widget/glic_panel_hotkey_delegate.cc",
     "widget/glic_panel_hotkey_delegate.h",
     "widget/glic_side_panel_coordinator.cc",

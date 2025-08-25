@@ -126,6 +126,8 @@ class GlicWindowControllerImpl
   void ShowDetachedForTesting() override;
   void SetPreviousPositionForTesting(gfx::Point position) override;
   std::unique_ptr<GlicView> CreateGlicViewForSidePanel() override;
+  base::CallbackListSubscription RegisterFloatyStateChange(
+      FloatyStateChangeCallback callback) override;
 
   // views::WidgetObserver implementation, monitoring the glic window widget.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
@@ -138,9 +140,6 @@ class GlicWindowControllerImpl
   // display::DisplayObserver implementation
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
-
-  base::CallbackListSubscription RegisterFloatyStateChange(
-      FloatyStateChangeCallback callback) override;
 
  private:
   Host& host() const;
