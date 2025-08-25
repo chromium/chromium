@@ -1858,10 +1858,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // be 0). The BookmarkBarCoordinator adds a LayoutChangeListener to the view; during
             // onLayoutChange we will have the correct height and update the top controls then.
             createBookmarkBarIfNecessary();
+            if (mToolbarManager != null) {
+                mToolbarManager.setProgressBarAnchorView(R.id.bookmark_bar);
+            }
         } else {
             if (mBookmarkBarCoordinator != null) {
                 mBookmarkBarCoordinator.setVisibility(false);
                 updateTopControlsHeight();
+                if (mToolbarManager != null) {
+                    mToolbarManager.setProgressBarAnchorView(R.id.control_container);
+                }
             }
         }
     }
