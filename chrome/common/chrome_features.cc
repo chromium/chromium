@@ -1597,6 +1597,11 @@ BASE_FEATURE(PeriodicLogUploadMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 // A feature to enable periodic log class management enabled policy.
 BASE_FEATURE(ClassManagementEnabledMetricsProvider,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables reporting Chrome app activity for supervised users.
+BASE_FEATURE(kUnicornChromeActivityReporting,
+             "UnicornChromeActivityReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // A feature to disable shortcut creation from the Chrome UI, and instead use

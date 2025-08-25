@@ -208,6 +208,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder_tab_helper.h"
+#include "chrome/browser/ash/child_accounts/time_limits/web_time_navigation_observer.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session_tab_helper.h"
 #include "chrome/browser/ash/mahi/web_contents/mahi_tab_helper.h"
 #include "chrome/browser/chromeos/cros_apps/cros_apps_tab_helper.h"
@@ -691,6 +692,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   GeminiAppTabHelper::MaybeCreateForWebContents(web_contents);
   mahi::MahiTabHelper::MaybeCreateForWebContents(web_contents);
   policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
+  ash::app_time::WebTimeNavigationObserver::MaybeCreateForWebContents(
+      web_contents);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
