@@ -356,8 +356,9 @@ void FileMetricsProvider::RegisterSource(const Params& params,
 // static
 void FileMetricsProvider::RegisterSourcePrefs(PrefRegistrySimple* prefs,
                                               std::string_view prefs_key) {
-  prefs->RegisterInt64Pref(
-      metrics::prefs::kMetricsLastSeenPrefix + std::string(prefs_key), 0);
+  prefs->RegisterTimePref(
+      metrics::prefs::kMetricsLastSeenPrefix + std::string(prefs_key),
+      base::Time());
 }
 
 //  static
