@@ -2353,11 +2353,19 @@ void RenderViewContextMenu::AppendSearchProvider() {
       return;
     }
 
-    menu_model_.AddItem(
-        IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
-        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
-                                   default_provider->short_name(),
-                                   printable_selection_text));
+    // When the Lens text selection entrypoint flag is enabled, checking for the
+    // availability of Lens requires the browser, so hide the menu item if the
+    // flag is enabled and there is no browser (e.g. when selecting in the side
+    // panel).
+    if (!lens::features::
+            IsLensOverlayTextSelectionContextMenuEntrypointEnabled() ||
+        GetBrowser()) {
+      menu_model_.AddItem(
+          IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
+          l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
+                                     default_provider->short_name(),
+                                     printable_selection_text));
+    }
   } else {
     if ((selection_navigation_url_ != params_.link_url) &&
         ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
@@ -3651,10 +3659,11 @@ bool RenderViewContextMenu::IsUntrustedNetworkDisabled() const {
 }
 
 bool RenderViewContextMenu::ShouldOpenTextQueryInLens() const {
+  BrowserWindowInterface* browser = GetBrowser();
   return lens::features::
              IsLensOverlayTextSelectionContextMenuEntrypointEnabled() &&
-         GetBrowser()
-             ->GetFeatures()
+         browser &&
+         browser->GetFeatures()
              .lens_overlay_entry_point_controller()
              ->IsEnabled();
 }
