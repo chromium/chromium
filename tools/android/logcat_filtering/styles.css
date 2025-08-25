@@ -125,6 +125,8 @@ body {
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   transition: background-color 0.3s ease;
+  /* Do not allow the user to highlight the text inside the button */
+  user-select: none;
 }
 
 .google-button:hover {
@@ -170,6 +172,8 @@ body {
   align-items: center;
   font-size: 15px;
   font-weight: 500;
+  /* Do not allow the user to highlight the text inside the dropdown header */
+  user-select: none;
 }
 
 .dropdown-header i {
