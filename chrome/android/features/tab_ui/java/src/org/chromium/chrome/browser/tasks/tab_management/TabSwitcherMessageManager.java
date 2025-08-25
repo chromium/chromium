@@ -592,8 +592,13 @@ public class TabSwitcherMessageManager {
                 UiType.INCOGNITO_REAUTH_PROMO_MESSAGE, MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
         tabListCoordinator.removeSpecialListItem(
                 UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
-        tabListCoordinator.removeSpecialListItem(
-                UiType.TAB_GROUP_SUGGESTION_MESSAGE, MessageType.TAB_GROUP_SUGGESTION_MESSAGE);
+
+        // TODO(crbug.com/441040016): Refactor the lifecycle of the TabGroupSuggestionMessageService
+        // so that we don't need to pass a dismiss runnable.
+        if (mTabGroupSuggestionMessageService != null) {
+            mTabGroupSuggestionMessageService.dismissMessage(
+                    tabListCoordinator.getTabListHighlighter()::unhighlightTabs);
+        }
 
         sAppendedMessagesForTesting = false;
         for (MessageUpdateObserver observer : mObservers) {

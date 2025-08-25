@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -35,10 +36,12 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -48,6 +51,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
+import org.chromium.chrome.browser.tab_ui.SuggestionLifecycleObserverHandler;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -66,8 +70,11 @@ import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.List;
+
 /** Unit tests for the TabSwitcherMessageManager. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID)
 public class TabSwitcherMessageManagerUnitTest {
     private static final int INITIAL_TAB_COUNT = 0;
     private static final int TAB1_ID = 456;
@@ -88,6 +95,7 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabListCoordinator mTabListCoordinator;
+    @Mock private TabListHighlighter mTabListHighlighter;
     @Mock private PriceWelcomeMessageReviewActionProvider mPriceWelcomeMessageReviewActionProvider;
     @Mock private MessageUpdateObserver mMessageUpdateObserver;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -132,6 +140,7 @@ public class TabSwitcherMessageManagerUnitTest {
         doReturn(true)
                 .when(mMultiWindowModeStateDispatcher)
                 .addObserver(mMultiWindowModeObserverCaptor.capture());
+        doReturn(mTabListHighlighter).when(mTabListCoordinator).getTabListHighlighter();
         doNothing().when(mTabGroupModelFilter).addObserver(any());
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(mProfile).when(mTabModel).getProfile();
@@ -228,10 +237,37 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mTabListCoordinator)
                 .removeSpecialListItem(
                         UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
+        verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
+    }
+
+    @Test
+    public void removeMessageItemsWhenCloseLastTab_withGroupSuggestion() {
+        createGroupSuggestion();
+
+        // Mock that mTab1 is not the only tab in the current tab model and it will be closed.
+        doReturn(2).when(mTabModel).getCount();
+        getTabModelObserver(0).willCloseTab(mTab1, true);
+        verify(mTabListCoordinator, never()).removeSpecialListItem(anyInt(), anyInt());
+
+        // Mock that mTab1 is the only tab in the current tab model and it will be closed.
+        doReturn(1).when(mTabModel).getCount();
+        getTabModelObserver(0).willCloseTab(mTab1, true);
+
+        verify(mTabListCoordinator).removeSpecialListItem(UiType.IPH_MESSAGE, MessageType.IPH);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(UiType.PRICE_MESSAGE, MessageType.PRICE_MESSAGE);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(
+                        UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+                        MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(
+                        UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
         verify(mTabListCoordinator)
                 .removeSpecialListItem(
                         UiType.TAB_GROUP_SUGGESTION_MESSAGE,
                         MessageType.TAB_GROUP_SUGGESTION_MESSAGE);
+        verify(mTabListHighlighter).unhighlightTabs();
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
@@ -263,10 +299,30 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mTabListCoordinator)
                 .removeSpecialListItem(
                         UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
+        verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
+    }
+
+    @Test
+    public void enterMultiWindowMode_withGroupSuggestion() {
+        createGroupSuggestion();
+
+        mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(true);
+
+        verify(mTabListCoordinator).removeSpecialListItem(UiType.IPH_MESSAGE, MessageType.IPH);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(UiType.PRICE_MESSAGE, MessageType.PRICE_MESSAGE);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(
+                        UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+                        MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(
+                        UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
         verify(mTabListCoordinator)
                 .removeSpecialListItem(
                         UiType.TAB_GROUP_SUGGESTION_MESSAGE,
                         MessageType.TAB_GROUP_SUGGESTION_MESSAGE);
+        verify(mTabListHighlighter).unhighlightTabs();
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
@@ -300,5 +356,13 @@ public class TabSwitcherMessageManagerUnitTest {
 
     private TabModelObserver getTabModelObserver(int i) {
         return mTabModelObserverCaptor.getAllValues().get(i);
+    }
+
+    private void createGroupSuggestion() {
+        TabGroupSuggestionMessageService suggestionService =
+                mMessageManager.getTabGroupSuggestionMessageService();
+        assertNotNull(suggestionService);
+        suggestionService.addGroupMessageForTabs(
+                List.of(1), new SuggestionLifecycleObserverHandler());
     }
 }
