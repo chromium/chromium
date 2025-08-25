@@ -251,6 +251,11 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
         controller.destroy();
 
         verify(suggestionCallback).destroy();
+
+        // Tests whether if the cached suggestions have been set to null.
+        // The callback should not be destroyed twice.
+        controller.destroy();
+        verify(suggestionCallback).destroy();
     }
 
     @Test
