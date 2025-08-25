@@ -1631,11 +1631,10 @@ TEST_F(RegistrationTest, ShutdownDuringRequest) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::RunLoop run_loop;
   server_.RegisterRequestHandler(base::BindRepeating(
-      [](base::RunLoop* run_loop, const test_server::HttpRequest& request) {
+      [](base::RunLoop* run_loop, const test_server::HttpRequest& request)
+          -> std::unique_ptr<test_server::HttpResponse> {
         run_loop->Quit();
-        std::unique_ptr<test_server::HttpResponse> response =
-            std::make_unique<test_server::HungResponse>();
-        return response;
+        return std::make_unique<test_server::HungResponse>();
       },
       &run_loop));
   ASSERT_TRUE(server_.Start());
