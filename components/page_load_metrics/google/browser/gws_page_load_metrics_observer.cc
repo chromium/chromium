@@ -647,7 +647,7 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
                             timing.initialize_stream_delay);
 
   // Record latency trace events.
-  RecordLatencyHitograms(timing.non_redirect_response_start_time);
+  RecordLatencyHistograms(timing.non_redirect_response_start_time);
 
   // Record trace events according to the navigation milestone.
   TRACE_EVENT_BEGIN("loading", "GWSNavigationStartToFirstRequestStart",
@@ -749,7 +749,7 @@ std::string GWSPageLoadMetricsObserver::AddHistogramSuffix(
   return histogram_name + suffix;
 }
 
-void GWSPageLoadMetricsObserver::RecordLatencyHitograms(
+void GWSPageLoadMetricsObserver::RecordLatencyHistograms(
     base::TimeTicks response_start_time) {
   CHECK(!is_prerendered_);
   const auto track = perfetto::NamedTrack("GWSLatencyEvent", navigation_id_);
