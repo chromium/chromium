@@ -75,11 +75,8 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
 
   void Attach();
   void AttachToReceiver(RTCRtpReceiver*);
-  bool IsAttached() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return is_attached_;
-  }
   void Detach();
+  bool HasBeenUsed() const;
 
   void CreateVideoUnderlyingSink(
       scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>

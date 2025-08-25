@@ -215,6 +215,11 @@ void RTCRtpScriptTransform::Detach() {
   }
 }
 
+bool RTCRtpScriptTransform::HasBeenUsed() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return !is_unused_;
+}
+
 RTCRtpScriptTransform::SendKeyFrameRequestResult
 RTCRtpScriptTransform::HandleSendKeyFrameRequestResults() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

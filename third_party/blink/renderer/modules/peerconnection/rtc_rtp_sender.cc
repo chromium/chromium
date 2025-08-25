@@ -1386,9 +1386,9 @@ void RTCRtpSender::setTransform(RTCRtpScriptTransform* transform,
     transform_ = nullptr;
     return;
   }
-  if (transform->IsAttached()) {
+  if (transform->HasBeenUsed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Transform is already in use");
+                                      "Transform cannot be reused");
     return;
   }
   if (transform_) {

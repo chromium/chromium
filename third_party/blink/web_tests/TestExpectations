@@ -3426,7 +3426,6 @@ crbug.com/419167522 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/
 crbug.com/418804914 [ Mac15 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-nn.html [ Skip Timeout ]
 crbug.com/418370871 [ Win11 ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/418175808 [ Mac12 ] external/wpt/html/cross-origin-embedder-policy/credentialless/reporting-subresource-corp.https.window.html [ Skip Timeout ]
-crbug.com/418031072 [ Linux ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Pass Timeout ]
 crbug.com/417940356 [ Win11 ] external/wpt/page-lifecycle/child-display-none.tentative.html [ Timeout ]
 crbug.com/417940356 [ Win11-arm64 ] external/wpt/page-lifecycle/child-display-none.tentative.html [ Pass Timeout ]
 crbug.com/417940356 [ Win10.20h2 ] external/wpt/page-lifecycle/child-display-none.tentative.html [ Timeout ]
