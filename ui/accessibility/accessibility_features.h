@@ -306,6 +306,10 @@ AX_BASE_EXPORT bool IsReadAnythingReadAloudEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloudPhraseHighlighting);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudPhraseHighlightingEnabled();
 
+// Enable TypeScript-based text segmentation in Read Anything Read Aloud.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloudTSTextSegmentation);
+AX_BASE_EXPORT bool IsReadAnythingReadAloudTSTextSegmentationEnabled();
+
 // Enable images to be distilled via algorithm. Should be disabled by
 // default.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingImagesViaAlgorithm);

@@ -459,6 +459,15 @@ bool IsReadAnythingReadAloudPhraseHighlightingEnabled() {
              ::features::kReadAnythingReadAloudPhraseHighlighting);
 }
 
+BASE_FEATURE(kReadAnythingReadAloudTSTextSegmentation,
+             "ReadAnythingReadAloudTSTextSegmentation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAnythingReadAloudTSTextSegmentationEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
+         base::FeatureList::IsEnabled(
+             ::features::kReadAnythingReadAloudTSTextSegmentation);
+}
+
 BASE_FEATURE(kReadAnythingImagesViaAlgorithm,
              "ReadAnythingImagesViaAlgorithm",
              base::FEATURE_DISABLED_BY_DEFAULT);
