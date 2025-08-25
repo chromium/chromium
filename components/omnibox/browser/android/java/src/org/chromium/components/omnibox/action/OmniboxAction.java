@@ -25,15 +25,30 @@ public abstract class OmniboxAction {
     /** Describes the ChipView decoration. */
     public static final class ChipIcon {
         public final @DrawableRes int iconRes;
+        public final @DrawableRes int incognitoIconRes;
         public final boolean tintWithTextColor;
+
+        /**
+         * @param iconRes The resource Id of the icon to be shown beside the text.
+         * @param incognitoIconRes The resource Id of the icon to be shown beside the text in
+         *     incognito.
+         * @param tintWithTextColor Whether to tint the icon using primary text color.
+         */
+        public ChipIcon(
+                @DrawableRes int iconRes,
+                @DrawableRes int incognitoIconRes,
+                boolean tintWithTextColor) {
+            this.iconRes = iconRes;
+            this.incognitoIconRes = incognitoIconRes;
+            this.tintWithTextColor = tintWithTextColor;
+        }
 
         /**
          * @param iconRes The resource Id of the icon to be shown beside the text.
          * @param tintWithTextColor Whether to tint the icon using primary text color.
          */
         public ChipIcon(@DrawableRes int iconRes, boolean tintWithTextColor) {
-            this.iconRes = iconRes;
-            this.tintWithTextColor = tintWithTextColor;
+            this(iconRes, iconRes, tintWithTextColor);
         }
     }
 

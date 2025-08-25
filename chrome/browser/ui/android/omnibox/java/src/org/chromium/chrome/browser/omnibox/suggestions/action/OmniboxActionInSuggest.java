@@ -75,7 +75,10 @@ public class OmniboxActionInSuggest extends OmniboxAction {
         map.put(
                 SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
                 new ChipIcon(
-                        org.chromium.chrome.browser.omnibox.R.drawable.search_spark_rainbow, true));
+                        org.chromium.chrome.browser.omnibox.R.drawable.search_spark_rainbow,
+                        org.chromium.chrome.browser.omnibox.R.drawable
+                                .search_spark_rainbow_incognito,
+                        false));
         return map;
     }
 
