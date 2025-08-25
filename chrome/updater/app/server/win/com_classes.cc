@@ -120,6 +120,10 @@ class UpdaterAppStateImpl : public IDispatchImpl<IUpdaterAppState> {
 
 }  // namespace
 
+UpdateStateImpl::UpdateStateImpl(const UpdateService::UpdateState& update_state)
+    : DYNAMICIIDSIMPL(IUpdateState)(GetUpdaterScope()),
+      update_state_(update_state) {}
+
 STDMETHODIMP UpdateStateImpl::get_state(LONG* state) {
   CHECK(state);
   *state = static_cast<LONG>(update_state_.state);
@@ -197,6 +201,13 @@ STDMETHODIMP UpdateStateImpl::get_installerCommandLine(
   return S_OK;
 }
 
+UpdateStateImpl::~UpdateStateImpl() = default;
+
+CompleteStatusImpl::CompleteStatusImpl(int code, const std::wstring& message)
+    : DYNAMICIIDSIMPL(ICompleteStatus)(GetUpdaterScope()),
+      code_(code),
+      message_(message) {}
+
 STDMETHODIMP CompleteStatusImpl::get_statusCode(LONG* code) {
   CHECK(code);
   *code = code_;
@@ -208,6 +219,8 @@ STDMETHODIMP CompleteStatusImpl::get_statusMessage(BSTR* message) {
   *message = base::win::ScopedBstr(message_).Release();
   return S_OK;
 }
+
+CompleteStatusImpl::~CompleteStatusImpl() = default;
 
 UpdaterImpl::UpdaterImpl()
     : DynamicIIDsMultImpl<IUpdater, IUpdater2>(

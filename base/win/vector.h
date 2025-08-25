@@ -122,8 +122,7 @@ class BASE_EXPORT VectorChangedEventArgs
  public:
   VectorChangedEventArgs(
       ABI::Windows::Foundation::Collections::CollectionChange change,
-      unsigned int index)
-      : change_(change), index_(index) {}
+      unsigned int index);
 
   ~VectorChangedEventArgs() override = default;
 

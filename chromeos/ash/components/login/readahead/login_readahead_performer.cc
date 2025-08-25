@@ -138,6 +138,10 @@ void ReadaheadFilesAndReportResult(scoped_refptr<CancelNotifier> notifier) {
 
 }  // namespace
 
+CancelNotifier::CancelNotifier() = default;
+
+CancelNotifier::~CancelNotifier() = default;
+
 LoginReadaheadPerformer::LoginReadaheadPerformer(
     SessionManagerClient* session_manager_client) {
   CHECK(session_manager_client);

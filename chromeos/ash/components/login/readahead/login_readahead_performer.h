@@ -17,12 +17,13 @@ namespace ash {
 // Wraps an AtomicFlag for notifying the readahead task when it should stop.
 class CancelNotifier : public base::RefCountedThreadSafe<CancelNotifier> {
  public:
+  CancelNotifier();
   void Cancel() { cancel_requested_.Set(); }
   bool IsCancelRequested() const { return cancel_requested_.IsSet(); }
 
  private:
   friend base::RefCountedThreadSafe<CancelNotifier>;
-  ~CancelNotifier() = default;
+  ~CancelNotifier();
 
   base::AtomicFlag cancel_requested_;
 };

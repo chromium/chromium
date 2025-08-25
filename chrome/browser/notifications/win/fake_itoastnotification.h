@@ -21,7 +21,7 @@ class FakeIToastNotification
                                   const std::wstring& tag);
   FakeIToastNotification(const FakeIToastNotification&) = delete;
   FakeIToastNotification& operator=(const FakeIToastNotification&) = delete;
-  ~FakeIToastNotification() override = default;
+  ~FakeIToastNotification() override;
 
   // ABI::Windows::UI::Notifications::IToastNotification implementation:
   HRESULT STDMETHODCALLTYPE

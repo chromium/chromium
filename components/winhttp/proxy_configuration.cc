@@ -33,6 +33,8 @@ void SetProxyForRequest(
   }
 }
 
+ProxyConfiguration::ProxyConfiguration() = default;
+
 ProxyConfiguration::ProxyConfiguration(const ProxyInfo& proxy_info)
     : proxy_info_(proxy_info) {}
 
@@ -67,6 +69,8 @@ std::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::GetProxyForUrl(
     const GURL& url) const {
   return DoGetProxyForUrl(session_handle, url);
 }
+
+ProxyConfiguration::~ProxyConfiguration() = default;
 
 std::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::DoGetProxyForUrl(
     HINTERNET session_handle,

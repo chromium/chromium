@@ -162,6 +162,8 @@ bool CheckSanity(const crashpad::ProcessSnapshot& process_snapshot,
 }
 }  // namespace
 
+AllocationRecorderHolder::AllocationRecorderHolder() = default;
+
 AllocationRecorderHolder::~AllocationRecorderHolder() = default;
 
 Result AllocationRecorderHolder::Initialize(

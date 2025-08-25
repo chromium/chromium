@@ -5,17 +5,20 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_SEQUENCE_AFFINE_COM_OBJECT_ROOT_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_SEQUENCE_AFFINE_COM_OBJECT_ROOT_WIN_H_
 
-#include <atlcom.h>
-
+#include "base/component_export.h"
 #include "base/sequence_checker.h"
+#include "base/win/atl.h"
 
 namespace ui {
 
 // A CComObjectRoot for a single-threaded object that uses a `SEQUENCE_CHECKER`
 // to assert that reference counting is performed on the correct sequence.
-class SequenceAffineComObjectRoot
+class COMPONENT_EXPORT(AX_PLATFORM) SequenceAffineComObjectRoot
     : public CComObjectRootEx<CComSingleThreadModel> {
  public:
+  SequenceAffineComObjectRoot();
+  ~SequenceAffineComObjectRoot();
+
   // CComObjectRootEx (non-virtual) overrides:
   ULONG InternalAddRef() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

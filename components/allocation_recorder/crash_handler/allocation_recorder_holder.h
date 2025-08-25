@@ -31,6 +31,8 @@ using Result =
 class AllocationRecorderHolder
     : public base::RefCounted<AllocationRecorderHolder> {
  public:
+  AllocationRecorderHolder();
+
   // Load an AllocationStackTraceRecorder from the passed process snapshot and
   // provide access via the result.
   virtual Result Initialize(const crashpad::ProcessSnapshot& process_snapshot);

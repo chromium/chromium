@@ -33,7 +33,7 @@ namespace winhttp {
 // with WPAD (Web Proxy Auto Discovery).
 class ProxyConfiguration : public base::RefCounted<ProxyConfiguration> {
  public:
-  ProxyConfiguration() = default;
+  ProxyConfiguration();
   explicit ProxyConfiguration(const ProxyInfo& proxy_info);
   ProxyConfiguration(const ProxyConfiguration&) = delete;
   ProxyConfiguration& operator=(const ProxyConfiguration&) = delete;
@@ -45,7 +45,7 @@ class ProxyConfiguration : public base::RefCounted<ProxyConfiguration> {
   std::optional<ScopedWinHttpProxyInfo> GetProxyForUrl(HINTERNET session_handle,
                                                        const GURL& url) const;
  protected:
-  virtual ~ProxyConfiguration() = default;
+  virtual ~ProxyConfiguration();
 
  private:
   friend class base::RefCounted<ProxyConfiguration>;
