@@ -20,10 +20,6 @@ source_set("parsing") {
   ]
 }
 
-source_set("hats_utils") {
-  sources = [ "plus_address_hats_utils.h" ]
-}
-
 proto_library("plus_address_blocklist_proto") {
   sources = [ "blocked_facets.proto" ]
 }
@@ -64,11 +60,11 @@ source_set("plus_addresses") {
   ]
   deps = [
     ":blocklist_data",
-    ":hats_utils",
     ":parsing",
     "//components/affiliations/core/browser:affiliations",
     "//components/feature_engagement/public",
     "//components/plus_addresses/core/browser",
+    "//components/plus_addresses/core/browser:hats_utils",
     "//components/plus_addresses/core/browser/metrics",
     "//components/plus_addresses/core/browser/metrics:submission_logger",
     "//components/plus_addresses/core/browser/settings",
@@ -119,7 +115,6 @@ source_set("unit_tests") {
 
   deps = [
     ":blocklist_data",
-    ":hats_utils",
     ":parsing",
     ":plus_addresses",
     ":test_support",
@@ -129,6 +124,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/feature_engagement/public",
     "//components/os_crypt/async/browser:test_support",
+    "//components/plus_addresses/core/browser:hats_utils",
     "//components/plus_addresses/core/browser/metrics",
     "//components/plus_addresses/core/browser/settings:test_support",
     "//components/plus_addresses/core/common:features",
@@ -159,13 +155,13 @@ static_library("test_support") {
     "plus_address_test_utils.h",
   ]
   deps = [
-    ":hats_utils",
     "//base",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/feature_engagement/public",
+    "//components/plus_addresses/core/browser:hats_utils",
     "//components/plus_addresses/core/common:prefs",
     "//components/plus_addresses/resources/strings",
     "//components/strings:components_strings_grit",

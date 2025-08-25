@@ -25,6 +25,10 @@ if (is_android) {
   }
 }
 
+source_set("hats_utils") {
+  sources = [ "plus_address_hats_utils.h" ]
+}
+
 source_set("browser") {
   sources = [
     "plus_address_ui_utils.cc",

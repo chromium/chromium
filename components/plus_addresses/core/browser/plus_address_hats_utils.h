@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HATS_UTILS_H_
-#define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HATS_UTILS_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_HATS_UTILS_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_HATS_UTILS_H_
 
 namespace plus_addresses::hats {
 
@@ -29,4 +29,4 @@ inline constexpr char kMaxDelayMs[] = "max-delay-ms";
 
 }  // namespace plus_addresses::hats
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HATS_UTILS_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_HATS_UTILS_H_
