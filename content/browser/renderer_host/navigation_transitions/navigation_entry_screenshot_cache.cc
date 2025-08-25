@@ -213,6 +213,7 @@ void NavigationEntryScreenshotCache::OnNavigationEntryGone(
 void NavigationEntryScreenshotCache::OnScreenshotCompressed(
     NavigationTransitionData::UniqueId screenshot_id,
     size_t new_size) {
+  TRACE_EVENT("content", "OnScreenshotCompressed");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto it = cached_screenshots_.find(screenshot_id);
   CHECK(it != cached_screenshots_.end());

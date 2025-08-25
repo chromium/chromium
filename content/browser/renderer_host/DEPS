@@ -38,6 +38,9 @@ specific_include_rules = {
   "embedded_frame_sink_provider_impl_unittest\.cc": [
     "+components/viz/service",
   ],
+  "navigation_transitions/navigation_transition_utils\.cc": [
+    "+gpu/command_buffer/client/client_shared_image.h",
+  ],
   "render_process_host_impl(_receiver_bindings)?\.cc": [
     "+google_apis/gaia/gaia_config.h",
     "+google_apis/gaia/gaia_switches.h",

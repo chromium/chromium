@@ -148,6 +148,12 @@ BASE_FEATURE(BackForwardCacheMemoryControls,
 #endif
 );
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables getting screenshots as shared images for back forward transitions.
+BASE_FEATURE(BackForwardTransitionsCrossDocSharedImage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // If enabled, makes battery saver request heavy align wake ups.
 BASE_FEATURE(BatterySaverModeAlignWakeUps, base::FEATURE_DISABLED_BY_DEFAULT);
 

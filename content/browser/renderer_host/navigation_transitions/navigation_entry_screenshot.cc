@@ -6,13 +6,20 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/raster_interface.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/skia_span_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/android/resources/etc1_utils.h"
@@ -74,31 +81,46 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
           performance_scenarios::kDefaultIdleScenarios),
       bitmap_(cc::UIResourceBitmap(bitmap)),
       unique_id_(unique_id),
-      dimensions_without_compression_(bitmap_->GetSize()) {
+      dimensions_without_compression_(bitmap_->GetSize()),
+      supports_etc_non_power_of_two_(supports_etc_non_power_of_two) {
   CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  compression_task_ = CompressionTask(bitmap, supports_etc_non_power_of_two);
-  if (!compression_task_) {
+  SetupCompressionTask(bitmap, supports_etc_non_power_of_two);
+}
+
+NavigationEntryScreenshot::NavigationEntryScreenshot(
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    NavigationTransitionData::UniqueId unique_id,
+    bool supports_etc_non_power_of_two,
+    scoped_refptr<viz::RasterContextProvider> context_provider)
+    : performance_scenarios::MatchingScenarioObserver(
+          performance_scenarios::kDefaultIdleScenarios),
+      shared_image_(std::move(shared_image)),
+      unique_id_(unique_id),
+      dimensions_without_compression_(shared_image_->size()),
+      supports_etc_non_power_of_two_(supports_etc_non_power_of_two),
+      context_provider_(std::move(context_provider)) {
+  DCHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  context_provider_->AddObserver(this);
+
+  auto observer_list =
+      performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+          performance_scenarios::ScenarioScope::kGlobal);
+  if (observer_list) {
+    observer_list->AddMatchingObserver(this);
+    read_back_needed_ = true;
     return;
   }
-  if (NavigationTransitionConfig::ShouldCompressScreenshotWhenQuiet()) {
-    auto observer_list =
-        performance_scenarios::PerformanceScenarioObserverList::GetForScope(
-            performance_scenarios::ScenarioScope::kGlobal);
-    if (observer_list) {
-      observer_list->AddMatchingObserver(this);
-      return;
-    }
-  }
-  StartCompression();
+  ReadBack();
 }
 
 NavigationEntryScreenshot::~NavigationEntryScreenshot() {
   if (cache_) {
     cache_->OnNavigationEntryGone(unique_id_);
   }
-  if (compression_task_) {
+  if (read_back_needed_ || compression_task_) {
     auto observer_list =
         performance_scenarios::PerformanceScenarioObserverList::GetForScope(
             performance_scenarios::ScenarioScope::kGlobal);
@@ -106,6 +128,7 @@ NavigationEntryScreenshot::~NavigationEntryScreenshot() {
       observer_list->RemoveMatchingObserver(this);
     }
   }
+  ResetContextProvider();
 }
 
 cc::UIResourceBitmap NavigationEntryScreenshot::GetBitmap(cc::UIResourceId uid,
@@ -124,18 +147,40 @@ size_t NavigationEntryScreenshot::SetCache(
     bitmap_.reset();
   }
 
+  if (shared_image_) {
+    return SkColorTypeBytesPerPixel(kN32_SkColorType) *
+           shared_image_->size().Area64();
+  }
+
   return GetBitmap().SizeInBytes();
 }
 
 void NavigationEntryScreenshot::OnScenarioMatchChanged(
     performance_scenarios::ScenarioScope scope,
     bool matches_pattern) {
-  if (matches_pattern && compression_task_) {
+  if (!matches_pattern) {
+    return;
+  }
+
+  if (read_back_needed_) {
+    ReadBack();
+    read_back_needed_ = false;
+    performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+        performance_scenarios::ScenarioScope::kGlobal)
+        ->RemoveMatchingObserver(this);
+    return;
+  }
+
+  if (compression_task_) {
     StartCompression();
     performance_scenarios::PerformanceScenarioObserverList::GetForScope(
         performance_scenarios::ScenarioScope::kGlobal)
         ->RemoveMatchingObserver(this);
   }
+}
+
+void NavigationEntryScreenshot::OnContextLost() {
+  ResetContextProvider();
 }
 
 SkBitmap NavigationEntryScreenshot::GetBitmapForTesting() const {
@@ -146,13 +191,13 @@ size_t NavigationEntryScreenshot::CompressedSizeForTesting() const {
   return !bitmap_ ? compressed_bitmap_->SizeInBytes() : 0u;
 }
 
-base::OnceClosure NavigationEntryScreenshot::CompressionTask(
+void NavigationEntryScreenshot::SetupCompressionTask(
     const SkBitmap& bitmap,
     bool supports_etc_non_power_of_two) {
 #if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(kNavigationEntryScreenshotCompression) ||
       g_disable_compression_for_testing) {
-    return base::OnceClosure();
+    return;
   }
 
   CompressionDoneCallback done_callback = base::BindPostTask(
@@ -160,11 +205,22 @@ base::OnceClosure NavigationEntryScreenshot::CompressionTask(
       base::BindOnce(&NavigationEntryScreenshot::OnCompressionFinished,
                      weak_factory_.GetWeakPtr()));
 
-  return base::BindOnce(&CompressNavigationScreenshotOnWorkerThread, bitmap,
-                        supports_etc_non_power_of_two,
-                        std::move(done_callback));
-#else
-  return base::OnceClosure();
+  compression_task_ =
+      base::BindOnce(&CompressNavigationScreenshotOnWorkerThread, bitmap,
+                     supports_etc_non_power_of_two, std::move(done_callback));
+
+  if (NavigationTransitionConfig::ShouldCompressScreenshotWhenQuiet() &&
+      !performance_scenarios::CurrentScenariosMatch(
+          performance_scenarios::ScenarioScope::kGlobal, scenario_pattern())) {
+    auto observer_list =
+        performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+            performance_scenarios::ScenarioScope::kGlobal);
+    if (observer_list) {
+      observer_list->AddMatchingObserver(this);
+      return;
+    }
+  }
+  StartCompression();
 #endif
 }
 
@@ -173,6 +229,62 @@ void NavigationEntryScreenshot::StartCompression() {
                              {base::TaskPriority::BEST_EFFORT,
                               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
                              std::move(compression_task_));
+}
+
+void NavigationEntryScreenshot::ResetContextProvider() {
+  if (context_provider_) {
+    context_provider_->RemoveObserver(this);
+    context_provider_.reset();
+  }
+}
+
+void NavigationEntryScreenshot::ReadBack() {
+  TRACE_EVENT("content", "NavigationEntryScreenshot::ReadBack");
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  SkImageInfo info = SkImageInfo::MakeN32(shared_image_->size().width(),
+                                          shared_image_->size().height(),
+                                          shared_image_->alpha_type());
+  read_back_bitmap_.emplace();
+  if (!read_back_bitmap_->tryAllocPixels(info)) {
+    OnReadBack(false);
+    return;
+  }
+
+  gfx::Point src_point;
+  if (!context_provider_) {
+    OnReadBack(false);
+  }
+  auto* raster_interface = context_provider_->RasterInterface();
+  DCHECK(raster_interface);
+  auto scoped_access = shared_image_->BeginRasterAccess(
+      raster_interface, shared_image_->creation_sync_token(),
+      /*readonly=*/true);
+  raster_interface->ReadbackARGBPixelsAsync(
+      shared_image_->mailbox(), shared_image_->GetTextureTarget(),
+      shared_image_->surface_origin(), shared_image_->size(), src_point, info,
+      info.minRowBytes(),
+      gfx::SkPixmapToWritableSpan(read_back_bitmap_->pixmap()),
+      base::BindOnce(&NavigationEntryScreenshot::OnReadBack,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void NavigationEntryScreenshot::OnReadBack(bool success) {
+  TRACE_EVENT("content", "NavigationEntryScreenshot::OnReadBack");
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // The context provider will no longer be used.
+  ResetContextProvider();
+  if (!success) {
+    read_back_bitmap_.reset();
+    shared_image_.reset();
+    return;
+  }
+  read_back_bitmap_->setImmutable();
+  bitmap_ = cc::UIResourceBitmap(*read_back_bitmap_);
+  shared_image_.reset();
+
+  SetupCompressionTask(*read_back_bitmap_, supports_etc_non_power_of_two_);
+  read_back_bitmap_.reset();
 }
 
 void NavigationEntryScreenshot::OnCompressionFinished(
@@ -184,9 +296,9 @@ void NavigationEntryScreenshot::OnCompressionFinished(
   const auto size =
       gfx::Size(compressed_bitmap->width(), compressed_bitmap->height());
   compressed_bitmap_ = cc::UIResourceBitmap(std::move(compressed_bitmap), size);
-  TRACE_EVENT2("navigation", "NavigationEntryScreenshot::OnCompressionFinished",
-               "old_size", bitmap_->SizeInBytes(), "new_size",
-               compressed_bitmap_->SizeInBytes());
+  TRACE_EVENT("navigation", "NavigationEntryScreenshot::OnCompressionFinished",
+              "old_size", bitmap_->SizeInBytes(), "new_size",
+              compressed_bitmap_->SizeInBytes());
 
   // We defer discarding the uncompressed bitmap if there is no cache since it
   // may still be in use in the UI.
@@ -194,6 +306,10 @@ void NavigationEntryScreenshot::OnCompressionFinished(
     bitmap_.reset();
     cache_->OnScreenshotCompressed(unique_id_, GetBitmap().SizeInBytes());
   }
+}
+
+bool NavigationEntryScreenshot::IsBitmapReady() const {
+  return bitmap_ || compressed_bitmap_;
 }
 
 const cc::UIResourceBitmap& NavigationEntryScreenshot::GetBitmap() const {

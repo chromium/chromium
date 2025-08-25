@@ -114,10 +114,14 @@ bool ShouldUseFallbackScreenshot(
     gfx::Size screen_size = animation_manager->web_contents_view_android()
                                 ->GetNativeView()
                                 ->GetPhysicalBackingSize();
-    use_fallback_screenshot = screenshot_size != screen_size;
+    use_fallback_screenshot =
+        screenshot_size != screen_size || !screenshot->IsBitmapReady();
     if (screenshot_size != screen_size) {
       cache_hit_or_miss_reason = NavigationTransitionData::
           CacheHitOrMissReason::kCacheMissScreenshotOrientation;
+    } else if (!screenshot->IsBitmapReady()) {
+      cache_hit_or_miss_reason = NavigationTransitionData::
+          CacheHitOrMissReason::kCacheMissPendingOrFailedReadBack;
     } else {
       // TODO(crbug.com/377566662): Identify why the cache hit or miss reason is
       // not set correctly at this point. This is to avoid the crashes addressed

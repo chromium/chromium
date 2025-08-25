@@ -94,7 +94,11 @@ class NavigationTransitionData {
     // history navigation out of this entry.
     kForwardTransitionAnimationNotSupported = 19,
 
-    kMaxValue = kForwardTransitionAnimationNotSupported
+    // A screenshot was captured into a texture, but the read back is still
+    // pending or it failed.
+    kCacheMissPendingOrFailedReadBack = 20,
+
+    kMaxValue = kCacheMissPendingOrFailedReadBack
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationTransitionCacheHitOrMissReason)
 

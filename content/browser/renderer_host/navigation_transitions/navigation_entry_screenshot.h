@@ -6,14 +6,24 @@
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_ENTRY_SCREENSHOT_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_client.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
+#include "components/viz/common/gpu/context_lost_observer.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/common/content_export.h"
 
 class SkBitmap;
+
+namespace gpu {
+class ClientSharedImage;
+}
+
+namespace viz {
+class RasterContextProvider;
+}  // namespace viz
 
 namespace content {
 
@@ -48,7 +58,8 @@ class NavigationEntryScreenshotCache;
 class CONTENT_EXPORT NavigationEntryScreenshot
     : public cc::UIResourceClient,
       public base::SupportsUserData::Data,
-      public performance_scenarios::MatchingScenarioObserver {
+      public performance_scenarios::MatchingScenarioObserver,
+      public viz::ContextLostObserver {
  public:
   const static void* const kUserDataKey;
 
@@ -57,10 +68,20 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   NavigationEntryScreenshot(const SkBitmap& bitmap,
                             NavigationTransitionData::UniqueId unique_id,
                             bool supports_etc_non_power_of_two);
+  NavigationEntryScreenshot(
+      scoped_refptr<gpu::ClientSharedImage> shared_image_holder,
+      NavigationTransitionData::UniqueId unique_id,
+      bool supports_etc_non_power_of_two,
+      scoped_refptr<viz::RasterContextProvider> context_provider);
+
   NavigationEntryScreenshot(const NavigationEntryScreenshot&) = delete;
   NavigationEntryScreenshot& operator=(const NavigationEntryScreenshot&) =
       delete;
   ~NavigationEntryScreenshot() override;
+
+  // Returns true when a bitmap (compressed or not) is ready for consumption.
+  // A bitmap isn't ready when a read back is still pending or it failed.
+  bool IsBitmapReady() const;
 
   // `cc::UIResourceClient`:
   cc::UIResourceBitmap GetBitmap(cc::UIResourceId uid,
@@ -75,6 +96,8 @@ class CONTENT_EXPORT NavigationEntryScreenshot
 
   void OnScenarioMatchChanged(performance_scenarios::ScenarioScope scope,
                               bool matches_pattern) override;
+
+  void OnContextLost() override;
 
   // Returns true if the screenshot is being managed by a cache. This is not the
   // case when it's being displayed in the UI.
@@ -91,17 +114,25 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   size_t CompressedSizeForTesting() const;
 
  private:
+  void ReadBack();
+  void OnReadBack(bool success);
   void OnCompressionFinished(sk_sp<SkPixelRef> compressed_bitmap);
 
-  base::OnceClosure CompressionTask(const SkBitmap& bitmap,
-                                    bool supports_etc_non_power_of_two);
+  void SetupCompressionTask(const SkBitmap& bitmap,
+                            bool supports_etc_non_power_of_two);
   void StartCompression();
+
+  void ResetContextProvider();
 
   const cc::UIResourceBitmap& GetBitmap() const;
 
   // The uncompressed bitmap cached when navigating away from this navigation
   // entry.
   std::optional<cc::UIResourceBitmap> bitmap_;
+
+  std::optional<SkBitmap> read_back_bitmap_;
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
 
   // The compressed bitmap generated on a worker thread. `bitmap_` is discarded
   // when the compressed bitmap is available and this screenshot is no longer
@@ -121,6 +152,13 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   const NavigationTransitionData::UniqueId unique_id_;
 
   const gfx::Size dimensions_without_compression_;
+
+  // Whether a readback is needed and wasn't issued.
+  bool read_back_needed_ = false;
+
+  const bool supports_etc_non_power_of_two_;
+
+  scoped_refptr<viz::RasterContextProvider> context_provider_;
 
   base::OnceClosure compression_task_;
 
