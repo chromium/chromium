@@ -25,8 +25,8 @@ TCPServerReadableStreamWrapper::TCPServerReadableStreamWrapper(
                           ExecutionContext::From(script_state)
                               ->GetTaskRunner(TaskType::kNetworking));
   tcp_server_socket_.set_disconnect_handler(
-      WTF::BindOnce(&TCPServerReadableStreamWrapper::ErrorStream,
-                    WrapWeakPersistent(this), net::ERR_CONNECTION_ABORTED));
+      BindOnce(&TCPServerReadableStreamWrapper::ErrorStream,
+               WrapWeakPersistent(this), net::ERR_CONNECTION_ABORTED));
 
   ScriptState::Scope scope(script_state);
 
@@ -48,8 +48,8 @@ void TCPServerReadableStreamWrapper::Pull() {
 
   tcp_server_socket_->Accept(
       std::move(socket_observer_remote),
-      WTF::BindOnce(&TCPServerReadableStreamWrapper::OnAccept,
-                    WrapPersistent(this), std::move(socket_observer)));
+      BindOnce(&TCPServerReadableStreamWrapper::OnAccept, WrapPersistent(this),
+               std::move(socket_observer)));
 }
 
 void TCPServerReadableStreamWrapper::CloseStream() {

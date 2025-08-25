@@ -84,8 +84,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
 
     auto* script_state = scope.GetScriptState();
     stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
-        script_state,
-        WTF::BindOnce(&StreamCreator::Close, WrapWeakPersistent(this)),
+        script_state, BindOnce(&StreamCreator::Close, WrapWeakPersistent(this)),
         udp_socket, network::mojom::RestrictedUDPSocketMode::CONNECTED,
         /*inspector_id=*/0);
     return stream_wrapper_.Get();

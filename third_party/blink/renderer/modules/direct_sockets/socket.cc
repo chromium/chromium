@@ -70,7 +70,7 @@ Socket::Socket(ScriptState* script_state)
       service_.BindNewPipeAndPassReceiver(
           GetExecutionContext()->GetTaskRunner(TaskType::kNetworking)));
   service_.set_disconnect_handler(
-      WTF::BindOnce(&Socket::OnServiceConnectionError, WrapPersistent(this)));
+      BindOnce(&Socket::OnServiceConnectionError, WrapPersistent(this)));
 
   // |closed| promise is just one of the ways to learn that the socket state has
   // changed. Therefore it's not necessary to force developers to handle

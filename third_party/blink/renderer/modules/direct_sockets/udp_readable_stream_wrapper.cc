@@ -55,8 +55,8 @@ UDPReadableStreamWrapper::UDPReadableStreamWrapper(
                         ExecutionContext::From(script_state)
                             ->GetTaskRunner(TaskType::kNetworking));
   socket_listener_.set_disconnect_handler(
-      WTF::BindOnce(&UDPReadableStreamWrapper::ErrorStream,
-                    WrapWeakPersistent(this), net::ERR_CONNECTION_ABORTED));
+      BindOnce(&UDPReadableStreamWrapper::ErrorStream, WrapWeakPersistent(this),
+               net::ERR_CONNECTION_ABORTED));
 
   ScriptState::Scope scope(script_state);
 

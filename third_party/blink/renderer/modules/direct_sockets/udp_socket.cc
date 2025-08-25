@@ -304,8 +304,8 @@ bool UDPSocket::Open(const UDPSocketOptions* options,
       GetServiceRemote()->OpenConnectedUDPSocket(
           std::move(connected_options), GetUDPSocketReceiver(),
           std::move(socket_listener_remote),
-          WTF::BindOnce(&UDPSocket::OnConnectedUDPSocketOpened,
-                        WrapPersistent(this), std::move(socket_listener)));
+          BindOnce(&UDPSocket::OnConnectedUDPSocketOpened, WrapPersistent(this),
+                   std::move(socket_listener)));
       break;
     }
     case network::mojom::blink::RestrictedUDPSocketMode::BOUND: {
@@ -317,8 +317,8 @@ bool UDPSocket::Open(const UDPSocketOptions* options,
       GetServiceRemote()->OpenBoundUDPSocket(
           std::move(bound_options), GetUDPSocketReceiver(),
           std::move(socket_listener_remote),
-          WTF::BindOnce(&UDPSocket::OnBoundUDPSocketOpened,
-                        WrapPersistent(this), std::move(socket_listener)));
+          BindOnce(&UDPSocket::OnBoundUDPSocketOpened, WrapPersistent(this),
+                   std::move(socket_listener)));
 
       break;
     }
@@ -341,11 +341,11 @@ void UDPSocket::FinishOpen(
   if (result == net::OK) {
     readable_stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
         GetScriptState(),
-        WTF::BindOnce(&UDPSocket::OnStreamClosed, WrapWeakPersistent(this)),
+        BindOnce(&UDPSocket::OnStreamClosed, WrapWeakPersistent(this)),
         udp_socket_, std::move(socket_listener), inspector_id_);
     writable_stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
         GetScriptState(),
-        WTF::BindOnce(&UDPSocket::OnStreamClosed, WrapWeakPersistent(this)),
+        BindOnce(&UDPSocket::OnStreamClosed, WrapWeakPersistent(this)),
         udp_socket_, mode, inspector_id_);
 
     auto* open_info = UDPSocketOpenInfo::Create();
@@ -422,7 +422,7 @@ UDPSocket::GetUDPSocketReceiver() {
   auto pending_receiver = udp_socket_->get().BindNewPipeAndPassReceiver(
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
   udp_socket_->get().set_disconnect_handler(
-      WTF::BindOnce(&UDPSocket::CloseOnError, WrapWeakPersistent(this)));
+      BindOnce(&UDPSocket::CloseOnError, WrapWeakPersistent(this)));
   return pending_receiver;
 }
 

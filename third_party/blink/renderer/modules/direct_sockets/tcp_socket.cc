@@ -224,10 +224,9 @@ bool TCPSocket::Open(const String& remote_address,
       socket_receiver;
   mojo::PendingRemote<network::mojom::blink::SocketObserver> observer_remote;
 
-  auto callback =
-      WTF::BindOnce(&TCPSocket::OnTCPSocketOpened, WrapPersistent(this),
-                    socket_receiver.InitWithNewPipeAndPassRemote(),
-                    observer_remote.InitWithNewPipeAndPassReceiver());
+  auto callback = BindOnce(&TCPSocket::OnTCPSocketOpened, WrapPersistent(this),
+                           socket_receiver.InitWithNewPipeAndPassRemote(),
+                           observer_remote.InitWithNewPipeAndPassReceiver());
   GetServiceRemote()->OpenTCPSocket(
       std::move(open_tcp_socket_options), std::move(socket_receiver),
       std::move(observer_remote), std::move(callback));
@@ -285,15 +284,15 @@ void TCPSocket::FinishOpenOrAccept(
       std::move(socket_observer),
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
   socket_observer_.set_disconnect_handler(
-      WTF::BindOnce(&TCPSocket::OnSocketConnectionError, WrapPersistent(this)));
+      BindOnce(&TCPSocket::OnSocketConnectionError, WrapPersistent(this)));
 
   readable_stream_wrapper_ = MakeGarbageCollected<TCPReadableStreamWrapper>(
       GetScriptState(),
-      WTF::BindOnce(&TCPSocket::OnStreamClosed, WrapWeakPersistent(this)),
+      BindOnce(&TCPSocket::OnStreamClosed, WrapWeakPersistent(this)),
       std::move(receive_stream), inspector_id_);
   writable_stream_wrapper_ = MakeGarbageCollected<TCPWritableStreamWrapper>(
       GetScriptState(),
-      WTF::BindOnce(&TCPSocket::OnStreamClosed, WrapWeakPersistent(this)),
+      BindOnce(&TCPSocket::OnStreamClosed, WrapWeakPersistent(this)),
       std::move(send_stream), inspector_id_);
 
   auto* open_info = TCPSocketOpenInfo::Create();

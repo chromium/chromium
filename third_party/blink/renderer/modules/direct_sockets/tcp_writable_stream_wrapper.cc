@@ -46,17 +46,15 @@ TCPWritableStreamWrapper::TCPWritableStreamWrapper(
       write_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
       close_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC),
       inspector_id_(inspector_id) {
-  write_watcher_.Watch(
-      data_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&TCPWritableStreamWrapper::OnHandleReady,
-                         WrapWeakPersistent(this)));
+  write_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+                       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                       BindRepeating(&TCPWritableStreamWrapper::OnHandleReady,
+                                     WrapWeakPersistent(this)));
 
-  close_watcher_.Watch(
-      data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&TCPWritableStreamWrapper::OnHandleReset,
-                         WrapWeakPersistent(this)));
+  close_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                       BindRepeating(&TCPWritableStreamWrapper::OnHandleReset,
+                                     WrapWeakPersistent(this)));
 
   ScriptState::Scope scope(script_state);
 

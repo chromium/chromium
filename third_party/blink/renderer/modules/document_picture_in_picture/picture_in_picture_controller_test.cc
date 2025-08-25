@@ -294,8 +294,8 @@ class PictureInPictureControllerTestWithWidget : public RenderingTest {
 
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::PictureInPictureService::Name_,
-        WTF::BindRepeating(&MockPictureInPictureService::Bind,
-                           WTF::Unretained(&mock_service_)));
+        BindRepeating(&MockPictureInPictureService::Bind,
+                      Unretained(&mock_service_)));
 
     video_ = MakeGarbageCollected<HTMLVideoElement>(GetDocument());
     GetDocument().body()->AppendChild(video_);
