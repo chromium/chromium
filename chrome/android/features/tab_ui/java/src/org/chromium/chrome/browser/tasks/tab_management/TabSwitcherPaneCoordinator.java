@@ -486,7 +486,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                 activity,
                                 mTabGroupModelFilterSupplier,
                                 profile,
-                                mTabListCoordinator.getTabListHighlighter(),
+                                mTabListCoordinator,
                                 assumeNonNull(
                                         messageManager.getTabGroupSuggestionMessageService()));
             }
