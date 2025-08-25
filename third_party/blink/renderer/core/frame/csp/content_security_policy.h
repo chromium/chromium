@@ -149,7 +149,7 @@ class CORE_EXPORT ContentSecurityPolicyDelegate : public GarbageCollectedMixin {
   virtual void ReportBlockedScriptExecutionToInspector(
       const String& directive_text) = 0;
   virtual void DidAddContentSecurityPolicies(
-      WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>) = 0;
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>) = 0;
 };
 
 class CORE_EXPORT ContentSecurityPolicy final
@@ -421,7 +421,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   void SetSupportsWasmEval(bool value) { supports_wasm_eval_ = value; }
 
   // Retrieve the parsed policies.
-  const WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>&
+  const Vector<network::mojom::blink::ContentSecurityPolicyPtr>&
   GetParsedPolicies() const;
 
   // Retrieves the parsed sandbox flags. A lot of the time the execution
@@ -519,7 +519,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   // We put the hash functions used on the policy object so that we only need
   // to calculate digests using those hashing algorithms which show up in the
   // policy.
-  WTF::HashSet<IntegrityAlgorithm> hash_algorithms_used_;
+  HashSet<IntegrityAlgorithm> hash_algorithms_used_;
 
   // State flags used to configure the environment after parsing a policy.
   network::mojom::blink::WebSandboxFlags sandbox_mask_;

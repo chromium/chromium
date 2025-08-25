@@ -53,7 +53,7 @@ static base::RepeatingCallback<void(ScrollableArea::ScrollCompletionMode)>
 MakeViewportScrollCompletion(ScrollableArea::ScrollCallback callback) {
   return callback
              ? base::BarrierCallback<ScrollableArea::ScrollCompletionMode>(
-                   2, WTF::BindOnce(
+                   2, blink::BindOnce(
                           [](ScrollableArea::ScrollCallback on_finish,
                              const std::vector<
                                  ScrollableArea::ScrollCompletionMode>

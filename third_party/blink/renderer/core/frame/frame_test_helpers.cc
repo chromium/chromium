@@ -125,9 +125,9 @@ void RunServeAsyncRequestsTask(scoped_refptr<base::TaskRunner> task_runner,
   // getting the platform's one. (crbug.com/751425)
   URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
   if (TestWebFrameClient::IsLoading()) {
-    task_runner->PostTask(FROM_HERE,
-                          WTF::BindOnce(&RunServeAsyncRequestsTask, task_runner,
-                                        std::move(quit_closure)));
+    task_runner->PostTask(
+        FROM_HERE, blink::BindOnce(&RunServeAsyncRequestsTask, task_runner,
+                                   std::move(quit_closure)));
   } else {
     std::move(quit_closure).Run();
   }
@@ -262,8 +262,8 @@ void PumpPendingRequestsForFrameToLoad(WebLocalFrame* frame) {
   scoped_refptr<base::TaskRunner> task_runner =
       frame->GetTaskRunner(blink::TaskType::kInternalTest);
   task_runner->PostTask(FROM_HERE,
-                        WTF::BindOnce(&RunServeAsyncRequestsTask, task_runner,
-                                      loop.QuitClosure()));
+                        blink::BindOnce(&RunServeAsyncRequestsTask, task_runner,
+                                        loop.QuitClosure()));
   loop.Run();
 }
 
@@ -401,11 +401,11 @@ WebViewHelper::WebViewHelper(
       std::move(create_web_frame_callback);
   if (!create_callback) {
     create_callback =
-        WTF::BindRepeating(&WebViewHelper::CreateTestWebFrameWidget<>);
+        blink::BindRepeating(&WebViewHelper::CreateTestWebFrameWidget<>);
   }
   // Due to return type differences we need to bind the RepeatingCallback
   // in a wrapper.
-  create_widget_callback_wrapper_ = WTF::BindRepeating(
+  create_widget_callback_wrapper_ = blink::BindRepeating(
       [](const CreateTestWebFrameWidgetCallback& create_test_web_widget,
          base::PassKey<WebLocalFrame> pass_key,
          CrossVariantMojoAssociatedRemote<
@@ -887,8 +887,8 @@ void TestWebFrameClient::BeginNavigation(
     return;
 
   navigation_callback_.Reset(
-      WTF::BindOnce(&TestWebFrameClient::CommitNavigation,
-                    weak_factory_.GetWeakPtr(), std::move(info)));
+      blink::BindOnce(&TestWebFrameClient::CommitNavigation,
+                      weak_factory_.GetWeakPtr(), std::move(info)));
   frame_->GetTaskRunner(blink::TaskType::kInternalLoading)
       ->PostTask(FROM_HERE, navigation_callback_.callback());
 }
@@ -1009,7 +1009,7 @@ void TestWebFrameWidget::DispatchThroughCcInputHandler(
   GetWidgetInputHandlerManager()->DispatchEvent(
       std::make_unique<WebCoalescedInputEvent>(event.Clone(),
                                                ui::LatencyInfo()),
-      WTF::BindOnce(
+      BindOnce(
           [](TestWebFrameWidget* widget, mojom::blink::InputEventResultSource,
              const ui::LatencyInfo&, mojom::blink::InputEventResultState,
              mojom::blink::DidOverscrollParamsPtr overscroll,
@@ -1191,7 +1191,7 @@ void TestWidgetInputHandlerHost::ImeCancelComposition() {}
 
 void TestWidgetInputHandlerHost::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const std::optional<WTF::Vector<gfx::Rect>>& character_bounds) {}
+    const std::optional<Vector<gfx::Rect>>& character_bounds) {}
 
 void TestWidgetInputHandlerHost::SetMouseCapture(bool capture) {}
 

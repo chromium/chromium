@@ -578,7 +578,7 @@ void WebFrameWidgetImpl::DragTargetDragLeave(
     const gfx::PointF& point_in_viewport,
     const gfx::PointF& screen_point) {
   base::ScopedClosureRunner runner(
-      WTF::BindOnce(&WebFrameWidgetImpl::CancelDrag, WrapWeakPersistent(this)));
+      BindOnce(&WebFrameWidgetImpl::CancelDrag, WrapWeakPersistent(this)));
   if (ShouldIgnoreInputEvents() || !current_drag_data_) {
     return;
   }
@@ -601,7 +601,7 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
                                         base::OnceClosure callback) {
   base::ScopedClosureRunner callback_runner(std::move(callback));
   base::ScopedClosureRunner runner(
-      WTF::BindOnce(&WebFrameWidgetImpl::CancelDrag, WrapWeakPersistent(this)));
+      BindOnce(&WebFrameWidgetImpl::CancelDrag, WrapWeakPersistent(this)));
 
   if (ShouldIgnoreInputEvents() || !current_drag_data_) {
     return;
@@ -640,8 +640,8 @@ void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
                                            base::OnceClosure callback) {
   base::ScopedClosureRunner callback_runner(std::move(callback));
   base::ScopedClosureRunner runner(
-      WTF::BindOnce(&WebFrameWidgetImpl::DragSourceSystemDragEnded,
-                    WrapWeakPersistent(this)));
+      BindOnce(&WebFrameWidgetImpl::DragSourceSystemDragEnded,
+               WrapWeakPersistent(this)));
 
   if (ShouldIgnoreInputEvents()) {
     return;
@@ -3382,9 +3382,9 @@ void WebFrameWidgetImpl::AutoscrollEnd() {
 
 void WebFrameWidgetImpl::DidMeaningfulLayout(WebMeaningfulLayout layout_type) {
   if (layout_type == blink::WebMeaningfulLayout::kVisuallyNonEmpty) {
-    NotifyPresentationTime(WTF::BindOnce(
-        &WebFrameWidgetImpl::PresentationCallbackForMeaningfulLayout,
-        WrapWeakPersistent(this)));
+    NotifyPresentationTime(
+        BindOnce(&WebFrameWidgetImpl::PresentationCallbackForMeaningfulLayout,
+                 WrapWeakPersistent(this)));
   }
 
   ForEachLocalFrameControlledByWidget(
@@ -3566,9 +3566,9 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
     if (widget && widget->widget_base_) {
       widget->widget_base_->AddPresentationCallback(
           frame_token,
-          WTF::BindOnce(&RunCallbackAfterPresentation,
-                        std::move(callbacks.presentation_time_callback),
-                        swap_time));
+          blink::BindOnce(&RunCallbackAfterPresentation,
+                          std::move(callbacks.presentation_time_callback),
+                          swap_time));
       ReportTime(std::move(callbacks.swap_time_callback), swap_time);
 
 #if BUILDFLAG(IS_APPLE)
@@ -4898,7 +4898,7 @@ WebFrameWidgetImpl::ComputeProximateCharacterBounds(
 
   // Compute the DIP space bounding box for each character in `text_range`
   // relative to the root editable Element containing `pivot_position`.
-  WTF::Vector<gfx::Rect> character_bounds;
+  Vector<gfx::Rect> character_bounds;
   character_bounds.reserve(text_range.length());
   for (wtf_size_t i = text_range.Start(); i < text_range.End(); ++i) {
     gfx::Rect rect = FirstRectForRange(
@@ -5297,8 +5297,8 @@ void WebFrameWidgetImpl::SetWindowRect(const gfx::Rect& requested_rect,
   DCHECK(ForMainFrame());
   SetPendingWindowRect(adjusted_rect);
   View()->SendWindowRectToMainFrameHost(
-      requested_rect, WTF::BindOnce(&WebFrameWidgetImpl::AckPendingWindowRect,
-                                    WrapWeakPersistent(this)));
+      requested_rect, BindOnce(&WebFrameWidgetImpl::AckPendingWindowRect,
+                               WrapWeakPersistent(this)));
 }
 
 void WebFrameWidgetImpl::SetWindowRectSynchronouslyForTesting(

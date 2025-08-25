@@ -690,7 +690,7 @@ TEST_F(LocalFrameViewTest, StartOfLifecycleTaskRunsOnFullLifecycle) {
   TestCallback callback;
 
   frame_view->EnqueueStartOfLifecycleTask(
-      WTF::BindOnce(&TestCallback::Increment, WTF::Unretained(&callback)));
+      BindOnce(&TestCallback::Increment, Unretained(&callback)));
   EXPECT_EQ(callback.calls, 0);
 
   frame_view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kTest);

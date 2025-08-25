@@ -2181,7 +2181,7 @@ bool LocalFrameView::UpdateLifecyclePhases(
           "blink",
           "LocalFrameView::UpdateLifecyclePhases - start of lifecycle tasks");
       ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-        WTF::Vector<base::OnceClosure> tasks;
+        Vector<base::OnceClosure> tasks;
         frame_view.start_of_lifecycle_tasks_.swap(tasks);
         for (auto& task : tasks)
           std::move(task).Run();
@@ -3068,7 +3068,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
     }
   });
 
-  WTF::Vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests;
+  Vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests;
   AppendViewTransitionRequests(view_transition_requests);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -3084,7 +3084,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
 }
 
 void LocalFrameView::AppendViewTransitionRequests(
-    WTF::Vector<std::unique_ptr<ViewTransitionRequest>>& requests) {
+    Vector<std::unique_ptr<ViewTransitionRequest>>& requests) {
   DCHECK(frame_ && frame_->GetDocument());
   DCHECK(frame_->IsLocalRoot());
 

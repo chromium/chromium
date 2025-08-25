@@ -332,8 +332,8 @@ void PausableScriptExecutor::PostExecuteAndDestroySelf(
     ExecutionContext* context) {
   task_handle_ = PostCancellableTask(
       *context->GetTaskRunner(TaskType::kJavascriptTimerImmediate), FROM_HERE,
-      WTF::BindOnce(&PausableScriptExecutor::ExecuteAndDestroySelf,
-                    WrapPersistent(this)));
+      BindOnce(&PausableScriptExecutor::ExecuteAndDestroySelf,
+               WrapPersistent(this)));
 }
 
 void PausableScriptExecutor::ExecuteAndDestroySelf() {
@@ -370,8 +370,8 @@ void PausableScriptExecutor::ExecuteAndDestroySelf() {
       keep_alive_ = this;
       MakeGarbageCollected<PromiseAggregator>(
           script_state_, results,
-          WTF::BindOnce(&PausableScriptExecutor::HandleResults,
-                        WrapWeakPersistent(this)));
+          BindOnce(&PausableScriptExecutor::HandleResults,
+                   WrapWeakPersistent(this)));
       break;
 
     case mojom::blink::PromiseResultOption::kDoNotWait:

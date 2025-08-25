@@ -239,7 +239,7 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
     HeapMojoRemote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
         reporter;
     bool endpoint_defined;
-    WTF::String reported_window_url;
+    String reported_window_url;
   };
   HeapVector<Member<CoopAccessMonitor>> coop_access_monitor_;
   // Mutable: only used to downsample metrics, no change to observable state.

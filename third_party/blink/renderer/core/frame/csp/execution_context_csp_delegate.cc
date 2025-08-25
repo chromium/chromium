@@ -153,10 +153,9 @@ void ExecutionContextCSPDelegate::DispatchViolationEvent(
   execution_context_->GetTaskRunner(TaskType::kNetworking)
       ->PostTask(
           FROM_HERE,
-          WTF::BindOnce(
-              &ExecutionContextCSPDelegate::DispatchViolationEventInternal,
-              WrapPersistent(this), WrapPersistent(&violation_data),
-              WrapPersistent(element)));
+          BindOnce(&ExecutionContextCSPDelegate::DispatchViolationEventInternal,
+                   WrapPersistent(this), WrapPersistent(&violation_data),
+                   WrapPersistent(element)));
 }
 
 void ExecutionContextCSPDelegate::PostViolationReport(
@@ -231,7 +230,7 @@ void ExecutionContextCSPDelegate::ReportBlockedScriptExecutionToInspector(
 }
 
 void ExecutionContextCSPDelegate::DidAddContentSecurityPolicies(
-    WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies) {
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies) {
   auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get());
   if (!window)
     return;

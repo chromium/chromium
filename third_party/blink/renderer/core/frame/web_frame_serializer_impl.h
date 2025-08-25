@@ -117,28 +117,26 @@ class WebFrameSerializerImpl {
 
   // Before we begin serializing open tag of a element, we give the target
   // element a chance to do some work prior to add some additional data.
-  WTF::String PreActionBeforeSerializeOpenTag(const Element*,
-                                              SerializeDomParam*,
-                                              bool* need_skip);
+  String PreActionBeforeSerializeOpenTag(const Element*,
+                                         SerializeDomParam*,
+                                         bool* need_skip);
 
   // After we finish serializing open tag of a element, we give the target
   // element a chance to do some post work to add some additional data.
-  WTF::String PostActionAfterSerializeOpenTag(const Element*,
-                                              SerializeDomParam*);
+  String PostActionAfterSerializeOpenTag(const Element*, SerializeDomParam*);
 
   // Before we begin serializing end tag of a element, we give the target
   // element a chance to do some work prior to add some additional data.
-  WTF::String PreActionBeforeSerializeEndTag(const Element*,
-                                             SerializeDomParam*,
-                                             bool* need_skip);
+  String PreActionBeforeSerializeEndTag(const Element*,
+                                        SerializeDomParam*,
+                                        bool* need_skip);
 
   // After we finish serializing end tag of a element, we give the target
   // element a chance to do some post work to add some additional data.
-  WTF::String PostActionAfterSerializeEndTag(const Element*,
-                                             SerializeDomParam*);
+  String PostActionAfterSerializeEndTag(const Element*, SerializeDomParam*);
 
   // Save generated html content to data buffer.
-  void SaveHTMLContentToBuffer(const WTF::String& content, SerializeDomParam*);
+  void SaveHTMLContentToBuffer(const String& content, SerializeDomParam*);
 
   enum FlushOption {
     kForceFlush,

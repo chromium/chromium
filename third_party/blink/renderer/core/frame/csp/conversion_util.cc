@@ -19,7 +19,7 @@ network::mojom::blink::CSPSourcePtr ConvertSource(const WebCSPSource& source) {
 network::mojom::blink::CSPSourceListPtr ConvertSourceList(
     const WebCSPSourceList& source_list) {
   return network::mojom::blink::CSPSourceList::New(
-      WTF::ToVector(source_list.sources, ConvertSource),
+      ToVector(source_list.sources, ConvertSource),
       Vector<String>(source_list.nonces),
       Vector<network::IntegrityMetadata>(source_list.hashes),
       Vector<network::IntegrityMetadata>(source_list.url_hashes),

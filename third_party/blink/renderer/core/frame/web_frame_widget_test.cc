@@ -248,8 +248,8 @@ class MockHandledEventCallback {
                       std::optional<cc::TouchAction>));
 
   WidgetBaseInputHandler::HandledEventCallback GetCallback() {
-    return WTF::BindOnce(&MockHandledEventCallback::HandleCallback,
-                         WTF::Unretained(this));
+    return BindOnce(&MockHandledEventCallback::HandleCallback,
+                    Unretained(this));
   }
 
  private:
@@ -1251,15 +1251,15 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
     base::TimeTicks swap_time;
     static_cast<WebFrameWidgetImpl*>(MainFrame().FrameWidget())
         ->NotifySwapAndPresentationTimeForTesting(
-            {WTF::BindOnce(
+            {blink::BindOnce(
                  [](base::OnceClosure swap_quit_closure,
                     base::TimeTicks* swap_time, base::TimeTicks timestamp) {
                    CHECK(!timestamp.is_null());
                    *swap_time = timestamp;
                    std::move(swap_quit_closure).Run();
                  },
-                 swap_run_loop.QuitClosure(), WTF::Unretained(&swap_time)),
-             WTF::BindOnce(
+                 swap_run_loop.QuitClosure(), blink::Unretained(&swap_time)),
+             blink::BindOnce(
                  [](base::OnceClosure presentation_quit_closure,
                     const viz::FrameTimingDetails& presentation_details) {
                    base::TimeTicks timestamp =
@@ -1725,13 +1725,13 @@ TEST_F(WebFrameWidgetSimTest, DisplayStateMatchesWindowShowState) {
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyBackgroundColor()));
 
-  WTF::Vector<std::pair<ui::mojom::blink::WindowShowState, Color>> test_cases =
-      {{ui::mojom::blink::WindowShowState::kMinimized,
-        Color::FromRGB(/*cyan*/ 0, 255, 255)},
-       {ui::mojom::blink::WindowShowState::kMaximized,
-        Color::FromRGB(/*red*/ 255, 0, 0)},
-       {ui::mojom::blink::WindowShowState::kFullscreen,
-        Color::FromRGB(/*blue*/ 0, 0, 255)}};
+  Vector<std::pair<ui::mojom::blink::WindowShowState, Color>> test_cases = {
+      {ui::mojom::blink::WindowShowState::kMinimized,
+       Color::FromRGB(/*cyan*/ 0, 255, 255)},
+      {ui::mojom::blink::WindowShowState::kMaximized,
+       Color::FromRGB(/*red*/ 255, 0, 0)},
+      {ui::mojom::blink::WindowShowState::kFullscreen,
+       Color::FromRGB(/*blue*/ 0, 0, 255)}};
 
   for (const auto& [show_state, color] : test_cases) {
     visual_properties.window_show_state = show_state;
@@ -2480,15 +2480,15 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
       // Register callbacks for swap and presentation times.
       base::TimeTicks swap_time;
       NotifySwapAndPresentationTimeForTesting(
-          {WTF::BindOnce(
+          {blink::BindOnce(
                [](base::OnceClosure swap_quit_closure,
                   base::TimeTicks* swap_time, base::TimeTicks timestamp) {
                  DCHECK(!timestamp.is_null());
                  *swap_time = timestamp;
                  std::move(swap_quit_closure).Run();
                },
-               swap_run_loop.QuitClosure(), WTF::Unretained(&swap_time)),
-           WTF::BindOnce(
+               swap_run_loop.QuitClosure(), blink::Unretained(&swap_time)),
+           blink::BindOnce(
                [](base::OnceClosure presentation_quit_closure,
                   const viz::FrameTimingDetails& presentation_details) {
                  base::TimeTicks timestamp =

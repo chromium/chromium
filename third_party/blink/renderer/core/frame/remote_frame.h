@@ -167,7 +167,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   // blink::mojom::RemoteFrame overrides:
   void WillEnterFullscreen(mojom::blink::FullscreenOptionsPtr) override;
-  void EnforceInsecureNavigationsSet(const WTF::Vector<uint32_t>& set) override;
+  void EnforceInsecureNavigationsSet(const Vector<uint32_t>& set) override;
   void SetFrameOwnerProperties(
       mojom::blink::FrameOwnerPropertiesPtr properties) override;
   void EnforceInsecureRequestPolicy(
@@ -201,7 +201,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
       mojom::blink::IntrinsicSizingInfoPtr sizing_info) override;
   void DidSetFramePolicyHeaders(
       network::mojom::blink::WebSandboxFlags,
-      const WTF::Vector<network::ParsedPermissionsPolicyDeclaration>&) override;
+      const Vector<network::ParsedPermissionsPolicyDeclaration>&) override;
   // Updates the snapshotted policy attributes (sandbox flags and permissions
   // policy container policy) in the frame's FrameOwner. This is used when this
   // frame's parent is in another process and it dynamically updates this
@@ -233,8 +233,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
       Vector<mojom::blink::CreateRemoteChildParamsPtr> params,
       const std::optional<base::UnguessableToken>& navigation_metrics_token)
       override;
-  void ForwardFencedFrameEventToEmbedder(
-      const WTF::String& event_type) override;
+  void ForwardFencedFrameEventToEmbedder(const String& event_type) override;
 
   // Called only when this frame has a local frame owner.
   gfx::Size GetOutermostMainFrameSize() const override;

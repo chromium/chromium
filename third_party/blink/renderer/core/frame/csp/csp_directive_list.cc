@@ -1005,7 +1005,7 @@ String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
 
 bool URLHashMatchesSourceList(
     const String& url_string,
-    const WTF::HashSet<IntegrityAlgorithm>& hash_algorithms_used,
+    const HashSet<IntegrityAlgorithm>& hash_algorithms_used,
     const network::mojom::blink::CSPSourceList* source_list) {
   Vector<network::IntegrityMetadata> url_hashes;
   FillInCSPHashValues(url_string, hash_algorithms_used, url_hashes);
@@ -1020,7 +1020,7 @@ bool CheckURLHash(const KURL& document_url,
   if (!source_list) {
     return false;
   }
-  WTF::HashSet<IntegrityAlgorithm> hash_algorithms_used;
+  HashSet<IntegrityAlgorithm> hash_algorithms_used;
   for (const network::IntegrityMetadata& hash : source_list->url_hashes) {
     hash_algorithms_used.insert(hash.algorithm);
   }
@@ -1264,7 +1264,7 @@ CSPOperativeDirective CSPDirectiveListOperativeDirective(
 
 void FillInCSPHashValues(
     const String& source,
-    const WTF::HashSet<IntegrityAlgorithm>& hash_algorithms_used,
+    const HashSet<IntegrityAlgorithm>& hash_algorithms_used,
     Vector<network::IntegrityMetadata>& csp_hash_values) {
   // Any additions or subtractions from this struct should also modify the
   // respective entries in the kSupportedPrefixes array in

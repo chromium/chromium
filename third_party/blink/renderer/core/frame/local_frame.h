@@ -463,7 +463,7 @@ class CORE_EXPORT LocalFrame final
   String SelectedText() const;
   String SelectedText(const TextIteratorBehavior& behavior) const;
   String SelectedTextForClipboard() const;
-  void TextSelectionChanged(const WTF::String& selection_text,
+  void TextSelectionChanged(const String& selection_text,
                             uint32_t offset,
                             const gfx::Range& range) const;
 

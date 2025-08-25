@@ -3321,14 +3321,14 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
     for (const auto& reason_to_copy : reasons_to_copy->reasons) {
       mojom::blink::BFCacheBlockingDetailedReasonPtr reason =
           mojom::blink::BFCacheBlockingDetailedReason::New();
-      reason->name = WTF::String(reason_to_copy->name);
+      reason->name = String(reason_to_copy->name);
       if (reason_to_copy->source) {
         CHECK_GT(reason_to_copy->source->line_number, 0U);
         CHECK_GT(reason_to_copy->source->column_number, 0U);
         mojom::blink::ScriptSourceLocationPtr source_location =
             mojom::blink::ScriptSourceLocation::New(
                 KURL(reason_to_copy->source->url),
-                WTF::String(reason_to_copy->source->function_name),
+                String(reason_to_copy->source->function_name),
                 reason_to_copy->source->line_number,
                 reason_to_copy->source->column_number);
         reason->source = std::move(source_location);

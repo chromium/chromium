@@ -39,8 +39,8 @@ class TestTextInputHostWaiter : public mojom::blink::TextInputHost {
     callback_ = std::move(callback);
     provider.SetBinderForTesting(
         mojom::blink::TextInputHost::Name_,
-        WTF::BindRepeating(&TestTextInputHostWaiter::BindTextInputHostReceiver,
-                           WTF::Unretained(this)));
+        BindRepeating(&TestTextInputHostWaiter::BindTextInputHostReceiver,
+                      Unretained(this)));
   }
 
   void GotCharacterIndexAtPoint(uint32_t index) override {

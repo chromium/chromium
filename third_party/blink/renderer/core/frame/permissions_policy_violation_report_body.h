@@ -23,8 +23,8 @@ class CORE_EXPORT PermissionsPolicyViolationReportBody
       const String& feature_id,
       const String& message,
       const String& disposition,
-      const String& allow_attribute = WTF::g_empty_string,
-      const String& src_attribute = WTF::g_empty_string)
+      const String& allow_attribute = g_empty_string,
+      const String& src_attribute = g_empty_string)
       : feature_id_(feature_id),
         message_(StrCat(
             {(allow_attribute.empty()

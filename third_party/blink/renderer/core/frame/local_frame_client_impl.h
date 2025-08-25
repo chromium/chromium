@@ -179,9 +179,9 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidCreateDocumentLoader(DocumentLoader*) override;
 
   String UserAgentOverride() override;
-  WTF::String UserAgent() override;
+  String UserAgent() override;
   std::optional<blink::UserAgentMetadata> UserAgentMetadata() override;
-  WTF::String DoNotTrackValue() override;
+  String DoNotTrackValue() override;
   void TransitionToCommittedForNewPage() override;
   LocalFrame* CreateFrame(const AtomicString& name,
                           HTMLFrameOwnerElement*) override;
@@ -193,9 +193,9 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
 
   WebPluginContainerImpl* CreatePlugin(HTMLPlugInElement&,
                                        const KURL&,
-                                       const Vector<WTF::String>&,
-                                       const Vector<WTF::String>&,
-                                       const WTF::String&,
+                                       const Vector<String>&,
+                                       const Vector<String>&,
+                                       const String&,
                                        bool load_manually) override;
   std::unique_ptr<WebMediaPlayer> CreateWebMediaPlayer(
       HTMLMediaElement&,

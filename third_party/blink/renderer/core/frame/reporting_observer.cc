@@ -55,9 +55,8 @@ void ReportingObserver::QueueReport(Report* report) {
   // batch.
   if (report_queue_.size() == 1) {
     execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI)
-        ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&ReportingObserver::ReportToCallback,
-                                 WrapWeakPersistent(this)));
+        ->PostTask(FROM_HERE, BindOnce(&ReportingObserver::ReportToCallback,
+                                       WrapWeakPersistent(this)));
   }
 }
 

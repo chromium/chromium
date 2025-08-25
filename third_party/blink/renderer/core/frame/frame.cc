@@ -648,13 +648,12 @@ base::OnceClosure Frame::ScheduleFormSubmission(
   form_submission->NotifyInspector();
   form_submit_navigation_task_ = PostCancellableTask(
       *scheduler->GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-      WTF::BindOnce(&FormSubmission::Navigate,
-                    WrapPersistent(form_submission)));
+      BindOnce(&FormSubmission::Navigate, WrapPersistent(form_submission)));
   form_submit_navigation_task_version_++;
 
-  return WTF::BindOnce(&Frame::CancelFormSubmissionWithVersion,
-                       WrapWeakPersistent(this),
-                       form_submit_navigation_task_version_);
+  return BindOnce(&Frame::CancelFormSubmissionWithVersion,
+                  WrapWeakPersistent(this),
+                  form_submit_navigation_task_version_);
 }
 
 void Frame::CancelFormSubmission() {

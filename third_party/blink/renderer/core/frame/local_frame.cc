@@ -407,7 +407,7 @@ void LocalFrame::Init(Frame* opener,
 
   CoreInitializer::GetInstance().InitLocalFrame(*this);
 
-  GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+  GetInterfaceRegistry()->AddInterface(BindRepeating(
       &LocalFrame::BindTextFragmentReceiver, WrapWeakPersistent(this)));
   DCHECK(!mojo_handler_);
   mojo_handler_ = MakeGarbageCollected<LocalFrameMojoHandler>(*this);
@@ -1877,7 +1877,7 @@ String LocalFrame::SelectedTextForClipboard() const {
   return Selection().SelectedTextForClipboard();
 }
 
-void LocalFrame::TextSelectionChanged(const WTF::String& selection_text,
+void LocalFrame::TextSelectionChanged(const String& selection_text,
                                       uint32_t offset,
                                       const gfx::Range& range) const {
   GetLocalFrameHostRemote().TextSelectionChanged(selection_text, offset, range);
@@ -4190,9 +4190,9 @@ void LocalFrame::AllowStorageAccessAndNotify(
     base::OnceCallback<void(bool)> callback) {
   mojom::blink::StorageTypeAccessed mojo_storage_type =
       ToMojoStorageType(storage_type);
-  auto wrapped_callback = WTF::BindOnce(&LocalFrame::OnStorageAccessCallback,
-                                        WrapWeakPersistent(this),
-                                        std::move(callback), mojo_storage_type);
+  auto wrapped_callback = blink::BindOnce(
+      &LocalFrame::OnStorageAccessCallback, WrapWeakPersistent(this),
+      std::move(callback), mojo_storage_type);
   if (WebContentSettingsClient* content_settings_client =
           GetContentSettingsClient()) {
     content_settings_client->AllowStorageAccess(storage_type,

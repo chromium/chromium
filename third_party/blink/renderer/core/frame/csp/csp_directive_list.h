@@ -176,7 +176,7 @@ CSPOperativeDirective CSPDirectiveListOperativeDirective(
 
 void FillInCSPHashValues(
     const String& source,
-    const WTF::HashSet<IntegrityAlgorithm>& hash_algorithms_used,
+    const HashSet<IntegrityAlgorithm>& hash_algorithms_used,
     Vector<network::IntegrityMetadata>& csp_hash_values);
 
 // Given a document URL and a script URL, returns the relative path of the

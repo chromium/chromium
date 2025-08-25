@@ -325,7 +325,7 @@ void AnimationFrameTimingMonitor::RequestPresentationTimeForTracing(
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
   if (tracing_enabled) {
     frame.GetChromeClient().NotifyPresentationTime(
-        frame, WTF::BindOnce(
+        frame, blink::BindOnce(
                    &AnimationFrameTimingMonitor::ReportPresentationTimeToTrace,
                    WrapWeakPersistent(this),
                    current_frame_timing_info_->GetTraceId()));
@@ -520,7 +520,7 @@ void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {
 }
 
 namespace {
-bool ShouldAllowScriptURL(const WTF::String& url) {
+bool ShouldAllowScriptURL(const String& url) {
   KURL kurl(url);
   return kurl.ProtocolIsData() || kurl.ProtocolIsInHTTPFamily() ||
          kurl.ProtocolIs("blob") || kurl.IsEmpty();

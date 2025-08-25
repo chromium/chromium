@@ -63,8 +63,8 @@ String UniversalGlobalScope::atob(const String& encoded_string,
 
 void UniversalGlobalScope::queueMicrotask(V8VoidFunction* callback) {
   GetExecutionContext()->GetAgent()->event_loop()->EnqueueMicrotask(
-      WTF::BindOnce(&V8VoidFunction::InvokeAndReportException,
-                    WrapPersistent(callback), nullptr));
+      BindOnce(&V8VoidFunction::InvokeAndReportException,
+               WrapPersistent(callback), nullptr));
 }
 
 ScriptValue UniversalGlobalScope::structuredClone(

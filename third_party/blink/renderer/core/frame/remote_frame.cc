@@ -575,8 +575,7 @@ void RemoteFrame::WillEnterFullscreen(
                                 request_type);
 }
 
-void RemoteFrame::EnforceInsecureNavigationsSet(
-    const WTF::Vector<uint32_t>& set) {
+void RemoteFrame::EnforceInsecureNavigationsSet(const Vector<uint32_t>& set) {
   TRACE_EVENT("navigation", "RemoteFrame::EnforceInsecureNavigationsSet");
   security_context_.SetInsecureNavigationsSet(set);
 }
@@ -770,12 +769,12 @@ void RemoteFrame::IntrinsicSizingInfoOfChildChanged(
 // this proxy ever parents a local frame.
 void RemoteFrame::DidSetFramePolicyHeaders(
     network::mojom::blink::WebSandboxFlags sandbox_flags,
-    const WTF::Vector<network::ParsedPermissionsPolicyDeclaration>&
+    const Vector<network::ParsedPermissionsPolicyDeclaration>&
         parsed_permissions_policy) {
   TRACE_EVENT("navigation", "RemoteFrame::DidSetFramePolicyHeaders");
 
   SetReplicatedSandboxFlags(sandbox_flags);
-  // Convert from WTF::Vector<network::ParsedPermissionsPolicyDeclaration>
+  // Convert from blink::Vector<network::ParsedPermissionsPolicyDeclaration>
   // to std::vector<network::ParsedPermissionsPolicyDeclaration>, since
   // network::ParsedPermissionsPolicy is an alias for the later.
   //
@@ -1176,8 +1175,7 @@ void RemoteFrame::CreateRemoteChildren(
   // Add any new code above the AddCreateRemoteChildrenEvent call.
 }
 
-void RemoteFrame::ForwardFencedFrameEventToEmbedder(
-    const WTF::String& event_type) {
+void RemoteFrame::ForwardFencedFrameEventToEmbedder(const String& event_type) {
   // This will also CHECK if the conversion to HTMLFrameOwnerElement fails.
   CHECK(To<HTMLFrameOwnerElement>(Owner())->IsHTMLFencedFrameElement());
   static_cast<HTMLFencedFrameElement*>(Owner())->DispatchFencedEvent(

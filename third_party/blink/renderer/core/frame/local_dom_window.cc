@@ -926,8 +926,8 @@ void LocalDOMWindow::DispatchWindowLoadEvent() {
   // 'load' event asynchronously.  crbug.com/569511.
   if (ScopedEventQueue::Instance()->ShouldQueueEvents() && document_) {
     document_->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(FROM_HERE, WTF::BindOnce(&LocalDOMWindow::DispatchLoadEvent,
-                                            WrapPersistent(this)));
+        ->PostTask(FROM_HERE, BindOnce(&LocalDOMWindow::DispatchLoadEvent,
+                                       WrapPersistent(this)));
     return;
   }
   DispatchLoadEvent();
@@ -1270,12 +1270,12 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   SourceLocation* location = CaptureSourceLocation(source);
   GetTaskRunner(TaskType::kPostedMessage)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&LocalDOMWindow::DispatchPostMessage,
-                               WrapPersistent(this), WrapPersistent(event),
-                               std::move(posted_message->target_origin),
-                               WrapPersistent(location),
-                               source->GetAgent()->cluster_id(),
-                               WrapPersistent(task_context)));
+                 blink::BindOnce(&LocalDOMWindow::DispatchPostMessage,
+                                 WrapPersistent(this), WrapPersistent(event),
+                                 std::move(posted_message->target_origin),
+                                 WrapPersistent(location),
+                                 source->GetAgent()->cluster_id(),
+                                 WrapPersistent(task_context)));
   event->async_task_context()->Schedule(this, "postMessage");
   uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
   event->SetTraceId(trace_id);
