@@ -4177,7 +4177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.OverscrollFromBottom.BottomControlsStatus"
-    enum="BottomControlsStatus" expires_after="2025-08-24">
+    enum="BottomControlsStatus" expires_after="2026-02-24">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/ui/android/edge_to_edge/OWNERS</owner>
   <summary>
