@@ -22,6 +22,7 @@ rust_bindgen_generator("crabbyavif_dav1d_bindings") {
     "allowlist-item=dav1d_open",
     "allowlist-item=dav1d_picture_unref",
     "allowlist-item=dav1d_send_data",
+    "allowlist-item=dav1d_version",
   ]
 }
 
@@ -33,6 +34,7 @@ rust_static_library("crabbyavif_dav1d_sys") {
   crate_name = "dav1d_sys"
   sources = [ "src/sys/dav1d-sys/src/lib.rs" ]
   bindgen_deps = [ ":crabbyavif_dav1d_bindings" ]
+  features = [ "dav1d" ]
 }
 
 rust_bindgen_generator("crabbyavif_libyuv_bindings") {
@@ -95,6 +97,7 @@ rust_bindgen_generator("crabbyavif_libyuv_bindings") {
     "allowlist-item=I444AlphaToARGBMatrix",
     "allowlist-item=I444ToARGBMatrix",
     "allowlist-item=I444ToRGB24Matrix",
+    "allowlist-item=LIBYUV_VERSION",
     "allowlist-item=NV12Scale",
     "allowlist-item=NV12ToARGBMatrix",
     "allowlist-item=NV12ToRGB565Matrix",
@@ -136,6 +139,7 @@ rust_static_library("crabbyavif_libyuv_sys") {
   crate_name = "libyuv_sys"
   sources = [ "src/sys/libyuv-sys/src/lib.rs" ]
   bindgen_deps = [ ":crabbyavif_libyuv_bindings" ]
+  features = [ "libyuv" ]
 }
 
 rust_static_library("crabbyavif") {
