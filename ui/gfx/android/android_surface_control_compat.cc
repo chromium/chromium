@@ -155,14 +155,17 @@ uint64_t g_agb_required_usage_bits = AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
   do {                                                       \
     func##Fn = reinterpret_cast<p##func>(dlsym(lib, #func)); \
     if (!func##Fn) {                                         \
-      supported = false;                                     \
-      LOG(ERROR) << "Unable to load function " << #func;     \
+      LOG(FATAL) << "Unable to load function " << #func;     \
     }                                                        \
   } while (0)
 
-#define LOAD_FUNCTION_MAYBE(lib, func)                       \
-  do {                                                       \
-    func##Fn = reinterpret_cast<p##func>(dlsym(lib, #func)); \
+#define LOAD_FUNCTION_MAYBE(lib, func, min_sdk_int)                        \
+  do {                                                                     \
+    if (base::android::android_info::sdk_int() >= min_sdk_int) {           \
+      func##Fn = reinterpret_cast<p##func>(dlsym(lib, #func));             \
+      LOG_IF(FATAL, !func##Fn) << "Unable to load " << #func << " on sdk " \
+                               << base::android::android_info::sdk_int();  \
+    }                                                                      \
   } while (0)
 
 struct SurfaceControlMethods {
@@ -224,43 +227,54 @@ struct SurfaceControlMethods {
   }
 
   SurfaceControlMethods(bool load_functions) {
-    if (!load_functions)
+    if (!load_functions) {
       return;
+    }
+
+    if (!SurfaceControl::IsSupported()) {
+      return;
+    }
 
     void* main_dl_handle = dlopen("libandroid.so", RTLD_NOW);
     if (!main_dl_handle) {
-      LOG(ERROR) << "Couldnt load android so";
-      supported = false;
-      return;
+      LOG(FATAL) << "Couldnt load android so";
     }
 
     LOAD_FUNCTION(main_dl_handle, ASurfaceControl_createFromWindow);
     LOAD_FUNCTION(main_dl_handle, ASurfaceControl_create);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceControl_fromJava);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceControl_fromJava,
+                        base::android::android_info::SDK_VERSION_U);
     LOAD_FUNCTION(main_dl_handle, ASurfaceControl_release);
 
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_create);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_delete);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_apply);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setOnComplete);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setOnCommit);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setOnCommit,
+                        base::android::android_info::SDK_VERSION_S);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_reparent);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setVisibility);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setZOrder);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setBuffer);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setGeometry);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setPosition);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setScale);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setCrop);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setPosition,
+                        base::android::android_info::SDK_VERSION_S);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setScale,
+                        base::android::android_info::SDK_VERSION_S);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setCrop,
+                        base::android::android_info::SDK_VERSION_S);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setBufferTransparency);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setDamageRegion);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setBufferDataSpace);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setHdrMetadata_cta861_3);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setHdrMetadata_smpte2086);
     LOAD_FUNCTION_MAYBE(main_dl_handle,
-                        ASurfaceTransaction_setExtendedRangeBrightness);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setFrameRate);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setFrameTimeline);
+                        ASurfaceTransaction_setExtendedRangeBrightness,
+                        base::android::android_info::SDK_VERSION_U);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setFrameRate,
+                        base::android::android_info::SDK_VERSION_R);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setFrameTimeline,
+                        base::android::android_info::SDK_VERSION_T);
 
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransactionStats_getPresentFenceFd);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransactionStats_getLatchTime);
@@ -270,60 +284,66 @@ struct SurfaceControlMethods {
     LOAD_FUNCTION(main_dl_handle,
                   ASurfaceTransactionStats_getPreviousReleaseFenceFd);
     LOAD_FUNCTION_MAYBE(main_dl_handle,
-                        ASurfaceTransaction_setEnableBackPressure);
+                        ASurfaceTransaction_setEnableBackPressure,
+                        base::android::android_info::SDK_VERSION_S);
   }
 
   ~SurfaceControlMethods() = default;
 
-  bool supported = true;
   // Surface methods.
-  pASurfaceControl_createFromWindow ASurfaceControl_createFromWindowFn;
-  pASurfaceControl_create ASurfaceControl_createFn;
-  pASurfaceControl_fromJava ASurfaceControl_fromJavaFn;
-  pASurfaceControl_release ASurfaceControl_releaseFn;
+  pASurfaceControl_createFromWindow ASurfaceControl_createFromWindowFn =
+      nullptr;
+  pASurfaceControl_create ASurfaceControl_createFn = nullptr;
+  pASurfaceControl_fromJava ASurfaceControl_fromJavaFn = nullptr;
+  pASurfaceControl_release ASurfaceControl_releaseFn = nullptr;
 
   // Transaction methods.
-  pASurfaceTransaction_create ASurfaceTransaction_createFn;
-  pASurfaceTransaction_delete ASurfaceTransaction_deleteFn;
-  pASurfaceTransaction_apply ASurfaceTransaction_applyFn;
-  pASurfaceTransaction_setOnComplete ASurfaceTransaction_setOnCompleteFn;
-  pASurfaceTransaction_setOnCommit ASurfaceTransaction_setOnCommitFn;
-  pASurfaceTransaction_reparent ASurfaceTransaction_reparentFn;
-  pASurfaceTransaction_setVisibility ASurfaceTransaction_setVisibilityFn;
-  pASurfaceTransaction_setZOrder ASurfaceTransaction_setZOrderFn;
-  pASurfaceTransaction_setBuffer ASurfaceTransaction_setBufferFn;
-  pASurfaceTransaction_setGeometry ASurfaceTransaction_setGeometryFn;
-  pASurfaceTransaction_setPosition ASurfaceTransaction_setPositionFn;
-  pASurfaceTransaction_setScale ASurfaceTransaction_setScaleFn;
-  pASurfaceTransaction_setCrop ASurfaceTransaction_setCropFn;
+  pASurfaceTransaction_create ASurfaceTransaction_createFn = nullptr;
+  pASurfaceTransaction_delete ASurfaceTransaction_deleteFn = nullptr;
+  pASurfaceTransaction_apply ASurfaceTransaction_applyFn = nullptr;
+  pASurfaceTransaction_setOnComplete ASurfaceTransaction_setOnCompleteFn =
+      nullptr;
+  pASurfaceTransaction_setOnCommit ASurfaceTransaction_setOnCommitFn = nullptr;
+  pASurfaceTransaction_reparent ASurfaceTransaction_reparentFn = nullptr;
+  pASurfaceTransaction_setVisibility ASurfaceTransaction_setVisibilityFn =
+      nullptr;
+  pASurfaceTransaction_setZOrder ASurfaceTransaction_setZOrderFn = nullptr;
+  pASurfaceTransaction_setBuffer ASurfaceTransaction_setBufferFn = nullptr;
+  pASurfaceTransaction_setGeometry ASurfaceTransaction_setGeometryFn = nullptr;
+  pASurfaceTransaction_setPosition ASurfaceTransaction_setPositionFn = nullptr;
+  pASurfaceTransaction_setScale ASurfaceTransaction_setScaleFn = nullptr;
+  pASurfaceTransaction_setCrop ASurfaceTransaction_setCropFn = nullptr;
   pASurfaceTransaction_setBufferTransparency
-      ASurfaceTransaction_setBufferTransparencyFn;
-  pASurfaceTransaction_setDamageRegion ASurfaceTransaction_setDamageRegionFn;
+      ASurfaceTransaction_setBufferTransparencyFn = nullptr;
+  pASurfaceTransaction_setDamageRegion ASurfaceTransaction_setDamageRegionFn =
+      nullptr;
   pASurfaceTransaction_setBufferDataSpace
-      ASurfaceTransaction_setBufferDataSpaceFn;
+      ASurfaceTransaction_setBufferDataSpaceFn = nullptr;
   pASurfaceTransaction_setHdrMetadata_cta861_3
-      ASurfaceTransaction_setHdrMetadata_cta861_3Fn;
+      ASurfaceTransaction_setHdrMetadata_cta861_3Fn = nullptr;
   pASurfaceTransaction_setHdrMetadata_smpte2086
-      ASurfaceTransaction_setHdrMetadata_smpte2086Fn;
+      ASurfaceTransaction_setHdrMetadata_smpte2086Fn = nullptr;
   pASurfaceTransaction_setExtendedRangeBrightness
-      ASurfaceTransaction_setExtendedRangeBrightnessFn;
+      ASurfaceTransaction_setExtendedRangeBrightnessFn = nullptr;
 
-  pASurfaceTransaction_setFrameRate ASurfaceTransaction_setFrameRateFn;
-  pASurfaceTransaction_setFrameTimeline ASurfaceTransaction_setFrameTimelineFn;
+  pASurfaceTransaction_setFrameRate ASurfaceTransaction_setFrameRateFn =
+      nullptr;
+  pASurfaceTransaction_setFrameTimeline ASurfaceTransaction_setFrameTimelineFn =
+      nullptr;
   pASurfaceTransaction_setEnableBackPressure
-      ASurfaceTransaction_setEnableBackPressureFn;
+      ASurfaceTransaction_setEnableBackPressureFn = nullptr;
 
   // TransactionStats methods.
   pASurfaceTransactionStats_getPresentFenceFd
-      ASurfaceTransactionStats_getPresentFenceFdFn;
+      ASurfaceTransactionStats_getPresentFenceFdFn = nullptr;
   pASurfaceTransactionStats_getLatchTime
-      ASurfaceTransactionStats_getLatchTimeFn;
+      ASurfaceTransactionStats_getLatchTimeFn = nullptr;
   pASurfaceTransactionStats_getASurfaceControls
-      ASurfaceTransactionStats_getASurfaceControlsFn;
+      ASurfaceTransactionStats_getASurfaceControlsFn = nullptr;
   pASurfaceTransactionStats_releaseASurfaceControls
-      ASurfaceTransactionStats_releaseASurfaceControlsFn;
+      ASurfaceTransactionStats_releaseASurfaceControlsFn = nullptr;
   pASurfaceTransactionStats_getPreviousReleaseFenceFd
-      ASurfaceTransactionStats_getPreviousReleaseFenceFdFn;
+      ASurfaceTransactionStats_getPreviousReleaseFenceFdFn = nullptr;
 };
 
 ARect RectToARect(const gfx::Rect& rect) {
@@ -555,7 +575,6 @@ bool SurfaceControl::IsSupported() {
     return false;
   }
 
-  CHECK(SurfaceControlMethods::Get().supported);
   return true;
 }
 
@@ -635,16 +654,13 @@ void SurfaceControl::EnableQualcommUBWC() {
 }
 
 bool SurfaceControl::SupportsSetFrameRate() {
-  // TODO(khushalsagar): Assert that this function is always available on R.
-  return IsSupported() &&
-         SurfaceControlMethods::Get().ASurfaceTransaction_setFrameRateFn !=
-             nullptr;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_R;
 }
 
 bool SurfaceControl::SupportsOnCommit() {
-  return IsSupported() &&
-         SurfaceControlMethods::Get().ASurfaceTransaction_setOnCommitFn !=
-             nullptr;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_S;
 }
 
 bool SurfaceControl::SupportsFrameRateCompatAtLeast() {
@@ -654,20 +670,18 @@ bool SurfaceControl::SupportsFrameRateCompatAtLeast() {
 }
 
 bool SurfaceControl::SupportsSetFrameTimeline() {
-  return IsSupported() &&
-         SurfaceControlMethods::Get().ASurfaceTransaction_setFrameTimelineFn !=
-             nullptr;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_T;
 }
 
 bool SurfaceControl::SupportsSurfacelessControl() {
-  return IsSupported() &&
-         !!SurfaceControlMethods::Get().ASurfaceControl_fromJavaFn;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_U;
 }
 
 bool SurfaceControl::SupportsSetEnableBackPressure() {
-  return IsSupported() &&
-         SurfaceControlMethods::Get()
-                 .ASurfaceTransaction_setEnableBackPressureFn != nullptr;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_S;
 }
 
 void SurfaceControl::SetStubImplementationForTesting() {
@@ -708,7 +722,7 @@ SurfaceControl::Surface::Surface(ANativeWindow* parent, const char* name) {
 SurfaceControl::Surface::Surface(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_surface_control) {
-  CHECK(SupportsSurfacelessControl());
+  CHECK(SurfaceControlMethods::Get().ASurfaceControl_fromJavaFn);
   owned_surface_ = SurfaceControlMethods::Get().ASurfaceControl_fromJavaFn(
       env, j_surface_control.obj());
   if (!owned_surface_) {
@@ -950,7 +964,7 @@ void SurfaceControl::Transaction::SetColorSpace(
 void SurfaceControl::Transaction::SetFrameRate(
     const Surface& surface,
     SurfaceControlFrameRate frame_rate) {
-  DCHECK(SupportsSetFrameRate());
+  CHECK(SurfaceControlMethods::Get().ASurfaceTransaction_setFrameRateFn);
   int8_t compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE;
   switch (frame_rate.compatibility) {
     case gfx::SurfaceControlFrameRateCompatibility::kFixedSource:
