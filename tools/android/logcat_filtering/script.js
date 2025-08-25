@@ -254,9 +254,6 @@ function handleFileUpload(event) {
       textDisplayArea.innerHTML = 'Encountered an error when reading the file.';
     };
     reader.readAsText(file);
-  } else {
-    setUpElements([]);
-    textDisplayArea.innerHTML = 'Please select a file.';
   }
 }
 
