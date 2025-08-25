@@ -108,11 +108,21 @@
   --cr-icon-button-size: 24px;
 }
 
+#actor-icon {
+  --cr-icon-size: 20px;
+  padding-inline-start: 12px;
+}
+
 #bookmark-star {
   --cr-icon-button-fill-color: var(--interactive-color);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-margin-start: 12px;
   --cr-icon-button-size: 32px;
+}
+
+#icons {
+  align-items: center;
+  display: flex;
 }
 
 #debug-container {

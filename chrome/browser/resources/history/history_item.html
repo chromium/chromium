@@ -40,13 +40,21 @@
               </a>
               <span id="domain">${this.item?.domain}</span>
             </div>
-            ${this.item?.starred ? html`
-              <cr-icon-button id="bookmark-star" iron-icon="cr:star"
-                  @click="${this.onRemoveBookmarkClick_}"
-                  title="$i18n{removeBookmark}"
-                  aria-hidden="true">
-              </cr-icon-button>
+            <div id="icons">
+              ${this.shouldShowActorTooltip_() ? html`
+                <cr-tooltip-icon id="actor-icon" icon-class="history20:auto-nav"
+                    tooltip-text="$i18n{actorTaskTooltip}"
+                    icon-aria-label="$i18n{actorTaskTooltip}">
+                </cr-tooltip-icon>
               `: ''}
+              ${this.item?.starred ? html`
+                <cr-icon-button id="bookmark-star" iron-icon="cr:star"
+                    @click="${this.onRemoveBookmarkClick_}"
+                    title="$i18n{removeBookmark}"
+                    aria-hidden="true">
+                </cr-icon-button>
+                `: ''}
+            </div>
           </div>
           <div role="gridcell" id="options">
             <cr-icon-button id="menu-button" iron-icon="cr:more-vert"
