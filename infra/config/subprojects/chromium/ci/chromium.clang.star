@@ -2132,7 +2132,7 @@ ci.builder(
             apply_configs = ["rust_tot"],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "clang_tot_linux",
+            config = "rust_tot_linux",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.DEBUG,
             target_arch = builder_config.target_arch.INTEL,
