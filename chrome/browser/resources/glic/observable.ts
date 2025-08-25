@@ -194,7 +194,7 @@ class ObservableBase<T> {
 
   protected activeSubscriptionChanged(_hasActiveSubscription: boolean): void {}
 
-  protected hasActiveSubscription(): boolean {
+  hasActiveSubscription(): boolean {
     return this.subscribers.size > 0;
   }
 }

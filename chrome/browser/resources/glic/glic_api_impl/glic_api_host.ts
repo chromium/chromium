@@ -18,7 +18,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata.mojom-webui.js';
 import type {BrowserProxy} from '../browser_proxy.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
-import type {ActiveBrowserInfo as ActiveBrowserInfoMojo, ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskState as ActorTaskStateMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabContext as TabContextMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientHandlerInterface, WebClientInitialState, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../glic.mojom-webui.js';
+import type {ActiveBrowserInfo as ActiveBrowserInfoMojo, ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskState as ActorTaskStateMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, TabContext as TabContextMojo, TabData as TabDataMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientHandlerInterface, WebClientInitialState, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../glic.mojom-webui.js';
 import {CurrentView as CurrentViewMojo, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {ActiveBrowserInfo, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, DraggableArea, GetPinCandidatesOptions, HostCapability, Journal, OnResponseStoppedDetails, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, ViewChangedNotification, ViewChangeRequest, WebPageData, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, ClientView, CreateTaskErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason} from '../glic_api/glic_api.js';
@@ -29,7 +29,7 @@ import {OneShotTimer} from '../timer.js';
 import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, ResponseExtras} from './post_message_transport.js';
-import type {AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate, WebClientRequestTypes} from './request_types.js';
+import type {AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate, WebClientRequestTypes} from './request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
 export enum WebClientState {
@@ -361,6 +361,16 @@ class WebClientImpl implements WebClientInterface {
           pageMetadata: pageMetadataToClient(metadata),
         },
         undefined, `${tabId}`);
+  }
+
+  async requestToShowCredentialSelectionDialog(
+      request: SelectCredentialDialogRequestMojo):
+      Promise<{response: SelectCredentialDialogResponseMojo}> {
+    const clientResponse = await this.sender.requestWithResponse(
+        'glicWebClientRequestToShowDialog', {request});
+    return {
+      response: selectCredentialDialogResponseToMojo(clientResponse.response),
+    };
   }
 }
 
@@ -1881,4 +1891,25 @@ function byteArrayFromClient(buffer: ArrayBuffer): number[] {
 function hostCapabilitiesToClient(capabilities: HostCapabilityMojo[]):
     HostCapability[] {
   return capabilities.map(capability => capability as number as HostCapability);
+}
+
+function selectCredentialDialogResponseToMojo(
+    response: SelectCredentialDialogResponsePrivate):
+    SelectCredentialDialogResponseMojo {
+  return response.errorReason ?
+      {
+        taskId: response.taskId,
+        errorReason: response.errorReason as number as
+            SelectCredentialDialogErrorReasonMojo,
+        permissionDuration: null,
+        selectedCredentialId: null,
+      } :
+      {
+        ...response,
+        errorReason: null,
+        permissionDuration: optionalFromClient(response.permissionDuration) as
+                UserGrantedPermissionDurationMojo |
+            null,
+        selectedCredentialId: response.selectedCredentialId ?? null,
+      };
 }

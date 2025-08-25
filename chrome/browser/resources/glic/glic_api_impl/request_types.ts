@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {type WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActiveBrowserInfo, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActiveBrowserInfo, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, Screenshot, ScrollToParams, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -577,6 +577,15 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientRequestToShowDialog: {
+    request: {
+      request: SelectCredentialDialogRequestPrivate,
+    },
+    response: {
+      response: SelectCredentialDialogResponsePrivate,
+    },
+    backgroundAllowed: true,
+  },
 }>;
 
 
@@ -801,6 +810,21 @@ export declare interface AnnotatedPageDataPrivate extends
     Omit<AnnotatedPageData, 'annotatedPageContent'> {
   annotatedPageContent?: ArrayBuffer;
   metadata?: PageMetadata;
+}
+
+export declare interface SelectCredentialDialogRequestPrivate extends
+    Omit<SelectCredentialDialogRequest, 'onDialogClosed'> {}
+
+/** Reasons why the credential selection dialog request failed. */
+export enum SelectCredentialDialogErrorReason {
+  // The hosting WebUI received the request, but the web client has not
+  // subscribed to the request yet. We couldn't show the dialog in this case.
+  DIALOG_PROMISE_NO_SUBSCRIBER = 0,
+}
+
+export declare interface SelectCredentialDialogResponsePrivate extends
+    SelectCredentialDialogResponse {
+  errorReason?: SelectCredentialDialogErrorReason;
 }
 
 export class ErrorWithReasonImpl<T extends keyof ErrorReasonTypes> extends Error
