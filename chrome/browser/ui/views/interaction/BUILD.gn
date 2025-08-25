@@ -14,3 +14,11 @@ source_set("interaction") {
     "//ui/views",
   ]
 }
+
+source_set("impl") {
+  sources = [
+    "browser_elements_views_impl.cc",
+    "browser_elements_views_impl.h",
+  ]
+  public_deps = [ ":interaction" ]
+}

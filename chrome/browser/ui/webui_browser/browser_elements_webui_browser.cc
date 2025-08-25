@@ -8,11 +8,12 @@
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(BrowserElementsWebUiBrowser)
+DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(BrowserElementsWebUiBrowser,
+                                            BrowserElementsViews)
 
 BrowserElementsWebUiBrowser::BrowserElementsWebUiBrowser(
     BrowserWindowInterface& browser)
-    : BrowserElements(browser) {}
+    : BrowserElementsViews(browser) {}
 
 BrowserElementsWebUiBrowser::~BrowserElementsWebUiBrowser() = default;
 

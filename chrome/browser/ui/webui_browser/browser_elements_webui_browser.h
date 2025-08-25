@@ -6,7 +6,7 @@
 #define CHROMIUM_BROWSER_UI_WEBUI_BROWSER_BROWSER_ELEMENTS_WEBUI_BROWSER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 
@@ -18,7 +18,7 @@ class BrowserWindowInterface;
 
 // Provides WebUIBrowser-specific extensions to `BrowserElements` so it can
 // provide a context and elements for the WebUIBrowser.
-class BrowserElementsWebUiBrowser : public BrowserElements {
+class BrowserElementsWebUiBrowser : public BrowserElementsViews {
  public:
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
@@ -31,12 +31,10 @@ class BrowserElementsWebUiBrowser : public BrowserElements {
   // to track elements in this WebUIBrowser.
   void Init(views::Widget* browser_widget);
 
-  // Call this when the hosting context is going away.
-  void TearDown();
-
  private:
   // BrowserElements:
   ui::ElementContext GetContext() override;
+  void TearDown() override;
 
   raw_ptr<views::Widget> browser_widget_ = nullptr;
 };

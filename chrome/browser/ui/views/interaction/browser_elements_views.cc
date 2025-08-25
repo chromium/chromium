@@ -22,18 +22,6 @@ BrowserElementsViews* BrowserElementsViews::From(
   return base ? base->AsA<BrowserElementsViews>() : nullptr;
 }
 
-void BrowserElementsViews::Init(views::View* view) {
-  context_view_ = view;
-}
-
-void BrowserElementsViews::TearDown() {
-  context_view_ = nullptr;
-}
-
-ui::ElementContext BrowserElementsViews::GetContext() {
-  return views::ElementTrackerViews::GetContextForView(context_view_);
-}
-
 views::View* BrowserElementsViews::GetView(ui::ElementIdentifier id) {
   return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
       id, GetContext());

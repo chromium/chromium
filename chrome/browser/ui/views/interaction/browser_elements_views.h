@@ -26,16 +26,6 @@ class BrowserElementsViews : public BrowserElements {
 
   static BrowserElementsViews* From(BrowserWindowInterface* browser);
 
-  // Initializes with a view that provides context (typically a BrowserView, but
-  // no need to inject a dependency here).
-  void Init(views::View* context_view);
-
-  // Call this when the hosting context is going away.
-  void TearDown();
-
-  // BrowserElements:
-  ui::ElementContext GetContext() override;
-
   // These provide convenience access to ElementTrackerViews without having to
   // specify context:
 
@@ -47,8 +37,8 @@ class BrowserElementsViews : public BrowserElements {
     requires std::derived_from<T, views::View>
   T* GetViewAs(ui::ElementIdentifier id);
 
- private:
-  raw_ptr<views::View> context_view_ = nullptr;
+  // Call this when the hosting context is going away.
+  virtual void TearDown() = 0;
 };
 
 // Template implementations:
