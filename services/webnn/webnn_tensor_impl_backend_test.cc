@@ -732,9 +732,10 @@ TEST_F(WebNNTensorImplDmlBackendTest, MAYBE_AccessOnDifferentQueueTest) {
 
   {
     ASSERT_HRESULT_SUCCEEDED(command_recorder->Open());
-    UploadBufferWithBarrier(command_recorder.get(),
-                            webnn_tensor->GetD3D12Buffer(), upload_buffer,
-                            kTensorSize);
+    UploadBufferWithBarrier(
+        command_recorder.get(),
+        static_cast<dml::TensorImplDml*>(webnn_tensor.get())->buffer(),
+        upload_buffer, kTensorSize);
     ASSERT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
   }
 
@@ -771,9 +772,10 @@ TEST_F(WebNNTensorImplDmlBackendTest, MAYBE_AccessOnDifferentQueueTest) {
         webnn_fence_to_wait_for_2->GetD3D12Fence(),
         webnn_fence_to_wait_for_2->GetFenceValue()));
     ASSERT_HRESULT_SUCCEEDED(command_recorder->Open());
-    UploadBufferWithBarrier(command_recorder.get(),
-                            webnn_tensor->GetD3D12Buffer(), upload_buffer,
-                            kTensorSize);
+    UploadBufferWithBarrier(
+        command_recorder.get(),
+        static_cast<dml::TensorImplDml*>(webnn_tensor.get())->buffer(),
+        upload_buffer, kTensorSize);
     ASSERT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
   }
 

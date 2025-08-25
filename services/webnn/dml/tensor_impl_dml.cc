@@ -119,8 +119,4 @@ TensorImplDml::EndAccessWebNN() {
       {command_queue->submission_fence(), last_submission_fence_value_}));
 }
 
-ID3D12Resource* TensorImplDml::GetD3D12Buffer() const {
-  return buffer();
-}
-
 }  // namespace webnn::dml

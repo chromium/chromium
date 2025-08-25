@@ -43,11 +43,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensor {
   // access to WebNN and to EndAccessWebNN() again.
   virtual std::unique_ptr<WebNNSharedFence> EndAccessWebNN() = 0;
 
-  // Retrieves the underlying buffer held in the `WebNNTensor` instance.
-  // The returned tensor buffer is a committed resource which cannot be used
-  // externally until EndAccessWebNN() is called.
-  virtual ID3D12Resource* GetD3D12Buffer() const = 0;
-
   virtual ~WebNNTensor() = default;
 };
 

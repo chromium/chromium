@@ -71,7 +71,6 @@ class TensorImplDml final : public WebNNTensorImpl,
   bool BeginAccessWebNN(Microsoft::WRL::ComPtr<ID3D12Fence> wait_fence,
                         uint64_t wait_fence_value) override;
   std::unique_ptr<native::d3d12::WebNNSharedFence> EndAccessWebNN() override;
-  ID3D12Resource* GetD3D12Buffer() const override;
 
   // The D3D12 resource that holds the tensor data.
   // The buffer must always remain valid after creation and could outlive
