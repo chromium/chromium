@@ -44,7 +44,7 @@ class GnomeDesktopResizer : public DesktopResizer {
   void SetVideoLayout(const protocol::VideoLayout& layout) override;
 
  private:
-  struct PendingMonitorConfig {
+  struct PreferredMonitorConfig {
     webrtc::DesktopSize expected_resolution;
     webrtc::DesktopVector position;
     double scale;
@@ -55,12 +55,12 @@ class GnomeDesktopResizer : public DesktopResizer {
   void QueryDisplayInfo();
   void OnGnomeDisplayConfigReceived(GnomeDisplayConfig config);
 
-  // Schedules an ApplyMonitorsConfig call to apply `current_display_config_` in
-  // the next event loop iteration of the current sequence, if it hasn't been
+  // Schedules an ApplyMonitorsConfig call to apply `preferred_monitors_config_`
+  // in the next event loop iteration of the current sequence, if it hasn't been
   // called in the current event loop iteration yet. This is used to bundle
   // multiple display config changes and avoid race conditions.
-  void ScheduleApplyMonitorsConfig();
-  void DoApplyMonitorsConfig();
+  void ScheduleApplyPreferredMonitorsConfig();
+  void DoApplyPreferredMonitorsConfig();
 
   double GetTextScalingFactor() const;
 
@@ -71,24 +71,32 @@ class GnomeDesktopResizer : public DesktopResizer {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<GnomeDisplayConfigDBusClient::Subscription>
-      monitors_changed_subscription_;
+      monitors_changed_subscription_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Represents the current display config state, plus all pending changes this
-  // class wants to apply. This may not match the actual state, if there are any
-  // pending changes, or external changes that hasn't been sync'ed into this
-  // class yet.
-  GnomeDisplayConfig current_display_config_;
-  bool apply_monitors_config_scheduled_ = false;
+  // Represents the latest known display config state reported by Mutter. This
+  // may potentially not be up-to-date, and does not include any pending
+  // changes.
+  GnomeDisplayConfig current_display_config_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool apply_monitors_config_scheduled_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
-  // Pending monitors config to be applied.
-  // Screen resolutions need to be changed on the pipewire stream, while monitor
-  // positions and scales need to be changed with the Mutter DisplayConfig D-Bus
-  // API. So we need to change the resolutions first, wait for the screen
-  // resolutions of all monitors in the map match the value in
-  // `expected_resolution`, then apply the config.
+  // Preferred monitors config, which may or may be be reflected in
+  // `current_display_config_`. This field is used to:
+  //
+  // 1. Store pending config so that it can be applied later to prevent race
+  //    conditions. For example, we wait for screen resolution changes via
+  //    pipewire to be reflected in the display config before we apply display
+  //    scales or offsets.
+  // 2. Make adjustments if the display config has changed externally. For
+  //    example, if the preferred scale for the primary display is 2 and we have
+  //    previously set the text scale to 2, if the user manually sets the
+  //    monitor scale to 2, then we use this map to look up the preferred scale
+  //    and change the text scale to 1 so that the combined scale is 2.
+  //
   // We can't use flat_map since we may remove elements during iteration.
-  std::map<std::string /* monitor_name */, PendingMonitorConfig>
-      pending_monitors_config_;
+  std::map<std::string /* monitor_name */, PreferredMonitorConfig>
+      preferred_monitors_config_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to set the text-scaling-factor.
   ScopedGObject<GSettings> registry_;

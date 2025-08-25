@@ -79,7 +79,9 @@ std::list<ScreenResolution> GnomeDesktopResizer::GetSupportedResolutions(
     const ScreenResolution& preferred,
     webrtc::ScreenId screen_id) {
   // TODO: crbug.com/431816005 - clamp scale to the supported range of
-  // text-scaling-factor.
+  // text-scaling-factor. Also, the effective scale of non-primary displays are
+  // dictated by the preferred scale of the primary display, which may need to
+  // be reflected here.
   return {preferred};
 }
 
@@ -103,71 +105,24 @@ void GnomeDesktopResizer::SetResolution(const ScreenResolution& resolution,
     stream->SetResolution(resolution.dimensions());
   }
 
-  // Now change the display scale by setting text-scaling-factor to the desired
-  // scale and setting the monitor scale to 1. There are several reasons why we
-  // do it this way for now:
-  //
-  // 1. Due to crbug.com/433312809, a virtual monitor with a scale other than 1
-  //    will not render correctly due to incorrect damage area coordinates.
-  // 2. Gnome has a list of supported scales for a specific screen resolution.
-  //    You won't be able to apply a monitor scale if Gnome thinks it is not
-  //    supported for the current resolution. You would either need to replicate
-  //    Gnome's support scales calculation logic, or do it in a try-and-error
-  //    manner. Meanwhile you are allowed to set any fractional number between
-  //    [0.5, 3.0] as the text-scaling-factor.
-  // 3. Currently Gnome will show a confirmation dialog whenever the monitor
-  //    scale is changed, which is disruptive to the users. With the current
-  //    approach, the user will likely only see the confirmation dialog once, or
-  //    never, if Gnome believe the recommended scaling is 1x.
-  //
-  // But there are some caveats:
-  //
-  // 1. Not all UI elements are scaled by text-scaling-factor, and unfortunately
-  //    the mouse cursor isn't scaled so it will be tiny in high-DPI mode.
-  //    TODO: crbug.com/431816005 - maybe add DPI/scale info to the
-  //    CursorShapeInfo so that the client can scale the mouse cursor properly.
-  // 2. text-scaling-factor is applied on all monitors, so if the user has
-  //    a multi-monitor setup with mixed DPIs, then the scaling factor may
-  //    change back and forth when the monitor is resized.
-  //    TODO: crbug.com/431816005 - Fix this properly by tracking individual
-  //    monitors' preferred scales and choosing the lowest scale.
-  //
-  // Given these caveats, we would still prefer to set monitor scales rather
-  // than text scales when that becomes possible, but we can do it for now.
-  // TODO: crbug.com/431816005 - Just set monitor scales to the desired scales
-  // and text-scaling-factor to 1 once the blockers have been resolved.
   DCHECK_EQ(resolution.dpi().x(), resolution.dpi().y());
-  if (!g_settings_set_double(
-          registry_.get(), "text-scaling-factor",
-          static_cast<double>(resolution.dpi().x()) / kDefaultDpi)) {
-    LOG(ERROR) << "Failed to set text-scaling-factor";
-    return;
-  }
-
-  // Now set the monitor scale to 1. Gnome infers the default monitor scale for
-  // the given resolution, and sometimes that is not 1. A none-1 monitor scale
-  // will cause rendering issues. See: crbug.com/433312809
-  auto monitor_it = current_display_config_.FindMonitor(screen_id);
+  const auto monitor_it = current_display_config_.FindMonitor(screen_id);
   if (monitor_it == current_display_config_.monitors.end()) {
     LOG(ERROR) << "Cannot find monitor with screen ID: " << screen_id;
     return;
   }
-  auto& monitor = monitor_it->second;
-  double monitor_scale = 1.0;
-  if (!resolution_changed && !IsSameScale(monitor_scale, monitor.scale)) {
-    // Only the display scale is changed, so we don't need to wait for the
-    // resolution change to take effect.
-    monitor.scale = monitor_scale;
-    ScheduleApplyMonitorsConfig();
-    return;
+  const auto& monitor = monitor_it->second;
+  double preferred_scale =
+      static_cast<double>(resolution.dpi().x()) / kDefaultDpi;
+  preferred_monitors_config_[monitor_it->first] = {
+      resolution.dimensions(), {monitor.x, monitor.y}, preferred_scale};
+  // If the resolution has not changed, then we can immediately apply the
+  // preferred monitors config, otherwise we wait for an updated displays config
+  // to be received with a matching screen resolution to learn the list of
+  // supported scales and prevent race conditions.
+  if (!resolution_changed) {
+    ScheduleApplyPreferredMonitorsConfig();
   }
-  // If the resolution is changed, Gnome may potentially pick a different
-  // monitor scale, so we need to wait for the resolution change to be reflected
-  // on the display config before we check and set the scale, otherwise
-  // ApplyMonitorsConfig will fail due to mismatched serials, i.e. race
-  // condition.
-  pending_monitors_config_[monitor_it->first] = {
-      resolution.dimensions(), {monitor.x, monitor.y}, monitor_scale};
 }
 
 void GnomeDesktopResizer::RestoreResolution(const ScreenResolution& original,
@@ -216,7 +171,35 @@ void GnomeDesktopResizer::OnGnomeDisplayConfigReceived(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   current_display_config_ = std::move(config);
-  if (pending_monitors_config_.empty()) {
+  // Switch to the physical layout mode, since otherwise monitor offsets would
+  // need to be recalculated whenever a monitor scale is changed.
+  current_display_config_.SwitchLayoutMode(
+      GnomeDisplayConfig::LayoutMode::kPhysical);
+  ScheduleApplyPreferredMonitorsConfig();
+}
+
+void GnomeDesktopResizer::ScheduleApplyPreferredMonitorsConfig() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (apply_monitors_config_scheduled_) {
+    return;
+  }
+  apply_monitors_config_scheduled_ = true;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GnomeDesktopResizer::DoApplyPreferredMonitorsConfig,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!display_config_client_) {
+    return;
+  }
+  apply_monitors_config_scheduled_ = false;
+
+  if (preferred_monitors_config_.empty()) {
     return;
   }
   // Check if all resolution changes are reflected in the new config. If so,
@@ -226,16 +209,14 @@ void GnomeDesktopResizer::OnGnomeDisplayConfigReceived(
   GnomeDisplayConfig new_config = current_display_config_;
   bool all_resolution_changes_reflected = true;
   bool config_changed = false;
-  for (auto pending_monitor_config_it = pending_monitors_config_.begin();
-       pending_monitor_config_it != pending_monitors_config_.end();) {
-    const auto [monitor_name, pending_change] = *pending_monitor_config_it;
+  for (auto preferred_monitor_config_it = preferred_monitors_config_.begin();
+       preferred_monitor_config_it != preferred_monitors_config_.end();) {
+    const auto [monitor_name, preferred_config] = *preferred_monitor_config_it;
     auto monitor_it = new_config.monitors.find(monitor_name);
     if (monitor_it == new_config.monitors.end()) {
-      LOG(ERROR) << "Cannot find monitor with name: " << monitor_name;
-      all_resolution_changes_reflected = false;
-      // Remove the change that's no longer valid.
-      pending_monitor_config_it =
-          pending_monitors_config_.erase(pending_monitor_config_it);
+      HOST_LOG << "Monitor " << monitor_name << " no longer exists";
+      preferred_monitor_config_it =
+          preferred_monitors_config_.erase(preferred_monitor_config_it);
       break;
     }
 
@@ -244,50 +225,51 @@ void GnomeDesktopResizer::OnGnomeDisplayConfigReceived(
     if (!mode) {
       LOG(ERROR) << "Cannot find current mode for monitor " << monitor_name;
       all_resolution_changes_reflected = false;
-    } else if (pending_change.expected_resolution.width() != mode->width ||
-               pending_change.expected_resolution.height() != mode->height) {
+    } else if (!preferred_config.expected_resolution.equals(
+                   webrtc::DesktopSize{mode->width, mode->height})) {
       // Resolution change not reflected in display config yet.
       all_resolution_changes_reflected = false;
-    } else if (monitor.x != pending_change.position.x() ||
-               monitor.y != pending_change.position.y() ||
-               !IsSameScale(monitor.scale, pending_change.scale)) {
-      monitor.x = pending_change.position.x();
-      monitor.y = pending_change.position.y();
-      monitor.scale = pending_change.scale;
-      config_changed = true;
+    } else {
+      if (monitor.x != preferred_config.position.x() ||
+          monitor.y != preferred_config.position.y()) {
+        monitor.x = preferred_config.position.x();
+        monitor.y = preferred_config.position.y();
+        config_changed = true;
+      }
+      // Ideally we want to set the monitor scale to a supported scale that is
+      // closest to the preferred scale, but we can't do it until
+      // https://gitlab.gnome.org/GNOME/mutter/-/issues/4275 is fixed, since the
+      // monitor scale will be changed back to 1x whenever the monitor
+      // resolution is changed via pipewire, and changing it back to the desired
+      // scale would trigger the confirmation dialog, which is very spammy.
+      // Instead, we just set the text scale to the preferred scale divided by
+      // the current monitor scale, which is suboptimal since not all
+      // applications support non-1 text scales well, but would allow the user
+      // to get a better experience by manually changing the monitor scale to
+      // the desired scale. Also, the text scale is global as opposed to per
+      // monitor. In case of a mixed DPI setup, we can only make the combined
+      // scale correct for one monitor, so we do it only for the primary
+      // monitor.
+      // TODO: crbug.com/431816005 - once the mutter bug is fixed (or patched in
+      // gLinux), set the monitor scale to a supported scale that is closest to
+      // the preferred scale, then apply the text scale correction.
+      if (monitor.is_primary &&
+          !IsSameScale(monitor.scale * GetTextScalingFactor(),
+                       preferred_config.scale)) {
+        if (!g_settings_set_double(registry_.get(), "text-scaling-factor",
+                                   preferred_config.scale / monitor.scale)) {
+          LOG(ERROR) << "Failed to set text-scaling-factor";
+        }
+      }
     }
-    pending_monitor_config_it++;
+    preferred_monitor_config_it++;
   }
 
   if (all_resolution_changes_reflected) {
-    pending_monitors_config_.clear();
     if (config_changed) {
-      current_display_config_ = std::move(new_config);
-      ScheduleApplyMonitorsConfig();
+      display_config_client_->ApplyMonitorsConfig(new_config);
     }
   }
-}
-
-void GnomeDesktopResizer::ScheduleApplyMonitorsConfig() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (apply_monitors_config_scheduled_) {
-    return;
-  }
-  apply_monitors_config_scheduled_ = true;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&GnomeDesktopResizer::DoApplyMonitorsConfig,
-                                weak_ptr_factory_.GetWeakPtr()));
-}
-
-void GnomeDesktopResizer::DoApplyMonitorsConfig() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!display_config_client_) {
-    return;
-  }
-  apply_monitors_config_scheduled_ = false;
-  display_config_client_->ApplyMonitorsConfig(current_display_config_);
 }
 
 double GnomeDesktopResizer::GetTextScalingFactor() const {
