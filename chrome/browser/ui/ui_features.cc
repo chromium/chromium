@@ -131,6 +131,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kSideBySide,
                    "drop_target_show_delay",
                    base::Milliseconds(500));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSideBySideHideDropTargetDelay,
+                   &kSideBySide,
+                   "drop_target_hide_delay",
+                   base::Milliseconds(100));
 BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetMinWidth,
                    &kSideBySide,

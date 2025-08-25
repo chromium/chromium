@@ -145,6 +145,7 @@ BASE_DECLARE_FEATURE(KScrimForTabModal);
 BASE_DECLARE_FEATURE(kSideBySide);
 
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSideBySideShowDropTargetDelay);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSideBySideHideDropTargetDelay);
 
 // Feature params for the width of the multi-contents drop target.
 // If the `kSideBySideDropTargetNudge` feature is enabled, then these only

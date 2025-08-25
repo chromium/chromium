@@ -10,6 +10,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/to_address.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
@@ -30,7 +31,7 @@ MultiContentsViewDropTargetController::MultiContentsViewDropTargetController(
 
 MultiContentsViewDropTargetController::
     ~MultiContentsViewDropTargetController() {
-  hide_drop_target_callback_.Cancel();
+  hide_drop_target_timer_.Stop();
   on_will_destroy_callback_list_.Notify();
   drop_target_view_->SetDragDelegate(nullptr);
 }
@@ -97,7 +98,7 @@ bool MultiContentsViewDropTargetController::CanDrop(
 
 void MultiContentsViewDropTargetController::OnDragEntered(
     const ui::DropTargetEvent& event) {
-  hide_drop_target_callback_.Cancel();
+  hide_drop_target_timer_.Stop();
 
   if (!drop_target_view_->GetVisible()) {
     return;
@@ -128,7 +129,7 @@ void MultiContentsViewDropTargetController::OnDragExited() {
     // If we are we a nudge or expanded nudge evaluate hiding the drop target
     // from a posted task. This is so we can determine if we are exiting the
     // drop target into the web content area.
-    MaybeHideDropTarget();
+    StartDropTargetHideTimer();
   }
 }
 
@@ -182,7 +183,7 @@ void MultiContentsViewDropTargetController::OnWebContentsDragUpdate(
     const content::DropData& data,
     const gfx::Point& point,
     bool is_in_split_view) {
-  hide_drop_target_callback_.Cancel();
+  hide_drop_target_timer_.Stop();
   // "Drag update" events can still be delivered even if the point is out of the
   // contents area, particularly while the drop target is animating in and
   // shifting them.
@@ -209,7 +210,7 @@ void MultiContentsViewDropTargetController::OnWebContentsDragExit() {
   if (drop_target_view_->GetVisible()) {
     // Evaluate determining whether to hide the drop target on a new task
     // This is so we avoid hiding the view if we are entering the drop target.
-    MaybeHideDropTarget();
+    StartDropTargetHideTimer();
   }
 }
 
@@ -314,14 +315,10 @@ void MultiContentsViewDropTargetController::ShowTimerDelayedDropTarget() {
   show_drop_target_timer_.reset();
 }
 
-void MultiContentsViewDropTargetController::MaybeHideDropTarget() {
-  // Using raw pointer here is safe here since we cancel the task prior to
-  // destruction and so we have guarantees around life time of the view and the
-  // callback.
-  hide_drop_target_callback_.Reset(base::BindOnce(
-      &MultiContentsDropTargetView::Hide, base::Unretained(drop_target_view_)));
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, hide_drop_target_callback_.callback());
+void MultiContentsViewDropTargetController::StartDropTargetHideTimer() {
+  hide_drop_target_timer_.Start(
+      FROM_HERE, features::kSideBySideHideDropTargetDelay.Get(),
+      base::to_address(drop_target_view_), &MultiContentsDropTargetView::Hide);
 }
 
 bool MultiContentsViewDropTargetController::PointOverlapsWithOSDropTarget(
