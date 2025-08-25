@@ -86,8 +86,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
     return is_continuous_scroll_in_progress_;
   }
 
-  bool windows_have_snapshot() const { return windows_have_snapshot_; }
-
   // Starts/Ends overview with `type`. Returns true if enter or exit overview
   // successful. Depending on `type` the enter/exit animation will look
   // different. `start_action`/`end_action` is used by UMA to record the reasons
@@ -152,19 +150,11 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
 
   base::AutoReset<bool> SetDisableAppIdCheckForTests();
 
-  void set_occlusion_pause_duration_for_start_for_test(
-      base::TimeDelta duration) {
-    occlusion_pause_duration_for_start_ = duration;
-  }
   void set_occlusion_pause_duration_for_end_for_test(base::TimeDelta duration) {
     occlusion_pause_duration_for_end_ = duration;
   }
   void set_delayed_animation_task_delay_for_test(base::TimeDelta delta) {
     delayed_animation_task_delay_ = delta;
-  }
-
-  void set_windows_have_snapshot_for_test(bool windows_have_snapshot) {
-    windows_have_snapshot_ = windows_have_snapshot;
   }
 
  private:
@@ -224,7 +214,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
 
   base::Time last_overview_session_time_;
 
-  base::TimeDelta occlusion_pause_duration_for_start_;
   base::TimeDelta occlusion_pause_duration_for_end_;
 
   // App dragging enters overview right away. This task is used to delay the
@@ -243,12 +232,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // `disable_app_id_check_for_saved_desks_` is true, then this check is
   // omitted so we can test Saved Desks.
   bool disable_app_id_check_for_saved_desks_ = false;
-
-  // True if windows shown in overview mode will have a snapshot available.
-  // If a snapshot is available then we can pause occlusion tracking until
-  // overview mode as finished its enter animation. Otherwise, we must mark
-  // all windows as visible immediately.
-  bool windows_have_snapshot_ = false;
 
   std::optional<OverviewSessionMetricsRecorder> session_metrics_recorder_;
 

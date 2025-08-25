@@ -264,13 +264,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   // overview item.
   wm::ScopedAnimationDisabler animation_disabler_;
 
-  // Force `OverviewItem` to be visible while overview is in progress. This is
-  // to ensure that overview items are properly marked as visible during all
-  // parts of their animation (e.g. overview enter). This is only required
-  // if those item's windows won't have snapshots.
-  std::optional<aura::WindowOcclusionTracker::ScopedForceVisible>
-      scoped_force_visible_;
-
   base::WeakPtrFactory<OverviewItem> weak_ptr_factory_{this};
 };
 
