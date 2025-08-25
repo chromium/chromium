@@ -8,7 +8,6 @@
 • "Optimizuesi i JavaScript" është joaktiv. <ph name="BEGIN_LINK2" />Menaxho përjashtimet e sajteve<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Hap versionin online</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
-<translation id="1044891598689252897">Sajtet do të punojnë normalisht</translation>
 <translation id="1070329623210597193">Skedarët që mund të shikojë ose modifikojë ky sajt</translation>
 <translation id="1073417869336441572">Na ndihmo të përmirësojmë Chrome duke na treguar se pse ke lejuar kukit e palëve të treta. <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Mund të kërkosh për të parë versionin e desktopit të sajteve</translation>
@@ -128,7 +127,6 @@
 <translation id="2433507940547922241">Pamja</translation>
 <translation id="2434158240863470628">Shkarkimi përfundoi <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Ke lejuar përkohësisht këtë sajt që të përdorë kukit e palëve të treta, gjë që do të thotë më pak mbrojtje të shfletimit, por veçoritë e sajtit ka më shumë mundësi të funksionojnë siç pritet. <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Veçoritë në disa sajte mund të mos funksionojnë në "Modalitetin 'e fshehtë'"</translation>
 <translation id="2442870161001914531">Kërko gjithmonë sajtin për desktop</translation>
 <translation id="2445311670906052406">Chrome tani i ndan skedat e tua të fundit me pajisjen tënde. Do t'i shohësh ato në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes. Mund ta çaktivizosh këtë në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="245322989586167203">Sajtet lidhen zakonisht me portat seriale për veçoritë e transferimit të të dhënave, si p.sh. konfigurimin e rrjetit tënd</translation>
@@ -193,7 +191,6 @@
 <translation id="3123473560110926937">Bllokuar në disa sajte</translation>
 <translation id="3132996321662585180">Rifresko çdo ditë</translation>
 <translation id="3143754809889689516">Luaj nga fillimi</translation>
-<translation id="3162899666601560689">Sajtet mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve</translation>
 <translation id="3165022941318558018">Lejo që një sajt të përdorë kukit e palëve të treta</translation>
 <translation id="3167868116600277716">Furnizimi i "Zbulo"</translation>
 <translation id="3198916472715691905">Të dhënat e ruajtura <ph name="STORAGE_AMOUNT" /></translation>
@@ -262,8 +259,6 @@
 <translation id="3895926599014793903">Aktivizo me detyrim zmadhimin</translation>
 <translation id="3903738175795615004">Zvarrit nga kreu ose shtyp tastin Esc për të dalë nga ekrani i plotë.</translation>
 <translation id="3905475044299942653">Ndalo shumë njoftime</translation>
-<translation id="3908288065506437185">Blloko kukit e palëve të treta në "Modalitetin 'e fshehtë'"</translation>
-<translation id="3918378745482005425">Disa veçori mund të mos funksionojnë. Sajtet e lidhura mund të përdorin përsëri kukit e palëve të treta.</translation>
 <translation id="3922092564198021702">Në telefon, hap "Cilësimet"</translation>
 <translation id="3933121352599513978">Palos kërkesat e padëshiruara (rekomandohet)</translation>
 <translation id="3955193568934677022">Lejo që sajtet të luajnë përmbajtje të mbrojtur (rekomandohet)</translation>
@@ -320,7 +315,6 @@
 <translation id="4566417217121906555">Çaktivizo mikrofonin</translation>
 <translation id="4570913071927164677">Detajet</translation>
 <translation id="4578289292431526768">Fillojmë</translation>
-<translation id="4598549027014564149">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, as edhe në sajtet e ngjashme. Aktiviteti yt i shfletimit nuk përdoret për gjëra të tilla si p.sh. personalizimi i reklamave. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="461356340001513807">Të lejon që të identifikohesh në uebsajte duke përdorur llogarinë që ke me një shërbim identiteti</translation>
 <translation id="4635969503923889910">Mos lejo që sajtet të përdorin pajisjet me NFC</translation>
 <translation id="4644713492825682049">Fshi dhe rivendos</translation>
@@ -398,7 +392,6 @@
 <translation id="5515432237048785579">Fleta e poshtme e furnizimit të "Zbulo" u hap në lartësi të plotë</translation>
 <translation id="5516455585884385570">Hap cilësimet e njoftimeve</translation>
 <translation id="5527111080432883924">Pyet përpara se të lejosh sajtet të lexojnë tekstin dhe imazhet nga kujtesa e fragmenteve (rekomandohet)</translation>
-<translation id="5545693483061321551">Sajtet nuk mund të përdorin kukit e tua për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, p.sh. për të personalizuar reklamat. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="5553374991681107062">Më të fundit</translation>
 <translation id="5555115555607204100">Mos i shpejto sajtet me motorin V8 të Chrome, por bëje Chrome pak më rezistent ndaj sulmeve</translation>
 <translation id="5556459405103347317">Ringarko</translation>
@@ -415,7 +408,6 @@
 <translation id="5700761515355162635">Kukit e palëve të treta lejohen</translation>
 <translation id="5706552988683188916">Kjo fshin kukit dhe të dhënat e tjera të sajtit për <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Sajtet mund të shfaqin kërkesat për identifikimin nga shërbimet e identitetit</translation>
-<translation id="5723967018671998714">Kukit e palëve të treta janë bllokuar në modalitetin "i fshehtë"</translation>
 <translation id="5740126560802162366">Sajtet mund të ruajnë të dhëna në pajisjen tënde</translation>
 <translation id="5743425052258407233">Merr historikun tënd në të gjitha pajisjet e tua, në mënyrë që të mund të vazhdosh me lehtësi aty ku e ke lënë</translation>
 <translation id="5749158352074143502">Vazhdo me këtë skedë</translation>
@@ -594,7 +586,6 @@
 <translation id="7881140103901777395">Chrome e kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta. Por kukit e palëve të treta lejohen në këtë sajt sepse ai mbështetet tek ato për të ofruar shërbimet bazë.\n\nVizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar qasjen te kukit e palëve të treta<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Lejo tingullin për një sajt specifik.</translation>
 <translation id="7891547341794213004">Fshi kartën "Vazhdo me këtë skedë"</translation>
-<translation id="789180354981963912">Blloko kukit e palëve të treta në modalitetin "e fshehtë"</translation>
 <translation id="789722939441020330">Mos lejo që sajtet të shkarkojnë automatikisht disa skedarë</translation>
 <translation id="7940722705963108451">Më kujto</translation>
 <translation id="7948081750384205628">Mëso më shumë për <ph name="SETTING_TITLE" /></translation>

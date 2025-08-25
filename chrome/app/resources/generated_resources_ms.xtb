@@ -1567,6 +1567,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2059913712424898428">Zon waktu</translation>
 <translation id="2060375639911876205">Alih keluar profil eSIM</translation>
 <translation id="2061366302742593739">Tiada apa-apa untuk ditunjukkan</translation>
+<translation id="2061589908388230480">Jika Chromium mendapati satu daripada kata laluan anda dalam pelanggaran data umum, Google Password Manager boleh mencadangkan untuk menukar kata laluan sekiranya anda telah log masuk. <ph name="BEGIN_LINK" />Maklumat lanjut tentang penukaran kata laluan automatik<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">Gunakan web tanpa menyimpan sejarah penyemakan imbas anda menggunakan tetingkap Inkognito</translation>
 <translation id="206308717637808771">Padamkan data apabila anda menutup semua tetingkap. Data dikendalikan sama seperti laman yang sedang anda lihat</translation>
 <translation id="2065405795449409761">Chrome sedang dikawal oleh perisian ujian automatik.</translation>
@@ -2467,6 +2468,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2669241540496514785">Tidak dapat membuka <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Sesiapa sahaja yang menggunakan peranti ini dapat melihat fail yang dimuat turun</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> berkongsi tab Chrome.</translation>
+<translation id="2670168377011445813">Jika Chrome mendapati satu daripada kata laluan anda dalam pelanggaran data umum, Google Password Manager boleh mencadangkan untuk menukar kata laluan sekiranya anda telah log masuk. <ph name="BEGIN_LINK" />Maklumat lanjut tentang penukaran kata laluan automatik<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">Animasi yang dikurangkan</translation>
 <translation id="2670403088701171361">Jangan benarkan laman melihat teks atau imej pada papan keratan anda</translation>
 <translation id="2671423594960767771">Kongsi kumpulan</translation>
@@ -3306,7 +3308,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3269175001434213183">Hidupkan penyegerakan untuk menyandarkan bahan anda dan menggunakan bahan itu pada mana-mana peranti</translation>
 <translation id="3269612321104318480">Hijau kebiruan muda dan putih</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fail}other{# fail}}</translation>
-<translation id="326999365752735949">Memuat turun beza</translation>
 <translation id="3270965368676314374">Baca, ubah dan padam foto, muzik dan media lain daripada komputer anda</translation>
 <translation id="3275464924531706548">Runtuhkan <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Kunci keselamatan dalaman tidak selamat pada masa ini. Sila alih keluar kunci tersebut daripada mana-mana perkhidmatan yang menggunakan kunci itu. Untuk menyelesaikan isu ini, sila tetapkan semula kunci keselamatan.</translation>
@@ -3563,6 +3564,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3450056559545492516">Tunjukkan pemberitahuan sistem tentang ciri Chrome dan petua</translation>
 <translation id="3450157232394774192">Peratusan Penggunaan Keadaan Melahu</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> menghendaki anda menyambung kepada Wi-Fi sekarang dan memuat turun kemaskinian.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Anda berkongsi tab ini dengan Gemini</translation>
 <translation id="345078987193237421">Tindakan ini membenarkan akses kamera untuk apl, laman web dengan kebenaran kamera dan perkhidmatan sistem</translation>
 <translation id="3451362021220965191">Apl Web Terpencil mengawal pembaca kad pintar untuk memperoleh akses kepada kad pintar yang dimasukkan atau ditunjukkan kepada mereka. Lazimnya, kad pintar mengandungi identiti yang digunakan untuk mengesahkan atau mengizinkan operasi, log kepada perkhidmatan dll.</translation>
 <translation id="3452999110156026232">Akses Ibu Bapa</translation>
@@ -7389,6 +7391,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6151128161396960693">Pastikan anda mempercayai orang yang menghantar undangan ini</translation>
 <translation id="6151771661215463137">Fail ini telah pun wujud dalam folder muat turun anda.</translation>
 <translation id="6152918902620844577">Menunggu operasi seterusnya</translation>
+<translation id="6152929108650354050">Anda berkongsi tab ini dengan Gemini</translation>
 <translation id="6153439704237222699">Ketahui lebih lanjut mengenai Do Not Track</translation>
 <translation id="6154240335466762404">Alih keluar semua port</translation>
 <translation id="615436196126345398">Protokol</translation>
@@ -9799,7 +9802,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7842692330619197998">Lawati g.co/ChromeEnterpriseAccount jika anda perlu membuat akaun baharu.</translation>
 <translation id="784273751836026224">Nyahpasang Linux</translation>
 <translation id="784475655832336580">Serlahkan item dengan fokus papan kekunci tidak tersedia apabila ChromeVox dihidupkan</translation>
-<translation id="7844992432319478437">Mengemaskini beza</translation>
 <translation id="7846161022626028328">Terdapat ralat. Cuba lagi.</translation>
 <translation id="7846296061357476882">Perkhidmatan Google</translation>
 <translation id="7846634333498149051">Papan kekunci</translation>

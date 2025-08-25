@@ -8,7 +8,6 @@ Advanced Protection controls these Chrome settings:
 • 'JavaScript optimiser' is off. <ph name="BEGIN_LINK2" />Manage site exceptions<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Open Online</translation>
 <translation id="1036348656032585052">Turn off</translation>
-<translation id="1044891598689252897">Sites will work normally</translation>
 <translation id="1070329623210597193">Files this site can view or edit</translation>
 <translation id="1073417869336441572">Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">You can ask to see the desktop version of sites</translation>
@@ -128,7 +127,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="2433507940547922241">Appearance</translation>
 <translation id="2434158240863470628">Download complete <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Features on some sites may not work in Incognito mode</translation>
 <translation id="2442870161001914531">Always request desktop site</translation>
 <translation id="2445311670906052406">Chrome now shares your recent tabs with your device. You'll see them in your device's app list and search results. You can turn this off at any time in Chrome settings.</translation>
 <translation id="245322989586167203">Sites usually connect to serial ports for data transfer features, like setting up your network</translation>
@@ -193,7 +191,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="3123473560110926937">Blocked on some sites</translation>
 <translation id="3132996321662585180">Refresh daily</translation>
 <translation id="3143754809889689516">Play from the beginning</translation>
-<translation id="3162899666601560689">Sites can use cookies to improve your browsing experience, for example to keep you signed in or to remember items in your shopping basket</translation>
 <translation id="3165022941318558018">Allow a site to use third-party cookies</translation>
 <translation id="3167868116600277716">Discover feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> stored data</translation>
@@ -262,8 +259,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="3895926599014793903">Force enable zoom</translation>
 <translation id="3903738175795615004">Drag from top or press Esc key to exit full screen.</translation>
 <translation id="3905475044299942653">Stop lots of notifications</translation>
-<translation id="3908288065506437185">Block third-party cookies in Incognito mode</translation>
-<translation id="3918378745482005425">Some features may not work. Related sites can still use third-party cookies.</translation>
 <translation id="3922092564198021702">On your phone, open Settings</translation>
 <translation id="3933121352599513978">Collapse unwanted requests (recommended)</translation>
 <translation id="3955193568934677022">Allow sites to play protected content (recommended)</translation>
@@ -320,7 +315,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="4566417217121906555">Mute microphone</translation>
 <translation id="4570913071927164677">Details</translation>
 <translation id="4578289292431526768">Let’s go</translation>
-<translation id="4598549027014564149">While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalising ads. Features on some sites may not work.</translation>
 <translation id="461356340001513807">Lets you sign in to websites using the account that you have with an identity service</translation>
 <translation id="4635969503923889910">Don't allow sites to use NFC devices</translation>
 <translation id="4644713492825682049">Delete and reset</translation>
@@ -398,7 +392,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="5515432237048785579">Discover feed bottom sheet opened at full height</translation>
 <translation id="5516455585884385570">Open notification settings</translation>
 <translation id="5527111080432883924">Ask before allowing sites to read text and images from the clipboard (recommended)</translation>
-<translation id="5545693483061321551">Sites can't use your cookies to see your browsing activity across different sites, for example, to personalise ads. Features on some sites may not work.</translation>
 <translation id="5553374991681107062">Latest</translation>
 <translation id="5555115555607204100">Do not speed up sites with Chrome's V8 engine but make Chrome slightly more resistant to attacks</translation>
 <translation id="5556459405103347317">Reload</translation>
@@ -415,7 +408,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="5700761515355162635">Third-party cookies allowed</translation>
 <translation id="5706552988683188916">This deletes cookies and other site data for <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Sites can show sign-in prompts from identity services</translation>
-<translation id="5723967018671998714">Third-party cookies are blocked in Incognito mode</translation>
 <translation id="5740126560802162366">Sites can save data on your device</translation>
 <translation id="5743425052258407233">Get your history on all your devices, so that you can easily pick up where you left off</translation>
 <translation id="5749158352074143502">Continue with this tab</translation>
@@ -594,7 +586,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="7881140103901777395">Chrome limits most sites from using third-party cookies. However, third-party cookies are allowed on this site because it relies on them to provide basic services.\n\nVisit settings to <ph name="BEGIN_LINK" />manage access to third-party cookies<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Allow sound for a specific site.</translation>
 <translation id="7891547341794213004">Hide continue with this tab card</translation>
-<translation id="789180354981963912">Block third-party cookies in Incognito:</translation>
 <translation id="789722939441020330">Don't allow sites to automatically download multiple files</translation>
 <translation id="7940722705963108451">Remind me</translation>
 <translation id="7948081750384205628">Learn more about <ph name="SETTING_TITLE" /></translation>

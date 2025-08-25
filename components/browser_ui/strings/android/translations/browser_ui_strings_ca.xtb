@@ -8,7 +8,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 • L'opció Optimitzador de JavaScript està desactivada. <ph name="BEGIN_LINK2" />Gestiona les excepcions de llocs web<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Obre en línia</translation>
 <translation id="1036348656032585052">Desactiva</translation>
-<translation id="1044891598689252897">Els llocs web funcionaran amb normalitat</translation>
 <translation id="1070329623210597193">Fitxers que aquest lloc web pot visualitzar o editar</translation>
 <translation id="1073417869336441572">Ajuda'ns a millorar Chrome explicant-nos per què has permès les galetes de tercers. <ph name="BEGIN_LINK" />Envia suggeriments<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Pots sol·licitar que es mostri la versió per a ordinadors dels llocs web</translation>
@@ -128,7 +127,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="2433507940547922241">Aparença</translation>
 <translation id="2434158240863470628">S'ha completat la baixada <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Has permès temporalment que aquest lloc web utilitzi galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista. <ph name="BEGIN_LINK" />Envia suggeriments<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">És possible que les funcions d'alguns llocs web no funcionin en mode d'incògnit</translation>
 <translation id="2442870161001914531">Sol·licita sempre el lloc web per a ordinadors</translation>
 <translation id="2445311670906052406">Ara Chrome comparteix les teves pestanyes recents amb el teu dispositiu. Les veuràs als resultats de la cerca i a la llista d'aplicacions del dispositiu. Pots desactivar aquesta opció en qualsevol moment des de la configuració de Chrome.</translation>
 <translation id="245322989586167203">Els llocs web solen connectar-se a ports en sèrie per a funcions de transferència de dades, com ara configurar la teva xarxa</translation>
@@ -193,7 +191,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="3123473560110926937">Bloquejat en alguns llocs web</translation>
 <translation id="3132996321662585180">Actualitza diàriament</translation>
 <translation id="3143754809889689516">Reprodueix des del principi</translation>
-<translation id="3162899666601560689">Els llocs web poden fer servir galetes per millorar la teva experiència de navegació, per exemple, per mantenir la teva sessió iniciada o per recordar els elements que tens al carretó electrònic</translation>
 <translation id="3165022941318558018">Permet que un lloc web utilitzi galetes de tercers</translation>
 <translation id="3167868116600277716">Feed de Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de dades desades</translation>
@@ -262,8 +259,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="3895926599014793903">Força l'activació del zoom</translation>
 <translation id="3903738175795615004">Arrossega des de la part superior o prem la tecla Esc per sortir de la pantalla completa.</translation>
 <translation id="3905475044299942653">Atura l'enviament de moltes notificacions</translation>
-<translation id="3908288065506437185">Bloqueja les galetes de tercers en mode d'incògnit</translation>
-<translation id="3918378745482005425">És possible que algunes funcions no estiguin operatives. Els llocs web relacionats podran continuar utilitzant galetes de tercers.</translation>
 <translation id="3922092564198021702">Al telèfon, obre Configuració</translation>
 <translation id="3933121352599513978">Replega les sol·licituds no desitjades (opció recomanada)</translation>
 <translation id="3955193568934677022">Permet que els llocs web reprodueixin contingut protegit (opció recomanada)</translation>
@@ -320,7 +315,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="4566417217121906555">Silencia el micròfon</translation>
 <translation id="4570913071927164677">Detalls</translation>
 <translation id="4578289292431526768">Som-hi</translation>
-<translation id="4598549027014564149">En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva activitat de navegació en llocs web, ni tan sols en llocs web relacionats. La teva activitat de navegació no s'utilitza per a coses com ara personalitzar anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="461356340001513807">Et permet iniciar la sessió en llocs web amb un servei d'identitat utilitzant el compte que ja tens</translation>
 <translation id="4635969503923889910">No permetis que els llocs web utilitzin dispositius amb NFC</translation>
 <translation id="4644713492825682049">Suprimeix les dades i restableix els permisos</translation>
@@ -398,7 +392,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="5515432237048785579">Full inferior del feed de Discover obert a alçada completa</translation>
 <translation id="5516455585884385570">Obre la configuració de notificacions</translation>
 <translation id="5527111080432883924">Pregunta abans de permetre que els llocs web llegeixin el text i les imatges del porta-retalls (opció recomanada)</translation>
-<translation id="5545693483061321551">Els llocs web no poden fer servir les teves galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="5553374991681107062">Més recents</translation>
 <translation id="5555115555607204100">No agilitza els llocs web amb el motor V8 de Chrome, però fa que Chrome sigui una mica més resistent als atacs</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
@@ -415,7 +408,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="5700761515355162635">Galetes de tercers permeses</translation>
 <translation id="5706552988683188916">Aquesta acció suprimeix les galetes i altres dades de llocs web per a <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Els llocs web poden mostrar sol·licituds d'inici de sessió procedents de serveis d'identitat</translation>
-<translation id="5723967018671998714">Les galetes de tercers estan bloquejades en mode d'incògnit</translation>
 <translation id="5740126560802162366">Els llocs web poden desar dades al teu dispositiu</translation>
 <translation id="5743425052258407233">Obtén l'historial en tots els teus dispositius perquè puguis continuar fàcilment des d'on ho vas deixar</translation>
 <translation id="5749158352074143502">Continua amb aquesta pestanya</translation>
@@ -594,7 +586,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="7881140103901777395">Chrome limita la majoria de llocs web perquè no utilitzin galetes de tercers. Tanmateix, les galetes de tercers es permeten en aquest lloc web perquè en depèn per proporcionar serveis bàsics.\n\nVes a la configuració per <ph name="BEGIN_LINK" />gestionar l'accés a les galetes de tercers<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permet el so d'un lloc web concret.</translation>
 <translation id="7891547341794213004">Amaga la targeta Continua amb aquesta pestanya</translation>
-<translation id="789180354981963912">Bloqueja les galetes de tercers en mode d'incògnit:</translation>
 <translation id="789722939441020330">No permetis que els llocs web baixin automàticament diversos fitxers</translation>
 <translation id="7940722705963108451">Recorda-m'ho</translation>
 <translation id="7948081750384205628">Més informació sobre <ph name="SETTING_TITLE" /></translation>

@@ -8,7 +8,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 • Opcja „Optymalizator JavaScriptu” jest wyłączona. <ph name="BEGIN_LINK2" />Zarządzaj wyjątkami dotyczącymi witryny<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Otwórz online</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
-<translation id="1044891598689252897">Strony będą działać normalnie</translation>
 <translation id="1070329623210597193">Pliki, które ta witryna może wyświetlać lub edytować</translation>
 <translation id="1073417869336441572">Pomóż nam ulepszyć Chrome, informując nas, dlaczego zezwalasz na pliki cookie innych firm. <ph name="BEGIN_LINK" />Prześlij opinię<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Możesz poprosić o wyświetlenie witryn w wersji na komputer</translation>
@@ -128,7 +127,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="2433507940547922241">Wygląd</translation>
 <translation id="2434158240863470628">Ukończono pobieranie <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Tymczasowo zezwalasz tej witrynie na używanie plików cookie innych firm. Oznacza to słabszą ochronę przeglądania, ale jest większa szansa na to, że funkcje witryny będą działać zgodnie z oczekiwaniami. <ph name="BEGIN_LINK" />Prześlij opinię<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">W niektórych witrynach funkcje mogą nie działać w trybie incognito</translation>
 <translation id="2442870161001914531">Zawsze żądaj strony na komputery</translation>
 <translation id="2445311670906052406">Chrome udostępnia teraz ostatnie karty Twojemu urządzeniu. Zobaczysz je na liście aplikacji na urządzeniu i w wynikach wyszukiwania. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
 <translation id="245322989586167203">Strony zwykle łączą się z portami szeregowymi w celu obsługi funkcji związanych z przesyłaniem danych, na przykład aby skonfigurować sieć</translation>
@@ -193,7 +191,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3123473560110926937">Blokowane na niektórych stronach</translation>
 <translation id="3132996321662585180">Odświeżaj codziennie</translation>
 <translation id="3143754809889689516">Odtwórz od początku</translation>
-<translation id="3162899666601560689">Witryny mogą używać plików cookie dla Twojej wygody, by na przykład zapamiętać Twoje logowanie lub zawartość koszyka</translation>
 <translation id="3165022941318558018">Zezwól witrynie na używanie plików cookie innych firm</translation>
 <translation id="3167868116600277716">Karty Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> zapisanych danych</translation>
@@ -262,8 +259,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3895926599014793903">Wymuś powiększenie</translation>
 <translation id="3903738175795615004">Aby zamknąć pełny ekran, przeciągnij od góry lub naciśnij klawisz Esc.</translation>
 <translation id="3905475044299942653">Zatrzymaj wiele powiadomień</translation>
-<translation id="3908288065506437185">Blokuj pliki cookie innych firm w trybie incognito</translation>
-<translation id="3918378745482005425">Niektóre funkcje mogą nie działać prawidłowo. Powiązane witryny mogą nadal używać plików cookie innych firm.</translation>
 <translation id="3922092564198021702">Na telefonie otwórz Ustawienia.</translation>
 <translation id="3933121352599513978">Zwiń niechciane żądania (zalecane)</translation>
 <translation id="3955193568934677022">Zezwalaj stronom na odtwarzanie treści chronionej (zalecane)</translation>
@@ -320,7 +315,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="4566417217121906555">Wycisz mikrofon</translation>
 <translation id="4570913071927164677">Szczegóły</translation>
 <translation id="4578289292431526768">Rozpocznij</translation>
-<translation id="4598549027014564149">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem innych witryn, nawet powiązanych. Twoja aktywność związana z przeglądaniem nie służy do personalizowania reklam. Funkcje w niektórych witrynach mogą nie działać.</translation>
 <translation id="461356340001513807">Umożliwia logowanie się w witrynach za pomocą Twojego konta w usłudze tożsamości</translation>
 <translation id="4635969503923889910">Nie zezwalaj stronom na używanie urządzeń NFC</translation>
 <translation id="4644713492825682049">Usuń i zresetuj</translation>
@@ -398,7 +392,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="5515432237048785579">Plansza dolna karty Discover otwarta na całą wysokość</translation>
 <translation id="5516455585884385570">Otwórz ustawienia powiadomień</translation>
 <translation id="5527111080432883924">Pytaj, czy zezwolić stronom na odczytywanie tekstu i obrazów ze schowka (zalecane)</translation>
-<translation id="5545693483061321551">Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam. W niektórych witrynach mogą nie działać funkcje.</translation>
 <translation id="5553374991681107062">Najnowsze</translation>
 <translation id="5555115555607204100">Działanie witryn nie będzie przyspieszane za pomocą mechanizmu V8 w przeglądarce Chrome, ale będzie ona trochę bardziej odporna na ataki</translation>
 <translation id="5556459405103347317">Odśwież</translation>
@@ -415,7 +408,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="5700761515355162635">Pliki cookie innych firm są dozwolone</translation>
 <translation id="5706552988683188916">Spowoduje to usunięcie plików cookie i innych danych witryny <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Witryny mogą wyświetlać prośby o zalogowanie się pochodzące od usług tożsamości</translation>
-<translation id="5723967018671998714">Pliki cookie innych firm są blokowane w trybie incognito</translation>
 <translation id="5740126560802162366">Witryny mogą zapisywać dane na Twoim urządzeniu</translation>
 <translation id="5743425052258407233">Zyskaj dostęp do swojej historii na wszystkich urządzeniach, aby móc łatwo wznawiać przeglądanie od ostatniego miejsca</translation>
 <translation id="5749158352074143502">Kontynuuj na tej karcie</translation>
@@ -594,7 +586,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="7881140103901777395">Chrome ogranicza większości witryn możliwość używania plików cookie innych firm. Takie pliki są jednak dozwolone w tej witrynie, ponieważ są w niej niezbędne do świadczenia podstawowych usług.\n\nAby <ph name="BEGIN_LINK" />zarządzać dostępem do plików cookie innych firm<ph name="END_LINK" />, otwórz ustawienia.</translation>
 <translation id="7882806643839505685">Zezwalaj na dźwięk na określonej stronie.</translation>
 <translation id="7891547341794213004">Ukryj kartę Kontynuuj na tej karcie</translation>
-<translation id="789180354981963912">Blokuj pliki cookie innych firm w trybie incognito:</translation>
 <translation id="789722939441020330">Nie zezwalaj witrynom na automatyczne pobieranie wielu plików</translation>
 <translation id="7940722705963108451">Przypomnij mi</translation>
 <translation id="7948081750384205628">Dowiedz się więcej o ustawieniu <ph name="SETTING_TITLE" /></translation>

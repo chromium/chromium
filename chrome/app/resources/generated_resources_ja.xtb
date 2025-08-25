@@ -3285,7 +3285,6 @@
 <translation id="3269175001434213183">他のデバイスで使用できるように同期をオンにしてデータをバックアップ</translation>
 <translation id="3269612321104318480">明るい青緑と白</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
-<translation id="326999365752735949">差分のダウンロード中</translation>
 <translation id="3270965368676314374">パソコンからの写真、音楽、その他のメディアの読み取り、変更、削除</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> を折りたたむ</translation>
 <translation id="3275778809241512831">ご使用の内部セキュリティ キーは現在、安全ではありません。このキーを使用しているすべてのサービスからキーを削除してください。この問題を解決するには、セキュリティ キーをリセットしてください。</translation>
@@ -9767,7 +9766,6 @@
 <translation id="7842692330619197998">新しいアカウントを作成するには、g.co/ChromeEnterpriseAccount にアクセスします。</translation>
 <translation id="784273751836026224">Linux のアンインストール</translation>
 <translation id="784475655832336580">ChromeVox が有効になっている場合、キーボード フォーカスがある項目をハイライト表示することはできません</translation>
-<translation id="7844992432319478437">差分の更新中</translation>
 <translation id="7846161022626028328">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="7846296061357476882">Google のサービス</translation>
 <translation id="7846634333498149051">キーボード</translation>

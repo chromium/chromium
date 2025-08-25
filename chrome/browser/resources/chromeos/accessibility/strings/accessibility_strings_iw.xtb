@@ -1033,7 +1033,7 @@
 <translation id="7731002461127710752">.input {$$COUNT :number} .match $$COUNT 1{{backtick}} *{{{$$COUNT} backticks}}</translation>
 <translation id="7731785449856576010">אין עוד ווידג'טים של מדיה</translation>
 <translation id="7735498529470878067">בעזרת 'גילוי באמצעות מגע', קל להבין במהירות מה מוצג במסך.</translation>
-<translation id="773906353055481349">‏כדי לנווט לפי תא, יש להקיש על Search+Ctrl+Alt ביחד עם מקשי החיצים</translation>
+<translation id="773906353055481349">‏כדי לעבור בין התאים בטבלה, אפשר ללחוץ על Search+Ctrl+Alt יחד עם אחד ממקשי החיצים</translation>
 <translation id="7746976083433980639"><ph name="ACTION" /> עד <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">ההורדה של <ph name="FILE_NAME" /> התחילה</translation>
 <translation id="7768784765476638775">הקראה</translation>

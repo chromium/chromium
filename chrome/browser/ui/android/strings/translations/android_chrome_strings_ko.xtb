@@ -1257,6 +1257,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="679956319013005046">자동 완성에 사용할 기본 서비스를 설정하려면 먼저 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 서비스를 추가하세요.</translation>
 <translation id="6802555630140434547">창이 닫힙니다.</translation>
 <translation id="6803791793483522764">알림 검토</translation>
+<translation id="6809470175540814047">시크릿 창으로 열기</translation>
 <translation id="6811034713472274749">페이지를 볼 수 있음</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{이미지, 목록에 있는 이미지 1개}other{이미지, 목록에 있는 이미지 #개}}</translation>
 <translation id="6813446258015311409">Chrome에 로그인, 계정 선택 도구가 열렸습니다.</translation>

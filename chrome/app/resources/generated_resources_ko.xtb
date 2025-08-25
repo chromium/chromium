@@ -3308,7 +3308,6 @@
 <translation id="3269175001434213183">콘텐츠를 백업하고 어느 기기에서나 사용하려면 동기화를 사용 설정하세요</translation>
 <translation id="3269612321104318480">연한 청록색 및 흰색</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{파일}other{파일 #개}}</translation>
-<translation id="326999365752735949">diff 다운로드 중</translation>
 <translation id="3270965368676314374">컴퓨터에서 사진, 음악, 기타 미디어 조회, 변경, 삭제</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> 접기</translation>
 <translation id="3275778809241512831">현재 내부 보안 키가 안전하지 않습니다. 키를 사용한 모든 서비스에서 키를 삭제하세요. 문제를 해결하려면 보안 키를 재설정하시기 바랍니다.</translation>
@@ -9799,7 +9798,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7842692330619197998">새 계정을 만들려면 g.co/ChromeEnterpriseAccount를 방문하세요.</translation>
 <translation id="784273751836026224">Linux 제거</translation>
 <translation id="784475655832336580">ChromeVox가 사용 설정된 경우 키보드 포커스로 항목을 강조 표시할 수 없음</translation>
-<translation id="7844992432319478437">diff 업데이트 중</translation>
 <translation id="7846161022626028328">오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="7846296061357476882">Google 서비스</translation>
 <translation id="7846634333498149051">키보드</translation>

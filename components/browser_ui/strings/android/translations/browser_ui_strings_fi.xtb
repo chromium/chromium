@@ -8,7 +8,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 • JavaScript-optimoija on pois päältä. <ph name="BEGIN_LINK2" />Muokkaa sivustoja koskevia poikkeuksia<ph name="END_LINK2" />.</translation>
 <translation id="1006017844123154345">Avaa verkkoversio</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
-<translation id="1044891598689252897">Sivustot toimivat normaalisti</translation>
 <translation id="1070329623210597193">Tiedostot, jotka sivusto voi katsella tai muokata</translation>
 <translation id="1073417869336441572">Auta meitä parantamaan Chromea kertomalla, miksi sallit kolmannen osapuolen evästeet. <ph name="BEGIN_LINK" />Lähetä palautetta<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Voit pyytää sivustojen tietokoneversiota</translation>
@@ -128,7 +127,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="2433507940547922241">Ulkoasu</translation>
 <translation id="2434158240863470628">Lataus valmis <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Olet väliaikaisesti sallinut tämän sivuston käyttää kolmannen osapuolen evästeitä. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein. <ph name="BEGIN_LINK" />Lähetä palautetta<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi incognito-tilassa</translation>
 <translation id="2442870161001914531">Pyydä aina tietokonesivustoa</translation>
 <translation id="2445311670906052406">Chrome jakaa nyt viimeaikaiset välilehdet laitteelle. Näet ne laitteen sovelluslistasta ja hakutuloksista. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="245322989586167203">Sivustot yhdistävät yleensä sarjaportteihin datansiirto-ominaisuuksia, esimerkiksi verkon luomista, varten</translation>
@@ -193,7 +191,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3123473560110926937">Estetty tietyillä sivustoilla</translation>
 <translation id="3132996321662585180">Päivitä päivittäin</translation>
 <translation id="3143754809889689516">Toista alusta</translation>
-<translation id="3162899666601560689">Sivustot voivat käyttää evästeitä selauskokemuksesi parantamiseen, esimerkiksi pitää sinut kirjautuneena tai muistaa ostoskorisi sisällön</translation>
 <translation id="3165022941318558018">Salli sivuston käyttää kolmannen osapuolen evästeitä</translation>
 <translation id="3167868116600277716">Discover-fiidi</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> tallennettua tietoa</translation>
@@ -262,8 +259,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3895926599014793903">Ota zoomaus käyttöön</translation>
 <translation id="3903738175795615004">Poistu koko näytön tilasta vetämällä näytön yläreunasta tai painamalla Esc-näppäintä.</translation>
 <translation id="3905475044299942653">Estä useat ilmoitukset</translation>
-<translation id="3908288065506437185">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
-<translation id="3918378745482005425">Kaikki ominaisuudet eivät välttämättä toimi. Aiheeseen liittyvät sivustot voivat edelleen käyttää kolmannen osapuolen evästeitä.</translation>
 <translation id="3922092564198021702">Avaa puhelimella Asetukset</translation>
 <translation id="3933121352599513978">Tiivistä ei-toivotut pyynnöt (suositus)</translation>
 <translation id="3955193568934677022">Salli sivustojen toistaa suojattua sisältöä (suositus)</translation>
@@ -320,7 +315,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4566417217121906555">Mykistä mikrofoni</translation>
 <translation id="4570913071927164677">Tiedot</translation>
 <translation id="4578289292431526768">Aloitetaan</translation>
-<translation id="4598549027014564149">Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta – eivät edes aiheeseen liittyvillä sivustoilla. Selaustoimintaasi ei käytetä mainosten personointiin tai muuhun vastaavaan. Joidenkin sivustojen ominaisuudet eivät välttämättä toimi.</translation>
 <translation id="461356340001513807">Sallii sinun kirjautua verkkosivustoille identiteettipalvelun tilillä</translation>
 <translation id="4635969503923889910">Älä salli sivustojen käyttää NFC-laitteita</translation>
 <translation id="4644713492825682049">Poista ja nollaa luvat</translation>
@@ -398,7 +392,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5515432237048785579">Discover-fiidin alapaneeli avattu koko näytölle</translation>
 <translation id="5516455585884385570">Avaa ilmoitusasetukset</translation>
 <translation id="5527111080432883924">Pyydä lupaa, kun sivustot yrittävät lukea tekstiä ja kuvia leikepöydältä (suositus)</translation>
-<translation id="5545693483061321551">Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. personoidakseen mainoksia. Joidenkin sivustojen ominaisuudet eivät välttämättä toimi.</translation>
 <translation id="5553374991681107062">Uusimmat</translation>
 <translation id="5555115555607204100">Älä nopeuta sivustoja Chromen V8-moottorilla, mutta paranna Chromen suojaa hyökkäyksiä vastaan hieman</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
@@ -415,7 +408,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5700761515355162635">Kolmannen osapuolen evästeet sallittu</translation>
 <translation id="5706552988683188916">Tämä poistaa evästeet ja muun sivustodatan täällä: <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Sivustot voivat näyttää henkilöllisyyspalveluiden sisäänkirjautumiskehotteita</translation>
-<translation id="5723967018671998714">Kolmannen osapuolen evästeet estetään incognito-tilassa</translation>
 <translation id="5740126560802162366">Sivustot voivat tallentaa dataa laitteellesi</translation>
 <translation id="5743425052258407233">Historia löytyy kaikilta laitteilta, joten voit helposti jatkaa siitä, mihin jäit</translation>
 <translation id="5749158352074143502">Jatka tällä välilehdellä</translation>
@@ -594,7 +586,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7881140103901777395">Chrome rajoittaa useimpien sivustojen kolmannen osapuolen evästeiden käyttöä. Kolmannen osapuolen evästeet on kuitenkin sallittu tällä sivustolla, koska se tarvitsee niitä peruspalvelujen tarjoamiseen.\n\nVoit <ph name="BEGIN_LINK" />muuttaa kolmannen osapuolen evästeisiin pääsyä<ph name="END_LINK" /> asetuksista.</translation>
 <translation id="7882806643839505685">Salli tietyn sivuston äänet.</translation>
 <translation id="7891547341794213004">Piilota "Jatka tällä välilehdellä" ‐kortti</translation>
-<translation id="789180354981963912">Estä kolmannen osapuolen evästeet incognito-tilassa:</translation>
 <translation id="789722939441020330">Älä salli sivustojen ladata automaattisesti useita tiedostoja</translation>
 <translation id="7940722705963108451">Muistuta minua</translation>
 <translation id="7948081750384205628">Lue lisää: <ph name="SETTING_TITLE" /></translation>

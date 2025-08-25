@@ -8,7 +8,6 @@
 • 關閉「JavaScript 最佳化工具」。<ph name="BEGIN_LINK2" />管理網站例外狀況<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">在網路上開啟</translation>
 <translation id="1036348656032585052">關閉</translation>
-<translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="1070329623210597193">這個網站可以查看或編輯的檔案</translation>
 <translation id="1073417869336441572">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome。<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">你可以要求查看電腦版網站</translation>
@@ -128,7 +127,6 @@
 <translation id="2433507940547922241">外觀</translation>
 <translation id="2434158240863470628">下載完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">你已暫時允許這個網站使用第三方 Cookie。換言之，網頁瀏覽防護的強度會降低，但網站功能正常運作的機率會提高。<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">在無痕模式下，某些網站的功能可能無法正常運作</translation>
 <translation id="2442870161001914531">一律要求電腦版網站</translation>
 <translation id="2445311670906052406">Chrome 現在會將最近開啟的分頁分享給裝置，這些資訊會顯示在裝置的應用程式清單和搜尋結果。你隨時可以前往 Chrome 設定頁面關閉這項功能。</translation>
 <translation id="245322989586167203">網站通常會連線至序列埠，以提供設定網路等資料移轉功能</translation>
@@ -193,7 +191,6 @@
 <translation id="3123473560110926937">在某些網站上設定封鎖</translation>
 <translation id="3132996321662585180">每天更新</translation>
 <translation id="3143754809889689516">從頭播放</translation>
-<translation id="3162899666601560689">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品</translation>
 <translation id="3165022941318558018">允許網站使用第三方 Cookie</translation>
 <translation id="3167868116600277716">「探索」動態消息</translation>
 <translation id="3198916472715691905">儲存了 <ph name="STORAGE_AMOUNT" /> 的資料</translation>
@@ -262,8 +259,6 @@
 <translation id="3895926599014793903">強制啟用縮放功能</translation>
 <translation id="3903738175795615004">從頂端向下拖曳或按下 Esc 鍵，即可退出全螢幕模式。</translation>
 <translation id="3905475044299942653">停止大量通知</translation>
-<translation id="3908288065506437185">在無痕模式中封鎖第三方 Cookie</translation>
-<translation id="3918378745482005425">某些功能可能無法運作，相關網站仍可使用第三方 Cookie。</translation>
 <translation id="3922092564198021702">在手機上開啟「設定」</translation>
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
@@ -320,7 +315,6 @@
 <translation id="4566417217121906555">將麥克風設為靜音</translation>
 <translation id="4570913071927164677">詳細資料</translation>
 <translation id="4578289292431526768">開始設定</translation>
-<translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解你的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="461356340001513807">讓你透過身分識別服務，使用自己的帳戶登入網站</translation>
 <translation id="4635969503923889910">不允許網站使用 NFC 裝置</translation>
 <translation id="4644713492825682049">刪除並重設</translation>
@@ -398,7 +392,6 @@
 <translation id="5515432237048785579">「探索」動態消息底部功能表已開啟，並顯示在整個畫面</translation>
 <translation id="5516455585884385570">開啟通知設定</translation>
 <translation id="5527111080432883924">允許網站讀取剪貼簿中的文字和圖片前，必須先詢問你 (建議)</translation>
-<translation id="5545693483061321551">網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="5553374991681107062">最新</translation>
 <translation id="5555115555607204100">不使用 Chrome 的 V8 引擎加快網站速度，但稍微提高 Chrome 防範攻擊的能力</translation>
 <translation id="5556459405103347317">重新載入</translation>
@@ -415,7 +408,6 @@
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5706552988683188916">如果這麼做，系統將刪除 <ph name="WEBSITE" /> 的 Cookie 及其他網站資料</translation>
 <translation id="571222594670061844">網站可以顯示身分識別服務的登入提示</translation>
-<translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5740126560802162366">網站可將資料儲存到裝置</translation>
 <translation id="5743425052258407233">在所有裝置上存取歷史記錄，輕鬆接續瀏覽進度</translation>
 <translation id="5749158352074143502">繼續使用這個分頁</translation>
@@ -594,7 +586,6 @@
 <translation id="7881140103901777395">Chrome 會限制大多數網站使用第三方 Cookie，但允許這個網站使用第三方 Cookie，因為這個網站需要使用 Cookie 才能提供基本服務。\n\n前往設定頁面<ph name="BEGIN_LINK" />管理第三方 Cookie 存取權<ph name="END_LINK" />。</translation>
 <translation id="7882806643839505685">允許特定網站播放音訊。</translation>
 <translation id="7891547341794213004">隱藏「繼續使用這個分頁」資訊卡</translation>
-<translation id="789180354981963912">在無痕模式中封鎖第三方 Cookie：</translation>
 <translation id="789722939441020330">禁止網站自動下載多個檔案</translation>
 <translation id="7940722705963108451">提醒我</translation>
 <translation id="7948081750384205628">進一步瞭解<ph name="SETTING_TITLE" /></translation>

@@ -8,7 +8,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 • "Pengoptimal JavaScript" nonaktif. <ph name="BEGIN_LINK2" />Kelola Pengecualian situs<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Buka versi Online</translation>
 <translation id="1036348656032585052">Nonaktifkan</translation>
-<translation id="1044891598689252897">Situs akan berfungsi secara normal</translation>
 <translation id="1070329623210597193">File yang dapat dilihat atau diedit oleh situs ini</translation>
 <translation id="1073417869336441572">Bantu kami meningkatkan Chrome dengan memberi tahu kami alasan Anda mengizinkan cookie pihak ketiga. <ph name="BEGIN_LINK" />Kirim masukan<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Anda dapat meminta untuk melihat situs versi desktop</translation>
@@ -128,7 +127,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="2433507940547922241">Tampilan</translation>
 <translation id="2434158240863470628">Download selesai <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Anda mengizinkan situs ini menggunakan cookie pihak ketiga untuk sementara. Dengan demikian, Anda mendapatkan lebih sedikit perlindungan terhadap penjelajahan, tetapi fitur situs cenderung berfungsi seperti yang diharapkan. <ph name="BEGIN_LINK" />Kirim masukan<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Fitur di beberapa situs mungkin tidak berfungsi dalam mode Samaran</translation>
 <translation id="2442870161001914531">Selalu minta situs desktop</translation>
 <translation id="2445311670906052406">Chrome kini membagikan tab terbaru ke perangkat Anda. Anda akan melihatnya di daftar aplikasi dan hasil penelusuran perangkat Anda. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="245322989586167203">Situs biasanya terhubung ke port serial untuk fitur transfer data, seperti penyiapan jaringan Anda</translation>
@@ -193,7 +191,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3123473560110926937">Diblokir di beberapa situs</translation>
 <translation id="3132996321662585180">Perbarui tiap hari</translation>
 <translation id="3143754809889689516">Putar dari awal</translation>
-<translation id="3162899666601560689">Situs dapat menggunakan cookie untuk menyempurnakan pengalaman penjelajahan Anda, misalnya untuk membuat Anda tetap login atau untuk mengingat item di keranjang belanja Anda</translation>
 <translation id="3165022941318558018">Izinkan situs menggunakan cookie pihak ketiga</translation>
 <translation id="3167868116600277716">Feed Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> data tersimpan</translation>
@@ -262,8 +259,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3895926599014793903">Aktifkan zoom secara paksa</translation>
 <translation id="3903738175795615004">Tarik dari atas atau tekan tombol Esc untuk keluar dari layar penuh.</translation>
 <translation id="3905475044299942653">Menghentikan banyak notifikasi</translation>
-<translation id="3908288065506437185">Blokir cookie pihak ketiga dalam mode Samaran</translation>
-<translation id="3918378745482005425">Beberapa fitur mungkin tidak berfungsi. Situs terkait masih dapat menggunakan cookie pihak ketiga.</translation>
 <translation id="3922092564198021702">Di ponsel Anda, buka Setelan</translation>
 <translation id="3933121352599513978">Ciutkan permintaan yang tidak diinginkan (direkomendasikan)</translation>
 <translation id="3955193568934677022">Izinkan situs memutar konten yang dilindungi (direkomendasikan)</translation>
@@ -320,7 +315,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="4566417217121906555">Nonaktifkan mikrofon</translation>
 <translation id="4570913071927164677">Detail</translation>
 <translation id="4578289292431526768">Mulai</translation>
-<translation id="4598549027014564149">Selama dalam mode Samaran, situs tidak dapat menggunakan cookie Anda untuk melihat aktivitas penjelajahan Anda di berbagai situs, bahkan situs yang terkait. Aktivitas penjelajahan Anda tidak digunakan untuk hal-hal seperti mempersonalisasi iklan. Fitur tertentu di beberapa situs mungkin tidak berfungsi.</translation>
 <translation id="461356340001513807">Memungkinkan Anda login ke situs menggunakan akun yang Anda miliki dengan layanan identitas</translation>
 <translation id="4635969503923889910">Jangan izinkan situs menggunakan perangkat NFC</translation>
 <translation id="4644713492825682049">Hapus &amp; reset</translation>
@@ -398,7 +392,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="5515432237048785579">Panel bawah feed Discover terbuka sepenuhnya</translation>
 <translation id="5516455585884385570">Buka setelan notifikasi</translation>
 <translation id="5527111080432883924">Tanya sebelum mengizinkan situs membaca teks dan gambar dari papan klip (disarankan)</translation>
-<translation id="5545693483061321551">Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan. Fitur tertentu di beberapa situs mungkin tidak berfungsi.</translation>
 <translation id="5553374991681107062">Terbaru</translation>
 <translation id="5555115555607204100">Jangan percepat situs dengan mesin V8 Chrome, tetapi buat Chrome sedikit lebih tahan terhadap serangan</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
@@ -415,7 +408,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="5700761515355162635">Cookie pihak ketiga diizinkan</translation>
 <translation id="5706552988683188916">Tindakan ini akan menghapus cookie dan data situs lainnya untuk <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Situs dapat menampilkan perintah login dari layanan identitas</translation>
-<translation id="5723967018671998714">Cookie pihak ketiga diblokir dalam mode Samaran</translation>
 <translation id="5740126560802162366">Situs dapat menyimpan data di perangkat Anda</translation>
 <translation id="5743425052258407233">Dapatkan histori Anda di semua perangkat, sehingga Anda dapat dengan mudah melanjutkan dari bagian yang terakhir dibuka</translation>
 <translation id="5749158352074143502">Lanjutkan dengan tab ini</translation>
@@ -594,7 +586,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="7881140103901777395">Chrome membatasi sebagian besar situs agar tidak menggunakan cookie pihak ketiga. Namun, cookie pihak ketiga diizinkan di situs ini karena situs mengandalkan cookie tersebut untuk memberikan layanan dasar.\n\nBuka setelan untuk <ph name="BEGIN_LINK" />mengelola akses ke cookie pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Izinkan suara untuk situs tertentu.</translation>
 <translation id="7891547341794213004">Sembunyikan kartu lanjutkan dengan tab ini</translation>
-<translation id="789180354981963912">Blokir cookie pihak ketiga dalam mode Samaran:</translation>
 <translation id="789722939441020330">Jangan izinkan situs mendownload beberapa file secara otomatis</translation>
 <translation id="7940722705963108451">Ingatkan saya</translation>
 <translation id="7948081750384205628">Pelajari lebih lanjut <ph name="SETTING_TITLE" /></translation>

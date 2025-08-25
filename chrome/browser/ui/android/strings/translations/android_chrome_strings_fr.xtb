@@ -1257,6 +1257,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="679956319013005046">Pour définir votre service préféré pour la saisie automatique, commencez par l'ajouter dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">La fenêtre sera fermée</translation>
 <translation id="6803791793483522764">Examiner les notifications</translation>
+<translation id="6809470175540814047">Ouvrir dans une fenêtre de navigation privée</translation>
 <translation id="6811034713472274749">La page est prête à être affichée</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Images, une image dans la liste}one{Images, # image dans la liste}other{Images, # images dans la liste}}</translation>
 <translation id="6813446258015311409">Se connecter à Chrome, ouvert.</translation>

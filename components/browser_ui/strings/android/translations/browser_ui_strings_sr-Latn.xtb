@@ -8,7 +8,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 • „JavaScript optimizator“ je isključen. <ph name="BEGIN_LINK2" />Upravljajte izuzecima za sajtove<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Otvori onlajn</translation>
 <translation id="1036348656032585052">Isključi</translation>
-<translation id="1044891598689252897">Sajtovi će normalno raditi</translation>
 <translation id="1070329623210597193">Fajlovi koje ovaj sajt može da pregleda ili menja</translation>
 <translation id="1073417869336441572">Pomozite nam da poboljšamo Chrome tako što ćete nam reći zašto ste dozvolili kolačiće treće strane. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Možete da zatražite da vidite verziju sajtova za računare</translation>
@@ -128,7 +127,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="2433507940547922241">Izgled</translation>
 <translation id="2434158240863470628">Preuzimanje je završeno <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Privremeno ste dozvolili ovom sajtu da koristi kolačiće treće strane, što znači manje zaštite pri pregledanju, ali je veća verovatnoća da će funkcije sajta raditi prema očekivanjima. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Funkcije na nekim sajtovima možda neće raditi u režimu bez arhiviranja</translation>
 <translation id="2442870161001914531">Uvek se zahteva sajt za računar</translation>
 <translation id="2445311670906052406">Chrome sada deli nedavne kartice sa uređajem. Videćete ih na listi aplikacija i u rezultatima pretrage uređaja. To možete da isključite u svakom trenutku u Chrome podešavanjima.</translation>
 <translation id="245322989586167203">Sajtovi se obično povezuju sa serijskim portovima za potrebe funkcija za prenos podataka, na primer, pri podešavanju mreže</translation>
@@ -193,7 +191,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="3123473560110926937">Blokirano na nekim sajtovima</translation>
 <translation id="3132996321662585180">Osvežavaj dnevno</translation>
 <translation id="3143754809889689516">Pusti ispočetka</translation>
-<translation id="3162899666601560689">Sajtovi mogu da koriste kolačiće za poboljšanje doživljaja pregledanja, na primer, da biste ostali prijavljeni ili da bi stavke u vašoj korpi za kupovinu ostale sačuvane</translation>
 <translation id="3165022941318558018">Dozvolite sajtu da koristi kolačiće treće strane</translation>
 <translation id="3167868116600277716">Discover fid</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> sačuvanih podataka</translation>
@@ -262,8 +259,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="3895926599014793903">Prinudno omogući zumiranje</translation>
 <translation id="3903738175795615004">Prevucite od vrha ili pritisnite taster Esc da biste izašli iz režima celog ekrana.</translation>
 <translation id="3905475044299942653">Zaustavite mnogo obaveštenja</translation>
-<translation id="3908288065506437185">Blokiraj kolačiće treće strane u režimu bez arhiviranja</translation>
-<translation id="3918378745482005425">Neke funkcije možda neće raditi. Srodni sajtovi i dalje mogu da koriste kolačiće treće strane.</translation>
 <translation id="3922092564198021702">Na telefonu otvorite Podešavanja</translation>
 <translation id="3933121352599513978">Skupi neželjene zahteve (preporučeno)</translation>
 <translation id="3955193568934677022">Dozvoli sajtovima da puštaju zaštićeni sadržaj (preporučeno)</translation>
@@ -320,7 +315,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="4566417217121906555">Isključi zvuk mikrofona</translation>
 <translation id="4570913071927164677">Detalji</translation>
 <translation id="4578289292431526768">Idemo</translation>
-<translation id="4598549027014564149">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na svim sajtovima, čak i na srodnim sajtovima. Aktivnosti pregledanja se ne koriste za stvari kao što je personalizovanje oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
 <translation id="461356340001513807">Omogućava vam da se prijavljujete na veb-sajtove pomoću naloga koji imate u usluzi za identitet</translation>
 <translation id="4635969503923889910">Ne dozvoljavaj sajtovima da koriste NFC uređaje</translation>
 <translation id="4644713492825682049">Izbriši i resetuj</translation>
@@ -398,7 +392,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="5515432237048785579">Donja tabela Discover fida je otvorena na celom ekranu</translation>
 <translation id="5516455585884385570">Otvorite podešavanja obaveštenja</translation>
 <translation id="5527111080432883924">Pitaj pre nego što dozvoliš sajtovima da čitaju tekst i slike iz privremene memorije (preporučeno)</translation>
-<translation id="5545693483061321551">Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
 <translation id="5553374991681107062">Najnovije</translation>
 <translation id="5555115555607204100">Ne ubrzava sajtove pomoću Chrome mehanizma V8, ali čini Chrome malo otpornijim na napade</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
@@ -415,7 +408,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="5700761515355162635">Kolačići trećih strana su dozvoljeni</translation>
 <translation id="5706552988683188916">Ovim se brišu kolačići i drugi podaci o sajtu za <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Sajtovi mogu da prikazuju upite za prijavljivanje iz usluga za identitet</translation>
-<translation id="5723967018671998714">Kolačići treće strane su blokirani u režimu bez arhiviranja</translation>
 <translation id="5740126560802162366">Sajtovi mogu da čuvaju podatke na uređaju</translation>
 <translation id="5743425052258407233">Dobijte istoriju na svim uređajima da biste lako nastavili tamo gde ste stali</translation>
 <translation id="5749158352074143502">Nastavite sa ovom karticom</translation>
@@ -594,7 +586,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="7881140103901777395">Chrome sprečava većinu sajtova da koriste kolačiće treće strane. Međutim, kolačići treće strane su dozvoljeni na ovom sajtu zato što se Chrome oslanja na njih da bi pružao osnovne usluge.\n\nPosetite podešavanja da biste <ph name="BEGIN_LINK" />upravljali pristupom kolačićima treće strane<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Dozvoli zvuk za određeni sajt.</translation>
 <translation id="7891547341794213004">Sakrij karticu Nastavi sa ovom karticom</translation>
-<translation id="789180354981963912">Blokirajte kolačiće trećih strana u režimu bez arhiviranja:</translation>
 <translation id="789722939441020330">Ne dozvoljavaj sajtovima da automatski preuzimaju više fajlova</translation>
 <translation id="7940722705963108451">Podseti me</translation>
 <translation id="7948081750384205628">Saznajte više o podešavanju <ph name="SETTING_TITLE" /></translation>

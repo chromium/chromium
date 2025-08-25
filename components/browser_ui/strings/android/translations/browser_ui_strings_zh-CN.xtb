@@ -8,7 +8,6 @@
 •“JavaScript 优化工具”已关闭。<ph name="BEGIN_LINK2" />管理网站例外情况<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">在线打开</translation>
 <translation id="1036348656032585052">关闭</translation>
-<translation id="1044891598689252897">网站将能够正常运行</translation>
 <translation id="1070329623210597193">此网站可以查看或修改的文件</translation>
 <translation id="1073417869336441572">请告诉我们您允许使用第三方 Cookie 的原因，以帮助我们改进 Chrome<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">您可以查看桌面版网站</translation>
@@ -128,7 +127,6 @@
 <translation id="2433507940547922241">外观</translation>
 <translation id="2434158240863470628">下载完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">您暂时允许了此网站使用第三方 Cookie，这意味着您选择采用较低级别的浏览保护措施，但网站功能更有可能会按预期运行。<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">在无痕模式下，某些网站上的功能可能会无法正常运行</translation>
 <translation id="2442870161001914531">始终请求访问桌面版网站</translation>
 <translation id="2445311670906052406">Chrome 现在会与您的设备分享您近期打开的标签页。您可以在设备的应用列表和搜索结果中看到这些标签页。您可以随时在 Chrome 设置中关闭此功能。</translation>
 <translation id="245322989586167203">网站通常会连接到串行端口以实现数据传输功能（例如设置您的网络）</translation>
@@ -193,7 +191,6 @@
 <translation id="3123473560110926937">已禁止部分网站显示广告</translation>
 <translation id="3132996321662585180">每日刷新</translation>
 <translation id="3143754809889689516">从头播放</translation>
-<translation id="3162899666601560689">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品</translation>
 <translation id="3165022941318558018">允许网站使用第三方 Cookie</translation>
 <translation id="3167868116600277716">探索信息流</translation>
 <translation id="3198916472715691905">已存储 <ph name="STORAGE_AMOUNT" /> 数据</translation>
@@ -262,8 +259,6 @@
 <translation id="3895926599014793903">强制启用缩放功能</translation>
 <translation id="3903738175795615004">从顶部拖动或按 Esc 键可退出全屏模式。</translation>
 <translation id="3905475044299942653">停止发送大量通知</translation>
-<translation id="3908288065506437185">在无痕模式下阻止第三方 Cookie</translation>
-<translation id="3918378745482005425">某些功能可能无法正常运行。相关网站仍然可以使用第三方 Cookie。</translation>
 <translation id="3922092564198021702">打开手机上的“设置”</translation>
 <translation id="3933121352599513978">收起不需要的请求（推荐）</translation>
 <translation id="3955193568934677022">允许网站播放受保护的内容（推荐）</translation>
@@ -320,7 +315,6 @@
 <translation id="4566417217121906555">将麦克风静音</translation>
 <translation id="4570913071927164677">详情</translation>
 <translation id="4578289292431526768">开始查看</translation>
-<translation id="4598549027014564149">在无痕模式下，网站无法使用 Cookie 查看您在各个网站（即使是彼此相关的网站）上的浏览活动。系统不会将您的浏览活动用于展示个性化广告等用途。某些网站上的功能可能会无法正常运行。</translation>
 <translation id="461356340001513807">允许使用您在身份服务中注册的账号登录网站</translation>
 <translation id="4635969503923889910">不允许网站使用 NFC 设备</translation>
 <translation id="4644713492825682049">删除并重置</translation>
@@ -398,7 +392,6 @@
 <translation id="5515432237048785579">探索信息流底部动作条已按最大高度显示</translation>
 <translation id="5516455585884385570">打开通知设置</translation>
 <translation id="5527111080432883924">需先询问，得到许可后才允许网站读取剪贴板中的文字和图片（推荐）</translation>
-<translation id="5545693483061321551">网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行。</translation>
 <translation id="5553374991681107062">最新</translation>
 <translation id="5555115555607204100">不使用 Chrome 的 V8 引擎加速网站，但 Chrome 的防攻击能力会略微增强</translation>
 <translation id="5556459405103347317">重新加载</translation>
@@ -415,7 +408,6 @@
 <translation id="5700761515355162635">已允许使用第三方 Cookie</translation>
 <translation id="5706552988683188916">此操作会删除 <ph name="WEBSITE" /> 的 Cookie 和其他网站数据</translation>
 <translation id="571222594670061844">网站可以显示来自身份服务的登录提示</translation>
-<translation id="5723967018671998714">已阻止无痕模式下的第三方 Cookie</translation>
 <translation id="5740126560802162366">网站可将数据保存在您的设备上</translation>
 <translation id="5743425052258407233">在您的所有设备上同步历史记录，以便您轻松继续未完成的操作</translation>
 <translation id="5749158352074143502">继续使用此标签页</translation>
@@ -594,7 +586,6 @@
 <translation id="7881140103901777395">Chrome 会限制大多数网站使用第三方 Cookie。不过，该网站已获准使用第三方 Cookie，因为它需要依赖这类 Cookie 来提供基本服务。\n\n访问“设置”可<ph name="BEGIN_LINK" />管理对第三方 Cookie 的使用权限<ph name="END_LINK" />。</translation>
 <translation id="7882806643839505685">允许特定网站播放声音。</translation>
 <translation id="7891547341794213004">隐藏“继续使用此标签页”卡片</translation>
-<translation id="789180354981963912">在无痕模式下阻止第三方 Cookie：</translation>
 <translation id="789722939441020330">不允许网站自动下载多个文件</translation>
 <translation id="7940722705963108451">提醒我</translation>
 <translation id="7948081750384205628">详细了解“<ph name="SETTING_TITLE" />”</translation>

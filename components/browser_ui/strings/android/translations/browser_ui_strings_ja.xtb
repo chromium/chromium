@@ -8,7 +8,6 @@
 • [JavaScript オプティマイザー] がオフになります。<ph name="BEGIN_LINK2" />サイトの例外を管理する<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">オンライン版を開く</translation>
 <translation id="1036348656032585052">オフにする</translation>
-<translation id="1044891598689252897">サイトは通常どおり動作します</translation>
 <translation id="1070329623210597193">このサイトが表示または編集できるファイル</translation>
 <translation id="1073417869336441572">Chrome の改善に役立てるため、サードパーティ Cookie を許可した理由をお聞かせください。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">サイトの PC 版を表示するようリクエストできます</translation>
@@ -128,7 +127,6 @@
 <translation id="2433507940547922241">デザイン</translation>
 <translation id="2434158240863470628">ダウンロードが完了しました<ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">このサイトにサードパーティ Cookie の使用を一時的に許可しました。ブラウジングの保護の強度は低下しますが、サイトが適切に機能する可能性が高くなります。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">シークレット モードでは、一部サイトの機能が使用できなくなる可能性があります</translation>
 <translation id="2442870161001914531">常に PC 版サイトを表示する</translation>
 <translation id="2445311670906052406">Chrome で最近使ったタブがデバイスと共有され、デバイスのアプリリストと検索結果に表示されるようになりました。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="245322989586167203">多くのサイトは、ネットワークを設定するなど、データ転送機能を使用するためにシリアルポートに接続します</translation>
@@ -193,7 +191,6 @@
 <translation id="3123473560110926937">一部のサイトでブロックされています</translation>
 <translation id="3132996321662585180">毎日更新する</translation>
 <translation id="3143754809889689516">最初から再生</translation>
-<translation id="3162899666601560689">サイトは、Cookie を使用して閲覧の利便性を高めることができます（ログイン状態の維持、ショッピング カートの中身の保存など）</translation>
 <translation id="3165022941318558018">サイトにサードパーティ Cookie の使用を許可する</translation>
 <translation id="3167868116600277716">Discover フィード</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> の保存データ</translation>
@@ -262,8 +259,6 @@
 <translation id="3895926599014793903">強制的にズームを有効にする</translation>
 <translation id="3903738175795615004">全画面表示を終了するには、上からドラッグするか、Esc キーを押します。</translation>
 <translation id="3905475044299942653">頻繁な通知をブロック</translation>
-<translation id="3908288065506437185">シークレット モードでサードパーティ Cookie をブロックする</translation>
-<translation id="3918378745482005425">一部の機能が動作しない可能性があります。関連サイトでは引き続きサードパーティ Cookie を使用できます。</translation>
 <translation id="3922092564198021702">スマートフォンの [設定] を開きます</translation>
 <translation id="3933121352599513978">不要なリクエストを閉じる（推奨）</translation>
 <translation id="3955193568934677022">保護されたコンテンツの再生をサイトに許可する（推奨）</translation>
@@ -320,7 +315,6 @@
 <translation id="4566417217121906555">マイクをミュート</translation>
 <translation id="4570913071927164677">詳細</translation>
 <translation id="4578289292431526768">始める</translation>
-<translation id="4598549027014564149">シークレット モードのとき、サイトは Cookie を使用して関連サイトを含む他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のパーソナライズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="461356340001513807">アカウント管理サービスのアカウントを使用してウェブサイトにログインできます</translation>
 <translation id="4635969503923889910">サイトに NFC デバイスの使用を許可しない</translation>
 <translation id="4644713492825682049">削除してリセット</translation>
@@ -398,7 +392,6 @@
 <translation id="5515432237048785579">Discover フィードのボトムシートが画面全体に表示されています</translation>
 <translation id="5516455585884385570">通知設定を開く</translation>
 <translation id="5527111080432883924">サイトがクリップボードのテキストや画像を読み取る前に確認する（推奨）</translation>
-<translation id="5545693483061321551">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のパーソナライズなどが行えなくなります。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="5553374991681107062">最新</translation>
 <translation id="5555115555607204100">Chrome の V8 エンジンでサイトを高速化しない（攻撃に対する Chrome の耐性は若干強化されます）</translation>
 <translation id="5556459405103347317">再読み込み</translation>
@@ -415,7 +408,6 @@
 <translation id="5700761515355162635">サードパーティ Cookie が許可されています</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> の Cookie などのサイトデータが削除されます</translation>
 <translation id="571222594670061844">サイトで ID サービスからのログイン メッセージを表示できるようにする</translation>
-<translation id="5723967018671998714">シークレット モードでサードパーティの Cookie がブロックされています</translation>
 <translation id="5740126560802162366">サイトはデバイスにデータを保存できます</translation>
 <translation id="5743425052258407233">すべてのデバイスで履歴にアクセスできるため、作業を中断したところから簡単に再開できます</translation>
 <translation id="5749158352074143502">このタブを続行</translation>
@@ -594,7 +586,6 @@
 <translation id="7881140103901777395">Chrome ではほとんどのサイトに対してサードパーティ Cookie の使用を制限しています。しかしこのサイトでは、基本的なサービスの提供に使用されているため、サードパーティ Cookie が許可されています。\n\n<ph name="BEGIN_LINK" />サードパーティ Cookie へのアクセスを管理する<ph name="END_LINK" />には、設定に移動してください。</translation>
 <translation id="7882806643839505685">特定のサイトに対して音声の再生を許可します。</translation>
 <translation id="7891547341794213004">[このタブを続行] カードを非表示にする</translation>
-<translation id="789180354981963912">シークレット モードでサードパーティの Cookie をブロックする:</translation>
 <translation id="789722939441020330">サイトに複数のファイルの自動ダウンロードを許可しない</translation>
 <translation id="7940722705963108451">リマインダーの設定</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> の詳細</translation>

@@ -3306,7 +3306,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3269175001434213183">Turn on sync to back up your stuff and use it on any device</translation>
 <translation id="3269612321104318480">Light teal and white</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{File}other{# files}}</translation>
-<translation id="326999365752735949">Downloading diff</translation>
 <translation id="3270965368676314374">Read, change and delete photos, music and other media from your computer</translation>
 <translation id="3275464924531706548">Collapse <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Your internal security key is currently insecure. Please remove it from any services that you used it with. In order to resolve the issue, please reset the security key.</translation>
@@ -9799,7 +9798,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7842692330619197998">Visit g.co/ChromeEnterpriseAccount if you need to create a new account.</translation>
 <translation id="784273751836026224">Uninstall Linux</translation>
 <translation id="784475655832336580">Highlight the item with keyboard focus is not available when ChromeVox is on</translation>
-<translation id="7844992432319478437">Updating diff</translation>
 <translation id="7846161022626028328">There was an error. Try again.</translation>
 <translation id="7846296061357476882">Google services</translation>
 <translation id="7846634333498149051">Keyboard</translation>

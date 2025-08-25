@@ -3294,7 +3294,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3269175001434213183">Activa la sincronización para crear una copia de seguridad de tus cosas y usarla en cualquier dispositivo</translation>
 <translation id="3269612321104318480">Turquesa claro y blanco</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Archivo}other{# archivos}}</translation>
-<translation id="326999365752735949">Descargando archivo diff</translation>
 <translation id="3270965368676314374">Leer, modificar y eliminar fotos, música y otros archivos multimedia de tu ordenador</translation>
 <translation id="3275464924531706548">Ocultar <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Tu llave de seguridad interna es insegura actualmente. Elimínala de todos los servicios en los que la utilizabas. Para solucionar el problema, restablece la llave de seguridad.</translation>
@@ -9784,7 +9783,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7842692330619197998">Si necesitas crear una cuenta, visita g.co/ChromeEnterpriseAccount.</translation>
 <translation id="784273751836026224">Desinstalar Linux</translation>
 <translation id="784475655832336580">Destacar el elemento con el foco del teclado no disponible cuando ChromeVox está activado</translation>
-<translation id="7844992432319478437">Actualizando archivo diff</translation>
 <translation id="7846161022626028328">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="7846296061357476882">Servicios de Google</translation>
 <translation id="7846634333498149051">Teclado</translation>

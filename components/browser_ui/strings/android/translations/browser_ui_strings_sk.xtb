@@ -8,7 +8,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 • Optimalizátor JavaScriptu je vypnutý. <ph name="BEGIN_LINK2" />Spravovať výnimky webov<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Otvoriť online</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
-<translation id="1044891598689252897">Weby budú fungovať normálne</translation>
 <translation id="1070329623210597193">Súbory, ktoré môže tento web čítať alebo upravovať</translation>
 <translation id="1073417869336441572">Pomôžte nám zlepšiť Chrome tým, že nám poviete, prečo ste povolili súbory cookie tretích strán. <ph name="BEGIN_LINK" />Odoslať spätnú väzbu<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Môžete požiadať o zobrazenie verzie webov pre počítače</translation>
@@ -128,7 +127,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="2433507940547922241">Vzhľad</translation>
 <translation id="2434158240863470628">Sťahovanie bolo dokončené <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Tomuto webu ste dočasne povolili používať súbory cookie tretích strán, čo znamená nižšiu ochranu, ale funkcie webu budú s väčšou pravdepodobnosťou fungovať podľa očakávaní. <ph name="BEGIN_LINK" />Odoslať spätnú väzbu<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Funkcie na niektorých weboch nemusia byť v režime inkognito k dispozícii</translation>
 <translation id="2442870161001914531">Vždy požadovať web pre počítače</translation>
 <translation id="2445311670906052406">Chrome teraz zdieľa vaše nedávne karty s vaším zariadením. Nájdete ich v zariadení v zozname aplikácií a vo výsledkoch vyhľadávania. Túto možnosť môžete kedykoľvek vypnúť v nastaveniach Chromu.</translation>
 <translation id="245322989586167203">Weby sa zvyčajne pripájajú k sériovým portom, aby mohli poskytovať funkcie na prenos údajov, ako je nastavenie siete</translation>
@@ -193,7 +191,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3123473560110926937">Blokované na niektorých weboch</translation>
 <translation id="3132996321662585180">Obnovovať denne</translation>
 <translation id="3143754809889689516">Prehrať od začiatku</translation>
-<translation id="3162899666601560689">Weby môžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku</translation>
 <translation id="3165022941318558018">Povoľte webu používať súbory cookie tretej strany</translation>
 <translation id="3167868116600277716">Kanál Objaviť</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> uložených dát</translation>
@@ -262,8 +259,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3895926599014793903">Vynútiť povolenie priblíženia</translation>
 <translation id="3903738175795615004">Režim celej obrazovky ukončíte presunutím zhora alebo stlačením klávesa Esc.</translation>
 <translation id="3905475044299942653">Zastavenie veľkého množstva upozornení</translation>
-<translation id="3908288065506437185">Blokovať súbory cookie tretích strán v režime inkognito</translation>
-<translation id="3918378745482005425">Niektoré funkcie nemusia fungovať. Súvisiace weby môžu naďalej používať súbory cookie tretej strany.</translation>
 <translation id="3922092564198021702">Otvorte v telefóne Nastavenia</translation>
 <translation id="3933121352599513978">Zbaliť nechcené požiadavky (odporúčané)</translation>
 <translation id="3955193568934677022">Povoliť webom prehrávať chránený obsah (odporúčané)</translation>
@@ -320,7 +315,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="4566417217121906555">Vypnúť mikrofón</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4578289292431526768">Začať</translation>
-<translation id="4598549027014564149">Keď ste v režime inkognito, weby nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania na nich (ani súvisiace weby). Aktivita prehliadania sa nepoužíva ani na prispôsobenie reklám. Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="461356340001513807">Umožňuje vám prihlásiť sa na weboch účtom, ktorý ste si zriadili prostredníctvom služby identity</translation>
 <translation id="4635969503923889910">Nepovoliť webom používať zariadenia s technológiou NFC</translation>
 <translation id="4644713492825682049">Odstrániť a resetovať</translation>
@@ -398,7 +392,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5515432237048785579">Dolný hárok feedu Objaviť je otvorený na celú výšku</translation>
 <translation id="5516455585884385570">Otvoriť nastavenia upozornení</translation>
 <translation id="5527111080432883924">Pýtať sa, či chcete povoliť webu prístup k textom a obrázkom v schránke (odporúčané)</translation>
-<translation id="5545693483061321551">Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám). Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="5553374991681107062">Najnovšie</translation>
 <translation id="5555115555607204100">Nezrýchľovať weby pomocou nástroja V8 Chromu (Chrome bude o niečo odolnejší voči útokom)</translation>
 <translation id="5556459405103347317">Znova načítať</translation>
@@ -415,7 +408,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5700761515355162635">Súbory cookie tretích strán sú povolené</translation>
 <translation id="5706552988683188916">Týmto odstránite súbory cookie a ďalšie dáta webu <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Weby môžu zobrazovať výzvy na prihlásenie od služieb identity</translation>
-<translation id="5723967018671998714">Súbory cookie tretích strán sú v anonymnom režime blokované</translation>
 <translation id="5740126560802162366">Weby môžu ukladať údaje vo vašom zariadení</translation>
 <translation id="5743425052258407233">Získajte históriu vo všetkých zariadeniach, aby ste mohli ľahko pokračovať tam, kde ste skončili</translation>
 <translation id="5749158352074143502">Pokračovať s touto kartou</translation>
@@ -594,7 +586,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7881140103901777395">Chrome obmedzuje väčšine webom používanie súborov cookie tretích strán. Súbory cookie tretích strán sú však na tomto webe povolené, pretože sú preň nevyhnutné na poskytovanie základných služieb.\n\nPrejdite do nastavení a <ph name="BEGIN_LINK" />spravujte prístup k súborom cookie tretej strany<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Povoliť zvuk na konkrétnom webe.</translation>
 <translation id="7891547341794213004">Skryť kartu Pokračovať s touto kartou</translation>
-<translation id="789180354981963912">Blokovať súbory cookie tretích strán v režime inkognito:</translation>
 <translation id="789722939441020330">Nepovoliť webom automaticky sťahovať viacero súborov</translation>
 <translation id="7940722705963108451">Pripomenúť mi</translation>
 <translation id="7948081750384205628">Ďalšie informácie o nastavení <ph name="SETTING_TITLE" /></translation>

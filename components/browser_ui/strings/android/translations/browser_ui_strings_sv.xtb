@@ -8,7 +8,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 • JavaScript-optimering aktiveras. <ph name="BEGIN_LINK2" />Hantera webbplatsundantag<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Öppna onlineversionen</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
-<translation id="1044891598689252897">Webbplatser fungerar som de ska</translation>
 <translation id="1070329623210597193">Filer som webbplatsen kan visa eller redigera</translation>
 <translation id="1073417869336441572">Hjälp oss att förbättra Chrome genom att berätta varför du har tillåtit cookies från tredje part. <ph name="BEGIN_LINK" />Skicka feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kan begära att se webbplatsernas datorversion</translation>
@@ -128,7 +127,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="2433507940547922241">Utseende</translation>
 <translation id="2434158240863470628">Nedladdningen är klar<ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Du har tillfälligt tillåtit att den här webbplatsen använder tredjepartscookies, vilket innebär att webbsökningen är mindre skyddad, men det är mer troligt att webbplatsfunktioner fungerar som förväntat. <ph name="BEGIN_LINK" />Skicka feedback<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Funktioner på vissa webbplatser kanske inte fungerar i inkognitoläge</translation>
 <translation id="2442870161001914531">Begär alltid datorversionen av webbplatsen</translation>
 <translation id="2445311670906052406">Chrome delar nu dina senaste flikar med enheten. Du ser dem i enhetens applista och sökresultat. Du kan inaktivera detta när som helst i Chrome-inställningarna.</translation>
 <translation id="245322989586167203">Åtkomst till serieportar brukar kunna behövas för dataöverföring, t.ex. vid konfigurering av ett nätverk</translation>
@@ -193,7 +191,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3123473560110926937">Blockeras på vissa webbplatser</translation>
 <translation id="3132996321662585180">Uppdatera dagligen</translation>
 <translation id="3143754809889689516">Spela upp från början</translation>
-<translation id="3162899666601560689">Webbplatser får förbättra surfupplevelsen med hjälp av cookies, till exempel genom att låta dig förbli inloggad eller spara vad du har lagt till i kundvagnen</translation>
 <translation id="3165022941318558018">Tillåt att en webbplats använder tredjepartscookies</translation>
 <translation id="3167868116600277716">Förslagsflödet</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> sparad data</translation>
@@ -262,8 +259,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3895926599014793903">Tvinga aktivering av zoom</translation>
 <translation id="3903738175795615004">Dra uppifrån eller tryck på tangenten Esc om du vill avsluta helskärmsläget.</translation>
 <translation id="3905475044299942653">Stoppa många aviseringar</translation>
-<translation id="3908288065506437185">Blockera tredjepartscookies i inkognitoläge</translation>
-<translation id="3918378745482005425">En del funktioner fungerar eventuellt inte. Relaterade webbplatser kan fortfarande använda tredjepartscookies.</translation>
 <translation id="3922092564198021702">Öppna Inställningar på telefonen</translation>
 <translation id="3933121352599513978">Komprimera oönskade förfrågningar (rekommenderas)</translation>
 <translation id="3955193568934677022">Tillåt att skyddat innehåll spelas upp på webbplatser (rekommenderas)</translation>
@@ -320,7 +315,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="4566417217121906555">Stäng av mikrofonen</translation>
 <translation id="4570913071927164677">Information</translation>
 <translation id="4578289292431526768">Kom igång</translation>
-<translation id="4598549027014564149">I inkognitoläget kan webbplatser inte använda cookies för att se din webbaktivitet på olika webbplatser – inte ens relaterade webbplatser. Din webbaktivitet används inte för sådant som annonsanpassning. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="461356340001513807">Låter dig logga in på webbplatser med kontot du har hos en identitetstjänst</translation>
 <translation id="4635969503923889910">Tillåt inte att webbplatser använder NFC-enheter</translation>
 <translation id="4644713492825682049">Radera och återställ</translation>
@@ -398,7 +392,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="5515432237048785579">Arket på nedre delen av skärmen för flödet Upptäck har öppnats över hela skärmen</translation>
 <translation id="5516455585884385570">Öppna aviseringsinställningar</translation>
 <translation id="5527111080432883924">Fråga innan en webbplats ges läsbehörighet till text och bilder i Urklipp (rekommenderas)</translation>
-<translation id="5545693483061321551">Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av cookies, för att till exempel anpassa annonser. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="5553374991681107062">Senaste</translation>
 <translation id="5555115555607204100">Öka inte webbplatsernas hastighet med Chromes V8-motor men gör Chrome något mer motståndskraftigt mot attacker</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
@@ -415,7 +408,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="5700761515355162635">Tredjepartscookies tillåts</translation>
 <translation id="5706552988683188916">Cookies och annan webbplatsdata för <ph name="WEBSITE" /> raderas</translation>
 <translation id="571222594670061844">Webbplatser får visa inloggningsmeddelanden från identitetstjänster</translation>
-<translation id="5723967018671998714">Cookies från tredje part blockeras i inkognitoläge</translation>
 <translation id="5740126560802162366">Webbplatser kan spara data på enheten</translation>
 <translation id="5743425052258407233">Få din historik på alla dina enheter så att du enkelt kan fortsätta där du slutade</translation>
 <translation id="5749158352074143502">Fortsätt med den här fliken</translation>
@@ -594,7 +586,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7881140103901777395">Chrome begränsar de flesta webbplatser från att använda tredjepartscookies. Tredjepartscookies tillåts dock på den här webbplatsen eftersom den förlitar sig på att de tillhandahåller grundläggande tjänster.\n\nÖppna inställningarna för att <ph name="BEGIN_LINK" />hantera åtkomst till tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Tillåt ljud för en webbplats.</translation>
 <translation id="7891547341794213004">Dölj kortet Fortsätt med den här fliken</translation>
-<translation id="789180354981963912">Blockera cookies från tredje part i inkognitoläge:</translation>
 <translation id="789722939441020330">Tillåt inte att webbplatser laddar ned flera filer samtidigt</translation>
 <translation id="7940722705963108451">Påminn mig</translation>
 <translation id="7948081750384205628">Läs mer om <ph name="SETTING_TITLE" /></translation>

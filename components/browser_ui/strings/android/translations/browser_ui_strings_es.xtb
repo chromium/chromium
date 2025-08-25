@@ -8,7 +8,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 • La opción "Optimizador de JavaScript" está desactivada. <ph name="BEGIN_LINK2" />Gestionar excepciones de sitios<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Abrir versión online</translation>
 <translation id="1036348656032585052">Desactivar</translation>
-<translation id="1044891598689252897">Los sitios funcionarán con normalidad</translation>
 <translation id="1070329623210597193">Archivos que este sitio puede ver o editar</translation>
 <translation id="1073417869336441572">Ayúdanos a mejorar Chrome indicándonos por qué has permitido el uso de cookies de terceros. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Puedes pedir ver la versión para ordenadores de los sitios</translation>
@@ -128,7 +127,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="2433507940547922241">Aspecto</translation>
 <translation id="2434158240863470628">Descarga finalizada <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Has permitido temporalmente que este sitio use cookies de terceros. Tendrás menos protección al navegar, pero será más probable que las funciones del sitio funcionen según lo previsto. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Es posible que las funciones de algunos sitios no funcionen en modo Incógnito</translation>
 <translation id="2442870161001914531">Solicitar siempre la vista para ordenador</translation>
 <translation id="2445311670906052406">Ahora Chrome comparte tus pestañas recientes con tu dispositivo. Las verás en la lista de aplicaciones y en los resultados de búsqueda de tu dispositivo. Desactiva esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="245322989586167203">Los sitios se suelen conectar a puertos serie para usarlos en funciones relacionadas con la transferencia de datos, como la configuración de la red.</translation>
@@ -193,7 +191,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="3123473560110926937">Bloqueados en algunos sitios</translation>
 <translation id="3132996321662585180">Actualizar todos los días</translation>
 <translation id="3143754809889689516">Reproducir desde el principio</translation>
-<translation id="3162899666601560689">Los sitios pueden usar cookies para mejorar tu experiencia de navegación, por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.</translation>
 <translation id="3165022941318558018">Permitir que un sitio use cookies de terceros</translation>
 <translation id="3167868116600277716">Feed de Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de datos almacenados</translation>
@@ -262,8 +259,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="3895926599014793903">Forzar zoom</translation>
 <translation id="3903738175795615004">Arrastra desde arriba o pulsa la tecla Esc para salir de la pantalla completa.</translation>
 <translation id="3905475044299942653">Dejar de recibir muchas notificaciones</translation>
-<translation id="3908288065506437185">Bloquear cookies de terceros en modo Incógnito</translation>
-<translation id="3918378745482005425">Es posible que no puedas usar algunas funciones. Los sitios relacionados podrán seguir usando cookies de terceros.</translation>
 <translation id="3922092564198021702">En tu teléfono, abre Configuración</translation>
 <translation id="3933121352599513978">Ocultar solicitudes no deseadas (recomendado)</translation>
 <translation id="3955193568934677022">Permitir que los sitios reproduzcan contenido protegido (recomendado)</translation>
@@ -320,7 +315,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="4566417217121906555">Silenciar micrófono</translation>
 <translation id="4570913071927164677">Detalles</translation>
 <translation id="4578289292431526768">Empezar</translation>
-<translation id="4598549027014564149">Mientras estás en modo Incógnito, los sitios no pueden usar las cookies para ver tu actividad de navegación en otros sitios, ni siquiera en sitios relacionados. Tu actividad de navegación no se usa para personalizar anuncios. Es posible que las funciones de algunos sitios no funcionen.</translation>
 <translation id="461356340001513807">Permite iniciar sesión en sitios web con la cuenta que tengas con un servicio de identidad</translation>
 <translation id="4635969503923889910">No permitir que los sitios usen dispositivos NFC</translation>
 <translation id="4644713492825682049">Eliminar y restablecer</translation>
@@ -398,7 +392,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="5515432237048785579">Hoja inferior del feed de Discover abierta a altura completa</translation>
 <translation id="5516455585884385570">Abrir ajustes de notificaciones</translation>
 <translation id="5527111080432883924">Preguntar antes de permitir que los sitios lean texto e imágenes del portapapeles (recomendado)</translation>
-<translation id="5545693483061321551">Los sitios web no pueden usar cookies para ver tu actividad de navegación en otros sitios web con el objetivo de, por ejemplo, personalizar anuncios. Es posible que las funciones de algunos sitios no funcionen.</translation>
 <translation id="5553374991681107062">Más recientes</translation>
 <translation id="5555115555607204100">No acelerar los sitios con el motor V8 de Chrome, pero hacer que Chrome sea un poco más resistente a los ataques</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
@@ -415,7 +408,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="5700761515355162635">Cookies de terceros permitidas</translation>
 <translation id="5706552988683188916">Esta acción eliminará las cookies y otros datos de sitios de <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Los sitios pueden mostrar notificaciones de inicio de sesión de servicios de identidad</translation>
-<translation id="5723967018671998714">Las cookies de terceros están bloqueadas en el modo Incógnito</translation>
 <translation id="5740126560802162366">Los sitios pueden guardar datos en tu dispositivo</translation>
 <translation id="5743425052258407233">Accede a tu historial en todos tus dispositivos para retomar fácilmente lo que estabas haciendo</translation>
 <translation id="5749158352074143502">Continuar con esta pestaña</translation>
@@ -594,7 +586,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="7881140103901777395">Chrome impide que la mayoría de los sitios usen cookies de terceros. Sin embargo, las cookies de terceros están permitidas en este sitio porque depende de ellas para prestar servicios básicos.\n\nVe a la configuración para <ph name="BEGIN_LINK" />gestionar el acceso a las cookies de terceros<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permite que se reproduzcan sonidos en un sitio específico.</translation>
 <translation id="7891547341794213004">Ocultar tarjeta Continuar con esta pestaña</translation>
-<translation id="789180354981963912">Bloquea cookies de terceros en incógnito:</translation>
 <translation id="789722939441020330">No permitir que los sitios descarguen varios archivos automáticamente</translation>
 <translation id="7940722705963108451">Recuérdamelo</translation>
 <translation id="7948081750384205628">Más información sobre <ph name="SETTING_TITLE" /></translation>

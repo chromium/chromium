@@ -3302,7 +3302,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3269175001434213183">Включете синхронизирането, за да създадете резервно копие на нещата си и да ги използвате на всяко устройство</translation>
 <translation id="3269612321104318480">Светло синьо-зелено и бяло</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}other{# файла}}</translation>
-<translation id="326999365752735949">Файлът с разликите се изтегля</translation>
 <translation id="3270965368676314374">Четене, промяна и изтриване на снимки, музика и друга мултимедия от компютъра ви</translation>
 <translation id="3275464924531706548">Свиване на „<ph name="HEADER" />“</translation>
 <translation id="3275778809241512831">Понастоящем вътрешният ви ключ за сигурност не е защитен. Моля, премахнете го от услугите, с които сте го използвали. За да отстраните проблема, нулирайте ключа за сигурност.</translation>
@@ -3559,6 +3558,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3450056559545492516">Показване на системни известия за съвети и функции на Chrome</translation>
 <translation id="3450157232394774192">Процент на използване в състояние на неактивност</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> изисква да се свържете с Wi-Fi сега и да изтеглите актуализация.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Споделяте този раздел с Gemini</translation>
 <translation id="345078987193237421">Това разрешава достъп до камерата за приложенията и уебсайтовете със съответното разрешение и за системните услуги</translation>
 <translation id="3451362021220965191">Изолираните уеб приложения контролират четците на смарткарти, за да получат достъп до поставените или представените им смарткарти. Обикновено смарткартите съдържат идентификационни данни, които служат за удостоверяване или упълномощаване на операции, влизане в услуги и т.н.</translation>
 <translation id="3452999110156026232">Достъп на родител</translation>
@@ -7387,6 +7387,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6151128161396960693">Уверете се, че имате доверие на човека, изпратил тази покана</translation>
 <translation id="6151771661215463137">Файлът вече съществува в папката ви с изтегляния.</translation>
 <translation id="6152918902620844577">Изчаква се следващата операция</translation>
+<translation id="6152929108650354050">Споделяте този раздел с Gemini</translation>
 <translation id="6153439704237222699">Научете повече за Do Not Track</translation>
 <translation id="6154240335466762404">Премахване на всички портове</translation>
 <translation id="615436196126345398">Протокол</translation>
@@ -9797,7 +9798,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7842692330619197998">Посетете g.co/ChromeEnterpriseAccount, ако трябва да създадете нов профил.</translation>
 <translation id="784273751836026224">Деинсталиране на Linux</translation>
 <translation id="784475655832336580">Функцията за открояване на елементи, върху които е поставен фокусът на клавиатурата, не е налице, когато екранният четец ChromeVox е включен</translation>
-<translation id="7844992432319478437">Файлът с разликите се актуализира</translation>
 <translation id="7846161022626028328">Възникна грешка. Опитайте отново.</translation>
 <translation id="7846296061357476882">Услуги на Google</translation>
 <translation id="7846634333498149051">Клавиатура</translation>

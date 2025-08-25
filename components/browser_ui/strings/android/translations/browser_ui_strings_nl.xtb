@@ -8,7 +8,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 • JavaScript-optimalisatie is uitgezet. <ph name="BEGIN_LINK2" />Site-uitzonderingen beheren<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Online openen</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
-<translation id="1044891598689252897">Sites werken naar behoren</translation>
 <translation id="1070329623210597193">Bestanden die deze site mag bekijken of bewerken</translation>
 <translation id="1073417869336441572">Help ons Chrome te verbeteren door ons te vertellen waarom je cookies van derden hebt toegestaan. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Je kunt vragen om de desktopversie van sites te bekijken</translation>
@@ -128,7 +127,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="2433507940547922241">Vormgeving</translation>
 <translation id="2434158240863470628">Download voltooid <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Je hebt deze site tijdelijk toestemming gegeven om cookies van derden te gebruiken. Je krijgt dan minder bescherming terwijl je browst, maar het is waarschijnlijker dat de sitefuncties werken zoals verwacht. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Functies op bepaalde sites werken misschien niet in de incognitomodus</translation>
 <translation id="2442870161001914531">Altijd desktopsite aanvragen</translation>
 <translation id="2445311670906052406">Chrome deelt nu je recente tabbladen met je apparaat. Je ziet ze in de app-lijst en zoekresultaten van je apparaat. Je kunt dit altijd uitzetten in de Chrome-instellingen.</translation>
 <translation id="245322989586167203">Sites maken meestal verbinding met seriële poorten voor functies voor gegevensoverdracht zoals je netwerk instellen</translation>
@@ -193,7 +191,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3123473560110926937">Geblokkeerd op bepaalde sites</translation>
 <translation id="3132996321662585180">Dagelijks vernieuwen</translation>
 <translation id="3143754809889689516">Afspelen vanaf het begin</translation>
-<translation id="3162899666601560689">Sites mogen cookies gebruiken om de browsefunctionaliteit te verbeteren, bijvoorbeeld door je ingelogd te houden of door artikelen in je winkelwagen te onthouden</translation>
 <translation id="3165022941318558018">Toestaan dat een site cookies van derden gebruikt</translation>
 <translation id="3167868116600277716">Discover-feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> opgeslagen gegevens</translation>
@@ -262,8 +259,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3895926599014793903">Zoom verplicht aan</translation>
 <translation id="3903738175795615004">Sleep vanaf de bovenkant of druk op Esc om het volledige scherm te sluiten.</translation>
 <translation id="3905475044299942653">Houd veel meldingen tegen</translation>
-<translation id="3908288065506437185">Cookies van derden blokkeren in de incognitomodus</translation>
-<translation id="3918378745482005425">Sommige functies werken misschien niet. Gerelateerde sites kunnen nog steeds cookies van derden gebruiken.</translation>
 <translation id="3922092564198021702">Open Instellingen op je telefoon</translation>
 <translation id="3933121352599513978">Ongewenste verzoeken samenvouwen (aanbevolen)</translation>
 <translation id="3955193568934677022">Toestaan dat sites beschermde content afspelen (aanbevolen)</translation>
@@ -320,7 +315,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="4566417217121906555">Microfoon uitzetten</translation>
 <translation id="4570913071927164677">Details</translation>
 <translation id="4578289292431526768">Aan de slag</translation>
-<translation id="4598549027014564149">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op sites te bekijken (ook niet op gerelateerde sites). Je browse-activiteit wordt bijvoorbeeld niet gebruikt om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="461356340001513807">Hiermee kun je inloggen bij websites met het account dat je hebt bij een identiteitsservice</translation>
 <translation id="4635969503923889910">Niet toestaan dat sites NFC-apparaten gebruiken</translation>
 <translation id="4644713492825682049">Verwijderen en resetten</translation>
@@ -398,7 +392,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="5515432237048785579">Blad onderaan voor Discover-feed is op volledige hoogte geopend</translation>
 <translation id="5516455585884385570">Instellingen voor meldingen openen</translation>
 <translation id="5527111080432883924">Vragen voordat sites toestemming krijgen om tekst en afbeeldingen vanaf het klembord te lezen (aanbevolen)</translation>
-<translation id="5545693483061321551">Sites kunnen je cookies niet gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="5553374991681107062">Nieuwste</translation>
 <translation id="5555115555607204100">Sites niet versnellen met de V8-engine van Chrome en Chrome iets beter bestand maken tegen aanvallen</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
@@ -415,7 +408,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="5700761515355162635">Cookies van derden toegestaan</translation>
 <translation id="5706552988683188916">Hiermee worden cookies en andere sitegegevens voor <ph name="WEBSITE" /> verwijderd</translation>
 <translation id="571222594670061844">Sites kunnen inlogprompts van identiteitsservices tonen</translation>
-<translation id="5723967018671998714">Cookies van derden worden geblokkeerd in de incognitomodus</translation>
 <translation id="5740126560802162366">Sites kunnen gegevens opslaan op je apparaat</translation>
 <translation id="5743425052258407233">Krijg toegang tot je geschiedenis op al je apparaten, zodat je makkelijk verder kunt gaan waar je gebleven was</translation>
 <translation id="5749158352074143502">Doorgaan met dit tabblad</translation>
@@ -594,7 +586,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7881140103901777395">Chrome beperkt het gebruik van cookies van derden voor de meeste sites. Cookies van derden zijn wel toegestaan op deze site omdat ze nodig zijn om basisservices te kunnen leveren.\n\nGa naar de instellingen om <ph name="BEGIN_LINK" />de toegang tot cookies van derden te beheren<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Geluid toestaan voor een specifieke site.</translation>
 <translation id="7891547341794213004">Kaart Doorgaan met dit tabblad verbergen</translation>
-<translation id="789180354981963912">Cookies van derden blokkeren in incognito:</translation>
 <translation id="789722939441020330">Niet toestaan dat sites automatisch meerdere bestanden downloaden</translation>
 <translation id="7940722705963108451">Herinner me eraan</translation>
 <translation id="7948081750384205628">Meer informatie over <ph name="SETTING_TITLE" /></translation>

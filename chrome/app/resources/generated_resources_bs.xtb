@@ -3305,7 +3305,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3269175001434213183">Uključite sinhronizaciju da napravite sigurnosnu kopiju svojih stvari i koristite ih na bilo kojem uređaju</translation>
 <translation id="3269612321104318480">Svijetlotirkizna i bijela</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fajl}one{# fajl}few{# fajla}other{# fajlova}}</translation>
-<translation id="326999365752735949">Preuzimanje razlika</translation>
 <translation id="3270965368676314374">Čitanje, izmjena i brisanje fotografija, muzike i drugih medija na vašem računaru</translation>
 <translation id="3275464924531706548">Sužavanje zaglavlja <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Vaš interni sigurnosni ključ trenutno nije siguran. Uklonite ga iz svih usluga za koje ste ga koristili. Vratite na zadano sigurnosni ključ da riješite problem.</translation>
@@ -9802,7 +9801,6 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7842692330619197998">Ako trebate kreirati novi račun, posjetite g.co/ChromeEnterpriseAccount.</translation>
 <translation id="784273751836026224">Deinstalirajte Linux</translation>
 <translation id="784475655832336580">Isticanje stavke fokusom tastature nije dostupno kada je ChromeVox uključen</translation>
-<translation id="7844992432319478437">Ažuriranje diff-a</translation>
 <translation id="7846161022626028328">Došlo je do greške. Pokušajte ponovo.</translation>
 <translation id="7846296061357476882">Googleove usluge</translation>
 <translation id="7846634333498149051">Tastatura</translation>

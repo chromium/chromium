@@ -3290,7 +3290,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3269175001434213183">Activa la sincronización para crear una copia de seguridad de tus datos y usarlos en cualquier dispositivo</translation>
 <translation id="3269612321104318480">Verde azulado claro y blanco</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Archivo}other{# archivos}}</translation>
-<translation id="326999365752735949">Descargando diff</translation>
 <translation id="3270965368676314374">Leer, cambiar y eliminar fotos, música y otro contenido multimedia desde tu computadora</translation>
 <translation id="3275464924531706548">Contraer <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Por el momento, tu llave de seguridad interna no es segura. Quítala de los servicios donde la hayas usado. Para resolver este problema, restablécela.</translation>
@@ -9783,7 +9782,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7842692330619197998">Visita g.co/ChromeEnterpriseAccount si necesitas crear una cuenta nueva.</translation>
 <translation id="784273751836026224">Desinstalar Linux</translation>
 <translation id="784475655832336580">La función para destacar el elemento con el enfoque del teclado no está disponible cuando ChromeVox está activado</translation>
-<translation id="7844992432319478437">Actualizando diff</translation>
 <translation id="7846161022626028328">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="7846296061357476882">Servicios de Google</translation>
 <translation id="7846634333498149051">Teclado</translation>

@@ -1257,6 +1257,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="679956319013005046">Da biste podesili željenu uslugu za automatsko popunjavanje, prvo dodajte uslugu u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Prozor će biti zatvoren</translation>
 <translation id="6803791793483522764">Pregledajte obaveštenja</translation>
+<translation id="6809470175540814047">Otvori u prozoru bez arhiviranja</translation>
 <translation id="6811034713472274749">Stranica je spremna za pregled</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Slike, 1 slika na listi}one{Slike, # slika na listi}few{Slike, # slike na listi}other{Slike, # slika na listi}}</translation>
 <translation id="6813446258015311409">Prijavljivanje u Chrome, otvoreno.</translation>

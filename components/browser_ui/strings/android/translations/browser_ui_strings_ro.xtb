@@ -8,7 +8,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 • instrumentul de optimizare pentru JavaScript este dezactivat. <ph name="BEGIN_LINK2" />Gestionează excepțiile pentru site-uri<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Deschide online</translation>
 <translation id="1036348656032585052">Dezactivează</translation>
-<translation id="1044891598689252897">Site-urile vor funcționa normal</translation>
 <translation id="1070329623210597193">Fișierele pe care le poate vedea sau modifica acest site</translation>
 <translation id="1073417869336441572">Ajută-ne să îmbunătățim Chrome spunându-ne de ce ai permis cookie-urile terță parte. <ph name="BEGIN_LINK" />Trimite feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Poți solicita să vezi versiunea pentru computer a site-urilor</translation>
@@ -128,7 +127,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="2433507940547922241">Aspect</translation>
 <translation id="2434158240863470628">Descărcare finalizată <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Ai permis temporar acestui site să utilizeze cookie-uri terță parte, ceea ce înseamnă mai puțină protecție la navigare, dar există șanse mai mari ca funcțiile site-ului să ruleze conform așteptărilor. <ph name="BEGIN_LINK" />Trimite feedback<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Este posibil ca funcțiile de pe anumite site-uri să nu ruleze în modul incognito</translation>
 <translation id="2442870161001914531">Solicită întotdeauna site-ul pentru computer</translation>
 <translation id="2445311670906052406">Chrome îți trimite acum filele recente pe dispozitiv. Le vei vedea în lista de aplicații a dispozitivului și în rezultatele căutării. Poți dezactiva oricând această opțiune din setările Chrome.</translation>
 <translation id="245322989586167203">Site-urile se conectează de obicei la porturi seriale pentru funcții de transfer de date, cum ar fi configurarea rețelei</translation>
@@ -193,7 +191,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3123473560110926937">Blocate pe anumite site-uri</translation>
 <translation id="3132996321662585180">Actualizează zilnic</translation>
 <translation id="3143754809889689516">Redă de la început</translation>
-<translation id="3162899666601560689">Site-urile pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături</translation>
 <translation id="3165022941318558018">Permite ca un site să folosească cookie-uri terță parte</translation>
 <translation id="3167868116600277716">Feedul Discover</translation>
 <translation id="3198916472715691905">Date stocate: <ph name="STORAGE_AMOUNT" /></translation>
@@ -262,8 +259,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3895926599014793903">Forțează activarea zoomului</translation>
 <translation id="3903738175795615004">Trage din partea de sus sau apasă pe tasta Esc pentru a ieși din ecranul complet.</translation>
 <translation id="3905475044299942653">Oprește numărul mare de notificări</translation>
-<translation id="3908288065506437185">Blochează cookie-urile terță parte în modul incognito</translation>
-<translation id="3918378745482005425">Este posibil ca unele funcții să nu ruleze. Site-urile asociate pot folosi în continuare cookie-uri terță parte.</translation>
 <translation id="3922092564198021702">Pe telefon, deschide Setări</translation>
 <translation id="3933121352599513978">Restrânge solicitările nedorite (recomandat)</translation>
 <translation id="3955193568934677022">Permite site-urilor să redea conținutul protejat (recomandat)</translation>
@@ -320,7 +315,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="4566417217121906555">Dezactivează sunetul microfonului</translation>
 <translation id="4570913071927164677">Detalii</translation>
 <translation id="4578289292431526768">Să începem!</translation>
-<translation id="4598549027014564149">În modul incognito, site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe site-uri, inclusiv site-urile conexe. Activitatea ta de navigare nu este folosită pentru acțiuni precum personalizarea anunțurilor. Este posibil ca funcțiile de pe anumite site-uri să nu ruleze.</translation>
 <translation id="461356340001513807">Îți dă posibilitatea să te conectezi pe site-uri folosind contul creat într-un serviciu de identitate</translation>
 <translation id="4635969503923889910">Nu permite site-urilor să folosească dispozitive NFC</translation>
 <translation id="4644713492825682049">Șterge și resetează</translation>
@@ -398,7 +392,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5515432237048785579">Foaia din partea de jos a feedului Discover deschisă la înălțimea completă</translation>
 <translation id="5516455585884385570">Deschide setările pentru notificări</translation>
 <translation id="5527111080432883924">Întreabă-mă înainte de a permite site-urilor să citească textul și imaginile din clipboard (recomandat)</translation>
-<translation id="5545693483061321551">Site-urile nu pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile. Este posibil ca funcțiile de pe anumite site-uri să nu funcționeze.</translation>
 <translation id="5553374991681107062">Cele mai recente</translation>
 <translation id="5555115555607204100">Nu accelera site-urile cu motorul V8 din Chrome, dar fă Chrome mai rezistent la atacuri</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
@@ -415,7 +408,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5700761515355162635">Sunt permise cookie-urile terță parte</translation>
 <translation id="5706552988683188916">Astfel, se șterg cookie-urile și alte date privind site-urile pentru <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Site-urile pot afișa solicitări de conectare de la servicii de identitate</translation>
-<translation id="5723967018671998714">Cookie-urile terță parte sunt blocate în modul Incognito</translation>
 <translation id="5740126560802162366">Site-urile pot salva date pe dispozitiv</translation>
 <translation id="5743425052258407233">Istoricul apare pe toate dispozitivele tale. Astfel, poți continua ceea ce făceai.</translation>
 <translation id="5749158352074143502">Continuă cu această filă</translation>
@@ -594,7 +586,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="7881140103901777395">Chrome restricționează folosirea cookie-urilor terță parte pentru majoritatea site-urilor. Totuși, cookie-urile terță parte sunt permise pe acest site, deoarece se bazează pe ele ca să ofere servicii de bază.\n\nAccesează setările pentru a <ph name="BEGIN_LINK" />gestiona accesul la cookie-urile terță parte<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permite sunetul pentru un anumit site.</translation>
 <translation id="7891547341794213004">Ascunde cardul Continuă cu această filă</translation>
-<translation id="789180354981963912">Blochează cookie-urile terță parte în modul incognito:</translation>
 <translation id="789722939441020330">Nu permite site-urilor să descarce automat mai multe fișiere</translation>
 <translation id="7940722705963108451">Reamintește-mi</translation>
 <translation id="7948081750384205628">Află mai multe despre <ph name="SETTING_TITLE" /></translation>

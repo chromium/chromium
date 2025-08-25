@@ -3290,7 +3290,6 @@
 <translation id="3269175001434213183">開啟同步功能即可備份資料，並在任何裝置上使用</translation>
 <translation id="3269612321104318480">淺藍綠色與白色</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{檔案}other{# 個檔案}}</translation>
-<translation id="326999365752735949">正在下載差異部分</translation>
 <translation id="3270965368676314374">讀取、變更及刪除你電腦中的相片、音樂及其他媒體</translation>
 <translation id="3275464924531706548">收合「<ph name="HEADER" />」</translation>
 <translation id="3275778809241512831">你的內部安全金鑰目前有安全疑慮，請將該金鑰從所有搭配使用的服務中移除。如要解決此問題，請重設安全金鑰。</translation>
@@ -9772,7 +9771,6 @@
 <translation id="7842692330619197998">如需建立新帳戶，請前往 g.co/ChromeEnterpriseAccount。</translation>
 <translation id="784273751836026224">解除安裝 Linux</translation>
 <translation id="784475655832336580">ChromeVox 開啟時無法使用鍵盤焦點醒目顯示項目</translation>
-<translation id="7844992432319478437">正在更新差異部分</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="7846296061357476882">Google 服務</translation>
 <translation id="7846634333498149051">鍵盤</translation>

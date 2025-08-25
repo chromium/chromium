@@ -1257,6 +1257,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="679956319013005046">Jos haluat valita automaattisen täytön palvelun, lisää se ensin <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Ikkuna suljetaan</translation>
 <translation id="6803791793483522764">Tarkista ilmoitukset</translation>
+<translation id="6809470175540814047">Avaa incognito-ikkunassa</translation>
 <translation id="6811034713472274749">Sivu on valmis näytettäväksi</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Kuvat, 1 kuva listassa}other{Kuvat, # kuvaa listassa}}</translation>
 <translation id="6813446258015311409">Kirjaudu Chromeen, avattu.</translation>

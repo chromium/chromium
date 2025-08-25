@@ -8,7 +8,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 • Mae "optimeiddiwr JavaScript" wedi'i ddiffodd. <ph name="BEGIN_LINK2" />Rheoli eithriadau gwefan<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Agor ar-lein</translation>
 <translation id="1036348656032585052">Diffodd</translation>
-<translation id="1044891598689252897">Bydd gwefannau'n gweithio fel arfer</translation>
 <translation id="1070329623210597193">Ffeiliau y gall y wefan hon eu gweld neu eu golygu</translation>
 <translation id="1073417869336441572">Helpwch ni i wella Chrome trwy ddweud wrthym pam eich bod wedi caniatáu cwcis trydydd parti. <ph name="BEGIN_LINK" />Anfon adborth<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Gallwch ofyn am weld y fersiwn bwrdd gwaith o wefannau</translation>
@@ -128,7 +127,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="2433507940547922241">Gwedd</translation>
 <translation id="2434158240863470628">Mae'r lawrlwythiad wedi'i gwblhau <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Rydych wedi caniatáu i'r wefan hon ddefnyddio cwcis trydydd parti dros dro, sy'n golygu llai o amddiffyniad pori ond mae nodweddion y wefan yn fwy tebygol o weithio yn ôl y disgwyl. <ph name="BEGIN_LINK" />Anfon adborth<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio yn y modd anhysbys</translation>
 <translation id="2442870161001914531">Gofyn am wefan bwrdd gwaith bob amser</translation>
 <translation id="2445311670906052406">Mae Chrome bellach yn rhannu'ch tabiau diweddar â'ch dyfais. Byddwch yn eu gweld yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch ddiffodd hwn unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="245322989586167203">Mae gwefannau fel arfer yn cysylltu â phyrth cyfresol ar gyfer nodweddion trosglwyddo data, megis gosod eich rhwydwaith</translation>
@@ -193,7 +191,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="3123473560110926937">Wedi'u rhwystro ar rai gwefannau</translation>
 <translation id="3132996321662585180">Adnewyddu'n ddyddiol</translation>
 <translation id="3143754809889689516">Chwarae o'r dechrau</translation>
-<translation id="3162899666601560689">Gall gwefannau ddefnyddio cwcis i wella'ch profiad pori, er enghraifft, i'ch cadw bod wedi'ch mewngofnodi neu i gofio eitemau yn eich basged siopa</translation>
 <translation id="3165022941318558018">Caniatáu i wefan ddefnyddio cwcis trydydd parti</translation>
 <translation id="3167868116600277716">Ffrwd darganfod</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> data a storiwyd</translation>
@@ -262,8 +259,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="3895926599014793903">Gorfodi galluogi chwyddo</translation>
 <translation id="3903738175795615004">Llusgwch o'r brig neu pwyswch y fysell Esc i adael y sgrîn lawn.</translation>
 <translation id="3905475044299942653">Atal llawer o hysbysiadau</translation>
-<translation id="3908288065506437185">Rhwystro cwcis trydydd parti yn y modd Anhysbys</translation>
-<translation id="3918378745482005425">Mae'n bosib na fydd rhai nodweddion yn gweithio. Gall gwefannau cysylltiedig barhau i ddefnyddio cwcis trydydd parti.</translation>
 <translation id="3922092564198021702">Ar eich ffôn, agorwch y Gosodiadau</translation>
 <translation id="3933121352599513978">Crebachu ceisiadau digroeso (argymhellir)</translation>
 <translation id="3955193568934677022">Caniatáu i wefannau chwarae cynnwys gwarchodedig (argymhellir)</translation>
@@ -320,7 +315,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="4566417217121906555">Distewi'r meicroffon</translation>
 <translation id="4570913071927164677">Manylion</translation>
 <translation id="4578289292431526768">I ffwrdd â ni</translation>
-<translation id="4598549027014564149">Tra yn y modd Anhysbys, ni all gwefannau ddefnyddio'ch cwcis i weld eich gweithgarwch pori ar draws gwefannau, hyd yn oed gwefannau cysylltiedig. Nid yw eich gweithgarwch pori yn cael ei ddefnyddio ar gyfer pethau megis personoleiddio hysbysebion. Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>
 <translation id="461356340001513807">Yn gadael i chi fewngofnodi i wefannau gan ddefnyddio'r cyfrif sydd gennych gyda gwasanaeth hunaniaeth</translation>
 <translation id="4635969503923889910">Peidiwch â chaniatáu i wefannau ddefnyddio dyfeisiau NFC</translation>
 <translation id="4644713492825682049">Dileu ac ailosod</translation>
@@ -398,7 +392,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="5515432237048785579">Dalen waelod ffrwd darganfod wedi'i hagor ar uchder llawn</translation>
 <translation id="5516455585884385570">Agor y gosodiadau hysbysu</translation>
 <translation id="5527111080432883924">Gofyn cyn caniatáu i wefannau ddarllen testun a lluniau o'r clipfwrdd (argymhellir)</translation>
-<translation id="5545693483061321551">Ni all gwefannau ddefnyddio eich cwcis i weld eich gweithgarwch pori ar draws gwahanol wefannau, er enghraifft, i bersonoleiddio hysbysebion. Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>
 <translation id="5553374991681107062">Diweddaraf</translation>
 <translation id="5555115555607204100">Peidio â chyflymu gwefannau gydag injan V8 Chrome ond gwneud Chrome ychydig yn fwy galluog i wrthsefyll ymosodiadau</translation>
 <translation id="5556459405103347317">Ail-lwytho</translation>
@@ -415,7 +408,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="5700761515355162635">Caniateir cwcis trydydd parti</translation>
 <translation id="5706552988683188916">Mae hyn yn dileu cwcis a data gwefan eraill ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Gall gwefannau ddangos anogwyr mewngofnodi o wasanaethau hunaniaeth</translation>
-<translation id="5723967018671998714">Mae cwcis trydydd parti wedi'u rhwystro yn y Modd Anhysbys</translation>
 <translation id="5740126560802162366">Gall gwefannau gadw data ar eich dyfais</translation>
 <translation id="5743425052258407233">Cewch eich hanes ar eich holl ddyfeisiau, fel y barhau â'r hyn yr oeddech yn ei wneud yn hawdd</translation>
 <translation id="5749158352074143502">Parhau gyda'r tab hwn</translation>
@@ -594,7 +586,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="7881140103901777395">Mae Chrome yn cyfyngu ar y rhan fwyaf o wefannau rhag defnyddio cwcis trydydd parti. Ond caniateir cwcis trydydd parti ar y wefan hon oherwydd ei bod yn dibynnu arnynt i ddarparu gwasanaethau sylfaenol.\n\nEwch i'r gosodiadau i <ph name="BEGIN_LINK" />reoli mynediad at gwcis trydydd parti<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Caniatáu sain ar gyfer gwefan benodol.</translation>
 <translation id="7891547341794213004">Cuddio cerdyn parhau â'r tab hwn</translation>
-<translation id="789180354981963912">Rhwystro cwcis trydydd parti yn y Modd Anhysbys:</translation>
 <translation id="789722939441020330">Peidio â chaniatáu i wefannau lawrlwytho mwy nag un ffeil yn awtomatig</translation>
 <translation id="7940722705963108451">Atgoffwch fi</translation>
 <translation id="7948081750384205628">Dysgu rhagor am <ph name="SETTING_TITLE" /></translation>

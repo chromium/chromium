@@ -3295,7 +3295,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3269175001434213183">Zapnite synchronizáciu a zálohujte svoj obsah, pričom ho môžete používať v ľubovoľnom zariadení</translation>
 <translation id="3269612321104318480">Svetlá modrozelená a biela</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Súbor}few{# súbory}many{# files}other{# súborov}}</translation>
-<translation id="326999365752735949">Súbor diff sa sťahuje</translation>
 <translation id="3270965368676314374">Čítať, meniť a odstraňovať fotky, hudbu a ďalšie médiá z počítača</translation>
 <translation id="3275464924531706548">Zbaliť <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Váš interný bezpečnostný kľúč je momentálne nezabezpečený. Odstráňte ho zo všetkých služieb, v ktorých ste ho používali. Problém vyriešite jeho resetovaním.</translation>
@@ -9789,7 +9788,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7842692330619197998">Ak chcete vytvoriť nový účet, prejdite na g.co/ChromeEnterpriseAccount.</translation>
 <translation id="784273751836026224">Odinštalovať systém Linux</translation>
 <translation id="784475655832336580">Zvýraznenie položky označením na klávesnici nie je k dispozícii, keď je čítačka ChromeVox zapnutá</translation>
-<translation id="7844992432319478437">Súbor diff sa aktualizuje</translation>
 <translation id="7846161022626028328">Vyskytla sa chyba. Skúste to znova.</translation>
 <translation id="7846296061357476882">Služby Googlu</translation>
 <translation id="7846634333498149051">Klávesnica</translation>

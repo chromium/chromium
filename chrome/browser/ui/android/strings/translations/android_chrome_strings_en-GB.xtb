@@ -1257,6 +1257,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="679956319013005046">To set your preferred service for autofill, first add the service in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" /> .</translation>
 <translation id="6802555630140434547">The window will be closed</translation>
 <translation id="6803791793483522764">Review notifications</translation>
+<translation id="6809470175540814047">Open in Incognito window</translation>
 <translation id="6811034713472274749">Page is ready to view</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Images, 1 image in list}other{Images, # images in list}}</translation>
 <translation id="6813446258015311409">Sign in to Chrome, opened.</translation>

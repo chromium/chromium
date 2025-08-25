@@ -8,7 +8,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 • L'option "Optimiseur JavaScript" est désactivée. <ph name="BEGIN_LINK2" />Gérer les exceptions de site<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Ouvrir la version en ligne</translation>
 <translation id="1036348656032585052">Désactiver</translation>
-<translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="1070329623210597193">Fichiers que ce site peut afficher ou modifier</translation>
 <translation id="1073417869336441572">Aidez-nous à améliorer Chrome en nous indiquant pourquoi vous avez autorisé les cookies tiers. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Vous pouvez demander à voir la version classique des sites</translation>
@@ -128,7 +127,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="2433507940547922241">Apparence</translation>
 <translation id="2434158240863470628">Téléchargement terminé <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Vous avez temporairement autorisé ce site à utiliser des cookies tiers. La navigation est donc moins sécurisée, mais les fonctionnalités du site ont plus de chances de fonctionner comme prévu. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Il est possible que les fonctionnalités de certains sites ne soient pas opérationnelles en mode navigation privée</translation>
 <translation id="2442870161001914531">Toujours demander la version pour ordinateur</translation>
 <translation id="2445311670906052406">Chrome partage désormais vos onglets récents avec votre appareil. Vous les verrez dans la liste d'applis et les résultats de recherche de votre appareil. Vous pouvez désactiver cette option à tout moment dans les paramètres de Chrome.</translation>
 <translation id="245322989586167203">Les sites se connectent généralement aux ports série pour transférer des données, par exemple pour configurer votre réseau</translation>
@@ -193,7 +191,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3123473560110926937">Bloqué sur certains sites</translation>
 <translation id="3132996321662585180">Actualiser quotidiennement</translation>
 <translation id="3143754809889689516">Lire depuis le début</translation>
-<translation id="3162899666601560689">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation, par exemple pour vous maintenir connecté ou se souvenir des articles de votre panier</translation>
 <translation id="3165022941318558018">Autorisez un site à utiliser des cookies tiers</translation>
 <translation id="3167868116600277716">Flux Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de données stockées</translation>
@@ -262,8 +259,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3895926599014793903">Forcer l'activation du zoom</translation>
 <translation id="3903738175795615004">Faites glisser un doigt du haut vers le bas ou appuyez sur Échap pour quitter le plein écran.</translation>
 <translation id="3905475044299942653">Arrêter les nombreuses notifications</translation>
-<translation id="3908288065506437185">Bloquer les cookies tiers en mode navigation privée</translation>
-<translation id="3918378745482005425">Certaines fonctionnalités sont susceptibles de ne pas fonctionner. Les sites associés peuvent toujours utiliser des cookies tiers.</translation>
 <translation id="3922092564198021702">Sur votre téléphone, ouvrez Paramètres.</translation>
 <translation id="3933121352599513978">Réduire les demandes indésirables (recommandé)</translation>
 <translation id="3955193568934677022">Autoriser les sites à lire les contenus protégés (recommandé)</translation>
@@ -320,7 +315,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="4566417217121906555">Désactiver le micro</translation>
 <translation id="4570913071927164677">Détails</translation>
 <translation id="4578289292431526768">C'est parti</translation>
-<translation id="4598549027014564149">En mode navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des sites, même sur les sites associés. Votre activité de navigation n'est pas utilisée pour personnaliser les annonces, par exemple. Il est possible que les fonctionnalités de certains sites ne fonctionnent pas.</translation>
 <translation id="461356340001513807">Permet de vous connecter à des sites Web avec votre compte enregistré auprès d'un service d'identité</translation>
 <translation id="4635969503923889910">Ne pas autoriser les sites à utiliser des appareils NFC</translation>
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
@@ -398,7 +392,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="5515432237048785579">Bottom sheet du flux Discover ouvert à pleine hauteur</translation>
 <translation id="5516455585884385570">Ouvrir les paramètres de notification</translation>
 <translation id="5527111080432883924">Demander avant d'autoriser les sites à accéder en lecture au texte et aux images du presse-papiers (recommandé)</translation>
-<translation id="5545693483061321551">Les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent ne pas fonctionner.</translation>
 <translation id="5553374991681107062">Les plus récents</translation>
 <translation id="5555115555607204100">Ne pas accélérer les sites avec le moteur V8 de Chrome, mais rendre Chrome légèrement plus résistant aux attaques</translation>
 <translation id="5556459405103347317">Actualiser</translation>
@@ -415,7 +408,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="5700761515355162635">Cookies tiers autorisés</translation>
 <translation id="5706552988683188916">Cette action supprimera les cookies et les autres données de site pour <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Les sites peuvent afficher les invites de connexion des services d'identité</translation>
-<translation id="5723967018671998714">Les cookies tiers sont bloqués lorsque vous utilisez le mode navigation privée</translation>
 <translation id="5740126560802162366">Les sites peuvent enregistrer des données sur votre appareil</translation>
 <translation id="5743425052258407233">Accédez à votre historique sur vos appareils pour reprendre facilement là où vous vous étiez arrêté</translation>
 <translation id="5749158352074143502">Continuer avec cet onglet</translation>
@@ -594,7 +586,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="7881140103901777395">Chrome empêche la plupart des sites d'utiliser des cookies tiers. Cependant, ils sont autorisés sur ce site, car il en a besoin pour fournir des services de base.\n\nAccédez aux paramètres pour <ph name="BEGIN_LINK" />gérer l'accès aux cookies tiers<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Autorisez le son pour un site spécifique.</translation>
 <translation id="7891547341794213004">Masquer la carte "Continuer avec cet onglet"</translation>
-<translation id="789180354981963912">Bloquer les cookies tiers en mode navigation privée :</translation>
 <translation id="789722939441020330">Ne pas autoriser les sites à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="7940722705963108451">M'envoyer un rappel</translation>
 <translation id="7948081750384205628">En savoir plus sur le <ph name="SETTING_TITLE" /></translation>

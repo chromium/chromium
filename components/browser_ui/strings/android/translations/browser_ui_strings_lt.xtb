@@ -8,7 +8,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 • Parinktis „JavaScript“ optimizavimo priemonė“ išjungta. <ph name="BEGIN_LINK2" />Tvarkyti svetainės išimtis<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Atidaryti prisijungus</translation>
 <translation id="1036348656032585052">Išjungti</translation>
-<translation id="1044891598689252897">Svetainės veiks įprastai</translation>
 <translation id="1070329623210597193">Failai, kuriuos ši svetainė gali peržiūrėti arba redaguoti</translation>
 <translation id="1073417869336441572">Padėkite mums tobulinti „Chrome“ nurodydami, kodėl leidote trečiųjų šalių slapukus. <ph name="BEGIN_LINK" />Išsiųskite atsiliepimą<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Galite prašyti peržiūrėti svetainių versiją staliniams kompiuteriams</translation>
@@ -128,7 +127,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="2433507940547922241">Išvaizda</translation>
 <translation id="2434158240863470628">Atsisiųsta: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Laikinai leidote šiai svetainei naudoti trečiųjų šalių slapukus, dėl kurių teikiama silpnesnė naršymo apsauga, bet labiau tikėtina, kad svetainės funkcijos veiks, kaip numatyta. <ph name="BEGIN_LINK" />Išsiųskite atsiliepimą<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Kai kurių svetainių funkcijos gali neveikti inkognito režimu</translation>
 <translation id="2442870161001914531">Visada galite pateikti užklausą dėl svetainės staliniams kompiuteriams</translation>
 <translation id="2445311670906052406">Dabar „Chrome“ bendrina pastaruosius skirtukus su įrenginiu. Juos matysite įrenginio programų sąraše ir paieškos rezultatuose. Galite bet kada išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="245322989586167203">Paprastai svetainėse prisijungiama prie nuosekliųjų prievadų vykdant duomenų perkėlimo funkcijas, pvz., nustatant tinklą</translation>
@@ -193,7 +191,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3123473560110926937">Užblokuota kai kuriose svetainėse</translation>
 <translation id="3132996321662585180">Atnaujinti kasdien</translation>
 <translation id="3143754809889689516">Paleisti nuo pradžios</translation>
-<translation id="3162899666601560689">Svetainės gali naudoti slapukus naršymo kokybei pagerinti, pavyzdžiui, kad liktumėte prisijungę ar būtų įsimintos pirkinių krepšelyje esančios prekės</translation>
 <translation id="3165022941318558018">Leisti svetainėje naudoti trečiųjų šalių slapukus</translation>
 <translation id="3167868116600277716">„Discover“ sklaidos kanalas</translation>
 <translation id="3198916472715691905">Išsaugota duomenų: <ph name="STORAGE_AMOUNT" /></translation>
@@ -262,8 +259,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3895926599014793903">Priverstinai įgalinti mastelio keitimą</translation>
 <translation id="3903738175795615004">Vilkite nuo viršaus arba paspauskite „Esc“, kad išeitumėte iš viso ekrano režimo.</translation>
 <translation id="3905475044299942653">Daugybės pranešimų sustabdymas</translation>
-<translation id="3908288065506437185">Blokuoti trečiųjų šalių slapukus inkognito režimu</translation>
-<translation id="3918378745482005425">Gali neveikti kai kurios funkcijos. Susijusios svetainės vis tiek gali naudoti trečiųjų šalių slapukus.</translation>
 <translation id="3922092564198021702">Telefone atidarykite skiltį „Nustatymai“</translation>
 <translation id="3933121352599513978">Sutraukti nepageidaujamas užklausas (rekomenduojama)</translation>
 <translation id="3955193568934677022">Leisti svetainėms paleisti apsaugotą turinį (rekomenduojama)</translation>
@@ -320,7 +315,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="4566417217121906555">Nutildyti mikrofoną</translation>
 <translation id="4570913071927164677">Išsami informacija</translation>
 <translation id="4578289292431526768">Pirmyn</translation>
-<translation id="4598549027014564149">Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie jūsų naršymo veiklą skirtingose ar susijusiose svetainėse. Jūsų naršymo veikla nenaudojama skelbimams suasmeninti. Funkcijos gali neveikti kai kuriose svetainėse.</translation>
 <translation id="461356340001513807">Leidžiama prisijungti prie svetainių naudojant tapatybės paslaugos paskyrą</translation>
 <translation id="4635969503923889910">Neleisti svetainėms naudoti NFC įrenginių</translation>
 <translation id="4644713492825682049">Ištrinti ir nustatyti iš naujo</translation>
@@ -398,7 +392,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="5515432237048785579">„Discover“ sklaidos kanalo apatinis lapas atidarytas per visą aukštį</translation>
 <translation id="5516455585884385570">Atidaryti pranešimų nustatymus</translation>
 <translation id="5527111080432883924">Klausti, prieš leidžiant svetainėms skaityti tekstą ir vaizdus iš iškarpinės (rekomenduojama)</translation>
-<translation id="5545693483061321551">Svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus. Funkcijos gali neveikti kai kuriose svetainėse.</translation>
 <translation id="5553374991681107062">Naujausi</translation>
 <translation id="5555115555607204100">Nespartinti svetainių naudojant „Chrome“ V8 variklį, bet padaryti „Chrome“ šiek tiek atsparesnę atakoms</translation>
 <translation id="5556459405103347317">Įkelti iš naujo</translation>
@@ -415,7 +408,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="5700761515355162635">Trečiųjų šalių slapukai leidžiami</translation>
 <translation id="5706552988683188916">Bus ištrinti <ph name="WEBSITE" /> slapukai ir kiti svetainės duomenys</translation>
 <translation id="571222594670061844">Svetainėse gali būti rodomi raginimai prisijungti iš tapatybės nustatymo paslaugų</translation>
-<translation id="5723967018671998714">Trečiosios šalies slapukai užblokuoti inkognito režimu</translation>
 <translation id="5740126560802162366">Svetainės gali išsaugoti duomenis įrenginyje</translation>
 <translation id="5743425052258407233">Gaukite istoriją visuose įrenginiuose, kad galėtumėte lengvai tęsti darbą nuo ten, kur baigėte</translation>
 <translation id="5749158352074143502">Tęsti naudojant šį skirtuką</translation>
@@ -594,7 +586,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7881140103901777395">„Chrome“ daugelyje svetainių riboja trečiųjų šalių slapukų naudojimą. Tačiau trečiųjų šalių slapukai leidžiami šioje svetainėje, nes jie priklauso nuo jų teikiamų pagrindinių paslaugų.\n\nApsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti prieigą prie trečiųjų šalių slapukų<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Konkrečios svetainės garso leidimas.</translation>
 <translation id="7891547341794213004">Slėpti kortelę „Tęsti naudojant šį skirtuką“</translation>
-<translation id="789180354981963912">Blokuoti trečiųjų šalių slapukus inkognito režimu:</translation>
 <translation id="789722939441020330">Neleisti svetainėms automatiškai atsisiųsti kelių failų</translation>
 <translation id="7940722705963108451">Priminti</translation>
 <translation id="7948081750384205628">Sužinokite daugiau apie nustatytmą „<ph name="SETTING_TITLE" />“</translation>

@@ -8,7 +8,6 @@
 • 'JavaScript 옵티마이저'를 사용 중지합니다. <ph name="BEGIN_LINK2" />사이트 예외 관리<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">온라인 열기</translation>
 <translation id="1036348656032585052">사용 중지</translation>
-<translation id="1044891598689252897">사이트가 정상적으로 작동합니다.</translation>
 <translation id="1070329623210597193">이 사이트에서 볼 수 있거나 수정할 수 있는 파일</translation>
 <translation id="1073417869336441572">서드 파티 쿠키를 허용한 이유를 알려주시면 Chrome을 개선하는 데 도움이 됩니다. <ph name="BEGIN_LINK" />의견 보내기<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">사이트의 데스크톱 버전을 표시하도록 요청할 수 있습니다.</translation>
@@ -128,7 +127,6 @@
 <translation id="2433507940547922241">모양</translation>
 <translation id="2434158240863470628">다운로드 완료: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">이 사이트에서 서드 파티 쿠키가 일시적으로 허용되었습니다. 보안이 취약해졌지만 사이트 기능이 예상대로 작동할 가능성은 높아졌습니다. <ph name="BEGIN_LINK" />의견 보내기<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">시크릿 모드에서는 일부 사이트의 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="2442870161001914531">항상 데스크톱 사이트 요청</translation>
 <translation id="2445311670906052406">이제 Chrome에서 내 기기와 최근 탭을 공유합니다. 최근 탭이 기기의 앱 목록과 검색 결과에 표시됩니다. 이 기능은 Chrome 설정에서 언제든지 사용 중지할 수 있습니다.</translation>
 <translation id="245322989586167203">사이트에서는 일반적으로 네트워크 설정과 같은 데이터 전송 기능을 사용하기 위해 직렬 포트에 연결합니다.</translation>
@@ -193,7 +191,6 @@
 <translation id="3123473560110926937">일부 사이트에서 차단됨</translation>
 <translation id="3132996321662585180">매일 새로고침</translation>
 <translation id="3143754809889689516">처음부터 재생</translation>
-<translation id="3162899666601560689">사이트에서 사용자의 로그인 상태를 유지하거나 장바구니에 담긴 상품을 기억하는 등 탐색 환경을 개선하기 위해 쿠키를 사용할 수 있습니다.</translation>
 <translation id="3165022941318558018">사이트에서 서드 파티 쿠키를 사용하도록 허용합니다</translation>
 <translation id="3167868116600277716">디스커버 피드</translation>
 <translation id="3198916472715691905">저장 데이터 <ph name="STORAGE_AMOUNT" /></translation>
@@ -262,8 +259,6 @@
 <translation id="3895926599014793903">확대/축소 강제 사용</translation>
 <translation id="3903738175795615004">전체 화면을 종료하려면 위에서 드래그하거나 Esc 키를 누르세요.</translation>
 <translation id="3905475044299942653">많은 알림 중지</translation>
-<translation id="3908288065506437185">시크릿 모드에서 서드 파티 쿠키 차단</translation>
-<translation id="3918378745482005425">일부 기능이 작동하지 않을 수 있습니다. 관련 사이트에서는 계속 서드 파티 쿠키를 사용할 수 있습니다.</translation>
 <translation id="3922092564198021702">휴대전화에서 설정을 엽니다.</translation>
 <translation id="3933121352599513978">원치 않는 요청 접기(권장)</translation>
 <translation id="3955193568934677022">사이트에서 보호된 콘텐츠를 재생하도록 허용(권장)</translation>
@@ -320,7 +315,6 @@
 <translation id="4566417217121906555">마이크 음소거</translation>
 <translation id="4570913071927164677">세부정보</translation>
 <translation id="4578289292431526768">시작</translation>
-<translation id="4598549027014564149">시크릿 모드인 경우 사이트에서 쿠키를 사용해 관련 사이트 등 사용자의 사이트 탐색 활동을 볼 수 없습니다. 사용자의 탐색 활동은 광고 개인 최적화 등의 목적으로 사용되지 않습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="461356340001513807">가지고 있는 ID 서비스 계정으로 웹사이트에 로그인할 수 있습니다.</translation>
 <translation id="4635969503923889910">사이트에서 NFC 기기를 사용할 수 없음</translation>
 <translation id="4644713492825682049">삭제 및 재설정</translation>
@@ -398,7 +392,6 @@
 <translation id="5515432237048785579">디스커버 피드 하단 시트가 전체 높이로 열림</translation>
 <translation id="5516455585884385570">알림 설정 열기</translation>
 <translation id="5527111080432883924">사이트에서 클립보드의 텍스트 및 이미지에 액세스하도록 허용하기 전에 확인(권장)</translation>
-<translation id="5545693483061321551">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="5553374991681107062">최신</translation>
 <translation id="5555115555607204100">Chrome의 V8 엔진으로 사이트 속도를 높이지 않지만 Chrome이 공격에 약간 더 강해집니다.</translation>
 <translation id="5556459405103347317">새로고침</translation>
@@ -415,7 +408,6 @@
 <translation id="5700761515355162635">서드 파티 쿠키 허용됨</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" />의 쿠키 및 기타 사이트 데이터가 삭제됩니다.</translation>
 <translation id="571222594670061844">사이트에서 ID 서비스의 로그인 메시지를 표시할 수 있음</translation>
-<translation id="5723967018671998714">시크릿 모드에서는 타사 쿠키가 차단됨</translation>
 <translation id="5740126560802162366">사이트에서 기기에 데이터를 저장할 수 있습니다.</translation>
 <translation id="5743425052258407233">모든 기기에서 방문 기록을 확인하면 중단한 부분부터 쉽게 다시 시작할 수 있습니다.</translation>
 <translation id="5749158352074143502">이 탭으로 계속</translation>
@@ -594,7 +586,6 @@
 <translation id="7881140103901777395">Chrome은 대부분의 사이트에서 서드 파티 쿠키를 사용하지 못하도록 제한합니다. 하지만 이 사이트에서는 서드 파티 쿠키를 사용하여 기본 서비스를 제공하기 때문에 서드 파티 쿠키가 허용됩니다.\n\n설정으로 이동하여 <ph name="BEGIN_LINK" />서드 파티 쿠키 액세스를 관리<ph name="END_LINK" />하세요.</translation>
 <translation id="7882806643839505685">특정 사이트에서 소리를 재생하도록 허용합니다.</translation>
 <translation id="7891547341794213004">'이 탭 카드로 계속하기' 카드 숨기기</translation>
-<translation id="789180354981963912">시크릿 모드에서 서드 파티 쿠키 차단:</translation>
 <translation id="789722939441020330">사이트에서 여러 개의 파일을 자동으로 다운로드하도록 허용하지 않음</translation>
 <translation id="7940722705963108451">알림</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" />에 관해 자세히 알아보기</translation>

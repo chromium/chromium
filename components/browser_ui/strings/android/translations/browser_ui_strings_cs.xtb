@@ -8,7 +8,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 • Optimalizátor JavaScriptu je vypnutý. <ph name="BEGIN_LINK2" />Spravovat výjimky pro konkrétní weby<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Otevřít online</translation>
 <translation id="1036348656032585052">Vypnout</translation>
-<translation id="1044891598689252897">Weby budou fungovat normálně</translation>
 <translation id="1070329623210597193">Soubory, které může tento web prohlížet nebo upravovat</translation>
 <translation id="1073417869336441572">Pomozte nám vylepšit Chrome tím, že nám sdělíte, proč jste povolili soubory cookie třetích stran. <ph name="BEGIN_LINK" />Odeslat zpětnou vazbu<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Můžete požádat o zobrazení verze webů pro počítače</translation>
@@ -128,7 +127,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="2433507940547922241">Vzhled</translation>
 <translation id="2434158240863470628">Stažení bylo dokončeno <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Dočasně jste tomuto webu povolili používat soubory cookie třetích stran, což znamená, že při procházení budete méně chráněni, ale funkce webů budou s větší pravděpodobností fungovat správně. <ph name="BEGIN_LINK" />Odeslat zpětnou vazbu<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Některé weby nemusejí v anonymním režimu fungovat správně</translation>
 <translation id="2442870161001914531">Vždy požadovat zobrazení na počítači</translation>
 <translation id="2445311670906052406">Chrome teď nedávno použité karty sdílí se zařízením. Uvidíte je v seznamu aplikací v zařízení a ve výsledcích vyhledávání. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="245322989586167203">Weby se k sériovým portům obvykle připojují kvůli přenosu dat, například při nastavování sítě</translation>
@@ -193,7 +191,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3123473560110926937">Na některých webech blokováno</translation>
 <translation id="3132996321662585180">Každý den obnovit</translation>
 <translation id="3143754809889689516">Přehrát od začátku</translation>
-<translation id="3162899666601560689">Weby mohou používat soubory cookie ke zlepšování prostředí při prohlížení, například si pomocí nich mohou pamatovat vaše přihlášení a položky v nákupním košíku</translation>
 <translation id="3165022941318558018">Povolení, aby web používal soubory cookie třetích stran</translation>
 <translation id="3167868116600277716">Feed Objevit</translation>
 <translation id="3198916472715691905">Uložená data: <ph name="STORAGE_AMOUNT" /></translation>
@@ -262,8 +259,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3895926599014793903">Vynutit aktivaci přiblížení</translation>
 <translation id="3903738175795615004">Režim celé obrazovky ukončíte přetažením shora nebo stisknutím klávesy Esc.</translation>
 <translation id="3905475044299942653">Zastavit spousty oznámení</translation>
-<translation id="3908288065506437185">V anonymním režimu blokovat soubory cookie třetích stran</translation>
-<translation id="3918378745482005425">Některé funkce mohou být omezeny. Související weby mohou soubory cookie třetích stran používat i nadále.</translation>
 <translation id="3922092564198021702">V telefonu přejděte do Nastavení</translation>
 <translation id="3933121352599513978">Sbalit nechtěné žádosti (doporučeno)</translation>
 <translation id="3955193568934677022">Povolit webům přehrávat chráněný obsah (doporučeno)</translation>
@@ -320,7 +315,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="4566417217121906555">Vypnout mikrofon</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4578289292431526768">Jdeme na to</translation>
-<translation id="4598549027014564149">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na webech, a to ani na souvisejících webech. Vaše aktivita prohlížení se nepoužívá například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="461356340001513807">Umožňuje přihlašovat se na weby pomocí účtu služby identity</translation>
 <translation id="4635969503923889910">Nepovolovat webům používat zařízení NFC</translation>
 <translation id="4644713492825682049">Vymazat a resetovat</translation>
@@ -398,7 +392,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="5515432237048785579">Spodní panel Feed Objevit otevřený na celou výšku</translation>
 <translation id="5516455585884385570">Otevřít nastavení oznámení</translation>
 <translation id="5527111080432883924">Zeptat se, než bude webům povolen přístup k textu a obrázkům zkopírovaným do schránky (doporučeno)</translation>
-<translation id="5545693483061321551">Weby nemohou pomocí souborů sledovat vaši aktivitu prohlížení na různých webech, například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="5553374991681107062">Nejnovější</translation>
 <translation id="5555115555607204100">Nezrychlovat v Chromu weby pomocí modulu V8, a trochu tak zvýšit odolnost Chromu vůči útokům</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
@@ -415,7 +408,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="5700761515355162635">Soubory cookie třetích stran jsou povoleny</translation>
 <translation id="5706552988683188916">Touto akcí smažete soubory cookie a další data webu <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Weby mohou zobrazovat výzvy k přihlášení od služeb ověření identity</translation>
-<translation id="5723967018671998714">Soubory cookie třetích stran jsou v anonymním režimu blokovány</translation>
 <translation id="5740126560802162366">Weby mohou ukládat data na vašem zařízení</translation>
 <translation id="5743425052258407233">Synchronizujte svou historii do všech svých zařízení, abyste mohli snadno pokračovat, kde jste přestali</translation>
 <translation id="5749158352074143502">Pokračovat s touto kartou</translation>
@@ -594,7 +586,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="7881140103901777395">Chrome většině webů omezuje používání souborů cookie třetích stran. Na tomto webu jsou však soubory cookie třetích stran povoleny, protože je potřebuje k poskytování základních služeb.\n\nPokud chcete <ph name="BEGIN_LINK" />spravovat přístup k souborům cookie třetích stran<ph name="END_LINK" />, přejděte do nastavení.</translation>
 <translation id="7882806643839505685">Zapne zvuk na konkrétním webu.</translation>
 <translation id="7891547341794213004">Skrýt kartu Pokračovat s touto kartou</translation>
-<translation id="789180354981963912">V anonymním režimu blokovat soubory cookie třetích stran:</translation>
 <translation id="789722939441020330">Nepovolovat webům stahovat automaticky několik souborů</translation>
 <translation id="7940722705963108451">Připomenout</translation>
 <translation id="7948081750384205628">Další informace o nastavení <ph name="SETTING_TITLE" /></translation>

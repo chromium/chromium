@@ -1257,6 +1257,7 @@
 <translation id="679956319013005046">За да зададете предпочитаната от вас услуга за автоматично попълване, първо я добавете от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Прозорецът ще бъде затворен</translation>
 <translation id="6803791793483522764">Преглед на известията</translation>
+<translation id="6809470175540814047">Отваряне на прозорец в режим „инкогнито“</translation>
 <translation id="6811034713472274749">Страницата е готова за преглед</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Изображения, 1 изображение в списъка}other{Изображения, # изображения в списъка}}</translation>
 <translation id="6813446258015311409">Вход в Chrome – отворено.</translation>
@@ -1341,6 +1342,7 @@
 <translation id="7111822978084196600">Наименувайте този прозорец</translation>
 <translation id="7115358764509798967">Стандартно за системата</translation>
 <translation id="7117485132243600300">Управление на съдържанието, което следвате, и на предложените теми и търсения</translation>
+<translation id="7119984597597798764">Затваряне на <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Прегледани са разрешенията за 1 сайт}other{Прегледани са разрешенията за # сайта}}</translation>
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7140829094791862589">Ръчно сортиране</translation>

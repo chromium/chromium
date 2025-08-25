@@ -8,7 +8,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 • Lo "Strumento di ottimizzazione di JavaScript" è disattivato. <ph name="BEGIN_LINK2" />Gestisci le eccezioni del sito<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Apri online</translation>
 <translation id="1036348656032585052">Disattiva</translation>
-<translation id="1044891598689252897">I siti funzioneranno normalmente</translation>
 <translation id="1070329623210597193">File che questo sito può visualizzare o modificare</translation>
 <translation id="1073417869336441572">Aiutaci a migliorare Chrome spiegandoci perché hai consentito i cookie di terze parti. <ph name="BEGIN_LINK" />Invia feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Puoi chiedere di visualizzare la versione desktop dei siti</translation>
@@ -128,7 +127,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2433507940547922241">Aspetto</translation>
 <translation id="2434158240863470628">Download completato: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Hai consentito temporaneamente a questo sito di utilizzare i cookie di terze parti, il che comporta una minore protezione della navigazione, ma è più probabile che le funzionalità del sito funzionino come previsto. <ph name="BEGIN_LINK" />Invia feedback<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Le funzionalità su alcuni siti potrebbero non essere disponibili in modalità di navigazione in incognito</translation>
 <translation id="2442870161001914531">Richiedi sempre sito desktop</translation>
 <translation id="2445311670906052406">Chrome ora condivide le schede recenti con il tuo dispositivo. Le vedrai nell'elenco di app e nei risultati di ricerca del tuo dispositivo. Puoi disattivare questa funzionalità in qualsiasi momento nelle impostazioni di Chrome.</translation>
 <translation id="245322989586167203">In genere, i siti si connettono a porte seriali per funzionalità di trasferimento di dati come la configurazione della rete</translation>
@@ -193,7 +191,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="3123473560110926937">Bloccati su alcuni siti</translation>
 <translation id="3132996321662585180">Aggiorna ogni giorno</translation>
 <translation id="3143754809889689516">Riproduci dall'inizio</translation>
-<translation id="3162899666601560689">I siti possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello.</translation>
 <translation id="3165022941318558018">Consenti a un sito di utilizzare i cookie di terze parti</translation>
 <translation id="3167868116600277716">Feed personalizzato</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> di dati memorizzati</translation>
@@ -262,8 +259,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="3895926599014793903">Attivazione forzata dello zoom</translation>
 <translation id="3903738175795615004">Trascina dall'alto o premi il tasto Esc per uscire dalla modalità a schermo intero.</translation>
 <translation id="3905475044299942653">Interrompi notifiche eccessive</translation>
-<translation id="3908288065506437185">Blocca i cookie di terze parti in modalità di navigazione in incognito</translation>
-<translation id="3918378745482005425">Alcune funzionalità potrebbero non essere disponibili. I siti correlati possono comunque utilizzare i cookie di terze parti.</translation>
 <translation id="3922092564198021702">Apri le Impostazioni sullo smartphone</translation>
 <translation id="3933121352599513978">Comprimi le richieste indesiderate (opzione consigliata)</translation>
 <translation id="3955193568934677022">Consenti ai siti di riprodurre i contenuti protetti (opzione consigliata)</translation>
@@ -320,7 +315,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="4566417217121906555">Disattiva microfono</translation>
 <translation id="4570913071927164677">Dettagli</translation>
 <translation id="4578289292431526768">Inizia</translation>
-<translation id="4598549027014564149">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione sui siti, inclusi quelli correlati. La tua attività di navigazione non viene usata, ad esempio, per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="461356340001513807">Ti consente di accedere ai siti web utilizzando l'account che hai creato con un servizio di identità</translation>
 <translation id="4635969503923889910">Non consentire ai siti di utilizzare i dispositivi NFC</translation>
 <translation id="4644713492825682049">Elimina e reimposta</translation>
@@ -398,7 +392,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="5515432237048785579">Riquadro inferiore del Feed personalizzato aperto a schermo intero</translation>
 <translation id="5516455585884385570">Apri le impostazioni di notifica</translation>
 <translation id="5527111080432883924">Chiedi conferma prima di consentire ai siti di leggere testo e immagini negli appunti (opzione consigliata)</translation>
-<translation id="5545693483061321551">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="5553374991681107062">Più recenti</translation>
 <translation id="5555115555607204100">Non accelerare i siti con il motore V8 di Chrome, ma rendi Chrome leggermente più resistente agli attacchi</translation>
 <translation id="5556459405103347317">Ricarica</translation>
@@ -415,7 +408,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="5700761515355162635">Cookie di terze parti consentiti</translation>
 <translation id="5706552988683188916">Vengono eliminati i cookie e altri dati dei siti per <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">I siti possono mostrare richieste di accesso da servizi di identità</translation>
-<translation id="5723967018671998714">I cookie di terze parti sono bloccati in modalità di navigazione in incognito</translation>
 <translation id="5740126560802162366">I siti possono salvare dati sul dispositivo</translation>
 <translation id="5743425052258407233">Attiva la tua cronologia su tutti i dispositivi, così potrai riprendere facilmente da dove avevi interrotto</translation>
 <translation id="5749158352074143502">Continua con questa scheda</translation>
@@ -594,7 +586,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="7881140103901777395">Chrome limita l'utilizzo dei cookie di terze parti per la maggior parte dei siti. Tuttavia, i cookie di terze parti sono consentiti su questo sito perché si basa su di questi cookie per fornire servizi di base.\n\nVai alle impostazioni per <ph name="BEGIN_LINK" />gestire l'accesso ai cookie di terze parti<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Consenti l'audio per un sito specifico.</translation>
 <translation id="7891547341794213004">Nascondi scheda Continua con questa scheda</translation>
-<translation id="789180354981963912">Blocca cookie di terze parti nella modalità di navigazione in incognito:</translation>
 <translation id="789722939441020330">Non consentire ai siti di scaricare automaticamente più file</translation>
 <translation id="7940722705963108451">Ricordami</translation>
 <translation id="7948081750384205628">Scopri di più su <ph name="SETTING_TITLE" /></translation>

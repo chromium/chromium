@@ -440,6 +440,7 @@
 <translation id="1719838434204287058">‏‎24 x 30 انچ</translation>
 <translation id="1720941539803966190">ٹیوٹوریل بند کریں</translation>
 <translation id="1721424275792716183">* فیلڈ لازمی ہے</translation>
+<translation id="1723636263173393300">اس پالیسی میں <ph name="MAX_ITEMS_LIMIT" /> سے زیادہ شارٹ کٹس نہیں ہونے چاہئیں۔</translation>
 <translation id="1725591448053514783">‏You 6 لفافہ</translation>
 <translation id="1727613060316725209">سرٹیفیکیٹ درست ہے</translation>
 <translation id="1728677426644403582">آپ ویب صفحہ کا ماخذ دیکھ رہے ہیں</translation>
@@ -1047,6 +1048,7 @@
 <translation id="271663710482723385">پوری اسکرین سے باہر نکلنے کیلئے |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| کو دبائیں</translation>
 <translation id="2717336592027046789">رول</translation>
 <translation id="2718207025093645426">نظم کردہ صارف یا آلے پر کوئی پالیسی لوڈ نہیں ہے۔</translation>
+<translation id="2719233594187778789">‏غیر منفرد URL کو نظر انداز کر دیا گیا: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">درخواست کامیاب رہی</translation>
 <translation id="2722622039067384533">رہائشی کمرے کا فرنیچر</translation>
 <translation id="2723669454293168317">‏Chrome کی ترتیبات میں سیفٹی چیک چلائیں</translation>
@@ -2008,6 +2010,7 @@
 <translation id="4298000214066716287">سرمایہ کاری</translation>
 <translation id="4298148761711700950">‏‫QR اپ لوڈ کے بغیر فوری طور پر ادائیگی کریں</translation>
 <translation id="4298925811540301889">‏اس سائٹ کیلئے کوکیز کو آپ کے ChromeOS آلات پر سنک کیا جاتا ہے۔ آپ جو سنک کرتے ہیں، اس کے نظم کیلئے <ph name="SYNC_SETTINGS" /> پر جائیں۔</translation>
+<translation id="4299919199185766032">شارٹ کٹ کا نام <ph name="MAX_LENGTH" /> حروف کی زیادہ سے زیادہ اجازت شدہ لمبائی سے زیادہ ہے۔</translation>
 <translation id="4300272766492248925">ایپ کھولیں</translation>
 <translation id="4300675098767811073">دائیں طرف متعدد سوراخ</translation>
 <translation id="4302514097724775343">کھیلنے کے لیے ڈائنوسار گیم کھیلنے پر تھپتھپائیں</translation>
@@ -2709,6 +2712,7 @@
 اپنے سسٹم کے منتظم سے رابطہ کرنے کی کوشش کریں۔</translation>
 <translation id="5496804587179176046">سیکیورٹی کوڈز کو محفوظ کریں، فی الحال کوئی سیکیورٹی کوڈ محفوظ نہیں ہے</translation>
 <translation id="550365051221576010">ہر چیز کو پُر کریں</translation>
+<translation id="5506286895894263601">فہرست میں کوئی درست شارٹ کٹ نہیں ہے۔</translation>
 <translation id="5508443345185481044">کیمرے اور کیمکارڈرز</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">زیر انتظام بُک مارکس</translation>
@@ -3629,6 +3633,7 @@
 <translation id="7014741021609395734">زوم کی سطح</translation>
 <translation id="7016992613359344582">یہ چارجز ایک بار یا بار بار عائد ہوسکتے ہیں اور ہو سکتا ہے کہ واضح نہ ہوں۔</translation>
 <translation id="701757816833614688">بصری فنون اور ڈیزائن سے متعلق تعلیم</translation>
+<translation id="7020464868401003526">‏شارٹ کٹ کا URL <ph name="MAX_LENGTH" /> حروف کی زیادہ سے زیادہ اجازت شدہ لمبائی سے زیادہ ہے۔</translation>
 <translation id="702275896380648118">‏یہ سائٹ آپ کی پسندیدہ چیزوں کا تعین کرتی ہے اور پھر دیگر سائٹس کو اشتہارات تجویز کرتی ہے۔ آپ کو مزید متعلقہ اشتہارات دکھانے کیلئے، یہ سائٹ Chrome سے آپ کے اشتہار کے موضوعات بھی وصول کرتی ہے۔</translation>
 <translation id="7023162328967545559">منتظم کی وارننگ</translation>
 <translation id="7023765275461720661">اکاؤنٹ لنک کریں اور <ph name="BNPL_ISSUER_NAME" /> کے ساتھ ادائیگی کریں؟</translation>

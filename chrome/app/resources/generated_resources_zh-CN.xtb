@@ -3283,7 +3283,6 @@
 <translation id="3269175001434213183">开启同步功能，以备份您的资料并在任意设备上使用</translation>
 <translation id="3269612321104318480">浅蓝绿色和白色</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{文件}other{# 个文件}}</translation>
-<translation id="326999365752735949">正在下载diff</translation>
 <translation id="3270965368676314374">读取、更改和删除您计算机上的照片、音乐和其他媒体</translation>
 <translation id="3275464924531706548">收起“<ph name="HEADER" />”</translation>
 <translation id="3275778809241512831">您的内部安全密钥目前不安全。请从所有使用了此密钥的服务中将其移除。要想解决该问题，请重置此安全密钥。</translation>
@@ -9770,7 +9769,6 @@
 <translation id="7842692330619197998">如果您需要创建新账号，请访问 g.co/ChromeEnterpriseAccount。</translation>
 <translation id="784273751836026224">卸载 Linux</translation>
 <translation id="784475655832336580">开启 ChromeVox 后，无法使用键盘焦点突出显示此内容</translation>
-<translation id="7844992432319478437">正在更新diff</translation>
 <translation id="7846161022626028328">出错了，请重试。</translation>
 <translation id="7846296061357476882">Google 服务</translation>
 <translation id="7846634333498149051">键盘</translation>

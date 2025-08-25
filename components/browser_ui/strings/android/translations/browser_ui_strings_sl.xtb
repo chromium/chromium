@@ -8,7 +8,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 • Možnost »Optimiziranje Javascripta« je izklopljena. <ph name="BEGIN_LINK2" />Upravljanje izjem za spletna mesta<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Odpri v spletu</translation>
 <translation id="1036348656032585052">Izklop</translation>
-<translation id="1044891598689252897">Spletna mesta bodo delovala normalno</translation>
 <translation id="1070329623210597193">Datoteke, ki si jih to spletno mesto lahko ogleda ali jih uredi</translation>
 <translation id="1073417869336441572">Pomagajte nam izboljšati Chrome, tako da nam poveste, zakaj ste dovolili piškotke tretjih oseb. <ph name="BEGIN_LINK" />Pošiljanje povratnih informacij<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Zahtevate lahko namizno različico spletnih mest</translation>
@@ -128,7 +127,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="2433507940547922241">Videz</translation>
 <translation id="2434158240863470628">Prenos je končan <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Temu spletnemu mestu ste začasno dovolili uporabo piškotkov tretjih oseb, kar pomeni manj zaščite brskanja, vendar je verjetneje, da bodo funkcije spletnega mesta delovale po pričakovanjih. <ph name="BEGIN_LINK" />Pošiljanje povratnih informacij<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Funkcije na nekaterih spletnih mestih morda ne bodo delovale v anonimnem načinu</translation>
 <translation id="2442870161001914531">Vedno zahtevaj spletno mesto za namizne računalnike</translation>
 <translation id="2445311670906052406">Chrome zdaj deli nedavne zavihke z napravo. Prikazani bodo na seznamu aplikacij in v rezultatih iskanja naprave. To lahko kadar koli izklopite v nastavitvah Chroma.</translation>
 <translation id="245322989586167203">Spletna mesta običajno vzpostavijo povezavo s serijskimi vrati zaradi funkcij prenosa podatkov, kot je nastavitev omrežja.</translation>
@@ -193,7 +191,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="3123473560110926937">Blokirano na nekaterih spletnih mestih</translation>
 <translation id="3132996321662585180">Dnevno osveževanje</translation>
 <translation id="3143754809889689516">Predvajaj od začetka</translation>
-<translation id="3162899666601560689">Spletna mesta lahko uporabljajo piškotke za izboljšanje izkušnje brskanja, in sicer tako, da na primer poskrbijo, da ostanete prijavljeni, ali si zapomnijo izdelke v nakupovalnem vozičku.</translation>
 <translation id="3165022941318558018">Dovoli spletnemu mestu uporabo piškotkov tretje osebe</translation>
 <translation id="3167868116600277716">Vir Odkrivanje</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> shranjenih podatkov</translation>
@@ -262,8 +259,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="3895926599014793903">Vsili povečavo</translation>
 <translation id="3903738175795615004">Povlecite z vrha ali pritisnite tipko Esc, če želite zapreti celozaslonski način.</translation>
 <translation id="3905475044299942653">Ustavitev veliko obvestil</translation>
-<translation id="3908288065506437185">Blokiranje piškotkov tretjih oseb v anonimnem načinu.</translation>
-<translation id="3918378745482005425">Nekatere funkcije morda ne bodo delovale. Povezana spletna mesta lahko še vedno uporabljajo piškotke tretjih oseb.</translation>
 <translation id="3922092564198021702">V telefonu odprite nastavitve</translation>
 <translation id="3933121352599513978">Strni neželene zahteve (priporočeno)</translation>
 <translation id="3955193568934677022">Dovoli spletnim mestom predvajanje zaščitene vsebine (priporočeno)</translation>
@@ -320,7 +315,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="4566417217121906555">Izklopi mikrofon</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4578289292431526768">Pa začnimo</translation>
-<translation id="4598549027014564149">Ko uporabljate anonimni način, spletna mesta ne morejo uporabljati piškotkov za ogled dejavnosti brskanja na spletnih mestih, tudi na sorodnih spletnih mestih. Dejavnost brskanja se ne uporablja za stvari, kot je osebno prilagajanje oglasov. Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="461356340001513807">Omogoča prijavo na spletnih mestih z računom, ki ga imate pri storitvi potrjevanja identitete</translation>
 <translation id="4635969503923889910">Spletnim mestom ni dovoljena uporaba naprav s tehnologijo NFC</translation>
 <translation id="4644713492825682049">Izbriši in ponastavi</translation>
@@ -398,7 +392,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5515432237048785579">Razdelek na dnu zaslona za vir Odkrivanje je odprt pri polni višini</translation>
 <translation id="5516455585884385570">Odpiranje nastavitev obvestil</translation>
 <translation id="5527111080432883924">Prikaži poziv, preden se spletnim mestom dovoli branje besedila in slik v odložišču (priporočeno)</translation>
-<translation id="5545693483061321551">Spletna mesta ne morejo uporabljati vaših piškotkov za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov. Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="5553374991681107062">Najnovejše</translation>
 <translation id="5555115555607204100">Ne pospešite delovanja spletnih mest s Chromovim mehanizmom V8, vendar je Chrome zato nekoliko odpornejši proti napadom</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
@@ -415,7 +408,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5700761515355162635">Piškotki tretjih oseb so dovoljeni</translation>
 <translation id="5706552988683188916">S tem izbrišete piškotke in druge podatke spletnega mesta za <ph name="WEBSITE" />.</translation>
 <translation id="571222594670061844">Spletna mesta lahko prikazujejo pozive za prijavo storitev za identiteto</translation>
-<translation id="5723967018671998714">Piškotki tretjih oseb so blokirani v anonimnem načinu</translation>
 <translation id="5740126560802162366">Spletna mesta lahko shranjujejo podatke v napravi.</translation>
 <translation id="5743425052258407233">Zagotovite si zgodovino v vseh napravah, da boste lahko preprosto nadaljevali, kjer ste nehali</translation>
 <translation id="5749158352074143502">Nadaljuj s tem zavihkom</translation>
@@ -594,7 +586,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7881140103901777395">Chrome večini spletnih mest omejuje uporabo piškotkov tretjih oseb. Vendar so piškotki tretjih oseb dovoljeni na tem spletnem mestu, ker z njimi zagotavlja osnovne storitve.\n\nObiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati dostop do piškotkov tretjih oseb<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Dovolitev zvoka za določeno spletno mesto.</translation>
 <translation id="7891547341794213004">Skrij kartico za nadaljevanje s tem zavihkom</translation>
-<translation id="789180354981963912">Blokiranje piškotkov tretjih oseb v anonimnem načinu:</translation>
 <translation id="789722939441020330">Spletnim mestom ni dovoljeno samodejno prenašanje več datotek.</translation>
 <translation id="7940722705963108451">Opomni me</translation>
 <translation id="7948081750384205628">Preberite več o nastavitvi <ph name="SETTING_TITLE" /></translation>

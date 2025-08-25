@@ -8,7 +8,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 • “JavaScript-optimeerder” is af. <ph name="BEGIN_LINK2" />Bestuur werfuitsonderings<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Maak aanlyn oop</translation>
 <translation id="1036348656032585052">Skakel af</translation>
-<translation id="1044891598689252897">Werwe sal normaalweg werk</translation>
 <translation id="1070329623210597193">Lêers wat hierdie werf kan bekyk of wysig</translation>
 <translation id="1073417869336441572">Help ons om Chrome te verbeter deur ons te vertel hoekom jy derdepartywebkoekies toegelaat het. <ph name="BEGIN_LINK" />Stuur terugvoer<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Jy kan vra om die rekenaarweergawe van werwe te sien</translation>
@@ -128,7 +127,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="2433507940547922241">Voorkoms</translation>
 <translation id="2434158240863470628">Aflaai is voltooi <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Jy het hierdie werf tydelik toegelaat om derdepartywebkoekies te gebruik, wat minder blaaibeskerming beteken, maar werfkenmerke is meer geneig om te werk soos verwag. <ph name="BEGIN_LINK" />Stuur terugvoer<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Kenmerke op sommige werwe sal dalk nie in Incognitomodus werk nie</translation>
 <translation id="2442870161001914531">Versoek altyd rekenaarwerf</translation>
 <translation id="2445311670906052406">Chrome deel nou jou onlangse oortjies met jou toestel. Jy sal hulle in jou toestel se applys en soekresultate sien. Jy kan dit enige tyd in Chrome-instellings afskakel.</translation>
 <translation id="245322989586167203">Werwe koppel gewoonlik aan reekspoorte vir dataoordragkenmerke, soos die opstel van jou netwerk</translation>
@@ -193,7 +191,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="3123473560110926937">Geblokkeer op sommige werwe</translation>
 <translation id="3132996321662585180">Herlaai daagliks</translation>
 <translation id="3143754809889689516">Speel van die begin af</translation>
-<translation id="3162899666601560689">Werwe kan webkoekies gebruik om jou blaai-ervaring beter te maak, byvoorbeeld, om jou aangemeld te hou of om items in jou inkopiemandjie te onthou</translation>
 <translation id="3165022941318558018">Laat ’n werf toe om derdepartywebkoekies te gebruik</translation>
 <translation id="3167868116600277716">Ontdek-stroom</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> gestoorde data</translation>
@@ -262,8 +259,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="3895926599014793903">Dwing aktivering van zoem</translation>
 <translation id="3903738175795615004">Sleep van bo af of druk Esc-sleutel om volskerm te verlaat.</translation>
 <translation id="3905475044299942653">Stop baie kennisgewings</translation>
-<translation id="3908288065506437185">Blokkeer derdepartywebkoekies in Incognitomodus</translation>
-<translation id="3918378745482005425">Sommige kenmerke sal dalk nie werk nie. Verwante werwe kan steeds derdepartywebkoekies gebruik.</translation>
 <translation id="3922092564198021702">Maak Instellings op jou foon oop</translation>
 <translation id="3933121352599513978">Vou ongewenste versoeke in (aanbeveel)</translation>
 <translation id="3955193568934677022">Laat werwe toe om beskermde inhoud te speel (aanbeveel)</translation>
@@ -320,7 +315,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="4566417217121906555">Demp mikrofoon</translation>
 <translation id="4570913071927164677">Besonderhede</translation>
 <translation id="4578289292431526768">Kom ons begin</translation>
-<translation id="4598549027014564149">Terwyl jy in Incognitomodus is, kan werwe nie jou webkoekies gebruik om jou blaai-aktiwiteit op werwe, selfs verwante werwe, te sien nie. Jou blaai-aktiwiteit word nie gebruik vir dinge soos om advertensies te personaliseer nie. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
 <translation id="461356340001513807">Jy kan by webwerwe aanmeld met die rekening wat jy by ’n identiteitdiens het</translation>
 <translation id="4635969503923889910">Moenie werwe toelaat om NFC-toestelle te gebruik nie</translation>
 <translation id="4644713492825682049">Vee uit en stel terug</translation>
@@ -398,7 +392,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="5515432237048785579">Onderste blad van Ontdek-stroom is teen volle hoogte oopgemaak</translation>
 <translation id="5516455585884385570">Maak kennisgewinginstellings oop</translation>
 <translation id="5527111080432883924">Vra voordat werwe toegelaat word om teks en prente van die knipbord af te lees (aanbeveel)</translation>
-<translation id="5545693483061321551">Werwe kan nie jou webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld om advertensies te publiseer. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
 <translation id="5553374991681107062">Jongste</translation>
 <translation id="5555115555607204100">Maak werwe nie vinniger met Chrome se V8-enjin nie, maar maak Chrome effens meer bestand teen aanvalle</translation>
 <translation id="5556459405103347317">Herlaai</translation>
@@ -415,7 +408,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="5700761515355162635">Derdepartywebkoekies toegelaat</translation>
 <translation id="5706552988683188916">Dit vee webkoekies en ander werfdata vir <ph name="WEBSITE" /> uit</translation>
 <translation id="571222594670061844">Werwe kan vir jou aanmeldporboodskappe van identiteitsdienste af wys</translation>
-<translation id="5723967018671998714">Derdepartywebkoekies word in incognitomodus geblokkeer</translation>
 <translation id="5740126560802162366">Werwe kan data op jou toestel stoor</translation>
 <translation id="5743425052258407233">Kry jou geskiedenis op al jou toestelle sodat jy maklik kan voortgaan waar jy opgehou het</translation>
 <translation id="5749158352074143502">Gaan voort met hierdie oortjie</translation>
@@ -594,7 +586,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="7881140103901777395">Chrome beperk die meeste werwe om derdepartywebkoekies te gebruik. Maar derdepartywebkoekies word op hierdie werf toegelaat omdat dit daarop staatmaak om basiese dienste te verskaf.\n\nBesoek instellings om <ph name="BEGIN_LINK" />toegang tot derdepartywebkoekies te bestuur<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Laat klank toe vir 'n spesifieke werf.</translation>
 <translation id="7891547341794213004">Versteek Gaan voort met hierdie Oortjie-kaart</translation>
-<translation id="789180354981963912">Blokkeer derdepartywebkoekies in Incognito:</translation>
 <translation id="789722939441020330">Moenie werwe toelaat om outomaties veelvuldige lêers af te laai nie</translation>
 <translation id="7940722705963108451">Herinner my</translation>
 <translation id="7948081750384205628">Kry meer inligting oor <ph name="SETTING_TITLE" /></translation>

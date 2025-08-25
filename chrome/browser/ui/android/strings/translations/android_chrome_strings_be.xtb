@@ -1257,6 +1257,7 @@
 <translation id="679956319013005046">Каб задаць пераважную службу для аўтазапаўнення, спачатку дадайце гэту службу ў <ph name="BEGIN_LINK" />Налады Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Акно будзе закрыта</translation>
 <translation id="6803791793483522764">Праверка апавяшчэнняў</translation>
+<translation id="6809470175540814047">Адкрыць у акне ў рэжыме інкогніта</translation>
 <translation id="6811034713472274749">Старонка гатовая да прагляду</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Відарысы, 1 відарыс у спісе}one{Відарысы, # відарыс у спісе}few{Відарысы, # відарысы ў спісе}many{Відарысы, # відарысаў у спісе}other{Відарысы, # відарыса ў спісе}}</translation>
 <translation id="6813446258015311409">Аркуш "Увайсці ў Chrome" адкрыты.</translation>

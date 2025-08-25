@@ -3293,7 +3293,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3269175001434213183">Activează sincronizarea ca să faci backup pentru date și să le folosești pe orice dispozitiv</translation>
 <translation id="3269612321104318480">Turcoaz deschis și alb</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fișier}few{# fișiere}other{# de fișiere}}</translation>
-<translation id="326999365752735949">Se descarcă diferențele</translation>
 <translation id="3270965368676314374">Citește, modifică și șterge fotografii, muzică și alte tipuri de conținut media de pe computer</translation>
 <translation id="3275464924531706548">Restrânge <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Cheia de securitate internă nu este sigură. Elimină cheia din toate serviciile cu care ai folosit-o. Pentru a rezolva problema, resetează cheia de securitate.</translation>
@@ -9786,7 +9785,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7842692330619197998">Accesează g.co/ChromeEnterpriseAccount dacă este necesar să creezi un cont nou.</translation>
 <translation id="784273751836026224">Dezinstalează Linux</translation>
 <translation id="784475655832336580">Evidențierea elementului cu focalizare de la tastatură nu este disponibilă când ChromeVox este activat</translation>
-<translation id="7844992432319478437">Se actualizează diferențele</translation>
 <translation id="7846161022626028328">A apărut o eroare. Încearcă din nou.</translation>
 <translation id="7846296061357476882">Servicii Google</translation>
 <translation id="7846634333498149051">Tastatură</translation>

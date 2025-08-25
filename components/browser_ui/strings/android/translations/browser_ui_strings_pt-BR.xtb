@@ -8,7 +8,6 @@ A Proteção avançada controla estas configurações do Chrome:
 • O otimizador de JavaScript está desativado. <ph name="BEGIN_LINK2" />Gerenciar exceções dos sites<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Abrir on-line</translation>
 <translation id="1036348656032585052">Desativar</translation>
-<translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
 <translation id="1070329623210597193">Arquivos que este site pode ver ou editar</translation>
 <translation id="1073417869336441572">Ajude a melhorar o Chrome informando por que você permitiu cookies de terceiros. <ph name="BEGIN_LINK" />Enviar feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Você pode pedir para ver a versão para computador dos sites</translation>
@@ -128,7 +127,6 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="2433507940547922241">Aparência</translation>
 <translation id="2434158240863470628">Download concluído <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Você permitiu temporariamente que este site use cookies de terceiros, o que diminui a proteção da navegação, mas dá aos recursos do site mais chances de funcionar conforme o esperado. <ph name="BEGIN_LINK" />Enviar feedback<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">Os recursos de alguns sites podem não funcionar no modo de navegação anônima</translation>
 <translation id="2442870161001914531">Sempre ver a versão para computador</translation>
 <translation id="2445311670906052406">Agora, o Chrome compartilha as guias recentes com o dispositivo. Você vai encontrá-las na lista de apps e nos resultados da pesquisa do seu aparelho. É possível desativar essa opção a qualquer momento nas configurações do Chrome.</translation>
 <translation id="245322989586167203">Os sites geralmente se conectam a portas seriais para recursos de transferência de dados, como a configuração da rede</translation>
@@ -193,7 +191,6 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="3123473560110926937">Bloqueados em alguns sites</translation>
 <translation id="3132996321662585180">Atualizar diariamente</translation>
 <translation id="3143754809889689516">Reproduzir do início</translation>
-<translation id="3162899666601560689">Os sites podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras</translation>
 <translation id="3165022941318558018">Permitir que um site use cookies de terceiros</translation>
 <translation id="3167868116600277716">Feed do Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de dados armazenados</translation>
@@ -262,8 +259,6 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="3895926599014793903">Forçar zoom</translation>
 <translation id="3903738175795615004">Para sair da tela cheia, arraste a parte de cima da tela ou pressione a tecla Esc.</translation>
 <translation id="3905475044299942653">Parar muitas notificações</translation>
-<translation id="3908288065506437185">Bloquear cookies de terceiros no modo de navegação anônima</translation>
-<translation id="3918378745482005425">É possível que alguns recursos não funcionem. Os sites relacionados ainda podem usar cookies de terceiros.</translation>
 <translation id="3922092564198021702">No smartphone, acesse as Configurações.</translation>
 <translation id="3933121352599513978">Recolher solicitações indesejadas (recomendado)</translation>
 <translation id="3955193568934677022">Permitir que os sites mostrem conteúdo protegido (recomendado)</translation>
@@ -320,7 +315,6 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="4566417217121906555">Desativar microfone</translation>
 <translation id="4570913071927164677">Detalhes</translation>
 <translation id="4578289292431526768">Vamos lá</translation>
-<translation id="4598549027014564149">Na navegação anônima, os sites não podem usar cookies para conferir sua atividade de navegação, mesmo sites relacionados. Sua atividade de navegação não é usada para ações como a personalização de anúncios. Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="461356340001513807">Permite fazer login em sites usando a conta que você tem com um serviço de identidade</translation>
 <translation id="4635969503923889910">Não permitir que os sites usem dispositivos NFC</translation>
 <translation id="4644713492825682049">Excluir e redefinir</translation>
@@ -398,7 +392,6 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="5515432237048785579">A página inferior do feed do Discover está aberta no tamanho máximo</translation>
 <translation id="5516455585884385570">Abrir configurações de notificação</translation>
 <translation id="5527111080432883924">Perguntar antes de permitir que sites leiam textos e imagens da área de transferência (recomendado)</translation>
-<translation id="5545693483061321551">Os sites não podem usar seus cookies para ver sua atividade de navegação em diferentes páginas, por exemplo, para personalizar anúncios. Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="5553374991681107062">Mais recentes</translation>
 <translation id="5555115555607204100">Não tornar os sites mais rápidos com o mecanismo V8 do Chrome, mas deixar o navegador um pouco mais resistente a ataques</translation>
 <translation id="5556459405103347317">Recarregar</translation>
@@ -415,7 +408,6 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
 <translation id="5706552988683188916">Essa ação vai excluir cookies e outros dados do site <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Sites podem mostrar solicitações de login de serviços de identificação</translation>
-<translation id="5723967018671998714">Os cookies de terceiros são bloqueados no modo de navegação anônima</translation>
 <translation id="5740126560802162366">Os sites podem salvar dados no seu dispositivo</translation>
 <translation id="5743425052258407233">Com seu histórico em todos os dispositivos, fica fácil continuar de onde você parou</translation>
 <translation id="5749158352074143502">Continuar com esta guia</translation>
@@ -594,7 +586,6 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="7881140103901777395">O Chrome impede que a maioria dos sites use cookies de terceiros. No entanto, cookies de terceiros são permitidos neste site porque eles são necessários para o fornecimento de serviços básicos.\n\nAcesse as configurações para <ph name="BEGIN_LINK" />gerenciar o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permitir o som de um site específico.</translation>
 <translation id="7891547341794213004">Ocultar o card "Continuar nesta guia"</translation>
-<translation id="789180354981963912">Bloquear cookies de terceiros na navegação anônima:</translation>
 <translation id="789722939441020330">Não permitir que os sites façam o download automático de vários arquivos</translation>
 <translation id="7940722705963108451">Lembrar</translation>
 <translation id="7948081750384205628">Saiba mais sobre <ph name="SETTING_TITLE" /></translation>

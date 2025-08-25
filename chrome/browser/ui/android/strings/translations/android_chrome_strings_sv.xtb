@@ -1258,6 +1258,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="679956319013005046">Om du vill ställa in din önskade tjänst för autofyll lägger du först till tjänsten i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Fönstret stängs</translation>
 <translation id="6803791793483522764">Granska aviseringar</translation>
+<translation id="6809470175540814047">Öppna i inkognitofönster</translation>
 <translation id="6811034713472274749">Sidan är klar att öppna</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Bilder, 1 bild i listan}other{Bilder, # bilder i listan}}</translation>
 <translation id="6813446258015311409">Logga in i Chrome, öppet.</translation>
