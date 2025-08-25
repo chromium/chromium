@@ -324,6 +324,10 @@ BASE_FEATURE(SkiaGraphite,
 #endif
 );
 
+// Enable atlasing of small paths on Skia Graphite. Only meaningful if
+// SkiaGraphite is also enabled.
+BASE_FEATURE(SkiaGraphiteSmallPathAtlas, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable Skia Graphite's Pipeline precompilation feature.
 // Note: This is only meaningful when Skia Graphite is enabled but can then also
 // be overridden by
@@ -359,7 +363,7 @@ const base::FeatureParam<int> kSkiaGraphiteMaxPendingRecordings{
     &kSkiaGraphite, "max_pending_recordings", 100};
 
 const base::FeatureParam<int> kSkiaGraphiteMinPathSizeForMsaa{
-    &kSkiaGraphite, "min_path_size_for_msaa", 0};
+    &kSkiaGraphiteSmallPathAtlas, "min_path_size_for_msaa", 0};
 
 #if BUILDFLAG(IS_WIN)
 // Whether the we should DumpWithoutCrashing when D3D related errors are detected.

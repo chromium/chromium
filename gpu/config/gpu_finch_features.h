@@ -70,8 +70,6 @@ GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
     kSkiaGraphiteDawnBackendDebugLabels;
 GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
     kSkiaGraphiteMaxPendingRecordings;
-GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
-    kSkiaGraphiteMinPathSizeForMsaa;
 
 #if BUILDFLAG(IS_WIN)
 GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
@@ -83,6 +81,10 @@ GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteDawnUseD3D12);
 #endif
+
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteSmallPathAtlas);
+GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
+    kSkiaGraphiteMinPathSizeForMsaa;
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kConditionallySkipGpuChannelFlush);
 
