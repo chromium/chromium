@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -346,10 +347,14 @@ NSString* GetPromoLabelString(
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  if (_accountManagerService &&
-      !_accountManagerService->IsValidIdentity(self.selectedIdentity)) {
-    // The currently selected identity is not valid anymore. Let’s select the
-    // default identity instead.
+  if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
+    if (_accountManagerService &&
+        !_accountManagerService->IsValidIdentity(self.selectedIdentity)) {
+      // The currently selected identity is not valid anymore. Let’s select the
+      // default identity instead.
+      [self selectSelectedIdentity];
+    }
+  } else {
     [self selectSelectedIdentity];
   }
 }
