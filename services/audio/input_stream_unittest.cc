@@ -150,7 +150,8 @@ class AudioServiceInputStreamTest : public testing::Test {
         remote_stream.InitWithNewPipeAndPassReceiver(), client_.MakeRemote(),
         observer_.MakeRemote(), log_.MakeRemote(), kDefaultDeviceId,
         media::AudioParameters::UnavailableDeviceParams(),
-        kDefaultSharedMemoryCount, enable_agc, nullptr,
+        base::UnguessableToken::Create(), kDefaultSharedMemoryCount, enable_agc,
+        nullptr,
         base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
                        base::Unretained(this)));
     return remote_stream;
@@ -163,7 +164,8 @@ class AudioServiceInputStreamTest : public testing::Test {
         remote_stream.InitWithNewPipeAndPassReceiver(), client_.MakeRemote(),
         observer_.MakeRemote(), mojo::NullRemote(), kDefaultDeviceId,
         media::AudioParameters::UnavailableDeviceParams(),
-        kDefaultSharedMemoryCount, false, nullptr,
+        base::UnguessableToken::Create(), kDefaultSharedMemoryCount, false,
+        nullptr,
         base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
                        base::Unretained(this)));
     return remote_stream;
@@ -176,7 +178,8 @@ class AudioServiceInputStreamTest : public testing::Test {
         remote_stream.InitWithNewPipeAndPassReceiver(), client_.MakeRemote(),
         mojo::NullRemote(), log_.MakeRemote(), kDefaultDeviceId,
         media::AudioParameters::UnavailableDeviceParams(),
-        kDefaultSharedMemoryCount, false, nullptr,
+        base::UnguessableToken::Create(), kDefaultSharedMemoryCount, false,
+        nullptr,
         base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
                        base::Unretained(this)));
     return remote_stream;

@@ -35,6 +35,8 @@ interface AudioStreamFactory {
   // creation failed.
   // |device_id| is either the |unique_id| field from an AudioDeviceDescription
   // obtained from the audio.mojom.SystemInfo interface, or "default".
+  // If |device_id| is kLoopbackWithoutChromeId, |group_id| identifies output
+  // streams that should be excluded from the loopback.
   // |shared_memory_count| indicates how many buffer segments can the input
   // stream client read at once, to avoid data overwriting. |enable_agc| is used
   // for enabling automatic gain control. When |processing_config| is passed,
@@ -50,6 +52,7 @@ interface AudioStreamFactory {
     pending_remote<media.mojom.AudioInputStreamObserver>? observer,
     pending_remote<media.mojom.AudioLog>? log,
     string device_id, media.mojom.AudioParameters params,
+    mojo_base.mojom.UnguessableToken group_id,
     uint32 shared_memory_count, bool enable_agc,
     media.mojom.AudioProcessingConfig? processing_config)
       => (media.mojom.ReadWriteAudioDataPipe? data_pipe, bool initially_muted,

@@ -34,6 +34,7 @@ AudioInputStreamBroker::AudioInputStreamBroker(
     int render_frame_id,
     const std::string& device_id,
     const media::AudioParameters& params,
+    const base::UnguessableToken& group_id,
     uint32_t shared_memory_count,
     bool enable_agc,
     media::mojom::AudioProcessingConfigPtr processing_config,
@@ -43,6 +44,7 @@ AudioInputStreamBroker::AudioInputStreamBroker(
     : AudioStreamBroker(render_process_id, render_frame_id),
       device_id_(device_id),
       params_(params),
+      group_id_(group_id),
       shared_memory_count_(shared_memory_count),
       enable_agc_(enable_agc),
       deleter_(std::move(deleter)),
@@ -118,7 +120,7 @@ void AudioInputStreamBroker::CreateStream(
       MediaInternals::GetInstance()->CreateMojoAudioLog(
           media::AudioLogFactory::AudioComponent::kAudioInputController,
           log_component_id, render_process_id(), render_frame_id()),
-      device_id_, params_, shared_memory_count_, enable_agc_,
+      device_id_, params_, group_id_, shared_memory_count_, enable_agc_,
       std::move(processing_config_),
       base::BindOnce(&AudioInputStreamBroker::StreamCreated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(stream)));

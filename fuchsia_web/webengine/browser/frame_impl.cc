@@ -325,6 +325,7 @@ class AudioStreamBrokerFactory final
       int render_frame_id,
       const std::string& device_id,
       const media::AudioParameters& params,
+      const base::UnguessableToken& group_id,
       uint32_t shared_memory_count,
       bool enable_agc,
       media::mojom::AudioProcessingConfigPtr processing_config,
@@ -332,7 +333,7 @@ class AudioStreamBrokerFactory final
       mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
           renderer_factory_client) final {
     return base_factory_->CreateAudioInputStreamBroker(
-        render_process_id, render_frame_id, device_id, params,
+        render_process_id, render_frame_id, device_id, params, group_id,
         shared_memory_count, enable_agc, std::move(processing_config),
         std::move(deleter), std::move(renderer_factory_client));
   }
