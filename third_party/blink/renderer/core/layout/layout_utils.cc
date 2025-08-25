@@ -594,13 +594,15 @@ bool MaySkipLayoutWithinBlockFormattingContext(
     if (physical_fragment.HasAdjoiningObjectDescendants()) {
       // Check if the previous position intersects with any floats.
       if (old_expected <
-          old_space.GetExclusionSpace().ClearanceOffset(EClear::kBoth)) {
+          old_space.GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
+              EClear::kBoth)) {
         return false;
       }
 
       // Check if the new position intersects with any floats.
       if (new_expected <
-          new_space.GetExclusionSpace().ClearanceOffset(EClear::kBoth)) {
+          new_space.GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
+              EClear::kBoth)) {
         return false;
       }
     }
@@ -649,7 +651,8 @@ bool MaySkipLayoutWithinBlockFormattingContext(
 
   // Check if the previous position intersects with any floats.
   if (**bfc_block_offset <
-      old_space.GetExclusionSpace().ClearanceOffset(EClear::kBoth)) {
+      old_space.GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
+          EClear::kBoth)) {
     return false;
   }
 
@@ -682,7 +685,8 @@ bool MaySkipLayoutWithinBlockFormattingContext(
 
   // Check if the new position intersects with any floats.
   if (**bfc_block_offset <
-      new_space.GetExclusionSpace().ClearanceOffset(EClear::kBoth)) {
+      new_space.GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
+          EClear::kBoth)) {
     return false;
   }
 

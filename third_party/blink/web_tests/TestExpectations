@@ -3155,7 +3155,6 @@ crbug.com/431036875 [ Mac14 ] external/wpt/content-security-policy/report-hash/d
 crbug.com/431036875 [ Win11-arm64 ] external/wpt/content-security-policy/report-hash/default-src.https.window.html [ Timeout ]
 crbug.com/431039944 [ Mac14 ] external/wpt/cookies/samesite/window-open-reload.https.html [ Timeout ]
 crbug.com/431033198 [ Mac14 ] external/wpt/css/css-cascade/all-prop-revert-layer.html [ Timeout ]
-crbug.com/431030816 external/wpt/css/css-inline/initial-letter/initial-letter-short-para-initial-letter-wraps.html [ Failure ]
 crbug.com/431038525 external/wpt/css/css-masking/clip-path/clip-path-inline-002.html [ Failure ]
 crbug.com/431038525 external/wpt/css/css-masking/clip-path/clip-path-inline-003.html [ Failure ]
 crbug.com/431038525 [ Mac15-arm64 ] external/wpt/css/css-masking/clip-path/clip-path-inline-004.html [ Failure ]
