@@ -163,6 +163,12 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
       // halted and the state will not change.
       kUpdateError = 8,
 
+      // The engine is decompressing an update.
+      kDecompressing = 9,
+
+      // The engine is applying a patch.
+      kPatching = 10,
+
       // Update EnumTraits<UpdateService::UpdateState::State> when adding new
       // values.
     };
@@ -380,7 +386,7 @@ template <>
 struct EnumTraits<UpdateService::UpdateState::State> {
   using State = UpdateService::UpdateState::State;
   static constexpr State first_elem = State::kUnknown;
-  static constexpr State last_elem = State::kUpdateError;
+  static constexpr State last_elem = State::kPatching;
 };
 
 template <>

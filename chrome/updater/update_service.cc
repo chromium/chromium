@@ -42,6 +42,10 @@ std::ostream& operator<<(std::ostream& os,
         return "update available";
       case UpdateService::UpdateState::State::kDownloading:
         return "downloading";
+      case UpdateService::UpdateState::State::kDecompressing:
+        return "decompressing";
+      case UpdateService::UpdateState::State::kPatching:
+        return "patching";
       case UpdateService::UpdateState::State::kInstalling:
         return "installing";
       case UpdateService::UpdateState::State::kUpdated:

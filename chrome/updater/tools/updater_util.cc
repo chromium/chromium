@@ -394,6 +394,16 @@ void OnAppStateChanged(const UpdateService::UpdateState& update_state) {
                 << ", total: " << update_state.total_bytes << std::endl;
       break;
 
+    case UpdateService::UpdateState::State::kDecompressing:
+      std::cout << Quoted(update_state.app_id) << ": decompressing files"
+                << std::endl;
+      break;
+
+    case UpdateService::UpdateState::State::kPatching:
+      std::cout << Quoted(update_state.app_id) << ": applying patches"
+                << std::endl;
+      break;
+
     case UpdateService::UpdateState::State::kInstalling:
       std::cout << Quoted(update_state.app_id)
                 << ": installing update, progress at: "

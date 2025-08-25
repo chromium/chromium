@@ -62,6 +62,10 @@ void UpdateStatus(VersionUpdater::StatusCallback status_callback,
       progress = GetDownloadProgress(update_state.downloaded_bytes,
                                      update_state.total_bytes);
       [[fallthrough]];
+    case updater::UpdateService::UpdateState::State::kDecompressing:
+      [[fallthrough]];
+    case updater::UpdateService::UpdateState::State::kPatching:
+      [[fallthrough]];
     case updater::UpdateService::UpdateState::State::kInstalling:
       status = VersionUpdater::Status::UPDATING;
       break;

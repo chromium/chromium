@@ -743,6 +743,12 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
         case UpdateService::UpdateState::State::kDownloading:
           state_value = STATE_DOWNLOADING;
           break;
+        case UpdateService::UpdateState::State::kDecompressing:
+          state_value = STATE_EXTRACTING;
+          break;
+        case UpdateService::UpdateState::State::kPatching:
+          state_value = STATE_APPLYING_DIFFERENTIAL_PATCH;
+          break;
         case UpdateService::UpdateState::State::kInstalling:
           state_value = STATE_INSTALLING;
           break;

@@ -509,10 +509,12 @@ UpdateService::UpdateState::State ToUpdateState(
     case update_client::ComponentState::kCanUpdate:
       return UpdateService::UpdateState::State::kUpdateAvailable;
 
-    // TODO(crbug.com/439625705): Create additional UpdateStates for
-    // decompressing and patching.
     case update_client::ComponentState::kDecompressing:
+      return UpdateService::UpdateState::State::kDecompressing;
+
     case update_client::ComponentState::kPatching:
+      return UpdateService::UpdateState::State::kPatching;
+
     case update_client::ComponentState::kUpdating:
       return UpdateService::UpdateState::State::kInstalling;
 

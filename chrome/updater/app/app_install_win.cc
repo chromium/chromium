@@ -801,6 +801,15 @@ void AppInstallControllerImpl::StateChange(
       break;
     }
 
+    case UpdateService::UpdateState::State::kDecompressing:
+    case UpdateService::UpdateState::State::kPatching:
+      // TODO(crbug.com/439625645): Treat decompression / patching differently
+      // from installation.
+      install_progress_observer_ipc_->OnInstalling(
+          app_id_, app_name_, install_progress_sampler_.GetRemainingTime(100),
+          0);
+      break;
+
     case UpdateService::UpdateState::State::kInstalling: {
       const int pos = update_state.install_progress;  // [0..100]
       if (pos >= 0) {
