@@ -1220,8 +1220,6 @@ void AttributionManagerImpl::SendReports(
 void AttributionManagerImpl::SendReport(base::OnceClosure web_ui_callback,
                                         const base::Time now,
                                         AttributionReport report) {
-  CHECK_LE(report.report_time(), now);
-
   bool inserted = reports_being_sent_.emplace(report.id()).second;
   if (!inserted) {
     if (web_ui_callback) {
