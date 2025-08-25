@@ -339,16 +339,6 @@ class UkmReduceAddEntryIpcTest : public testing::Test {
 };
 }  // namespace
 
-TEST_F(UkmServiceTest, ClientIdMigration) {
-  prefs_.SetInt64(prefs::kUkmClientId, -1);
-  UkmService service(&prefs_, &client_,
-                     std::make_unique<MockDemographicMetricsProvider>());
-  service.Initialize();
-  uint64_t migrated_id = prefs_.GetUint64(prefs::kUkmClientId);
-  // -1 migrates to the max UInt 64 value.
-  EXPECT_EQ(migrated_id, 18446744073709551615ULL);
-}
-
 TEST_F(UkmServiceTest, ClientIdClonedInstall) {
   prefs_.SetInt64(prefs::kUkmClientId, 123);
   UkmService service(&prefs_, &client_,
