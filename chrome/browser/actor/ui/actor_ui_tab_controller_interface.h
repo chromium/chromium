@@ -73,14 +73,6 @@ class ActorUiTabControllerInterface {
   virtual void OnTabActiveStatusChanged(bool tab_active_status,
                                         tabs::TabInterface* tab) = 0;
 
-  // Sets the last active task id actuating on this tab.
-  // TODO(crbug.com/425952887): At most one task should be acting on a tab at
-  // once. In the future we should implement a callback to halt Actor execution
-  // if the active_task_id is already set and stop Actor actuation.
-  virtual void SetActiveTaskId(TaskId task_id) = 0;
-  // Clears the last active task id actuating on this tab.
-  virtual void ClearActiveTaskId() = 0;
-
   // Called when the hover status changes on the overlay and handoff button.
   virtual void SetOverlayHoverStatus(bool is_hovering) = 0;
   virtual void SetHandoffButtonHoverStatus(bool is_hovering) = 0;

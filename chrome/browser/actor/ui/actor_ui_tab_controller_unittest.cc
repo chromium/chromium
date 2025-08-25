@@ -106,7 +106,6 @@ class ActorUiTabControllerTest : public testing::Test {
 
     // Creates task for testing.
     task_id_ = actor_keyed_service()->CreateTaskForTesting();
-    actor_ui_tab_controller_->SetActiveTaskId(task_id_);
     base::RunLoop loop;
     actor_keyed_service()->GetTask(task_id_)->AddTab(
         mock_tab_.GetHandle(),

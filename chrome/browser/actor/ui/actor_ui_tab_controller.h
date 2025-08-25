@@ -43,8 +43,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
                           UiResultCallback callback) override;
   void OnTabActiveStatusChanged(bool tab_active_status,
                                 tabs::TabInterface* tab) override;
-  void SetActiveTaskId(TaskId task_id) override;
-  void ClearActiveTaskId() override;
   void SetActorTaskPaused() override;
   void SetActorTaskResume() override;
   void SetOverlayHoverStatus(bool is_hovering) override;
@@ -95,8 +93,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
 
   // The current active status of the tab.
   bool current_tab_active_status_ = false;
-  // The last active task id actuating on this tab.
-  TaskId active_task_id_;
 
   bool is_hovering_overlay_ = false;
   bool is_hovering_button_ = false;

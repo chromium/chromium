@@ -193,25 +193,26 @@ bool ActorUiTabController::ComputeHandoffButtonVisibility() {
          (is_hovering_overlay_ || is_hovering_button_ || is_client_control);
 }
 
-void ActorUiTabController::SetActiveTaskId(TaskId task_id) {
-  // TODO(crbug.com/432121373): Enable this check again once StoppedActingOnTab
-  // events are dispatched.
-  // CHECK(!active_task_id_);
-  active_task_id_ = task_id;
-}
-
-void ActorUiTabController::ClearActiveTaskId() {
-  active_task_id_ = TaskId(0);
-}
-
 void ActorUiTabController::SetActorTaskPaused() {
-  if (auto* task = actor_keyed_service_->GetTask(active_task_id_)) {
+  TaskId task_id = actor_keyed_service_->IsAnyTaskActingOnTab(*tab_);
+  if (!task_id) {
+    VLOG(1) << "There is no active task acting on this tab.";
+    return;
+  }
+
+  if (auto* task = actor_keyed_service_->GetTask(task_id)) {
     task->Pause(/*from_actor=*/false);
   }
 }
 
 void ActorUiTabController::SetActorTaskResume() {
-  if (auto* task = actor_keyed_service_->GetTask(active_task_id_)) {
+  TaskId task_id = actor_keyed_service_->IsAnyTaskActingOnTab(*tab_);
+  if (!task_id) {
+    VLOG(1) << "There is no active task acting on this tab.";
+    return;
+  }
+
+  if (auto* task = actor_keyed_service_->GetTask(task_id)) {
     task->Resume();
   }
 }

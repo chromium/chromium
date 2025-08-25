@@ -68,14 +68,10 @@ struct TabUiUpdate {
   UiTabState ui_tab_state;
 };
 
-auto GetNewUiStateFn(ActorUiStateManager& manager) {
+auto GetNewUiStateFn() {
   return absl::Overload{
       [](const StartingToActOnTab& e) -> TabUiUpdate {
-        auto* tab = e.tab_handle.Get();
-        if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
-          tab_controller->SetActiveTaskId(e.task_id);
-        }
-        return TabUiUpdate{tab, GetActorControlledUiTabState()};
+        return TabUiUpdate{e.tab_handle.Get(), GetActorControlledUiTabState()};
       },
       [](const MouseClick& e) -> TabUiUpdate {
         UiTabState ui_tab_state = GetActorControlledUiTabState();
@@ -182,7 +178,7 @@ std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
 void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
                                     UiCompleteCallback callback) {
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
-    const TabUiUpdate update = std::visit(GetNewUiStateFn(*this), event);
+    const TabUiUpdate update = std::visit(GetNewUiStateFn(), event);
     if (auto* tab_controller =
             ActorUiTabControllerInterface::From(update.tab)) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -223,7 +219,6 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
             auto* tab = e.tab_handle.Get();
             if (auto* tab_controller =
                     ActorUiTabControllerInterface::From(tab)) {
-              tab_controller->ClearActiveTaskId();
               tab_controller->OnUiTabStateChange(
                   GetCompletedUiTabState(), base::BindOnce(&LogUiChangeError));
             }

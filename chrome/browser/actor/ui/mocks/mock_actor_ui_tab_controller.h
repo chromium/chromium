@@ -36,10 +36,6 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
               (bool tab_active_status, tabs::TabInterface* tab),
               (override));
 
-  MOCK_METHOD(void, SetActiveTaskId, (TaskId task_id), (override));
-
-  MOCK_METHOD(void, ClearActiveTaskId, (), (override));
-
   MOCK_METHOD(base::WeakPtr<ActorUiTabControllerInterface>,
               GetWeakPtr,
               (),

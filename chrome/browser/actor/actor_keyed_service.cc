@@ -354,16 +354,16 @@ ActorUiStateManagerInterface* ActorKeyedService::GetActorUiStateManager() {
   return actor_ui_state_manager_.get();
 }
 
-bool ActorKeyedService::IsAnyTaskActingOnTab(
+TaskId ActorKeyedService::IsAnyTaskActingOnTab(
     const tabs::TabInterface& tab) const {
   tabs::TabHandle handle = tab.GetHandle();
-  for (auto task_pair : GetActiveTasks()) {
-    if (task_pair.second->IsActingOnTab(handle)) {
-      return true;
+  for (auto [task_id, task] : GetActiveTasks()) {
+    if (task->IsActingOnTab(handle)) {
+      return task_id;
     }
   }
 
-  return false;
+  return TaskId();
 }
 
 Profile* ActorKeyedService::GetProfile() {
