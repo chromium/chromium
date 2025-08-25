@@ -473,6 +473,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setNavigationId(navigationId)
                         .setIsTabInPWA(mClient.isTabInPWA())
                         .setIsInDesktopWindowingMode(mClient.isInDesktopWindowingMode())
+                        .setOriginalWindowOpenDisposition(
+                                mClient.getWebContents().getOriginalWindowOpenDisposition())
                         .build();
         if (!shouldRunAsync) return doShouldOverrideUrlLoading(params, isExternalProtocol);
         Runnable shouldIgnoreCheck =

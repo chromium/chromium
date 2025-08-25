@@ -100,6 +100,7 @@ public class ExternalNavigationParams {
     private final long mNavigationId;
     private final boolean mIsTabInPWA;
     private final boolean mIsInDesktopWindowingMode;
+    private final int mOriginalWindowOpenDisposition;
 
     // Populated when an async action is taken, ensuring the callback gets called.
     private @Nullable RequiredCallback<AsyncActionTakenParams> mRequiredAsyncActionTakenCallback;
@@ -124,7 +125,8 @@ public class ExternalNavigationParams {
             boolean isSandboxedMainFrame,
             long navigationId,
             boolean isTabInPWA,
-            boolean isInDesktopWindowingMode) {
+            boolean isInDesktopWindowingMode,
+            int originalWindowOpenDisposition) {
         mUrl = url;
         mIsIncognito = isIncognito;
         mPageTransition = pageTransition;
@@ -145,6 +147,7 @@ public class ExternalNavigationParams {
         mNavigationId = navigationId;
         mIsTabInPWA = isTabInPWA;
         mIsInDesktopWindowingMode = isInDesktopWindowingMode;
+        mOriginalWindowOpenDisposition = originalWindowOpenDisposition;
     }
 
     public void onAsyncActionStarted() {
@@ -275,6 +278,14 @@ public class ExternalNavigationParams {
         return mIsInDesktopWindowingMode;
     }
 
+    /**
+     * @return the window open disposition that was originally requested when this WebContents was
+     *     created.
+     */
+    public int getOriginalWindowOpenDisposition() {
+        return mOriginalWindowOpenDisposition;
+    }
+
     /** The builder for {@link ExternalNavigationParams} objects. */
     public static class Builder {
         private final GURL mUrl;
@@ -297,6 +308,7 @@ public class ExternalNavigationParams {
         private long mNavigationId;
         private boolean mIsTabInPWA;
         private boolean mIsInDesktopWindowingMode;
+        private int mOriginalWindowOpenDisposition;
 
         public Builder(GURL url, boolean isIncognito) {
             mUrl = url;
@@ -394,14 +406,23 @@ public class ExternalNavigationParams {
         }
 
         /** Sets whether this navigation was started in a PWA (TWA or WebAPK). */
-        public Builder setIsTabInPWA(boolean isTabInPWA) {
-            mIsTabInPWA = isTabInPWA;
+        public Builder setIsTabInPWA(boolean v) {
+            mIsTabInPWA = v;
             return this;
         }
 
         /** Sets whether this application is in a desktop window. */
         public Builder setIsInDesktopWindowingMode(boolean v) {
             mIsInDesktopWindowingMode = v;
+            return this;
+        }
+
+        /**
+         * Sets the window open disposition that was originally requested when this WebContents was
+         * created.
+         */
+        public Builder setOriginalWindowOpenDisposition(int v) {
+            mOriginalWindowOpenDisposition = v;
             return this;
         }
 
@@ -429,7 +450,8 @@ public class ExternalNavigationParams {
                     mIsSandboxedMainFrame,
                     mNavigationId,
                     mIsTabInPWA,
-                    mIsInDesktopWindowingMode);
+                    mIsInDesktopWindowingMode,
+                    mOriginalWindowOpenDisposition);
         }
     }
 }

@@ -2478,6 +2478,41 @@ public class UrlOverridingTest {
         Assert.assertFalse(tab.getWebContents().hasOpener());
     }
 
+    @Test
+    @LargeTest
+    public void testNavigationsToSelfPWALaunchHandler() throws Exception {
+        InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        filter.addDataAuthority("example.com", null);
+        filter.addDataScheme("https");
+        mTestContext.setIntentFilterForHost("example.com", filter);
+        mActivityMonitor =
+                InstrumentationRegistry.getInstrumentation()
+                        .addMonitor(
+                                filter,
+                                new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
+                                true);
+
+        String url2 = mTestServer.getURL(HELLO_PAGE);
+        String url1 = getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_LINK, url2);
+
+        launchTwa("com.foo.bar", url1);
+
+        ChromeActivity activity = mCustomTabActivityRule.getActivity();
+
+        TouchCommon.singleClickView(activity.getActivityTab().getView());
+
+        // The TWA is still displaying the initial web page
+        Assert.assertEquals(new GURL(url1).getSpec(), activity.getActivityTab().getUrl().getSpec());
+
+        // url1 and url2 are in the scope of the same TWA but an intent was generated anyway
+        Assert.assertFalse(mActivityMonitor.getHits() == 1);
+
+        InstrumentationRegistry.getInstrumentation().removeMonitor(mActivityMonitor);
+    }
+
     private void doTestInitialIntentToApp(boolean allowInitialIntentToLeave, boolean prewarm)
             throws Exception {
         final String initialUrl = "https://example.com/path";

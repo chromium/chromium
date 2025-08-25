@@ -968,7 +968,8 @@ public class ExternalNavigationHandler {
         return false;
     }
 
-    private boolean externalIntentRequestsDisabledForUrl(ExternalNavigationParams params) {
+    private boolean externalIntentRequestsDisabledForUrl(
+            ExternalNavigationParams params, Intent intent) {
         // TODO(changwan): check if we need to handle URL even when external intent is off.
         if (CommandLine.getInstance()
                 .hasSwitch(ExternalIntentsSwitches.DISABLE_EXTERNAL_INTENT_REQUESTS)) {
@@ -976,7 +977,7 @@ public class ExternalNavigationHandler {
             return true;
         }
 
-        if (mDelegate.shouldDisableExternalIntentRequestsForUrl(params.getUrl())) {
+        if (mDelegate.shouldDisableExternalIntentRequestsForUrl(params, intent)) {
             if (debug()) Log.i(TAG, "Delegate disables external intent requests for URL.");
             return true;
         }
@@ -1613,7 +1614,7 @@ public class ExternalNavigationHandler {
 
         // This should come after file intents, but before any returns of
         // OVERRIDE_WITH_EXTERNAL_INTENT.
-        if (externalIntentRequestsDisabledForUrl(params)) {
+        if (externalIntentRequestsDisabledForUrl(params, targetIntent)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 

@@ -38,8 +38,21 @@ public interface ExternalNavigationDelegate {
      */
     boolean willAppHandleIntent(Intent intent);
 
-    /** Returns whether to disable forwarding URL requests to external intents for the passed-in URL. */
-    boolean shouldDisableExternalIntentRequestsForUrl(GURL url);
+    /**
+     * Returns whether to disable forwarding URL requests to external intents for the passed-in URL.
+     *
+     * <p>This method may have the side effect of modifying the given {@link Intent}. For specific
+     * navigation scenarios defined by {@code params}, it may add the {@link
+     * Intent#FLAG_ACTIVITY_MULTIPLE_TASK} flag. This ensures that the external application is
+     * launched in a new task.
+     *
+     * @param params The parameters describing the navigation.
+     * @param intent The external {@link Intent} that will be used for the navigation. This object
+     *     may be modified by this method.
+     * @return true to disable the external intent request, false to allow it.
+     */
+    boolean shouldDisableExternalIntentRequestsForUrl(
+            ExternalNavigationParams params, Intent intent);
 
     /** Adds a window id to the intent, if necessary. */
     void maybeSetWindowId(Intent intent);
