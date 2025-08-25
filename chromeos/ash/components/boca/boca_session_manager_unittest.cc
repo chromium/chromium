@@ -55,7 +55,6 @@
 
 using ::testing::_;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::StrictMock;
@@ -957,12 +956,12 @@ TEST_F(BocaSessionManagerTest, UpdateTabActivity) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             EXPECT_EQ(kInitialSessionId, request->session_id());
             EXPECT_EQ(kTestGaiaId, request->gaia_id());
             EXPECT_EQ(kDeviceId, request->device_id());
             request->callback().Run(true);
-          })));
+          }));
 
   boca_session_manager()->UpdateCurrentSession(
       std::make_unique<::boca::Session>(session), false);
@@ -980,10 +979,10 @@ TEST_F(BocaSessionManagerTest, UpdateTabActivityFailed) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             request->callback().Run(base::unexpected<google_apis::ApiErrorCode>(
                 google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR));
-          })));
+          }));
 
   boca_session_manager()->UpdateCurrentSession(
       std::make_unique<::boca::Session>(session), false);
@@ -1008,12 +1007,12 @@ TEST_F(BocaSessionManagerTest, UpdateTabActivityWithDummyDeviceId) {
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
-          Invoke([&](auto request) {
+          [&](auto request) {
             EXPECT_EQ(kInitialSessionId, request->session_id());
             EXPECT_EQ(kTestGaiaId, request->gaia_id());
             EXPECT_EQ(BocaSessionManager::kDummyDeviceId, request->device_id());
             request->callback().Run(true);
-          })));
+          }));
 
   boca_session_manager()->UpdateTabActivity(kTab);
 }

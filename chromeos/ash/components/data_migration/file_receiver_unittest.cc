@@ -27,7 +27,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::Mock;
 
 constexpr char kRemoteEndpointId[] = "test-remote-endpoint";
@@ -47,17 +46,16 @@ class MockFileReceiverObserver {
       base::OnceClosure on_file_transfer_complete_cb) {
     InSequence sequence;
     EXPECT_CALL(*this, OnFileRegistered())
-        .WillOnce(Invoke(
+        .WillOnce(
             [payload_id, nearby_process_manager, expected_file_content]() {
               ASSERT_TRUE(
                   nearby_process_manager->fake_nearby_connections().SendFile(
                       payload_id, expected_file_content));
-            }));
+            });
     EXPECT_CALL(*this, OnFileTransferComplete(success))
-        .WillOnce(
-            Invoke([cb = std::move(on_file_transfer_complete_cb)]() mutable {
-              std::move(cb).Run();
-            }));
+        .WillOnce([cb = std::move(on_file_transfer_complete_cb)]() mutable {
+          std::move(cb).Run();
+        });
   }
 
   FileReceiver::Observer CreateCallbacks() {
@@ -165,13 +163,13 @@ TEST_F(FileReceiverTest, FileReceiverDestroyedWhileInProgress) {
       /*payload_id=*/1);
   base::test::TestFuture<void> completion_signal;
   EXPECT_CALL(observer_, OnFileRegistered())
-      .WillOnce(Invoke([this, &completion_signal]() {
+      .WillOnce([this, &completion_signal]() {
         ASSERT_TRUE(nearby_process_manager_.fake_nearby_connections().SendFile(
             /*payload_id=*/1, /*expected_file_content=*/nullptr));
         // The file should be partially filled at this point.
         ASSERT_TRUE(base::PathExists(test_payload_path_));
         completion_signal.GetCallback().Run();
-      }));
+      });
   EXPECT_CALL(observer_, OnFileTransferComplete(_)).Times(0);
 
   auto receiver = std::make_optional<FileReceiver>(
@@ -188,15 +186,15 @@ TEST_F(FileReceiverTest, FileReceiverDestroyedWhileInProgress) {
 TEST_F(FileReceiverTest, FileReceiverDestroyedWithinCompletionCallback) {
   base::test::TestFuture<void> completion_signal;
   std::optional<FileReceiver> receiver;
-  ON_CALL(observer_, OnFileRegistered()).WillByDefault(Invoke([this]() {
+  ON_CALL(observer_, OnFileRegistered()).WillByDefault([this]() {
     ASSERT_TRUE(nearby_process_manager_.fake_nearby_connections().SendFile(
         /*payload_id=*/1, /*expected_file_content=*/nullptr));
-  }));
+  });
   ON_CALL(observer_, OnFileTransferComplete(/*success=*/true))
-      .WillByDefault(Invoke([&receiver, &completion_signal]() {
+      .WillByDefault([&receiver, &completion_signal]() {
         receiver.reset();
         completion_signal.GetCallback().Run();
-      }));
+      });
 
   receiver.emplace(
       /*payload_id=*/1, test_payload_path_, observer_.CreateCallbacks(),
@@ -218,9 +216,9 @@ TEST_F(FileReceiverTest, FileRegistrationError) {
             return result;
           }));
   base::test::TestFuture<void> completion_signal;
-  EXPECT_CALL(observer_, OnFileRegistered())
-      .WillOnce(Invoke(
-          [&completion_signal]() { completion_signal.GetCallback().Run(); }));
+  EXPECT_CALL(observer_, OnFileRegistered()).WillOnce([&completion_signal]() {
+    completion_signal.GetCallback().Run();
+  });
   FileReceiver receiver(/*payload_id=*/1, test_payload_path_,
                         observer_.CreateCallbacks(),
                         &nearby_connections_manager_);
@@ -234,8 +232,8 @@ TEST_F(FileReceiverTest, FileRegistrationPermanentError) {
   base::test::TestFuture<void> completion_signal;
   EXPECT_CALL(observer_, OnFileRegistered()).Times(0);
   EXPECT_CALL(observer_, OnFileTransferComplete(false))
-      .WillOnce(Invoke(
-          [&completion_signal]() { completion_signal.GetCallback().Run(); }));
+      .WillOnce(
+          [&completion_signal]() { completion_signal.GetCallback().Run(); });
   FileReceiver receiver(/*payload_id=*/1, test_payload_path_,
                         observer_.CreateCallbacks(),
                         &nearby_connections_manager_);
@@ -249,12 +247,12 @@ TEST_F(FileReceiverTest, OneFileTransferOverridesAnother) {
       /*payload_id=*/1);
   base::test::TestFuture<void> transfer_started_signal;
   EXPECT_CALL(observer_, OnFileRegistered())
-      .WillOnce(Invoke([this, &transfer_started_signal]() {
+      .WillOnce([this, &transfer_started_signal]() {
         ASSERT_TRUE(nearby_process_manager_.fake_nearby_connections().SendFile(
             /*payload_id=*/1, /*expected_file_content=*/nullptr));
         ASSERT_TRUE(base::PathExists(test_payload_path_));
         transfer_started_signal.GetCallback().Run();
-      }));
+      });
   auto receiver = std::make_optional<FileReceiver>(
       /*payload_id=*/1, test_payload_path_, observer_.CreateCallbacks(),
       &nearby_connections_manager_);
@@ -270,15 +268,15 @@ TEST_F(FileReceiverTest, OneFileTransferOverridesAnother) {
   InSequence sequence;
   std::vector<uint8_t> expected_file_content;
   EXPECT_CALL(observer_, OnFileRegistered())
-      .WillOnce(Invoke([this, &expected_file_content]() {
+      .WillOnce([this, &expected_file_content]() {
         ASSERT_TRUE(nearby_process_manager_.fake_nearby_connections().SendFile(
             /*payload_id=*/2, &expected_file_content));
-      }));
+      });
   base::test::TestFuture<void> transfer_complete_signal;
   EXPECT_CALL(observer_, OnFileTransferComplete(/*success=*/true))
-      .WillOnce(Invoke([&transfer_complete_signal]() {
+      .WillOnce([&transfer_complete_signal]() {
         transfer_complete_signal.GetCallback().Run();
-      }));
+      });
   receiver.emplace(
       /*payload_id=*/2, test_payload_path_, observer_.CreateCallbacks(),
       &nearby_connections_manager_);

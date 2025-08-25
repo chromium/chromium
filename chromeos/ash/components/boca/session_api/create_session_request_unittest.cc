@@ -39,7 +39,6 @@ using ::testing::ByMove;
 using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::Truly;

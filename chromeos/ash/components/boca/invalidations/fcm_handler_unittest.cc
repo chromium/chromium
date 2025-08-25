@@ -23,7 +23,6 @@ using base::test::RunOnceCallback;
 using base::test::RunOnceCallbackRepeatedly;
 using instance_id::InstanceID;
 using testing::_;
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 using testing::WithArg;

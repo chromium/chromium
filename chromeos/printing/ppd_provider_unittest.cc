@@ -45,7 +45,6 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
 using ::testing::WithArg;
@@ -234,7 +233,7 @@ class PpdProviderTest : public ::testing::Test {
                             std::move(content));
         };
     EXPECT_CALL(*provider_backdoor_.remote_ppd_fetcher, Fetch(GURL(url), _))
-        .WillOnce(Invoke(WithArg<1>(invoke_callback_with_content)));
+        .WillOnce(WithArg<1>(invoke_callback_with_content));
   }
 
   void MockRemotePpdFetchResult(const std::string& url,
@@ -244,7 +243,7 @@ class PpdProviderTest : public ::testing::Test {
           std::move(cb).Run(code, std::string());
         };
     EXPECT_CALL(*provider_backdoor_.remote_ppd_fetcher, Fetch(GURL(url), _))
-        .WillOnce(Invoke(WithArg<1>(invoke_callback_with_content)));
+        .WillOnce(WithArg<1>(invoke_callback_with_content));
   }
 
   // Calls the ResolveManufacturer() method of the |provider| and

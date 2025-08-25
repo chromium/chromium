@@ -24,7 +24,6 @@ namespace ash {
 
 using testing::_;
 using testing::Eq;
-using testing::Invoke;
 
 class AuthSessionStorageImplTest : public ::testing::Test {
  protected:
@@ -42,14 +41,13 @@ class AuthSessionStorageImplTest : public ::testing::Test {
 
   void ExpectExtendAuthsession(ash::MockUserDataAuthClient& mock_client) {
     EXPECT_CALL(mock_udac_, ExtendAuthSession(_, _))
-        .WillOnce(
-            Invoke([](const ::user_data_auth::ExtendAuthSessionRequest& request,
-                      UserDataAuthClient::ExtendAuthSessionCallback callback) {
-              ::user_data_auth::ExtendAuthSessionReply reply;
-              reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
-              reply.set_seconds_left(request.extension_duration());
-              std::move(callback).Run(reply);
-            }));
+        .WillOnce([](const ::user_data_auth::ExtendAuthSessionRequest& request,
+                     UserDataAuthClient::ExtendAuthSessionCallback callback) {
+          ::user_data_auth::ExtendAuthSessionReply reply;
+          reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
+          reply.set_seconds_left(request.extension_duration());
+          std::move(callback).Run(reply);
+        });
   }
 
   base::test::SingleThreadTaskEnvironment task_environment{
@@ -262,13 +260,13 @@ TEST_F(AuthSessionStorageImplTest, LifetimeInvalidateUponReturningTooLate) {
 
   // Session would be extended as soon as context is returned.
   EXPECT_CALL(mock_udac_, InvalidateAuthSession(_, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [](const ::user_data_auth::InvalidateAuthSessionRequest& request,
              UserDataAuthClient::InvalidateAuthSessionCallback callback) {
             ::user_data_auth::InvalidateAuthSessionReply reply;
             reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
             std::move(callback).Run(reply);
-          }));
+          });
 
   storage_->Return(token, std::move(borrowed));
   base::RunLoop().RunUntilIdle();

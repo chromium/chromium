@@ -42,7 +42,6 @@ using testing::_;
 using testing::AnyNumber;
 using testing::ByMove;
 using testing::Eq;
-using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
@@ -114,9 +113,9 @@ class AuthHubTestBase : public ::testing::Test {
 
     EXPECT_CALL(*engine_, SetUsageAllowed(_))
         .Times(AnyNumber())
-        .WillRepeatedly(Invoke([&](AuthFactorEngine::UsageAllowed usage) {
+        .WillRepeatedly([&](AuthFactorEngine::UsageAllowed usage) {
           engine_usage_ = usage;
-        }));
+        });
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -165,34 +164,32 @@ class AuthHubTestVector : public AuthHubTestBase {
 
   void ExpectAttemptConfirmation() {
     EXPECT_CALL(status_consumer_, InitializeUi(_, _))
-        .WillOnce(
-            Invoke([&](AuthFactorsSet factors, AuthHubConnector* connector) {
-              for (auto factor : factors) {
-                factors_state_[factor] = AuthFactorState::kCheckingForPresence;
-              }
-            }));
+        .WillOnce([&](AuthFactorsSet factors, AuthHubConnector* connector) {
+          for (auto factor : factors) {
+            factors_state_[factor] = AuthFactorState::kCheckingForPresence;
+          }
+        });
 
     EXPECT_CALL(attempt_consumer_, OnUserAuthAttemptConfirmed(_, _))
-        .WillOnce(Invoke([&](AuthHubConnector* connector,
-                             raw_ptr<AuthFactorStatusConsumer>& out_consumer) {
+        .WillOnce([&](AuthHubConnector* connector,
+                      raw_ptr<AuthFactorStatusConsumer>& out_consumer) {
           connector_ = connector;
           out_consumer = &status_consumer_;
-        }));
+        });
   }
 
   void ExpectFactorListUpdate() {
     EXPECT_CALL(status_consumer_, OnFactorListChanged(_))
-        .WillOnce(
-            Invoke([&](FactorsStatusMap update) { factors_state_ = update; }));
+        .WillOnce([&](FactorsStatusMap update) { factors_state_ = update; });
   }
 
   void ExpectFactorStateUpdate() {
     EXPECT_CALL(status_consumer_, OnFactorStatusesChanged(_))
-        .WillOnce(Invoke([&](FactorsStatusMap update) {
+        .WillOnce([&](FactorsStatusMap update) {
           for (const auto& factor : update) {
             factors_state_[factor.first] = factor.second;
           }
-        }));
+        });
   }
 
   AccountId account_;

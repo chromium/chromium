@@ -27,7 +27,6 @@
 
 using ::testing::_;
 using ::testing::ContainerEq;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace ash {
@@ -140,7 +139,7 @@ TEST_F(CecServiceClientTest, QueryPowerStatusSendDBusMessage) {
 TEST_F(CecServiceClientTest, QueryPowerStatusNoCecDevicesGivesEmptyResponse) {
   EXPECT_CALL(*mock_proxy_.get(),
               DoCallMethod(HasMember(cecservice::kGetTvsPowerStatus), _, _))
-      .WillOnce(Invoke(GetTvsPowerStatusHandler({})));
+      .WillOnce(GetTvsPowerStatusHandler({}));
 
   base::MockCallback<CecServiceClient::PowerStateCallback> callback;
   EXPECT_CALL(callback,
@@ -153,8 +152,7 @@ TEST_F(CecServiceClientTest, QueryPowerStatusNoCecDevicesGivesEmptyResponse) {
 TEST_F(CecServiceClientTest, QueryPowerStatusOneDeviceIsPropagated) {
   EXPECT_CALL(*mock_proxy_.get(),
               DoCallMethod(HasMember(cecservice::kGetTvsPowerStatus), _, _))
-      .WillOnce(
-          Invoke(GetTvsPowerStatusHandler({cecservice::kTvPowerStatusOn})));
+      .WillOnce(GetTvsPowerStatusHandler({cecservice::kTvPowerStatusOn}));
 
   base::MockCallback<CecServiceClient::PowerStateCallback> callback;
   EXPECT_CALL(callback,
@@ -179,7 +177,7 @@ TEST_F(CecServiceClientTest, QueryPowerStatusAllStatesCorrectlyHandled) {
 
   EXPECT_CALL(*mock_proxy_.get(),
               DoCallMethod(HasMember(cecservice::kGetTvsPowerStatus), _, _))
-      .WillOnce(Invoke(GetTvsPowerStatusHandler(std::move(power_states))));
+      .WillOnce(GetTvsPowerStatusHandler(std::move(power_states)));
 
   base::MockCallback<CecServiceClient::PowerStateCallback> callback;
   EXPECT_CALL(callback,

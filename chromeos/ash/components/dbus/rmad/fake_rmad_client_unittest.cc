@@ -22,7 +22,6 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace ash {

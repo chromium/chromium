@@ -69,7 +69,6 @@ using testing::_;
 using testing::AnyNumber;
 using testing::DoAll;
 using testing::Field;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::Return;
 using testing::SizeIs;
@@ -2465,12 +2464,11 @@ TEST_F(DriveFsPinningManagerTest, DropQuery) {
   manager.progress_.active_queries = 2;
 
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
-      .WillOnce(
-          Invoke([&manager](std::optional<vector<QueryItemPtr>>* const items) {
-            manager.Stop();
-            *items = {};
-            return FileError::FILE_ERROR_OK;
-          }));
+      .WillOnce([&manager](std::optional<vector<QueryItemPtr>>* const items) {
+        manager.Stop();
+        *items = {};
+        return FileError::FILE_ERROR_OK;
+      });
 
   PinningManager::Query query;
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);

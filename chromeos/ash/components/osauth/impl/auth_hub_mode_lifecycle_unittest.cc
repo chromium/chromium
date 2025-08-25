@@ -33,7 +33,6 @@ using base::test::RunOnceCallback;
 using testing::_;
 using testing::ByMove;
 using testing::Eq;
-using testing::Invoke;
 using testing::Mock;
 using testing::Return;
 using testing::StrictMock;
@@ -64,10 +63,9 @@ class AuthHubModeLifecycleTest : public ::testing::Test {
           .WillOnce(RunOnceCallback<0>(factor));
     } else {
       EXPECT_CALL(*engine, InitializeCommon(_))
-          .WillOnce(
-              Invoke([&, factor](AuthFactorEngine::CommonInitCallback cb) {
-                init_callbacks_[factor] = std::move(cb);
-              }));
+          .WillOnce([&, factor](AuthFactorEngine::CommonInitCallback cb) {
+            init_callbacks_[factor] = std::move(cb);
+          });
     }
   }
 
@@ -78,12 +76,12 @@ class AuthHubModeLifecycleTest : public ::testing::Test {
     EXPECT_CALL(*factory, GetFactor()).WillRepeatedly(Return(factor));
     EXPECT_CALL(*factory, CreateEngine(_))
         .Times(times)
-        .WillRepeatedly(Invoke([&, auto_init, factor](AuthHubMode mode) {
+        .WillRepeatedly([&, auto_init, factor](AuthHubMode mode) {
           auto engine = std::make_unique<StrictMock<MockAuthFactorEngine>>();
           SetEngineExpectations(engine.get(), factor, auto_init);
           engines_[factor] = engine.get();
           return engine;
-        }));
+        });
     parts_->RegisterEngineFactory(std::move(factory));
   }
 
@@ -94,17 +92,17 @@ class AuthHubModeLifecycleTest : public ::testing::Test {
     EXPECT_CALL(*factory, GetFactor()).WillRepeatedly(Return(factor));
     EXPECT_CALL(*factory, CreateEngine(Eq(AuthHubMode::kInSession)))
         .Times(times)
-        .WillRepeatedly(Invoke([&, auto_init, factor](AuthHubMode) {
+        .WillRepeatedly([&, auto_init, factor](AuthHubMode) {
           auto engine = std::make_unique<StrictMock<MockAuthFactorEngine>>();
           SetEngineExpectations(engine.get(), factor, auto_init);
           engines_[factor] = engine.get();
           return engine;
-        }));
+        });
     ON_CALL(*factory, CreateEngine(Eq(AuthHubMode::kLoginScreen)))
-        .WillByDefault(Invoke([&](AuthHubMode) {
+        .WillByDefault([&](AuthHubMode) {
           delete engines_[factor];
           return std::unique_ptr<MockAuthFactorEngine>();
-        }));
+        });
     parts_->RegisterEngineFactory(std::move(factory));
   }
 

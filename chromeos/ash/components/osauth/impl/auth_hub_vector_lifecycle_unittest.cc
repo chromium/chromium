@@ -36,7 +36,6 @@ using testing::ByMove;
 using testing::DoAll;
 using testing::Eq;
 using testing::InSequence;
-using testing::Invoke;
 using testing::Mock;
 using testing::MockFunction;
 using testing::Return;
@@ -85,11 +84,11 @@ class AuthHubVectorLifecycleTest : public ::testing::Test {
 
   void ExpectOwnerAttemptStartCalled(AuthAttemptVector attempt) {
     EXPECT_CALL(owner_, OnAttemptStarted(Eq(attempt), _, _))
-        .WillOnce(Invoke([&](const AuthAttemptVector&, AuthFactorsSet usable,
-                             AuthFactorsSet failed) {
+        .WillOnce([&](const AuthAttemptVector&, AuthFactorsSet usable,
+                      AuthFactorsSet failed) {
           usable_factors_ = usable;
           failed_factors_ = failed;
-        }));
+        });
   }
 
   void TriggerTimeout() { task_environment_.FastForwardBy(kLongTime); }
@@ -127,11 +126,11 @@ class AuthHubVectorLifecycleTest : public ::testing::Test {
 
     EXPECT_CALL(*engine,
                 StartAuthFlow(Eq(attempt.account), Eq(attempt.purpose), _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [&, factor](AccountId, AuthPurpose,
                         AuthFactorEngine::FactorEngineObserver* observer) {
               engine_obvservers_[factor] = observer;
-            }));
+            });
   }
 
   StrictMock<MockAuthFactorEngine>* SetUpEngine(AshAuthFactor factor) {
@@ -143,10 +142,10 @@ class AuthHubVectorLifecycleTest : public ::testing::Test {
 
     EXPECT_CALL(*engine, UpdateObserver(_))
         .Times(AnyNumber())
-        .WillRepeatedly(Invoke(
+        .WillRepeatedly(
             [&, factor](AuthFactorEngine::FactorEngineObserver* observer) {
               engine_obvservers_[factor] = observer;
-            }));
+            });
     return engine;
   }
 

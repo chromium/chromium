@@ -144,7 +144,7 @@ class DevicePairingHandlerImplTest : public testing::Test {
 
     device::BluetoothDevice* device = mock_device.get();
     ON_CALL(*mock_device, Connect(testing::_, testing::_))
-        .WillByDefault(testing::Invoke(
+        .WillByDefault(
             [this, auth_type, device, passkey](
                 device::BluetoothDevice::PairingDelegate* pairing_delegate,
                 device::BluetoothDevice::ConnectCallback callback) {
@@ -175,32 +175,30 @@ class DevicePairingHandlerImplTest : public testing::Test {
                   pairing_delegate->AuthorizePairing(device);
                   break;
               }
-            }));
+            });
 
-    ON_CALL(*mock_device, CancelPairing())
-        .WillByDefault(testing::Invoke([this]() {
-          num_cancel_pairing_calls_++;
-          std::move(connect_callback_)
-              .Run(device::BluetoothDevice::ConnectErrorCode::
-                       ERROR_AUTH_CANCELED);
-        }));
+    ON_CALL(*mock_device, CancelPairing()).WillByDefault([this]() {
+      num_cancel_pairing_calls_++;
+      std::move(connect_callback_)
+          .Run(device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_CANCELED);
+    });
 
-    ON_CALL(*mock_device, ConfirmPairing())
-        .WillByDefault(
-            testing::Invoke([this]() { num_confirm_pairing_calls_++; }));
+    ON_CALL(*mock_device, ConfirmPairing()).WillByDefault([this]() {
+      num_confirm_pairing_calls_++;
+    });
 
     ON_CALL(*mock_device, SetPinCode(testing::_))
-        .WillByDefault(testing::Invoke([this](const std::string& pincode) {
+        .WillByDefault([this](const std::string& pincode) {
           received_pin_code_ = pincode;
-        }));
+        });
 
     ON_CALL(*mock_device, SetPasskey(testing::_))
-        .WillByDefault(testing::Invoke(
-            [this](const uint32_t passkey) { received_passkey_ = passkey; }));
+        .WillByDefault(
+            [this](const uint32_t passkey) { received_passkey_ = passkey; });
 
-    ON_CALL(*mock_device, GetType()).WillByDefault(testing::Invoke([]() {
+    ON_CALL(*mock_device, GetType()).WillByDefault([]() {
       return device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC;
-    }));
+    });
 
     mock_devices_.push_back(std::move(mock_device));
   }

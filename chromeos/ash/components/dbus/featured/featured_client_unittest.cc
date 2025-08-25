@@ -33,7 +33,6 @@ namespace ash::featured {
 namespace {
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Return;
 
@@ -124,12 +123,12 @@ TEST_F(FeaturedClientTest, NotInitializedFakeGet) {
 TEST_F(FeaturedClientTest, HandleSeedFetched_Success) {
   EXPECT_CALL(*proxy_,
               DoCallMethod(_, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
-      .WillOnce(Invoke([](dbus::MethodCall* call, int timeout_ms,
-                          dbus::MockObjectProxy::ResponseCallback* callback) {
+      .WillOnce([](dbus::MethodCall* call, int timeout_ms,
+                   dbus::MockObjectProxy::ResponseCallback* callback) {
         std::unique_ptr<dbus::Response> response =
             dbus::Response::CreateEmpty();
         std::move(*callback).Run(response.get());
-      }));
+      });
 
   FeaturedClient::Initialize(bus_.get());
   FeaturedClient* client = FeaturedClient::Get();
@@ -157,15 +156,15 @@ TEST_F(FeaturedClientTest, HandleSeedFetched_Success) {
 TEST_F(FeaturedClientTest, HandleSeedFetched_Failure_ErrorResponse) {
   EXPECT_CALL(*proxy_,
               DoCallMethod(_, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
-      .WillOnce(Invoke([](dbus::MethodCall* call, int timeout_ms,
-                          dbus::MockObjectProxy::ResponseCallback* callback) {
+      .WillOnce([](dbus::MethodCall* call, int timeout_ms,
+                   dbus::MockObjectProxy::ResponseCallback* callback) {
         // Not setting the serial causes a crash.
         call->SetSerial(123);
         std::unique_ptr<dbus::Response> response =
             dbus::ErrorResponse::FromMethodCall(call, DBUS_ERROR_FAILED,
                                                 "test");
         std::move(*callback).Run(response.get());
-      }));
+      });
 
   FeaturedClient::Initialize(bus_.get());
   FeaturedClient* client = FeaturedClient::Get();
@@ -193,10 +192,10 @@ TEST_F(FeaturedClientTest, HandleSeedFetched_Failure_ErrorResponse) {
 TEST_F(FeaturedClientTest, HandleSeedFetched_Failure_NullResponse) {
   EXPECT_CALL(*proxy_,
               DoCallMethod(_, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
-      .WillOnce(Invoke([](dbus::MethodCall* call, int timeout_ms,
-                          dbus::MockObjectProxy::ResponseCallback* callback) {
+      .WillOnce([](dbus::MethodCall* call, int timeout_ms,
+                   dbus::MockObjectProxy::ResponseCallback* callback) {
         std::move(*callback).Run(nullptr);
-      }));
+      });
 
   FeaturedClient::Initialize(bus_.get());
   FeaturedClient* client = FeaturedClient::Get();

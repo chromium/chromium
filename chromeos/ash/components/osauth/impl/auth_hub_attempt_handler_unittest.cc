@@ -31,7 +31,6 @@ using testing::_;
 using testing::AnyNumber;
 using testing::ByMove;
 using testing::Eq;
-using testing::Invoke;
 using testing::Mock;
 using testing::Return;
 using testing::SaveArg;
@@ -72,20 +71,18 @@ class AuthHubAttemptHandlerTest : public ::testing::Test {
     engines_map_[factor] = engine;
     EXPECT_CALL(*engine, SetUsageAllowed(_))
         .Times(AnyNumber())
-        .WillRepeatedly(
-            Invoke([&, factor](AuthFactorEngine::UsageAllowed usage) {
-              engine_usage_[factor] = usage;
-            }));
+        .WillRepeatedly([&, factor](AuthFactorEngine::UsageAllowed usage) {
+          engine_usage_[factor] = usage;
+        });
   }
 
   void InitializeConsumer() {
     EXPECT_CALL(status_consumer_, InitializeUi(_, _))
-        .WillOnce(
-            Invoke([&](AuthFactorsSet factors, AuthHubConnector* connector) {
-              for (auto factor : factors) {
-                factors_state_[factor] = AuthFactorState::kCheckingForPresence;
-              }
-            }));
+        .WillOnce([&](AuthFactorsSet factors, AuthHubConnector* connector) {
+          for (auto factor : factors) {
+            factors_state_[factor] = AuthFactorState::kCheckingForPresence;
+          }
+        });
     handler_->SetConsumer(&status_consumer_);
   }
 
@@ -100,18 +97,17 @@ class AuthHubAttemptHandlerTest : public ::testing::Test {
 
   void ExpectFactorStateUpdate() {
     EXPECT_CALL(status_consumer_, OnFactorStatusesChanged(_))
-        .WillOnce(Invoke([&](FactorsStatusMap update) {
+        .WillOnce([&](FactorsStatusMap update) {
           for (const auto& factor : update) {
             factors_state_[factor.first] = factor.second;
           }
-        }))
+        })
         .RetiresOnSaturation();
   }
 
   void ExpectFactorListChange() {
     EXPECT_CALL(status_consumer_, OnFactorListChanged(_))
-        .WillOnce(
-            Invoke([&](FactorsStatusMap update) { factors_state_ = update; }))
+        .WillOnce([&](FactorsStatusMap update) { factors_state_ = update; })
         .RetiresOnSaturation();
   }
 

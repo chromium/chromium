@@ -38,7 +38,6 @@ using testing::_;
 using testing::ByRef;
 using testing::Eq;
 using testing::Exactly;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
@@ -232,12 +231,12 @@ TEST_F(UserfaultFDTest, SimpleZeroPageReadFault) {
       Pagefault(static_cast<uintptr_t>(mem),
                 UserfaultFDHandler::PagefaultFlags::kReadFault,
                 /* we didn't register for tids */ base::kInvalidThreadId))
-      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
-                                  UserfaultFDHandler::PagefaultFlags,
-                                  base::PlatformThreadId) {
+      .WillOnce([uffd_ptr](uintptr_t fault_address,
+                           UserfaultFDHandler::PagefaultFlags,
+                           base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -277,15 +276,14 @@ TEST_F(UserfaultFDTest, SimpleZeroPageReadFaultRetry) {
       Pagefault(static_cast<uintptr_t>(mem),
                 UserfaultFDHandler::PagefaultFlags::kReadFault,
                 /* we didn't register for tids */ base::kInvalidThreadId))
-      .WillOnce(
-          Invoke([](uintptr_t fault_address, UserfaultFDHandler::PagefaultFlags,
-                    base::PlatformThreadId) { return false; }))
-      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
-                                  UserfaultFDHandler::PagefaultFlags,
-                                  base::PlatformThreadId) {
+      .WillOnce([](uintptr_t fault_address, UserfaultFDHandler::PagefaultFlags,
+                   base::PlatformThreadId) { return false; })
+      .WillOnce([uffd_ptr](uintptr_t fault_address,
+                           UserfaultFDHandler::PagefaultFlags,
+                           base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -330,12 +328,12 @@ TEST_F(UserfaultFDTest, SimpleZeroPageReadFaultWithTid) {
               Pagefault(static_cast<uintptr_t>(mem),
                         UserfaultFDHandler::PagefaultFlags::kReadFault,
                         Eq(ByRef(expected_tid))))
-      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
-                                  UserfaultFDHandler::PagefaultFlags,
-                                  base::PlatformThreadId) {
+      .WillOnce([uffd_ptr](uintptr_t fault_address,
+                           UserfaultFDHandler::PagefaultFlags,
+                           base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -377,12 +375,12 @@ TEST_F(UserfaultFDTest, SimpleZeroPageWriteFault) {
               Pagefault(static_cast<uintptr_t>(mem),
                         UserfaultFDHandler::PagefaultFlags::kWriteFault,
                         /* we didn't register tid */ base::kInvalidThreadId))
-      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
-                                  UserfaultFDHandler::PagefaultFlags,
-                                  base::PlatformThreadId) {
+      .WillOnce([uffd_ptr](uintptr_t fault_address,
+                           UserfaultFDHandler::PagefaultFlags,
+                           base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -432,12 +430,12 @@ TEST_F(UserfaultFDTest, SimpleReadFaultResolveWithCopyPage) {
               Pagefault(static_cast<uintptr_t>(mem),
                         UserfaultFDHandler::PagefaultFlags::kReadFault,
                         /* we didn't register tid */ base::kInvalidThreadId))
-      .WillOnce(Invoke([uffd_ptr, &buf](uintptr_t fault_address, uintptr_t,
-                                        base::PlatformThreadId) {
+      .WillOnce([uffd_ptr, &buf](uintptr_t fault_address, uintptr_t,
+                                 base::PlatformThreadId) {
         HandleWithCopyRange(uffd_ptr, fault_address,
                             reinterpret_cast<uintptr_t>(buf.data()), kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -485,13 +483,13 @@ TEST_F(UserfaultFDTest, ReadFaultResolveWithCopyPageForMultiplePages) {
               Pagefault(static_cast<uintptr_t>(mem),
                         UserfaultFDHandler::PagefaultFlags::kReadFault,
                         /* we didn't register tid */ base::kInvalidThreadId))
-      .WillOnce(Invoke([&](uintptr_t fault_address, uintptr_t,
-                           base::PlatformThreadId) {
+      .WillOnce([&](uintptr_t fault_address, uintptr_t,
+                    base::PlatformThreadId) {
         HandleWithCopyRange(uffd_ptr, fault_address,
                             reinterpret_cast<uintptr_t>(buf.data()),
                             kRegionSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -544,9 +542,9 @@ TEST_F(UserfaultFDTest,
               Pagefault(_, UserfaultFDHandler::PagefaultFlags::kReadFault,
                         /* we didn't register tid */ base::kInvalidThreadId))
       .Times(Exactly(kNumPages))  // We should be called once for each page.
-      .WillRepeatedly(Invoke([&](uintptr_t fault_address,
-                                 UserfaultFDHandler::PagefaultFlags,
-                                 base::PlatformThreadId) {
+      .WillRepeatedly([&](uintptr_t fault_address,
+                          UserfaultFDHandler::PagefaultFlags,
+                          base::PlatformThreadId) {
         int page_number =
             (GetPageBase(fault_address) - static_cast<uintptr_t>(mem)) /
             kPageSize;
@@ -558,7 +556,7 @@ TEST_F(UserfaultFDTest,
                             reinterpret_cast<uintptr_t>(pg_fill_buf.data()),
                             kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -616,9 +614,9 @@ TEST_F(UserfaultFDTest, ReadFaultRegisteredOnPartialRange) {
           Exactly(kNumPagesRegistered))  // We should be called once for each
                                          // page we registered the other pages
                                          // will be zero filled by the kernel.
-      .WillRepeatedly(Invoke([&](uintptr_t fault_address,
-                                 UserfaultFDHandler::PagefaultFlags,
-                                 base::PlatformThreadId) {
+      .WillRepeatedly([&](uintptr_t fault_address,
+                          UserfaultFDHandler::PagefaultFlags,
+                          base::PlatformThreadId) {
         int page_number =
             (GetPageBase(fault_address) - static_cast<uintptr_t>(mem)) /
             kPageSize;
@@ -630,7 +628,7 @@ TEST_F(UserfaultFDTest, ReadFaultRegisteredOnPartialRange) {
                             reinterpret_cast<uintptr_t>(pg_fill_buf.data()),
                             kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -700,9 +698,9 @@ TEST_F(UserfaultFDTest, WriteFaultRegisteredOnPartialRange) {
           Exactly(kNumPagesRegistered))  // We should be called once for each
                                          // page we registered the other pages
                                          // will be zero filled by the kernel.
-      .WillRepeatedly(Invoke([&](uintptr_t fault_address,
-                                 UserfaultFDHandler::PagefaultFlags,
-                                 base::PlatformThreadId) {
+      .WillRepeatedly([&](uintptr_t fault_address,
+                          UserfaultFDHandler::PagefaultFlags,
+                          base::PlatformThreadId) {
         int page_number =
             (GetPageBase(fault_address) - static_cast<uintptr_t>(mem)) /
             kPageSize;
@@ -714,7 +712,7 @@ TEST_F(UserfaultFDTest, WriteFaultRegisteredOnPartialRange) {
                             reinterpret_cast<uintptr_t>(pg_fill_buf.data()),
                             kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 
@@ -1068,12 +1066,12 @@ TEST_F(UserfaultFDTest, RemapAndFaultAtNewAddress) {
       Pagefault(Eq(ByRef(remapped_start)),
                 UserfaultFDHandler::PagefaultFlags::kReadFault,
                 /* we didn't register for tids */ base::kInvalidThreadId))
-      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
-                                  UserfaultFDHandler::PagefaultFlags,
-                                  base::PlatformThreadId) {
+      .WillOnce([uffd_ptr](uintptr_t fault_address,
+                           UserfaultFDHandler::PagefaultFlags,
+                           base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
         return true;
-      }));
+      });
 
   // And because the userfaultfd is attached to the VMA when it's remapped and
   // grown we also have a userfaultfd registered on the new second page.
@@ -1082,12 +1080,12 @@ TEST_F(UserfaultFDTest, RemapAndFaultAtNewAddress) {
       Pagefault(Eq(ByRef(second_page_start)),
                 UserfaultFDHandler::PagefaultFlags::kReadFault,
                 /* we didn't register for tids */ base::kInvalidThreadId))
-      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
-                                  UserfaultFDHandler::PagefaultFlags,
-                                  base::PlatformThreadId) {
+      .WillOnce([uffd_ptr](uintptr_t fault_address,
+                           UserfaultFDHandler::PagefaultFlags,
+                           base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
         return true;
-      }));
+      });
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
 

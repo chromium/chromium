@@ -121,22 +121,22 @@ class SecureChannelBleScannerImplTest : public testing::Test {
         std::move(fake_service_data_provider));
 
     ON_CALL(*mock_adapter_, StartScanWithFilter_(testing::_, testing::_))
-        .WillByDefault(testing::Invoke(
+        .WillByDefault(
             [](const device::BluetoothDiscoveryFilter* discovery_filter,
                device::BluetoothAdapter::DiscoverySessionResultCallback&
                    callback) {
               std::move(callback).Run(
                   /*is_error=*/false,
                   device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
-            }));
+            });
     ON_CALL(*mock_adapter_, StopScan(testing::_))
-        .WillByDefault(testing::Invoke(
+        .WillByDefault(
             [](device::BluetoothAdapter::DiscoverySessionResultCallback
                    callback) {
               std::move(callback).Run(
                   /*is_error=*/false,
                   device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
-            }));
+            });
     ON_CALL(*mock_adapter_, StartLowEnergyScanSession(testing::_, testing::_))
         .WillByDefault(Invoke(
             this, &SecureChannelBleScannerImplTest::StartLowEnergyScanSession));

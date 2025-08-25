@@ -27,7 +27,6 @@
 #include "ui/message_center/public/cpp/notification.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::StrictMock;
@@ -214,14 +213,14 @@ TEST_F(
 
   // Expect CRD to return an connection code.
   EXPECT_CALL(*spotlight_crd_manager(), InitiateSpotlightSession(_, kUserEmail))
-      .WillOnce(WithArg<0>(Invoke([&](auto callback) {
+      .WillOnce(WithArg<0>([&](auto callback) {
         std::move(callback).Run(kSpotlightConnectionCode);
-      })));
+      }));
   // Expect sending the code to server.
   EXPECT_CALL(*spotlight_service(),
               RegisterScreen(kSpotlightConnectionCode, kTestBaseUrl, _))
-      .WillOnce(WithArg<2>(Invoke(
-          [&](auto callback) { std::move(callback).Run(base::ok(true)); })));
+      .WillOnce(WithArg<2>(
+          [&](auto callback) { std::move(callback).Run(base::ok(true)); }));
   // Expect persistent notification to show after countdown.
   EXPECT_CALL(*spotlight_crd_manager(),
               ShowPersistentNotification(kUserFullName))
@@ -258,14 +257,14 @@ TEST_F(SpotlightSessionManagerTest,
   // Expect CRD to return an connection code.
   EXPECT_CALL(*spotlight_crd_manager(),
               InitiateSpotlightSession(_, kRobotEmail))
-      .WillOnce(WithArg<0>(Invoke([&](auto callback) {
+      .WillOnce(WithArg<0>([&](auto callback) {
         std::move(callback).Run(kSpotlightConnectionCode);
-      })));
+      }));
   // Expect sending the code to server.
   EXPECT_CALL(*spotlight_service(),
               RegisterScreen(kSpotlightConnectionCode, kTestBaseUrl, _))
-      .WillOnce(WithArg<2>(Invoke(
-          [&](auto callback) { std::move(callback).Run(base::ok(true)); })));
+      .WillOnce(WithArg<2>(
+          [&](auto callback) { std::move(callback).Run(base::ok(true)); }));
   // Expect persistent notification to show after countdown.
   EXPECT_CALL(*spotlight_crd_manager(),
               ShowPersistentNotification(kUserFullName))
@@ -297,14 +296,14 @@ TEST_F(SpotlightSessionManagerTest,
 
   // Expect CRD to return an connection code.
   EXPECT_CALL(*spotlight_crd_manager(), InitiateSpotlightSession(_, kUserEmail))
-      .WillOnce(WithArg<0>(Invoke([&](auto callback) {
+      .WillOnce(WithArg<0>([&](auto callback) {
         std::move(callback).Run(kSpotlightConnectionCode);
-      })));
+      }));
   // Expect sending the code to server.
   EXPECT_CALL(*spotlight_service(),
               RegisterScreen(kSpotlightConnectionCode, kTestBaseUrl, _))
-      .WillOnce(WithArg<2>(Invoke(
-          [&](auto callback) { std::move(callback).Run(base::ok(true)); })));
+      .WillOnce(WithArg<2>(
+          [&](auto callback) { std::move(callback).Run(base::ok(true)); }));
   // Expect persistent notification to show after countdown.
   EXPECT_CALL(*spotlight_crd_manager(),
               ShowPersistentNotification(kUserFullName))
@@ -389,9 +388,9 @@ TEST_F(SpotlightSessionManagerTest, OnlyProcessesOneRequestAtATime) {
   activities.emplace(kGaiaId, status);
 
   EXPECT_CALL(*spotlight_crd_manager(), InitiateSpotlightSession)
-      .WillRepeatedly(WithArg<0>(Invoke([&](auto callback) {
+      .WillRepeatedly(WithArg<0>([&](auto callback) {
         std::move(callback).Run(kSpotlightConnectionCode);
-      })));
+      }));
   EXPECT_CALL(*spotlight_service(),
               RegisterScreen(kSpotlightConnectionCode, kTestBaseUrl, _))
       .Times(1);

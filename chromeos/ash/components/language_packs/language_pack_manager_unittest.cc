@@ -31,7 +31,6 @@ using ::testing::AllOf;
 using ::testing::Each;
 using ::testing::Field;
 using ::testing::FieldsAre;
-using ::testing::Invoke;
 using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::Return;

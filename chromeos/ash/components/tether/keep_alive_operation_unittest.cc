@@ -21,7 +21,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::NotNull;
 
 namespace ash::tether {
@@ -114,9 +113,9 @@ TEST_F(KeepAliveOperationTest, NotifiesObserversOnResponse) {
 
   // Verify that the observer is called with the correct parameters.
   EXPECT_CALL(mock_observer_, OnOperationFinishedRaw(NotNull()))
-      .WillOnce(Invoke([&test_status](DeviceStatus* status) {
+      .WillOnce([&test_status](DeviceStatus* status) {
         EXPECT_EQ(test_status.SerializeAsString(), status->SerializeAsString());
-      }));
+      });
 
   // Start the operation.
   operation_->Initialize();

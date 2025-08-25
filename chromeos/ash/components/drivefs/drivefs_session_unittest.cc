@@ -37,7 +37,6 @@ static const std::optional<base::TimeDelta> kEmptyDelay;
 static const std::optional<base::TimeDelta> kDefaultDelay = base::Seconds(5);
 
 using testing::_;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using MountFailure = DriveFsSession::MountObserver::MountFailure;
 

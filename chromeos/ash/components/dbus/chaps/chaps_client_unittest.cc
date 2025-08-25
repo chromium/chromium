@@ -22,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/chaps/dbus-constants.h"
 
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace ash {
@@ -179,7 +178,7 @@ TEST_F(SessionChapsClientTest, GetSlotList) {
     auto response = CreateResponse(out_slots, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<const std::vector<uint64_t>&, uint32_t> waiter;
   client_->GetSlotList(token_present, waiter.GetCallback());
@@ -204,7 +203,7 @@ TEST_F(SessionChapsClientTest, GetMechanismList) {
     auto response = CreateResponse(out_mechanisms, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<const std::vector<uint64_t>&, uint32_t> waiter;
   client_->GetMechanismList(slot_id, waiter.GetCallback());
@@ -231,7 +230,7 @@ TEST_F(SessionChapsClientTest, OpenSession) {
     auto response = CreateResponse(out_slot_id, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, uint32_t> waiter;
   client_->OpenSession(slot_id, flags, waiter.GetCallback());
@@ -255,7 +254,7 @@ TEST_F(SessionChapsClientTest, CloseSession) {
     auto response = CreateResponse(result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->CloseSession(session_id, waiter.GetCallback());
@@ -281,7 +280,7 @@ TEST_F(SessionChapsClientTest, CreateObject) {
     auto response = CreateResponse(out_handle, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, uint32_t> waiter;
   client_->CreateObject(session_id, attributes, waiter.GetCallback());
@@ -307,7 +306,7 @@ TEST_F(SessionChapsClientTest, DestroyObject) {
     auto response = CreateResponse(result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->DestroyObject(session_id, object_handle, waiter.GetCallback());
@@ -335,7 +334,7 @@ TEST_F(SessionChapsClientTest, GetAttributeValue) {
     auto response = CreateResponse(out_attributes, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<const std::vector<uint8_t>&, uint32_t> waiter;
   client_->GetAttributeValue(session_id, object_handle, attributes_query,
@@ -364,7 +363,7 @@ TEST_F(SessionChapsClientTest, SetAttributeValue) {
     auto response = CreateResponse(result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->SetAttributeValue(session_id, object_handle, attributes,
@@ -390,7 +389,7 @@ TEST_F(SessionChapsClientTest, FindObjectsInit) {
     auto response = CreateResponse(result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->FindObjectsInit(session_id, attributes, waiter.GetCallback());
@@ -416,7 +415,7 @@ TEST_F(SessionChapsClientTest, FindObjects) {
     auto response = CreateResponse(out_handles, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<const std::vector<uint64_t>&, uint32_t> waiter;
   client_->FindObjects(session_id, max_object_count, waiter.GetCallback());
@@ -440,7 +439,7 @@ TEST_F(SessionChapsClientTest, FindObjectsFinal) {
     auto response = CreateResponse(result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->FindObjectsFinal(session_id, waiter.GetCallback());
@@ -469,7 +468,7 @@ TEST_F(SessionChapsClientTest, EncryptInit) {
     auto response = CreateResponse(result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->EncryptInit(session_id, mechanism_type, mechanism_parameter,
@@ -499,7 +498,7 @@ TEST_F(SessionChapsClientTest, Encrypt) {
     auto response = CreateResponse(actual_out_length, out_data, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, const std::vector<uint8_t>&, uint32_t>
       waiter;
@@ -531,7 +530,7 @@ TEST_F(SessionChapsClientTest, DecryptInit) {
     auto response = CreateResponse(result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->DecryptInit(session_id, mechanism_type, mechanism_parameter,
@@ -561,7 +560,7 @@ TEST_F(SessionChapsClientTest, Decrypt) {
     auto response = CreateResponse(actual_out_length, out_data, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, const std::vector<uint8_t>&, uint32_t>
       waiter;
@@ -593,7 +592,7 @@ TEST_F(SessionChapsClientTest, SignInit) {
     auto response = CreateResponse(result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->SignInit(session_id, mechanism_type, mechanism_parameter, key_handle,
@@ -623,7 +622,7 @@ TEST_F(SessionChapsClientTest, Sign) {
     auto response = CreateResponse(actual_out_length, out_data, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, const std::vector<uint8_t>&, uint32_t>
       waiter;
@@ -660,7 +659,7 @@ TEST_F(SessionChapsClientTest, GenerateKeyPair) {
         CreateResponse(public_key_handle, private_key_handle, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, uint64_t, uint32_t> waiter;
   client_->GenerateKeyPair(session_id, mechanism_type, mechanism_parameter,
@@ -700,7 +699,7 @@ TEST_F(SessionChapsClientTest, WrapKey) {
         CreateResponse(actual_out_length, out_wrapped_key, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, const std::vector<uint8_t>&, uint32_t>
       waiter;
@@ -739,7 +738,7 @@ TEST_F(SessionChapsClientTest, UnwrapKey) {
     auto response = CreateResponse(out_key_handle, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, uint32_t> waiter;
   client_->UnwrapKey(session_id, mechanism_type, mechanism_parameter,
@@ -774,7 +773,7 @@ TEST_F(SessionChapsClientTest, DeriveKey) {
     auto response = CreateResponse(out_key_handle, result_code);
     return std::move(*callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(Invoke(fake_dbus));
+  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, uint32_t> waiter;
   client_->DeriveKey(session_id, mechanism_type, mechanism_parameter,

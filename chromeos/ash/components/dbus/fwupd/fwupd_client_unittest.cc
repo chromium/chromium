@@ -975,11 +975,11 @@ TEST_P(FwupdClientTest_DeviceRequest, OnDeviceRequestReceived) {
 
   MockObserver observer;
   EXPECT_CALL(observer, OnDeviceRequestResponse(_))
-      .WillOnce(Invoke([&](FwupdRequest req) {
+      .WillOnce([&](FwupdRequest req) {
         EXPECT_EQ(req.id, GetParam().expected_index_of_request_id);
         EXPECT_EQ(req.kind, 2u);
         run_loop_.Quit();
-      }));
+      });
 
   fwupd_client_->AddObserver(&observer);
 

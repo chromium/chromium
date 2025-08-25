@@ -424,7 +424,7 @@ class LorgnetteManagerClientTest : public testing::Test {
     EXPECT_CALL(*mock_proxy_.get(),
                 DoConnectToSignal(lorgnette::kManagerServiceInterface,
                                   lorgnette::kScanStatusChangedSignal, _, _))
-        .WillOnce(WithArgs<2, 3>(Invoke(
+        .WillOnce(WithArgs<2, 3>(
             [&](dbus::ObjectProxy::SignalCallback signal_callback,
                 dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
               scan_status_changed_signal_callback_ = std::move(signal_callback);
@@ -434,13 +434,13 @@ class LorgnetteManagerClientTest : public testing::Test {
                                             lorgnette::kManagerServiceInterface,
                                             lorgnette::kScanStatusChangedSignal,
                                             /*success=*/true));
-            })));
+            }));
 
     // Save the client's scanner list updated signal callback.
     EXPECT_CALL(*mock_proxy_.get(),
                 DoConnectToSignal(lorgnette::kManagerServiceInterface,
                                   lorgnette::kScannerListChangedSignal, _, _))
-        .WillOnce(WithArgs<2, 3>(Invoke(
+        .WillOnce(WithArgs<2, 3>(
             [&](dbus::ObjectProxy::SignalCallback signal_callback,
                 dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
               scanner_list_changed_signal_callback_ =
@@ -452,7 +452,7 @@ class LorgnetteManagerClientTest : public testing::Test {
                                  lorgnette::kManagerServiceInterface,
                                  lorgnette::kScannerListChangedSignal,
                                  /*success=*/true));
-            })));
+            }));
 
     // ShutdownAndBlock() will be called in TearDown().
     EXPECT_CALL(*mock_bus_.get(), ShutdownAndBlock()).WillOnce(Return());
