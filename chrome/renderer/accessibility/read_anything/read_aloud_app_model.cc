@@ -111,7 +111,7 @@ void ReadAloudAppModel::MovePositionToPreviousGranularity() {
   }
 }
 
-std::vector<ui::AXNodeID> ReadAloudAppModel::GetCurrentText(
+a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetCurrentText(
     bool is_pdf,
     bool is_docs,
     const std::set<ui::AXNodeID>* current_nodes) {
@@ -123,7 +123,7 @@ std::vector<ui::AXNodeID> ReadAloudAppModel::GetCurrentText(
     if (next_granularity.node_ids.size() == 0) {
       // TODO(crbug.com/40927698) think about behavior when increment happened
       // out of the content- should we reset the state?
-      return next_granularity.node_ids;
+      return next_granularity;
     }
     if (features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
       // TODO(crbug.com/330749762): initiate phrase calculation here, with some
@@ -132,8 +132,7 @@ std::vector<ui::AXNodeID> ReadAloudAppModel::GetCurrentText(
     processed_granularities_on_current_page_.push_back(next_granularity);
   }
 
-  return processed_granularities_on_current_page_[processed_granularity_index_]
-      .node_ids;
+  return processed_granularities_on_current_page_[processed_granularity_index_];
 }
 
 void ReadAloudAppModel::PreprocessTextForSpeech(
@@ -669,6 +668,23 @@ bool ReadAloudAppModel::IsValidAXPosition(
 
   return !is_ignored && !was_previously_spoken && is_text_node &&
          contains_node && on_active_tree;
+}
+
+std::vector<ReadAloudTextSegment> ReadAloudAppModel::GetCurrentTextSegments(
+    bool is_pdf,
+    bool is_docs,
+    const std::set<ui::AXNodeID>* current_nodes) {
+  GetCurrentText(is_pdf, is_docs, current_nodes);
+  // If the granularity index isn't valid, return an empty array.
+  if (processed_granularity_index_ >=
+      processed_granularities_on_current_page_.size()) {
+    return {};
+  }
+
+  a11y::ReadAloudCurrentGranularity current_granularity =
+      processed_granularities_on_current_page_[processed_granularity_index_];
+  return current_granularity.GetSegmentsForRange(
+      0, current_granularity.text.length());
 }
 
 std::vector<ReadAloudTextSegment>

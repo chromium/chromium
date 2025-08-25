@@ -1204,6 +1204,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getCurrentTextEndIndex",
                  &ReadAnythingAppController::GetCurrentTextEndIndex)
       .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
+      .SetMethod("getCurrentTextContent",
+                 &ReadAnythingAppController::GetCurrentTextContent)
       .SetMethod("shouldShowUi", &ReadAnythingAppController::ShouldShowUI)
       .SetMethod("onIsSpeechActiveChanged",
                  &ReadAnythingAppController::OnIsSpeechActiveChanged)
@@ -1229,6 +1231,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SendInstallVoicePackRequest)
       .SetMethod("sendUninstallVoiceRequest",
                  &ReadAnythingAppController::SendUninstallVoiceRequest)
+      .SetMethod("getCurrentTextSegments",
+                 &ReadAnythingAppController::GetCurrentTextSegments)
       .SetMethod("getHighlightForCurrentSegmentIndex",
                  &ReadAnythingAppController::GetHighlightForCurrentSegmentIndex)
       .SetMethod("getValidatedFontName",
@@ -1992,7 +1996,14 @@ bool ReadAnythingAppController::IsSpeechTreeInitialized() {
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {
   return read_aloud_model_.GetCurrentText(model_.is_pdf(), model_.IsDocs(),
-                                          model_.GetCurrentlyVisibleNodes());
+                                          model_.GetCurrentlyVisibleNodes()).node_ids;
+}
+
+std::u16string ReadAnythingAppController::GetCurrentTextContent() {
+  return read_aloud_model_
+      .GetCurrentText(model_.is_pdf(), model_.IsDocs(),
+                      model_.GetCurrentlyVisibleNodes())
+      .text;
 }
 
 void ReadAnythingAppController::PreprocessTextForSpeech() {
@@ -2159,6 +2170,32 @@ int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
       shorter_string.length() - 1, ax::mojom::MoveDirection::kBackward,
       ax::mojom::TextAffinity::kDefaultValue);
   return word_ends;
+}
+
+v8::Local<v8::Value> ReadAnythingAppController::GetCurrentTextSegments() {
+  v8::Isolate* isolate =
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+  auto context = isolate->GetCurrentContext();
+
+  std::vector<ReadAloudTextSegment> nodes =
+      read_aloud_model_.GetCurrentTextSegments(
+          model_.is_pdf(), model_.IsDocs(), model_.GetCurrentlyVisibleNodes());
+
+  v8::Local<v8::Array> highlight_array = v8::Array::New(isolate, nodes.size());
+  for (int i = 0; i < (int)nodes.size(); i++) {
+    v8::Local<v8::Object> obj = v8::Object::New(isolate);
+    auto checked = obj->DefineOwnProperty(
+        context, v8::String::NewFromUtf8(isolate, "nodeId").ToLocalChecked(),
+        v8::Number::New(isolate, nodes[i].id));
+    checked = obj->DefineOwnProperty(
+        context, v8::String::NewFromUtf8(isolate, "start").ToLocalChecked(),
+        v8::Number::New(isolate, nodes[i].text_start));
+    checked = obj->DefineOwnProperty(
+        context, v8::String::NewFromUtf8(isolate, "length").ToLocalChecked(),
+        v8::Number::New(isolate, (nodes[i].text_end - nodes[i].text_start)));
+    checked = highlight_array->Set(isolate->GetCurrentContext(), i, obj);
+  }
+  return highlight_array;
 }
 
 v8::Local<v8::Value>

@@ -102,16 +102,13 @@ class ReadAloudAppModel {
 
   void ResetGranularityIndex();
 
-  // Returns a list of AXNodeIds representing the next nodes that should be
-  // spoken and highlighted with Read Aloud.
+  // Returns a list of ReadAloudCurrentGranularitys representing the next nodes
+  // that should be spoken and highlighted with Read Aloud.
   // This defaults to returning the first granularity until
   // MovePositionTo<Next,Previous>Granularity() moves the position.
   // If the the current processed_granularity_index_ has not been calculated
   // yet, GetNextNodes() is called which updates the AXPosition.
-  // GetCurrentTextStartIndex and GetCurrentTextEndIndex called with an AXNodeID
-  // return by GetCurrentText will return the starting text and ending text
-  // indices for specific text that should be referenced within the node.
-  std::vector<ui::AXNodeID> GetCurrentText(
+  a11y::ReadAloudCurrentGranularity GetCurrentText(
       bool is_pdf,
       bool is_docs,
       const std::set<ui::AXNodeID>* current_nodes);
@@ -148,6 +145,18 @@ class ReadAloudAppModel {
   int GetCurrentTextEndIndex(const ui::AXNodeID& node_id);
 
   void ResetReadAloudState();
+
+  // Returns a list of segments representing the next nodes and ranges
+  // that should be spoken and highlighted with Read Aloud. The text ranges
+  // consist of start and end offsets within each node. This defaults to
+  // returning the first granularity until
+  // MovePositionTo<Next,Previous>Granularity() moves the position.
+  // If the the current processed_granularity_index_ has not been calculated
+  // yet, GetNextNodes() is called which updates the AXPosition.
+  std::vector<ReadAloudTextSegment> GetCurrentTextSegments(
+      bool is_pdf,
+      bool is_docs,
+      const std::set<ui::AXNodeID>* current_nodes);
 
   // Given a text index for the current granularity, return the nodes and the
   // corresponding text ranges for that part of the text. The text ranges
