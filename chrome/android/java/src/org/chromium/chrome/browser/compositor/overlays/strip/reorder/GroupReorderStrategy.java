@@ -288,6 +288,8 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         Tab adjTab = mModel.getTabById(adjStripTab.getTabId());
         assert adjTab != null : "No matching Tab in the TabModel.";
 
+        if (adjTab.getIsPinned()) return false;
+
         if (mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(adjStripTab.getTabId()))) {
             // Case A: Attempt to drag past adjacent group.
             StripLayoutGroupTitle adjTitle =

@@ -32,6 +32,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
@@ -219,6 +220,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     }
 
     @Test
+    @Feature("Pinned Tabs")
     public void testUpdateReorder_success_pinnedTabs() {
         // Pinned tabs should live at strip start, however, this test and below only checks the
         // success/failure of the reorder, the initial position doesn't matter, so reuse the current

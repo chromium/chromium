@@ -486,9 +486,9 @@ void TabStripSceneLayer::PutStripTabLayer(
   if (foreground != layer->foreground() || is_pinned != layer->is_pinned()) {
     if (foreground != layer->foreground() && foreground) {
       foreground_tabs_->AddChild(layer->layer());
-    } else if (is_pinned != layer->is_pinned() && is_pinned) {
+    } else if (is_pinned) {
       pinned_tabs_layer_->AddChild(layer->layer());
-    } else if (!is_pinned && !foreground) {
+    } else {
       tab_ui_parent_layer_->AddChild(layer->layer());
     }
   }
