@@ -2087,6 +2087,11 @@ dialog:where(:modal) {
   select:not(:-internal-list-box) option:disabled {
     color: -internal-auto-base(inherit, color-mix(in lab, currentColor 50%, transparent));
   }
+  select:not(:-internal-list-box)[multiple] option:disabled {
+  /* This rule applies appearance:base styles to the appearance:auto
+   * <select multiple size=1>. Without it, disabled options would not appear disabled. */
+    color: color-mix(in lab, currentColor 50%, transparent);
+  }
 }
 @supports blink-feature(CustomizableSelectInPage) {
   /* :-internal-list-box is needed here in order to get precedence over this
@@ -2118,6 +2123,12 @@ dialog:where(:modal) {
   }
   select[multiple] option:checked::checkmark {
     content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2213%22%20height%3D%2213%22%20rx%3D%222%22%20fill%3D%22%230075FF%22%2F%3E%3Cpath%20d%3D%22M2.6%207%20l2.6%202.5%20L10.4%202.6%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E), '\2713');
+  }
+  select[multiple] option:disabled::checkmark {
+    content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220.5%22%20y%3D%220.5%22%20width%3D%2212%22%20height%3D%2212%22%20rx%3D%222%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23767676%22%20stroke-opacity%3D%2260%25%22%20fill-opacity%3D%2260%25%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E), '\2713');
+  }
+  select[multiple] option:checked:disabled::checkmark {
+    content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2213%22%20height%3D%2213%22%20rx%3D%222%22%20fill%3D%22%23767676%22%20fill-opacity%3D%2260%25%22%2F%3E%3Cpath%20d%3D%22M2.6%207%20l2.6%202.5%20L10.4%202.6%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%2260%25%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E), '\2713');
   }
 }
 
@@ -2209,6 +2220,20 @@ select::-internal-select-autofill-preview-text {
   select:-internal-list-box optgroup option,
   select:not(:-internal-list-box) optgroup option {
     padding-inline-start: -internal-auto-base(20px, 0.5em);
+    font-weight: normal;
+  }
+}
+@supports blink-feature(SelectMobileDesktopParity) {
+  /* This rule applies appearance:base styles to the appearance:auto
+   * <select multiple size=1> optgroups. Without it, the padding would look too
+   * small. */
+  select:not(:-internal-list-box)[multiple] optgroup::-internal-optgroup-label,
+  select:not(:-internal-list-box)[multiple] optgroup legend {
+    padding-inline: 0.5em;
+    padding-block: 0;
+  }
+  select:not(:-internal-list-box)[multiple] optgroup option {
+    padding-inline-start: -internal-auto-base(1em, 0.5em);
     font-weight: normal;
   }
 }

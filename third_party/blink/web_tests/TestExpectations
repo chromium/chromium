@@ -6745,6 +6745,9 @@ crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/ht
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/select-pseudo-light-dismiss-invalidation.tentative.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/select-tabindex-order.tentative.html [ Failure ]
 
+# The height of the appearance:auto <select> button on mac is different from the reference.
+crbug.com/440471997 [ Mac ] wpt_internal/html/semantics/forms/the-select-element/select-multiple-popup-auto-appearance.html [ Failure ]
+
 ### Tests failing with CSSGapDecorations Enabled:
 # These tests are failing for multicol OOF items.
 crbug.com/429365670 external/wpt/css/css-break/out-of-flow-in-multicolumn-097.html [ Failure ]
