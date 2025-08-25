@@ -61,6 +61,10 @@ namespace cc::slim {
 class SurfaceLayer;
 }
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace input {
 struct NativeWebKeyboardEvent;
 }  // namespace input
@@ -70,9 +74,14 @@ struct BrowserControlsOffsetTagDefinitions;
 class MotionEventAndroid;
 class OverscrollRefreshHandler;
 struct DidOverscrollParams;
-}
+}  // namespace ui
+
+namespace viz {
+class RasterContextProvider;
+}  // namespace viz
 
 namespace content {
+class CompositorImpl;
 class GestureListenerManager;
 class ImeAdapterAndroid;
 class OverscrollControllerAndroid;
@@ -177,6 +186,11 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
       base::OnceCallback<void(const SkBitmap&)> callback) override;
+  void CopySharedImageFromExactSurface(
+      const gfx::Rect& src_rect,
+      const gfx::Size& output_size,
+      base::OnceCallback<void(scoped_refptr<gpu::ClientSharedImage>)> callback);
+
   void EnsureSurfaceSynchronizedForWebTest() override;
   uint32_t GetCaptureSequenceNumber() const override;
   int GetMouseWheelMinimumGranularity() const override;
@@ -463,6 +477,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   const cc::slim::SurfaceLayer* GetSurfaceLayer() const;
 
+  scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider();
+
   void RegisterOffsetTags(
       const ui::BrowserControlsOffsetTagDefinitions& tag_definitions);
   void UnregisterOffsetTags(const cc::BrowserControlsOffsetTags& tags);
@@ -631,6 +647,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void BeginRotationEmbed();
   void EndRotationAndSyncIfNecessary();
   void EvictInternal();
+  CompositorImpl* GetCompositorImpl();
 
   // DevicePosturePlatformProvider::Observer.
   void OnDisplayFeatureBoundsChanged(

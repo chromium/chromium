@@ -60,6 +60,11 @@ struct StructTraits<viz::mojom::CopyOutputRequestDataView,
     return request->result_selection_;
   }
 
+  static const std::optional<viz::BlitRequest>& blit_request(
+      const std::unique_ptr<viz::CopyOutputRequest>& request) {
+    return request->blit_request_;
+  }
+
   static mojo::PendingRemote<viz::mojom::CopyOutputResultSender> result_sender(
       const std::unique_ptr<viz::CopyOutputRequest>& request);
 

@@ -79,6 +79,9 @@ FrameSinkImpl::~FrameSinkImpl() {
     resource_provider_.RemoveImportedResource(uploaded_resource_id);
   }
   resource_provider_.ShutdownAndReleaseAllResources();
+  if (context_provider_) {
+    context_provider_->RemoveObserver(this);
+  }
 }
 
 void FrameSinkImpl::SetLocalSurfaceId(

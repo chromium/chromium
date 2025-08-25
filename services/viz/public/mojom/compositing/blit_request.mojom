@@ -1,0 +1,33 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "gpu/ipc/common/exported_shared_image.mojom";
+import "gpu/ipc/common/sync_token.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// See components/viz/common/frame_sinks/blit_request.h.
+enum LetterboxingBehavior {
+  kDoNotLetterbox,
+  kLetterbox,
+};
+
+// See components/viz/common/frame_sinks/blit_request.h.
+struct BlitRequest {
+  // Offset from the origin of the image represented by the `mailbox`.
+  gfx.mojom.Point destination_region_offset;
+
+  // Specifies the letterboxing behavior of this request.
+  LetterboxingBehavior letterboxing_behavior;
+
+  // The mailbox for the shared image that will be populated.
+  gpu.mojom.ExportedSharedImage shared_image;
+
+  // SyncToken to wait on before accessing the shared image.
+  gpu.mojom.SyncToken sync_token;
+
+  // True if the shared image has been created from a `GpuMemoryBuffer`.
+  bool populates_gpu_memory_buffer;
+};

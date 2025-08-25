@@ -9,6 +9,7 @@ mojom("mojom") {
     "compositing/animation.mojom",
     "compositing/begin_frame_args.mojom",
     "compositing/bitmap_in_shared_memory.mojom",
+    "compositing/blit_request.mojom",
     "compositing/compositing_mode_watcher.mojom",
     "compositing/compositor_frame.mojom",
     "compositing/compositor_frame_metadata.mojom",
@@ -235,6 +236,26 @@ mojom("mojom") {
       ]
       traits_sources = [ "//services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.cc" ]
       traits_headers = [ "//services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.LetterboxingBehavior"
+          cpp = "::viz::LetterboxingBehavior"
+        },
+        {
+          mojom = "viz.mojom.BlitRequest"
+          cpp = "::viz::BlitRequest"
+          move_only = true
+        },
+      ]
+      traits_sources = [
+        "//services/viz/public/cpp/compositing/blit_request_mojom_traits.cc",
+      ]
+      traits_headers = [
+        "//services/viz/public/cpp/compositing/blit_request_mojom_traits.h",
+      ]
       traits_public_deps = [ "//components/viz/common" ]
     },
     {

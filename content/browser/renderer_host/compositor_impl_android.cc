@@ -45,6 +45,7 @@
 #include "components/input/utils.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -357,6 +358,7 @@ void CompositorImpl::SetVisible(bool visible) {
     // Hide the LayerTreeHost and release its frame sink.
     host_->SetVisible(false);
     host_->ReleaseLayerTreeFrameSink();
+    raster_context_provider_.reset();
     pending_frames_ = 0;
 
     // Notify CompositorDependenciesAndroid of visibility changes last, to
@@ -546,6 +548,7 @@ void CompositorImpl::OnGpuChannelEstablished(
     return;
   }
 
+  raster_context_provider_ = context_provider;
   InitializeVizLayerTreeFrameSink(std::move(context_provider));
 }
 
@@ -605,6 +608,7 @@ void CompositorImpl::DidReceiveCompositorFrameAck() {
 
 void CompositorImpl::DidLoseLayerTreeFrameSink() {
   TRACE_EVENT0("compositor", "CompositorImpl::DidLoseLayerTreeFrameSink");
+  raster_context_provider_.reset();
   client_->DidSwapFrame(0);
 }
 
@@ -934,6 +938,11 @@ void CompositorImpl::AddFrameSubmissionObserver(
 void CompositorImpl::RemoveFrameSubmissionObserver(
     FrameSubmissionObserver* observer) {
   frame_submission_observers_.RemoveObserver(observer);
+}
+
+scoped_refptr<viz::RasterContextProvider>
+CompositorImpl::GetRasterContextProvider() {
+  return raster_context_provider_;
 }
 
 }  // namespace content

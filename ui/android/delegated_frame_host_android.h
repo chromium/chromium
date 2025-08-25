@@ -14,7 +14,6 @@
 #include "cc/layers/deadline_policy.h"
 #include "components/viz/client/frame_evictor.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -30,8 +29,14 @@ namespace cc::slim {
 class SurfaceLayer;
 }
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace viz {
+class CopyOutputRequest;
 class HostFrameSinkManager;
+class RasterContextProvider;
 }  // namespace viz
 
 namespace ui {
@@ -117,6 +122,19 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
       bool capture_exact_surface_id,
       base::TimeDelta ipc_delay);
   bool CanCopyFromCompositingSurface() const;
+
+  // Should only be called when the host has a content layer. Use this for one-
+  // off screen capture, not for video. Always provides ResultFormat::RGBA,
+  // ResultDestination::kSharedImage CopyOutputResults. It creates the
+  // SharedImage for the result and passes ownership to the `callback`.
+  // `capture_exact_surface_id` indicates if the `CopyOutputRequest` will be
+  // issued against a specific surface or not.
+  void CopySharedImageFromCompositingSurface(
+      scoped_refptr<viz::RasterContextProvider> context_provider,
+      const gfx::Rect& src_subrect,
+      const gfx::Size& output_size,
+      base::OnceCallback<void(scoped_refptr<gpu::ClientSharedImage>)> callback,
+      bool capture_exact_surface_id);
 
   void CompositorFrameSinkChanged();
 

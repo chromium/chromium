@@ -4,8 +4,7 @@
 
 module viz.mojom;
 
-import "gpu/ipc/common/mailbox.mojom";
-import "gpu/ipc/common/sync_token.mojom";
+import "services/viz/public/mojom/compositing/blit_request.mojom";
 import "services/viz/public/mojom/compositing/copy_output_result.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -24,6 +23,8 @@ struct CopyOutputRequest {
   mojo_base.mojom.UnguessableToken? source;
   gfx.mojom.Rect? area;
   gfx.mojom.Rect? result_selection;
+
+  BlitRequest? blit_request;
 
   pending_remote<CopyOutputResultSender> result_sender;
 };
