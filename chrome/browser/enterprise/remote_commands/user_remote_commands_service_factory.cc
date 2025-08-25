@@ -40,7 +40,7 @@ UserRemoteCommandsServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   // UserCloudPolicyManager doesn't exist in some test environments. In those
   // cases, we skip the creation of KeyedService here.
-  if (!profile->GetUserCloudPolicyManager()) {
+  if (!profile->GetCloudPolicyManager()) {
     return nullptr;
   }
   return std::make_unique<UserRemoteCommandsService>(profile);
