@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
 #include "chrome/common/webui_url_constants.h"
@@ -287,12 +288,12 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDragging) {
   ASSERT_TRUE(
       ash::SnapGroupController::Get()->AreWindowsInSnapGroup(window1, window2));
 
-  TabStrip* tap_strip =
-      BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
+  TabStripViewInterface* tab_strip_view =
+      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
   const auto start_point =
-      tap_strip->tab_at(1)->GetBoundsInScreen().CenterPoint();
+      tab_strip_view->GetTabAnchorViewAt(1)->GetBoundsInScreen().CenterPoint();
   const auto end_point =
-      tap_strip->tab_at(0)->GetBoundsInScreen().left_center();
+      tab_strip_view->GetTabAnchorViewAt(0)->GetBoundsInScreen().left_center();
   event_generator.MoveMouseTo(start_point);
   event_generator.PressLeftButton();
   event_generator.MoveMouseTo(end_point);
@@ -321,10 +322,10 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDetaching) {
 
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
 
-  TabStrip* tap_strip =
-      BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
+  TabStripViewInterface* tab_strip_view =
+      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
   const gfx::Point start_point =
-      tap_strip->tab_at(1)->GetBoundsInScreen().CenterPoint();
+      tab_strip_view->GetTabAnchorViewAt(1)->GetBoundsInScreen().CenterPoint();
   const gfx::Point end_point = window2->GetBoundsInScreen().CenterPoint();
   event_generator.MoveMouseTo(start_point);
   event_generator.PressLeftButton();

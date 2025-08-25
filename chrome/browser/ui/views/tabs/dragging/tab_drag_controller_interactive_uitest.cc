@@ -4454,14 +4454,16 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 namespace {
 
-TabStrip* GetAttachedTabstrip() {
+TabStripViewInterface* GetAttachedTabstripView() {
   for (Browser* browser : *BrowserList::GetInstance()) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+
     if (TabDragController::IsAttachedTo(
-            browser_view->tabstrip()->GetDragContext())) {
-      return browser_view->tabstrip();
+            browser_view->tab_strip_view()->GetDragContext())) {
+      return browser_view->tab_strip_view();
     }
   }
+
   return nullptr;
 }
 
@@ -4490,12 +4492,12 @@ void DragWindowAndVerifyOffset(DetachToBrowserTabDragControllerTest* test,
         // makes sure the window is positioned correctly.
         ASSERT_TRUE(test->DragInputToNotifyWhenDone(
             second_move, base::BindLambdaForTesting([&]() {
-              TabStrip* attached = GetAttachedTabstrip();
+              TabStripViewInterface* attached = GetAttachedTabstripView();
               // Same computation for drag offset. This operation drags a single
               // tab, so the target tab index should be always 0.
               gfx::Vector2d drag_offset(
                   second_move.x() -
-                      attached->tab_at(0)->GetBoundsInScreen().x(),
+                      attached->GetTabAnchorViewAt(0)->GetBoundsInScreen().x(),
                   second_move.y() -
                       attached->GetWidget()->GetWindowBoundsInScreen().y());
               EXPECT_EQ(press_offset, drag_offset);

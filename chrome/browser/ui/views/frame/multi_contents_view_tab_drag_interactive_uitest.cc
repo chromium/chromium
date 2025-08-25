@@ -166,7 +166,7 @@ class MultiContentsViewTabDragEntrypointsUiTest
   void SelectTabAt(int index) {
     EXPECT_TRUE(ui_test_utils::SendMouseMoveSync(
         ui_test_utils::GetCenterInScreenCoordinates(
-            GetBrowserView().tabstrip()->tab_at(index))));
+            GetBrowserView().tab_strip_view()->GetTabAnchorViewAt(index))));
     EXPECT_TRUE(ui_test_utils::SendMouseEventsSync(ui_controls::LEFT,
                                                    ui_controls::DOWN));
   }

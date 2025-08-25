@@ -16,14 +16,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -438,9 +437,8 @@ class RecentActivityBubbleDialogViewActionBrowserTest
   }
 
   void CloseTab(tabs::TabInterface* tab) {
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    auto* tabstrip_controller = browser_view->tabstrip()->controller();
-    tabstrip_controller->CloseTab(TabIndex(tab));
+    browser()->tab_strip_model()->CloseWebContentsAt(TabIndex(tab),
+                                                     TabCloseTypes::CLOSE_NONE);
   }
 
   LocalTabID TabId(tabs::TabInterface* tab) {

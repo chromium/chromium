@@ -322,9 +322,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
   TabStripModel* tsm = browser()->tab_strip_model();
   ASSERT_EQ(3, tsm->count());
   tsm->AddToNewGroup({0});
-  browser_view->tabstrip()->CloseTab(browser_view->tabstrip()->tab_at(0),
-                                     CloseTabSource::kFromMouse);
-
+  tsm->ActivateTabAt(0);
+  tsm->CloseSelectedTabs();
   tab_groups::DeletionDialogController* deletion_dialog_controller =
       browser_view->browser()
           ->GetFeatures()
@@ -353,8 +352,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
   TabStripModel* tsm = browser()->tab_strip_model();
   ASSERT_EQ(3, tsm->count());
   tsm->AddToNewGroup({0});
-  browser_view->tabstrip()->CloseTab(browser_view->tabstrip()->tab_at(0),
-                                     CloseTabSource::kFromMouse);
+  tsm->ActivateTabAt(0);
+  tsm->CloseSelectedTabs();
 
   EXPECT_FALSE(deletion_dialog_controller->IsShowingDialog());
   EXPECT_EQ(2, tsm->count());
