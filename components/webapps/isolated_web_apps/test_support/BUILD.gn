@@ -23,6 +23,7 @@ source_set("test_support") {
     "//base",
     "//components/web_package",
     "//components/web_package/test_support",
+    "//components/webapps/isolated_web_apps/types",
     "//url",
   ]
 }

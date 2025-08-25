@@ -21,6 +21,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/test_support/test_signed_web_bundle_builder.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +41,10 @@ using SessionType = IwaCacheClient::SessionType;
 
 const SignedWebBundleId kMainBundleId = test::GetDefaultEd25519WebBundleId();
 const SignedWebBundleId kBundleId2 = test::GetDefaultEcdsaP256WebBundleId();
-const base::Version kVersion = base::Version("0.0.1");
+
+IwaVersion GetBaseVersion() {
+  return *IwaVersion::Create("0.0.1");
+}
 
 constexpr char kCleanupBundleCacheSuccessMetric[] =
     "WebApp.Isolated.CleanupBundleCacheSuccess";
@@ -67,14 +71,14 @@ class CleanupBundleCacheCommandTest
   const base::FilePath& CacheRootPath() { return cache_root_dir_.GetPath(); }
 
   base::FilePath CreateBundleInCacheDir(const SignedWebBundleId& bundle_id,
-                                        const base::Version& version) {
+                                        const IwaVersion& version) {
     return CreateBundleInCacheDirForSession(bundle_id, version,
                                             GetSessionType());
   }
 
   base::FilePath CreateBundleInCacheDirForSession(
       const SignedWebBundleId& bundle_id,
-      const base::Version& version,
+      const IwaVersion& version,
       SessionType session_type) {
     base::FilePath bundle_directory_path =
         GetBundleDirWithVersion(bundle_id, version, session_type);
@@ -102,7 +106,7 @@ class CleanupBundleCacheCommandTest
   }
 
   base::FilePath GetBundleDirWithVersion(const SignedWebBundleId& bundle_id,
-                                         const base::Version& version,
+                                         const IwaVersion& version,
                                          SessionType session_type) {
     auto session_cache_dir =
         IwaCacheClient::GetCacheBaseDirectoryForSessionType(session_type,
@@ -179,7 +183,7 @@ TEST_P(CleanupBundleCacheCommandTest, NoBundles) {
 
 TEST_P(CleanupBundleCacheCommandTest, KeepTheOnlyApp) {
   const base::FilePath bundle_path =
-      CreateBundleInCacheDir(kMainBundleId, kVersion);
+      CreateBundleInCacheDir(kMainBundleId, GetBaseVersion());
 
   TestFuture<CleanupResult> cleanup_future;
   ScheduleCommand(/*iwas_to_keep_in_cache*/ {kMainBundleId},
@@ -193,9 +197,9 @@ TEST_P(CleanupBundleCacheCommandTest, KeepTheOnlyApp) {
 
 TEST_P(CleanupBundleCacheCommandTest, KeepTwoApps) {
   const base::FilePath bundle_path1 =
-      CreateBundleInCacheDir(kMainBundleId, kVersion);
+      CreateBundleInCacheDir(kMainBundleId, GetBaseVersion());
   const base::FilePath bundle_path2 =
-      CreateBundleInCacheDir(kBundleId2, kVersion);
+      CreateBundleInCacheDir(kBundleId2, GetBaseVersion());
 
   TestFuture<CleanupResult> cleanup_future;
   ScheduleCommand(/*iwas_to_keep_in_cache*/ {kMainBundleId, kBundleId2},
@@ -210,7 +214,7 @@ TEST_P(CleanupBundleCacheCommandTest, KeepTwoApps) {
 
 TEST_P(CleanupBundleCacheCommandTest, RemoveTheOnlyApp) {
   const base::FilePath bundle_path =
-      CreateBundleInCacheDir(kMainBundleId, kVersion);
+      CreateBundleInCacheDir(kMainBundleId, GetBaseVersion());
 
   TestFuture<CleanupResult> cleanup_future;
   ScheduleCommand(/*iwas_to_keep_in_cache*/ {}, cleanup_future.GetCallback());
@@ -223,9 +227,9 @@ TEST_P(CleanupBundleCacheCommandTest, RemoveTheOnlyApp) {
 
 TEST_P(CleanupBundleCacheCommandTest, RemoveCorrectBundle) {
   const base::FilePath bundle_path1 =
-      CreateBundleInCacheDir(kMainBundleId, kVersion);
+      CreateBundleInCacheDir(kMainBundleId, GetBaseVersion());
   const base::FilePath bundle_path2 =
-      CreateBundleInCacheDir(kBundleId2, kVersion);
+      CreateBundleInCacheDir(kBundleId2, GetBaseVersion());
 
   TestFuture<CleanupResult> cleanup_future;
   ScheduleCommand(/*iwas_to_keep_in_cache*/ {kBundleId2},
@@ -252,7 +256,7 @@ TEST_P(CleanupBundleCacheCommandTest, IwaNotCached) {
 TEST_P(CleanupBundleCacheCommandTest, FailedToDeleteOneDir) {
   ExpectEmptyCleanupBundleCacheMetrics();
   const base::FilePath bundle_path =
-      CreateBundleInCacheDir(kMainBundleId, kVersion);
+      CreateBundleInCacheDir(kMainBundleId, GetBaseVersion());
   const base::FilePath bundle_dir = GetBundleDir(kMainBundleId);
 
   // `CleanupBundleCacheCommand` tries to delete IWA directory, but can't do it
@@ -272,10 +276,10 @@ TEST_P(CleanupBundleCacheCommandTest, FailedToDeleteOneDir) {
 
 TEST_P(CleanupBundleCacheCommandTest, FailedToDeleteMultipleDirs) {
   const base::FilePath bundle_path1 =
-      CreateBundleInCacheDir(kMainBundleId, kVersion);
+      CreateBundleInCacheDir(kMainBundleId, GetBaseVersion());
   const base::FilePath bundle_dir1 = GetBundleDir(kMainBundleId);
   const base::FilePath bundle_path2 =
-      CreateBundleInCacheDir(kBundleId2, kVersion);
+      CreateBundleInCacheDir(kBundleId2, GetBaseVersion());
   const base::FilePath bundle_dir2 = GetBundleDir(kBundleId2);
 
   // `CleanupBundleCacheCommand` tries to delete IWA directories, but can't do
@@ -298,10 +302,10 @@ TEST_P(CleanupBundleCacheCommandTest, FailedToDeleteMultipleDirs) {
 
 TEST_P(CleanupBundleCacheCommandTest, PartiallyFailedToDeleteDirs) {
   const base::FilePath bundle_path1 =
-      CreateBundleInCacheDir(kMainBundleId, kVersion);
+      CreateBundleInCacheDir(kMainBundleId, GetBaseVersion());
   const base::FilePath bundle_dir1 = GetBundleDir(kMainBundleId);
   const base::FilePath bundle_path2 =
-      CreateBundleInCacheDir(kBundleId2, kVersion);
+      CreateBundleInCacheDir(kBundleId2, GetBaseVersion());
   const base::FilePath bundle_dir2 = GetBundleDir(kBundleId2);
 
   // `CleanupBundleCacheCommand` tries to delete IWA directory, but it can
@@ -320,13 +324,13 @@ TEST_P(CleanupBundleCacheCommandTest, PartiallyFailedToDeleteDirs) {
 
 TEST_P(CleanupBundleCacheCommandTest, RemoveBundleForCorrectSession) {
   const base::FilePath bundle_path_kiosk1 = CreateBundleInCacheDirForSession(
-      kMainBundleId, kVersion, SessionType::kKiosk);
+      kMainBundleId, GetBaseVersion(), SessionType::kKiosk);
   const base::FilePath bundle_path_kiosk2 = CreateBundleInCacheDirForSession(
-      kBundleId2, kVersion, SessionType::kKiosk);
+      kBundleId2, GetBaseVersion(), SessionType::kKiosk);
   const base::FilePath bundle_path_mgs1 = CreateBundleInCacheDirForSession(
-      kMainBundleId, kVersion, SessionType::kManagedGuestSession);
+      kMainBundleId, GetBaseVersion(), SessionType::kManagedGuestSession);
   const base::FilePath bundle_path_mgs2 = CreateBundleInCacheDirForSession(
-      kBundleId2, kVersion, SessionType::kManagedGuestSession);
+      kBundleId2, GetBaseVersion(), SessionType::kManagedGuestSession);
 
   TestFuture<CleanupResult> cleanup_future;
   ScheduleCommand(/*iwas_to_keep_in_cache*/ {kBundleId2},

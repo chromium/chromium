@@ -18,7 +18,6 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/version.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"

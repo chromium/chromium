@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/version.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
@@ -92,7 +91,7 @@ TestSignedWebBundleBuilder::TestSignedWebBundleBuilder(
 TestSignedWebBundleBuilder::~TestSignedWebBundleBuilder() = default;
 
 TestSignedWebBundleBuilder::BuildOptions::BuildOptions()
-    : version_(base::Version("1.0.0")),
+    : version_(*IwaVersion::Create("1.0.0")),
       app_name_("Simple Isolated App"),
       errors_for_testing_(
           {/*integrity_block_errors=*/{}, /*signatures_errors=*/{}}) {}

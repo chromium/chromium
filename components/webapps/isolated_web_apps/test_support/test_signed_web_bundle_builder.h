@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/version.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -71,7 +71,7 @@ class TestSignedWebBundleBuilder {
       return *this;
     }
 
-    BuildOptions& SetVersion(base::Version version) {
+    BuildOptions& SetVersion(IwaVersion version) {
       version_ = std::move(version);
       return *this;
     }
@@ -105,7 +105,7 @@ class TestSignedWebBundleBuilder {
 
     web_package::test::KeyPairs key_pairs_;
     std::optional<web_package::SignedWebBundleId> web_bundle_id_;
-    base::Version version_;
+    IwaVersion version_;
     std::string app_name_;
     std::optional<GURL> primary_url_;
     std::optional<GURL> base_url_;

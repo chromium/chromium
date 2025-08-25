@@ -18,7 +18,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
-#include "base/version.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
@@ -420,7 +419,7 @@ class IwaMgsCachingInstallerTest : public IwaInstallerBaseTest {
         IwaCacheClient::GetCacheBaseDirectoryForSessionType(
             IwaCacheClient::SessionType::kManagedGuestSession, CacheRootPath());
     return IwaCacheClient::GetCacheDirectoryForBundleWithVersion(
-        session_cache_dir, bundle_id, version.version());
+        session_cache_dir, bundle_id, version);
   }
 
   base::FilePath GetFullBundlePath(const SignedWebBundleId& bundle_id,

@@ -79,7 +79,7 @@ class GetBundleCachePathCommandTest
         IwaCacheClient::GetCacheBaseDirectoryForSessionType(GetSessionType(),
                                                             CacheRootPath());
     return IwaCacheClient::GetCacheDirectoryForBundleWithVersion(
-        session_cache_dir, bundle_id, version.version());
+        session_cache_dir, bundle_id, version);
   }
 
   void ScheduleCommand(

@@ -27,7 +27,7 @@ base::FilePath GetBundleFullName(
     const IwaVersion& version) {
   return IwaCacheClient::GetBundleFullName(
       IwaCacheClient::GetCacheDirectoryForBundleWithVersion(
-          cache_dir, web_bundle_id, version.version()));
+          cache_dir, web_bundle_id, version));
 }
 
 // Expects the following bundle path:

@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 
 namespace web_app {
 namespace {
@@ -26,7 +27,7 @@ using SessionType = IwaCacheClient::SessionType;
 CopyBundleToCacheResult CopyBundleToCacheCommandImpl(
     const base::FilePath& copy_from_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
-    base::Version version,
+    IwaVersion version,
     SessionType session_type) {
   const base::FilePath cache_dir =
       IwaCacheClient::GetCacheBaseDirectoryForSessionType(session_type);
@@ -131,9 +132,14 @@ void CopyBundleToCacheCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&CopyBundleToCacheCommandImpl, bundle_path.value(),
-                     url_info_.web_bundle_id(),
-                     app->isolation_data()->version(), session_type_),
+      // TODO(crbug.com/437038363): Adjust to IwaVersion after isolation data
+      // is migrated.
+      base::BindOnce(
+          &CopyBundleToCacheCommandImpl, bundle_path.value(),
+          url_info_.web_bundle_id(),
+          IwaVersion::Create(app->isolation_data()->version().components())
+              .value(),
+          session_type_),
       base::BindOnce(&CopyBundleToCacheCommand::CommandComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/types/expected_macros.h"
+#include "base/types/optional_util.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
@@ -102,9 +103,10 @@ std::optional<UpdateManifest::VersionEntry> GetVersionWithOptions(
     const UpdateManifest& update_manifest,
     const IsolatedWebAppExternalInstallOptions& install_options) {
   if (install_options.pinned_version().has_value()) {
-    // TODO: (crbug.com/437038363) Adjust to IwaVersion.
+    // TODO(crbug.com/437038363): Adjust to IwaVersion.
     return update_manifest.GetVersion(
-        *IwaVersion::Create(install_options.pinned_version()->GetString()),
+        IwaVersion::Create(install_options.pinned_version()->components())
+            .value(),
         install_options.update_channel());
   } else {
     return update_manifest.GetLatestVersion(install_options.update_channel());
@@ -190,15 +192,14 @@ void IwaInstaller::Start() {
     IsolatedWebAppUrlInfo url_info =
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
             install_options_.web_bundle_id());
-    // TODO: (crbug.com/437038363) Adjust to IwaVersion.
+
+    // TODO(crbug.com/437038363): Adjust to IwaVersion.
     std::optional<IwaVersion> pinned_version;
     if (install_options_.pinned_version().has_value()) {
-      auto iwa_version =
-          IwaVersion::Create(install_options_.pinned_version()->GetString());
-      if (iwa_version.has_value()) {
-        pinned_version = *std::move(iwa_version);
-      }
+      pinned_version = base::OptionalFromExpected(
+          IwaVersion::Create(install_options_.pinned_version()->components()));
     }
+
     CHECK_DEREF(provider_.get())
         .scheduler()
         .GetIsolatedWebAppBundleCachePath(

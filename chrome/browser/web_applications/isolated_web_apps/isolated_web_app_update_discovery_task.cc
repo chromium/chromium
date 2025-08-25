@@ -257,9 +257,9 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
 
   std::optional<UpdateManifest::VersionEntry> version_entry;
   if (task_params_.pinned_version().has_value()) {
-    // TODO: (crbug.com/437038363) Adjust to IwaVersion.
+    // TODO(crbug.com/437038363): Adjust to IwaVersion.
     version_entry = update_manifest.GetVersion(
-        *IwaVersion::Create(task_params_.pinned_version()->GetString()),
+        IwaVersion::Create(task_params_.pinned_version()->components()).value(),
         task_params_.update_channel());
     if (!version_entry) {
       FailWith(Error::kPinnedVersionNotFoundInUpdateManifest);

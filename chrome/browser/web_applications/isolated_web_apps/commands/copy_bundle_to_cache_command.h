@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_COPY_BUNDLE_TO_CACHE_COMMAND_H_
 
 #include "base/types/expected.h"
-#include "base/version.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"

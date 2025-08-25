@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 
 namespace web_app {
 
@@ -26,7 +27,7 @@ constexpr char kRemoveObsoleteBundleVersionsMetric[] =
 
 RemoveObsoleteBundleVersionsResult RemoveObsoleteBundleVersionsCacheCommandImpl(
     const web_package::SignedWebBundleId& web_bundle_id,
-    base::Version installed_version,
+    IwaVersion installed_version,
     SessionType session_type) {
   const base::FilePath cache_base_dir =
       IwaCacheClient::GetCacheBaseDirectoryForSessionType(session_type);
@@ -70,7 +71,7 @@ RemoveObsoleteBundleVersionsResult RemoveObsoleteBundleVersionsCacheCommandImpl(
       failed_to_remove_versions});
 }
 
-base::expected<base::Version, RemoveObsoleteBundleVersionsError> GetIwaVersion(
+base::expected<IwaVersion, RemoveObsoleteBundleVersionsError> GetIwaVersion(
     WebAppRegistrar& registrar,
     const webapps::AppId& app_id) {
   const WebApp* app = registrar.GetAppById(app_id);
@@ -80,7 +81,10 @@ base::expected<base::Version, RemoveObsoleteBundleVersionsError> GetIwaVersion(
   }
 
   CHECK(app->isolation_data());
-  return app->isolation_data()->version();
+  // TODO(crbug.com/437038363): Adjust to IwaVersion after migrating isolation
+  // data.
+  return IwaVersion::Create(app->isolation_data()->version().components())
+      .value();
 }
 
 RemoveObsoleteBundleVersionsResult RecordMetric(
@@ -144,7 +148,7 @@ void RemoveObsoleteBundleVersionsCacheCommand::StartWithLock(
   CHECK(lock);
   lock_ = std::move(lock);
 
-  ASSIGN_OR_RETURN(const base::Version installed_version,
+  ASSIGN_OR_RETURN(const IwaVersion installed_version,
                    GetIwaVersion(lock_->registrar(), url_info_.app_id()),
                    [&](const RemoveObsoleteBundleVersionsError& error) {
                      CommandComplete(base::unexpected(error));

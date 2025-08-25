@@ -35,6 +35,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -98,11 +99,11 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
   PrepareAndStoreUpdateResult PrepareAndStoreUpdateInfo(
       const web_package::SignedWebBundleId& web_bundle_id,
       const base::FilePath& update_bundle_path,
-      const base::Version& update_version) {
+      const IwaVersion& update_version) {
     base::test::TestFuture<PrepareAndStoreUpdateResult> future;
     provider()->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
         IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-            GetUpdateSource(update_bundle_path), update_version),
+            GetUpdateSource(update_bundle_path), update_version.version()),
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id),
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
@@ -182,7 +183,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_OK_AND_ASSIGN(
       auto prep_store_update_result,
       PrepareAndStoreUpdateInfo(web_bundle_id, update_iwa->path(),
-                                update_iwa->version().version()));
+                                update_iwa->version()));
   ASSERT_THAT(
       prep_store_update_result,
       Field(&IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::update_version,
@@ -232,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(
   auto web_bundle_id = test::GetDefaultEd25519WebBundleId();
   SetTrustedWebBundleIdsForTesting({web_bundle_id});
 
-  base::Version version("1.0.0");
+  IwaVersion version = *IwaVersion::Create("1.0.0");
 
   // IWA signed by a Ed25519 key.
   auto iwa =
@@ -253,13 +254,13 @@ IN_PROC_BROWSER_TEST_P(
 
   // Step 1: Install `iwa` and validate web app data.
   ASSERT_OK_AND_ASSIGN(auto install_result,
-                       Install(web_bundle_id, iwa->path(), version));
+                       Install(web_bundle_id, iwa->path(), version.version()));
 
   ASSERT_THAT(
       GetIsolatedWebAppFor(web_bundle_id),
       test::IwaIs(Eq("installed app"),
                   test::IsolationDataIs(
-                      install_result.location, version,
+                      install_result.location, version.version(),
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/std::nullopt,
                       /*integrity_block_data=*/
@@ -286,17 +287,17 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_THAT(
       prep_store_update_result,
       Field(&IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::update_version,
-            Eq(version)));
+            Eq(version.version())));
 
   ASSERT_THAT(
       GetIsolatedWebAppFor(web_bundle_id),
       test::IwaIs(Eq("installed app"),
                   test::IsolationDataIs(
-                      install_result.location, version,
+                      install_result.location, version.version(),
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/
                       test::PendingUpdateInfoIs(
-                          prep_store_update_result.location, version,
+                          prep_store_update_result.location, version.version(),
                           test::IntegrityBlockDataPublicKeysAre(ecdsa_p256_pk)),
                       /*integrity_block_data=*/
                       test::IntegrityBlockDataPublicKeysAre(ed25519_pk))));
@@ -305,13 +306,13 @@ IN_PROC_BROWSER_TEST_P(
   // successfully transferred.
   EXPECT_THAT(ApplyUpdate(web_bundle_id),
               ValueIs(IsolatedWebAppApplyUpdateCommandSuccess(
-                  version, prep_store_update_result.location)));
+                  version.version(), prep_store_update_result.location)));
 
   ASSERT_THAT(
       GetIsolatedWebAppFor(web_bundle_id),
       test::IwaIs(Eq("updated app"),
                   test::IsolationDataIs(
-                      prep_store_update_result.location, version,
+                      prep_store_update_result.location, version.version(),
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/std::nullopt,
                       /*integrity_block_data=*/
