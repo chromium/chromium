@@ -331,6 +331,14 @@ void ProfileMenuView::OnSyncSettingsButtonClicked() {
   chrome::ShowSettingsSubPage(&browser(), chrome::kSyncSetupSubPage);
 }
 
+void ProfileMenuView::OnAccountSettingsButtonClicked() {
+  OnActionableItemClicked(ActionableItem::kAccountSettingsButton);
+  if (!perform_menu_actions()) {
+    return;
+  }
+  chrome::ShowSettingsSubPage(&browser(), chrome::kPeopleSubPage);
+}
+
 void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
   OnActionableItemClicked(ActionableItem::kSyncErrorButton);
   if (!perform_menu_actions()) {
@@ -846,6 +854,35 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButton() {
     return;
   }
 
+  // Show the settings button only when signed in to Chrome or pending sign in.
+  switch (signin_util::GetSignedInState(identity_manager)) {
+    case signin_util::SignedInState::kSignInPending:
+    case signin_util::SignedInState::kSignedIn:
+      break;
+    case signin_util::SignedInState::kSyncPaused:
+    case signin_util::SignedInState::kSignedOut:
+    case signin_util::SignedInState::kWebOnlySignedIn:
+    case signin_util::SignedInState::kSyncing:
+      return;
+  }
+
+  AddFeatureButton(
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_ACCOUNT_SETTINGS_BUTTON),
+      base::BindRepeating(&ProfileMenuView::OnAccountSettingsButtonClicked,
+                          base::Unretained(this)),
+      vector_icons::kSettingsChromeRefreshIcon);
+}
+
+void ProfileMenuView::MaybeBuildChromeAccountSettingsButtonWithSync() {
+  CHECK(!profile().IsGuestSession());
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile());
+
+  if (!identity_manager) {
+    return;
+  }
+
   // Show the settings button when signed in to Chrome or to the web, or if
   // signin is disallowed.
   const bool should_show_settings_button =
@@ -989,7 +1026,9 @@ void ProfileMenuView::BuildFeatureButtons() {
   BuildAutofillSettingsButton();
   MaybeBuildManageGoogleAccountButton();
   BuildCustomizeProfileButton();
-  MaybeBuildChromeAccountSettingsButton();
+  base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      ? MaybeBuildChromeAccountSettingsButton()
+      : MaybeBuildChromeAccountSettingsButtonWithSync();
   MaybeBuildCloseBrowsersButton();
   MaybeBuildSignoutButton();
 }

@@ -1397,7 +1397,7 @@ constexpr std::array kActionableItems_WithPromoButton = {
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kAccountSettingsButton,
     ProfileMenuViewBase::ActionableItem::kSignoutButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,

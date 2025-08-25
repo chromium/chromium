@@ -2801,6 +2801,20 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_DICE_MIGRATION_CONFIRMATION_TOAST_BUTTON" desc="The text on the button of the confirmation toast shown after the user clicks on the accept button on the Dice Migration dialog, that allows the users to control the sync settings or sign out of Chrome.">
         Manage
       </message>
+
+      <!-- Profile menu strings -->
+      <if expr="not is_android">
+        <if expr="use_titlecase">
+          <message name="IDS_PROFILE_MENU_ACCOUNT_SETTINGS_BUTTON" desc="Button in the avatar menu bubble view for opening Chrome account settings.">
+            Your Account in Chrome
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_PROFILE_MENU_ACCOUNT_SETTINGS_BUTTON" desc="Button in the avatar menu bubble view for opening Chrome account settings.">
+            Your account in Chrome
+          </message>
+        </if>
+      </if>
     </messages>
   </release>
 </grit>

@@ -81,7 +81,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kAutofillSettingsButton = 22,
     // DEPRECATED: kHistorySyncOptInButton = 23,
     kBatchUploadButton = 24,
-    kMaxValue = kBatchUploadButton,
+    kAccountSettingsButton = 25,
+    kMaxValue = kAccountSettingsButton,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileMenuActionableItem)
 
