@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -152,6 +153,27 @@ TEST_F(AntiFingerprintingContentRuleListComponentInstallerPolicyTest,
   EXPECT_EQ(*result, kTestJson);
 }
 
+// Tests that ComponentReady logs a read error if the file exists but cannot
+// be read.
+TEST_F(AntiFingerprintingContentRuleListComponentInstallerPolicyTest,
+       ComponentReady_LogsFileReadError) {
+  base::HistogramTester histogram_tester;
+  // Create a directory where the file is expected to cause a read error.
+  base::FilePath json_path = CallGetInstalledPath(install_dir_.GetPath());
+  ASSERT_TRUE(base::CreateDirectory(json_path));
+
+  CallComponentReady(base::Version(kTestVersion), base::Value::Dict());
+
+  // Wait for the async file read to complete.
+  std::optional<std::string> result = on_load_complete_future_.Get();
+  EXPECT_FALSE(result.has_value());
+
+  // The callback in ComponentReady should have logged the read error.
+  histogram_tester.ExpectUniqueSample(
+      "FingerprintingProtection.WKContentRuleListComponent.InstallationResult",
+      InstallationResult::kFileReadError, 1);
+}
+
 // TODO(crbug.com/436881800): Clean up the dry-run feature flag after the
 // experiment.
 // Tests that the JSON transformation for the dry run mode works correctly.
@@ -171,6 +193,76 @@ TEST_F(AntiFingerprintingContentRuleListComponentInstallerPolicyTest,
 
   std::string result = CallTransformJsonForDryRun(kOriginalJson);
   EXPECT_EQ(result, kExpectedJson);
+}
+
+// Tests that the dry run transformation logs metrics correctly when rules are
+// transformed.
+TEST_F(AntiFingerprintingContentRuleListComponentInstallerPolicyTest,
+       TransformJsonForDryRun_LogsMetrics_SuccessRulesTransformed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      fingerprinting_protection_filter::features::
+          kEnableFingerprintingProtectionFilteriOSDryRun);
+  base::HistogramTester histogram_tester;
+
+  const std::string kJson =
+      R"([{"action": {"type": "block"}}, {"action": {"type": "allow"}}])";
+  CallTransformJsonForDryRun(kJson);
+
+  histogram_tester.ExpectUniqueSample(
+      "FingerprintingProtection.IOSDryRun.TransformResult",
+      AntiFingerprintingContentRuleListComponentInstallerPolicy::
+          IOSDryRunTransformResult::kSuccessRulesTransformed,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "FingerprintingProtection.IOSDryRun.TotalRules", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "FingerprintingProtection.IOSDryRun.SkippedRules", 1, 1);
+}
+
+// Tests that the dry run transformation logs metrics correctly when no rules
+// are transformed.
+TEST_F(AntiFingerprintingContentRuleListComponentInstallerPolicyTest,
+       TransformJsonForDryRun_LogsMetrics_SuccessNoRulesToTransform) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      fingerprinting_protection_filter::features::
+          kEnableFingerprintingProtectionFilteriOSDryRun);
+  base::HistogramTester histogram_tester;
+
+  const std::string kJson =
+      R"([{"action": {"type": "allow"}}, {"action": {"type": "allow"}}])";
+  CallTransformJsonForDryRun(kJson);
+
+  histogram_tester.ExpectUniqueSample(
+      "FingerprintingProtection.IOSDryRun.TransformResult",
+      AntiFingerprintingContentRuleListComponentInstallerPolicy::
+          IOSDryRunTransformResult::kSuccessNoRulesToTransform,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "FingerprintingProtection.IOSDryRun.TotalRules", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "FingerprintingProtection.IOSDryRun.SkippedRules", 2, 1);
+}
+
+// Tests that the dry run transformation logs a parse failure metric correctly.
+TEST_F(AntiFingerprintingContentRuleListComponentInstallerPolicyTest,
+       TransformJsonForDryRun_LogsMetrics_JsonParseFailed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      fingerprinting_protection_filter::features::
+          kEnableFingerprintingProtectionFilteriOSDryRun);
+  base::HistogramTester histogram_tester;
+
+  CallTransformJsonForDryRun("invalid json");
+
+  histogram_tester.ExpectUniqueSample(
+      "FingerprintingProtection.IOSDryRun.TransformResult",
+      AntiFingerprintingContentRuleListComponentInstallerPolicy::
+          IOSDryRunTransformResult::kJsonParseFailed,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "FingerprintingProtection.IOSDryRun.TotalRules", 0);
 }
 #endif  // BUILDFLAG(IS_IOS)
 

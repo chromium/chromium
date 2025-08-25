@@ -4753,11 +4753,22 @@ shown properly on the user-facing crash UI.
 
 <!-- LINT.ThenChange(//components/fingerprinting_protection_filter/browser/fingerprinting_protection_page_activation_throttle:ExceptionSource) -->
 
+<!-- LINT.IfChange(FingerprintingProtectionIOSDryRunTransformResult) -->
+
+<enum name="FingerprintingProtectionIOSDryRunTransformResult">
+  <int value="0" label="Success: Rules transformed"/>
+  <int value="1" label="Success: No rules to transform"/>
+  <int value="2" label="JSON parse failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/component_updater/installer_policies/afp_content_rule_list_component_installer.h:IOSDryRunTransformResult) -->
+
 <!-- LINT.IfChange(FingerprintingProtectionWKComponentInstallationResult) -->
 
 <enum name="FingerprintingProtectionWKComponentInstallationResult">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kMissingJsonFile"/>
+  <int value="0" label="Success"/>
+  <int value="1" label="Missing JSON file"/>
+  <int value="2" label="File read error"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/component_updater/installer_policies/afp_content_rule_list_component_installer.h:InstallationResult) -->

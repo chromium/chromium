@@ -40,16 +40,10 @@ ScriptBlockingRuleApplierServiceFactory::
 
 std::unique_ptr<KeyedService>
 ScriptBlockingRuleApplierServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  if (!fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionEnabledForIncognitoState(
-              browser_state->IsOffTheRecord())) {
-    // Feature is disabled for the given profile. Do not create the service.
-    return nullptr;
-  }
-
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+    web::BrowserState* context) const {
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<ScriptBlockingRuleApplierService>(
-      web::ContentRuleListManager::FromBrowserState(browser_state),
-      TrackingProtectionSettingsFactory::GetForProfile(profile));
+      web::ContentRuleListManager::FromBrowserState(context),
+      TrackingProtectionSettingsFactory::GetForProfile(profile),
+      profile->IsOffTheRecord());
 }

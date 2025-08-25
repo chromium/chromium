@@ -16,6 +16,27 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/privacy_sandbox/tracking_protection_settings_observer.h"
 
+// LINT.IfChange(FingerprintingProtectionRuleListApplyTrigger)
+enum class FingerprintingProtectionRuleListApplyTrigger {
+  kInitialLoad = 0,
+  kComponentUpdate = 1,
+  kFpProtectionToggled = 2,
+  kExceptionsChanged = 3,
+  kMaxValue = kExceptionsChanged,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:FingerprintingProtectionRuleListApplyTrigger)
+
+// LINT.IfChange(FingerprintingProtectionRuleListBuildOutcome)
+enum class FingerprintingProtectionRuleListBuildOutcome {
+  kUpdateListWithExceptions = 0,
+  kUpdateListNoExceptions = 1,
+  kRemoveListFpDisabled = 2,
+  kRemoveListNoBaseRules = 3,
+  kRemoveListInvalidBaseRules = 4,
+  kMaxValue = kRemoveListInvalidBaseRules,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:FingerprintingProtectionRuleListBuildOutcome)
+
 namespace privacy_sandbox {
 class TrackingProtectionSettings;
 }
@@ -37,8 +58,8 @@ class ScriptBlockingRuleApplierService
 
   ScriptBlockingRuleApplierService(
       web::ContentRuleListManager& content_rule_list_manager,
-      privacy_sandbox::TrackingProtectionSettings*
-          tracking_protection_settings);
+      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+      bool is_incognito);
   ~ScriptBlockingRuleApplierService() override;
 
   ScriptBlockingRuleApplierService(const ScriptBlockingRuleApplierService&) =
@@ -59,7 +80,9 @@ class ScriptBlockingRuleApplierService
 
   // Determines the rules to be applied based on the current state and
   // applies them.
-  void BuildAndApplyRules();
+  // - `trigger`: The reason why the rule application is being initiated, for
+  //   metrics.
+  void BuildAndApplyRules(FingerprintingProtectionRuleListApplyTrigger trigger);
 
   // Builds the content of the rule list based on the base list and exceptions.
   // Returns std::nullopt if no rules should be applied (i.e., the list
@@ -78,6 +101,9 @@ class ScriptBlockingRuleApplierService
   // protection is enabled.
   const raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
+
+  // Whether the service is for an incognito profile.
+  const bool is_incognito_;
 
   // Observation of the ContentRuleListData, which provides the rule list to
   // this service.

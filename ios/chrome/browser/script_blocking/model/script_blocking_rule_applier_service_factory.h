@@ -28,7 +28,7 @@ class ScriptBlockingRuleApplierServiceFactory
 
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* state) const override;
+      web::BrowserState* context) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SCRIPT_BLOCKING_MODEL_SCRIPT_BLOCKING_RULE_APPLIER_SERVICE_FACTORY_H_

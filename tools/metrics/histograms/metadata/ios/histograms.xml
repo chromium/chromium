@@ -1887,6 +1887,123 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.FingerprintingProtection.RuleList.ApplyTrigger.Incognito"
+    enum="FingerprintingProtectionRuleListApplyTrigger"
+    expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    For incognito profiles, records the event that triggered the script blocking
+    rule list to be re-evaluated and applied. Logged each time the rules are
+    processed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FingerprintingProtection.RuleList.ApplyTrigger.Regular"
+    enum="FingerprintingProtectionRuleListApplyTrigger"
+    expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    For regular profiles, records the event that triggered the script blocking
+    rule list to be re-evaluated and applied. Logged each time the rules are
+    processed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FingerprintingProtection.RuleList.BuildOutcome.Incognito"
+    enum="FingerprintingProtectionRuleListBuildOutcome"
+    expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    For incognito profiles, records the result of the rule-building logic before
+    the rules are sent to the WebKit provider. Logged each time the rules are
+    processed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FingerprintingProtection.RuleList.BuildOutcome.Regular"
+    enum="FingerprintingProtectionRuleListBuildOutcome"
+    expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    For regular profiles, records the result of the rule-building logic before
+    the rules are sent to the WebKit provider. Logged each time the rules are
+    processed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FingerprintingProtection.RuleList.BuildTime.Incognito"
+    units="ms" expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    For incognito profiles, records the time taken to build the script blocking
+    rule list from the base component and user exceptions. Logged each time the
+    rules are processed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FingerprintingProtection.RuleList.BuildTime.Regular"
+    units="ms" expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    For regular profiles, records the time taken to build the script blocking
+    rule list from the base component and user exceptions. Logged each time the
+    rules are processed.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.FingerprintingProtection.RuleList.ExceptionCount.Incognito"
+    units="count" expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    For incognito profiles, records the number of user-defined exceptions
+    applied to the script blocking rule list on iOS. Logged each time the rules
+    are processed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FingerprintingProtection.RuleList.ExceptionCount.Regular"
+    units="count" expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    For regular profiles, records the number of user-defined exceptions applied
+    to the script blocking rule list on iOS. Logged each time the rules are
+    processed.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.FingerprintingProtection.RuleList.TotalRulesApplied.Incognito"
+    units="rules" expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    For incognito profiles, the total number of rules applied by the script
+    blocking service on iOS, including both the base rules from the component
+    and user-defined exceptions. Logged each time the rules are processed.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.FingerprintingProtection.RuleList.TotalRulesApplied.Regular"
+    units="rules" expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    For regular profiles, the total number of rules applied by the script
+    blocking service on iOS, including both the base rules from the component
+    and user-defined exceptions. Logged each time the rules are processed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.FinishedNavigationHasContext" enum="Boolean"
     expires_after="2026-05-01">
   <owner>gambard@chromium.org</owner>

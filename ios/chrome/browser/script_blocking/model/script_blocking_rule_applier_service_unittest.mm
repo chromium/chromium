@@ -11,10 +11,12 @@
 #import "base/json/json_reader.h"
 #import "base/json/json_writer.h"
 #import "base/strings/string_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/content_settings/core/common/pref_names.h"
 #import "components/fingerprinting_protection_filter/browser/test_support.h"
+#import "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #import "components/privacy_sandbox/privacy_sandbox_features.h"
 #import "ios/web/public/test/fakes/fake_content_rule_list_manager.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -90,7 +92,8 @@ class ScriptBlockingRuleApplierServiceTest : public PlatformTest {
             /*management_service=*/nullptr, /*is_incognito=*/true);
     service_ = std::make_unique<ScriptBlockingRuleApplierService>(
         fake_content_rule_list_manager_,
-        incognito_tracking_protection_settings_.get());
+        incognito_tracking_protection_settings_.get(),
+        /*is_incognito=*/true);
     // Clear any state set by the service's constructor.
     fake_content_rule_list_manager_.Clear();
   }
@@ -103,6 +106,87 @@ class ScriptBlockingRuleApplierServiceTest : public PlatformTest {
       incognito_tracking_protection_settings_;
   std::unique_ptr<ScriptBlockingRuleApplierService> service_;
 };
+
+// Tests that the initial load trigger is recorded correctly.
+TEST_F(ScriptBlockingRuleApplierServiceTest, TestInitialLoadMetrics) {
+  base::HistogramTester histogram_tester;
+  // Re-create the service to capture initial load metrics.
+  service_ = std::make_unique<ScriptBlockingRuleApplierService>(
+      fake_content_rule_list_manager_,
+      incognito_tracking_protection_settings_.get(),
+      /*is_incognito=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.FingerprintingProtection.RuleList.ApplyTrigger.Incognito",
+      FingerprintingProtectionRuleListApplyTrigger::kInitialLoad, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.FingerprintingProtection.RuleList.BuildOutcome.Incognito",
+      FingerprintingProtectionRuleListBuildOutcome::kRemoveListNoBaseRules, 1);
+}
+
+// Tests that metrics are recorded correctly for a component update.
+TEST_F(ScriptBlockingRuleApplierServiceTest, TestComponentUpdateMetrics) {
+  base::HistogramTester histogram_tester;
+  const std::string json = "[{\"trigger\": {\"url-filter\": \".*\"}}]";
+  script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(json);
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.FingerprintingProtection.RuleList.ApplyTrigger.Incognito",
+      FingerprintingProtectionRuleListApplyTrigger::kComponentUpdate, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.FingerprintingProtection.RuleList.BuildOutcome.Incognito",
+      FingerprintingProtectionRuleListBuildOutcome::kUpdateListNoExceptions, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.FingerprintingProtection.RuleList.ExceptionCount.Incognito", 0, 1);
+}
+
+// Tests that metrics are recorded correctly when FP is toggled.
+TEST_F(ScriptBlockingRuleApplierServiceTest, TestFpToggledMetrics) {
+  base::HistogramTester histogram_tester;
+  test_support_.prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
+                                    false);
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.FingerprintingProtection.RuleList.ApplyTrigger.Incognito",
+      FingerprintingProtectionRuleListApplyTrigger::kFpProtectionToggled, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.FingerprintingProtection.RuleList.BuildOutcome.Incognito",
+      FingerprintingProtectionRuleListBuildOutcome::kRemoveListFpDisabled, 1);
+}
+
+// Tests that metrics are recorded correctly when exceptions change.
+TEST_F(ScriptBlockingRuleApplierServiceTest, TestExceptionsChangedMetrics) {
+  const std::string base_json = R"([{"trigger": {"url-filter": ".*"}}])";
+  script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
+      base_json);
+
+  base::HistogramTester histogram_tester;
+  GURL exception_url("https://example.com");
+  incognito_tracking_protection_settings_->AddTrackingProtectionException(
+      exception_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.FingerprintingProtection.RuleList.ApplyTrigger.Incognito",
+      FingerprintingProtectionRuleListApplyTrigger::kExceptionsChanged, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.FingerprintingProtection.RuleList.BuildOutcome.Incognito",
+      FingerprintingProtectionRuleListBuildOutcome::kUpdateListWithExceptions,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.FingerprintingProtection.RuleList.ExceptionCount.Incognito", 1, 1);
+}
+
+// Tests that the invalid base rules outcome is recorded.
+TEST_F(ScriptBlockingRuleApplierServiceTest, TestInvalidRulesMetrics) {
+  base::HistogramTester histogram_tester;
+  script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
+      "invalid json");
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.FingerprintingProtection.RuleList.BuildOutcome.Incognito",
+      FingerprintingProtectionRuleListBuildOutcome::kRemoveListInvalidBaseRules,
+      1);
+}
 
 // Tests that a non-empty rule list JSON triggers an update.
 TEST_F(ScriptBlockingRuleApplierServiceTest, TestUpdateRuleList) {
@@ -158,7 +242,40 @@ TEST_F(ScriptBlockingRuleApplierServiceTest, TestTogglingFpProtectionPref) {
 
 // Tests that the service correctly adds exception rules with the correct regex.
 TEST_F(ScriptBlockingRuleApplierServiceTest, TestCorrectExceptionRule) {
-  const std::string base_json = "[{\"trigger\": {\"url-filter\": \".*\"}}]";
+  const std::string base_json = R"([{"trigger": {"url-filter": ".*"}}])";
+  script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
+      base_json);
+
+  // Clear state from setup to isolate the test action.
+  fake_content_rule_list_manager_.Clear();
+
+  GURL exception_url("https://foo.example.com");
+  incognito_tracking_protection_settings_->AddTrackingProtectionException(
+      exception_url);
+
+  const base::Value::Dict last_rule =
+      GetLastRule(fake_content_rule_list_manager_.last_update_json());
+  EXPECT_THAT(last_rule,
+              IsExceptionRule("^https://"
+                              "(?:[^/.]*\\.)*example\\.com(?:/.*)?$"));
+}
+
+// Tests that adding an exception does nothing if the base rule list is empty.
+TEST_F(ScriptBlockingRuleApplierServiceTest, TestExceptionWithEmptyRuleList) {
+  // Adding the exception triggers an automatic update. Because the base rule
+  // list is empty, the service should remove any existing list.
+  incognito_tracking_protection_settings_->AddTrackingProtectionException(
+      GURL("https://example.com"));
+
+  EXPECT_EQ(fake_content_rule_list_manager_.last_remove_key(),
+            ScriptBlockingRuleApplierService::kScriptBlockingRuleListKey);
+  EXPECT_TRUE(fake_content_rule_list_manager_.last_update_key().empty());
+}
+
+// Tests that the service correctly updates rules when an exception is added.
+TEST_F(ScriptBlockingRuleApplierServiceTest,
+       TestExceptionAddedWhenRulesAreApplied) {
+  const std::string base_json = R"([{"trigger": {"url-filter": ".*"}}])";
   script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
       base_json);
 
@@ -228,7 +345,7 @@ TEST_F(ScriptBlockingRuleApplierServiceTest, TestFpProtectionPrefDisabled) {
 // Tests that the service correctly adds exception rules.
 TEST_F(ScriptBlockingRuleApplierServiceTest,
        TestWithTrackingProtectionException) {
-  const std::string base_json = "[{\"trigger\": {\"url-filter\": \".*\"}}]";
+  const std::string base_json = R"([{"trigger": {"url-filter": ".*"}}])";
   script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
       base_json);
   fake_content_rule_list_manager_.Clear();
@@ -248,7 +365,7 @@ TEST_F(ScriptBlockingRuleApplierServiceTest,
 // for a domain on the public suffix list.
 TEST_F(ScriptBlockingRuleApplierServiceTest,
        TestCorrectExceptionRuleWithPublicSuffix) {
-  const std::string base_json = "[{\"trigger\": {\"url-filter\": \".*\"}}]";
+  const std::string base_json = R"([{"trigger": {"url-filter": ".*"}}])";
   script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
       base_json);
 
@@ -268,7 +385,8 @@ TEST_F(ScriptBlockingRuleApplierServiceTest,
 
 // Tests that the service correctly adds exception rules for a URL with a port.
 TEST_F(ScriptBlockingRuleApplierServiceTest, TestCorrectExceptionRuleWithPort) {
-  const std::string base_json = "[{\"trigger\": {\"url-filter\": \".*\"}}]";
+  const std::string base_json = R"([{"trigger": {"url-filter": ".*"}}])";
+
   script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
       base_json);
 
@@ -289,7 +407,7 @@ TEST_F(ScriptBlockingRuleApplierServiceTest, TestCorrectExceptionRuleWithPort) {
 // Tests that the service correctly adds exception rules for an IP address.
 TEST_F(ScriptBlockingRuleApplierServiceTest,
        TestCorrectExceptionRuleWithIPAddress) {
-  const std::string base_json = "[{\"trigger\": {\"url-filter\": \".*\"}}]";
+  const std::string base_json = R"([{"trigger": {"url-filter": ".*"}}])";
   script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
       base_json);
 
@@ -311,7 +429,8 @@ TEST_F(ScriptBlockingRuleApplierServiceTest,
 // hyphen.
 TEST_F(ScriptBlockingRuleApplierServiceTest,
        TestCorrectExceptionRuleWithHyphen) {
-  const std::string base_json = "[{\"trigger\": {\"url-filter\": \".*\"}}]";
+  const std::string base_json = R"([{"trigger": {"url-filter": ".*"}}])";
+
   script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
       base_json);
 
@@ -333,7 +452,8 @@ TEST_F(ScriptBlockingRuleApplierServiceTest,
 // multiple subdomains.
 TEST_F(ScriptBlockingRuleApplierServiceTest,
        TestCorrectExceptionRuleWithMultipleSubdomains) {
-  const std::string base_json = "[{\"trigger\": {\"url-filter\": \".*\"}}]";
+  const std::string base_json = R"([{"trigger": {"url-filter": ".*"}}])";
+
   script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
       base_json);
 
@@ -355,7 +475,8 @@ TEST_F(ScriptBlockingRuleApplierServiceTest,
 // mixed-case characters.
 TEST_F(ScriptBlockingRuleApplierServiceTest,
        TestCorrectExceptionRuleWithMixedCase) {
-  const std::string base_json = "[{\"trigger\": {\"url-filter\": \".*\"}}]";
+  const std::string base_json = R"([{"trigger": {"url-filter": ".*"}}])";
+
   script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
       base_json);
 
@@ -377,7 +498,7 @@ TEST_F(ScriptBlockingRuleApplierServiceTest,
 // special characters that need escaping.
 TEST_F(ScriptBlockingRuleApplierServiceTest,
        TestCorrectExceptionRuleWithSpecialCharacters) {
-  const std::string base_json = "[{\"trigger\": {\"url-filter\": \".*\"}}]";
+  const std::string base_json = R"([{"trigger": {"url-filter": ".*"}}])";
   script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(
       base_json);
 
@@ -394,4 +515,36 @@ TEST_F(ScriptBlockingRuleApplierServiceTest,
               IsExceptionRule(
                   "^https://(?:[^/"
                   ".]*\\.)*example\\-with\\-special\\-chars\\.com(?:/.*)?$"));
+}
+
+// Tests that the dry-run metrics are recorded correctly for a regular profile.
+TEST_F(ScriptBlockingRuleApplierServiceTest, TestDryRunMetrics_RegularProfile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      fingerprinting_protection_filter::features::
+          kEnableFingerprintingProtectionFilteriOSDryRun);
+
+  // Simulate a regular profile where the user has not enabled FP protection.
+  test_support_.prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
+                                    false);
+  auto regular_tracking_protection_settings =
+      std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
+          test_support_.prefs(), test_support_.content_settings(),
+          /*management_service=*/nullptr, /*is_incognito=*/false);
+
+  // Create a separate service instance for the regular profile.
+  auto regular_service = std::make_unique<ScriptBlockingRuleApplierService>(
+      fake_content_rule_list_manager_,
+      regular_tracking_protection_settings.get(),
+      /*is_incognito=*/false);
+
+  // The constructor will have logged metrics. Create a new tester to isolate
+  // the metrics for the component update.
+  base::HistogramTester histogram_tester;
+  const std::string json = "[{\"trigger\": {\"url-filter\": \".*\"}}]";
+  script_blocking::ContentRuleListData::GetInstance().SetContentRuleList(json);
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.FingerprintingProtection.RuleList.BuildOutcome.Regular",
+      FingerprintingProtectionRuleListBuildOutcome::kUpdateListNoExceptions, 1);
 }

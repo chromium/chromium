@@ -12,7 +12,9 @@
 #import "base/functional/bind.h"
 #import "base/json/json_reader.h"
 #import "base/json/json_writer.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/timer/elapsed_timer.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #import "components/fingerprinting_protection_filter/ios/content_rule_list_data.h"
@@ -21,6 +23,10 @@
 #import "third_party/re2/src/re2/re2.h"
 
 namespace {
+
+std::string GetProfileTypeSuffix(bool is_incognito) {
+  return is_incognito ? "Incognito" : "Regular";
+}
 
 base::Value::Dict CreateExceptionRule(const std::string& scheme,
                                       const std::string& domain) {
@@ -73,14 +79,17 @@ using web::ContentRuleListManager;
 
 ScriptBlockingRuleApplierService::ScriptBlockingRuleApplierService(
     ContentRuleListManager& content_rule_list_manager,
-    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings)
+    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+    bool is_incognito)
     : content_rule_list_manager_(content_rule_list_manager),
-      tracking_protection_settings_(tracking_protection_settings) {
+      tracking_protection_settings_(tracking_protection_settings),
+      is_incognito_(is_incognito) {
   content_rule_list_observation_.Observe(
       &script_blocking::ContentRuleListData::GetInstance());
   tracking_protection_settings_observation_.Observe(
       tracking_protection_settings_);
-  BuildAndApplyRules();
+  BuildAndApplyRules(
+      FingerprintingProtectionRuleListApplyTrigger::kInitialLoad);
 }
 
 ScriptBlockingRuleApplierService::~ScriptBlockingRuleApplierService() {
@@ -96,23 +105,34 @@ void ScriptBlockingRuleApplierService::Shutdown() {
 
 void ScriptBlockingRuleApplierService::OnScriptBlockingRuleListUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BuildAndApplyRules();
+  BuildAndApplyRules(
+      FingerprintingProtectionRuleListApplyTrigger::kComponentUpdate);
 }
 
 void ScriptBlockingRuleApplierService::OnTrackingProtectionExceptionsChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BuildAndApplyRules();
+  BuildAndApplyRules(
+      FingerprintingProtectionRuleListApplyTrigger::kExceptionsChanged);
 }
 
 void ScriptBlockingRuleApplierService::OnFpProtectionEnabledChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BuildAndApplyRules();
+  BuildAndApplyRules(
+      FingerprintingProtectionRuleListApplyTrigger::kFpProtectionToggled);
 }
 
-void ScriptBlockingRuleApplierService::BuildAndApplyRules() {
+void ScriptBlockingRuleApplierService::BuildAndApplyRules(
+    FingerprintingProtectionRuleListApplyTrigger trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const std::string suffix = GetProfileTypeSuffix(is_incognito_);
+  base::UmaHistogramEnumeration(
+      "IOS.FingerprintingProtection.RuleList.ApplyTrigger." + suffix, trigger);
 
+  base::ElapsedTimer timer;
   std::optional<std::string> final_rules_json = BuildRules();
+  base::UmaHistogramTimes(
+      "IOS.FingerprintingProtection.RuleList.BuildTime." + suffix,
+      timer.Elapsed());
 
   if (final_rules_json.has_value()) {
     content_rule_list_manager_->UpdateRuleList(
@@ -128,6 +148,7 @@ void ScriptBlockingRuleApplierService::BuildAndApplyRules() {
 }
 
 std::optional<std::string> ScriptBlockingRuleApplierService::BuildRules() {
+  const std::string suffix = GetProfileTypeSuffix(is_incognito_);
   // TODO(crbug.com/436881800): Clean up the dry-run feature flag after the
   // experiment.
   bool is_dry_run = base::FeatureList::IsEnabled(
@@ -136,6 +157,9 @@ std::optional<std::string> ScriptBlockingRuleApplierService::BuildRules() {
 
   // In blocking mode (not a dry run), the feature is incognito-only.
   if (!is_dry_run && !tracking_protection_settings_->IsFpProtectionEnabled()) {
+    base::UmaHistogramEnumeration(
+        "IOS.FingerprintingProtection.RuleList.BuildOutcome." + suffix,
+        FingerprintingProtectionRuleListBuildOutcome::kRemoveListFpDisabled);
     return std::nullopt;
   }
 
@@ -144,6 +168,9 @@ std::optional<std::string> ScriptBlockingRuleApplierService::BuildRules() {
 
   // If the base rule list is not present, there are no rules to apply.
   if (!base_rules_json.has_value()) {
+    base::UmaHistogramEnumeration(
+        "IOS.FingerprintingProtection.RuleList.BuildOutcome." + suffix,
+        FingerprintingProtectionRuleListBuildOutcome::kRemoveListNoBaseRules);
     return std::nullopt;
   }
 
@@ -155,6 +182,10 @@ std::optional<std::string> ScriptBlockingRuleApplierService::BuildRules() {
   // An exception list is meaningless without a base list.
   if (!rules_value || !rules_value->is_list() ||
       rules_value->GetList().empty()) {
+    base::UmaHistogramEnumeration(
+        "IOS.FingerprintingProtection.RuleList.BuildOutcome." + suffix,
+        FingerprintingProtectionRuleListBuildOutcome::
+            kRemoveListInvalidBaseRules);
     return std::nullopt;
   }
 
@@ -162,11 +193,26 @@ std::optional<std::string> ScriptBlockingRuleApplierService::BuildRules() {
   base::Value::List rules_list = std::move(rules_value->GetList());
   ContentSettingsForOneType exceptions =
       tracking_protection_settings_->GetTrackingProtectionExceptions();
+
+  base::UmaHistogramCounts100(
+      "IOS.FingerprintingProtection.RuleList.ExceptionCount." + suffix,
+      exceptions.size());
+
+  base::UmaHistogramEnumeration(
+      "IOS.FingerprintingProtection.RuleList.BuildOutcome." + suffix,
+      exceptions.empty() ? FingerprintingProtectionRuleListBuildOutcome::
+                               kUpdateListNoExceptions
+                         : FingerprintingProtectionRuleListBuildOutcome::
+                               kUpdateListWithExceptions);
   for (const auto& exception : exceptions) {
     rules_list.Append(
         CreateExceptionRule(exception.secondary_pattern.GetScheme(),
                             exception.secondary_pattern.GetHost()));
   }
+
+  base::UmaHistogramCounts1000(
+      "IOS.FingerprintingProtection.RuleList.TotalRulesApplied." + suffix,
+      rules_list.size());
 
   std::string rules_json;
   base::JSONWriter::Write(rules_list, &rules_json);

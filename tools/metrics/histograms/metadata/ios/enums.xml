@@ -78,6 +78,39 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Apple Calendar"/>
 </enum>
 
+<!-- LINT.IfChange(FingerprintingProtectionRuleListApplyTrigger) -->
+
+<enum name="FingerprintingProtectionRuleListApplyTrigger">
+  <int value="0" label="Rules were applied on initial load."/>
+  <int value="1" label="Rules were applied because the component was updated."/>
+  <int value="2"
+      label="Rules were applied because Fingerprinting Protection was
+             toggled."/>
+  <int value="3"
+      label="Rules were applied because a site exception was changed."/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/script_blocking/model/script_blocking_rule_applier_service.h:FingerprintingProtectionRuleListApplyTrigger) -->
+
+<!-- LINT.IfChange(FingerprintingProtectionRuleListBuildOutcome) -->
+
+<enum name="FingerprintingProtectionRuleListBuildOutcome">
+  <int value="0"
+      label="The rule list was updated and exceptions were applied."/>
+  <int value="1"
+      label="The rule list was updated and no exceptions were applied."/>
+  <int value="2"
+      label="The rule list was removed as Fingerprinting Protection was
+             disabled."/>
+  <int value="3"
+      label="The rule list was removed as no base rules were provided."/>
+  <int value="4"
+      label="The rule list was removed as the provided base rules were
+             invalid."/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/script_blocking/model/script_blocking_rule_applier_service.h:FingerprintingProtectionRuleListBuildOutcome) -->
+
 <!-- LINT.IfChange(FullscreenModeTransitionReason) -->
 
 <enum name="FullscreenModeTransitionReason">
