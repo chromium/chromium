@@ -74,10 +74,9 @@ void CreateQueuePostData(
             EXPECT_CALL(*static_cast<MockReportQueue*>(
                             report_queue_result.value().get()),
                         AddRecord(StrEq(data), Eq(priority), _))
-                .WillOnce(
-                    WithArg<2>(Invoke([](ReportQueue::EnqueueCallback cb) {
-                      std::move(cb).Run(Status::StatusOK());
-                    })));
+                .WillOnce(WithArg<2>([](ReportQueue::EnqueueCallback cb) {
+                  std::move(cb).Run(Status::StatusOK());
+                }));
             base::ThreadPool::PostTask(
                 FROM_HERE,
                 base::BindOnce(
@@ -116,9 +115,9 @@ void CreateSpeculativeQueuePostData(
   // verify.
   EXPECT_CALL(*static_cast<MockReportQueue*>(report_queue_result.value().get()),
               AddRecord(StrEq(data), Eq(priority), _))
-      .WillOnce(WithArg<2>(Invoke([](ReportQueue::EnqueueCallback cb) {
+      .WillOnce(WithArg<2>([](ReportQueue::EnqueueCallback cb) {
         std::move(cb).Run(Status::StatusOK());
-      })));
+      }));
   // Enqueue on a random thread again.
   base::ThreadPool::PostTask(
       FROM_HERE,

@@ -105,9 +105,9 @@ class StorageQueueTest
     // Turn uploads to no-ops unless other expectation is set (any later
     // EXPECT_CALL will take precedence over this one).
     EXPECT_CALL(set_mock_uploader_expectations_, Call(_))
-        .WillRepeatedly(Invoke([this](UploaderInterface::UploadReason reason) {
+        .WillRepeatedly([this](UploaderInterface::UploadReason reason) {
           return TestUploader::SetUpDummy(this);
-        }));
+        });
     ResetExpectedUploadsCount();
   }
 
@@ -296,11 +296,10 @@ class StorageQueueTest
             .WillOnce(DoAll(
                 WithoutArgs(
                     Invoke(waiter_.get(), &test::TestCallbackWaiter::Signal)),
-                WithArg<1>(Invoke([](Status status) {
+                WithArg<1>([](Status status) {
                   LOG(ERROR) << "Completion signaled with status=" << status;
-                })),
-                WithoutArgs(
-                    Invoke([]() { LOG(ERROR) << "Completion signaled"; }))));
+                }),
+                WithoutArgs([]() { LOG(ERROR) << "Completion signaled"; })));
         return std::move(uploader_);
       }
 
@@ -867,13 +866,13 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndReopen) {
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
-      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+      .WillOnce([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
             .Required(2, kData[2])
             .Complete();
-      }))
+      })
       .RetiresOnSaturation();
 
   // Reopening will cause INIT_RESUME
@@ -895,13 +894,13 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenAndWriteMore) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Reopening will cause INIT_RESUME
@@ -924,13 +923,13 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUpload) {
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
-      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+      .WillOnce([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
             .Required(2, kData[2])
             .Complete();
-      }))
+      })
       .RetiresOnSaturation();
 
   // Trigger upload.
@@ -948,23 +947,23 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
   auto inject = InjectFailures();
   EXPECT_CALL(*inject,
               Call(Eq(test::StorageQueueOperationKind::kReadBlock), Eq(1)))
-      .WillRepeatedly(WithArg<1>(Invoke([](int64_t seq_id) {
+      .WillRepeatedly(WithArg<1>([](int64_t seq_id) {
         return Status(error::INTERNAL,
                       base::StrCat({"Simulated read failure, seq=",
                                     base::NumberToString(seq_id)}));
-      })));
+      }));
 
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
-      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+      .WillOnce([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .RequiredGap(1, 1)
             .Possible(2, kData[2])  // Depending on records binpacking
             .Complete();
-      }))
+      })
       .RetiresOnSaturation();
 
   // Trigger upload.
@@ -986,13 +985,13 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Reopening will cause INIT_RESUME
@@ -1008,7 +1007,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
-      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+      .WillOnce([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
@@ -1017,7 +1016,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
             .Required(4, kMoreData[1])
             .Required(5, kMoreData[2])
             .Complete();
-      }))
+      })
       .RetiresOnSaturation();
 
   // Trigger upload.
@@ -1047,11 +1046,11 @@ TEST_P(StorageQueueTest,
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
+        .WillOnce([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
           return base::unexpected(
               Status(error::UNAVAILABLE, "Skipped upload in test"));
-        }))
+        })
         .RetiresOnSaturation();
 
     // Reopening will cause INIT_RESUME
@@ -1068,7 +1067,7 @@ TEST_P(StorageQueueTest,
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
-      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+      .WillOnce([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
@@ -1077,7 +1076,7 @@ TEST_P(StorageQueueTest,
             .Required(4, kMoreData[1])
             .Required(5, kMoreData[2])
             .Complete();
-      }))
+      })
       .RetiresOnSaturation();
 
   // Trigger upload.
@@ -1121,11 +1120,11 @@ TEST_P(
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
+        .WillOnce([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
           return base::unexpected(
               Status(error::UNAVAILABLE, "Skipped upload in test"));
-        }))
+        })
         .RetiresOnSaturation();
 
     // Reopening will cause INIT_RESUME
@@ -1142,7 +1141,7 @@ TEST_P(
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
-      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+      .WillOnce([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
@@ -1151,7 +1150,7 @@ TEST_P(
             .Required(4, kMoreData[1])
             .Required(5, kMoreData[2])
             .Complete();
-      }))
+      })
       .RetiresOnSaturation();
 
   // Trigger upload.
@@ -1176,11 +1175,11 @@ TEST_P(StorageQueueTest,
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
+        .WillOnce([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
           return base::unexpected(
               Status(error::UNAVAILABLE, "Skipped upload in test"));
-        }))
+        })
         .RetiresOnSaturation();
 
     // Reopening will cause INIT_RESUME
@@ -1208,7 +1207,7 @@ TEST_P(StorageQueueTest,
       EXPECT_CALL(set_mock_uploader_expectations_,
                   Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
           .WillOnce(
-              Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              [&waiter, this](UploaderInterface::UploadReason reason) {
                 return TestUploader::SetUp(&waiter, this)
                     .PossibleGap(0, 1)
                     .Required(1, kData[1])
@@ -1217,7 +1216,7 @@ TEST_P(StorageQueueTest,
                     .Required(4, kMoreData[1])
                     .Required(5, kMoreData[2])
                     .Complete();
-              }))
+              })
           .RetiresOnSaturation();
       break;
     case 256:  // two records in file - deletion killed the first two records.
@@ -1225,7 +1224,7 @@ TEST_P(StorageQueueTest,
       EXPECT_CALL(set_mock_uploader_expectations_,
                   Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
           .WillOnce(
-              Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              [&waiter, this](UploaderInterface::UploadReason reason) {
                 return TestUploader::SetUp(&waiter, this)
                     .PossibleGap(0, 1)
                     .PossibleGap(1, 1)
@@ -1236,7 +1235,7 @@ TEST_P(StorageQueueTest,
                     .Required(4, kMoreData[1])
                     .Required(5, kMoreData[2])
                     .Complete();
-              }))
+              })
           .RetiresOnSaturation();
       break;
     default:  // Unlimited file size - deletion above killed all the data. Can
@@ -1244,7 +1243,7 @@ TEST_P(StorageQueueTest,
       EXPECT_CALL(set_mock_uploader_expectations_,
                   Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
           .WillOnce(
-              Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              [&waiter, this](UploaderInterface::UploadReason reason) {
                 return TestUploader::SetUp(&waiter, this)
                     .PossibleGap(0, 1)
                     .PossibleGap(0, 2)
@@ -1253,7 +1252,7 @@ TEST_P(StorageQueueTest,
                     .PossibleGap(0, 5)
                     .PossibleGap(0, 6)
                     .Complete();
-              }))
+              })
           .RetiresOnSaturation();
   }
 
@@ -1272,13 +1271,13 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndFlush) {
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::MANUAL)))
-      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+      .WillOnce([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
             .Required(2, kData[2])
             .Complete();
-      }))
+      })
       .RetiresOnSaturation();
 
   // Flush manually.
@@ -1299,11 +1298,11 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
+        .WillOnce([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
           return base::unexpected(
               Status(error::UNAVAILABLE, "Skipped upload in test"));
-        }))
+        })
         .RetiresOnSaturation();
 
     // Reopening will cause INIT_RESUME
@@ -1319,7 +1318,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::MANUAL)))
-      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+      .WillOnce([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
@@ -1328,7 +1327,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
             .Required(4, kMoreData[1])
             .Required(5, kMoreData[2])
             .Complete();
-      }))
+      })
       .RetiresOnSaturation();
 
   // Flush manually.
@@ -1350,14 +1349,13 @@ TEST_P(StorageQueueTest, ValidateVariousRecordSizes) {
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::MANUAL)))
-      .WillOnce(Invoke(
-          [&waiter, &data, this](UploaderInterface::UploadReason reason) {
-            TestUploader::SetUp uploader_setup(&waiter, this);
-            for (size_t i = 0; i < data.size(); ++i) {
-              uploader_setup.Required(i, data[i]);
-            }
-            return uploader_setup.Complete();
-          }))
+      .WillOnce([&waiter, &data, this](UploaderInterface::UploadReason reason) {
+        TestUploader::SetUp uploader_setup(&waiter, this);
+        for (size_t i = 0; i < data.size(); ++i) {
+          uploader_setup.Required(i, data[i]);
+        }
+        return uploader_setup.Complete();
+      })
       .RetiresOnSaturation();
 
   // Flush manually.
@@ -1378,13 +1376,13 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1399,12 +1397,12 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1420,11 +1418,11 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1443,14 +1441,14 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(2, kData[2])
                   .Required(3, kMoreData[0])
                   .Required(4, kMoreData[1])
                   .Required(5, kMoreData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1465,13 +1463,13 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(3, kMoreData[0])
                   .Required(4, kMoreData[1])
                   .Required(5, kMoreData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1491,13 +1489,13 @@ TEST_P(StorageQueueTest, WriteAndUploadWithBadConfirmation) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1529,13 +1527,13 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1551,12 +1549,12 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1572,11 +1570,11 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1591,11 +1589,11 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
+        .WillOnce([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
           return base::unexpected(
               Status(error::UNAVAILABLE, "Skipped upload in test"));
-        }))
+        })
         .RetiresOnSaturation();
 
     // Reopening will cause INIT_RESUME
@@ -1614,7 +1612,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Possible(0, kData[0])
                   .Possible(1, kData[1])
@@ -1623,7 +1621,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
                   .Required(4, kMoreData[1])
                   .Required(5, kMoreData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1638,13 +1636,13 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(3, kMoreData[0])
                   .Required(4, kMoreData[1])
                   .Required(5, kMoreData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1665,13 +1663,13 @@ TEST_P(StorageQueueTest,
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1687,12 +1685,12 @@ TEST_P(StorageQueueTest,
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1708,11 +1706,11 @@ TEST_P(StorageQueueTest,
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1727,11 +1725,11 @@ TEST_P(StorageQueueTest,
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
+        .WillOnce([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
           return base::unexpected(
               Status(error::UNAVAILABLE, "Skipped upload in test"));
-        }))
+        })
         .RetiresOnSaturation();
 
     // Reopening will cause INIT_RESUME
@@ -1748,11 +1746,11 @@ TEST_P(StorageQueueTest,
   auto inject = InjectFailures();
   EXPECT_CALL(*inject, Call(Eq(test::StorageQueueOperationKind::kReadBlock),
                             AnyOf(4, 5)))
-      .WillRepeatedly(WithArg<1>(Invoke([](int64_t seq_id) {
+      .WillRepeatedly(WithArg<1>([](int64_t seq_id) {
         return Status(error::INTERNAL,
                       base::StrCat({"Simulated read failure, seq=",
                                     base::NumberToString(seq_id)}));
-      })));
+      }));
 
   {
     // Set uploader expectations.
@@ -1760,7 +1758,7 @@ TEST_P(StorageQueueTest,
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Possible(0, kData[0])
                   .Possible(1, kData[1])
@@ -1771,7 +1769,7 @@ TEST_P(StorageQueueTest,
                   .PossibleGap(4, 1)
                   .PossibleGap(5, 1)
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1789,13 +1787,13 @@ TEST_P(StorageQueueTest,
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(3, kMoreData[0])
                   .Required(4, kMoreData[1])
                   .Required(5, kMoreData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1813,13 +1811,13 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Possible(1, kData[1])
                   .Possible(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     WriteStringOrDie(kData[0]);
@@ -1830,13 +1828,13 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Possible(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     WriteStringOrDie(kData[1]);
@@ -1847,13 +1845,13 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     WriteStringOrDie(kData[2]);
@@ -1872,11 +1870,11 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     WriteStringOrDie(kData[0]);
@@ -1887,12 +1885,12 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     WriteStringOrDie(kData[1]);
@@ -1903,13 +1901,13 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     WriteStringOrDie(kData[2]);
@@ -1927,12 +1925,12 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(2, kData[2])
                   .Required(3, kMoreData[0])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     WriteStringOrDie(kMoreData[0]);
@@ -1943,13 +1941,13 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(2, kData[2])
                   .Required(3, kMoreData[0])
                   .Required(4, kMoreData[1])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     WriteStringOrDie(kMoreData[1]);
@@ -1960,14 +1958,14 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(2, kData[2])
                   .Required(3, kMoreData[0])
                   .Required(4, kMoreData[1])
                   .Required(5, kMoreData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     WriteStringOrDie(kMoreData[2]);
@@ -1985,19 +1983,19 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithFailure) {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
-        .WillOnce(Invoke([](UploaderInterface::UploadReason reason) {
+        .WillOnce([](UploaderInterface::UploadReason reason) {
           return base::unexpected(
               Status(error::UNAVAILABLE, "Intended failure in test"));
-        }))
+        })
         .RetiresOnSaturation();
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::FAILURE_RETRY)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount(2u);
     WriteStringOrDie(kData[0]);  // Immediately uploads and fails.
@@ -2018,11 +2016,11 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     WriteStringOrDie(kData[0]);  // Immediately uploads and does not confirm.
@@ -2034,11 +2032,11 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::INCOMPLETE_RETRY)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
     SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(5));
@@ -2058,10 +2056,10 @@ TEST_P(StorageQueueTest, WriteEncryptFailure) {
   ASSERT_THAT(test_encryption_module_, NotNull());
   EXPECT_CALL(*test_encryption_module_, EncryptRecordImpl(_, _))
       .WillOnce(WithArg<1>(
-          Invoke([](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
+          [](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
             std::move(cb).Run(
                 base::unexpected(Status(error::UNKNOWN, "Failing for tests")));
-          })));
+          }));
   const Status result = WriteString("TEST_MESSAGE");
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
@@ -2080,13 +2078,13 @@ TEST_P(StorageQueueTest, ForceConfirm) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -2103,11 +2101,11 @@ TEST_P(StorageQueueTest, ForceConfirm) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -2125,7 +2123,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .RequiredSeqId(0)
                   .RequiredSeqId(1)
@@ -2138,7 +2136,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
                   .Possible(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -2156,7 +2154,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(&waiter, this)
                   .RequiredSeqId(1)
                   .RequiredSeqId(2)
@@ -2166,7 +2164,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
                   .Possible(1, kData[1])
                   .Required(2, kData[2])
                   .Complete();
-            }))
+            })
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -2197,11 +2195,11 @@ TEST_P(StorageQueueTest, WriteRecordWithWriteMetadataFailures) {
   auto inject = InjectFailures();
   EXPECT_CALL(*inject,
               Call(Eq(test::StorageQueueOperationKind::kWriteMetadata), Eq(0)))
-      .WillOnce(WithArg<1>(Invoke([](int64_t seq_id) {
+      .WillOnce(WithArg<1>([](int64_t seq_id) {
         return Status(error::INTERNAL,
                       base::StrCat({"Simulated metadata write failure, seq=",
                                     base::NumberToString(seq_id)}));
-      })));
+      }));
 
   Status write_result = WriteString(kData[0]);
   EXPECT_FALSE(write_result.ok());
@@ -2214,11 +2212,11 @@ TEST_P(StorageQueueTest, WriteRecordWithWriteBlockFailures) {
   auto inject = InjectFailures();
   EXPECT_CALL(*inject,
               Call(Eq(test::StorageQueueOperationKind::kWriteBlock), Eq(0)))
-      .WillOnce(WithArg<1>(Invoke([](int64_t seq_id) {
+      .WillOnce(WithArg<1>([](int64_t seq_id) {
         return Status(error::INTERNAL,
                       base::StrCat({"Simulated write failure, seq=",
                                     base::NumberToString(seq_id)}));
-      })));
+      }));
 
   Status write_result = WriteString(kData[0]);
   EXPECT_FALSE(write_result.ok());
@@ -2249,12 +2247,12 @@ TEST_P(StorageQueueTest, WriteRecordMetadataWithInsufficientDiskSpaceFailure) {
   EXPECT_CALL(
       *inject,
       Call(Eq(test::StorageQueueOperationKind::kWriteLowDiskSpace), Eq(0)))
-      .WillRepeatedly(WithArg<1>(Invoke([](int64_t seq_id) {
+      .WillRepeatedly(WithArg<1>([](int64_t seq_id) {
         return Status(
             error::INTERNAL,
             base::StrCat({"Simulated metadata write low disk space, seq=",
                           base::NumberToString(seq_id)}));
-      })));
+      }));
   Status write_result = WriteString(kData[0]);
   EXPECT_FALSE(write_result.ok());
   EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
@@ -2271,12 +2269,12 @@ TEST_P(StorageQueueTest, WrappedRecordWithInsufficientMemoryWithRetry) {
       *inject,
       Call(Eq(test::StorageQueueOperationKind::kWrappedRecordLowMemory), Eq(0)))
       .Times(kAttempts)
-      .WillRepeatedly(WithArg<1>(Invoke([&attempts](int64_t seq_id) {
+      .WillRepeatedly(WithArg<1>([&attempts](int64_t seq_id) {
         return Status(error::RESOURCE_EXHAUSTED,
                       base::StrCat({"Not enough memory for WrappedRecord, seq=",
                                     base::NumberToString(seq_id), " attempt=",
                                     base::NumberToString(attempts++)}));
-      })))
+      }))
       .RetiresOnSaturation();
   Record record;
   record.set_data(std::string(kData[0]));
@@ -2300,11 +2298,11 @@ TEST_P(StorageQueueTest, WrappedRecordWithInsufficientMemoryWithFailure) {
   EXPECT_CALL(
       *inject,
       Call(Eq(test::StorageQueueOperationKind::kWrappedRecordLowMemory), Eq(0)))
-      .WillRepeatedly(WithArg<1>(Invoke([](int64_t seq_id) {
+      .WillRepeatedly(WithArg<1>([](int64_t seq_id) {
         return Status(error::RESOURCE_EXHAUSTED,
                       base::StrCat({"Not enough memory for WrappedRecord, seq=",
                                     base::NumberToString(seq_id)}));
-      })))
+      }))
       .RetiresOnSaturation();
   Record record;
   record.set_data(std::string(kData[0]));
@@ -2332,13 +2330,13 @@ TEST_P(StorageQueueTest, EncryptedRecordWithInsufficientMemoryWithRetry) {
       Call(Eq(test::StorageQueueOperationKind::kEncryptedRecordLowMemory),
            Eq(0)))
       .Times(kAttempts)
-      .WillRepeatedly(WithArg<1>(Invoke([&attempts](int64_t seq_id) {
+      .WillRepeatedly(WithArg<1>([&attempts](int64_t seq_id) {
         return Status(
             error::RESOURCE_EXHAUSTED,
             base::StrCat({"Not enough memory for EncryptedRecord, seq=",
                           base::NumberToString(seq_id),
                           " attempt=", base::NumberToString(attempts++)}));
-      })))
+      }))
       .RetiresOnSaturation();
   Record record;
   record.set_data(std::string(kData[0]));
@@ -2363,12 +2361,12 @@ TEST_P(StorageQueueTest, EncryptedRecordWithInsufficientMemoryWithFailure) {
       *inject,
       Call(Eq(test::StorageQueueOperationKind::kEncryptedRecordLowMemory),
            Eq(0)))
-      .WillRepeatedly(WithArg<1>(Invoke([](int64_t seq_id) {
+      .WillRepeatedly(WithArg<1>([](int64_t seq_id) {
         return Status(
             error::RESOURCE_EXHAUSTED,
             base::StrCat({"Not enough memory for EncryptedRecord, seq=",
                           base::NumberToString(seq_id)}));
-      })))
+      }))
       .RetiresOnSaturation();
   Record record;
   record.set_data(std::string(kData[0]));
@@ -2418,13 +2416,13 @@ TEST_P(StorageQueueTest, UploadWithInsufficientMemory) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+            [&waiter, this](UploaderInterface::UploadReason reason) {
               // First attempt - update total memory to a low amount.
               options_.memory_resource()->Test_SetTotal(100u);
               return TestUploader::SetUp(&waiter, this)
                   .Complete(Status(error::RESOURCE_EXHAUSTED,
                                    "Insufficient memory for upload"));
-            }))
+            })
         .RetiresOnSaturation();
     // Trigger upload which will experience insufficient memory.
     SetExpectedUploadsCount();
@@ -2436,14 +2434,14 @@ TEST_P(StorageQueueTest, UploadWithInsufficientMemory) {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::FAILURE_RETRY)))
-        .WillOnce(Invoke([&waiter, &original_total_memory,
-                          this](UploaderInterface::UploadReason reason) {
+        .WillOnce([&waiter, &original_total_memory,
+                   this](UploaderInterface::UploadReason reason) {
           // Reset after running upload so it does not affect other tests.
           options_.memory_resource()->Test_SetTotal(original_total_memory);
           return TestUploader::SetUp(&waiter, this)
               .Required(0, kData[0])
               .Complete();
-        }))
+        })
         .RetiresOnSaturation();
 
     // Trigger another (failure retry) upload resetting the memory resource.
@@ -2488,12 +2486,12 @@ TEST_P(StorageQueueTest, WriteWithUnencryptedCopy) {
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::MANUAL)))
-      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+      .WillOnce([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(&waiter, this)
             .Required(0, kTestData)
             .HasUnencryptedCopy(0, UPLOAD_EVENTS, kTestData)
             .Complete();
-      }))
+      })
       .RetiresOnSaturation();
 
   // Flush manually.

@@ -22,7 +22,6 @@
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::StrEq;
@@ -57,11 +56,10 @@ TEST_F(FilteredReportQueueTest, StringAcceptedTest) {
   EXPECT_CALL(*mock_filter, is_accepted(_))
       .WillOnce(Return(Status::StatusOK()));
   EXPECT_CALL(*mock_report_queue, AddProducedRecord(_, _, _))
-      .WillOnce(
-          Invoke([](ReportQueue::RecordProducer record_producer,
-                    Priority priority, ReportQueue::EnqueueCallback callback) {
-            std::move(callback).Run(Status::StatusOK());
-          }));
+      .WillOnce([](ReportQueue::RecordProducer record_producer,
+                   Priority priority, ReportQueue::EnqueueCallback callback) {
+        std::move(callback).Run(Status::StatusOK());
+      });
   test::TestEvent<Status> enqueued;
   queue->Enqueue(kTestMessage, Priority::IMMEDIATE, enqueued.cb());
   EXPECT_OK(enqueued.result());
@@ -104,11 +102,10 @@ TEST_F(FilteredReportQueueTest, MixedStringsTest) {
     EXPECT_CALL(*mock_filter, is_accepted(_))
         .WillOnce(Return(Status::StatusOK()));
     EXPECT_CALL(*mock_report_queue, AddProducedRecord(_, _, _))
-        .WillOnce(Invoke([](ReportQueue::RecordProducer record_producer,
-                            Priority priority,
-                            ReportQueue::EnqueueCallback callback) {
+        .WillOnce([](ReportQueue::RecordProducer record_producer,
+                     Priority priority, ReportQueue::EnqueueCallback callback) {
           std::move(callback).Run(Status::StatusOK());
-        }));
+        });
     test::TestEvent<Status> enqueued;
     queue->Enqueue(kTestMessage, Priority::IMMEDIATE, enqueued.cb());
     EXPECT_OK(enqueued.result());
@@ -135,11 +132,10 @@ TEST_F(FilteredReportQueueTest, MixedStringsTest) {
     EXPECT_CALL(*mock_filter, is_accepted(_))
         .WillOnce(Return(Status::StatusOK()));
     EXPECT_CALL(*mock_report_queue, AddProducedRecord(_, _, _))
-        .WillOnce(Invoke([](ReportQueue::RecordProducer record_producer,
-                            Priority priority,
-                            ReportQueue::EnqueueCallback callback) {
+        .WillOnce([](ReportQueue::RecordProducer record_producer,
+                     Priority priority, ReportQueue::EnqueueCallback callback) {
           std::move(callback).Run(Status::StatusOK());
-        }));
+        });
     test::TestEvent<Status> enqueued;
     queue->Enqueue(kTestMessage, Priority::IMMEDIATE, enqueued.cb());
     EXPECT_OK(enqueued.result());
@@ -166,11 +162,10 @@ TEST_F(FilteredReportQueueTest, JsonAcceptedTest) {
   EXPECT_CALL(*mock_filter, is_accepted(_))
       .WillOnce(Return(Status::StatusOK()));
   EXPECT_CALL(*mock_report_queue, AddProducedRecord(_, _, _))
-      .WillOnce(
-          Invoke([](ReportQueue::RecordProducer record_producer,
-                    Priority priority, ReportQueue::EnqueueCallback callback) {
-            std::move(callback).Run(Status::StatusOK());
-          }));
+      .WillOnce([](ReportQueue::RecordProducer record_producer,
+                   Priority priority, ReportQueue::EnqueueCallback callback) {
+        std::move(callback).Run(Status::StatusOK());
+      });
   test::TestEvent<Status> enqueued;
   queue->Enqueue(std::move(test_dict), Priority::IMMEDIATE, enqueued.cb());
   EXPECT_OK(enqueued.result());
@@ -223,11 +218,10 @@ TEST_F(FilteredReportQueueTest, MixedJsonTest) {
     EXPECT_CALL(*mock_filter, is_accepted(_))
         .WillOnce(Return(Status::StatusOK()));
     EXPECT_CALL(*mock_report_queue, AddProducedRecord(_, _, _))
-        .WillOnce(Invoke([](ReportQueue::RecordProducer record_producer,
-                            Priority priority,
-                            ReportQueue::EnqueueCallback callback) {
+        .WillOnce([](ReportQueue::RecordProducer record_producer,
+                     Priority priority, ReportQueue::EnqueueCallback callback) {
           std::move(callback).Run(Status::StatusOK());
-        }));
+        });
     test::TestEvent<Status> enqueued;
     queue->Enqueue(test_dict.Clone(), Priority::IMMEDIATE, enqueued.cb());
     EXPECT_OK(enqueued.result());
@@ -254,11 +248,10 @@ TEST_F(FilteredReportQueueTest, MixedJsonTest) {
     EXPECT_CALL(*mock_filter, is_accepted(_))
         .WillOnce(Return(Status::StatusOK()));
     EXPECT_CALL(*mock_report_queue, AddProducedRecord(_, _, _))
-        .WillOnce(Invoke([](ReportQueue::RecordProducer record_producer,
-                            Priority priority,
-                            ReportQueue::EnqueueCallback callback) {
+        .WillOnce([](ReportQueue::RecordProducer record_producer,
+                     Priority priority, ReportQueue::EnqueueCallback callback) {
           std::move(callback).Run(Status::StatusOK());
-        }));
+        });
     test::TestEvent<Status> enqueued;
     queue->Enqueue(test_dict.Clone(), Priority::IMMEDIATE, enqueued.cb());
     EXPECT_OK(enqueued.result());
@@ -283,11 +276,10 @@ TEST_F(FilteredReportQueueTest, ProtoAcceptedTest) {
   EXPECT_CALL(*mock_filter, is_accepted(_))
       .WillOnce(Return(Status::StatusOK()));
   EXPECT_CALL(*mock_report_queue, AddProducedRecord(_, _, _))
-      .WillOnce(
-          Invoke([](ReportQueue::RecordProducer record_producer,
-                    Priority priority, ReportQueue::EnqueueCallback callback) {
-            std::move(callback).Run(Status::StatusOK());
-          }));
+      .WillOnce([](ReportQueue::RecordProducer record_producer,
+                   Priority priority, ReportQueue::EnqueueCallback callback) {
+        std::move(callback).Run(Status::StatusOK());
+      });
   test::TestEvent<Status> enqueued;
   queue->Enqueue(std::move(test_message), Priority::IMMEDIATE, enqueued.cb());
   EXPECT_OK(enqueued.result());
@@ -336,11 +328,10 @@ TEST_F(FilteredReportQueueTest, MixedProtoTest) {
     EXPECT_CALL(*mock_filter, is_accepted(_))
         .WillOnce(Return(Status::StatusOK()));
     EXPECT_CALL(*mock_report_queue, AddProducedRecord(_, _, _))
-        .WillOnce(Invoke([](ReportQueue::RecordProducer record_producer,
-                            Priority priority,
-                            ReportQueue::EnqueueCallback callback) {
+        .WillOnce([](ReportQueue::RecordProducer record_producer,
+                     Priority priority, ReportQueue::EnqueueCallback callback) {
           std::move(callback).Run(Status::StatusOK());
-        }));
+        });
     test::TestEvent<Status> enqueued;
     queue->Enqueue(test_message, Priority::IMMEDIATE, enqueued.cb());
     EXPECT_OK(enqueued.result());
@@ -367,11 +358,10 @@ TEST_F(FilteredReportQueueTest, MixedProtoTest) {
     EXPECT_CALL(*mock_filter, is_accepted(_))
         .WillOnce(Return(Status::StatusOK()));
     EXPECT_CALL(*mock_report_queue, AddProducedRecord(_, _, _))
-        .WillOnce(Invoke([](ReportQueue::RecordProducer record_producer,
-                            Priority priority,
-                            ReportQueue::EnqueueCallback callback) {
+        .WillOnce([](ReportQueue::RecordProducer record_producer,
+                     Priority priority, ReportQueue::EnqueueCallback callback) {
           std::move(callback).Run(Status::StatusOK());
-        }));
+        });
     test::TestEvent<Status> enqueued;
     queue->Enqueue(test_message, Priority::IMMEDIATE, enqueued.cb());
     EXPECT_OK(enqueued.result());
