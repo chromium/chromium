@@ -15467,6 +15467,21 @@
             ]
         }
     ],
+    "MigrateIOSKeychainAccessibility": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MigrateIOSKeychainAccessibility"
+                    ]
+                }
+            ]
+        }
+    ],
     "MiniOriginBar": [
         {
             "platforms": [
