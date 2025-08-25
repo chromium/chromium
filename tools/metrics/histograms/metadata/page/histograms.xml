@@ -47,6 +47,18 @@ chromium-metrics-reviews@google.com.
       summary="browser initialization in progress"/>
 </variants>
 
+<!-- LINT.IfChange(ConnectionProtocolType) -->
+
+<variants name="ConnectionProtocolType">
+  <variant name="" summary="any connection"/>
+  <variant name=".Http1" summary="Http1 connection"/>
+  <variant name=".Http2" summary="Http2 connection"/>
+  <variant name=".Http3" summary="Http3 connection"/>
+  <variant name=".Other" summary="Other connection"/>
+</variants>
+
+<!-- LINT.ThenChange(//net/http/http_connection_info.cc) -->
+
 <variants name="Gap">
   <variant name="1000ms"/>
 </variants>
@@ -1088,15 +1100,17 @@ chromium-metrics-reviews@google.com.
       variants="BrowserInitializationStatus"/>
 </histogram>
 
-<histogram name="PageLoad.Clients.GoogleSearch.ConnectionReuseStatus{Profile}"
+<histogram
+    name="PageLoad.Clients.GoogleSearch.ConnectionReuseStatus{ConnectionProtocolType}{Profile}"
     enum="ConnectionReuseStatus" expires_after="2026-02-09">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The possible status of connection reuse for Google search page loads for
-    {Profile}. This is only recorded for Search navigations and is recorded once
-    after navigation commit.
+    {Profile} with {ConnectionProtocolType}. This is only recorded for Search
+    navigations and is recorded once after navigation commit.
   </summary>
+  <token key="ConnectionProtocolType" variants="ConnectionProtocolType"/>
   <token key="Profile">
     <variant name="" summary="normal and incognito modes"/>
     <variant name=".Incognito" summary="incognito mode"/>
@@ -1104,87 +1118,93 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FinalRequestConnectDelay"
+    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FinalRequestConnectDelay{ConnectionProtocolType}"
     units="ms" expires_after="2025-12-28">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The delay caused by connection establishment for the final HTTP request
     which is sent for the main resource of a main frame navigation, for Google
-    Search page loads. Only recorded for Search navigations that happen entirely
-    in the foreground. The metric is emitted when the navigation is completed or
-    the app is backgrounded on Android.
+    Search page loads with {ConnectionProtocolType}. Only recorded for Search
+    navigations that happen entirely in the foreground. The metric is emitted
+    when the navigation is completed or the app is backgrounded on Android.
   </summary>
+  <token key="ConnectionProtocolType" variants="ConnectionProtocolType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FinalRequestDomainLookupDelay"
+    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FinalRequestDomainLookupDelay{ConnectionProtocolType}"
     units="ms" expires_after="2025-12-14">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The delay caused by domain lookup for the final HTTP request which is sent
     for the main resource of a main frame navigation, for Google Search page
-    loads. Only recorded for Search navigations that happen entirely in the
-    foreground. The metric is emitted when the navigation is completed or the
-    app is backgrounded on Android.
+    loads with {ConnectionProtocolType}. Only recorded for Search navigations
+    that happen entirely in the foreground. The metric is emitted when the
+    navigation is completed or the app is backgrounded on Android.
   </summary>
+  <token key="ConnectionProtocolType" variants="ConnectionProtocolType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FinalRequestSslDelay"
+    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FinalRequestSslDelay{ConnectionProtocolType}"
     units="ms" expires_after="2025-12-28">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The delay caused by SSL handshake for the final HTTP request which is sent
     for the main resource of a main frame navigation, for Google Search page
-    loads. Only recorded for Search navigations that happen entirely in the
-    foreground. The metric is emitted when the navigation is completed or the
-    app is backgrounded on Android.
+    loads with {ConnectionProtocolType}. Only recorded for Search navigations
+    that happen entirely in the foreground. The metric is emitted when the
+    navigation is completed or the app is backgrounded on Android.
   </summary>
+  <token key="ConnectionProtocolType" variants="ConnectionProtocolType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestConnectDelay"
+    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestConnectDelay{ConnectionProtocolType}"
     units="ms" expires_after="2025-12-28">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The delay caused by connection establishment for the first HTTP request
     which is sent for the main resource of a main frame navigation, for Google
-    Search page loads. Only recorded for Search navigations that happen entirely
-    in the foreground. The metric is emitted when the navigation is completed or
-    the app is backgrounded on Android.
+    Search page loads with {ConnectionProtocolType}. Only recorded for Search
+    navigations that happen entirely in the foreground. The metric is emitted
+    when the navigation is completed or the app is backgrounded on Android.
   </summary>
+  <token key="ConnectionProtocolType" variants="ConnectionProtocolType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestDomainLookupDelay"
+    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestDomainLookupDelay{ConnectionProtocolType}"
     units="ms" expires_after="2025-12-28">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The delay caused by domain lookup for the first HTTP request which is sent
     for the main resource of a main frame navigation, for Google Search page
-    loads. Only recorded for Search navigations that happen entirely in the
-    foreground. The metric is emitted when the navigation is completed or the
-    app is backgrounded on Android.
+    loads with {ConnectionProtocolType}. Only recorded for Search navigations
+    that happen entirely in the foreground. The metric is emitted when the
+    navigation is completed or the app is backgrounded on Android.
   </summary>
+  <token key="ConnectionProtocolType" variants="ConnectionProtocolType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestSslDelay"
+    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestSslDelay{ConnectionProtocolType}"
     units="ms" expires_after="2025-12-28">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The delay caused by SSL handshake for the first HTTP request which is sent
     for the main resource of a main frame navigation, for Google Search page
-    loads. Only recorded for Search navigations that happen entirely in the
-    foreground. The metric is emitted when the navigation is completed or the
-    app is backgrounded on Android.
+    loads with {ConnectionProtocolType}. Only recorded for Search navigations
+    that happen entirely in the foreground. The metric is emitted when the
+    navigation is completed or the app is backgrounded on Android.
   </summary>
+  <token key="ConnectionProtocolType" variants="ConnectionProtocolType"/>
 </histogram>
 
 <histogram name="PageLoad.Clients.GoogleSearch.CSI.{Event}" units="ms"

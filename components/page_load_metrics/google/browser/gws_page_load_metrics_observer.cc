@@ -30,6 +30,7 @@
 #include "components/page_load_metrics/google/browser/histogram_suffixes.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
+#include "net/http/http_connection_info.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
@@ -256,6 +257,8 @@ GWSPageLoadMetricsObserver::OnCommit(
   }
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
   was_cached_ = navigation_handle->WasResponseCached();
+  http_connection_info_ =
+      net::HttpConnectionInfoToCoarse(navigation_handle->GetConnectionInfo());
   if (!is_prerendered_) {
     RecordPreCommitHistograms();
   }
@@ -621,24 +624,33 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
         timing.first_request_start_time - *timing.first_fetch_start_time);
   }
 
-  PAGE_LOAD_SHORT_HISTOGRAM(
+  auto protocol = net::HttpConnectionInfoCoarseToString(http_connection_info_);
+  auto record_histogram_with_suffix =
+      [&protocol](const std::string& histogram_name, base::TimeDelta timing) {
+        auto histogram_with_suffix = base::StrCat({histogram_name, protocol});
+        PAGE_LOAD_SHORT_HISTOGRAM(histogram_name, timing);
+        PAGE_LOAD_SHORT_HISTOGRAM(histogram_with_suffix, timing);
+      };
+
+  record_histogram_with_suffix(
       internal::kHistogramGWSConnectTimingFirstRequestDomainLookupDelay,
       timing.first_request_domain_lookup_delay);
-  PAGE_LOAD_SHORT_HISTOGRAM(
+  record_histogram_with_suffix(
       internal::kHistogramGWSConnectTimingFirstRequestConnectDelay,
       timing.first_request_connect_delay);
-  PAGE_LOAD_SHORT_HISTOGRAM(
+  record_histogram_with_suffix(
       internal::kHistogramGWSConnectTimingFirstRequestSslDelay,
       timing.first_request_ssl_delay);
-  PAGE_LOAD_SHORT_HISTOGRAM(
+  record_histogram_with_suffix(
       internal::kHistogramGWSConnectTimingFinalRequestDomainLookupDelay,
       timing.final_request_domain_lookup_delay);
-  PAGE_LOAD_SHORT_HISTOGRAM(
+  record_histogram_with_suffix(
       internal::kHistogramGWSConnectTimingFinalRequestConnectDelay,
       timing.final_request_connect_delay);
-  PAGE_LOAD_SHORT_HISTOGRAM(
+  record_histogram_with_suffix(
       internal::kHistogramGWSConnectTimingFinalRequestSslDelay,
       timing.final_request_ssl_delay);
+
   PAGE_LOAD_SHORT_HISTOGRAM(internal::kHistogramGWSCreateStreamDelay,
                             timing.create_stream_delay);
   PAGE_LOAD_SHORT_HISTOGRAM(internal::kHistogramGWSConnectedCallbackDelay,
@@ -710,11 +722,21 @@ void GWSPageLoadMetricsObserver::RecordConnectionReuseHistograms() {
   }
   base::UmaHistogramEnumeration(internal::kHistogramGWSConnectionReuseStatus,
                                 status);
+
+  auto protocol = net::HttpConnectionInfoCoarseToString(http_connection_info_);
+  auto total_histogram_name =
+      base::StrCat({internal::kHistogramGWSConnectionReuseStatus, protocol});
+  base::UmaHistogramEnumeration(total_histogram_name, status);
+
   if (IsIncognitoProfile()) {
-    auto histogram_name =
+    auto histogram_name_with_incognito_suffix =
         base::StrCat({internal::kHistogramGWSConnectionReuseStatus,
                       internal::kHistogramIncognitoSuffix});
-    base::UmaHistogramEnumeration(histogram_name, status);
+    base::UmaHistogramEnumeration(histogram_name_with_incognito_suffix, status);
+
+    // Record the total histogram with protocol suffix as well.
+    total_histogram_name = base::StrCat({total_histogram_name, protocol});
+    base::UmaHistogramEnumeration(total_histogram_name, status);
   }
 
   switch (status) {
