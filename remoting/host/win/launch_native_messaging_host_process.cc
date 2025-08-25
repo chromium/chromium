@@ -137,8 +137,7 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
   base::CommandLine::StringType params = command_line.GetCommandLineString();
 
   // Launch the child process, requesting elevation if needed.
-  SHELLEXECUTEINFO info;
-  UNSAFE_TODO(memset(&info, 0, sizeof(info)));
+  SHELLEXECUTEINFO info = {};
   info.cbSize = sizeof(info);
   info.hwnd = reinterpret_cast<HWND>(parent_window_handle);
   info.lpFile = binary_path.value().c_str();
