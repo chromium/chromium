@@ -83,7 +83,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
-#include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
