@@ -125,6 +125,10 @@ class ReaderModeTabHelper : public web::WebStateObserver,
       NSURLRequest* request,
       web::WebStatePolicyDecider::RequestInfo request_info) override;
 
+  // Sets the script to be used to initialise the scrolling position when the
+  // Reader mode content has loaded.
+  void SetScrollAnchorScript(std::string script);
+
   // Returns a weak pointer.
   base::WeakPtr<ReaderModeTabHelper> GetWeakPtr();
 
@@ -174,6 +178,10 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Records the current page distillation failure, when called
   // `distillation_already_failed_` is set to true.
   void RecordDistillationFailure();
+
+  // Script to be used to initialise the scrolling position when the Reader mode
+  // content has loaded.
+  std::string scroll_anchor_script_;
 
   // Whether Reader mode is active in this tab.
   bool active_ = false;

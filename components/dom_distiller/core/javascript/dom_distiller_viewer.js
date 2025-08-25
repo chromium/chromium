@@ -569,6 +569,32 @@ function useFontScaling(scale) {
   }
 }
 
+// Finds a paragraph with `innerText` matching `hash` and `charCount`, then
+// scrolls to that paragraph with the provided `offset`.
+function scrollToParagraphByHash(hash, charCount, offset) {
+  const targetHash = hash;
+  const targetCharCount = charCount;
+  const paragraphs = document.querySelectorAll('p');
+  for (let i = 0; i < paragraphs.length; i++) {
+    const p = paragraphs[i];
+    const pText = p.innerText;
+    if (pText.length === targetCharCount) {
+      // Only compute hash if the length already matches.
+      const hashCode = (s) =>
+          s.split('').reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
+      const pHash = hashCode(pText);
+      if (pHash === targetHash) {
+        const rect = p.getBoundingClientRect();
+        const pMiddle = rect.top + rect.height / 2;
+        const viewportMiddle = window.innerHeight / 2;
+        const scrollOffset = window.scrollY + pMiddle - viewportMiddle + offset;
+        window.scrollTo(0, scrollOffset);
+        break;
+      }
+    }
+  }
+}
+
 class SettingsDialog {
   constructor(
       toggleElement, dialogElement, backdropElement, themeFieldset,

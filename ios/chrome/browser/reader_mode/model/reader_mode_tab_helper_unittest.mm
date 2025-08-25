@@ -147,6 +147,8 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicFlushedOnNewNavigation) {
   LoadWebpage(web_state(), test_url);
   WaitForPageLoadDelayAndRunUntilIdle();
 
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
   LoadWebpage(web_state(), test_url);
   WaitForPageLoadDelayAndRunUntilIdle();
 
