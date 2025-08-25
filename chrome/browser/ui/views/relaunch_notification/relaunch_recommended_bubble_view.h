@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_recommended_timer.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class Button;
@@ -25,7 +25,7 @@ class RelaunchRecommendedBubbleView : public LocationBarBubbleDelegateView {
   // Shows the bubble in |browser| for an upgrade that was detected at
   // |detection_time|. |on_accept| is run if the user accepts the prompt to
   // restart.
-  static views::Widget* ShowBubble(Browser* browser,
+  static views::Widget* ShowBubble(BrowserWindowInterface* browser,
                                    base::Time detection_time,
                                    base::RepeatingClosure on_accept);
 

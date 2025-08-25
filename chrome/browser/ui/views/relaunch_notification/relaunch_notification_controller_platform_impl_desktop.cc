@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_dialog_view.h"
 #include "ui/views/widget/widget.h"
@@ -18,13 +20,17 @@
 namespace {
 
 // Returns the last active tabbed browser.
-Browser* FindLastActiveTabbedBrowser() {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->is_type_normal()) {
-      return browser;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* FindLastActiveTabbedBrowser() {
+  BrowserWindowInterface* last_active_browser = nullptr;
+  ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* current_browser) {
+        if (current_browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
+          last_active_browser = current_browser;
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return last_active_browser;
 }
 
 }  // namespace
@@ -51,7 +57,7 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRecommended(
   }
 
   // Show the bubble in the most recently active browser.
-  Browser* browser = FindLastActiveTabbedBrowser();
+  BrowserWindowInterface* browser = FindLastActiveTabbedBrowser();
   if (!browser) {
     return;
   }
