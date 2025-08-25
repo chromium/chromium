@@ -106,7 +106,7 @@ class CORE_EXPORT HTMLPermissionElement
   bool IsHTMLPermissionElement() const final { return true; }
 
  protected:
-  void setType(const AtomicString& type) { type_ = type; }
+  void setType(const AtomicString& type);
 
  private:
   // TODO(crbug.com/1315595): remove this friend class once migration
@@ -116,6 +116,7 @@ class CORE_EXPORT HTMLPermissionElement
   friend class HTMLPermissionElementIntersectionTest;
   friend class HTMLPermissionElementLayoutChangeTest;
 
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTestBase, GetTypeAttribute);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementClickingEnabledTest,
                            UnclickableBeforeRegistered);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
