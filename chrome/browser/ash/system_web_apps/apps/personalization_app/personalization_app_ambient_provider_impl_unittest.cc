@@ -640,7 +640,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, ShouldCallOnAlbumsChanged) {
   ReplyFetchSettingsAndAlbums(/*success=*/true);
   // The fake albums are set in FakeAmbientBackendControllerImpl. Hidden setting
   // will be sent to JS side.
-  EXPECT_EQ(6u, ObservedAlbums().size());
+  EXPECT_EQ(7u, ObservedAlbums().size());
   EXPECT_FALSE(ObservedPreviews().empty());
 }
 

@@ -1242,7 +1242,7 @@ BASE_FEATURE(JapaneseFunctionRow, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables OS Settings page for japanese.
 BASE_FEATURE(JapaneseOSSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(JupiterScreensaver, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(JupiterScreensaver, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the "Remember password" button in the Kerberos "Add account"
 // dialog should be checked by default.
