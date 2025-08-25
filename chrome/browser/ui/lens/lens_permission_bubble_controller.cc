@@ -221,7 +221,7 @@ void LensPermissionBubbleController::OnHelpCenterLinkClicked(
   tab_interface_->GetBrowserWindowInterface()->OpenGURL(
       GURL(lens::features::GetLensOverlayHelpCenterURL()),
       ui::DispositionFromEventFlags(event.flags(),
-                                    WindowOpenDisposition::NEW_BACKGROUND_TAB));
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
 void LensPermissionBubbleController::OnPermissionDialogAccept(
