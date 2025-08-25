@@ -286,6 +286,11 @@
         </settings-toggle-button>
 </if>
       </div>
+      <settings-toggle-button class="hr" id="splitViewDragAndDrop"
+          hidden="[[!showSplitViewDragAndDropSetting_]]"
+          pref="{{prefs.browser.split_view_drag_and_drop_enabled}}"
+          label="$i18n{allowSplitViewDragAndDrop}">
+      </settings-toggle-button>
     </settings-section>
     <template is="dom-if" if="[[showManagedThemeDialog_]]" restamp>
       <managed-dialog on-close="onManagedDialogClosed_"
