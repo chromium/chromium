@@ -46,6 +46,7 @@ class WebUIBrowserPageHandler
   void GoBack(int guest_id) override;
   void CanGoForward(int guest_id, CanGoForwardCallback callback) override;
   void GoForward(int guest_id) override;
+  void Refresh(int guest_id) override;
   void OpenAppMenu() override;
   void OpenProfileMenu() override;
   void LaunchDevToolsForBrowser() override;

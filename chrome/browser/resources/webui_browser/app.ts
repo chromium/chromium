@@ -126,6 +126,12 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     }
   }
 
+  protected onRefreshClick_(_: Event) {
+    if (this.$.contentRegion.activeWebview) {
+      this.$.contentRegion.activeWebview.refresh();
+    }
+  }
+
   private async updateToolbarButtons_() {
     const webview = this.$.contentRegion.activeWebview;
     if (webview) {

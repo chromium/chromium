@@ -51,6 +51,9 @@ interface PageHandler {
   // Navigates the GuestContents with `guest_id` to forward in the nav stack.
   GoForward(int32 guest_id);
 
+  // Refreshes the GuestContents with `guest_id`.
+  Refresh(int32 guest_id);
+
   // Opens the app menu.
   OpenAppMenu();
 

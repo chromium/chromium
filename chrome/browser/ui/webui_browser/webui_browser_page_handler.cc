@@ -142,6 +142,15 @@ void WebUIBrowserPageHandler::GoForward(int guest_id) {
   }
 }
 
+void WebUIBrowserPageHandler::Refresh(int guest_id) {
+  auto* navigation_controller = GetGuestNavigationController(guest_id);
+  if (navigation_controller) {
+    navigation_controller->Reload(content::ReloadType::NORMAL, true);
+  } else {
+    mojo::ReportBadMessage("Invalid guest id");
+  }
+}
+
 void WebUIBrowserPageHandler::OpenAppMenu() {
   menu_.reset();
 
