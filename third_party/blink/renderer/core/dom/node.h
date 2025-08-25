@@ -1248,9 +1248,9 @@ class CORE_EXPORT Node : public EventTarget {
 
  private:
   static constexpr struct ParentNodeTag {
-  } kParentNodeTag;
+  } kParentNodeTag{};
   static constexpr struct ShadowHostTag {
-  } kShadowHostTag;
+  } kShadowHostTag{};
 
   using TaggedParentOrShadowHostNode =
       subtle::TaggedUncompressedMember<Node, ParentNodeTag, ShadowHostTag>;
