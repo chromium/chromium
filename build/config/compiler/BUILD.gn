@@ -199,10 +199,7 @@ declare_args() {
   # warning serves as a flip switch to allow a gradual migration of targets
   # away from the opt-in wexit_time_destructors config, and into the default
   # compiler config.
-  # TODO(crbug.com/40031409): This argument will eventually default to true,
-  # but ultimately the goal is for it to eventually be removed, once this mode
-  # is stable enough.
-  is_wexit_time_destructors_default = false
+  is_wexit_time_destructors_default = true
 }
 
 declare_args() {
@@ -2209,9 +2206,10 @@ config("default_warnings") {
       cflags += [ "-Wno-gnu-line-marker" ]
     }
 
-    if (is_wexit_time_destructors_default) {
+    if (is_wexit_time_destructors_default &&
+        use_clang_warning_suppression_file) {
       # TODO(crbug.com/40031409): We are migrating towards making this warning
-      # enabled by default, and once that is completed, the warning
+      # enabled by default. Once that is completed, the warning
       # should always be added for clang builds.
       cflags += [ "-Wexit-time-destructors" ]
     }
