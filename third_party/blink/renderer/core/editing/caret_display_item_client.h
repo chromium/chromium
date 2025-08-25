@@ -70,6 +70,9 @@ class CORE_EXPORT CaretDisplayItemClient final
   // Called during pre-paint tree walk to invalidate |previous_layout_block_|.
   void EnsureInvalidationOfPreviousLayoutBlock();
 
+  // Invalidate paint if a cc property tree update is not available.
+  void SetNeedsNonCompositedPaintInvalidation();
+
   bool ShouldPaintCaret(const LayoutBlock& block) const {
     return &block == layout_block_;
   }

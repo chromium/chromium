@@ -142,7 +142,7 @@ size_t ResizeObserver::GatherObservations(size_t deeper_than) {
   size_t min_observed_depth = ResizeObserverController::kDepthBottom;
   for (auto& observation : observations_) {
     if (!observation->ObservationSizeOutOfSync() &&
-        (deeper_than != 0 || !observation->FireOnEveryPaint())) {
+        (deeper_than != 0 || !observation->NeedsObservationForRepaint())) {
       continue;
     }
     auto depth = observation->TargetDepth();

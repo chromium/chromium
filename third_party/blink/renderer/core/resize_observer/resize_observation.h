@@ -31,7 +31,10 @@ class CORE_EXPORT ResizeObservation final
   bool ObservationSizeOutOfSync();
   void SetObservationSize(const LogicalSize&);
   ResizeObserverBoxOptions ObservedBox() const { return observed_box_; }
-  bool FireOnEveryPaint() const { return fire_on_every_paint_; }
+
+  // When `fire_on_every_paint_` is set, this returns true if the target, or
+  // its descendants, need to repaint.
+  bool NeedsObservationForRepaint() const;
 
   LogicalSize ComputeTargetSize() const;
 

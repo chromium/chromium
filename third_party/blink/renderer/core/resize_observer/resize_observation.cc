@@ -117,6 +117,23 @@ LogicalSize ResizeObservation::ComputeTargetSize() const {
   return LogicalSize();
 }
 
+bool ResizeObservation::NeedsObservationForRepaint() const {
+  if (!fire_on_every_paint_) {
+    return false;
+  }
+  CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
+  if (!target_ || !target_->GetLayoutObject()) {
+    return false;
+  }
+  const LayoutObject& layout_object = *target_->GetLayoutObject();
+  if (!layout_object.HasLayer()) {
+    return false;
+  }
+  return To<LayoutBoxModelObject>(layout_object)
+      .Layer()
+      ->SelfOrDescendantNeedsRepaint();
+}
+
 void ResizeObservation::Trace(Visitor* visitor) const {
   visitor->Trace(target_);
   visitor->Trace(observer_);
