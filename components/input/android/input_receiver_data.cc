@@ -7,18 +7,17 @@
 #include <utility>
 
 #include "base/android/android_info.h"
+#include "components/input/features.h"
 
 namespace input {
 
 namespace {
 
-// Time limit at which InputReceiver is destroyed without waiting
-// for complete of touch sequence to arrive from Viz.
-const base::TimeDelta kTimeToWaitForLastEvent = base::Seconds(2);
-// Time limit used to say we are probably not going to get any
-// more events from system, and if an input receiver destruction
-// timer has fired let's indeed destroy it.
-const base::TimeDelta kInactiveSequenceThreshold = base::Seconds(1);
+// Delay used to post a self destruction task for Android 16+.
+constexpr base::FeatureParam<int> kDestructionDelaySec{
+    &features::kInputOnViz, /*name=*/"input_receiver_destruction_delay_sec",
+    /*default_value=*/10};
+
 }  // namespace
 
 InputReceiverData::InputReceiverData(
@@ -45,29 +44,23 @@ InputReceiverData::~InputReceiverData() {
 
 void InputReceiverData::OnMotionEvent(
     const base::android::ScopedInputEvent& input_event) {
-  const int action = AMotionEvent_getAction(input_event.a_input_event()) &
-                     AMOTION_EVENT_ACTION_MASK;
-  last_motion_event_action_ = action;
-  last_motion_event_ts_ = base::TimeTicks::Now();
+  has_seen_events_ = true;
 }
 
 void InputReceiverData::TryDestroySelf(
     std::unique_ptr<InputReceiverData> receiver_data) {
   CHECK(receiver_data);
-  const base::TimeDelta time_since_last_motion_event =
-      base::TimeTicks::Now() - last_motion_event_ts_;
-  if (last_motion_event_action_ == AMOTION_EVENT_ACTION_CANCEL ||
-      last_motion_event_action_ == AMOTION_EVENT_ACTION_UP ||
-      time_since_last_motion_event > kInactiveSequenceThreshold) {
+  if (!has_seen_events_) {
     // InputReceiverData gets destroyed here.
     return;
   }
+  has_seen_events_ = false;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&InputReceiverData::TryDestroySelf,
                      base::Unretained(receiver_data.get()),
                      std::move(receiver_data)),
-      kTimeToWaitForLastEvent);
+      base::Seconds(kDestructionDelaySec.Get()));
 }
 
 void InputReceiverData::OnDestroyedCompositorFrameSink(
@@ -78,24 +71,14 @@ void InputReceiverData::OnDestroyedCompositorFrameSink(
     // have non-nullptr in it, which should be cleanup eventually after seeing
     // the full touch sequence or after giving up upon new input events to come.
     CHECK_EQ(receiver.get(), this);
-    const base::TimeDelta time_since_last_motion_event =
-        base::TimeTicks::Now() - last_motion_event_ts_;
-    if (time_since_last_motion_event > kInactiveSequenceThreshold ||
-        (last_motion_event_action_ == AMOTION_EVENT_ACTION_CANCEL ||
-         last_motion_event_action_ == AMOTION_EVENT_ACTION_UP)) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(
-                         [](std::unique_ptr<InputReceiverData>) {
-                           // InputReceiverData gets destroyed here.
-                         },
-                         std::move(receiver)));
-    } else {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&InputReceiverData::TryDestroySelf,
-                         base::Unretained(receiver.get()), std::move(receiver)),
-          kTimeToWaitForLastEvent);
-    }
+    // TODO(431139615): Guard this delayed destruction logic with appropriate
+    // Android version once it has been fixed on Android side.
+    has_seen_events_ = false;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&InputReceiverData::TryDestroySelf,
+                       base::Unretained(receiver.get()), std::move(receiver)),
+        base::Seconds(kDestructionDelaySec.Get()));
     return;
   }
   CHECK(!receiver);
