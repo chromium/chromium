@@ -1306,6 +1306,24 @@ bool IsRendererUnresponsive(RenderProcessHost* render_process_host) {
   return is_unresponsive;
 }
 
+void RecordMissedReuseOpportunityMetric(
+    SiteInstanceImpl* site_instance,
+    const ProcessAllocationContext& allocation_context) {
+  // This metric is only relevant for navigations. In other contexts,
+  // such as service worker creation, skip recording.
+  if (!allocation_context.IsForNavigation()) {
+    return;
+  }
+
+  auto context = allocation_context.navigation_context->is_outermost_main_frame
+                     ? RecentlyDestroyedHosts::Context::kMainFrame
+                     : RecentlyDestroyedHosts::Context::kSubframe;
+  RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
+      context, base::TimeTicks::Now(),
+      ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()),
+      site_instance->GetBrowserContext());
+}
+
 }  // namespace
 
 RenderProcessHostImpl::IOThreadHostImpl::IOThreadHostImpl(
@@ -4887,22 +4905,12 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
     case ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_WORKER: {
       render_process_host = FindReusableProcessHostForSiteInstance(
           site_instance, process_reuse_policy);
-      const base::TimeTicks reusable_host_lookup_time = base::TimeTicks::Now();
       UMA_HISTOGRAM_BOOLEAN(
           "SiteIsolation.ReusePendingOrCommittedSite.CouldReuse2",
           render_process_host != nullptr);
       if (render_process_host) {
         is_unmatched_service_worker = false;
         render_process_host->StopTrackingProcessForShutdownDelay();
-      } else {
-        if (process_reuse_policy ==
-            ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME) {
-          RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
-              RecentlyDestroyedHosts::Context::kSubframe,
-              reusable_host_lookup_time,
-              ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()),
-              site_instance->GetBrowserContext());
-        }
       }
       break;
     }
@@ -4963,6 +4971,12 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
     render_process_host = spare_process_manager.MaybeTakeSpare(
         browser_context, site_instance, allocation_context);
     if (render_process_host) {
+      // A spare process is being taken, which is a fallback from reusing an
+      // existing live process. Record this as a potential missed opportunity to
+      // have reused a recently destroyed process instead. This informs process
+      // keep-alive strategies.
+      RecordMissedReuseOpportunityMetric(site_instance, allocation_context);
+
       site_instance->set_process_assignment(
           SiteInstanceProcessAssignment::USED_SPARE_PROCESS);
       spare_was_taken = true;
@@ -5003,16 +5017,11 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
 
   // Otherwise, create a new RenderProcessHost.
   if (!render_process_host) {
-    // This is our last chance before creating a new process. If this is for
-    // a main frame navigation, check if we recently destroyed a suitable
-    // process to record a corresponding metric.
-    if (allocation_context.IsForNavigation() &&
-        allocation_context.navigation_context->is_outermost_main_frame) {
-      RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
-          RecentlyDestroyedHosts::Context::kMainFrame, base::TimeTicks::Now(),
-          ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()),
-          site_instance->GetBrowserContext());
-    }
+    // All other process reuse strategies have failed. Before creating a new
+    // process, which is the most expensive fallback, check if a suitable
+    // process was recently destroyed. This metric helps evaluate the
+    // effectiveness of process keep-alive heuristics.
+    RecordMissedReuseOpportunityMetric(site_instance, allocation_context);
 
     // Pass a null StoragePartition. Tests with TestBrowserContext using a
     // RenderProcessHostFactory may not instantiate a StoragePartition, and
