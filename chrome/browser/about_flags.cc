@@ -13170,6 +13170,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(device::features::kWebSerialWiredDevicesAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-update-context-for-web-contents",
+     flag_descriptions::kAndroidAutofillUpdateContextForWebContentsName,
+     flag_descriptions::kAndroidAutofillUpdateContextForWebContentsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAndroidAutofillUpdateContextForWebContents)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

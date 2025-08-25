@@ -13,6 +13,14 @@
 
 namespace flag_descriptions {
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAndroidAutofillUpdateContextForWebContentsName[] =
+    "Android Autofill updates context for WebContents";
+const char kAndroidAutofillUpdateContextForWebContentsDescription[] =
+    "When enabled, the Autofill provider is updated whenever the context of "
+    "the WebContents changes.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kAccelerated2dCanvasName[] = "Accelerated 2D canvas";
 const char kAccelerated2dCanvasDescription[] =
     "Enables the use of the GPU to perform 2d canvas rendering instead of "

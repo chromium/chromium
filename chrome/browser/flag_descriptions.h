@@ -82,6 +82,13 @@ extern const char kAndroidAdaptiveFrameRateName[];
 extern const char kAndroidAdaptiveFrameRateDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Android
+// TODO(crbug.com/40285824): remove this when 3p-patch is landed.
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidAutofillUpdateContextForWebContentsName[];
+extern const char kAndroidAutofillUpdateContextForWebContentsDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kAndroidAppIntegrationName[];
 extern const char kAndroidAppIntegrationDescription[];
 
