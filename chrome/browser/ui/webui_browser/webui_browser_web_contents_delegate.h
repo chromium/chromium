@@ -44,6 +44,11 @@ class WebUIBrowserWebContentsDelegate : public content::WebContentsDelegate,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
   void SetFocusToLocationBar() override;
+  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+      content::WebContents* source,
+      const input::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
   // WebContentsObserver implementation.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;

@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 
 #include "base/notimplemented.h"
+#include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -25,6 +28,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
+#include "ui/content_accelerators/accelerator_util.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -77,6 +81,7 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
   params.name = "WebUIBrowserWindow";
   params.bounds = gfx::Rect(0, 0, 800, 600);
   params.delegate = widget_delegate_.get();
+  params.native_widget = CreateNativeWidget();
   widget_->Init(std::move(params));
   widget_->MakeCloseSynchronous(base::BindRepeating(
       &WebUIBrowserWindow::OnWindowCloseRequested, base::Unretained(this)));
@@ -93,6 +98,8 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
   web_view_ = widget_->SetClientContentsView(std::move(web_view));
 
   widget_->Show();
+
+  LoadAccelerators();
 }
 
 WebUIBrowserWindow::~WebUIBrowserWindow() {
@@ -255,6 +262,80 @@ bool WebUIBrowserWindow::GetAcceleratorForCommandId(
     ui::Accelerator* accelerator) const {
   NOTIMPLEMENTED();
   return false;
+}
+
+bool WebUIBrowserWindow::FindCommandIdForAccelerator(
+    const ui::Accelerator& accelerator,
+    int* command_id) const {
+  auto iter = accelerator_table_.find(accelerator);
+  if (iter == accelerator_table_.end()) {
+    return false;
+  }
+
+  *command_id = iter->second;
+  if (accelerator.IsRepeat() && !IsCommandRepeatable(*command_id)) {
+    return false;
+  }
+
+  return true;
+}
+
+void WebUIBrowserWindow::LoadAccelerators() {
+  // Let's fill our own accelerator table.
+  const bool is_app_mode = IsRunningInForcedAppMode();
+#if BUILDFLAG(IS_CHROMEOS)
+  const bool is_captive_portal_signin_window =
+      browser_->profile()->IsOffTheRecord() &&
+      browser_->profile()->GetOTRProfileID().IsCaptivePortal();
+#endif
+  const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());
+  for (const auto& entry : accelerator_list) {
+    // In app mode, only allow accelerators of allowlisted commands to pass
+    // through.
+    if (is_app_mode && !IsCommandAllowedInAppMode(entry.command_id,
+                                                  browser_->is_type_popup())) {
+      continue;
+    }
+
+#if BUILDFLAG(IS_CHROMEOS)
+    if (is_captive_portal_signin_window) {
+      int command = entry.command_id;
+      // Captive portal signin uses an OTR profile without history.
+      if (command == IDC_SHOW_HISTORY) {
+        continue;
+      }
+      // The NewTab command expects navigation to occur in the same browser
+      // window. For captive portal signin this is not the case, so hide these
+      // to reduce confusion.
+      if (command == IDC_NEW_TAB || command == IDC_NEW_TAB_TO_RIGHT ||
+          command == IDC_CREATE_NEW_TAB_GROUP) {
+        continue;
+      }
+    }
+#endif
+
+    ui::Accelerator accelerator(entry.keycode, entry.modifiers);
+    accelerator_table_[accelerator] = entry.command_id;
+    accelerator_manager_.Register(
+        {accelerator}, ui::AcceleratorManager::kNormalPriority, this);
+  }
+}
+
+bool WebUIBrowserWindow::AcceleratorPressed(
+    const ui::Accelerator& accelerator) {
+  int command_id;
+  // Though AcceleratorManager should not send unknown |accelerator| to us, it's
+  // still possible the command cannot be executed now.
+  if (!FindCommandIdForAccelerator(accelerator, &command_id)) {
+    return false;
+  }
+
+  return chrome::ExecuteCommand(browser_.get(), command_id,
+                                accelerator.time_stamp());
+}
+
+bool WebUIBrowserWindow::CanHandleAccelerators() const {
+  return true;
 }
 
 int WebUIBrowserWindow::GetTopControlsHeight() const {
@@ -635,15 +716,66 @@ void WebUIBrowserWindow::HandleDragEnded() {
 content::KeyboardEventProcessingResult
 WebUIBrowserWindow::PreHandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
-  NOTIMPLEMENTED();
-  return content::KeyboardEventProcessingResult::NOT_HANDLED;
+  if ((event.GetType() != blink::WebInputEvent::Type::kRawKeyDown) &&
+      (event.GetType() != blink::WebInputEvent::Type::kKeyUp)) {
+    return content::KeyboardEventProcessingResult::NOT_HANDLED;
+  }
+
+  ui::Accelerator accelerator =
+      ui::GetAcceleratorFromNativeWebKeyboardEvent(event);
+
+  // What we have to do here is as follows:
+  // - If the |browser_| is for an app, do nothing.
+  // - On CrOS if |accelerator| is deprecated, we allow web contents to consume
+  //   it if needed.
+  // - If the |browser_| is not for an app, and the |accelerator| is not
+  //   associated with the browser (e.g. an Ash shortcut), process it.
+  // - If the |browser_| is not for an app, and the |accelerator| is associated
+  //   with the browser, and it is a reserved one (e.g. Ctrl+w), process it.
+  // - If the |browser_| is not for an app, and the |accelerator| is associated
+  //   with the browser, and it is not a reserved one, do nothing.
+
+  if (browser_->is_type_app() || browser_->is_type_app_popup()) {
+    // Let all keys fall through to a v1 app's web content, even accelerators.
+    // We don't use NOT_HANDLED_IS_SHORTCUT here. If we do that, the app
+    // might not be able to see a subsequent Char event. See OnHandleInputEvent
+    // in content/renderer/render_widget.cc for details.
+    return content::KeyboardEventProcessingResult::NOT_HANDLED;
+  }
+
+  int command_id;
+  if (!FindCommandIdForAccelerator(accelerator, &command_id)) {
+    return content::KeyboardEventProcessingResult::NOT_HANDLED;
+  }
+
+  // TODO(webium): Handle shortcuts that are registered in the FocusManager.
+  // We handle only browser window shortcuts here. Secondary UIs can
+  // registered their own shortcuts (e.g. Ctrl+Enter closes the Find Bar) via
+  // FocusManager::RegisterAccelerator().
+  if (accelerator_manager_.Process(accelerator)) {
+    return content::KeyboardEventProcessingResult::HANDLED;
+  }
+
+  // BrowserView does not register RELEASED accelerators. So if we can find the
+  // command id from |accelerator_table_|, it must be a keydown event. This
+  // DCHECK ensures we won't accidentally return NOT_HANDLED for a later added
+  // RELEASED accelerator in BrowserView.
+  DCHECK_EQ(event.GetType(), blink::WebInputEvent::Type::kRawKeyDown);
+  // |accelerator| is a non-reserved browser shortcut (e.g. Ctrl+f).
+  return content::KeyboardEventProcessingResult::NOT_HANDLED_IS_SHORTCUT;
 }
 
+// These functions have Mac implementations in webui_browser_window_mac.mm.
+#if !BUILDFLAG(IS_MAC)
 bool WebUIBrowserWindow::HandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
-  NOTIMPLEMENTED();
   return false;
 }
+
+views::NativeWidget* WebUIBrowserWindow::CreateNativeWidget() {
+  return nullptr;
+}
+#endif
 
 std::unique_ptr<FindBar> WebUIBrowserWindow::CreateFindBar() {
   NOTIMPLEMENTED();

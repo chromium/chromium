@@ -17,6 +17,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace views {
+class NativeWidget;
 class WebView;
 class Widget;
 }  // namespace views
@@ -31,7 +32,8 @@ class WebUILocationBar;
 class WebUIBrowserWindow : public BrowserWindow,
                            public ExclusiveAccessContext,
                            public ui::ColorProviderSource,
-                           public ui::AcceleratorProvider {
+                           public ui::AcceleratorProvider,
+                           public ui::AcceleratorTarget {
  public:
   explicit WebUIBrowserWindow(std::unique_ptr<Browser> browser);
   ~WebUIBrowserWindow() override;
@@ -260,6 +262,25 @@ class WebUIBrowserWindow : public BrowserWindow,
  private:
   class WidgetDelegate;
 
+  // Creates and returns the native widget.
+  // Note that this class uses CLIENT_OWNS_WIDGET ownership model whereby
+  // the NativeWidget owns itself (i.e. NativeWidget*::WindowDestroyed() frees
+  // itself) so this method returns a pointer rather than a unique_ptr.
+  views::NativeWidget* CreateNativeWidget();
+
+  // ui::AcceleratorTarget:
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  bool CanHandleAccelerators() const override;
+
+  // Retrieves the Chrome command ID associated with |accelerator|. The function
+  // returns false if |accelerator| is unknown. Otherwise |command_id| will be
+  // set to the Chrome command ID defined in //chrome/app/chrome_command_ids.h.
+  bool FindCommandIdForAccelerator(const ui::Accelerator& accelerator,
+                                   int* command_id) const;
+
+  // Load accelerators into |accelerator_table_| and |accelerator_manager_|.
+  void LoadAccelerators();
+
   void OnWindowCloseRequested(views::Widget::ClosedReason close_reason);
   WebUIBrowserUI* GetWebUIBrowserUI() const;
 
@@ -269,6 +290,11 @@ class WebUIBrowserWindow : public BrowserWindow,
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<views::WebView> web_view_ = nullptr;
   std::unique_ptr<WebUILocationBar> location_bar_;
+
+  // A mapping between accelerators and Chrome command IDs as defined in
+  // //chrome/app/chrome_command_ids.h.
+  std::map<ui::Accelerator, int> accelerator_table_;
+  ui::AcceleratorManager accelerator_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_WINDOW_H_

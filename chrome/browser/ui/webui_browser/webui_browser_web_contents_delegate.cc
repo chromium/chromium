@@ -71,3 +71,16 @@ void WebUIBrowserWebContentsDelegate::SetFocusToLocationBar() {
 
 // TODO(webium): implement ShouldFocusLocationBarByDefault(), perhaps by
 // forwarding to the browser.
+
+content::KeyboardEventProcessingResult
+WebUIBrowserWebContentsDelegate::PreHandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  return window_->PreHandleKeyboardEvent(event);
+}
+
+bool WebUIBrowserWebContentsDelegate::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  return window_->HandleKeyboardEvent(event);
+}

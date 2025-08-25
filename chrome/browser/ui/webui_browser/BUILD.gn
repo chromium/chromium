@@ -51,6 +51,10 @@ source_set("impl") {
     "webui_location_bar.cc",
   ]
 
+  if (is_mac) {
+    sources += [ "webui_browser_window_mac.mm" ]
+  }
+
   deps = [
     ":browser_mojo_bindings",
     ":webui_browser",
@@ -76,10 +80,19 @@ source_set("impl") {
     "//components/sharing_message",
     "//content/public/browser",
     "//ui/base",
+    "//ui/content_accelerators",
     "//ui/views",
     "//ui/views/controls/webview",
     "//ui/webui/tracked_element",
   ]
+
+  if (is_mac) {
+    deps += [
+      "//chrome/browser/apps/app_shim",
+      "//components/remote_cocoa/app_shim",
+      "//ui/base/accelerators/global_accelerator_listener",
+    ]
+  }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
