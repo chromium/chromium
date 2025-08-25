@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/paint_preview/browser/paint_preview_base_service_test_factory.h"
 #include "components/paint_preview/browser/paint_preview_file_mixin.h"
+#include "components/paint_preview/common/mock_paint_preview_recorder.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/common/serialized_recording.h"
@@ -74,42 +75,14 @@ base::FilePath CreateDir(scoped_refptr<FileManager> manager,
 
 }  // namespace
 
-class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
+class NoGuidMockPaintPreviewRecorder : public MockPaintPreviewRecorder {
  public:
-  MockPaintPreviewRecorder() = default;
-  ~MockPaintPreviewRecorder() override = default;
+  NoGuidMockPaintPreviewRecorder() = default;
+  ~NoGuidMockPaintPreviewRecorder() override = default;
 
-  void CapturePaintPreview(
-      mojom::PaintPreviewCaptureParamsPtr params,
-      mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback)
-      override {
-    {
-      base::ScopedAllowBlockingForTesting scope;
-      CheckParams(std::move(params));
-      std::move(callback).Run(status_, std::move(response_));
-    }
-  }
-
-  void SetExpectedParams(mojom::PaintPreviewCaptureParamsPtr params) {
-    expected_params_ = std::move(params);
-  }
-
-  void SetResponse(mojom::PaintPreviewStatus status,
-                   mojom::PaintPreviewCaptureResponsePtr response) {
-    status_ = status;
-    response_ = std::move(response);
-  }
-
-  void BindRequest(mojo::ScopedInterfaceEndpointHandle handle) {
-    binding_.Bind(mojo::PendingAssociatedReceiver<mojom::PaintPreviewRecorder>(
-        std::move(handle)));
-  }
-
-  MockPaintPreviewRecorder(const MockPaintPreviewRecorder&) = delete;
-  MockPaintPreviewRecorder& operator=(const MockPaintPreviewRecorder&) = delete;
-
- private:
-  void CheckParams(mojom::PaintPreviewCaptureParamsPtr input_params) {
+ protected:
+  void CheckParams(
+      const mojom::PaintPreviewCaptureParamsPtr& input_params) override {
     // Ignore GUID and File as this is internal information not known by the
     // Keyed Service API.
     EXPECT_EQ(input_params->clip_rect, expected_params_->clip_rect);
@@ -126,11 +99,6 @@ class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
     }
     EXPECT_EQ(input_params->is_main_frame, expected_params_->is_main_frame);
   }
-
-  mojom::PaintPreviewCaptureParamsPtr expected_params_;
-  mojom::PaintPreviewStatus status_;
-  mojom::PaintPreviewCaptureResponsePtr response_;
-  mojo::AssociatedReceiver<mojom::PaintPreviewRecorder> binding_{this};
 };
 
 class PaintPreviewBaseServiceTest
@@ -162,12 +130,12 @@ class PaintPreviewBaseServiceTest
         web_contents(), GURL("https://www.chromium.org"));
   }
 
-  void OverrideInterface(MockPaintPreviewRecorder* service) {
+  void OverrideInterface(NoGuidMockPaintPreviewRecorder* service) {
     blink::AssociatedInterfaceProvider* remote_interfaces =
         main_rfh()->GetRemoteAssociatedInterfaces();
     remote_interfaces->OverrideBinderForTesting(
         mojom::PaintPreviewRecorder::Name_,
-        base::BindRepeating(&MockPaintPreviewRecorder::BindRequest,
+        base::BindRepeating(&NoGuidMockPaintPreviewRecorder::BindRequest,
                             base::Unretained(service)));
   }
 
@@ -209,7 +177,7 @@ class PaintPreviewBaseServiceTest
 };
 
 TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
-  MockPaintPreviewRecorder recorder;
+  NoGuidMockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
   params->clip_rect = gfx::Rect(0, 0, 0, 0);
   params->clip_x_coord_override =
@@ -280,7 +248,7 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
 }
 
 TEST_P(PaintPreviewBaseServiceTest, CaptureFailed) {
-  MockPaintPreviewRecorder recorder;
+  NoGuidMockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
   params->clip_rect = gfx::Rect(0, 0, 0, 0);
   params->clip_x_coord_override =
@@ -319,7 +287,7 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureFailed) {
 }
 
 TEST_P(PaintPreviewBaseServiceTest, CaptureDisallowed) {
-  MockPaintPreviewRecorder recorder;
+  NoGuidMockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
   params->clip_rect = gfx::Rect(0, 0, 0, 0);
   params->clip_x_coord_override =
