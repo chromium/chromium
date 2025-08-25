@@ -33,7 +33,9 @@
 const controlsDiv = document.getElementById('controls');
 const fileUploadButton = document.getElementById('file-upload-button');
 const nextExceptionButton = document.getElementById('next-exception-button');
+const exceptionFeedbackSpan = document.getElementById('exception-feedback');
 const nextTestButton = document.getElementById('next-test-button');
+const testFeedbackSpan = document.getElementById('test-feedback');
 const dropdownHeaderProcess = document.getElementById(
   'dropdown-header-process');
 const dropdownSearchProcess = document.getElementById(
@@ -953,6 +955,13 @@ function jumpToNextException() {
       }
     }
   }
+
+  // If no next exception is found, display a feedback text.
+  exceptionFeedbackSpan.textContent = 'There is no next exception';
+  exceptionFeedbackSpan.classList.remove('hidden-element');
+  setTimeout(() => {
+    exceptionFeedbackSpan.classList.add('hidden-element');
+  }, 5000);
 }
 
 /**
@@ -991,6 +1000,13 @@ function jumpToNextTest() {
       }
     }
   }
+
+  // If no next test is found, display a feedback text.
+  testFeedbackSpan.textContent = 'There is no next test';
+  testFeedbackSpan.classList.remove('hidden-element');
+  setTimeout(() => {
+    testFeedbackSpan.classList.add('hidden-element');
+  }, 5000);
 }
 
 /**

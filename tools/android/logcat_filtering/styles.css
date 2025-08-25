@@ -136,6 +136,22 @@ body {
   margin-right: 8px;
 }
 
+.button-with-feedback {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.feedback-text {
+  position: absolute;
+  bottom: -20px;
+  left: 10px;
+  color: red;
+  font-size: 12px;
+  /* Prevents the text from wrapping, keeping height consistent */
+  white-space: nowrap;
+}
+
 .dropdown {
   position: relative;
   border: 1px solid var(--dropdown-border-color);
