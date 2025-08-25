@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.suggestions.tile.TileUtils;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuHost;
@@ -56,6 +57,8 @@ public class ContextMenuManager {
         ContextMenuItemId.PIN_THIS_SHORTCUT,
         ContextMenuItemId.EDIT_SHORTCUT,
         ContextMenuItemId.UNPIN,
+        ContextMenuItemId.MOVE_UP,
+        ContextMenuItemId.MOVE_DOWN,
         ContextMenuItemId.HIDE_ALL,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -369,9 +372,10 @@ public class ContextMenuManager {
                 }
             case ContextMenuItemId.EDIT_SHORTCUT: // Fall through.
             case ContextMenuItemId.UNPIN:
-            case ContextMenuItemId.MOVE_UP:
-            case ContextMenuItemId.MOVE_DOWN:
                 return true;
+            case ContextMenuItemId.MOVE_UP: // Fall through.
+            case ContextMenuItemId.MOVE_DOWN:
+                return AccessibilityState.isAnyAccessibilityServiceEnabled();
             case ContextMenuItemId.ADD_TO_MY_APPS:
                 return false;
             case ContextMenuItemId.HIDE_ALL:
