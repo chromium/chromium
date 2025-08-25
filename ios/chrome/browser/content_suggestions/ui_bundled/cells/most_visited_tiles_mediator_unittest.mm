@@ -50,7 +50,8 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
             &pref_service_, /*identity_manager*/ nullptr,
             /*supervised_user_service*/ nullptr, /*top_sites*/ nullptr,
             /*popular_sites*/ nullptr,
-            /*custom_links*/ nullptr, /*icon_cacher*/ nullptr,
+            /*custom_links*/ nullptr, /*enterprise_shortcuts*/ nullptr,
+            /*icon_cacher*/ nullptr,
             /*is_default_chrome_app_migrated*/ true,
             /*is_custom_links_mixable*/ false);
 

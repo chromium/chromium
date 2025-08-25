@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/ntp_tiles/enterprise/enterprise_shortcuts_store.h"
 #include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -22,6 +23,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using ntp_tiles::EnterpriseShortcut;
+using ntp_tiles::EnterpriseShortcutsStore;
 using testing::AllOf;
 using testing::ElementsAre;
 
@@ -115,14 +118,20 @@ base::Value::Dict GenerateNTPShortcutPolicyEntry(TestShortcut test_case) {
 // NTP shortcuts policy. Field values are obtained from |test_case|.
 testing::Matcher<const base::Value&> IsNTPShortcutEntry(
     TestShortcut test_case) {
-  // TODO(crbug.com/438302224): Update to use fields corresponding to new
-  // `EnterpriseLink` instead of hard-coded values.
-  return AllOf(HasStringField("title", test_case.name.value()),
-               HasStringField("url", test_case.url.value()),
-               HasBooleanField("allow_user_edit",
-                               test_case.allow_user_edit.value_or(false)),
-               HasBooleanField("allow_user_delete",
-                               test_case.allow_user_delete.value_or(false)));
+  return AllOf(
+      HasStringField(EnterpriseShortcutsStore::kDictionaryKeyTitle,
+                     test_case.name.value()),
+      HasStringField(EnterpriseShortcutsStore::kDictionaryKeyUrl,
+                     test_case.url.value()),
+      HasIntegerField(
+          EnterpriseShortcutsStore::kDictionaryKeyPolicyOrigin,
+          static_cast<int>(EnterpriseShortcut::PolicyOrigin::kNtpShortcuts)),
+      HasBooleanField(EnterpriseShortcutsStore::kDictionaryKeyIsHiddenByUser,
+                      false),
+      HasBooleanField(EnterpriseShortcutsStore::kDictionaryKeyAllowUserEdit,
+                      test_case.allow_user_edit.value_or(false)),
+      HasBooleanField(EnterpriseShortcutsStore::kDictionaryKeyAllowUserDelete,
+                      test_case.allow_user_delete.value_or(false)));
 }
 
 MATCHER_P(HasValidationError,
@@ -170,8 +179,8 @@ TEST_F(NTPShortcutsPolicyHandlerTest, PolicyNotSet) {
   EXPECT_TRUE(errors_.empty());
 
   handler_.ApplyPolicySettings(policies_, &prefs_);
-  EXPECT_FALSE(prefs_.GetValue(
-      ntp_tiles::prefs::kEnterpriseCustomLinksPolicyList, nullptr));
+  EXPECT_FALSE(prefs_.GetValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+                               nullptr));
 }
 
 TEST_F(NTPShortcutsPolicyHandlerTest, ValidNTPShortcuts_FeatureDisabled) {
@@ -191,8 +200,8 @@ TEST_F(NTPShortcutsPolicyHandlerTest, ValidNTPShortcuts_FeatureDisabled) {
   EXPECT_TRUE(errors_.empty());
 
   handler_.ApplyPolicySettings(policies_, &prefs_);
-  EXPECT_FALSE(prefs_.GetValue(
-      ntp_tiles::prefs::kEnterpriseCustomLinksPolicyList, nullptr));
+  EXPECT_FALSE(prefs_.GetValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+                               nullptr));
 }
 
 TEST_F(NTPShortcutsPolicyHandlerTest, ValidNTPShortcuts) {
@@ -210,8 +219,8 @@ TEST_F(NTPShortcutsPolicyHandlerTest, ValidNTPShortcuts) {
 
   handler_.ApplyPolicySettings(policies_, &prefs_);
   base::Value* shortcuts = nullptr;
-  ASSERT_TRUE(prefs_.GetValue(
-      ntp_tiles::prefs::kEnterpriseCustomLinksPolicyList, &shortcuts));
+  ASSERT_TRUE(prefs_.GetValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+                              &shortcuts));
   ASSERT_NE(shortcuts, nullptr);
   ASSERT_TRUE(shortcuts->is_list());
   EXPECT_THAT(shortcuts->GetList(),
@@ -271,8 +280,8 @@ TEST_F(NTPShortcutsPolicyHandlerTest, MissingRequiredFieldWithValidShortcuts) {
 
   handler_.ApplyPolicySettings(policies_, &prefs_);
   base::Value* shortcuts = nullptr;
-  ASSERT_TRUE(prefs_.GetValue(
-      ntp_tiles::prefs::kEnterpriseCustomLinksPolicyList, &shortcuts));
+  ASSERT_TRUE(prefs_.GetValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+                              &shortcuts));
   ASSERT_NE(shortcuts, nullptr);
   ASSERT_TRUE(shortcuts->is_list());
 
@@ -312,8 +321,8 @@ TEST_F(NTPShortcutsPolicyHandlerTest, UrlNotUnique) {
 
   handler_.ApplyPolicySettings(policies_, &prefs_);
   base::Value* shortcuts = nullptr;
-  ASSERT_TRUE(prefs_.GetValue(
-      ntp_tiles::prefs::kEnterpriseCustomLinksPolicyList, &shortcuts));
+  ASSERT_TRUE(prefs_.GetValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+                              &shortcuts));
   ASSERT_NE(shortcuts, nullptr);
   ASSERT_TRUE(shortcuts->is_list());
   EXPECT_THAT(shortcuts->GetList(),
@@ -375,8 +384,8 @@ TEST_F(NTPShortcutsPolicyHandlerTest, UnknownField) {
 
   handler_.ApplyPolicySettings(policies_, &prefs_);
   base::Value* shortcuts = nullptr;
-  ASSERT_TRUE(prefs_.GetValue(
-      ntp_tiles::prefs::kEnterpriseCustomLinksPolicyList, &shortcuts));
+  ASSERT_TRUE(prefs_.GetValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+                              &shortcuts));
   ASSERT_NE(shortcuts, nullptr);
   ASSERT_TRUE(shortcuts->is_list());
   EXPECT_THAT(shortcuts->GetList(),
@@ -417,8 +426,8 @@ TEST_F(NTPShortcutsPolicyHandlerTest, InvalidUrlWarning) {
 
   handler_.ApplyPolicySettings(policies_, &prefs_);
   base::Value* shortcuts = nullptr;
-  ASSERT_TRUE(prefs_.GetValue(
-      ntp_tiles::prefs::kEnterpriseCustomLinksPolicyList, &shortcuts));
+  ASSERT_TRUE(prefs_.GetValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+                              &shortcuts));
   ASSERT_NE(shortcuts, nullptr);
   ASSERT_TRUE(shortcuts->is_list());
   EXPECT_THAT(shortcuts->GetList(),

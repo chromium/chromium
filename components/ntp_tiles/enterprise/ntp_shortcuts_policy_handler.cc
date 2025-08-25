@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/ntp_tiles/enterprise/enterprise_shortcuts_store.h"
 #include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -18,6 +19,9 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "url/gurl.h"
+
+using ntp_tiles::EnterpriseShortcut;
+using ntp_tiles::EnterpriseShortcutsStore;
 
 namespace policy {
 
@@ -35,36 +39,39 @@ bool IsNTPEnterpriseShortcutsEnabled() {
 }
 
 // Converts a shortcuts policy entry `policy_dict` into a dictionary to be
-// saved to prefs, with fields corresponding to `EnterpriseLink`. `CHECK`s are
-// safe since this function is only used after policy values are validated.
-//
-// TODO(crbug.com/438302224): Update to use fields corresponding to new
-// `EnterpriseLink` instead of hard-coded values.
+// saved to prefs, with fields corresponding to `EnterpriseShortcut`. `CHECK`s
+// are safe since this function is only used after policy values are validated.
 base::Value NTPShortcutsDictFromPolicyValue(
     const base::Value::Dict& policy_dict) {
   base::Value::Dict dict;
 
-  // To align with `EnterpriseLink`, use "title" as dictionary key instead of
-  // "name".
+  // To align with `EnterpriseShortcut`, use "title" as dictionary key instead
+  // of "name".
   const std::string* name =
       policy_dict.FindString(NTPShortcutsPolicyHandler::kName);
   CHECK(name);
-  dict.Set("title", *name);
+  dict.Set(EnterpriseShortcutsStore::kDictionaryKeyTitle, *name);
 
   const std::string* url =
       policy_dict.FindString(NTPShortcutsPolicyHandler::kUrl);
   CHECK(url);
-  dict.Set("url", *url);
+  dict.Set(EnterpriseShortcutsStore::kDictionaryKeyUrl, *url);
+
+  dict.Set(EnterpriseShortcutsStore::kDictionaryKeyPolicyOrigin,
+           static_cast<int>(EnterpriseShortcut::PolicyOrigin::kNtpShortcuts));
+  dict.Set(EnterpriseShortcutsStore::kDictionaryKeyIsHiddenByUser, false);
 
   const bool allow_user_edit =
       policy_dict.FindBool(NTPShortcutsPolicyHandler::kAllowUserEdit)
           .value_or(false);
-  dict.Set("allow_user_edit", allow_user_edit);
+  dict.Set(EnterpriseShortcutsStore::kDictionaryKeyAllowUserEdit,
+           allow_user_edit);
 
   const bool allow_user_delete =
       policy_dict.FindBool(NTPShortcutsPolicyHandler::kAllowUserDelete)
           .value_or(false);
-  dict.Set("allow_user_delete", allow_user_delete);
+  dict.Set(EnterpriseShortcutsStore::kDictionaryKeyAllowUserDelete,
+           allow_user_delete);
 
   return base::Value(std::move(dict));
 }
@@ -101,7 +108,7 @@ const int NTPShortcutsPolicyHandler::kMaxNtpShortcutTextLength = 1000;
 NTPShortcutsPolicyHandler::NTPShortcutsPolicyHandler(Schema schema)
     : SimpleSchemaValidatingPolicyHandler(
           key::kNTPShortcuts,
-          ntp_tiles::prefs::kEnterpriseCustomLinksPolicyList,
+          ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
           schema,
           policy::SchemaOnErrorStrategy::
               SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY,
@@ -218,14 +225,14 @@ void NTPShortcutsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   // If policy handler is disabled, the pref should be cleared to prevent old
   // shortcuts from appearing.
   if (!IsNTPEnterpriseShortcutsEnabled()) {
-    prefs->RemoveValue(ntp_tiles::prefs::kEnterpriseCustomLinksPolicyList);
+    prefs->RemoveValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
     return;
   }
 
   const base::Value* policy_value =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
   if (!policy_value) {
-    prefs->RemoveValue(ntp_tiles::prefs::kEnterpriseCustomLinksPolicyList);
+    prefs->RemoveValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
     return;
   }
 
@@ -246,7 +253,7 @@ void NTPShortcutsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     }
   }
 
-  prefs->SetValue(ntp_tiles::prefs::kEnterpriseCustomLinksPolicyList,
+  prefs->SetValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
                   base::Value(std::move(shortcuts)));
 }
 

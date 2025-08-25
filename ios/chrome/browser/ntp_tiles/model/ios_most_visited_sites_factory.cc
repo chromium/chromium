@@ -28,6 +28,7 @@ IOSMostVisitedSitesFactory::NewForBrowserState(ProfileIOS* profile) {
       ios::TopSitesFactory::GetForProfile(profile),
       IOSPopularSitesFactory::NewForBrowserState(profile),
       /*custom_links=*/nullptr,
+      /*enterprise_shortcuts=*/nullptr,
       std::make_unique<ntp_tiles::IconCacherImpl>(
           ios::FaviconServiceFactory::GetForProfile(
               profile, ServiceAccessType::IMPLICIT_ACCESS),

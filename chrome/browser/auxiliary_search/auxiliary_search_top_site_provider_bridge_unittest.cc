@@ -26,6 +26,7 @@ class MockMostVisitedSites : public ntp_tiles::MostVisitedSites {
                                     /*top_sites*/ nullptr,
                                     /*popular_sites*/ nullptr,
                                     /*custom_links*/ nullptr,
+                                    /*enterprise_shortcuts*/ nullptr,
                                     /*icon_cacher*/ nullptr,
                                     /*is_default_chrome_app_migrated*/ true,
                                     /*is_custom_links_mixable*/ false) {}

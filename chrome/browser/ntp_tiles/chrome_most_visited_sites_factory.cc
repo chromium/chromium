@@ -17,6 +17,7 @@
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ntp_tiles/chrome_custom_links_manager_factory.h"
+#include "chrome/browser/ntp_tiles/chrome_enterprise_shortcuts_manager_factory.h"
 #include "chrome/browser/ntp_tiles/chrome_popular_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -24,6 +25,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/icon_cacher_impl.h"
 #include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/most_visited_sites.h"
@@ -52,6 +54,15 @@ bool ShouldCreateCustomLinksManager() {
       chrome::android::kMostVisitedTilesCustomization);
 #else
   return true;
+#endif
+}
+
+bool ShouldCreateEnterpriseShortcutsManager() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts);
+#else
+  return false;
 #endif
 }
 
@@ -91,6 +102,9 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 #endif
       ShouldCreateCustomLinksManager()
           ? ChromeCustomLinksManagerFactory::NewForProfile(profile)
+          : nullptr,
+      ShouldCreateEnterpriseShortcutsManager()
+          ? ChromeEnterpriseShortcutsManagerFactory::NewForProfile(profile)
           : nullptr,
       std::make_unique<ntp_tiles::IconCacherImpl>(
           FaviconServiceFactory::GetForProfile(

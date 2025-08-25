@@ -18,7 +18,9 @@ static_library("ntp_tiles") {
     "custom_links_manager_impl.h",
     "custom_links_store.cc",
     "custom_links_store.h",
+    "custom_links_util.h",
     "deleted_tile_type.h",
+    "enterprise/enterprise_shortcuts_manager.h",
     "features.cc",
     "features.h",
     "icon_cacher.h",
@@ -94,6 +96,12 @@ static_library("ntp_tiles") {
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
+      "enterprise/enterprise_shortcut.cc",
+      "enterprise/enterprise_shortcut.h",
+      "enterprise/enterprise_shortcuts_manager_impl.cc",
+      "enterprise/enterprise_shortcuts_manager_impl.h",
+      "enterprise/enterprise_shortcuts_store.cc",
+      "enterprise/enterprise_shortcuts_store.h",
       "enterprise/ntp_shortcuts_policy_handler.cc",
       "enterprise/ntp_shortcuts_policy_handler.h",
     ]
@@ -147,7 +155,11 @@ source_set("unit_tests") {
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {
-    sources += [ "enterprise/ntp_shortcuts_policy_handler_unittest.cc" ]
+    sources += [
+      "enterprise/enterprise_shortcuts_manager_impl_unittest.cc",
+      "enterprise/enterprise_shortcuts_store_unittest.cc",
+      "enterprise/ntp_shortcuts_policy_handler_unittest.cc",
+    ]
     deps += [ "//components/policy/core/browser:test_support" ]
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

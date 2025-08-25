@@ -29,6 +29,7 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/history/core/browser/top_sites_observer.h"
 #include "components/ntp_tiles/custom_links_manager.h"
+#include "components/ntp_tiles/enterprise/enterprise_shortcuts_manager.h"
 #include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/icon_cacher.h"
 #include "components/ntp_tiles/popular_sites_impl.h"
@@ -242,6 +243,18 @@ class MockCustomLinksManager : public CustomLinksManager {
                base::CallbackListSubscription(base::RepeatingClosure callback));
 };
 
+class MockEnterpriseShortcutsManager : public EnterpriseShortcutsManager {
+ public:
+  MOCK_METHOD0(RestorePolicyLinks, void());
+  MOCK_CONST_METHOD0(GetLinks, const std::vector<EnterpriseShortcut>&());
+  MOCK_METHOD2(UpdateLink, bool(const GURL& url, const std::u16string& title));
+  MOCK_METHOD2(ReorderLink, bool(const GURL& url, size_t new_pos));
+  MOCK_METHOD1(DeleteLink, bool(const GURL& url));
+  MOCK_METHOD0(UndoAction, bool());
+  MOCK_METHOD1(RegisterCallbackForOnChanged,
+               base::CallbackListSubscription(base::RepeatingClosure callback));
+};
+
 class PopularSitesFactoryForTest {
  public:
   explicit PopularSitesFactoryForTest(
@@ -445,6 +458,18 @@ class MostVisitedSitesTest : public ::testing::Test {
       mock_custom_links_manager_ = mock_custom_links_manager.get();
     }
 
+    // Enterprise custom links needs to be nullptr when MostVisitedSites is
+    // created, unless the enterprise shortcuts feature is enabled. Custom
+    // links is disabled for Android, iOS, and third-party NTPs.
+    std::unique_ptr<StrictMock<MockEnterpriseShortcutsManager>>
+        mock_enterprise_shortcuts_manager;
+    if (is_enterprise_shortcuts_enabled_) {
+      mock_enterprise_shortcuts_manager =
+          std::make_unique<StrictMock<MockEnterpriseShortcutsManager>>();
+      mock_enterprise_shortcuts_manager_ =
+          mock_enterprise_shortcuts_manager.get();
+    }
+
     // Populate Popular Sites' internal cache by mimicking a past usage of
     // PopularSitesImpl.
     auto tmp_popular_sites = popular_sites_factory_.New();
@@ -474,7 +499,7 @@ class MostVisitedSitesTest : public ::testing::Test {
         &pref_service_, /*identity_manager=*/nullptr,
         /*supervised_user_service=*/nullptr, mock_top_sites_,
         popular_sites_factory_.New(), std::move(mock_custom_links_manager),
-        std::move(icon_cacher),
+        std::move(mock_enterprise_shortcuts_manager), std::move(icon_cacher),
         /*is_default_chrome_app_migrated=*/true, is_custom_links_mixable_);
   }
 
@@ -498,10 +523,11 @@ class MostVisitedSitesTest : public ::testing::Test {
   }
 
   void EnableCustomLinks() { is_custom_links_enabled_ = true; }
-
+  void EnableEnterpriseShortcuts() { is_enterprise_shortcuts_enabled_ = true; }
   void EnableCustomLinkMixing() { is_custom_links_mixable_ = true; }
 
   bool is_custom_links_enabled_ = false;
+  bool is_enterprise_shortcuts_enabled_ = false;
 #if BUILDFLAG(IS_ANDROID)
   bool is_custom_links_mixable_ = true;
 #else
@@ -520,6 +546,7 @@ class MostVisitedSitesTest : public ::testing::Test {
   std::unique_ptr<MostVisitedSites> most_visited_sites_;
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<MockCustomLinksManager> mock_custom_links_manager_;
+  raw_ptr<MockEnterpriseShortcutsManager> mock_enterprise_shortcuts_manager_;
   raw_ptr<MockIconCacher> icon_cacher_;
 };
 
@@ -1076,6 +1103,12 @@ class MostVisitedSitesWithCustomLinksTest : public MostVisitedSitesTest {
  public:
   MostVisitedSitesWithCustomLinksTest() {
     EnableCustomLinks();
+    // TODO(crbug.com/438304256): Create new text fixture to properly test
+    // enterprise shortcuts once MostVisitedSites implementation is complete.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+    EnableEnterpriseShortcuts();
+#endif
     RecreateMostVisitedSites();
   }
 

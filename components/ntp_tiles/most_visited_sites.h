@@ -27,6 +27,7 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/history/core/browser/top_sites_observer.h"
 #include "components/ntp_tiles/custom_links_manager.h"
+#include "components/ntp_tiles/enterprise/enterprise_shortcuts_manager.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #include "components/ntp_tiles/popular_sites.h"
 #include "components/ntp_tiles/section_type.h"
@@ -125,8 +126,8 @@ class MostVisitedSites :
   // Construct a MostVisitedSites instance.
   //
   // |prefs| are required and may not be null. |top_sites|,
-  // |popular_sites|, |custom_links|, |identity_manager|,
-  // |supervised_user_service| and |homepage_client| are
+  // |popular_sites|, |custom_links|, |enterprise_shortcuts|,
+  // |identity_manager|, |supervised_user_service| and |homepage_client| are
   //  optional and if null, the associated features will be disabled.
   MostVisitedSites(
       PrefService* prefs,
@@ -135,6 +136,7 @@ class MostVisitedSites :
       scoped_refptr<history::TopSites> top_sites,
       std::unique_ptr<PopularSites> popular_sites,
       std::unique_ptr<CustomLinksManager> custom_links,
+      std::unique_ptr<EnterpriseShortcutsManager> enterprise_shortcuts,
       std::unique_ptr<IconCacher> icon_cacher,
       bool is_default_chrome_app_migrated,
       bool is_custom_links_mixable);
@@ -410,6 +412,8 @@ class MostVisitedSites :
   scoped_refptr<history::TopSites> top_sites_;
   std::unique_ptr<PopularSites> const popular_sites_;
   std::unique_ptr<CustomLinksManager> const custom_links_manager_;
+  std::unique_ptr<EnterpriseShortcutsManager> const
+      enterprise_shortcuts_manager_;
   std::unique_ptr<IconCacher> const icon_cacher_;
   std::unique_ptr<HomepageClient> homepage_client_;
   bool is_default_chrome_app_migrated_;

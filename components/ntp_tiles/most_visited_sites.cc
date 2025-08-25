@@ -181,6 +181,7 @@ MostVisitedSites::MostVisitedSites(
     scoped_refptr<history::TopSites> top_sites,
     std::unique_ptr<PopularSites> popular_sites,
     std::unique_ptr<CustomLinksManager> custom_links_manager,
+    std::unique_ptr<EnterpriseShortcutsManager> enterprise_shortcuts_manager,
     std::unique_ptr<IconCacher> icon_cacher,
     bool is_default_chrome_app_migrated,
     bool is_custom_links_mixable)
@@ -190,6 +191,7 @@ MostVisitedSites::MostVisitedSites(
       top_sites_(top_sites),
       popular_sites_(std::move(popular_sites)),
       custom_links_manager_(std::move(custom_links_manager)),
+      enterprise_shortcuts_manager_(std::move(enterprise_shortcuts_manager)),
       icon_cacher_(std::move(icon_cacher)),
       is_default_chrome_app_migrated_(is_default_chrome_app_migrated),
       is_custom_links_mixable_(is_custom_links_mixable),

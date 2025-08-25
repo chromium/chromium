@@ -906,6 +906,8 @@ static_library("browser") {
     "notifications/system_notification_helper.h",
     "ntp_tiles/chrome_custom_links_manager_factory.cc",
     "ntp_tiles/chrome_custom_links_manager_factory.h",
+    "ntp_tiles/chrome_enterprise_shortcuts_manager_factory.cc",
+    "ntp_tiles/chrome_enterprise_shortcuts_manager_factory.h",
     "ntp_tiles/chrome_most_visited_sites_factory.cc",
     "ntp_tiles/chrome_most_visited_sites_factory.h",
     "ntp_tiles/chrome_popular_sites_factory.cc",
