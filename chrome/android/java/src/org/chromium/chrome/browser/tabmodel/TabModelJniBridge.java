@@ -170,6 +170,20 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                         mNativeTabModelJniBridge, tab);
     }
 
+    protected void moveTabToWindowForTesting(
+            Tab tab, long nativeAndroidBrowserWindow, int newIndex) {
+        TabModelJniBridgeJni.get()
+                .moveTabToWindowForTesting( // IN-TEST
+                        mNativeTabModelJniBridge, tab, nativeAndroidBrowserWindow, newIndex);
+    }
+
+    protected void moveTabGroupToWindowForTesting(
+            Token tabGroupId, long nativeAndroidBrowserWindow, int newIndex) {
+        TabModelJniBridgeJni.get()
+                .moveTabGroupToWindowForTesting( // IN-TEST
+                        mNativeTabModelJniBridge, tabGroupId, nativeAndroidBrowserWindow, newIndex);
+    }
+
     /**
      * Sets the TabModel's index.
      *
@@ -564,10 +578,22 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
         void tabAddedToModel(long nativeTabModelJniBridge, @JniType("TabAndroid*") Tab tab);
 
+        void associateWithBrowserWindow(
+                long nativeTabModelJniBridge, long nativeAndroidBrowserWindow);
+
         void duplicateTabForTesting( // IN-TEST
                 long nativeTabModelJniBridge, @JniType("TabAndroid*") Tab tab);
 
-        void associateWithBrowserWindow(
-                long nativeTabModelJniBridge, long nativeAndroidBrowserWindow);
+        void moveTabToWindowForTesting( // IN-TEST
+                long nativeTabModelJniBridge,
+                @JniType("TabAndroid*") Tab tab,
+                long nativeAndroidBrowserWindow,
+                int newIndex);
+
+        void moveTabGroupToWindowForTesting( // IN-TEST
+                long nativeTabModelJniBridge,
+                @JniType("base::Token") Token tabGroupId,
+                long nativeAndroidBrowserWindow,
+                int newIndex);
     }
 }

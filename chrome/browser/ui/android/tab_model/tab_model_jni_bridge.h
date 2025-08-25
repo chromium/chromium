@@ -50,6 +50,14 @@ class TabModelJniBridge : public TabModel {
                                   long native_android_browser_window);
   void TabAddedToModel(JNIEnv* env, TabAndroid* tab);
   void DuplicateTabForTesting(JNIEnv* env, TabAndroid* tab);
+  void MoveTabToWindowForTesting(JNIEnv* env,
+                                 TabAndroid* tab,
+                                 long android_browser_window_ptr,
+                                 int new_index);
+  void MoveTabGroupToWindowForTesting(JNIEnv* env,
+                                      const base::Token& group_id,
+                                      long android_browser_window_ptr,
+                                      int new_index);
 
   // TabModel::
   void AddTabListInterfaceObserver(TabListInterfaceObserver* observer) override;

@@ -1329,6 +1329,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tabmodel") {
     "src/org/chromium/chrome/browser/tabmodel/TabGroupsTest.java",
     "src/org/chromium/chrome/browser/tabmodel/TabModelImplTest.java",
     "src/org/chromium/chrome/browser/tabmodel/TabModelMergingTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/TabModelMultiWindowTest.java",
     "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorObserverTestRule.java",
     "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserverTest.java",
     "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabObserverTest.java",
@@ -1337,7 +1338,11 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tabmodel") {
     "src/org/chromium/chrome/browser/tabmodel/UndoTabModelTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/ui/browser_window:factory_java",
+    "//chrome/browser/ui/browser_window:java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.tasks") {

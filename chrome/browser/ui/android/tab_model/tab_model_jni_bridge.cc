@@ -125,6 +125,37 @@ void TabModelJniBridge::DuplicateTabForTesting(JNIEnv* env,
   DuplicateTab(tab);
 }
 
+void TabModelJniBridge::MoveTabToWindowForTesting(
+    JNIEnv* env,
+    TabAndroid* tab,
+    long android_browser_window_ptr,
+    int new_index) {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  SessionID destination_window_id =
+      reinterpret_cast<AndroidBrowserWindow*>(android_browser_window_ptr)
+          ->GetSessionID();
+  MoveTabToWindow(tab->GetHandle(), destination_window_id, new_index);
+#else
+  NOTIMPLEMENTED();
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+}
+
+void TabModelJniBridge::MoveTabGroupToWindowForTesting(
+    JNIEnv* env,
+    const base::Token& group_id,
+    long android_browser_window_ptr,
+    int new_index) {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  SessionID destination_window_id =
+      reinterpret_cast<AndroidBrowserWindow*>(android_browser_window_ptr)
+          ->GetSessionID();
+  MoveTabGroupToWindow(tab_groups::TabGroupId::FromRawToken(group_id),
+                       destination_window_id, new_index);
+#else
+  NOTIMPLEMENTED();
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+}
+
 void TabModelJniBridge::AddTabListInterfaceObserver(
     TabListInterfaceObserver* observer) {
   // If a first observer is being added then instantiate an observer bridge.
