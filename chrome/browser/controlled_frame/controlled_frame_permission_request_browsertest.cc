@@ -374,8 +374,8 @@ class MockHidDelegate : public ChromeHidDelegate {
   }
 
  private:
-  std::unique_ptr<HidChooserController> chooser_controller_;
   std::unique_ptr<permissions::MockChooserControllerView> mock_chooser_view_;
+  std::unique_ptr<HidChooserController> chooser_controller_;
 };
 
 class TestContentBrowserClient : public ChromeContentBrowserClient {
