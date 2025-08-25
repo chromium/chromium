@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
+#include "base/token.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/background_tab_manager.h"
@@ -49,6 +50,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
@@ -587,6 +589,17 @@ void TabAndroid::OnShow(JNIEnv* env) {
   web_contents_->SetTabSwitchStartTime(base::TimeTicks::Now(), loaded);
 }
 
+void TabAndroid::NotifyPinnedStateChanged(JNIEnv* env, jboolean is_pinned) {
+  pinned_state_changed_callback_list_.Notify(this, is_pinned);
+}
+
+void TabAndroid::NotifyTabGroupChanged(
+    JNIEnv* env,
+    std::optional<base::Token> tab_group_id) {
+  group_changed_callback_list_.Notify(
+      this, tab_groups::TabGroupId::FromOptionalToken(tab_group_id));
+}
+
 scoped_refptr<content::DevToolsAgentHost> TabAndroid::GetDevToolsAgentHost() {
   return devtools_host_;
 }
@@ -621,7 +634,7 @@ void TabAndroid::Close() {
 base::CallbackListSubscription TabAndroid::RegisterWillDiscardContents(
     WillDiscardContentsCallback callback) {
   // Tab discarding is currently an OS level operation and we don't necessarily
-  // get signal when this occurs.
+  // get signals when this occurs.
   NOTIMPLEMENTED();
   return base::CallbackListSubscription();
 }
@@ -682,18 +695,14 @@ base::CallbackListSubscription TabAndroid::RegisterDidInsert(
   return base::CallbackListSubscription();
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterPinnedStateChanged(
     PinnedStateChangedCallback callback) {
-  NOTIMPLEMENTED();
-  return base::CallbackListSubscription();
+  return pinned_state_changed_callback_list_.Add(std::move(callback));
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterGroupChanged(
     GroupChangedCallback callback) {
-  NOTIMPLEMENTED();
-  return base::CallbackListSubscription();
+  return group_changed_callback_list_.Add(std::move(callback));
 }
 
 // For now tab scoped modals should continue to be handled by the window-scoped
@@ -769,7 +778,9 @@ void TabAndroid::OnReparented(tabs::TabCollection* parent,
 }
 
 void TabAndroid::OnAncestorChanged(base::PassKey<tabs::TabCollection>) {
-  // TODO(crbug.com/409366905): Possibly add a detached state.
+  // We only want to update this when getting attached to a collection. Keeping
+  // the old data around allows us to keep the tab group id or pinned state
+  // during undoable closures and reparenting.
   if (parent_collection_) {
     UpdateProperties();
   }

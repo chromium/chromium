@@ -2389,6 +2389,10 @@ class TabImpl implements Tab {
         for (TabObserver observer : mObservers) {
             observer.onTabGroupIdChanged(this, tabGroupId);
         }
+        // This may be called before the native TabAndroid is initialized.
+        if (mNativeTabAndroid != 0) {
+            TabImplJni.get().notifyTabGroupChanged(mNativeTabAndroid, tabGroupId);
+        }
     }
 
     @Override
@@ -2679,6 +2683,10 @@ class TabImpl implements Tab {
         for (TabObserver observer : mObservers) {
             observer.onTabPinnedStateChanged(this, isPinned);
         }
+        // This may be called before the native tab is initialized.
+        if (mNativeTabAndroid != 0) {
+            TabImplJni.get().notifyPinnedStateChanged(mNativeTabAndroid, isPinned);
+        }
     }
 
     @Override
@@ -2787,6 +2795,12 @@ class TabImpl implements Tab {
         boolean handleNonNavigationAboutURL(GURL url);
 
         void onShow(long nativeTabAndroid);
+
+        void notifyPinnedStateChanged(long nativeTabAndroid, boolean isPinned);
+
+        void notifyTabGroupChanged(
+                long nativeTabAndroid,
+                @JniType("std::optional<base::Token>") @Nullable Token tabGroupId);
     }
 
     @VisibleForTesting

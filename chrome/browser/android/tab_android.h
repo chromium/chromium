@@ -203,9 +203,11 @@ class TabAndroid : public tabs::TabInterface,
   void SetActiveNavigationEntryTitleForUrl(JNIEnv* env,
                                            std::string& jurl,
                                            std::u16string& jtitle);
-
   void LoadOriginalImage(JNIEnv* env);
   void OnShow(JNIEnv* env);
+  void NotifyPinnedStateChanged(JNIEnv* env, jboolean is_pinned);
+  void NotifyTabGroupChanged(JNIEnv* env,
+                             std::optional<base::Token> tab_group_id);
 
   scoped_refptr<content::DevToolsAgentHost> GetDevToolsAgentHost();
 
@@ -293,6 +295,13 @@ class TabAndroid : public tabs::TabInterface,
   raw_ptr<tabs::TabCollection> parent_collection_ = nullptr;
 
   base::ObserverList<Observer> observers_;
+
+  base::RepeatingCallbackList<void(TabInterface*, bool)>
+      pinned_state_changed_callback_list_;
+
+  base::RepeatingCallbackList<void(TabInterface*,
+                                   std::optional<tab_groups::TabGroupId>)>
+      group_changed_callback_list_;
 
   const base::WeakPtr<Profile> profile_;
   ui::UnownedUserDataHost unowned_user_data_host_;
