@@ -5,14 +5,24 @@
 // Wrapper class for Intl.Segmenter that manages Intl.Segmenter instances to
 // be used to segment text.
 export class TextSegmenter {
-  private wordSegmenter_: Intl.Segmenter;
+  private wordSegmenter_!: Intl.Segmenter;
 
   constructor() {
     // If no language code has been provided, Intl.Segmenter will use the system
     // default language.
     // TODO: crbug.com/440400392- Use the page language to improve segmentation.
-    this.wordSegmenter_ = new Intl.Segmenter(/* languageCode= */ undefined,
-                                             {granularity: 'word'});
+    this.updateLanguage();
+  }
+
+  updateLanguage(lang?: string) {
+    // The try-catch is needed because Intl.Segmenter throws an error if the
+    // language code is not well-formed.
+    try {
+      this.wordSegmenter_ = new Intl.Segmenter(lang, {granularity: 'word'});
+    } catch {
+      this.wordSegmenter_ =
+          new Intl.Segmenter(undefined, {granularity: 'word'});
+    }
   }
 
   getWordCount(text: string): number {

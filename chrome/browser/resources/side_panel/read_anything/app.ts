@@ -29,6 +29,7 @@ import {VoiceLanguageController} from './read_aloud/voice_language_controller.js
 import type {VoiceLanguageListener} from './read_aloud/voice_language_controller.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
+import {TextSegmenter} from './text_segmenter.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
 
 const AppElementBase = WebUiListenerMixinLit(CrLitElement);
@@ -148,6 +149,8 @@ export class AppElement extends AppElementBase implements
     this.styleUpdater_ = new AppStyleUpdater(this);
     this.nodeStore_.clear();
     ColorChangeUpdater.forDocument().start();
+    TextSegmenter.getInstance().updateLanguage(
+        chrome.readingMode.baseLanguageForSpeech);
   }
 
   override disconnectedCallback() {
@@ -713,6 +716,8 @@ export class AppElement extends AppElementBase implements
     if (this.isReadAloudEnabled_) {
       this.voiceLanguageController_.onPageLanguageChanged();
     }
+    TextSegmenter.getInstance().updateLanguage(
+        chrome.readingMode.baseLanguageForSpeech);
   }
 
   protected computeIsReadAloudPlayable(): boolean {

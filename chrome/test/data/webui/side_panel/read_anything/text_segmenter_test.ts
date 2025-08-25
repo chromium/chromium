@@ -21,4 +21,9 @@ suite('TextSegmenter', () => {
     assertEquals(5, segmenter.getWordCount('ready for my napalm era'));
     assertEquals(8, segmenter.getWordCount('do-re-mi-fa-so-la-ti-do'));
   });
+
+  // TODO: crbug.com/440400392- Once sentence segmentation is added, add
+  // tests to verify updateLanguage. It was difficult to find any examples
+  // of the language making a difference for word count because the segmenter
+  // is good enough at recognizing the input language to handle word breakdown.
 });
