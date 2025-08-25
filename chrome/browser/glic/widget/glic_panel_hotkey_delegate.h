@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_HOTKEY_DELEGATE_H_
-#define CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_HOTKEY_DELEGATE_H_
+#ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_PANEL_HOTKEY_DELEGATE_H_
+#define CHROME_BROWSER_GLIC_WIDGET_GLIC_PANEL_HOTKEY_DELEGATE_H_
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
@@ -18,11 +18,11 @@ class GlicWindowController;
 // it with the set of hotkeys relevant to the Glic window (like Escape to close)
 // and handling the registration and dispatch of those hotkeys within the
 // Glic window's scope (typically via GlicView).
-class GlicWindowHotkeyDelegate : public LocalHotkeyManager::Delegate {
+class GlicPanelHotkeyDelegate : public LocalHotkeyManager::Delegate {
  public:
-  explicit GlicWindowHotkeyDelegate(
+  explicit GlicPanelHotkeyDelegate(
       base::WeakPtr<GlicWindowController> window_controller);
-  ~GlicWindowHotkeyDelegate() override;
+  ~GlicPanelHotkeyDelegate() override;
 
   // LocalHotkeyManager::Delegate:
   const base::span<const LocalHotkeyManager::Hotkey> GetSupportedHotkeys()
@@ -34,13 +34,13 @@ class GlicWindowHotkeyDelegate : public LocalHotkeyManager::Delegate {
       ui::Accelerator accelerator,
       base::WeakPtr<ui::AcceleratorTarget> target) override;
 
-  base::WeakPtr<GlicWindowHotkeyDelegate> GetWeakPtr() {
+  base::WeakPtr<GlicPanelHotkeyDelegate> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
   base::WeakPtr<GlicWindowController> window_controller_;
-  base::WeakPtrFactory<GlicWindowHotkeyDelegate> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GlicPanelHotkeyDelegate> weak_ptr_factory_{this};
 };
 
 std::unique_ptr<LocalHotkeyManager> MakeGlicWindowHotkeyManager(
@@ -48,4 +48,4 @@ std::unique_ptr<LocalHotkeyManager> MakeGlicWindowHotkeyManager(
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_HOTKEY_DELEGATE_H_
+#endif  // CHROME_BROWSER_GLIC_WIDGET_GLIC_PANEL_HOTKEY_DELEGATE_H_

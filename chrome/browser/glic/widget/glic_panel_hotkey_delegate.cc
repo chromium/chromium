@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/widget/glic_window_hotkey_delegate.h"
+#include "chrome/browser/glic/widget/glic_panel_hotkey_delegate.h"
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
@@ -58,18 +58,18 @@ class GlicWindowScopedHotkeyRegistration
 
 }  // namespace
 
-GlicWindowHotkeyDelegate::GlicWindowHotkeyDelegate(
+GlicPanelHotkeyDelegate::GlicPanelHotkeyDelegate(
     base::WeakPtr<GlicWindowController> window_controller)
     : window_controller_(window_controller) {}
 
-GlicWindowHotkeyDelegate::~GlicWindowHotkeyDelegate() = default;
+GlicPanelHotkeyDelegate::~GlicPanelHotkeyDelegate() = default;
 
 const base::span<const LocalHotkeyManager::Hotkey>
-GlicWindowHotkeyDelegate::GetSupportedHotkeys() const {
+GlicPanelHotkeyDelegate::GetSupportedHotkeys() const {
   return kSupportedHotkeys;
 }
 
-bool GlicWindowHotkeyDelegate::AcceleratorPressed(
+bool GlicPanelHotkeyDelegate::AcceleratorPressed(
     LocalHotkeyManager::Hotkey hotkey) {
   if (!window_controller_) {
     return false;
@@ -103,7 +103,7 @@ bool GlicWindowHotkeyDelegate::AcceleratorPressed(
 }
 
 std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
-GlicWindowHotkeyDelegate::CreateScopedHotkeyRegistration(
+GlicPanelHotkeyDelegate::CreateScopedHotkeyRegistration(
     ui::Accelerator accelerator,
     base::WeakPtr<ui::AcceleratorTarget> target) {
   CHECK(window_controller_);
@@ -115,7 +115,7 @@ std::unique_ptr<LocalHotkeyManager> MakeGlicWindowHotkeyManager(
     base::WeakPtr<GlicWindowController> window_controller) {
   return std::make_unique<LocalHotkeyManager>(
       window_controller,
-      std::make_unique<GlicWindowHotkeyDelegate>(window_controller));
+      std::make_unique<GlicPanelHotkeyDelegate>(window_controller));
 }
 
 }  // namespace glic

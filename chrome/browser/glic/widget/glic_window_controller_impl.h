@@ -20,10 +20,8 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/widget/application_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_window_config.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
-#include "chrome/browser/glic/widget/glic_window_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -372,7 +370,7 @@ class GlicWindowControllerImpl
   std::unique_ptr<WindowFinder> window_finder_;
 
   std::unique_ptr<LocalHotkeyManager> application_hotkey_manager_;
-  std::unique_ptr<LocalHotkeyManager> glic_window_hotkey_manager_;
+  std::unique_ptr<LocalHotkeyManager> glic_panel_hotkey_manager_;
 
   raw_ptr<GlicKeyedService> glic_service_;  // Owns this.
   raw_ptr<GlicEnabling> enabling_;

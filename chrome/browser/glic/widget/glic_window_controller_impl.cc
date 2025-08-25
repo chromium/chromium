@@ -26,7 +26,9 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/widget/application_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
+#include "chrome/browser/glic/widget/glic_panel_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_animator.h"
@@ -648,7 +650,7 @@ void GlicWindowControllerImpl::Show(Browser* browser,
   host().CreateContents(/*initially_hidden=*/false);
   host().NotifyWindowIntentToShow();
 
-  glic_window_hotkey_manager_ = MakeGlicWindowHotkeyManager(GetWeakPtr());
+  glic_panel_hotkey_manager_ = MakeGlicWindowHotkeyManager(GetWeakPtr());
 
   if (browser && !AlwaysDetached()) {
     AttachToBrowser(*browser, AttachChangeReason::kInit);
@@ -656,7 +658,7 @@ void GlicWindowControllerImpl::Show(Browser* browser,
     SetupAndShowGlicWidget(browser);
   }
 
-  glic_window_hotkey_manager_->InitializeAccelerators();
+  glic_panel_hotkey_manager_->InitializeAccelerators();
 
   // Notify the web client that the panel will open, and wait for the response
   // to actually show the window. Note that we have to call
@@ -680,7 +682,7 @@ std::unique_ptr<GlicView>
 GlicWindowControllerImpl::CreateGlicViewForSidePanel() {
   auto glic_view =
       std::make_unique<GlicView>(profile_, GlicWidget::GetInitialSize(),
-                                 glic_window_hotkey_manager_->GetWeakPtr());
+                                 glic_panel_hotkey_manager_->GetWeakPtr());
   glic_view->SetWebContents(host().webui_contents());
   glic_view->UpdateBackgroundColor();
   glic_view_ = glic_view.get();
@@ -690,7 +692,7 @@ GlicWindowControllerImpl::CreateGlicViewForSidePanel() {
 void GlicWindowControllerImpl::SetupAndShowGlicWidget(Browser* browser) {
   auto initial_bounds = GetInitialBounds(browser);
   glic_widget_ = GlicWidget::Create(profile_, initial_bounds,
-                                    glic_window_hotkey_manager_->GetWeakPtr(),
+                                    glic_panel_hotkey_manager_->GetWeakPtr(),
                                     user_resizable_);
   glic_widget_observation_.Observe(glic_widget_.get());
   SetupGlicWidgetAccessibilityText();
@@ -1178,7 +1180,7 @@ void GlicWindowControllerImpl::CloseInternal(
   draggable_area_ = std::nullopt;
   window_event_observer_.reset();
   browser_close_subscription_.reset();
-  glic_window_hotkey_manager_.reset();
+  glic_panel_hotkey_manager_.reset();
   glic_widget_observation_.Reset();
   glic_widget_.reset();
   glic_view_ = nullptr;
