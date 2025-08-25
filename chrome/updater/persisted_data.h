@@ -95,6 +95,9 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   // into the persistent data store.
   void RegisterApp(const RegistrationRequest& rq);
 
+  // This function returns true if and only if the specified app is registered.
+  bool HasApp(const std::string& id);
+
   // This function removes a registered application from the persistent store.
   bool RemoveApp(const std::string& id);
 

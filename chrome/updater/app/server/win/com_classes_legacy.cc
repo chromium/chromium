@@ -408,6 +408,11 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
       return E_ACCESSDENIED;
     }
 
+    if (app_id.empty()) {
+      VLOG(1) << __func__ << ": refusing to handle an empty app_id.";
+      return E_INVALIDARG;
+    }
+
     is_install_ = is_install;
     app_id_ = base::WideToUTF8(app_id);
     brand_code_ = base::WideToUTF8(brand_code);

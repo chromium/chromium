@@ -521,6 +521,15 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   }
 }
 
+bool PersistedData::HasApp(const std::string& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const base::Value::Dict* apps =
+      pref_service_->GetDict(update_client::kPersistedDataPreference)
+          .FindDict("apps");
+  return apps && apps->Find(base::ToLowerASCII(id)) != nullptr;
+}
+
 bool PersistedData::RemoveApp(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

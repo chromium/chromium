@@ -100,6 +100,9 @@ void CleanupTask::Run(base::OnceClosure callback) {
             config->GetCrxCache()->RemoveIfNot(
                 config->GetUpdaterPersistedData()->GetAppIds(),
                 std::move(callback));
+            if (config->GetUpdaterPersistedData()->HasApp("")) {
+              config->GetUpdaterPersistedData()->RemoveApp("");
+            }
           },
           config_, std::move(callback)));
 }

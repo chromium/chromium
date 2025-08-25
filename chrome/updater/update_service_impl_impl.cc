@@ -763,6 +763,13 @@ void UpdateServiceImplImpl::RegisterApp(
     return;
   }
 
+  if (request.app_id.empty()) {
+    VLOG(1) << "Refusing to register an empty app ID.";
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), kRegistrationError));
+    return;
+  }
+
   if (!IsUpdaterOrCompanionApp(request.app_id)) {
     config_->GetUpdaterPersistedData()->SetHadApps();
   }

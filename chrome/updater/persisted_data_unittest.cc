@@ -111,6 +111,7 @@ TEST(PersistedDataTest, RemoveAppId) {
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
 
+  ASSERT_FALSE(metadata->HasApp("someappid"));
   metadata->RegisterApp(data);
 
   data.app_id = "someappid2";
@@ -124,10 +125,14 @@ TEST(PersistedDataTest, RemoveAppId) {
   metadata->RegisterApp(data);
   EXPECT_EQ(size_t{2}, metadata->GetAppIds().size());
 
+  ASSERT_TRUE(metadata->HasApp("someAPPID"));
   metadata->RemoveApp("someAPPID");
+  ASSERT_FALSE(metadata->HasApp("someAPPID"));
   EXPECT_EQ(size_t{1}, metadata->GetAppIds().size());
 
+  ASSERT_TRUE(metadata->HasApp("someappid2"));
   metadata->RemoveApp("someappid2");
+  ASSERT_FALSE(metadata->HasApp("someappid2"));
   EXPECT_TRUE(metadata->GetAppIds().empty());
 }
 
