@@ -3983,7 +3983,14 @@
       name: "RemoveDataUrlInSvgUse",
       status: "stable",
     },
-
+    {
+      // Fix for removeFormat command incorrectly preserving background-color
+      // when removing styles from elements. Prevents background-color from being
+      // re-applied to child elements during style removal.
+      // See https://crbug.com/41438799
+      name: "RemoveFormatFilterBackgroundColor",
+      status: "stable",
+    },
     {
       // See https://issues.chromium.org/issues/41474791
       name: "RemoveSelectionCanonicalizationInMoveParagraph",
