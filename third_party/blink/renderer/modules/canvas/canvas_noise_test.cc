@@ -25,6 +25,8 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
+#include "third_party/blink/renderer/modules/canvas/canvas_noise_test_util.h"
+#include "third_party/blink/renderer/modules/canvas/htmlcanvas/html_canvas_element_module.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -36,35 +38,11 @@
 
 namespace blink {
 
-// Raster interface that always returns the same randomized image when read
-// back.
-class CanvasNoiseTestRasterInterface : public viz::TestRasterInterface {
- public:
-  CanvasNoiseTestRasterInterface() { set_gpu_rasterization(true); }
-
- private:
-  UNSAFE_BUFFER_USAGE bool ReadbackImagePixels(
-      const gpu::Mailbox& source_mailbox,
-      const SkImageInfo& dst_info,
-      GLuint dst_row_bytes,
-      int src_x,
-      int src_y,
-      int plane_index,
-      void* dst_pixels) override {
-    size_t size = dst_info.computeByteSize(dst_row_bytes);
-    uint8_t* data = static_cast<uint8_t*>(dst_pixels);
-    for (size_t i = 0; i < size; ++i) {
-      data[i] = (i % 4 == 3) ? 255 : i % 256;
-    }
-    return true;
-  }
-};
-
 class CanvasNoiseTest : public PageTestBase {
  public:
   void SetUp() override {
     test_context_provider_ = viz::TestContextProvider::CreateRaster(
-        std::make_unique<CanvasNoiseTestRasterInterface>());
+        CreateCanvasNoiseTestRasterInterface());
     InitializeSharedGpuContextRaster(test_context_provider_.get());
 
     PageTestBase::SetUp();

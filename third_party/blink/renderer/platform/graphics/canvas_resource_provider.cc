@@ -480,6 +480,16 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
         return nullptr;
       }
 
+      // Getting the high entropy canvas operations should be done before
+      // flushing the canvas as flushing discards the recording (including the
+      // associated HighEntropyCanvasOpTypes).
+      HighEntropyCanvasOpType high_entropy_canvas_op_types =
+          GetRecorderHighEntropyCanvasOpTypes();
+      if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
+                                                  IsAccelerated())) {
+        output_resource->SetHighEntropyCanvasOpTypes(
+            high_entropy_canvas_op_types);
+      }
       FlushCanvas(reason);
 
       // Note that the resource *must* be a CanvasResourceSharedImage as this
@@ -493,6 +503,11 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     if (IsGpuContextLost())
       return nullptr;
 
+    // Getting the high entropy canvas operations should be done before
+    // flushing the canvas as flushing discards the recording (including the
+    // associated HighEntropyCanvasOpTypes).
+    HighEntropyCanvasOpType high_entropy_canvas_op_types =
+        GetRecorderHighEntropyCanvasOpTypes();
     FlushCanvas(reason);
     // Its important to end read access and ref the resource before the WillDraw
     // call below. Since it relies on resource ref-count to trigger
@@ -515,6 +530,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       WillDraw();
     }
 
+    if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
+                                                IsAccelerated())) {
+      resource->SetHighEntropyCanvasOpTypes(high_entropy_canvas_op_types);
+    }
     return resource;
   }
 
@@ -1083,11 +1102,20 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     if (!IsValid())
       return nullptr;
 
+    // Getting the high entropy canvas operations should be done before
+    // flushing the canvas as flushing discards the recording (including the
+    // associated HighEntropyCanvasOpTypes).
+    HighEntropyCanvasOpType high_entropy_canvas_op_types =
+        GetRecorderHighEntropyCanvasOpTypes();
     FlushIfNeeded(reason);
 
     if (needs_present_) {
       resource_->PresentSwapChain();
       needs_present_ = false;
+    }
+    if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
+                                                IsAccelerated())) {
+      resource_->SetHighEntropyCanvasOpTypes(high_entropy_canvas_op_types);
     }
     return resource_;
   }
