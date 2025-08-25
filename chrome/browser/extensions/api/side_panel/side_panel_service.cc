@@ -17,6 +17,7 @@
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/sessions/core/session_id.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/common/error_utils.h"
@@ -389,6 +390,29 @@ base::expected<bool, std::string> SidePanelService::CloseSidePanelForWindow(
 
   side_panel_util::CloseGlobalExtensionSidePanel(browser, extension.id());
   return true;
+}
+
+void SidePanelService::DispatchOnOpenedEvent(const ExtensionId& extension_id,
+                                             int window_id,
+                                             std::optional<int> tab_id,
+                                             const std::string& path) {
+  auto* router = EventRouter::Get(browser_context_);
+  if (!router->ExtensionHasEventListener(
+          extension_id, api::side_panel::OnOpened::kEventName)) {
+    return;
+  }
+
+  api::side_panel::PanelOpenedInfo info;
+  info.window_id = window_id;
+  info.tab_id = std::move(tab_id);
+  info.path = path;
+
+  base::Value::List args;
+  args.Append(info.ToValue());
+  auto event = std::make_unique<Event>(events::SIDE_PANEL_ON_OPENED,
+                                       api::side_panel::OnOpened::kEventName,
+                                       std::move(args));
+  router->DispatchEventToExtension(extension_id, std::move(event));
 }
 
 void SidePanelService::AddObserver(Observer* observer) {

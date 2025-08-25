@@ -126,6 +126,7 @@ bool ExtensionSidePanelCoordinator::IsGlobalCoordinator() const {
 }
 
 void ExtensionSidePanelCoordinator::DeregisterEntry() {
+  scoped_entry_observation_.Reset();
   registry_->Deregister(GetEntryKey());
 }
 
@@ -202,15 +203,25 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
   // not be null.
   DCHECK(extension_icon_);
 
-  // We use an unretained receiver here: the callback is called only when the
-  // SidePanelEntry exists for the extension, and the extension's SidePanelEntry
-  // is always deregistered when this class is destroyed, so CreateView can't be
-  // called after the destruction of `this`.
-  registry_->Register(std::make_unique<SidePanelEntry>(
+  // Use a `WeakPtr` for the creation callback to safely handle cases where
+  // this coordinator is destroyed before the view is created. Use a
+  // `ScopedObservation` to watch the entry, which lets us track when the panel
+  // is shown or hidden in order to manage state and dispatch events.
+  auto entry = std::make_unique<SidePanelEntry>(
       GetEntryKey(),
-      base::BindRepeating(&ExtensionSidePanelCoordinator::CreateView,
-                          base::Unretained(this)),
-      /*default_content_width_callback=*/base::NullCallback()));
+      base::BindRepeating(
+          [](base::WeakPtr<ExtensionSidePanelCoordinator> coordinator,
+             SidePanelEntryScope& scope) -> std::unique_ptr<views::View> {
+            if (!coordinator) {
+              return nullptr;
+            }
+            return coordinator->CreateView(scope);
+          },
+          weak_factory_.GetWeakPtr()),
+      /*default_content_width_callback=*/base::NullCallback());
+
+  scoped_entry_observation_.Observe(entry.get());
+  registry_->Register(std::move(entry));
 }
 
 std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView(
@@ -244,6 +255,47 @@ std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView(
   scoped_view_observation_.Reset();
   scoped_view_observation_.Observe(extension_view.get());
   return extension_view;
+}
+
+void ExtensionSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
+  if (entry->key() != GetEntryKey()) {
+    return;
+  }
+
+  // Set `is_panel_active_` to true to track the panel’s current state for this
+  // context.
+  if (!is_panel_active_) {
+    OnOpened();
+    is_panel_active_ = true;
+  }
+}
+
+void ExtensionSidePanelCoordinator::OnEntryWillHide(
+    SidePanelEntry* entry,
+    SidePanelEntryHideReason reason) {
+  if (entry->key() != GetEntryKey()) {
+    return;
+  }
+
+  // Reset the panel state to inactive.
+  is_panel_active_ = false;
+}
+
+void ExtensionSidePanelCoordinator::OnOpened() {
+  auto* service = SidePanelService::Get(profile_);
+  const ExtensionId& extension_id = extension_->id();
+
+  // Retrieve the `tab_id` if this is a contextual panel. Global panels can
+  // ignore this field.
+  std::optional<int> tab_id;
+  if (for_tab_ && tab_interface_) {
+    tab_id = ExtensionTabUtil::GetTabId(tab_interface_->GetContents());
+  }
+
+  // Dispatch all arguments to reach the router listener.
+  service->DispatchOnOpenedEvent(extension_id,
+                                 ExtensionTabUtil::GetWindowId(GetBrowser()),
+                                 tab_id, side_panel_url_.path());
 }
 
 void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
