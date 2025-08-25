@@ -181,7 +181,7 @@ class ExecutableWithIdbFactory
   }
 
   void GetBucketIDBFactory(LocalFrame* frame,
-                           const WTF::String& storage_bucket_name) {
+                           const String& storage_bucket_name) {
     LocalDOMWindow* dom_window = frame->DomWindow();
     CHECK(dom_window);
 
@@ -265,8 +265,8 @@ class ExecutableWithDatabase
     frame_ = frame;
     ExecutableWithIdbFactory::Start(
         frame_, std::move(storage_bucket),
-        WTF::BindOnce(&ExecutableWithDatabase::OnGetIDBFactory,
-                      WrapRefCounted(this)));
+        blink::BindOnce(&ExecutableWithDatabase::OnGetIDBFactory,
+                        WrapRefCounted(this)));
   }
 
  private:
@@ -859,7 +859,7 @@ void InspectorIndexedDBAgent::requestDatabaseNames(
   LocalFrame* frame = frame_or_response.value();
   ExecutableWithIdbFactory::Start(
       frame, std::move(storage_bucket),
-      WTF::BindOnce(
+      BindOnce(
           [](std::unique_ptr<RequestDatabaseNamesCallback> request_callback,
              LocalFrame* frame, protocol::Response response,
              IDBFactory* idb_factory) {
@@ -873,8 +873,8 @@ void InspectorIndexedDBAgent::requestDatabaseNames(
                   protocol::Response::InternalError());
               return;
             }
-            idb_factory->GetDatabaseInfoForDevTools(WTF::BindOnce(
-                &OnGotDatabaseNames, std::move(request_callback)));
+            idb_factory->GetDatabaseInfoForDevTools(
+                BindOnce(&OnGotDatabaseNames, std::move(request_callback)));
           },
           std::move(request_callback), WrapPersistent(frame)));
 }
@@ -1300,7 +1300,7 @@ void InspectorIndexedDBAgent::deleteDatabase(
   LocalFrame* frame = frame_or_response.value();
   ExecutableWithIdbFactory::Start(
       frame, std::move(storage_bucket),
-      WTF::BindOnce(
+      BindOnce(
           [](std::unique_ptr<DeleteDatabaseCallback> request_callback,
              LocalFrame* frame, String database_name,
              protocol::Response response, IDBFactory* idb_factory) {

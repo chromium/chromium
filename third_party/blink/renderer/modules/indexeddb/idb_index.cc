@@ -194,7 +194,7 @@ IDBRequest* IDBIndex::count(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   db().Count(transaction_->Id(), object_store_->Id(), Id(), key_range,
-             WTF::BindOnce(&IDBRequest::OnCount, WrapWeakPersistent(request)));
+             BindOnce(&IDBRequest::OnCount, WrapWeakPersistent(request)));
   return request;
 }
 
@@ -353,7 +353,7 @@ IDBRequest* IDBIndex::GetInternal(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   db().Get(transaction_->Id(), object_store_->Id(), Id(), key_range, key_only,
-           WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
+           BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
   return request;
 }
 

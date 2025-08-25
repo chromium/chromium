@@ -52,7 +52,7 @@ struct CrossThreadCopier<ScopedPromiseResolver<T>>
 class ImageCaptureFrameGrabber::SingleShotFrameHandler
     : public ThreadSafeRefCounted<SingleShotFrameHandler> {
  public:
-  using SkImageDeliverCB = WTF::CrossThreadOnceFunction<void(sk_sp<SkImage>)>;
+  using SkImageDeliverCB = CrossThreadOnceFunction<void(sk_sp<SkImage>)>;
 
   explicit SingleShotFrameHandler(
       SkImageDeliverCB deliver_cb,
@@ -317,10 +317,9 @@ void ImageCaptureFrameGrabber::GrabFrame(
       resolver,
       base::BindPostTask(
           task_runner,
-          WTF::BindOnce(
-              [](Persistent<ScriptPromiseResolver<ImageBitmap>> resolver) {
-                resolver->Reject();
-              })));
+          BindOnce([](Persistent<ScriptPromiseResolver<ImageBitmap>> resolver) {
+            resolver->Reject();
+          })));
 
   // A SingleShotFrameHandler is bound and given to the Track to guarantee that
   // only one VideoFrame is converted and delivered to OnSkImage(), otherwise
@@ -333,8 +332,8 @@ void ImageCaptureFrameGrabber::GrabFrame(
   // the promise from hanging indefinitely if no frame is ever produced.
   timeout_task_handle_ = PostDelayedCancellableTask(
       *task_runner, FROM_HERE,
-      WTF::BindOnce(&ImageCaptureFrameGrabber::OnTimeout,
-                    weak_factory_.GetWeakPtr()),
+      blink::BindOnce(&ImageCaptureFrameGrabber::OnTimeout,
+                      weak_factory_.GetWeakPtr()),
       timeout);
 
   MediaStreamVideoSink::ConnectToTrack(

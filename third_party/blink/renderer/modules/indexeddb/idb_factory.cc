@@ -150,9 +150,9 @@ ScriptPromise<IDLSequence<IDBDatabaseInfo>> IDBFactory::GetDatabaseInfo(
     return resolver->Promise();
   }
 
-  AllowIndexedDB(WTF::BindOnce(&IDBFactory::GetDatabaseInfoImpl,
-                               WrapPersistent(weak_factory_.GetWeakCell()),
-                               WrapPersistent(resolver)));
+  AllowIndexedDB(BindOnce(&IDBFactory::GetDatabaseInfoImpl,
+                          WrapPersistent(weak_factory_.GetWeakCell()),
+                          WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -167,7 +167,7 @@ void IDBFactory::GetDatabaseInfoImpl(
     return;
   }
 
-  GetRemote()->GetDatabaseInfo(WTF::BindOnce(
+  GetRemote()->GetDatabaseInfo(BindOnce(
       &IDBFactory::DidGetDatabaseInfo,
       WrapPersistent(weak_factory_.GetWeakCell()), WrapPersistent(resolver)));
 }
@@ -217,9 +217,9 @@ void IDBFactory::GetDatabaseInfoForDevTools(
 
   DCHECK(context->IsContextThread());
 
-  AllowIndexedDB(WTF::BindOnce(&IDBFactory::GetDatabaseInfoForDevToolsHelper,
-                               WrapPersistent(weak_factory_.GetWeakCell()),
-                               std::move(callback)));
+  AllowIndexedDB(blink::BindOnce(&IDBFactory::GetDatabaseInfoForDevToolsHelper,
+                                 WrapPersistent(weak_factory_.GetWeakCell()),
+                                 std::move(callback)));
 }
 
 void IDBFactory::ContextDestroyed() {
@@ -288,11 +288,11 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
       std::move(transaction_remote), transaction_id, version,
       std::move(metrics));
 
-  auto do_open = WTF::BindOnce(
-      &IDBFactory::OpenInternalImpl,
-      WrapPersistent(weak_factory_.GetWeakCell()), WrapPersistent(request),
-      std::move(callbacks_remote), std::move(transaction_receiver), name,
-      version, transaction_id);
+  auto do_open =
+      BindOnce(&IDBFactory::OpenInternalImpl,
+               WrapPersistent(weak_factory_.GetWeakCell()),
+               WrapPersistent(request), std::move(callbacks_remote),
+               std::move(transaction_receiver), name, version, transaction_id);
   if (allowed_.has_value() && !*allowed_) {
     // When the permission state is cached, `AllowIndexedDB` will invoke its
     // callback synchronously, and thus we'd dispatch the error event
@@ -326,12 +326,12 @@ void IDBFactory::OpenInternalImpl(
   std::unique_ptr<FrameOrWorkerScheduler::LifecycleObserverHandle> lifecycle =
       GetExecutionContext()->GetScheduler()->AddLifecycleObserver(
           FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
-          WTF::BindRepeating(
+          BindRepeating(
               [](int* priority,
                  scheduler::SchedulingLifecycleState lifecycle_state) {
                 *priority = IDBDatabase::GetSchedulingPriority(lifecycle_state);
               },
-              WTF::Unretained(&scheduling_priority)));
+              Unretained(&scheduling_priority)));
   DCHECK_GE(scheduling_priority, 0);
   request->set_connection_priority(scheduling_priority);
 
@@ -394,9 +394,9 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
       IDBTransaction::TransactionMojoRemote(context), 0,
       IDBDatabaseMetadata::kDefaultVersion, std::move(metrics));
 
-  auto do_delete = WTF::BindOnce(&IDBFactory::DeleteDatabaseInternalImpl,
-                                 WrapPersistent(weak_factory_.GetWeakCell()),
-                                 WrapPersistent(request), name, force_close);
+  auto do_delete = BindOnce(&IDBFactory::DeleteDatabaseInternalImpl,
+                            WrapPersistent(weak_factory_.GetWeakCell()),
+                            WrapPersistent(request), name, force_close);
   if (allowed_.has_value() && !*allowed_) {
     // When the permission state is cached, `AllowIndexedDB` will invoke its
     // callback synchronously, and thus we'd dispatch the error event
@@ -475,8 +475,8 @@ void IDBFactory::AllowIndexedDB(base::OnceCallback<void()> callback) {
     }
     frame->AllowStorageAccessAndNotify(
         WebContentSettingsClient::StorageType::kIndexedDB,
-        WTF::BindOnce(&IDBFactory::DidAllowIndexedDB,
-                      WrapPersistent(weak_factory_.GetWeakCell())));
+        BindOnce(&IDBFactory::DidAllowIndexedDB,
+                 WrapPersistent(weak_factory_.GetWeakCell())));
     return;
   }
 
@@ -488,8 +488,8 @@ void IDBFactory::AllowIndexedDB(base::OnceCallback<void()> callback) {
   }
   settings_client->AllowStorageAccess(
       WebContentSettingsClient::StorageType::kIndexedDB,
-      WTF::BindOnce(&IDBFactory::DidAllowIndexedDB,
-                    WrapPersistent(weak_factory_.GetWeakCell())));
+      BindOnce(&IDBFactory::DidAllowIndexedDB,
+               WrapPersistent(weak_factory_.GetWeakCell())));
 }
 
 void IDBFactory::DidAllowIndexedDB(bool allow_access) {

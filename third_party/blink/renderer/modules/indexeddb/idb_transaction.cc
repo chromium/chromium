@@ -108,8 +108,8 @@ IDBTransaction::IDBTransaction(
   ExecutionContext::From(script_state)
       ->GetAgent()
       ->event_loop()
-      ->EnqueueEndOfMicrotaskCheckpointTask(WTF::BindOnce(
-          &IDBTransaction::SetActive, WrapPersistent(this), false));
+      ->EnqueueEndOfMicrotaskCheckpointTask(
+          BindOnce(&IDBTransaction::SetActive, WrapPersistent(this), false));
 
   database_->TransactionCreated(this);
 }

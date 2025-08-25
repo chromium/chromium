@@ -11,14 +11,14 @@ void MockIDBDatabase::Bind(
     mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabase> receiver) {
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(
-      WTF::BindOnce(&MockIDBDatabase::OnDisconnect, base::Unretained(this)));
+      BindOnce(&MockIDBDatabase::OnDisconnect, Unretained(this)));
 }
 
 mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>
 MockIDBDatabase::BindNewEndpointAndPassDedicatedRemote() {
   auto remote = receiver_.BindNewEndpointAndPassDedicatedRemote();
   receiver_.set_disconnect_handler(
-      WTF::BindOnce(&MockIDBDatabase::OnDisconnect, base::Unretained(this)));
+      BindOnce(&MockIDBDatabase::OnDisconnect, Unretained(this)));
   return remote;
 }
 

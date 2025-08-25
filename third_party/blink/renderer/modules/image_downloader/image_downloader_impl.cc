@@ -31,12 +31,14 @@
 
 namespace {
 
-WTF::Vector<SkBitmap> DecodeImageData(const std::string& data,
-                                      const std::string& mime_type,
-                                      const gfx::Size& preferred_size) {
+using blink::Vector;
+
+Vector<SkBitmap> DecodeImageData(const std::string& data,
+                                 const std::string& mime_type,
+                                 const gfx::Size& preferred_size) {
   // Decode the image using Blink's image decoder.
   blink::WebData buffer(base::as_byte_span(data));
-  WTF::Vector<SkBitmap> bitmaps;
+  Vector<SkBitmap> bitmaps;
   if (mime_type == "image/svg+xml") {
     SkBitmap bitmap = blink::WebImage::DecodeSVG(buffer, preferred_size);
     if (!bitmap.drawsNothing()) {
@@ -53,13 +55,13 @@ WTF::Vector<SkBitmap> DecodeImageData(const std::string& data,
 }
 
 // Decodes a data: URL into one or more images, or no images in case of failure.
-WTF::Vector<SkBitmap> ImagesFromDataUrl(const blink::KURL& url,
-                                        const gfx::Size& preferred_size) {
+Vector<SkBitmap> ImagesFromDataUrl(const blink::KURL& url,
+                                   const gfx::Size& preferred_size) {
   std::string mime_type, data;
   if (!blink::network_utils::IsDataURLMimeTypeSupported(url, &data,
                                                         &mime_type) ||
       data.empty()) {
-    return WTF::Vector<SkBitmap>();
+    return Vector<SkBitmap>();
   }
   return DecodeImageData(data, mime_type, preferred_size);
 }
@@ -89,10 +91,10 @@ SkBitmap ResizeImage(const SkBitmap& image, uint32_t max_image_size) {
 // Sets |original_image_sizes| to the sizes of |images| before resizing. Both
 // output vectors are guaranteed to have the same size.
 void FilterAndResizeImagesForMaximalSize(
-    const WTF::Vector<SkBitmap>& unfiltered,
+    const Vector<SkBitmap>& unfiltered,
     uint32_t max_image_size,
-    WTF::Vector<SkBitmap>* images,
-    WTF::Vector<gfx::Size>* original_image_sizes) {
+    Vector<SkBitmap>* images,
+    Vector<gfx::Size>* original_image_sizes) {
   images->clear();
   original_image_sizes->clear();
 
@@ -162,7 +164,7 @@ ImageDownloaderImpl::ImageDownloaderImpl(LocalFrame& frame)
     : Supplement<LocalFrame>(frame),
       ExecutionContextLifecycleObserver(frame.DomWindow()),
       receiver_(this, frame.DomWindow()) {
-  frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
       &ImageDownloaderImpl::CreateMojoService, WrapWeakPersistent(this)));
 }
 
@@ -173,7 +175,7 @@ void ImageDownloaderImpl::CreateMojoService(
   receiver_.Bind(std::move(receiver),
                  GetSupplementable()->GetTaskRunner(TaskType::kNetworking));
   receiver_.set_disconnect_handler(
-      WTF::BindOnce(&ImageDownloaderImpl::Dispose, WrapWeakPersistent(this)));
+      BindOnce(&ImageDownloaderImpl::Dispose, WrapWeakPersistent(this)));
 }
 
 // ImageDownloader methods:
@@ -192,9 +194,9 @@ void ImageDownloaderImpl::DownloadImage(const KURL& image_url,
     float scale = float(max_bitmap_size) / max_preferred_dimension;
     constrained_preferred_size = gfx::ScaleToFlooredSize(preferred_size, scale);
   }
-  auto download_callback =
-      WTF::BindOnce(&ImageDownloaderImpl::DidDownloadImage,
-                    WrapPersistent(this), max_bitmap_size, std::move(callback));
+  auto download_callback = blink::BindOnce(
+      &ImageDownloaderImpl::DidDownloadImage, WrapPersistent(this),
+      max_bitmap_size, std::move(callback));
 
   if (!image_url.ProtocolIsData()) {
     FetchImage(image_url, is_favicon, constrained_preferred_size, bypass_cache,
@@ -203,7 +205,7 @@ void ImageDownloaderImpl::DownloadImage(const KURL& image_url,
     return;
   }
 
-  WTF::Vector<SkBitmap> result_images =
+  Vector<SkBitmap> result_images =
       ImagesFromDataUrl(image_url, constrained_preferred_size);
   std::move(download_callback).Run(0, result_images);
 }
@@ -243,13 +245,12 @@ void ImageDownloaderImpl::DownloadImageFromAxNode(
                 bypass_cache, std::move(callback));
 }
 
-void ImageDownloaderImpl::DidDownloadImage(
-    uint32_t max_image_size,
-    DownloadImageCallback callback,
-    int32_t http_status_code,
-    const WTF::Vector<SkBitmap>& images) {
-  WTF::Vector<SkBitmap> result_images;
-  WTF::Vector<gfx::Size> result_original_image_sizes;
+void ImageDownloaderImpl::DidDownloadImage(uint32_t max_image_size,
+                                           DownloadImageCallback callback,
+                                           int32_t http_status_code,
+                                           const Vector<SkBitmap>& images) {
+  Vector<SkBitmap> result_images;
+  Vector<gfx::Size> result_original_image_sizes;
   FilterAndResizeImagesForMaximalSize(images, max_image_size, &result_images,
                                       &result_original_image_sizes);
 
@@ -274,9 +275,9 @@ void ImageDownloaderImpl::FetchImage(const KURL& image_url,
           image_url, GetSupplementable(), is_favicon,
           bypass_cache ? blink::mojom::FetchCacheMode::kBypassCache
                        : blink::mojom::FetchCacheMode::kDefault,
-          WTF::BindOnce(&ImageDownloaderImpl::DidFetchImage,
-                        WrapPersistent(this), std::move(callback),
-                        preferred_size)));
+          blink::BindOnce(&ImageDownloaderImpl::DidFetchImage,
+                          WrapPersistent(this), std::move(callback),
+                          preferred_size)));
 }
 
 void ImageDownloaderImpl::DidFetchImage(

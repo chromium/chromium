@@ -117,8 +117,8 @@ IDBDatabase::IDBDatabase(
   // Invokes the callback immediately.
   scheduler_observer_ = context->GetScheduler()->AddLifecycleObserver(
       FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
-      WTF::BindRepeating(&IDBDatabase::OnSchedulerLifecycleStateChanged,
-                         WrapWeakPersistent(this)));
+      BindRepeating(&IDBDatabase::OnSchedulerLifecycleStateChanged,
+                    WrapWeakPersistent(this)));
 
   UpdateStateIfNeeded();
 }
@@ -211,7 +211,7 @@ void IDBDatabase::VersionChange(int64_t old_version, int64_t new_version) {
 
 void IDBDatabase::Abort(int64_t transaction_id,
                         mojom::blink::IDBException code,
-                        const WTF::String& message) {
+                        const String& message) {
   DCHECK(transactions_.Contains(transaction_id));
   DOMException* dom_exception;
   if (code == mojom::blink::IDBException::kQuotaError &&
@@ -639,11 +639,11 @@ void IDBDatabase::GetAll(int64_t transaction_id,
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
-  database_remote_->GetAll(
-      transaction_id, object_store_id, index_id, std::move(key_range_ptr),
-      result_type, max_count, direction,
-      WTF::BindOnce(&IDBRequest::OnGetAll, WrapWeakPersistent(request),
-                    result_type));
+  database_remote_->GetAll(transaction_id, object_store_id, index_id,
+                           std::move(key_range_ptr), result_type, max_count,
+                           direction,
+                           BindOnce(&IDBRequest::OnGetAll,
+                                    WrapWeakPersistent(request), result_type));
 }
 
 void IDBDatabase::OpenCursor(int64_t object_store_id,
@@ -660,7 +660,7 @@ void IDBDatabase::OpenCursor(int64_t object_store_id,
   database_remote_->OpenCursor(
       request->transaction()->Id(), object_store_id, index_id,
       std::move(key_range_ptr), direction, key_only, task_type,
-      WTF::BindOnce(&IDBRequest::OnOpenCursor, WrapWeakPersistent(request)));
+      BindOnce(&IDBRequest::OnOpenCursor, WrapWeakPersistent(request)));
 }
 
 void IDBDatabase::Count(int64_t transaction_id,

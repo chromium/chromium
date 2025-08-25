@@ -296,8 +296,8 @@ class BackendDatabaseWithMockedClose
           pending_receiver)
       : receiver_(this, std::move(pending_receiver)) {
     receiver_.set_disconnect_handler(
-        WTF::BindOnce(&BackendDatabaseWithMockedClose::DatabaseDestroyed,
-                      base::Unretained(this)));
+        BindOnce(&BackendDatabaseWithMockedClose::DatabaseDestroyed,
+                 base::Unretained(this)));
   }
 
   void DatabaseDestroyed() { destroyed_ = true; }

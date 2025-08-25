@@ -31,27 +31,26 @@ class MediaStreamComponent;
 //
 // Example usage:
 //
-//   void RespondWithSuccess(ScopedPromiseResolver<Foo> resolver) {
-//     resolver.TakeResolver()->Resolve(Foo("everything is great"));
-//   }
+// void RespondWithSuccess(ScopedPromiseResolver<Foo> resolver) {
+//   resolver.TakeResolver()->Resolve(Foo("everything is great"));
+// }
 //
-//   void OnCallbacksDropped(Persistent<PromiseResolver<Foo>> resolver) {
-//     // Ownership of the promise resolver is passed to this function if
-//     // ScopedPromiseResolver::TakeResolver isn't called before the
-//     // ScopedPromiseResolver is destroyed.
-//     resolver->Reject(FooError("everything is terrible"));
-//   }
+// void OnCallbacksDropped(Persistent<PromiseResolver<Foo>> resolver) {
+//   // Ownership of the promise resolver is passed to this function if
+//   // ScopedPromiseResolver::TakeResolver isn't called before the
+//   // ScopedPromiseResolver is destroyed.
+//   resolver->Reject(FooError("everything is terrible"));
+// }
 //
-//   // Blink client implementation
-//   void FooClientImpl::doMagic(PromiseResolver<Foo>* resolver) {
-//     ScopedPromiseResolver scoped_resolver(resolver,
-//         WTF::BindOnce(&OnCallbacksDropped));
-//
-//     // Call to some lower-level service which may never run the callback we
-//     // give it.
-//     foo_service_->DoMagic(WTF::BindOnce(&RespondWithSuccess,
-//                                          std::move(scoped_resolver)));
-//   }
+// Blink client implementation
+// void FooClientImpl::doMagic(PromiseResolver<Foo>* resolver) {
+//   ScopedPromiseResolver scoped_resolver(resolver,
+//                                         BindOnce(&OnCallbacksDropped));
+//   // Call to some lower-level service which may never run the callback we
+//   // give it.
+//   foo_service_->DoMagic(
+//       BindOnce(&RespondWithSuccess, std::move(scoped_resolver)));
+// }
 //
 // If the bound RespondWithSuccess callback actually runs, TakeResolver() will
 // relinquish ownership of the resolver.

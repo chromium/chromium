@@ -133,8 +133,8 @@ MultiResolutionImageResourceFetcher::MultiResolutionImageResourceFetcher(
 
   Start(frame, is_favicon, network::mojom::RequestMode::kNoCors,
         network::mojom::CredentialsMode::kInclude,
-        WTF::BindOnce(&MultiResolutionImageResourceFetcher::OnURLFetchComplete,
-                      WTF::Unretained(this)));
+        BindOnce(&MultiResolutionImageResourceFetcher::OnURLFetchComplete,
+                 Unretained(this)));
 }
 
 MultiResolutionImageResourceFetcher::~MultiResolutionImageResourceFetcher() {

@@ -398,11 +398,11 @@ TEST_F(IDBTransactionTest, ValueSizeTest) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   bool got_error = false;
-  auto callback = WTF::BindOnce(
+  auto callback = BindOnce(
       [](bool* got_error, mojom::blink::IDBTransactionPutResultPtr result) {
         *got_error = result->is_error_result();
       },
-      WTF::Unretained(&got_error));
+      Unretained(&got_error));
 
   V8TestingScope scope;
   MockIDBDatabase database_backend;
@@ -446,11 +446,11 @@ TEST_F(IDBTransactionTest, KeyAndValueSizeTest) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   bool got_error = false;
-  auto callback = WTF::BindOnce(
+  auto callback = BindOnce(
       [](bool* got_error, mojom::blink::IDBTransactionPutResultPtr result) {
         *got_error = result->is_error_result();
       },
-      WTF::Unretained(&got_error));
+      Unretained(&got_error));
 
   V8TestingScope scope;
   MockIDBDatabase database_backend;
