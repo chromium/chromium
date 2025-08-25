@@ -528,6 +528,16 @@ public final class TabGridViewBinderUnitTest {
     }
 
     @Test
+    public void testBindHighlightState_updateTransientState() {
+        mModel.set(TabProperties.HIGHLIGHT_STATE, TabCardHighlightState.TO_BE_HIGHLIGHTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.HIGHLIGHT_STATE);
+        verify(mViewGroup).setIsHighlighted(TabCardHighlightState.TO_BE_HIGHLIGHTED, false);
+        assertThat(
+                mModel.get(TabProperties.HIGHLIGHT_STATE),
+                equalTo(TabCardHighlightState.HIGHLIGHTED));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.MEDIA_INDICATORS_ANDROID)
     public void testMediaIndicator() {
         mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
