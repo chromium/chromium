@@ -1899,7 +1899,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         } else if (id == R.id.toggle_bookmark_bar) {
             if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
-                BookmarkBarUtils.toggleSettingEnabled(mProfileSupplier.get());
+                BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(mProfileSupplier.get());
                 return true;
             }
         }

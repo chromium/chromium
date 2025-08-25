@@ -107,7 +107,8 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
                 .setOnPreferenceChangeListener(
                         (pref, newValue) -> {
-                            BookmarkBarUtils.setSettingEnabled(getProfile(), (boolean) newValue);
+                            BookmarkBarUtils.setUserPrefsShowBookmarksBar(
+                                    getProfile(), (boolean) newValue);
                             return true;
                         });
     }
@@ -144,7 +145,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     private void updateBookmarkBarPref() {
         if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(getContext())) {
             ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
-                    .setChecked(BookmarkBarUtils.isSettingEnabled(getProfile()));
+                    .setChecked(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(getProfile()));
         }
     }
 

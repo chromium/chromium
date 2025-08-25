@@ -111,55 +111,6 @@ public class BookmarkBarUtils {
     }
 
     /**
-     * Returns true if the Bookmark Bar currently visible. The feature is visible when it is allowed
-     * in the given context and the user setting for the given profile is enabled.
-     *
-     * @param context The context in which compatibility should be assessed.
-     * @param profile The profile for which the user setting should be assessed.
-     * @return Whether the Bookmark Bar is currently visible.
-     */
-    public static boolean isBookmarkBarVisible(Context context, @Nullable Profile profile) {
-        if (sBookmarkBarVisibleForTesting != null) {
-            return sBookmarkBarVisibleForTesting;
-        }
-        return isActivityStateBookmarkBarCompatible(context) && isSettingEnabled(profile);
-    }
-
-    /**
-     * Returns whether the bookmark bar user setting is currently enabled.
-     *
-     * @param profile The profile for which the user setting should be assessed.
-     * @return Whether the user setting is currently enabled.
-     */
-    public static boolean isSettingEnabled(@Nullable Profile profile) {
-        if (sSettingEnabledForTesting != null) {
-            return sSettingEnabledForTesting;
-        }
-        return profile != null ? getPrefService(profile).getBoolean(Pref.SHOW_BOOKMARK_BAR) : false;
-    }
-
-    /**
-     * Sets whether the bookmark bar user setting is currently enabled.
-     *
-     * @param profile The profile for which the user setting should be set.
-     * @param enabled Whether the user setting should be set to enabled/disabled.
-     */
-    public static void setSettingEnabled(Profile profile, boolean enabled) {
-        getPrefService(profile).setBoolean(Pref.SHOW_BOOKMARK_BAR, enabled);
-    }
-
-    /**
-     * Toggles whether the bookmark bar user setting is currently enabled.
-     *
-     * @param profile The profile for which the user setting should be toggled.
-     */
-    public static void toggleSettingEnabled(Profile profile) {
-        final var prefService = getPrefService(profile);
-        prefService.setBoolean(
-                Pref.SHOW_BOOKMARK_BAR, !prefService.getBoolean(Pref.SHOW_BOOKMARK_BAR));
-    }
-
-    /**
      * Returns true if the current activity window is compatible with the Bookmark Bar. The Bookmark
      * Bar is disabled for narrow windows, so the window size needs to be of sufficient width for
      * the Bookmark Bar to be displayed. The current requirement is a width >= 412dp, see {@link
@@ -173,6 +124,61 @@ public class BookmarkBarUtils {
      */
     private static boolean isWindowBookmarkBarCompatible(Context context) {
         return context.getResources().getBoolean(R.bool.bookmark_bar_allowed);
+    }
+
+    /**
+     * Returns true if the Bookmark Bar currently visible. The feature is visible when it is allowed
+     * in the given context, and the show bookmark bar UserPref is enabled for the current user.
+     *
+     * @param context The context in which compatibility should be assessed.
+     * @param profile The profile for which the user UserPref should be assessed.
+     * @return Whether the Bookmark Bar is currently visible.
+     */
+    public static boolean isBookmarkBarVisible(Context context, @Nullable Profile profile) {
+        if (sBookmarkBarVisibleForTesting != null) {
+            return sBookmarkBarVisibleForTesting;
+        }
+
+        if (!isActivityStateBookmarkBarCompatible(context)) {
+            return false;
+        }
+
+        return isUserPrefsShowBookmarksBarEnabled(profile);
+    }
+
+    /**
+     * Returns whether the bookmark bar should be shown based on the current user's UserPrefs. Note:
+     * This is synced across devices for the user's profile.
+     *
+     * @param profile The profile for which the UserPref should be assessed.
+     * @return The user's current preference for showing the bookmark bar.
+     */
+    public static boolean isUserPrefsShowBookmarksBarEnabled(@Nullable Profile profile) {
+        if (sSettingEnabledForTesting != null) {
+            return sSettingEnabledForTesting;
+        }
+        return profile != null ? getPrefService(profile).getBoolean(Pref.SHOW_BOOKMARK_BAR) : false;
+    }
+
+    /**
+     * Sets whether the bookmark bar user setting is currently enabled.
+     *
+     * @param profile The profile for which the user setting should be set.
+     * @param enabled Whether the user setting should be set to enabled/disabled.
+     */
+    public static void setUserPrefsShowBookmarksBar(Profile profile, boolean enabled) {
+        getPrefService(profile).setBoolean(Pref.SHOW_BOOKMARK_BAR, enabled);
+    }
+
+    /**
+     * Toggles the value of the show bookmarks bar UserPref for the current user.
+     *
+     * @param profile The profile for which the UserPref should be toggled.
+     */
+    public static void toggleUserPrefsShowBookmarksBar(Profile profile) {
+        final var prefService = getPrefService(profile);
+        prefService.setBoolean(
+                Pref.SHOW_BOOKMARK_BAR, !prefService.getBoolean(Pref.SHOW_BOOKMARK_BAR));
     }
 
     /**

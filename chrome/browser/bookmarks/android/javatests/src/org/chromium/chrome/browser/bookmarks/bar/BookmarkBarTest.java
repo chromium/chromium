@@ -401,7 +401,7 @@ public class BookmarkBarTest {
     private void setBookmarkBarSetting(boolean enabled) {
         final var activity = mCtaTestRule.getActivity();
         final var profile = activity.getProfileProviderSupplier().get().getOriginalProfile();
-        BookmarkBarUtils.setSettingEnabled(profile, enabled);
+        BookmarkBarUtils.setUserPrefsShowBookmarksBar(profile, enabled);
     }
 
     private void waitForBookmarkBarVisibility(boolean visible) {
