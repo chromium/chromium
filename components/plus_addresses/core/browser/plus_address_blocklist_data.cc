@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_blocklist_data.h"
+#include "components/plus_addresses/core/browser/plus_address_blocklist_data.h"
 
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "components/plus_addresses/blocked_facets.pb.h"
+#include "components/plus_addresses/core/browser/blocked_facets.pb.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace plus_addresses {

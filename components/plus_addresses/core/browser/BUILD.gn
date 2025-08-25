@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -29,6 +31,22 @@ source_set("hats_utils") {
   sources = [ "plus_address_hats_utils.h" ]
 }
 
+proto_library("plus_address_blocklist_proto") {
+  sources = [ "blocked_facets.proto" ]
+}
+
+source_set("blocklist_data") {
+  sources = [
+    "plus_address_blocklist_data.cc",
+    "plus_address_blocklist_data.h",
+  ]
+  deps = [ "//base" ]
+  public_deps = [
+    ":plus_address_blocklist_proto",
+    "//third_party/re2",
+  ]
+}
+
 source_set("browser") {
   sources = [
     "plus_address_ui_utils.cc",
@@ -42,5 +60,16 @@ source_set("browser") {
     "//base",
     "//components/plus_addresses/core/browser:types",
     "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "plus_address_blocklist_data_unittest.cc" ]
+
+  deps = [
+    ":blocklist_data",
+    "//base/test:test_support",
+    "//testing/gmock",
   ]
 }

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_blocklist_data.h"
+#include "components/plus_addresses/core/browser/plus_address_blocklist_data.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/plus_addresses/blocked_facets.pb.h"
+#include "components/plus_addresses/core/browser/blocked_facets.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

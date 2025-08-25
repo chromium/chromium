@@ -3987,7 +3987,7 @@ if (!is_android) {
       "//chrome/browser/web_applications:app_service_browser_tests",
       "//chrome/browser/webauthn",
       "//components/live_caption:live_translate",
-      "//components/plus_addresses:blocklist_data",
+      "//components/plus_addresses/core/browser:blocklist_data",
       "//components/policy/core/common:common_constants",
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
     ]
