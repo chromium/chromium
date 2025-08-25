@@ -235,8 +235,9 @@ bool ChromeRequireCTDelegate::MatchSPKI(
 
   std::vector<CRYPTO_BUFFER*> candidates;
   auto intermediate_hashes = base::span(hashes).subspan(1u);
+  auto intermediate_buffers = chain->intermediate_buffers();
   for (auto [hash, cert_buffer] :
-       base::zip(intermediate_hashes, chain->intermediate_buffers())) {
+       base::zip(intermediate_hashes, intermediate_buffers)) {
     if (spkis_.contains(hash)) {
       candidates.push_back(cert_buffer.get());
     }

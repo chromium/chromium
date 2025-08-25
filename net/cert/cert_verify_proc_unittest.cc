@@ -162,14 +162,10 @@ int MockCertVerifyProc::VerifyInternal(X509Certificate* cert,
   *verify_result = result_;
   verify_result->verified_cert = cert;
   if (error_ == OK && verify_result->public_key_hashes.empty()) {
-    net::SHA256HashValue spki_hash;
-    EXPECT_TRUE(net::x509_util::CalculateSha256SpkiHash(
-        verify_result->verified_cert->cert_buffer(), &spki_hash));
-    verify_result->public_key_hashes.push_back(spki_hash);
-    for (const auto& intermediate :
-         verify_result->verified_cert->intermediate_buffers()) {
-      EXPECT_TRUE(net::x509_util::CalculateSha256SpkiHash(intermediate.get(),
-                                                          &spki_hash));
+    for (const auto& buffer : verify_result->verified_cert->cert_buffers()) {
+      net::SHA256HashValue spki_hash;
+      EXPECT_TRUE(
+          net::x509_util::CalculateSha256SpkiHash(buffer.get(), &spki_hash));
       verify_result->public_key_hashes.push_back(spki_hash);
     }
   }

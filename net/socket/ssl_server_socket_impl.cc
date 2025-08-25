@@ -40,21 +40,6 @@
 
 namespace net {
 
-namespace {
-
-std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> ChainFromX509Certificate(
-    X509Certificate* cert) {
-  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain;
-  cert_chain.reserve(1 + cert->intermediate_buffers().size());
-  cert_chain.push_back(bssl::UpRef(cert->cert_buffer()));
-  for (const auto& handle : cert->intermediate_buffers()) {
-    cert_chain.push_back(bssl::UpRef(handle.get()));
-  }
-  return cert_chain;
-}
-
-}  // namespace
-
 class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
                                          public SocketBIOAdapter::Delegate {
  public:
@@ -770,7 +755,7 @@ std::unique_ptr<SSLServerContext> CreateSSLServerContext(
     EVP_PKEY* pkey,
     const SSLServerConfig& ssl_server_config) {
   SSLServerCredential credential;
-  credential.cert_chain = ChainFromX509Certificate(certificate);
+  credential.cert_chain = certificate->CopyCertBuffers();
   credential.pkey = bssl::UpRef(pkey);
   std::vector<SSLServerCredential> credentials;
   credentials.push_back(std::move(credential));

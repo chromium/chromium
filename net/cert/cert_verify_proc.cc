@@ -165,25 +165,21 @@ bool ExaminePublicKeys(const scoped_refptr<X509Certificate>& cert,
       cert->valid_start() >= kBaselineEffectiveDate &&
       cert->valid_expiry() >= kBaselineKeysizeEffectiveDate;
 
-  X509Certificate::GetPublicKeyInfo(cert->cert_buffer(), &size_bits, &type);
-  if (should_histogram) {
-    RecordPublicKeyHistogram(kLeafCert, baseline_keysize_applies, size_bits,
-                             type);
-  }
-  if (IsWeakKey(type, size_bits))
-    weak_key = true;
-
-  const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>& intermediates =
-      cert->intermediate_buffers();
-  for (size_t i = 0; i < intermediates.size(); ++i) {
-    X509Certificate::GetPublicKeyInfo(intermediates[i].get(), &size_bits,
-                                      &type);
+  const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>& certs =
+      cert->cert_buffers();
+  for (size_t i = 0; i < certs.size(); ++i) {
+    X509Certificate::GetPublicKeyInfo(certs[i].get(), &size_bits, &type);
     if (should_histogram) {
-      RecordPublicKeyHistogram(
-          (i < intermediates.size() - 1) ? kIntermediateCert : kRootCert,
-          baseline_keysize_applies,
-          size_bits,
-          type);
+      const char* chain_position;
+      if (i == 0) {
+        chain_position = kLeafCert;
+      } else if (i < certs.size() - 1) {
+        chain_position = kIntermediateCert;
+      } else {
+        chain_position = kRootCert;
+      }
+      RecordPublicKeyHistogram(chain_position, baseline_keysize_applies,
+                               size_bits, type);
     }
     if (!weak_key && IsWeakKey(type, size_bits))
       weak_key = true;
@@ -336,29 +332,23 @@ void RecordTrustAnchorHistogram(const std::vector<SHA256HashValue>& spki_hashes,
 // in order to prevent such confusion.
 [[nodiscard]] bool InspectSignatureAlgorithmsInChain(
     CertVerifyResult* verify_result) {
-  const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>& intermediates =
-      verify_result->verified_cert->intermediate_buffers();
-
   // If there are no intermediates, then the leaf is trusted or verification
   // failed.
-  if (intermediates.empty())
+  if (verify_result->verified_cert->intermediate_buffers().empty()) {
     return true;
+  }
 
   DCHECK(!verify_result->has_sha1);
 
-  // Fill in hash algorithms for the leaf certificate.
-  if (!InspectSignatureAlgorithmForCert(
-          verify_result->verified_cert->cert_buffer(), verify_result)) {
-    return false;
-  }
-
-  // Fill in hash algorithms for the intermediate cerificates, excluding the
+  // Fill in hash algorithms for the certificates, excluding the
   // final one (which is presumably the trust anchor; may be incorrect for
   // partial chains).
-  for (size_t i = 0; i + 1 < intermediates.size(); ++i) {
-    if (!InspectSignatureAlgorithmForCert(intermediates[i].get(),
-                                          verify_result))
+  for (const auto& cert :
+       base::span(verify_result->verified_cert->cert_buffers())
+           .first(verify_result->verified_cert->cert_buffers().size() - 1)) {
+    if (!InspectSignatureAlgorithmForCert(cert.get(), verify_result)) {
       return false;
+    }
   }
 
   return true;
@@ -481,7 +471,7 @@ int CertVerifyProc::Verify(X509Certificate* cert,
 
   CHECK(verify_result->verified_cert);
   if (rv == OK) {
-    CHECK_EQ(verify_result->verified_cert->intermediate_buffers().size() + 1,
+    CHECK_EQ(verify_result->verified_cert->cert_buffers().size(),
              verify_result->public_key_hashes.size());
   }
 
@@ -642,26 +632,21 @@ void CertVerifyProc::LogNameNormalizationMetrics(
     return;
   }
 
-  std::vector<CRYPTO_BUFFER*> der_certs;
-  der_certs.push_back(verified_cert->cert_buffer());
-  for (const auto& buf : verified_cert->intermediate_buffers())
-    der_certs.push_back(buf.get());
-
   bssl::ParseCertificateOptions options;
   options.allow_invalid_serial_numbers = true;
 
   std::vector<bssl::der::Input> subjects;
   std::vector<bssl::der::Input> issuers;
 
-  for (auto* buf : der_certs) {
+  for (const auto& buf : verified_cert->cert_buffers()) {
     bssl::der::Input tbs_certificate_tlv;
     bssl::der::Input signature_algorithm_tlv;
     bssl::der::BitString signature_value;
     bssl::ParsedTbsCertificate tbs;
-    if (!bssl::ParseCertificate(
-            bssl::der::Input(CRYPTO_BUFFER_data(buf), CRYPTO_BUFFER_len(buf)),
-            &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
-            nullptr /* errors*/) ||
+    if (!bssl::ParseCertificate(bssl::der::Input(CRYPTO_BUFFER_data(buf.get()),
+                                                 CRYPTO_BUFFER_len(buf.get())),
+                                &tbs_certificate_tlv, &signature_algorithm_tlv,
+                                &signature_value, nullptr /* errors*/) ||
         !ParseTbsCertificate(tbs_certificate_tlv, options, &tbs,
                              nullptr /*errors*/)) {
       LogNameNormalizationResult(histogram_suffix,

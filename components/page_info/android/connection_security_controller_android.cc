@@ -77,11 +77,9 @@ ScopedJavaLocalRef<jobjectArray> CertToJavaArray(
     const scoped_refptr<net::X509Certificate>& cert) {
   std::vector<std::string> cert_chain;
   if (cert) {
-    cert_chain.reserve(1 + cert->intermediate_buffers().size());
-    cert_chain.emplace_back(
-        net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()));
-    for (const auto& intermediate : cert->intermediate_buffers()) {
-      cert_chain.emplace_back(CryptoBufferAsStringPiece(intermediate.get()));
+    cert_chain.reserve(cert->cert_buffers().size());
+    for (const auto& handle : cert->cert_buffers()) {
+      cert_chain.emplace_back(CryptoBufferAsStringPiece(handle.get()));
     }
   }
   return base::android::ToJavaArrayOfByteArray(env, cert_chain);

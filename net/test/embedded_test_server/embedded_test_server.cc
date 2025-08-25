@@ -226,18 +226,6 @@ void DispatchResponseToDelegate(std::unique_ptr<HttpResponse> response,
   response_ptr->SendResponse(delegate);
 }
 
-// TODO(crbug.com/433569398): Remove this.
-std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> ChainFromX509Certificate(
-    X509Certificate* cert) {
-  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain;
-  cert_chain.reserve(1 + cert->intermediate_buffers().size());
-  cert_chain.push_back(bssl::UpRef(cert->cert_buffer()));
-  for (const auto& handle : cert->intermediate_buffers()) {
-    cert_chain.push_back(bssl::UpRef(handle.get()));
-  }
-  return cert_chain;
-}
-
 }  // namespace
 
 EmbeddedTestServerHandle::EmbeddedTestServerHandle(
@@ -433,8 +421,7 @@ EmbeddedTestServer::InitializeCertAndKeyFromFile() {
     return {};
   }
 
-  ssl_server_credential.cert_chain =
-      ChainFromX509Certificate(credential.x509_cert.get());
+  ssl_server_credential.cert_chain = credential.x509_cert->CopyCertBuffers();
 
   ssl_server_credential.pkey =
       key_util::LoadEVP_PKEYFromPEM(certs_dir.AppendASCII(cert_name));

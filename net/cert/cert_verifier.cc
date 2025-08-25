@@ -101,8 +101,7 @@ CertVerifier::RequestParams::RequestParams(
   // sake.
   SHA256_CTX ctx;
   SHA256_Init(&ctx);
-  Sha256UpdateLengthPrefixed(&ctx, certificate_->cert_span());
-  for (const auto& cert_handle : certificate_->intermediate_buffers()) {
+  for (const auto& cert_handle : certificate_->cert_buffers()) {
     Sha256UpdateLengthPrefixed(
         &ctx, x509_util::CryptoBufferAsSpan(cert_handle.get()));
   }

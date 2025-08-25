@@ -1544,8 +1544,7 @@ int SSLClientSocketImpl::ClientCertRequestCallback(SSL* ssl) {
 
     net_log_.AddEventWithIntParams(
         NetLogEventType::SSL_CLIENT_CERT_PROVIDED, "cert_count",
-        base::checked_cast<int>(1 +
-                                client_cert_->intermediate_buffers().size()));
+        base::checked_cast<int>(client_cert_->cert_buffers().size()));
     return 1;
   }
 #endif  // !BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)

@@ -60,10 +60,7 @@ CreateCertificateSecurityState(
     const security_state::VisibleSecurityState& state) {
   auto certificate = std::make_unique<protocol::Array<protocol::String>>();
   if (state.certificate) {
-    certificate->push_back(
-        base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
-            state.certificate->cert_buffer())));
-    for (const auto& cert : state.certificate->intermediate_buffers()) {
+    for (const auto& cert : state.certificate->cert_buffers()) {
       certificate->push_back(base::Base64Encode(
           net::x509_util::CryptoBufferAsStringPiece(cert.get())));
     }

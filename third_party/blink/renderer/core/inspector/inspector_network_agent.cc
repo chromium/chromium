@@ -2550,10 +2550,7 @@ protocol::Response InspectorNetworkAgent::getCertificate(
         SecurityOrigin::Create(resource->RequestedURL());
     net::X509Certificate* cert = resource->Certificate();
     if (resource_origin->IsSameOriginWith(security_origin.get()) && cert) {
-      (*certificate)
-          ->push_back(Base64Encode(
-              net::x509_util::CryptoBufferAsSpan(cert->cert_buffer())));
-      for (const auto& buf : cert->intermediate_buffers()) {
+      for (const auto& buf : cert->cert_buffers()) {
         (*certificate)
             ->push_back(
                 Base64Encode(net::x509_util::CryptoBufferAsSpan(buf.get())));

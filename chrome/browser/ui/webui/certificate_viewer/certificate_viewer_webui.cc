@@ -337,12 +337,7 @@ std::string DialogArgsForCertList(
 void ShowCertificateViewer(WebContents* web_contents,
                            gfx::NativeWindow parent,
                            net::X509Certificate* cert) {
-  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_buffers;
-  cert_buffers.push_back(bssl::UpRef(cert->cert_buffer()));
-  for (const auto& intermediate : cert->intermediate_buffers()) {
-    cert_buffers.push_back(bssl::UpRef(intermediate));
-  }
-  CertificateViewerDialog::ShowConstrained(std::move(cert_buffers),
+  CertificateViewerDialog::ShowConstrained(cert->CopyCertBuffers(),
                                            web_contents, parent);
 }
 
