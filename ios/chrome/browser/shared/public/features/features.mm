@@ -761,7 +761,7 @@ bool IsHomeMemoryImprovementsEnabled() {
   return base::FeatureList::IsEnabled(kHomeMemoryImprovements);
 }
 
-BASE_FEATURE(IdentityConfirmationSnackbar, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(IdentityConfirmationSnackbar, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature parameters for kIdentityConfirmationSnackbar.
 constexpr base::FeatureParam<base::TimeDelta>
@@ -790,7 +790,7 @@ bool IsBlueDotOnToolsMenuButtoneEnabled() {
 }
 
 BASE_FEATURE(SeparateProfilesForManagedAccounts,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature parameter for kSeparateProfilesForManagedAccountsForceMigration.
 constexpr base::FeatureParam<base::TimeDelta> kMultiProfileMigrationGracePeriod{

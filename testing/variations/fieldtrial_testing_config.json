@@ -22911,23 +22911,6 @@
             ]
         }
     ],
-    "SeparateProfilesForManagedAccounts": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IdentityConfirmationSnackbar",
-                        "IdentityDiscAccountMenu",
-                        "SeparateProfilesForManagedAccounts"
-                    ]
-                }
-            ]
-        }
-    ],
     "ServerBasedTranscriptionForScreencast": [
         {
             "platforms": [
