@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/time/time.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
@@ -29,14 +30,14 @@ const char kMultiple[] = "MULTIPLE";
 const char kTimestamp[] = "TIMESTAMP";
 
 // The period of |incremental_transfer_abort_timer_|. Arbitrary but must be <=
-// than kIncrementalTransferTimeoutMs.
-const int KSelectionOwnerTimerPeriodMs = 1000;
+// than kIncrementalTransferTimeout.
+constexpr base::TimeDelta kSelectionOwnerTimerPeriod = base::Seconds(1);
 
 // The amount of time to wait for the selection requestor to process the data
 // sent by the selection owner before aborting an incremental data transfer.
-const int kIncrementalTransferTimeoutMs = 10000;
+constexpr base::TimeDelta kIncrementalTransferTimeout = base::Seconds(10);
 
-static_assert(KSelectionOwnerTimerPeriodMs <= kIncrementalTransferTimeoutMs,
+static_assert(kSelectionOwnerTimerPeriod <= kIncrementalTransferTimeout,
               "timer period must be <= transfer timeout");
 
 size_t GetMaxIncrementalTransferSize() {
@@ -237,8 +238,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
       // the selection result before sending the first chunk of data. The
       // selection requestor indicates this by deleting |property|.
       base::TimeTicks timeout =
-          base::TimeTicks::Now() +
-          base::Milliseconds(kIncrementalTransferTimeoutMs);
+          base::TimeTicks::Now() + kIncrementalTransferTimeout;
       incremental_transfers_.emplace_back(
           requestor, target, property,
           connection_->ScopedSelectEvent(requestor,
@@ -250,7 +250,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
       // the data transfer.
       if (!incremental_transfer_abort_timer_.IsRunning()) {
         incremental_transfer_abort_timer_.Start(
-            FROM_HERE, base::Milliseconds(KSelectionOwnerTimerPeriodMs), this,
+            FROM_HERE, kSelectionOwnerTimerPeriod, this,
             &SelectionOwner::AbortStaleIncrementalTransfers);
       }
     } else {
@@ -275,8 +275,7 @@ void SelectionOwner::ProcessIncrementalTransfer(IncrementalTransfer* transfer) {
   connection_->SetArrayProperty(transfer->window, transfer->property,
                                 transfer->target, buf);
   transfer->offset += chunk_length;
-  transfer->timeout = base::TimeTicks::Now() +
-                      base::Milliseconds(kIncrementalTransferTimeoutMs);
+  transfer->timeout = base::TimeTicks::Now() + kIncrementalTransferTimeout;
 
   // When offset == data->size(), we still need to transfer a zero-sized chunk
   // to notify the selection requestor that the transfer is complete. Clear
