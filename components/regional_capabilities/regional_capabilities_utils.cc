@@ -105,7 +105,7 @@ std::vector<const PrepopulatedEngine*> GetPrepopulatedEngines(
   std::vector<const PrepopulatedEngine*> engines;
 
   switch (search_engine_list_type) {
-    case SearchEngineListType::kTopFive: {
+    case SearchEngineListType::kTopN: {
       // Some regional lists can have more (e.g. EEA lists) or fewer (e.g. the
       // default) than 5 entries.
       size_t num_top_engines = std::min(regional_settings.search_engines.size(),

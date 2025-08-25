@@ -159,11 +159,10 @@ std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(
     return std::vector<std::unique_ptr<TemplateURLData>>();
   }
 
-  return base::ToVector(
-      regional_capabilities::GetPrepopulatedEngines(
-          country_id, prefs,
-          regional_capabilities::SearchEngineListType::kTopFive),
-      &PrepopulatedEngineToTemplateURLData);
+  return base::ToVector(regional_capabilities::GetPrepopulatedEngines(
+                            country_id, prefs,
+                            regional_capabilities::SearchEngineListType::kTopN),
+                        &PrepopulatedEngineToTemplateURLData);
 }
 
 #endif

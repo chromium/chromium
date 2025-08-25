@@ -35,7 +35,7 @@ constexpr ProgramSettings kTaiyakiSettings{
 constexpr ProgramSettings kDefaultSettings{
     .program = Program::kDefault,
     .associated_countries = base::raw_span<const country_codes::CountryId>(),
-    .search_engine_list_type = SearchEngineListType::kTopFive,
+    .search_engine_list_type = SearchEngineListType::kTopN,
     .can_show_search_engine_choice_screen = false,
 };
 

@@ -20,9 +20,10 @@ enum class Program: int {
 
 // Describes how search engines should be listed.
 enum class SearchEngineListType {
-  // The top 5 (at most) engines of the current country's list should be used,
-  // in the order specified by the regional settings.
-  kTopFive,
+  // The top N (`kTopSearchEnginesThreshold` at most) engines of the current
+  // country's list should be used, in the order specified by the regional
+  // settings.
+  kTopN,
   // The list of search engines should be fully shuffled.
   kShuffled,
 };
