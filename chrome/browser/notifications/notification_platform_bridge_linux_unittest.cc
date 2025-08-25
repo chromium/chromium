@@ -257,7 +257,7 @@ ACTION_P2(OnGetServerInformation, server_name, server_version) {
   writer.AppendString("chromium");      // vendor
   writer.AppendString(server_version);  // version
   writer.AppendString("1.2");           // spec_version
-  std::move(*arg2).Run(response.get());
+  std::move(*arg2).Run(response.get(), nullptr);
 }
 
 ACTION_P(RegisterSignalCallback, callback_addr) {
@@ -267,13 +267,13 @@ ACTION_P(RegisterSignalCallback, callback_addr) {
 }
 
 ACTION_P(RespondWith, response) {
-  std::move(*arg2).Run(response.get());
+  std::move(*arg2).Run(response.get(), nullptr);
 }
 
 ACTION_P2(OnNotify, verifier, id) {
   verifier(ParseRequest(arg0));
   auto response = GetIdResponse(id);
-  std::move(*arg2).Run(response.get());
+  std::move(*arg2).Run(response.get(), nullptr);
 }
 
 ACTION(OnCloseNotification) {
@@ -288,7 +288,7 @@ ACTION(OnCloseNotification) {
   EXPECT_FALSE(reader.HasMoreData());
 
   auto response = dbus::Response::CreateEmpty();
-  std::move(*callback).Run(response.get());
+  std::move(*callback).Run(response.get(), nullptr);
 }
 
 ACTION_P(OnNotificationBridgeReady, success) {
@@ -378,12 +378,13 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
     writer.AppendArrayOfStrings(test_params.capabilities);
 
     EXPECT_CALL(*mock_notification_proxy_.get(),
-                DoCallMethod(Calls("GetCapabilities"), _, _))
+                DoCallMethodWithErrorResponse(Calls("GetCapabilities"), _, _))
         .WillOnce(RespondWith(std::move(capabilities_response)));
 
     if (test_params.expect_init_success) {
-      EXPECT_CALL(*mock_notification_proxy_.get(),
-                  DoCallMethod(Calls("GetServerInformation"), _, _))
+      EXPECT_CALL(
+          *mock_notification_proxy_.get(),
+          DoCallMethodWithErrorResponse(Calls("GetServerInformation"), _, _))
           .WillOnce(OnGetServerInformation(test_params.server_name,
                                            test_params.server_version));
     }
@@ -471,10 +472,10 @@ TEST_F(NotificationPlatformBridgeLinuxTest, SetUpAndTearDown) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, NotifyAndCloseFormat) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify([](const NotificationRequest&) {}, 1));
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("CloseNotification"), _, _))
+              DoCallMethodWithErrorResponse(Calls("CloseNotification"), _, _))
       .WillOnce(OnCloseNotification());
 
   CreateNotificationBridgeLinux(TestParams());
@@ -487,7 +488,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotifyAndCloseFormat) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, ProgressPercentageAddedToSummary) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [](const NotificationRequest& request) {
             EXPECT_EQ(
@@ -510,7 +511,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, ProgressPercentageAddedToSummary) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, NotificationListItemsInBody) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [](const NotificationRequest& request) {
             EXPECT_EQ("<b>abc</b> 123\n<b>def</b> 456", request.body);
@@ -533,7 +534,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationTimeoutsNoPersistence) {
   const int32_t kExpireTimeout = 25000;
   const int32_t kExpireTimeoutNever = 0;
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [=](const NotificationRequest& request) {
             EXPECT_EQ(kExpireTimeout, request.expire_timeout);
@@ -559,7 +560,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest,
        NotificationTimeoutWithPersistence) {
   const int32_t kExpireTimeoutDefault = -1;
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [=](const NotificationRequest& request) {
             EXPECT_EQ(kExpireTimeoutDefault, request.expire_timeout);
@@ -587,7 +588,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationImages) {
       gfx::Image(gfx::test::CreateImageSkia(original_width, original_height));
 
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [=](const NotificationRequest& request) {
             std::string file_name;
@@ -618,7 +619,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationImages) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, NotificationAttribution) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [](const NotificationRequest& request) {
             EXPECT_EQ(
@@ -642,7 +643,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationAttribution) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, NotificationAttributionKde) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [](const NotificationRequest& request) {
             EXPECT_EQ("Body text", request.body);
@@ -680,7 +681,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, MissingBodyCapability) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, EscapeHtml) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [](const NotificationRequest& request) {
             EXPECT_EQ("&lt;span id='1' class=\"2\"&gt;&amp;#39;&lt;/span&gt;",
@@ -700,7 +701,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, EscapeHtml) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, Silent) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [=](const NotificationRequest& request) {
             EXPECT_FALSE(request.silent);
@@ -724,7 +725,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, Silent) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, OriginUrlFormat) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [=](const NotificationRequest& request) {
             EXPECT_EQ("google.com", request.body);
@@ -790,7 +791,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, OriginUrlFormat) {
 TEST_F(NotificationPlatformBridgeLinuxTest,
        OldCinnamonNotificationsHaveClosebutton) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [](const NotificationRequest& request) {
             ASSERT_EQ(3UL, request.actions.size());
@@ -814,7 +815,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest,
 TEST_F(NotificationPlatformBridgeLinuxTest,
        NewCinnamonNotificationsDontHaveClosebutton) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [](const NotificationRequest& request) {
             ASSERT_EQ(2UL, request.actions.size());
@@ -835,7 +836,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest,
 
 TEST_F(NotificationPlatformBridgeLinuxTest, NoSettingsButton) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify(
           [](const NotificationRequest& request) {
             ASSERT_EQ(1UL, request.actions.size());
@@ -865,7 +866,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, ActivationToken) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, DefaultButtonForwards) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify([](const NotificationRequest&) {}, 1));
 
   CreateNotificationBridgeLinux(TestParams());
@@ -885,7 +886,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, DefaultButtonForwards) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, SettingsButtonForwards) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify([](const NotificationRequest&) {}, 1));
 
   CreateNotificationBridgeLinux(TestParams());
@@ -904,7 +905,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, SettingsButtonForwards) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, ActionButtonForwards) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify([](const NotificationRequest&) {}, 1));
 
   CreateNotificationBridgeLinux(TestParams());
@@ -926,10 +927,10 @@ TEST_F(NotificationPlatformBridgeLinuxTest, ActionButtonForwards) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, CloseButtonForwards) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify([](const NotificationRequest&) {}, 1));
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("CloseNotification"), _, _))
+              DoCallMethodWithErrorResponse(Calls("CloseNotification"), _, _))
       .WillOnce(OnCloseNotification());
 
   // The custom close button is only auto-added on older Cinnamon.
@@ -949,7 +950,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, CloseButtonForwards) {
 
 TEST_F(NotificationPlatformBridgeLinuxTest, NotificationRepliedForwards) {
   EXPECT_CALL(*mock_notification_proxy_.get(),
-              DoCallMethod(Calls("Notify"), _, _))
+              DoCallMethodWithErrorResponse(Calls("Notify"), _, _))
       .WillOnce(OnNotify([](const NotificationRequest&) {}, 1));
 
   CreateNotificationBridgeLinux(TestParams().SetCapabilities(
