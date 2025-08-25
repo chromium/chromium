@@ -72,6 +72,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private final ObserverList<AccountsChangeObserver> mObservers = new ObserverList<>();
 
     private final AtomicReference<List<Account>> mAllAccounts = new AtomicReference<>();
+    private final AtomicReference<List<PlatformAccount>> mAllPlatformAccounts =
+            new AtomicReference<>();
     private final AtomicReference<List<PatternMatcher>> mAccountRestrictionPatterns =
             new AtomicReference<>();
 
@@ -93,7 +95,14 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public AccountManagerFacadeImpl(AccountManagerDelegate delegate) {
         ThreadUtils.assertOnUiThread();
         mDelegate = delegate;
-        mDelegate.attachAccountsChangeObserver(this::onAccountsUpdated);
+
+        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            mDelegate.attachAccountsChangeObserver(this::onPlatformAccountsUpdated);
+            onPlatformAccountsUpdated();
+        } else {
+            mDelegate.attachAccountsChangeObserver(this::onAccountsUpdated);
+            onAccountsUpdated();
+        }
         new AccountRestrictionPatternReceiver(this::onAccountRestrictionPatternsUpdated);
 
         getAccounts()
@@ -102,7 +111,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                             RecordHistogram.recordExactLinearHistogram(
                                     "Signin.AndroidNumberOfDeviceAccounts", accounts.size(), 50);
                         });
-        onAccountsUpdated();
     }
 
     /**
@@ -331,6 +339,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     /** Fetches gaia ids, creates account objects and updates {@link #mAccountsPromise}. */
     @MainThread
     private void fetchGaiaIdsAndUpdateCoreAccountInfos() {
+        assert !SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
         ThreadUtils.assertOnUiThread();
         if (mFetchGaiaIdsTask != null) {
             // Cancel previous fetch task as it is obsolete now.
@@ -343,6 +352,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     private void onAccountsUpdated() {
+        assert !SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
         ThreadUtils.assertOnUiThread();
         new AsyncTask<@Nullable List<Account>>() {
             @Override
@@ -394,6 +404,61 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
+    private void onPlatformAccountsUpdated() {
+        assert SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
+        ThreadUtils.assertOnUiThread();
+        new AsyncTask<@Nullable List<PlatformAccount>>() {
+            @Override
+            protected @Nullable List<PlatformAccount> doInBackground() {
+                try {
+                    return mDelegate.getPlatformAccountsSynchronous();
+                } catch (AccountManagerDelegateException delegateException) {
+                    Log.e(TAG, "Error fetching accounts from the delegate.", delegateException);
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(@Nullable List<PlatformAccount> allAccounts) {
+                mDidAccountFetchSucceed = true;
+                if (allAccounts == null) {
+                    mDidAccountFetchSucceed = false;
+                    if (shouldRetry()) {
+                        // Wait for a fixed amount of time then try to fetch the accounts again.
+                        PostTask.postDelayedTask(
+                                TaskTraits.UI_USER_VISIBLE,
+                                () -> {
+                                    onPlatformAccountsUpdated();
+                                },
+                                GET_ACCOUNTS_BACKOFF_DELAY);
+                        return;
+                    } else {
+                        // We shouldn't wait indefinitely for the account fetching to succeed, at it
+                        // might block certain features. Fall back to an empty list to allow the
+                        // user to proceed.
+                        allAccounts =
+                                mAllPlatformAccounts.get() == null
+                                        ? List.of()
+                                        : mAllPlatformAccounts.get();
+                    }
+                }
+                if (mNumberOfRetries != 0) {
+                    RecordHistogram.recordBooleanHistogram(
+                            "Signin.GetAccountsBackoffSuccess", mDidAccountFetchSucceed);
+                    if (mDidAccountFetchSucceed) {
+                        RecordHistogram.recordExactLinearHistogram(
+                                "Signin.GetAccountsBackoffRetries",
+                                mNumberOfRetries,
+                                MAXIMUM_RETRIES + 1);
+                    }
+                }
+                mNumberOfRetries = 0;
+                mAllPlatformAccounts.set(allAccounts);
+                updateAccountInfos();
+            }
+        }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+    }
+
     private boolean shouldRetry() {
         if (mNumberOfRetries < MAXIMUM_RETRIES) {
             mNumberOfRetries += 1;
@@ -404,18 +469,69 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     private void onAccountRestrictionPatternsUpdated(List<PatternMatcher> patternMatchers) {
         mAccountRestrictionPatterns.set(patternMatchers);
+        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            updateAccountInfos();
+            return;
+        }
         updateAccounts();
     }
 
     @MainThread
     private void updateAccounts() {
+        assert !SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
         if (mAllAccounts.get() == null || mAccountRestrictionPatterns.get() == null) {
             return;
         }
         fetchGaiaIdsAndUpdateCoreAccountInfos();
     }
 
+    @MainThread
+    private void updateAccountInfos() {
+        assert SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
+
+        if (mAllPlatformAccounts.get() == null || mAccountRestrictionPatterns.get() == null) {
+            return;
+        }
+
+        List<AccountInfo> accounts = new ArrayList<>();
+        for (PlatformAccount account : getFilteredPlatformAccounts()) {
+            accounts.add(new AccountInfo.Builder(account.getEmail(), account.getId()).build());
+        }
+
+        if (mAccountsPromise.isFulfilled()) {
+            mAccountsPromise = Promise.fulfilled(accounts);
+        } else {
+            mAccountsPromise.fulfill(accounts);
+        }
+
+        for (AccountsChangeObserver observer : mObservers) {
+            observer.onCoreAccountInfosChanged();
+        }
+    }
+
+    private List<PlatformAccount> getFilteredPlatformAccounts() {
+        assert SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
+        List<PlatformAccount> filteredAccounts = new ArrayList<>();
+        List<PatternMatcher> restrictions = assumeNonNull(mAccountRestrictionPatterns.get());
+        for (PlatformAccount account : assumeNonNull(mAllPlatformAccounts.get())) {
+            String email = account.getEmail();
+            boolean matches = restrictions.isEmpty();
+            for (PatternMatcher matcher : restrictions) {
+                if (matches) {
+                    break;
+                }
+                matches = matcher.matches(email);
+            }
+            if (matches) {
+                filteredAccounts.add(account);
+            }
+        }
+
+        return filteredAccounts;
+    }
+
     private List<String> getFilteredAccountEmails() {
+        assert !SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
         List<String> ret = new ArrayList<>();
         List<PatternMatcher> restrictions = mAccountRestrictionPatterns.get();
         assumeNonNull(restrictions);
@@ -449,6 +565,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public void resetAccountsForTesting() {
         mAccountsPromise = new Promise<>();
         mAllAccounts.set(null);
+        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            updateAccountInfos();
+            return;
+        }
         updateAccounts();
     }
 
@@ -462,6 +582,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         private final List<String> mEmails;
 
         GetAccountAsyncTask(List<String> emails) {
+            assert !SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
             mEmails = emails;
         }
 

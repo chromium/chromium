@@ -38,6 +38,12 @@ const base::FeatureParam<int> kHistoryOptInEducationalTipVariation(
     "history_opt_in_educational_tip_param",
     0);
 
+// When enabled a new library is used to fetch accounts via
+// AccountManagerAccountManagerDelegate
+BASE_FEATURE(kMigrateAccountManagerDelegate,
+             "MigrateAccountManagerDelegate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature to bypass double-checking that signin callers have correctly gotten
 // the user to accept account management. This check is slow and not strictly
 // necessary, so disable it while we work on adding caching.

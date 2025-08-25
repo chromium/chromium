@@ -9,6 +9,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.cached_flags.CachedFlag;
+
+import java.util.List;
 
 /** Java accessor for base/android/feature_map.h state. */
 @JNINamespace("signin")
@@ -19,7 +22,13 @@ public final class SigninFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private SigninFeatureMap() {}
 
-    /** @return the singleton SigninFeatureMap. */
+    public static final CachedFlag sMigrateAccountManagerDelegate =
+            new CachedFlag(sInstance, SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE, false);
+    public static final List<CachedFlag> sCachedFlags = List.of(sMigrateAccountManagerDelegate);
+
+    /**
+     * @return the singleton SigninFeatureMap.
+     */
     public static SigninFeatureMap getInstance() {
         return sInstance;
     }

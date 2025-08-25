@@ -21,23 +21,31 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterProvider;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link AccountManagerFacade}. See also {@link AccountManagerFacadeImplTest}. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
+@DoNotBatch(reason = "Test needs to be torn down to allow parameters to take effect")
 public class AccountManagerFacadeTest {
     private static final class BlockingAccountManagerDelegate extends FakeAccountManagerDelegate {
         private @Nullable CountDownLatch mGetAccountsLatch;
@@ -47,6 +55,13 @@ public class AccountManagerFacadeTest {
         public Account[] getAccountsSynchronous() throws AccountManagerDelegateException {
             maybeBlockOnLatch(mGetAccountsLatch);
             return super.getAccountsSynchronous();
+        }
+
+        @Override
+        public List<PlatformAccount> getPlatformAccountsSynchronous()
+                throws AccountManagerDelegateException {
+            maybeBlockOnLatch(mGetAccountsLatch);
+            return super.getPlatformAccountsSynchronous();
         }
 
         void blockGetAccount() {
@@ -126,6 +141,25 @@ public class AccountManagerFacadeTest {
 
     private static final String TOKEN_SCOPE = "oauth2:http://example.com/scope";
 
+    public static class AccountManagerFacadeTestParams implements ParameterProvider {
+        private static final List<ParameterSet> sAccountManagerFacadeTestParams =
+                Arrays.asList(
+                        new ParameterSet().value(true).name("migrateAccountManagerDelegateEnabled"),
+                        new ParameterSet()
+                                .value(false)
+                                .name("migrateAccountManagerDelegateDisabled"));
+
+        @Override
+        public List<ParameterSet> getParameters() {
+            return sAccountManagerFacadeTestParams;
+        }
+    }
+
+    @ParameterAnnotations.UseMethodParameterBefore(AccountManagerFacadeTestParams.class)
+    public void enableMigrateAccountManagerDelegateFlag(boolean enabled) {
+        FeatureOverrides.overrideFlag(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE, enabled);
+    }
+
     @Before
     public void setUp() {
         // Load native library because GoogleServiceAuthError may be created during access token
@@ -135,7 +169,8 @@ public class AccountManagerFacadeTest {
 
     @Test
     @SmallTest
-    public void testIsCachePopulated() throws InterruptedException {
+    @ParameterAnnotations.UseMethodParameter(AccountManagerFacadeTestParams.class)
+    public void testIsCachePopulated(boolean isMigrationEnabled) throws InterruptedException {
         BlockingAccountManagerDelegate blockingDelegate = new BlockingAccountManagerDelegate();
         blockingDelegate.blockGetAccount();
         AccountManagerFacade facade =
@@ -168,7 +203,9 @@ public class AccountManagerFacadeTest {
 
     @Test
     @SmallTest
-    public void testRunAfterCacheIsPopulated() throws InterruptedException {
+    @ParameterAnnotations.UseMethodParameter(AccountManagerFacadeTestParams.class)
+    public void testRunAfterCacheIsPopulated(boolean isMigrationEnabled)
+            throws InterruptedException {
         BlockingAccountManagerDelegate blockingDelegate = new BlockingAccountManagerDelegate();
         blockingDelegate.blockGetAccount();
         AccountManagerFacade facade =
@@ -233,7 +270,8 @@ public class AccountManagerFacadeTest {
 
     @Test
     @SmallTest
-    public void testGetOAuth2AccessTokenOnFailure() throws AuthException {
+    @ParameterAnnotations.UseMethodParameter(AccountManagerFacadeTestParams.class)
+    public void testGetOAuth2AccessTokenOnFailure(boolean isMigrationEnabled) throws AuthException {
         FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
         AccountManagerFacade facade =
                 ThreadUtils.runOnUiThreadBlocking(() -> new AccountManagerFacadeImpl(delegate));
@@ -287,7 +325,9 @@ public class AccountManagerFacadeTest {
 
     @Test
     @SmallTest
-    public void testWaitForPendingTokenRequestsToComplete() throws Exception {
+    @ParameterAnnotations.UseMethodParameter(AccountManagerFacadeTestParams.class)
+    public void testWaitForPendingTokenRequestsToComplete(boolean isMigrationEnabled)
+            throws Exception {
         BlockingAccountManagerDelegate blockingDelegate = new BlockingAccountManagerDelegate();
         blockingDelegate.addAccount(TestAccounts.ACCOUNT1);
         blockingDelegate.blockGetAuthToken();

@@ -46,6 +46,9 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<int> kHistoryOptInEducationalTipVariation;
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kMigrateAccountManagerDelegate);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSkipCheckForAccountManagementOnSignin);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
