@@ -22,3 +22,5 @@ per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 per-file *_param_traits*.*=set noparent
 per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
+
+per-file accessibility_features.*=lwinston@google.com,kristislee@google.com
