@@ -301,6 +301,9 @@ DEFINE_BINARY_PROTO_FUZZER(
   while (!webnn_graph_fuzzer_instance.IsFinished()) {
     webnn_graph_fuzzer_instance.NextAction();
   }
+  // Ensure that any tasks scheduled by `webnn_graph_fuzzer_instance` are
+  // executed before it is freed. See https://crbug.com/441020155.
+  init_globals->task_environment->RunUntilIdle();
 }
 
 }  // namespace
