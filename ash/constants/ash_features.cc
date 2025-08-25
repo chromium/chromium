@@ -679,7 +679,7 @@ BASE_FEATURE(FamilyLinkOnSchoolDevice, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(FastPair, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the usage of the 2025 format for Fast Pair advertisements.
-BASE_FEATURE(FastPairAdvertisingFormat2025, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(FastPairAdvertisingFormat2025, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables logic for handling BLE address rotations during retroactive pair
 // scenarios.
