@@ -36,6 +36,7 @@ found in the LICENSE file.
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title_input_text"
+                android:contentDescription="@string/instance_switcher_name_window_confirm_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="flagNoExtractUi"
