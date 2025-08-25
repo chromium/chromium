@@ -24,7 +24,7 @@ FileSystemObservation::FileSystemObservation(
                  execution_context_->GetTaskRunner(TaskType::kStorage));
 
   // Add a disconnect handler so we can cleanup appropriately.
-  receiver_.set_disconnect_handler(WTF::BindOnce(
+  receiver_.set_disconnect_handler(BindOnce(
       &FileSystemObservation::OnRemoteDisconnected, WrapWeakPersistent(this)));
 }
 
@@ -39,7 +39,7 @@ void FileSystemObservation::DisconnectReceiver() {
 }
 
 void FileSystemObservation::OnFileChanges(
-    WTF::Vector<mojom::blink::FileSystemAccessChangePtr> mojo_changes) {
+    Vector<mojom::blink::FileSystemAccessChangePtr> mojo_changes) {
   observer_->OnFileChanges(std::move(mojo_changes));
 }
 

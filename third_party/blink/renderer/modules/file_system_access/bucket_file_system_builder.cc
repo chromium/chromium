@@ -72,10 +72,10 @@ void BucketFileSystemBuilder::DidReadDirectory(
 
   self_keep_alive_.Clear();
 
-  auto barrier_callback = base::BarrierClosure(
-      file_system_handle_queue_.size(),
-      WTF::BindOnce(&BucketFileSystemBuilder::DidBuildDirectory,
-                    WrapWeakPersistent(this)));
+  auto barrier_callback =
+      base::BarrierClosure(file_system_handle_queue_.size(),
+                           BindOnce(&BucketFileSystemBuilder::DidBuildDirectory,
+                                    WrapWeakPersistent(this)));
 
   for (auto entry : file_system_handle_queue_) {
     if (entry->isFile()) {
@@ -84,7 +84,7 @@ void BucketFileSystemBuilder::DidReadDirectory(
 
       // Some info is only available via the blob. Retrieve it and build the
       // `protocol::FileSystem::File` with it.
-      To<FileSystemFileHandle>(*entry).MojoHandle()->AsBlob(WTF::BindOnce(
+      To<FileSystemFileHandle>(*entry).MojoHandle()->AsBlob(blink::BindOnce(
           [](String name,
              base::OnceCallback<void(
                  mojom::blink::FileSystemAccessErrorPtr,
@@ -111,8 +111,8 @@ void BucketFileSystemBuilder::DidReadDirectory(
             std::move(callback).Run(std::move(result), std::move(file));
           },
           entry->name(),
-          WTF::BindOnce(&BucketFileSystemBuilder::DidBuildFile,
-                        WrapPersistent(this), barrier_callback)));
+          blink::BindOnce(&BucketFileSystemBuilder::DidBuildFile,
+                          WrapPersistent(this), barrier_callback)));
 
     } else if (entry->isDirectory()) {
       nested_directories_->emplace_back(entry->name());
@@ -138,7 +138,7 @@ BucketFileSystemBuilder::GetListener() {
   // use self-referential GC root to pin this in memory. To reduce the
   // possibility of an implementation bug introducing a memory leak,
   // also clear the self reference if the Mojo pipe is disconnected.
-  receiver_.set_disconnect_handler(WTF::BindOnce(
+  receiver_.set_disconnect_handler(BindOnce(
       &BucketFileSystemBuilder::OnMojoDisconnect, WrapWeakPersistent(this)));
 
   return remote;

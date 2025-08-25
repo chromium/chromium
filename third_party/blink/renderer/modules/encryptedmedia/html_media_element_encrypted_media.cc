@@ -213,10 +213,10 @@ void SetMediaKeysHandler::ClearExistingMediaKeys() {
       //       attribute to decrypt media data and remove the association
       //       with the media element.
       // (All 3 steps handled as needed in Chromium.)
-      SuccessCallback success_callback = WTF::BindOnce(
-          &SetMediaKeysHandler::SetNewMediaKeys, WrapPersistent(this));
-      FailureCallback failure_callback = WTF::BindOnce(
-          &SetMediaKeysHandler::ClearFailed, WrapPersistent(this));
+      SuccessCallback success_callback =
+          BindOnce(&SetMediaKeysHandler::SetNewMediaKeys, WrapPersistent(this));
+      FailureCallback failure_callback =
+          BindOnce(&SetMediaKeysHandler::ClearFailed, WrapPersistent(this));
       ContentDecryptionModuleResult* result =
           MakeGarbageCollected<SetContentDecryptionModuleResult>(
               std::move(success_callback), std::move(failure_callback));
@@ -245,9 +245,9 @@ void SetMediaKeysHandler::SetNewMediaKeys() {
     //       (Handled in Chromium).
     if (element_->GetWebMediaPlayer()) {
       SuccessCallback success_callback =
-          WTF::BindOnce(&SetMediaKeysHandler::Finish, WrapPersistent(this));
+          BindOnce(&SetMediaKeysHandler::Finish, WrapPersistent(this));
       FailureCallback failure_callback =
-          WTF::BindOnce(&SetMediaKeysHandler::SetFailed, WrapPersistent(this));
+          BindOnce(&SetMediaKeysHandler::SetFailed, WrapPersistent(this));
       ContentDecryptionModuleResult* result =
           MakeGarbageCollected<SetContentDecryptionModuleResult>(
               std::move(success_callback), std::move(failure_callback));

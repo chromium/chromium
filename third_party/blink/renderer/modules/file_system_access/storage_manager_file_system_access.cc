@@ -60,10 +60,9 @@ StorageManagerFileSystemAccess::getDirectory(ScriptState* script_state,
                                              ExceptionState& exception_state) {
   return CheckStorageAccessIsAllowed(
       script_state, exception_state,
-      WTF::BindOnce([](ScriptPromiseResolver<FileSystemDirectoryHandle>*
-                           resolver) {
+      BindOnce([](ScriptPromiseResolver<FileSystemDirectoryHandle>* resolver) {
         FileSystemAccessManager::From(resolver->GetExecutionContext())
-            ->GetSandboxedFileSystem(WTF::BindOnce(
+            ->GetSandboxedFileSystem(BindOnce(
                 &StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
                 WrapPersistent(resolver)));
       }));
@@ -83,8 +82,8 @@ StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
 
   CheckStorageAccessIsAllowed(
       ExecutionContext::From(script_state),
-      WTF::BindOnce(&OnGotAccessAllowed, WrapPersistent(resolver),
-                    std::move(on_allowed)));
+      blink::BindOnce(&OnGotAccessAllowed, WrapPersistent(resolver),
+                      std::move(on_allowed)));
 
   return result;
 }
@@ -137,7 +136,8 @@ void StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
     }
     frame->AllowStorageAccessAndNotify(
         WebContentSettingsClient::StorageType::kFileSystem,
-        WTF::BindOnce(std::move(storage_access_callback), std::move(callback)));
+        blink::BindOnce(std::move(storage_access_callback),
+                        std::move(callback)));
     return;
   }
 
@@ -150,7 +150,7 @@ void StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
   }
   content_settings_client->AllowStorageAccess(
       WebContentSettingsClient::StorageType::kFileSystem,
-      WTF::BindOnce(std::move(storage_access_callback), std::move(callback)));
+      blink::BindOnce(std::move(storage_access_callback), std::move(callback)));
 }
 
 // static

@@ -143,8 +143,8 @@ HandwritingRecognitionService::CreateHandwritingRecognizer(
 
   remote_service_->CreateHandwritingRecognizer(
       std::move(mojo_model_constraint),
-      WTF::BindOnce(OnCreateHandwritingRecognizer, WrapPersistent(script_state),
-                    WrapPersistent(resolver)));
+      BindOnce(OnCreateHandwritingRecognizer, WrapPersistent(script_state),
+               WrapPersistent(resolver)));
 
   return promise;
 }
@@ -177,8 +177,8 @@ HandwritingRecognitionService::QueryHandwritingRecognizer(
   remote_service_->QueryHandwritingRecognizer(
       mojo::ConvertTo<handwriting::mojom::blink::HandwritingModelConstraintPtr>(
           constraint),
-      WTF::BindOnce(&OnQueryHandwritingRecognizer, WrapPersistent(script_state),
-                    WrapPersistent(resolver)));
+      BindOnce(&OnQueryHandwritingRecognizer, WrapPersistent(script_state),
+               WrapPersistent(resolver)));
 
   return promise;
 }

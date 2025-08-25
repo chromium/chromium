@@ -269,7 +269,7 @@ void ShowFilePickerImpl(ScriptPromiseResolverBase* resolver,
   FileSystemAccessManager::From(resolver->GetExecutionContext())
       ->ChooseEntries(
           std::move(options),
-          WTF::BindOnce(
+          BindOnce(
               [](ScriptPromiseResolverBase* resolver, ShowFilePickerType type,
                  LocalFrame* local_frame,
                  mojom::blink::FileSystemAccessErrorPtr file_operation_result,

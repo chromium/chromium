@@ -79,7 +79,7 @@ class FileSystemFileHandle final : public FileSystemHandle {
       override;
   void GetUniqueIdImpl(
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
-                              const WTF::String&)>) override;
+                              const String&)>) override;
   void GetCloudIdentifiersImpl(
       base::OnceCallback<void(
           mojom::blink::FileSystemAccessErrorPtr,
@@ -98,7 +98,7 @@ class FileSystemFileHandle final : public FileSystemHandle {
   HeapMojoRemote<mojom::blink::FileSystemAccessFileHandle> mojo_ptr_;
   std::optional<std::tuple</*status=*/mojom::blink::FileSystemAccessStatus,
                            /*file_error=*/::base::File::Error,
-                           /*message=*/WTF::String>>
+                           /*message=*/String>>
       storage_access_status_;
 };
 

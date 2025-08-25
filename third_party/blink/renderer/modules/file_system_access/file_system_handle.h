@@ -106,7 +106,7 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
                               bool)>) = 0;
   virtual void GetUniqueIdImpl(
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
-                              const WTF::String&)>) = 0;
+                              const String&)>) = 0;
   virtual void GetCloudIdentifiersImpl(
       base::OnceCallback<
           void(mojom::blink::FileSystemAccessErrorPtr,

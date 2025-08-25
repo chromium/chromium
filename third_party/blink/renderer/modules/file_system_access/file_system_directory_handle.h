@@ -90,7 +90,7 @@ class MODULES_EXPORT FileSystemDirectoryHandle final
       override;
   void GetUniqueIdImpl(
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
-                              const WTF::String&)>) override;
+                              const String&)>) override;
   void GetCloudIdentifiersImpl(
       base::OnceCallback<void(
           mojom::blink::FileSystemAccessErrorPtr,

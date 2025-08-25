@@ -108,12 +108,11 @@ ScriptPromise<ColorSelectionResult> EyeDropper::open(
       eye_dropper_chooser_.BindNewPipeAndPassReceiver(
           frame->GetTaskRunner(TaskType::kUserInteraction)));
   eye_dropper_chooser_.set_disconnect_handler(
-      WTF::BindOnce(&EyeDropper::EndChooser, WrapWeakPersistent(this),
-                    std::move(end_chooser_abort_state)));
-  eye_dropper_chooser_->Choose(
-      resolver_->WrapCallbackInScriptScope(WTF::BindOnce(
-          &EyeDropper::EyeDropperResponseHandler, WrapPersistent(this),
-          std::move(response_handler_abort_state))));
+      BindOnce(&EyeDropper::EndChooser, WrapWeakPersistent(this),
+               std::move(end_chooser_abort_state)));
+  eye_dropper_chooser_->Choose(resolver_->WrapCallbackInScriptScope(
+      BindOnce(&EyeDropper::EyeDropperResponseHandler, WrapPersistent(this),
+               std::move(response_handler_abort_state))));
   return promise;
 }
 
@@ -173,7 +172,7 @@ void EyeDropper::EndChooser(
 }
 
 void EyeDropper::RejectPromiseHelper(DOMExceptionCode exception_code,
-                                     const WTF::String& message) {
+                                     const String& message) {
   resolver_->RejectWithDOMException(exception_code, message);
   resolver_ = nullptr;
 }

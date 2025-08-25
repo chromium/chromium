@@ -61,7 +61,7 @@ ScriptPromise<IDLUndefined> InternalsFuzzing::runFuzzer(
       &context->GetBrowserInterfaceBroker(),
       Platform::Current()->GetBrowserInterfaceBroker(), associated_provider,
       fuzzer_id.Utf8(), std::move(data),
-      WTF::BindOnce(&ResolvePromise, WrapPersistent(resolver)));
+      BindOnce(&ResolvePromise, WrapPersistent(resolver)));
 
   return promise;
 }

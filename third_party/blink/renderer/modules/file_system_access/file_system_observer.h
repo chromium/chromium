@@ -41,7 +41,7 @@ class FileSystemObserver : public ScriptWrappable {
   void disconnect();
 
   void OnFileChanges(
-      WTF::Vector<mojom::blink::FileSystemAccessChangePtr> mojo_changes);
+      Vector<mojom::blink::FileSystemAccessChangePtr> mojo_changes);
 
   void Trace(Visitor* visitor) const override;
 
@@ -61,7 +61,7 @@ class FileSystemObserver : public ScriptWrappable {
 
   std::optional<std::tuple</*status=*/mojom::blink::FileSystemAccessStatus,
                            /*file_error=*/::base::File::Error,
-                           /*message=*/WTF::String>>
+                           /*message=*/String>>
       storage_access_status_;
   Member<ExecutionContext> execution_context_;
   Member<V8FileSystemObserverCallback> callback_;

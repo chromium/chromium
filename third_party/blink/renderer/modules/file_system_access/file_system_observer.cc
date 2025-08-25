@@ -146,9 +146,9 @@ ScriptPromise<IDLUndefined> FileSystemObserver::observe(
   auto result = resolver->Promise();
 
   auto on_got_storage_access_status_cb =
-      WTF::BindOnce(&FileSystemObserver::OnGotStorageAccessStatus,
-                    WrapWeakPersistent(this), WrapPersistent(resolver),
-                    WrapPersistent(handle), WrapPersistent(options));
+      BindOnce(&FileSystemObserver::OnGotStorageAccessStatus,
+               WrapWeakPersistent(this), WrapPersistent(resolver),
+               WrapPersistent(handle), WrapPersistent(options));
 
   if (storage_access_status_.has_value()) {
     std::move(on_got_storage_access_status_cb)
@@ -199,8 +199,8 @@ void FileSystemObserver::OnGotStorageAccessStatus(
 
   host_remote_->Observe(
       handle->Transfer(), options->recursive(),
-      WTF::BindOnce(&FileSystemObserver::DidObserve, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      BindOnce(&FileSystemObserver::DidObserve, WrapPersistent(this),
+               WrapPersistent(resolver)));
 }
 
 void FileSystemObserver::DidObserve(
@@ -246,7 +246,7 @@ void FileSystemObserver::disconnect() {
 }
 
 void FileSystemObserver::OnFileChanges(
-    WTF::Vector<mojom::blink::FileSystemAccessChangePtr> mojo_changes) {
+    Vector<mojom::blink::FileSystemAccessChangePtr> mojo_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   HeapVector<Member<FileSystemChangeRecord>> records;

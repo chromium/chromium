@@ -34,18 +34,16 @@ class MockFileSystemAccessManager
       : reached_callback_(std::move(reached_callback)), broker_(broker) {
     broker_->SetBinderForTesting(
         mojom::blink::FileSystemAccessManager::Name_,
-        WTF::BindRepeating(
-            &MockFileSystemAccessManager::BindFileSystemAccessManager,
-            WTF::Unretained(this)));
+        BindRepeating(&MockFileSystemAccessManager::BindFileSystemAccessManager,
+                      Unretained(this)));
   }
   explicit MockFileSystemAccessManager(
       const BrowserInterfaceBrokerProxy& broker)
       : broker_(broker) {
     broker_->SetBinderForTesting(
         mojom::blink::FileSystemAccessManager::Name_,
-        WTF::BindRepeating(
-            &MockFileSystemAccessManager::BindFileSystemAccessManager,
-            WTF::Unretained(this)));
+        BindRepeating(&MockFileSystemAccessManager::BindFileSystemAccessManager,
+                      Unretained(this)));
   }
   ~MockFileSystemAccessManager() override {
     broker_->SetBinderForTesting(mojom::blink::FileSystemAccessManager::Name_,
@@ -137,8 +135,8 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationRequiredOtherwiseDenied) {
   EXPECT_FALSE(frame->HasStickyUserActivation());
 
   MockFileSystemAccessManager manager(frame->GetBrowserInterfaceBroker());
-  manager.SetChooseEntriesResponse(WTF::BindOnce(
-      [](MockFileSystemAccessManager::ChooseEntriesCallback callback) {
+  manager.SetChooseEntriesResponse(
+      BindOnce([](MockFileSystemAccessManager::ChooseEntriesCallback callback) {
         FAIL();
       }));
   ClassicScript::CreateUnspecifiedScript("window.showOpenFilePicker();")
@@ -158,8 +156,8 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationChooseEntriesSuccessful) {
   base::RunLoop manager_run_loop;
   MockFileSystemAccessManager manager(frame->GetBrowserInterfaceBroker(),
                                       manager_run_loop.QuitClosure());
-  manager.SetChooseEntriesResponse(WTF::BindOnce(
-      [](MockFileSystemAccessManager::ChooseEntriesCallback callback) {
+  manager.SetChooseEntriesResponse(
+      BindOnce([](MockFileSystemAccessManager::ChooseEntriesCallback callback) {
         auto error = mojom::blink::FileSystemAccessError::New();
         error->status = mojom::blink::FileSystemAccessStatus::kOk;
         error->message = "";
@@ -214,7 +212,7 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationChooseEntriesErrors) {
 
     base::RunLoop manager_run_loop;
     manager.SetQuitClosure(manager_run_loop.QuitClosure());
-    manager.SetChooseEntriesResponse(WTF::BindOnce(
+    manager.SetChooseEntriesResponse(BindOnce(
         [](mojom::blink::FileSystemAccessStatus status,
            MockFileSystemAccessManager::ChooseEntriesCallback callback) {
           auto error = mojom::blink::FileSystemAccessError::New();

@@ -70,10 +70,9 @@ void BucketFileSystemAgent::getDirectory(
       path_components.empty() ? g_empty_string : path_components.back();
   storage_bucket->GetDirectoryForDevTools(
       execution_context, std::move(path_components),
-      WTF::BindOnce(&BucketFileSystemAgent::DidGetDirectoryHandle,
-                    WrapWeakPersistent(this),
-                    WrapWeakPersistent(execution_context), storage_key,
-                    std::move(directory_name), std::move(callback)));
+      BindOnce(&BucketFileSystemAgent::DidGetDirectoryHandle,
+               WrapWeakPersistent(this), WrapWeakPersistent(execution_context),
+               storage_key, std::move(directory_name), std::move(callback)));
 }
 
 void BucketFileSystemAgent::DidGetDirectoryHandle(
@@ -102,7 +101,7 @@ void BucketFileSystemAgent::DidGetDirectoryHandle(
 
   BucketFileSystemBuilder::BuildDirectoryTree(
       execution_context, storage_key, directory_name,
-      WTF::BindOnce(
+      BindOnce(
           [](std::unique_ptr<
                  protocol::FileSystem::Backend::GetDirectoryCallback> callback,
              mojom::blink::FileSystemAccessErrorPtr result,

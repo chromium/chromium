@@ -70,7 +70,7 @@ FileSystemFileHandle::createWritable(
 
   mojo_ptr_->CreateFileWriter(
       options->keepExistingData(), options->autoClose(), lock_mode,
-      WTF::BindOnce(
+      BindOnce(
           [](FileSystemFileHandle*,
              ScriptPromiseResolver<FileSystemWritableFileStream>* resolver,
              V8FileSystemWritableFileStreamMode lock_mode,
@@ -108,7 +108,7 @@ ScriptPromise<File> FileSystemFileHandle::getFile(
       script_state, exception_state.GetContext());
   auto result = resolver->Promise();
 
-  mojo_ptr_->AsBlob(WTF::BindOnce(
+  mojo_ptr_->AsBlob(BindOnce(
       [](FileSystemFileHandle*, ScriptPromiseResolver<File>* resolver,
          const String& name, FileSystemAccessErrorPtr result,
          const base::File::Info& info,
@@ -146,14 +146,14 @@ FileSystemFileHandle::createSyncAccessHandle(
   auto promise = resolver->Promise();
 
   auto on_allowed_callback =
-      WTF::BindOnce(&FileSystemFileHandle::CreateSyncAccessHandleImpl,
-                    WrapWeakPersistent(this), WrapPersistent(options),
-                    WrapPersistent(resolver));
+      BindOnce(&FileSystemFileHandle::CreateSyncAccessHandleImpl,
+               WrapWeakPersistent(this), WrapPersistent(options),
+               WrapPersistent(resolver));
 
   auto on_got_storage_access_status_cb =
-      WTF::BindOnce(&FileSystemFileHandle::OnGotFileSystemStorageAccessStatus,
-                    WrapWeakPersistent(this), WrapPersistent(resolver),
-                    std::move(on_allowed_callback));
+      blink::BindOnce(&FileSystemFileHandle::OnGotFileSystemStorageAccessStatus,
+                      WrapWeakPersistent(this), WrapPersistent(resolver),
+                      std::move(on_allowed_callback));
 
   if (storage_access_status_.has_value()) {
     std::move(on_got_storage_access_status_cb)
@@ -216,7 +216,7 @@ void FileSystemFileHandle::CreateSyncAccessHandleImpl(
 
   mojo_ptr_->OpenAccessHandle(
       lock_mode,
-      WTF::BindOnce(
+      BindOnce(
           [](FileSystemFileHandle*,
              ScriptPromiseResolver<FileSystemSyncAccessHandle>* resolver,
              V8FileSystemSyncAccessHandleMode lock_mode,
@@ -353,7 +353,7 @@ void FileSystemFileHandle::IsSameEntryImpl(
 
 void FileSystemFileHandle::GetUniqueIdImpl(
     base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
-                            const WTF::String&)> callback) {
+                            const String&)> callback) {
   if (!mojo_ptr_.is_bound()) {
     std::move(callback).Run(
         mojom::blink::FileSystemAccessError::New(

@@ -64,7 +64,7 @@ void DirectoryReader::readEntries(V8EntriesCallback* entries_callback,
     // the caller with an error.
     if (error_callback) {
       Filesystem()->ReportError(
-          WTF::BindOnce(
+          BindOnce(
               [](V8ErrorCallback* error_callback, base::File::Error error) {
                 error_callback->InvokeAndReportException(
                     nullptr, file_error::CreateDOMException(error));
@@ -75,7 +75,7 @@ void DirectoryReader::readEntries(V8EntriesCallback* entries_callback,
     return;
   }
 
-  auto success_callback_wrapper = WTF::BindRepeating(
+  auto success_callback_wrapper = BindRepeating(
       [](DirectoryReader* persistent_reader, GCedEntryHeapVector* entries) {
         persistent_reader->AddEntries(EntryHeapVector(std::move(*entries)));
       },
@@ -83,15 +83,15 @@ void DirectoryReader::readEntries(V8EntriesCallback* entries_callback,
 
   if (!is_reading_) {
     is_reading_ = true;
-    Filesystem()->ReadDirectory(
-        this, full_path_, success_callback_wrapper,
-        WTF::BindOnce(&DirectoryReader::OnError, WrapPersistentIfNeeded(this)));
+    Filesystem()->ReadDirectory(this, full_path_, success_callback_wrapper,
+                                blink::BindOnce(&DirectoryReader::OnError,
+                                                WrapPersistentIfNeeded(this)));
   }
 
   if (error_ != base::File::FILE_OK) {
-    Filesystem()->ReportError(
-        WTF::BindOnce(&DirectoryReader::OnError, WrapPersistentIfNeeded(this)),
-        error_);
+    Filesystem()->ReportError(blink::BindOnce(&DirectoryReader::OnError,
+                                              WrapPersistentIfNeeded(this)),
+                              error_);
     return;
   }
 
@@ -100,8 +100,8 @@ void DirectoryReader::readEntries(V8EntriesCallback* entries_callback,
         MakeGarbageCollected<GCedEntryHeapVector>(std::move(entries_));
     DOMFileSystem::ScheduleCallback(
         Filesystem()->GetExecutionContext(),
-        WTF::BindOnce(&RunEntriesCallback, WrapPersistent(entries_callback),
-                      WrapPersistent(entries)));
+        BindOnce(&RunEntriesCallback, WrapPersistent(entries_callback),
+                 WrapPersistent(entries)));
     return;
   }
 

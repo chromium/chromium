@@ -56,8 +56,8 @@ ScriptPromise<Blob> FontMetadata::blob(ScriptState* script_state) {
   ExecutionContext::From(script_state)
       ->GetTaskRunner(TaskType::kFontLoading)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&FontMetadata::BlobImpl,
-                               WrapPersistent(resolver), postscriptName_));
+                 BindOnce(&FontMetadata::BlobImpl, WrapPersistent(resolver),
+                          postscriptName_));
 
   return promise;
 }

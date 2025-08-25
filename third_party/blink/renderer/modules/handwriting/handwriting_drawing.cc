@@ -95,8 +95,8 @@ HandwritingDrawing::getPrediction(ScriptState* script_state) {
       std::move(strokes),
       mojo::ConvertTo<handwriting::mojom::blink::HandwritingHintsPtr>(
           hints_.Get()),
-      WTF::BindOnce(&OnRecognitionResult, WrapPersistent(resolver),
-                    WrapPersistent(script_state)));
+      BindOnce(&OnRecognitionResult, WrapPersistent(resolver),
+               WrapPersistent(script_state)));
 
   return promise;
 }

@@ -108,11 +108,11 @@ DOMFileSystemSync* WorkerGlobalScopeFileSystem::webkitRequestFileSystemSync(
   auto* sync_helper = MakeGarbageCollected<FileSystemCallbacksSyncHelper>();
 
   auto success_callback_wrapper =
-      WTF::BindOnce(&FileSystemCallbacksSyncHelper::OnSuccess,
-                    WrapPersistentIfNeeded(sync_helper));
+      BindOnce(&FileSystemCallbacksSyncHelper::OnSuccess,
+               WrapPersistentIfNeeded(sync_helper));
   auto error_callback_wrapper =
-      WTF::BindOnce(&FileSystemCallbacksSyncHelper::OnError,
-                    WrapPersistentIfNeeded(sync_helper));
+      blink::BindOnce(&FileSystemCallbacksSyncHelper::OnError,
+                      WrapPersistentIfNeeded(sync_helper));
 
   auto callbacks = std::make_unique<FileSystemCallbacks>(
       std::move(success_callback_wrapper), std::move(error_callback_wrapper),
@@ -184,10 +184,9 @@ EntrySync* WorkerGlobalScopeFileSystem::webkitResolveLocalFileSystemSyncURL(
 
   auto* sync_helper = MakeGarbageCollected<EntryCallbacksSyncHelper>();
 
-  auto success_callback_wrapper =
-      WTF::BindOnce(&EntryCallbacksSyncHelper::OnSuccess,
-                    WrapPersistentIfNeeded(sync_helper));
-  auto error_callback_wrapper = WTF::BindOnce(
+  auto success_callback_wrapper = BindOnce(&EntryCallbacksSyncHelper::OnSuccess,
+                                           WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = blink::BindOnce(
       &EntryCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(sync_helper));
 
   std::unique_ptr<ResolveURICallbacks> callbacks =
