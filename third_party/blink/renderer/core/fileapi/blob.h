@@ -79,22 +79,6 @@ class CORE_EXPORT Blob : public ScriptWrappable,
               const String& content_type,
               ExceptionState&) const;
 
-  // To allow ExceptionState to be passed in last, manually enumerate the
-  // optional argument overloads.
-  Blob* slice(ExceptionState& exception_state) const {
-    return slice(0, std::numeric_limits<int64_t>::max(), String(),
-                 exception_state);
-  }
-  Blob* slice(int64_t start, ExceptionState& exception_state) const {
-    return slice(start, std::numeric_limits<int64_t>::max(), String(),
-                 exception_state);
-  }
-  Blob* slice(int64_t start,
-              int64_t end,
-              ExceptionState& exception_state) const {
-    return slice(start, end, String(), exception_state);
-  }
-
   ReadableStream* stream(ScriptState* script_state) const;
   ScriptPromise<IDLUSVString> text(ScriptState* script_state);
   ScriptPromise<DOMArrayBuffer> arrayBuffer(ScriptState* script_state);
