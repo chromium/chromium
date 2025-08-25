@@ -10,7 +10,7 @@
 
 AutofillMlInternalsPageHandlerImpl::AutofillMlInternalsPageHandlerImpl(
     mojo::PendingReceiver<autofill_ml_internals::mojom::PageHandler> receiver,
-    autofill::MLLogRouter* log_router)
+    autofill::MlLogRouter* log_router)
     : receiver_(this, std::move(receiver)) {
   if (log_router) {
     log_router_observation_.Observe(log_router);
@@ -23,7 +23,7 @@ void AutofillMlInternalsPageHandlerImpl::SetPage(
 }
 
 void AutofillMlInternalsPageHandlerImpl::ProcessLog(
-    const autofill_ml_internals::mojom::MLPredictionLog& log) {
+    const autofill_ml_internals::mojom::MlPredictionLog& log) {
   page_->OnLogAdded(log.Clone());
 }
 

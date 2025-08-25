@@ -72,8 +72,8 @@ std::unique_ptr<KeyedService> PasswordFieldClassificationModelHandlerFactory::
 
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  autofill::MLLogRouter* log_router =
-      autofill::MLLogRouterFactory::GetForProfile(profile);
+  autofill::MlLogRouter* log_router =
+      autofill::MlLogRouterFactory::GetForProfile(profile);
   return std::make_unique<autofill::FieldClassificationModelHandler>(
       optimization_guide,
       optimization_guide::proto::OptimizationTarget::

@@ -30,7 +30,7 @@ AutofillMlInternalsUI::AutofillMlInternalsUI(content::WebUI* web_ui)
 void AutofillMlInternalsUI::BindInterface(
     mojo::PendingReceiver<autofill_ml_internals::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<AutofillMlInternalsPageHandlerImpl>(
-      std::move(receiver), autofill::MLLogRouterFactory::GetForProfile(
+      std::move(receiver), autofill::MlLogRouterFactory::GetForProfile(
                                Profile::FromWebUI(web_ui())));
 }
 

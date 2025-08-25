@@ -43,7 +43,7 @@ class FieldClassificationModelHandler
   FieldClassificationModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       optimization_guide::proto::OptimizationTarget optimization_target,
-      autofill::MLLogRouter* log_router = nullptr);
+      autofill::MlLogRouter* log_router = nullptr);
   ~FieldClassificationModelHandler() override;
 
   // This function asynchronously queries predictions for the `form_structure`
@@ -118,6 +118,9 @@ class FieldClassificationModelHandler
   ModelInputHash CalculateModelInputHash(
       const FieldClassificationModelEncoder::ModelInput& input);
 
+  autofill_ml_internals::mojom::MlPredictionLogPtr CreateMlPredictionLog(
+      const FormStructure& form_structure) const;
+
   struct ModelState {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
         metadata;
@@ -136,10 +139,8 @@ class FieldClassificationModelHandler
   // Cached model classifications.
   base::LRUCache<ModelInputHash, std::vector<FieldType>> predictions_cache_;
 
-  raw_ptr<autofill::MLLogRouter> log_router_ = nullptr;
 
-  autofill_ml_internals::mojom::MLPredictionLogPtr CreateMLPredictionLog(
-      const FormStructure& form_structure) const;
+  raw_ptr<autofill::MlLogRouter> log_router_ = nullptr;
 
   base::WeakPtrFactory<FieldClassificationModelHandler> weak_ptr_factory_{this};
 };

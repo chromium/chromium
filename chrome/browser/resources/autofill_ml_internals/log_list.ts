@@ -7,7 +7,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {type Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {type MLPredictionLog, OptimizationTarget} from './autofill_ml_internals.mojom-webui.js';
+import {type MlPredictionLog, OptimizationTarget} from './autofill_ml_internals.mojom-webui.js';
 import {getCss} from './log_list.css.js';
 import {getHtml} from './log_list.html.js';
 
@@ -34,12 +34,12 @@ export class LogListElement extends CrLitElement {
     };
   }
 
-  accessor logEntries: MLPredictionLog[] = [];
-  accessor selectedLogEntry: MLPredictionLog|undefined;
+  accessor logEntries: MlPredictionLog[] = [];
+  accessor selectedLogEntry: MlPredictionLog|undefined;
   protected accessor hideAutofill_: boolean = false;
   protected accessor hidePasswordManager_: boolean = false;
 
-  protected get filteredLogEntries_(): MLPredictionLog[] {
+  protected get filteredLogEntries_(): MlPredictionLog[] {
     return this.logEntries.filter(log => {
       switch (log.optimizationTarget) {
         case OptimizationTarget.kAutofill:
@@ -138,7 +138,7 @@ export class LogListElement extends CrLitElement {
     return `${count} field${count === 1 ? '' : 's'}`;
   }
 
-  protected getSelectedCssClass_(item: MLPredictionLog): string {
+  protected getSelectedCssClass_(item: MlPredictionLog): string {
     return this.selectedLogEntry === item ? 'selected' : '';
   }
 }

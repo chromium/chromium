@@ -14,11 +14,11 @@
 
 class AutofillMlInternalsPageHandlerImpl
     : public autofill_ml_internals::mojom::PageHandler,
-      public autofill::MLLogReceiver {
+      public autofill::MlLogReceiver {
  public:
   AutofillMlInternalsPageHandlerImpl(
       mojo::PendingReceiver<autofill_ml_internals::mojom::PageHandler> receiver,
-      autofill::MLLogRouter* log_router);
+      autofill::MlLogRouter* log_router);
   AutofillMlInternalsPageHandlerImpl(
       const AutofillMlInternalsPageHandlerImpl&) = delete;
   AutofillMlInternalsPageHandlerImpl& operator=(
@@ -30,12 +30,12 @@ class AutofillMlInternalsPageHandlerImpl
       mojo::PendingRemote<autofill_ml_internals::mojom::Page> page) override;
 
   void ProcessLog(
-      const autofill_ml_internals::mojom::MLPredictionLog& log) override;
+      const autofill_ml_internals::mojom::MlPredictionLog& log) override;
 
  private:
   mojo::Receiver<autofill_ml_internals::mojom::PageHandler> receiver_;
   mojo::Remote<autofill_ml_internals::mojom::Page> page_;
-  base::ScopedObservation<autofill::MLLogRouter, autofill::MLLogReceiver>
+  base::ScopedObservation<autofill::MlLogRouter, autofill::MlLogReceiver>
       log_router_observation_{this};
 };
 

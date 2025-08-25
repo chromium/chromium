@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {MLFieldPredictionLog} from './autofill_ml_internals.mojom-webui.js';
+import type {MlFieldPredictionLog} from './autofill_ml_internals.mojom-webui.js';
 import type {LogDetailsElement} from './log_details.js';
 
 export function getHtml(this: LogDetailsElement) {
@@ -30,7 +30,7 @@ export function getHtml(this: LogDetailsElement) {
       <span>${this.log.duration.microseconds} μs</span>
     </div>
     <h3>Fields</h3>
-    ${this.log.fieldPredictions.map((field: MLFieldPredictionLog) => html`
+    ${this.log.fieldPredictions.map((field: MlFieldPredictionLog) => html`
       <div class="field">
         <div class="field-properties">
           <div class="row">

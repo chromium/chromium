@@ -61,8 +61,7 @@ std::unique_ptr<KeyedService> AutofillFieldClassificationModelServiceFactory::
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context));
-  autofill::MLLogRouter* log_router =
-      autofill::MLLogRouterFactory::GetForProfile(
+  MlLogRouter* log_router = MlLogRouterFactory::GetForProfile(
           Profile::FromBrowserContext(context));
   return std::make_unique<FieldClassificationModelHandler>(
       optimization_guide,

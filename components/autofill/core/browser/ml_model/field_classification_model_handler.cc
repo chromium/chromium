@@ -98,7 +98,7 @@ bool ParsingSupportsMultipleFieldsOfType(FieldType type) {
 FieldClassificationModelHandler::FieldClassificationModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     optimization_guide::proto::OptimizationTarget optimization_target,
-    autofill::MLLogRouter* log_router)
+    autofill::MlLogRouter* log_router)
     : optimization_guide::ModelHandler<
           FieldClassificationModelEncoder::ModelOutput,
           const FieldClassificationModelEncoder::ModelInput&>(
@@ -160,11 +160,11 @@ void FieldClassificationModelHandler::ApplySmallFormRules(
   }
 }
 
-autofill_ml_internals::mojom::MLPredictionLogPtr
-FieldClassificationModelHandler::CreateMLPredictionLog(
+autofill_ml_internals::mojom::MlPredictionLogPtr
+FieldClassificationModelHandler::CreateMlPredictionLog(
     const FormStructure& form_structure) const {
-  autofill_ml_internals::mojom::MLPredictionLogPtr prediction_log =
-      autofill_ml_internals::mojom::MLPredictionLog::New();
+  autofill_ml_internals::mojom::MlPredictionLogPtr prediction_log =
+      autofill_ml_internals::mojom::MlPredictionLog::New();
 
   switch (optimization_target_) {
     case optimization_guide::proto::OptimizationTarget::
@@ -198,11 +198,11 @@ FieldClassificationModelHandler::CreateMLPredictionLog(
   prediction_log->model_output_types.assign(model_types.begin(),
                                             model_types.end());
 
-  std::vector<autofill_ml_internals::mojom::MLFieldPredictionLogPtr>
+  std::vector<autofill_ml_internals::mojom::MlFieldPredictionLogPtr>
       field_predictions;
   for (const auto& field : form_structure.fields()) {
-    autofill_ml_internals::mojom::MLFieldPredictionLogPtr field_prediction =
-        autofill_ml_internals::mojom::MLFieldPredictionLog::New();
+    autofill_ml_internals::mojom::MlFieldPredictionLogPtr field_prediction =
+        autofill_ml_internals::mojom::MlFieldPredictionLog::New();
     field_prediction->label = base::UTF16ToUTF8(field->label());
     field_prediction->placeholder = base::UTF16ToUTF8(field->placeholder());
     field_prediction->autocomplete = field->autocomplete_attribute();
@@ -232,8 +232,8 @@ FieldClassificationModelHandler::CreateMLPredictionLog(
   return prediction_log;
 }
 
-void PopulateMLPredictionLogAfterInference(
-    autofill_ml_internals::mojom::MLPredictionLog& prediction_log,
+void PopulateMlPredictionLogAfterInference(
+    autofill_ml_internals::mojom::MlPredictionLog& prediction_log,
     const FieldClassificationModelEncoder::ModelOutput& model_output) {
   prediction_log.end_time = base::Time::Now();
   prediction_log.duration = prediction_log.end_time - prediction_log.start_time;
@@ -257,10 +257,10 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
     return;
   }
 
-  std::optional<autofill_ml_internals::mojom::MLPredictionLogPtr>
+  std::optional<autofill_ml_internals::mojom::MlPredictionLogPtr>
       prediction_log = std::nullopt;
   if (log_router_ && log_router_->HasReceivers()) {
-    prediction_log = CreateMLPredictionLog(*form_structure);
+    prediction_log = CreateMlPredictionLog(*form_structure);
   }
 
   // TODO(crbug.com/428686605) Set tokenized representation in `prediction_log`.
@@ -291,7 +291,7 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
   ExecuteModelWithInput(
       base::BindOnce(
           [](base::WeakPtr<FieldClassificationModelHandler> self,
-             std::optional<autofill_ml_internals::mojom::MLPredictionLogPtr>
+             std::optional<autofill_ml_internals::mojom::MlPredictionLogPtr>
                  prediction_log,
              std::unique_ptr<FormStructure> form_structure,
              std::optional<ModelInputHash> model_input_hash,
@@ -313,7 +313,7 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
               }
             }
             if (self && output && prediction_log && self->log_router_) {
-              PopulateMLPredictionLogAfterInference(*(prediction_log.value()),
+              PopulateMlPredictionLogAfterInference(*(prediction_log.value()),
                                                     output.value());
               self->log_router_->ProcessLog(std::move(*prediction_log));
             }

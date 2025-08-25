@@ -4,7 +4,7 @@
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {type MLPredictionLog, OptimizationTarget} from './autofill_ml_internals.mojom-webui.js';
+import {type MlPredictionLog, OptimizationTarget} from './autofill_ml_internals.mojom-webui.js';
 import {getCss} from './log_details.css.js';
 import {getHtml} from './log_details.html.js';
 
@@ -27,7 +27,7 @@ export class LogDetailsElement extends CrLitElement {
     };
   }
 
-  accessor log: MLPredictionLog = {
+  accessor log: MlPredictionLog = {
     formSignature: '0',
     formUrl: {url: ''},
     modelOutputTypes: [],

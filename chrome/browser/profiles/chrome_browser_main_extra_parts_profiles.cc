@@ -722,7 +722,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   autofill::IbanManagerFactory::GetInstance();
   autofill::MerchantPromoCodeManagerFactory::GetInstance();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  autofill::MLLogRouterFactory::GetInstance();
+  autofill::MlLogRouterFactory::GetInstance();
 #endif
   autofill::PersonalDataManagerFactory::GetInstance();
   autofill::ValuablesDataManagerFactory::GetInstance();
