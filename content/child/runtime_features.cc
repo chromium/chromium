@@ -239,6 +239,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kUserMediaScreenCapturing)},
           {wf::EnableRegionCapture,
            raw_ref(features::kUserMediaScreenCapturing)},
+          {wf::EnableElementCapture,
+           raw_ref(features::kUserMediaScreenCapturing)},
+
 #endif
           {wf::EnableInstalledApp, raw_ref(features::kInstalledApp)},
           {wf::EnableIntegrityPolicyScript,

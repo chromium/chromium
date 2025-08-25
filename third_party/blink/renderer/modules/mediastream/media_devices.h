@@ -204,9 +204,9 @@ class MODULES_EXPORT MediaDevices final
   void EnqueueMicrotaskToCloseFocusWindowOfOpportunity(const String&,
                                                        CaptureController*);
   void CloseFocusWindowOfOpportunity(const String&, CaptureController*);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   void ResolveRestrictionTargetPromise(Element* element, const WTF::String& id);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   bool MayProduceSubCaptureTarget(ScriptState* script_state,
                                   Element* element,
@@ -233,13 +233,11 @@ class MODULES_EXPORT MediaDevices final
                                               IDLSequence<MediaDeviceInfo>>>>
       enumerate_device_requests_;
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   using ElementToRestrictionTargetResolverMap =
       HeapHashMap<Member<Element>,
                   Member<ScriptPromiseResolver<RestrictionTarget>>>;
 
   ElementToRestrictionTargetResolverMap restriction_target_resolvers_;
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   using ElementToCropTargetResolverMap =
       HeapHashMap<Member<Element>, Member<ScriptPromiseResolver<CropTarget>>>;

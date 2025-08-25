@@ -1003,11 +1003,6 @@ ScriptPromise<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
     ScriptState* script_state,
     Element* element,
     ExceptionState& exception_state) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Unsupported.");
-  return EmptyPromise();
-#else
   if (!MayProduceSubCaptureTarget(script_state, element, exception_state,
                                   SubCaptureTarget::Type::kRestrictionTarget)) {
     // Exception thrown by helper.
@@ -1062,7 +1057,6 @@ ScriptPromise<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
   RecordUma(SubCaptureTarget::Type::kRestrictionTarget,
             ProduceTargetFunctionResult::kPromiseProduced);
   return promise;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 const AtomicString& MediaDevices::InterfaceName() const {
@@ -1404,10 +1398,7 @@ void MediaDevices::Trace(Visitor* visitor) const {
   visitor->Trace(enumerate_device_requests_);
 
   visitor->Trace(crop_target_resolvers_);
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   visitor->Trace(restriction_target_resolvers_);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   Supplement<Navigator>::Trace(visitor);
   EventTarget::Trace(visitor);
@@ -1449,6 +1440,7 @@ void MediaDevices::CloseFocusWindowOfOpportunity(
 
   GetDispatcherHost(window->GetFrame()).CloseFocusWindowOfOpportunity(id);
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void MediaDevices::ResolveRestrictionTargetPromise(Element* element,
                                                    const WTF::String& id) {
@@ -1473,7 +1465,6 @@ void MediaDevices::ResolveRestrictionTargetPromise(Element* element,
   RecordUma(SubCaptureTarget::Type::kRestrictionTarget,
             ProduceTargetPromiseResult::kPromiseResolved);
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Checks whether the production of a SubCaptureTarget of the given type is
 // allowed. Throw an appropriate exception if not.

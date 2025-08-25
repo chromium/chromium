@@ -1316,20 +1316,6 @@ class ProduceSubCaptureTargetTest
   ScopedElementCaptureForTest scoped_element_capture_;
 };
 
-/*
-kRestrictionTarget is related to Element Capture. When Element Capture is
-enabled for android as well this condition will be simplified to have the same
-tests set for all platforms.
-*/
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-INSTANTIATE_TEST_SUITE_P(
-    _,
-    ProduceSubCaptureTargetTest,
-    ::testing::Values(std::make_pair(SubCaptureTarget::Type::kCropTarget,
-                                     /* Element Capture enabled: */ false),
-                      std::make_pair(SubCaptureTarget::Type::kCropTarget,
-                                     /* Element Capture enabled: */ true)));
-#else
 INSTANTIATE_TEST_SUITE_P(
     _,
     ProduceSubCaptureTargetTest,
@@ -1339,34 +1325,6 @@ INSTANTIATE_TEST_SUITE_P(
                                      /* Element Capture enabled: */ true),
                       std::make_pair(SubCaptureTarget::Type::kRestrictionTarget,
                                      /* Element Capture enabled: */ true)));
-#endif
-
-// Note: This test runs on non-IOS too in order to prove that the test
-// itself is sane. (Rather than, for example, an exception always being thrown.)
-TEST_P(ProduceSubCaptureTargetTest, IdUnsupportedOnIos) {
-  V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
-  ASSERT_TRUE(media_devices);
-
-  // Note that the test will NOT produce false-positive on failure to call this.
-  // Rather, GTEST_FAIL would be called by ProduceCropTarget or
-  // ProduceRestrictionTarget if it ends up being called.
-  dispatcher_host().SetNextId(
-      type_, String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-
-  SetBodyContent(R"HTML(
-    <div id='test-div'></div>
-    <iframe id='test-iframe' src="about:blank" />
-  )HTML");
-
-  Document& document = GetDocument();
-  Element* const div = document.getElementById(AtomicString("test-div"));
-  bool got_promise =
-      ProduceSubCaptureTargetAndGetPromise(scope, type_, media_devices, div);
-  platform()->RunUntilIdle();
-  EXPECT_TRUE(got_promise);
-  EXPECT_FALSE(scope.GetExceptionState().HadException());
-}
 
 TEST_P(ProduceSubCaptureTargetTest, IdWithValidElement) {
   V8TestingScope scope;

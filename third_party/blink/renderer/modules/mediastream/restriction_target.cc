@@ -17,11 +17,6 @@ ScriptPromise<RestrictionTarget> RestrictionTarget::fromElement(
     Element* element,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-#if BUILDFLAG(IS_ANDROID)
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Unsupported.");
-  return EmptyPromise();
-#else
   MediaDevices* const media_devices =
       GetMediaDevices(script_state, element, exception_state);
   if (!media_devices) {
@@ -30,7 +25,6 @@ ScriptPromise<RestrictionTarget> RestrictionTarget::fromElement(
   }
   return media_devices->ProduceRestrictionTarget(script_state, element,
                                                  exception_state);
-#endif
 }
 
 RestrictionTarget::RestrictionTarget(String id)

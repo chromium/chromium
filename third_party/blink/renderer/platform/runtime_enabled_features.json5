@@ -1960,8 +1960,9 @@
       status: {"Android": "stable"},
     },
     {
+      public: true,
       name: "ElementCapture",
-      status: {"Android": "", "default": "stable"},
+      status: {"Android": "experimental", "iOS": "", "default": "stable"},
     },
     {
       name: "ElementInnerTextHandleFirstLineStyle",
