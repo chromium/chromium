@@ -67,6 +67,10 @@ suite('PeoplePageIndex', function() {
     assertActiveView('syncControls');
 
     // <if expr="not is_chromeos">
+    Router.getInstance().navigateTo(routes.IMPORT_DATA);
+    await microtasksFinished();
+    assertActiveView('parent');
+
     Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
     await microtasksFinished();
     assertActiveView('manageProfile');
