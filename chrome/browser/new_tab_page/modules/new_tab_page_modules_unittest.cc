@@ -16,6 +16,9 @@
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/modules/test_support.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,41 +30,63 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 std::unique_ptr<KeyedService> CreateTestSyncService(
-    bool has_sync_enabled,
     content::BrowserContext* context) {
   auto sync_service = std::make_unique<syncer::TestSyncService>();
-  sync_service->SetLocalSyncEnabled(has_sync_enabled);
+  sync_service->SetLocalSyncEnabled(true);
   return sync_service;
 }
 
-std::unique_ptr<TestingProfile> MakeTestingProfile(bool has_sync_enabled) {
+std::unique_ptr<TestingProfile> MakeTestingProfile(
+    network::TestURLLoaderFactory& url_loader_factory) {
   TestingProfile::Builder profile_builder;
+  profile_builder.SetSharedURLLoaderFactory(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &url_loader_factory));
   profile_builder.AddTestingFactory(
       SyncServiceFactory::GetInstance(),
-      base::BindRepeating(&CreateTestSyncService, has_sync_enabled));
-  return profile_builder.Build();
+      base::BindRepeating(&CreateTestSyncService));
+  profile_builder.AddTestingFactory(
+      ChromeSigninClientFactory::GetInstance(),
+      base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                          &url_loader_factory));
+  return IdentityTestEnvironmentProfileAdaptor::
+      CreateProfileForIdentityTestEnvironment(profile_builder);
 }
+
+const char kSampleUserEmail[] = "user@gmail.com";
+const std::vector<ntp::ModuleIdDetail> kSampleModules = {
+    {ntp_modules::kDriveModuleId, IDS_NTP_MODULES_DRIVE_NAME}};
 
 }  // namespace
 
 class NewTabPageModulesTest : public testing::Test {
  public:
-  NewTabPageModulesTest() : profile_(MakeTestingProfile(false)) {}
+  NewTabPageModulesTest() {
+    profile_ = MakeTestingProfile(test_url_loader_factory_);
+    identity_test_environment_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+    identity_test_env().SetTestURLLoaderFactory(&test_url_loader_factory_);
+  }
 
   TestingProfile& profile() { return *profile_; }
-  void SetSyncEnabled(bool has_sync_enabled) {
-    profile_ = MakeTestingProfile(has_sync_enabled);
+  signin::IdentityTestEnvironment& identity_test_env() {
+    return *identity_test_environment_profile_adaptor_->identity_test_env();
   }
 
  private:
   // Must be on Chrome_UIThread.
   content::BrowserTaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_environment_profile_adaptor_;
 };
 
 TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_PopulatesStructCorrectly) {
@@ -73,6 +98,8 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_PopulatesStructCorrectly) {
                             ntp_features::kNtpSharepointModule,
                             ntp_features::kNtpMostRelevantTabResumptionModule},
       /*disabled_features=*/{});
+  identity_test_env().SetCookieAccounts(
+      {{kSampleUserEmail, signin::GetTestGaiaIdForEmail(kSampleUserEmail)}});
 
   const std::vector<ntp::ModuleIdDetail> module_id_details =
       ntp::MakeModuleIdDetails(/*is_managed_profile=*/false,
@@ -99,6 +126,8 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_PopulatesStructCorrectly) {
 }
 
 TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_OnlyPopulatesEnabledModules) {
+  identity_test_env().SetCookieAccounts(
+      {{kSampleUserEmail, signin::GetTestGaiaIdForEmail(kSampleUserEmail)}});
   const std::vector<base::test::FeatureRef>& some_module_features = {
       ntp_features::kNtpFeedModule,
       ntp_features::kNtpMostRelevantTabResumptionModule};
@@ -124,7 +153,8 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_WithDriveModule) {
       /*enabled_features=*/enabled_features,
       /*disabled_features=*/ntp::ComputeDisabledFeaturesList(
           ntp::kAllModuleFeatures, enabled_features));
-  SetSyncEnabled(true);
+  identity_test_env().SetCookieAccounts(
+      {{kSampleUserEmail, signin::GetTestGaiaIdForEmail(kSampleUserEmail)}});
 
   const std::vector<ntp::ModuleIdDetail> module_id_details =
       ntp::MakeModuleIdDetails(/*is_managed_profile=*/true,
@@ -140,6 +170,8 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_Managed) {
       /*enabled_features=*/enabled_features,
       /*disabled_features=*/ntp::ComputeDisabledFeaturesList(
           ntp::kAllModuleFeatures, enabled_features));
+  identity_test_env().SetCookieAccounts(
+      {{kSampleUserEmail, signin::GetTestGaiaIdForEmail(kSampleUserEmail)}});
 
   const std::vector<ntp::ModuleIdDetail> module_id_details =
       ntp::MakeModuleIdDetails(/*is_managed_profile=*/true,
@@ -176,71 +208,23 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_DummyModules) {
 }
 #endif
 
-const char kSampleUserEmail[] = "user@gmail.com";
-const std::vector<ntp::ModuleIdDetail> kSampleModules = {
-    {ntp_modules::kDriveModuleId, IDS_NTP_MODULES_DRIVE_NAME}};
-
-TEST_F(NewTabPageModulesTest, HasModulesEnabled_SignedInAccount) {
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.SetCookieAccounts(
+TEST_F(NewTabPageModulesTest, HasModulesEnabled) {
+  identity_test_env().SetCookieAccounts(
       {{kSampleUserEmail, signin::GetTestGaiaIdForEmail(kSampleUserEmail)}});
   ASSERT_TRUE(ntp::HasModulesEnabled(kSampleModules,
-                                     identity_test_env.identity_manager()));
+                                     identity_test_env().identity_manager()));
 }
 
-TEST_F(NewTabPageModulesTest,
-       HasModulesEnabled_SignedInAccountNtpModulesLoadFlag) {
+TEST_F(NewTabPageModulesTest, HasModulesEnabled_NtpModulesLoadFlag) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{ntp_features::kNtpModulesLoad},
       /*disabled_features=*/{});
 
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.SetCookieAccounts(
+  identity_test_env().SetCookieAccounts(
       {{kSampleUserEmail, signin::GetTestGaiaIdForEmail(kSampleUserEmail)}});
   ASSERT_FALSE(ntp::HasModulesEnabled(kSampleModules,
-                                      identity_test_env.identity_manager()));
-}
-
-TEST_F(NewTabPageModulesTest, HasModulesEnabled_NoSignedInAccount) {
-  signin::IdentityTestEnvironment identity_test_env;
-  ASSERT_FALSE(ntp::HasModulesEnabled(kSampleModules,
-                                      identity_test_env.identity_manager()));
-}
-
-TEST_F(NewTabPageModulesTest,
-       HasModulesEnabled_NoSignedInAccountSignedOutModulesSwitch) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kSignedOutNtpModulesSwitch);
-  signin::IdentityTestEnvironment identity_test_env;
-  ASSERT_TRUE(ntp::HasModulesEnabled(kSampleModules,
-                                     identity_test_env.identity_manager()));
-}
-
-TEST_F(NewTabPageModulesTest,
-       HasModulesEnabled_SignedInAccountSignInRequirementFlag) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{ntp_features::kNtpModuleSignInRequirement},
-      /*disabled_features=*/{});
-
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.SetCookieAccounts(
-      {{kSampleUserEmail, signin::GetTestGaiaIdForEmail(kSampleUserEmail)}});
-  ASSERT_TRUE(ntp::HasModulesEnabled(kSampleModules,
-                                     identity_test_env.identity_manager()));
-}
-
-TEST_F(NewTabPageModulesTest,
-       HasModulesEnabled_NoSignedInAccountSignInRequirementFlag) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{ntp_features::kNtpModuleSignInRequirement},
-      /*disabled_features=*/{});
-
-  signin::IdentityTestEnvironment identity_test_env;
-  ASSERT_TRUE(ntp::HasModulesEnabled(kSampleModules,
-                                     identity_test_env.identity_manager()));
+                                      identity_test_env().identity_manager()));
 }
 
 TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_MicrosoftCards) {

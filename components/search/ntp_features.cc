@@ -180,7 +180,7 @@ BASE_FEATURE(kNtpModulesLoad,
 // requirement for all modules.
 BASE_FEATURE(kNtpModuleSignInRequirement,
              "NtpModuleSignInRequirement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, OneGoogleBar will be shown.
 // This is a kill switch. Keep indefinitely.
