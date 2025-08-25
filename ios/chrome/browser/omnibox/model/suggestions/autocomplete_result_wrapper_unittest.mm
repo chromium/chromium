@@ -43,7 +43,8 @@ class AutocompleteResultWrapperTest : public PlatformTest {
         [[FakeAutocompleteResultWrapperDelegate alloc] init];
     omnibox_client_ = std::make_unique<TestOmniboxClient>();
     wrapper_ = [[AutocompleteResultWrapper alloc]
-        initWithOmniboxClient:omnibox_client_.get()];
+        initWithOmniboxClient:omnibox_client_.get()
+                      profile:profile_.get()];
     wrapper_.incognito = NO;
     wrapper_.templateURLService =
         search_engines_test_environment_.template_url_service();

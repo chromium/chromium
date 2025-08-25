@@ -43,6 +43,7 @@ class HomeBackgroundCustomizationService;
 @class NewTabPageState;
 class PlaceholderService;
 class PrefService;
+class ProfileIOS;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
 @protocol UserAccountImageUpdateDelegate;
@@ -76,6 +77,7 @@ class UrlLoadingBrowserAgent;
     discoverFeedVisibilityBrowserAgent:
         (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
               featureEngagementTracker:(feature_engagement::Tracker*)tracker
+                               profile:(ProfileIOS*)profile
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

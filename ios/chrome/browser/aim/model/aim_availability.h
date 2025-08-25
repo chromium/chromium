@@ -5,11 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_AIM_MODEL_AIM_AVAILABILITY_H_
 #define IOS_CHROME_BROWSER_AIM_MODEL_AIM_AVAILABILITY_H_
 
-class PrefService;
-class TemplateURLService;
+class ProfileIOS;
 
 /// Whether AIM is available.
-bool IsAIMAvailable(const PrefService* prefs,
-                    const TemplateURLService* template_url_service);
+bool IsAIMAvailable(ProfileIOS* profile);
 
 #endif  // IOS_CHROME_BROWSER_AIM_MODEL_AIM_AVAILABILITY_H_
