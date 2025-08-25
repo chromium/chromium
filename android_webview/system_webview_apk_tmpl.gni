@@ -181,9 +181,9 @@ template("system_webview_apk_or_module_tmpl") {
     _include_primary_support = false
     _include_secondary_support = false
 
-    if (!_is_trichrome) {
-      shared_resources = true
+    app_as_shared_lib = true
 
+    if (!_is_trichrome) {
       if ((!android_64bit_target_cpu && _include_32_bit_webview) ||
           (android_64bit_target_cpu && _include_64_bit_webview)) {
         shared_libraries = [ "//android_webview:libwebviewchromium" ]
@@ -195,8 +195,6 @@ template("system_webview_apk_or_module_tmpl") {
       }
       deps += [ "//third_party/icu:icu_assets" ]
     } else {
-      app_as_shared_lib = true
-
       # Include placeholder libraries to ensure we are treated as the desired
       # architecture.
       if (android_64bit_target_cpu) {
