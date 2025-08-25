@@ -132,6 +132,11 @@ class BrowserNonClientFrameViewChromeOS
     return caption_button_container_;
   }
 
+  // Returns whether the associated window is in TrustedPinned state.
+  // TODO(crbug.com/429215055): Rename `IsTrustedPinned` to
+  // `IsLockedFullscreen()` under /c/b/ui.
+  bool IsTrustedPinned() const;
+
  protected:
   // BrowserNonClientFrameView:
   void PaintAsActiveChanged() override;
@@ -213,9 +218,6 @@ class BrowserNonClientFrameViewChromeOS
 
   // Returns whether the associated window is currently snapped or not.
   bool IsSnapped() const;
-
-  // Returns whether the associated window is in TrustedPinned state.
-  bool IsTrustedPinned() const;
 
   // True if the the associated browser window should be using the WebUI tab
   // strip.

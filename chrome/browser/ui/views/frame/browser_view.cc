@@ -2518,6 +2518,12 @@ void BrowserView::OnLockedForOnTaskUpdated() {
   SetShowCloseButton(!locked_for_on_task);
 }
 
+bool BrowserView::IsTrustedPinned() const {
+  const auto* frame_view =
+      static_cast<BrowserNonClientFrameViewChromeOS*>(frame_->GetFrameView());
+  return frame_view->IsTrustedPinned();
+}
+
 #endif
 
 base::CallbackListSubscription BrowserView::AddOnLinkOpeningFromGestureCallback(

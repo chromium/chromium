@@ -43,6 +43,7 @@ specific_include_rules = {
    "!ash",
    "+ash/constants",
    "+ash/public",
+   "+ash/wm/window_pin_util.h",
    "+ash/system/mahi/fake_mahi_manager.h",
    "+ash/system/mahi/test/mock_mahi_media_app_events_proxy.h",
    "+ash/webui/system_apps/public/system_web_app_type.h",

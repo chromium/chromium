@@ -857,6 +857,8 @@ class BrowserView : public BrowserWindow,
 #if BUILDFLAG(IS_CHROMEOS)
   // This is used only for SWA/PWA scenario.
   void OnLockedForOnTaskUpdated();
+
+  bool IsTrustedPinned() const;
 #endif
 
  private:

@@ -882,6 +882,10 @@ bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController()
          fullscreen_controller->IsFullscreenForBrowser();
 }
 
+bool BrowserNonClientFrameViewChromeOS::IsTrustedPinned() const {
+  return ash::WindowState::Get(frame()->GetNativeWindow())->IsTrustedPinned();
+}
+
 void BrowserNonClientFrameViewChromeOS::PaintAsActiveChanged() {
   BrowserNonClientFrameView::PaintAsActiveChanged();
 
@@ -913,9 +917,12 @@ bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview()
     const {
-  // Show the caption buttons if the app happens to be locked for OnTask. Only
-  // relevant for non-web browser scenarios.
-  if (browser_view()->browser()->IsLockedForOnTask()) {
+  // Show the caption buttons if an immersive mode is enabled for trusted pined
+  // state. This is to show the three dot menu which is a part of caption button
+  // container, rather than showing buttons. Only relevant for non-web browser
+  // scenarios.
+  if (IsTrustedPinned() &&
+      GetFrameWindow()->GetProperty(chromeos::kUseImmersiveInTrustedPinned)) {
     return true;
   }
 
@@ -1230,10 +1237,6 @@ bool BrowserNonClientFrameViewChromeOS::IsFloated() const {
 
 bool BrowserNonClientFrameViewChromeOS::IsSnapped() const {
   return ash::WindowState::Get(frame()->GetNativeWindow())->IsSnapped();
-}
-
-bool BrowserNonClientFrameViewChromeOS::IsTrustedPinned() const {
-  return ash::WindowState::Get(frame()->GetNativeWindow())->IsTrustedPinned();
 }
 
 bool BrowserNonClientFrameViewChromeOS::UseWebUITabStrip() const {

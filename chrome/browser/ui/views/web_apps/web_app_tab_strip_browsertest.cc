@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -66,6 +67,10 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/wm/window_pin_util.h"
+#endif
 
 using content::OpenURLParams;
 using content::Referrer;
@@ -1355,6 +1360,12 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripForOnTaskBrowserTest,
   ASSERT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
   ASSERT_EQ(tab_strip_model->count(), 1);
   ASSERT_TRUE(tab_strip_model->IsTabPinned(0));
+
+  PinWindow(app_browser->window()->GetNativeWindow(), /*trusted=*/true);
+  // TODO(crbug.com/429215055): This should happen as a part of pin state
+  // transition.
+  app_browser->command_controller()->LockedFullscreenStateChanged();
+  ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(app_browser));
 
   // Open another tab so we can test tab close behavior on both home and
   // non-home tabs.

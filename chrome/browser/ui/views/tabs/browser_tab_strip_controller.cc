@@ -441,9 +441,9 @@ void BrowserTabStripController::OnCloseTab(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Tabs cannot be closed when the app is locked for OnTask. Only relevant for
-  // non-web browser scenarios.
-  if (browser_view_->browser()->IsLockedForOnTask()) {
+  // Tabs cannot be closed when the app is in locked fullscreen, which is
+  // available only on ChromeOS.
+  if (browser_view_->IsTrustedPinned()) {
     return;
   }
 #endif
