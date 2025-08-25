@@ -44,6 +44,7 @@ source_set("model") {
     "//components/strings",
     "//components/sync",
     "//components/unified_consent",
+    "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/optimization_guide/model",

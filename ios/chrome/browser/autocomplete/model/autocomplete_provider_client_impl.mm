@@ -29,6 +29,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "components/unified_consent/url_keyed_data_collection_consent_helper.h"
+#import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scoring_model_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
@@ -212,7 +213,7 @@ AutocompleteProviderClientImpl::GetTabGroupSyncService() const {
 
 AimEligibilityService*
 AutocompleteProviderClientImpl::GetAimEligibilityService() const {
-  return nullptr;
+  return IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_);
 }
 
 std::string AutocompleteProviderClientImpl::GetAcceptLanguages() const {
