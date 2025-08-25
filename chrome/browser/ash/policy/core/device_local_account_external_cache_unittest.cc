@@ -254,6 +254,7 @@ void DeviceLocalAccountExternalCacheTest::SetUp() {
 }
 
 void DeviceLocalAccountExternalCacheTest::TearDown() {
+  provider_.reset();
   testing_profile_manager_.DeleteAllTestingProfiles();
   TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
 }

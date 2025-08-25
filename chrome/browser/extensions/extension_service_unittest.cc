@@ -498,7 +498,6 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
   ExternalProviderImpl* provider() { return provider_.get(); }
 
  protected:
-  std::unique_ptr<ExternalProviderImpl> provider_;
 
   void SetUp(const std::string& json_data,
              ManifestLocation crx_location,
@@ -532,6 +531,7 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
   ManifestLocation crx_location_;
   std::optional<base::Value::Dict> prefs_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<ExternalProviderImpl> provider_;
 };
 
 // Mock provider that can simulate incremental update like
@@ -556,7 +556,7 @@ class MockUpdateProviderVisitor : public MockProviderVisitor {
     auto new_prefs = GetDictionaryFromJSON(json_data);
     if (!new_prefs)
       return;
-    provider_->UpdatePrefs(std::move(*new_prefs));
+    provider()->UpdatePrefs(std::move(*new_prefs));
   }
 
   void OnExternalProviderUpdateComplete(
