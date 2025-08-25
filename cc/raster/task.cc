@@ -123,8 +123,10 @@ void TaskGraph::Swap(TaskGraph* other) {
 }
 
 void TaskGraph::Reset() {
-  nodes.clear();
+  // Clear edges first to avoid dangling raw_ptrs into Tasks that can be
+  // destroyed when clearing nodes.
   edges.clear();
+  nodes.clear();
 }
 
 }  // namespace cc
