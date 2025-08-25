@@ -611,6 +611,9 @@ extern const char kBackForwardCacheDescription[];
 extern const char kBackForwardTransitionsName[];
 extern const char kBackForwardTransitionsDescription[];
 
+extern const char kBackForwardTransitionsCrossDocSharedImageName[];
+extern const char kBackForwardTransitionsCrossDocSharedImageDescription[];
+
 extern const char kBackgroundListeningName[];
 extern const char kBackgroundListeningDescription[];
 

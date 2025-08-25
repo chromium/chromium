@@ -1085,6 +1085,11 @@
     "expiry_milestone": 142
   },
   {
+    "name": "back-forward-transitions-cross-doc-shared-image",
+    "owners": [ "acondor@chromium.org", "clank-performance-team@google.com" ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "backdrop-filter-mirror-edge",
     "owners": [ "flackr@chromium.org", "michaelludwig@google.com"],
     "expiry_milestone": 140

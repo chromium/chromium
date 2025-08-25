@@ -1022,6 +1022,12 @@ const char kBackForwardTransitionsDescription[] =
     "If enabled, adds animated gesture transitions for back/forward session "
     "history navigations.";
 
+const char kBackForwardTransitionsCrossDocSharedImageName[] =
+    "Back-forward transitions on cross-document navigations use SharedImage";
+const char kBackForwardTransitionsCrossDocSharedImageDescription[] =
+    "When enabled, use a SharedImage for capturing screenshots for "
+    "back/forward transitions on cross-document navigations.";
+
 const char kBiometricReauthForPasswordFillingName[] =
     "Biometric reauth for password filling";
 const char kBiometricReauthForPasswordFillingDescription[] =

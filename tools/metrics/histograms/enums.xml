@@ -15972,6 +15972,8 @@ from previous Chrome versions.
   <int value="646163532" label="CameraAppPreviewOcr:enabled"/>
   <int value="646252875" label="ReadItLaterInMenu:enabled"/>
   <int value="646269021" label="UnifiedSidePanel:disabled"/>
+  <int value="646358677"
+      label="BackForwardTransitionsCrossDocSharedImage:disabled"/>
   <int value="646738320" label="disable-gesture-editing"/>
   <int value="647662142" label="use-angle"/>
   <int value="647724971" label="LauncherImageSearchIca:disabled"/>
@@ -17964,6 +17966,8 @@ from previous Chrome versions.
   <int value="1360969228" label="RevampedContextMenu:enabled"/>
   <int value="1361047396" label="disable-click-delay"/>
   <int value="1361073386" label="ContentSuggestionsNotifications:enabled"/>
+  <int value="1361242104"
+      label="BackForwardTransitionsCrossDocSharedImage:enabled"/>
   <int value="1361736708"
       label="ExperimentalWebAppStoragePartitionIsolation:enabled"/>
   <int value="1363136936" label="VrCustomTabBrowsing:enabled"/>
