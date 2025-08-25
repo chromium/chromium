@@ -1155,7 +1155,8 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   // TODO(msarda): This invariant is violated on Android. Remove this check
   // once the IdentityManager is no longer created as part of the initialization
   // of the storage partition on Android.
-  CHECK(!IdentityManagerFactory::GetForProfileIfExists(this));
+  CHECK(!IdentityManagerFactory::GetForProfileIfExists(this),
+        base::NotFatalUntil::M160);
 #endif
 
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
