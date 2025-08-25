@@ -121,4 +121,22 @@ public class NavigationAttachmentsMediatorUnitTest {
         assertEquals("image/*", intent.getType());
         assertTrue(intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false));
     }
+
+    @Test
+    public void onFileButtonClicked_launchesFilePicker() {
+        Runnable runnable = mModel.get(NavigationAttachmentsProperties.POPUP_FILE_CLICKED);
+        assertNotNull(runnable);
+
+        runnable.run();
+
+        verify(mPopup).dismiss();
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mWindowAndroid).showCancelableIntent(intentCaptor.capture(), any(), any());
+
+        Intent intent = intentCaptor.getValue();
+        assertEquals(Intent.ACTION_OPEN_DOCUMENT, intent.getAction());
+        assertTrue(intent.hasCategory(Intent.CATEGORY_OPENABLE));
+        assertEquals("*/*", intent.getType());
+        assertTrue(intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false));
+    }
 }

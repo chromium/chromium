@@ -29,6 +29,9 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED) {
             view.popup.mGalleryButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED).run());
+        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_FILE_CLICKED) {
+            view.popup.mFileButton.setOnClickListener(
+                    v -> model.get(NavigationAttachmentsProperties.POPUP_FILE_CLICKED).run());
         } else if (propertyKey == NavigationAttachmentsProperties.TOOLBAR_VISIBLE) {
             view.navigationToolbar.setVisibility(
                     model.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE)

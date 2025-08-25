@@ -316,6 +316,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/ic_history_googblue_24dp.png",
     "java/res/drawable-xxxhdpi/ic_suggestion_magnifier.png",
     "java/res/drawable/hairline_circle.xml",
+    "java/res/drawable/ic_attach_file_24dp.xml",
     "java/res/drawable/ic_book_round.xml",
     "java/res/drawable/ic_equals_sign_round.xml",
     "java/res/drawable/ic_google_round.xml",

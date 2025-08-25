@@ -43,6 +43,7 @@ class NavigationAttachmentsMediator {
                 NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
         mModel.set(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED, this::launchCamera);
         mModel.set(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED, this::launchImagePicker);
+        mModel.set(NavigationAttachmentsProperties.POPUP_FILE_CLICKED, this::launchFilePicker);
     }
 
     void destroy() {}
@@ -97,6 +98,31 @@ class NavigationAttachmentsMediator {
                         .addCategory(Intent.CATEGORY_OPENABLE)
                         .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                         .setType("image/*");
+
+        mWindowAndroid.showCancelableIntent(
+                i,
+                (resultCode, data) -> {
+                    if (resultCode != Activity.RESULT_OK || data == null) return;
+
+                    var uris = extractUrisFromResult(data);
+                    for (var uri : uris) {
+                        Log.i(TAG, "Photo URI: " + uri);
+                    }
+                },
+                R.string.low_memory_error);
+    }
+
+    private void launchFilePicker() {
+        mPopup.dismiss();
+
+        var i =
+                new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .setType("*/*")
+                        .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                        .addFlags(
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                        | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
 
         mWindowAndroid.showCancelableIntent(
                 i,

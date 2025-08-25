@@ -25,6 +25,10 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> POPUP_CAMERA_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Action to perform when the user clicks the File button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_FILE_CLICKED =
+            new WritableObjectPropertyKey<>();
+
     /** Action to perform when the user clicks the Gallery button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_GALLERY_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -34,6 +38,11 @@ class NavigationAttachmentsProperties {
             new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
-        ADAPTER, BUTTON_ADD_CLICKED, POPUP_CAMERA_CLICKED, POPUP_GALLERY_CLICKED, TOOLBAR_VISIBLE
+        ADAPTER,
+        BUTTON_ADD_CLICKED,
+        POPUP_CAMERA_CLICKED,
+        POPUP_FILE_CLICKED,
+        POPUP_GALLERY_CLICKED,
+        TOOLBAR_VISIBLE
     };
 }

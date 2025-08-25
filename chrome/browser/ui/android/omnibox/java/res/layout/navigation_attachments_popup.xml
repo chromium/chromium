@@ -51,4 +51,16 @@ found in the LICENSE file.
         android:singleLine="true"
         android:textAlignment="viewStart"/>
 
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/navigation_attachments_pick_file_button"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:drawableStart="@drawable/ic_attach_file_24dp"
+        android:drawablePadding="8dp"
+        style="@style/TextButton"
+        app:drawableTint="@color/default_icon_color_tint_list"
+        android:text="@string/photo_picker_browse"
+        android:singleLine="true"
+        android:textAlignment="viewStart"/>
+
 </LinearLayout>

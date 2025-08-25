@@ -41,6 +41,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     private @Mock ChromeImageButton mAddButton;
     private @Mock Button mCameraButton;
     private @Mock Button mGalleryButton;
+    private @Mock Button mFileButton;
     private @Mock NavigationAttachmentsRecyclerView mRecyclerView;
 
     private PropertyModel mModel;
@@ -55,6 +56,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
         mViewHolder.popup.mCameraButton = mCameraButton;
         mViewHolder.popup.mGalleryButton = mGalleryButton;
+        mViewHolder.popup.mFileButton = mFileButton;
         PropertyModelChangeProcessor.create(
                 mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
     }
@@ -110,6 +112,19 @@ public class NavigationAttachmentsViewBinderUnitTest {
                 ArgumentCaptor.forClass(View.OnClickListener.class);
         verify(mGalleryButton).setOnClickListener(listenerCaptor.capture());
         listenerCaptor.getValue().onClick(mGalleryButton);
+
+        verify(runnable).run();
+    }
+
+    @Test
+    public void fileButtonClickListener_isCalled() {
+        Runnable runnable = mock(Runnable.class);
+        mModel.set(NavigationAttachmentsProperties.POPUP_FILE_CLICKED, runnable);
+
+        ArgumentCaptor<View.OnClickListener> listenerCaptor =
+                ArgumentCaptor.forClass(View.OnClickListener.class);
+        verify(mFileButton).setOnClickListener(listenerCaptor.capture());
+        listenerCaptor.getValue().onClick(mFileButton);
 
         verify(runnable).run();
     }
