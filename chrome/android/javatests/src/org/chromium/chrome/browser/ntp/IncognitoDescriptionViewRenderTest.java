@@ -43,8 +43,7 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({
     ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
-    ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
-    ChromeFeatureList.IP_PROTECTION_UX
+    ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
 })
 public class IncognitoDescriptionViewRenderTest {
     @ParameterAnnotations.ClassParameter
@@ -88,8 +87,7 @@ public class IncognitoDescriptionViewRenderTest {
     @Feature({"RenderTest"})
     @DisableFeatures({
         ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
-        ChromeFeatureList.IP_PROTECTION_UX
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
     })
     public void testRender_IncognitoDescriptionView() throws IOException {
         View view = sActivity.findViewById(android.R.id.content);
@@ -109,8 +107,7 @@ public class IncognitoDescriptionViewRenderTest {
     @Feature({"RenderTest"})
     @DisableFeatures({
         ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
-        ChromeFeatureList.IP_PROTECTION_UX
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
     })
     public void testRender_IncognitoDescriptionViewTrackingProtection() throws IOException {
         View view = sActivity.findViewById(android.R.id.content);
@@ -128,10 +125,7 @@ public class IncognitoDescriptionViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableFeatures({
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
-        ChromeFeatureList.IP_PROTECTION_UX
-    })
+    @DisableFeatures({ChromeFeatureList.FINGERPRINTING_PROTECTION_UX})
     public void render_IncognitoDescriptionView_alwaysBlock3pcsIncognito() throws IOException {
         View view = sActivity.findViewById(android.R.id.content);
         ThreadUtils.runOnUiThreadBlocking(

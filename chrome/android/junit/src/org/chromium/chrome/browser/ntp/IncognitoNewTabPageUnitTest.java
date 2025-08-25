@@ -40,11 +40,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /** Unit test for {@link org.chromium.chrome.browser.ntp.IncognitoNewTabPage} */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
-    ChromeFeatureList.IP_PROTECTION_UX
-})
+@DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
 public class IncognitoNewTabPageUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mScenarioRule =

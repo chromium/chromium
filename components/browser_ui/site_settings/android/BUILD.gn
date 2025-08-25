@@ -230,6 +230,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/web_asset.png",
     "java/res/drawable/broken_24.xml",
     "java/res/drawable/gm_database_24.xml",
+    "java/res/drawable/google.xml",
     "java/res/drawable/ic_account_attention.xml",
     "java/res/drawable/ic_archive.xml",
     "java/res/drawable/ic_background_replace.xml",
