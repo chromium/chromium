@@ -1028,11 +1028,41 @@ public class TabWindowManagerImplUnitTest {
     public void testKeepAllTabModelsLoaded() {
         List<InstanceInfo> instanceInfoList = new ArrayList<>();
         instanceInfoList.add(
-                new InstanceInfo(0, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false, 0));
+                new InstanceInfo(
+                        0,
+                        0,
+                        InstanceInfo.Type.OTHER,
+                        "",
+                        "",
+                        /* customTitle= */ null,
+                        0,
+                        0,
+                        false,
+                        0));
         instanceInfoList.add(
-                new InstanceInfo(1, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false, 0));
+                new InstanceInfo(
+                        1,
+                        0,
+                        InstanceInfo.Type.OTHER,
+                        "",
+                        "",
+                        /* customTitle= */ null,
+                        0,
+                        0,
+                        false,
+                        0));
         instanceInfoList.add(
-                new InstanceInfo(2, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false, 0));
+                new InstanceInfo(
+                        2,
+                        0,
+                        InstanceInfo.Type.OTHER,
+                        "",
+                        "",
+                        /* customTitle= */ null,
+                        0,
+                        0,
+                        false,
+                        0));
         when(mMultiInstanceManager.getInstanceInfo()).thenReturn(instanceInfoList);
 
         ActivityController<Activity> activityController0 = createActivity();
@@ -1080,7 +1110,17 @@ public class TabWindowManagerImplUnitTest {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         List<InstanceInfo> instanceInfoList = new ArrayList<>();
         instanceInfoList.add(
-                new InstanceInfo(0, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false, 0));
+                new InstanceInfo(
+                        0,
+                        0,
+                        InstanceInfo.Type.OTHER,
+                        "",
+                        "",
+                        /* customTitle= */ null,
+                        0,
+                        0,
+                        false,
+                        0));
         when(mMultiInstanceManager.getInstanceInfo()).thenReturn(instanceInfoList);
 
         // The default mock TabModelSelectorFactory is hard to verify

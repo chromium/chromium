@@ -500,6 +500,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             type,
                             assumeNonNull(readUrl(i)),
                             assumeNonNull(readTitle(i)),
+                            /* customTitle= */ null,
                             readTabCount(i),
                             readIncognitoTabCount(i),
                             readIncognitoSelected(i),

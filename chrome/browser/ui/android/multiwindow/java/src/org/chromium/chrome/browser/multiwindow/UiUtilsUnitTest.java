@@ -440,6 +440,7 @@ public class UiUtilsUnitTest {
                 0,
                 "https://url.com",
                 TITLE,
+                /* customTitle= */ null,
                 tabCount,
                 incognitoTabCount,
                 isIncognito,
@@ -447,10 +448,11 @@ public class UiUtilsUnitTest {
     }
 
     private InstanceInfo mockInstance(int type) {
-        return new InstanceInfo(1, 57, type, "https://url.com", TITLE, 1, 1, true, 0);
+        return new InstanceInfo(
+                1, 57, type, "https://url.com", TITLE, /* customTitle= */ null, 1, 1, true, 0);
     }
 
     private InstanceInfo mockInstanceBeforeLoadingTab(int type) {
-        return new InstanceInfo(1, 57, type, null, null, 1, 0, false, 0);
+        return new InstanceInfo(1, 57, type, null, null, /* customTitle= */ null, 1, 0, false, 0);
     }
 }

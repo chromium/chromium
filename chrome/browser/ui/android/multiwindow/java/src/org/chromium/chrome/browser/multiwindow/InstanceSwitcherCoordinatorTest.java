@@ -793,11 +793,38 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                            0,
+                            57,
+                            InstanceInfo.Type.CURRENT,
+                            "url0",
+                            "title0",
+                            /* customTitle= */ null,
+                            1,
+                            0,
+                            false,
+                            0),
                     new InstanceInfo(
-                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                            1,
+                            58,
+                            InstanceInfo.Type.OTHER,
+                            "ur11",
+                            "title1",
+                            /* customTitle= */ null,
+                            2,
+                            0,
+                            false,
+                            0),
                     new InstanceInfo(
-                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false, 0)
+                            2,
+                            59,
+                            InstanceInfo.Type.OTHER,
+                            "url2",
+                            "title2",
+                            /* customTitle= */ null,
+                            0,
+                            0,
+                            false,
+                            0)
                 };
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
         Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
@@ -1168,7 +1195,16 @@ public class InstanceSwitcherCoordinatorTest {
         // Set instance0 as the current instance.
         instances[0] =
                 new InstanceInfo(
-                        0, taskId++, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 1, false, 0);
+                        0,
+                        taskId++,
+                        InstanceInfo.Type.CURRENT,
+                        "url0",
+                        "title0",
+                        /* customTitle= */ null,
+                        1,
+                        1,
+                        false,
+                        0);
 
         // Create other active instances.
         for (int i = 1; i < numActiveInstances; i++) {
@@ -1179,6 +1215,7 @@ public class InstanceSwitcherCoordinatorTest {
                             InstanceInfo.Type.OTHER,
                             "url" + i,
                             "title" + i,
+                            /* customTitle= */ null,
                             1,
                             0,
                             false,
@@ -1189,7 +1226,16 @@ public class InstanceSwitcherCoordinatorTest {
         for (int i = numActiveInstances; i < totalInstances; i++) {
             instances[i] =
                     new InstanceInfo(
-                            i, -1, InstanceInfo.Type.OTHER, "url" + i, "title" + i, 1, 0, false, 0);
+                            i,
+                            -1,
+                            InstanceInfo.Type.OTHER,
+                            "url" + i,
+                            "title" + i,
+                            /* customTitle= */ null,
+                            1,
+                            0,
+                            false,
+                            0);
         }
 
         return instances;
