@@ -93,7 +93,6 @@ import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.resources.ResourceManager;
 
 /** Tests for toolbar manager behavior. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -106,9 +105,7 @@ public class ToolbarTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private BookmarkBarSceneLayer mBookmarkBarSceneLayer;
     @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJniMock;
-    @Mock private ResourceManager mResourceManager;
 
     private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
     private WebPageStation mPage;

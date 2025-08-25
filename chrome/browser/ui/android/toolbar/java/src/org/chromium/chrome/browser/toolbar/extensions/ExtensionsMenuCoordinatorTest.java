@@ -58,7 +58,6 @@ public class ExtensionsMenuCoordinatorTest {
     @Mock private TabCreator mTabCreator;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
-    @Mock private Tab mNewTab;
     @Mock private Tab mAnotherTab;
     @Mock private ThemeColorProvider mThemeColorProvider;
 
@@ -86,7 +85,6 @@ public class ExtensionsMenuCoordinatorTest {
 
         mCurrentTabSupplier.set(mTab);
         when(mTab.getProfile()).thenReturn(mProfile);
-        when(mNewTab.getProfile()).thenReturn(mProfile);
 
         mProfileSupplier.set(mProfile);
 

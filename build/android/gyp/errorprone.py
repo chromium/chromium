@@ -28,107 +28,89 @@ TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
 
 # Full list of checks: https://errorprone.info/bugpatterns
 ERRORPRONE_WARNINGS_TO_DISABLE = [
-    'InlineMeInliner',
-    'InlineMeSuggester',
     # High priority to enable:
     'DirectInvocationOnMock',
-    'MockNotUsedInProduction',
-    'PatternMatchingInstanceof',
     'AssignmentExpression',
-    'RuleNotRun',
     # High priority to enable in non-tests:
     'JdkObsolete',
     'ReturnValueIgnored',
     'StaticAssignmentInConstructor',
+
+    # Low priority.
+    'BadImport',
+    'CatchAndPrintStackTrace',
+    'EffectivelyPrivate',
+    'EmptyCatch',
+    'EqualsGetClass',
+    'EqualsHashCode',
+    'IdentityHashMapUsage',
+    'JavaUtilDate',
+    'OverrideThrowableToString',
+    'NonCanonicalType',
+    'PatternMatchingInstanceof',
+    'RedundantControlFlow',
+    'StatementSwitchToExpressionSwitch',
+    'UndefinedEquals',
+    'UseCorrectAssertInTests',
+    'SameNameButDifferent',
+    'StaticAssignmentOfThrowable',  # Want in non-test
+    'StaticMockMember',
+    'StringCaseLocaleUsage',
+    'StringCharset',
+    'ThreadLocalUsage',
+    'TypeParameterUnusedInFormals',
+    'UnsafeReflectiveConstructionCast',
+
+    # Never Enable:
+    #
+    # Just use Android Studio refactors to inline things.
+    'InlineMeInliner',
+    'InlineMeSuggester',
+    # We already have presubmit checks for this. We don't want it to fail
+    # local compiles.
+    'RemoveUnusedImports',
+    # Several instances of using a string right before the String.format(),
+    # which seems better than inlining.
+    'InlineFormatString',
+    # Assigning to fields marked as @Mock or @Spy. Suggested fix is to delete
+    # assignments, which would break tests in many cases.
+    'UnnecessaryAssignment',
+    # Android platform default is always UTF-8.
+    # https://developer.android.com/reference/java/nio/charset/Charset.html#defaultCharset()
+    'DefaultCharset',
+    # If google-java-format is not going to do this, it's not worth our time.
+    'StringConcatToTextBlock',
+    # We don't use Dagger.
+    'RefersToDaggerCodegen',
+    # Only has false positives (would not want to enable this).
+    'UnicodeEscape',
+    # Does not apply to Android because it assumes no desugaring.
+    'UnnecessaryLambda',
+    # These are best practices that I doubt are worth the churn / overhead.
+    'MixedMutabilityReturnType',
+    'MutablePublicArray',
+    'NonApiType',
+    # Not that useful.
+    'ClassNewInstance',
+    # Low priority corner cases with String.split.
+    # Linking Guava and using Splitter was rejected
+    # in the https://chromium-review.googlesource.com/c/chromium/src/+/871630.
+    'StringSplitter',
+    # There are lots of times when we just want to post a task.
+    'FutureReturnValueIgnored',
+    # Just false positives in our code.
+    'ThreadJoinLoop',
+
     # These are all for Javadoc, which we don't really care about.
-    # vvv
     'InvalidBlockTag',
-    'InvalidParam',
-    'InvalidLink',
     'InvalidInlineTag',
+    'InvalidLink',
+    'InvalidParam',
     'MalformedInlineTag',
     'MissingSummary',
     'NotJavadoc',
     'UnescapedEntity',
     'UnrecognisedJavadocTag',
-    # ^^^
-    'MutablePublicArray',
-    'NonCanonicalType',
-    'DoNotClaimAnnotations',
-    'JavaUtilDate',
-    'IdentityHashMapUsage',
-    'StaticMockMember',
-    # Triggers in tests where this is useful to do.
-    'StaticAssignmentOfThrowable',
-    # TODO(crbug.com/41384349): Follow steps in bug.
-    'CatchAndPrintStackTrace',
-    # TODO(crbug.com/41364806): Follow steps in bug.
-    'TypeParameterUnusedInFormals',
-    # Android platform default is always UTF-8.
-    # https://developer.android.com/reference/java/nio/charset/Charset.html#defaultCharset()
-    'DefaultCharset',
-    # There are lots of times when we just want to post a task.
-    'FutureReturnValueIgnored',
-    # Just false positives in our code.
-    'ThreadJoinLoop',
-    # Low priority corner cases with String.split.
-    # Linking Guava and using Splitter was rejected
-    # in the https://chromium-review.googlesource.com/c/chromium/src/+/871630.
-    'StringSplitter',
-    # Preferred to use another method since it propagates exceptions better.
-    'ClassNewInstance',
-    # Results in false positives.
-    'ThreadLocalUsage',
-    # Low priority.
-    'EqualsHashCode',
-    # Not necessary for tests.
-    'OverrideThrowableToString',
-    # Not that useful.
-    'UnsafeReflectiveConstructionCast',
-    # Not that useful.
-    'MixedMutabilityReturnType',
-    # Nice to have.
-    'EqualsGetClass',
-    # A lot of false-positives from CharSequence.equals().
-    'UndefinedEquals',
-    # Dagger generated code triggers this.
-    'SameNameButDifferent',
-    # Does not apply to Android because it assumes no desugaring.
-    'UnnecessaryLambda',
-    # Nice to have.
-    'EmptyCatch',
-    # Nice to have.
-    'BadImport',
-    # Nice to have.
-    'UseCorrectAssertInTests',
-    # Must be off since we are now passing in annotation processor generated
-    # code as a source jar (deduplicating work with turbine).
-    'RefersToDaggerCodegen',
-    # We already have presubmit checks for this. We don't want it to fail
-    # local compiles.
-    'RemoveUnusedImports',
-    # Only has false positives (would not want to enable this).
-    'UnicodeEscape',
-    # A lot of existing violations. e.g. Should return List and not ArrayList
-    'NonApiType',
-    # Nice to have.
-    'StringCharset',
-    # Nice to have.
-    'StringConcatToTextBlock',
-    # Nice to have.
-    'StringCaseLocaleUsage',
-    # Low priority.
-    'RedundantControlFlow',
-    # Low priority.
-    'StatementSwitchToExpressionSwitch',
-    # Assigning to fields marked as @Mock or @Spy. Suggested fix is to delete
-    # assignments, which would break tests in many cases.
-    'UnnecessaryAssignment',
-    # Serveral instances of using a string right before the String.format(),
-    # which seems better than inlining.
-    'InlineFormatString',
-    # Low priority.
-    'EffectivelyPrivate',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns

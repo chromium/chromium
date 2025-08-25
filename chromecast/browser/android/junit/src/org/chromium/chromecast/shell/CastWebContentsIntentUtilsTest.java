@@ -4,7 +4,6 @@
 
 package org.chromium.chromecast.shell;
 
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -32,7 +31,6 @@ public class CastWebContentsIntentUtilsTest {
     private static final int VISIBILITY_PRIORITY = 2;
 
     private @Mock WebContents mWebContents;
-    private @Mock BroadcastReceiver mReceiver;
 
     @Test
     public void testOnActivityStopped() {
