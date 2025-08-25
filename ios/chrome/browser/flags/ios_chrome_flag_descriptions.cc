@@ -464,6 +464,11 @@ const char kDefaultBrowserBannerPromoDescription[] =
     "When enabled, the default browser banner promo will show when conditions "
     "are met.";
 
+const char kDefaultBrowserMagicStackName[] =
+    "Default Browser Magic Stack card.";
+const char kDefaultBrowserMagicStackDescription[] =
+    "When enabled, display the Default Browser module in the Magic Stack.";
+
 const char kDefaultBrowserOffCyclePromoName[] =
     "Default Browser off-cycle promo";
 const char kDefaultBrowserOffCyclePromoDescription[] =

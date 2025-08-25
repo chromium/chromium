@@ -19,6 +19,11 @@
 #import "ios/chrome/common/channel_info.h"
 #import "ui/base/device_form_factor.h"
 
+BASE_FEATURE(DefaultBrowserMagicStack, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kDefaultBrowserMagicStackVariation[] =
+    "DefaultBrowserMagicStackVariation";
+
 BASE_FEATURE(IOSKeyboardAccessoryUpgradeForIPad,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

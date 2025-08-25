@@ -1461,6 +1461,17 @@ const FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
      std::size(kMobilePromoOnDesktopAutofillNotification), nullptr},
 };
 
+const FeatureEntry::FeatureParam kDefaultBrowserMagicStackDeviceSettings[] = {
+    {kDefaultBrowserMagicStackVariation, "0"}};
+const FeatureEntry::FeatureParam kDefaultBrowserMagicStackInAppSettings[] = {
+    {kDefaultBrowserMagicStackVariation, "1"}};
+
+const FeatureEntry::FeatureVariation kDefaultBrowserMagicStackVariations[] = {
+    {" - Tap to Device Settings", kDefaultBrowserMagicStackDeviceSettings,
+     std::size(kDefaultBrowserMagicStackDeviceSettings), nullptr},
+    {" - Tap to In App Settings", kDefaultBrowserMagicStackInAppSettings,
+     std::size(kDefaultBrowserMagicStackInAppSettings), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2886,7 +2897,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"remove-autofill-badges", flag_descriptions::kRemoveAutofillBadgesName,
      flag_descriptions::kRemoveAutofillBadgesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAutofillBadgeRemoval)},
-
+    {"ios-default-browser-magic-stack",
+     flag_descriptions::kDefaultBrowserMagicStackName,
+     flag_descriptions::kDefaultBrowserMagicStackDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kDefaultBrowserMagicStack,
+                                    kDefaultBrowserMagicStackVariations,
+                                    "DefaultBrowserMagicStack")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

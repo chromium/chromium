@@ -17,6 +17,24 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
+// Feature flag to enable the Default Browser card in the Magic Stack.
+BASE_DECLARE_FEATURE(kDefaultBrowserMagicStack);
+
+// Enum to represent the variation of kDefaultBrowserMagicStack, which
+// determines where users are directed when they tap on the Default Browser
+// card.
+enum class DefaultBrowserMagicStackVariationType {
+  // The Default Browser card deep-links to iOS Settings.
+  kTapToDeviceSettings,
+  // The Default Browser card links to the "Default Browser" settings within the
+  // app.
+  kTapToAppSettings,
+};
+
+// Name of the parameter that indicates which variation of the
+// kDefaultBrowserMagicStack feature is enabled.
+extern const char kDefaultBrowserMagicStackVariation[];
+
 // Feature flag to enable the Keyboard Accessory Upgrade for iPads.
 BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgradeForIPad);
 

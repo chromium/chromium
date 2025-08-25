@@ -263,6 +263,9 @@ extern const char kDataSharingSharedDataTypesEnabledWithUi[];
 extern const char kDefaultBrowserBannerPromoName[];
 extern const char kDefaultBrowserBannerPromoDescription[];
 
+extern const char kDefaultBrowserMagicStackName[];
+extern const char kDefaultBrowserMagicStackDescription[];
+
 extern const char kDefaultBrowserOffCyclePromoName[];
 extern const char kDefaultBrowserOffCyclePromoDescription[];
 

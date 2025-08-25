@@ -6008,6 +6008,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "ios-default-browser-magic-stack",
+    "owners": [ "bmcclure@google.com", "bling-pandamonium@google.com" ],
+    "expiry_milestone": 147
+  },
+  {
     "name": "ios-default-browser-promo-propensity-model",
     "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 145
