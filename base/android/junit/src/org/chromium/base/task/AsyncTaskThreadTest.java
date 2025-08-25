@@ -27,6 +27,7 @@ import org.robolectric.util.Scheduler;
 
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask.Status;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.concurrent.CancellationException;
@@ -102,6 +103,7 @@ public class AsyncTaskThreadTest {
 
     @Before
     public void setUp() {
+        BaseRobolectricTestRule.uninstallPausedExecutorService();
         mBackgroundScheduler.pause();
         assertEquals(Status.PENDING, mTask.getStatus());
     }
