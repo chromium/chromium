@@ -57,6 +57,7 @@ struct TextCheckingResult {
   int length;
   Vector<GrammarDetail> details;
   Vector<String> replacements;
+  bool should_hide_suggestion_menu = false;
 };
 
 }  // namespace blink

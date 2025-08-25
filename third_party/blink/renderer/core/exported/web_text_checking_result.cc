@@ -40,6 +40,7 @@ WebTextCheckingResult::operator TextCheckingResult() const {
   result.location = location;
   result.length = length;
   result.replacements = Vector<String>(replacements);
+  result.should_hide_suggestion_menu = should_hide_suggestion_menu;
 
   if (result.decoration == kTextDecorationTypeGrammar) {
     GrammarDetail detail;

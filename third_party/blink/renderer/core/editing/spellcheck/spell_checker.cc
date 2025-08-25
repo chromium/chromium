@@ -266,7 +266,8 @@ static void AddMarker(Document* document,
                       DocumentMarker::MarkerType type,
                       int location,
                       int length,
-                      const Vector<String>& descriptions) {
+                      const Vector<String>& descriptions,
+                      bool should_hide_suggestion_menu) {
   DCHECK(type == DocumentMarker::kSpelling || type == DocumentMarker::kGrammar)
       << type;
   DCHECK_GT(length, 0);
@@ -286,13 +287,14 @@ static void AddMarker(Document* document,
   }
 
   if (type == DocumentMarker::kSpelling) {
-    document->Markers().AddSpellingMarker(range_to_mark,
-                                          description.ToString());
+    document->Markers().AddSpellingMarker(range_to_mark, description.ToString(),
+                                          should_hide_suggestion_menu);
     return;
   }
 
   DCHECK_EQ(type, DocumentMarker::kGrammar);
-  document->Markers().AddGrammarMarker(range_to_mark, description.ToString());
+  document->Markers().AddGrammarMarker(range_to_mark, description.ToString(),
+                                       should_hide_suggestion_menu);
 }
 
 void SpellChecker::MarkAndReplaceFor(
@@ -349,7 +351,7 @@ void SpellChecker::MarkAndReplaceFor(
           continue;
         AddMarker(GetFrame().GetDocument(), checking_range,
                   DocumentMarker::kSpelling, result_location, result_length,
-                  result.replacements);
+                  result.replacements, result.should_hide_suggestion_menu);
         continue;
 
       case kTextDecorationTypeGrammar:
@@ -369,7 +371,8 @@ void SpellChecker::MarkAndReplaceFor(
           }
           AddMarker(GetFrame().GetDocument(), checking_range,
                     DocumentMarker::kGrammar, result_location + detail.location,
-                    detail.length, result.replacements);
+                    detail.length, result.replacements,
+                    result.should_hide_suggestion_menu);
         }
         continue;
     }
