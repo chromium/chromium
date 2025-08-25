@@ -5,8 +5,10 @@
 #include "ui/ozone/platform/wayland/host/wayland_wp_image_description.h"
 
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace ui {
@@ -108,6 +110,31 @@ WaylandWpImageDescription::WaylandWpImageDescription(
 }
 
 WaylandWpImageDescription::~WaylandWpImageDescription() = default;
+
+scoped_refptr<gfx::DisplayColorSpacesRef>
+WaylandWpImageDescription::AsDisplayColorSpaces() const {
+  auto display_color_spaces = gfx::DisplayColorSpaces(color_space_);
+
+  // GetContentMaxLuminance returns a default of 1000 if the metadata does
+  // not contain a peak luminance. Avoid this by checking first.
+  if ((hdr_metadata_.cta_861_3 &&
+       hdr_metadata_.cta_861_3->max_content_light_level > 0) ||
+      (hdr_metadata_.smpte_st_2086 &&
+       hdr_metadata_.smpte_st_2086->luminance_max > 0)) {
+    float peak_brightness =
+        gfx::HDRMetadata::GetContentMaxLuminance(hdr_metadata_);
+    float sdr_nits = hdr_metadata_.ndwl
+                         ? hdr_metadata_.ndwl->nits
+                         : gfx::ColorSpace::kDefaultSDRWhiteLevel;
+    if (sdr_nits > 0.f) {
+      display_color_spaces.SetHDRMaxLuminanceRelative(peak_brightness /
+                                                      sdr_nits);
+    }
+  }
+
+  return base::MakeRefCounted<gfx::DisplayColorSpacesRef>(
+      std::move(display_color_spaces));
+}
 
 void WaylandWpImageDescription::HandleReady() {
   if (creation_callback_) {

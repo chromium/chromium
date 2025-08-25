@@ -261,4 +261,10 @@ bool DisplayColorSpaces::EqualExceptForHdrHeadroom(
   return a == b_with_a_params;
 }
 
+DisplayColorSpacesRef::DisplayColorSpacesRef() = default;
+
+DisplayColorSpacesRef::DisplayColorSpacesRef(
+    const gfx::DisplayColorSpaces& color_spaces)
+    : color_spaces_(color_spaces) {}
+
 }  // namespace gfx

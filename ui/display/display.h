@@ -9,7 +9,6 @@
 
 #include <optional>
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/display/display_export.h"
@@ -254,9 +253,7 @@ class DISPLAY_EXPORT Display final {
 
   // The number of bits per pixel. Used by media query APIs.
   int color_depth() const { return color_depth_; }
-  void set_color_depth(int color_depth) {
-    color_depth_ = color_depth;
-  }
+  void set_color_depth(int color_depth) { color_depth_ = color_depth; }
 
   // The number of bits per color component (all color components are assumed to
   // have the same number of bits). Used by media query APIs.
@@ -291,32 +288,11 @@ class DISPLAY_EXPORT Display final {
  private:
   friend struct mojo::StructTraits<mojom::DisplayDataView, Display>;
 
-  // A ref counted object to avoid copying DisplayColorSpaces.
-  class DisplayColorSpacesRef
-      : public base::RefCountedThreadSafe<DisplayColorSpacesRef> {
-   public:
-    DisplayColorSpacesRef();
-    explicit DisplayColorSpacesRef(const gfx::DisplayColorSpaces& color_spaces);
-    DisplayColorSpacesRef(const DisplayColorSpacesRef& color_spaces) = delete;
-    const DisplayColorSpacesRef& operator=(const DisplayColorSpacesRef) =
-        delete;
-
-    const gfx::DisplayColorSpaces& color_spaces() const {
-      return color_spaces_;
-    }
-
-   private:
-    friend class base::RefCountedThreadSafe<DisplayColorSpacesRef>;
-
-    ~DisplayColorSpacesRef() = default;
-    const gfx::DisplayColorSpaces color_spaces_;
-  };
-
   void SetDisplayColorSpacesRef(
-      scoped_refptr<const DisplayColorSpacesRef> color_spaces);
+      scoped_refptr<const gfx::DisplayColorSpacesRef> color_spaces);
 
   // Returns the default value of the DisplayColorSpaces.
-  static scoped_refptr<const DisplayColorSpacesRef>
+  static scoped_refptr<const gfx::DisplayColorSpacesRef>
   GetDefaultDisplayColorSpacesRef();
 
   int64_t id_ = kInvalidDisplayId;
@@ -332,7 +308,7 @@ class DISPLAY_EXPORT Display final {
   TouchSupport touch_support_ = TouchSupport::UNKNOWN;
   AccelerometerSupport accelerometer_support_ = AccelerometerSupport::UNKNOWN;
   gfx::Size maximum_cursor_size_;
-  scoped_refptr<const DisplayColorSpacesRef> color_spaces_;
+  scoped_refptr<const gfx::DisplayColorSpacesRef> color_spaces_;
   int color_depth_;
   int depth_per_component_;
   bool is_monochrome_ = false;

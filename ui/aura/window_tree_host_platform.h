@@ -101,6 +101,8 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
       ui::PlatformWindowOcclusionState occlusion_state) override;
   int64_t OnStateUpdate(const PlatformWindowDelegate::State& old,
                         const PlatformWindowDelegate::State& latest) override;
+  void OnDisplayColorSpacesChanged(
+      scoped_refptr<gfx::DisplayColorSpacesRef> color_spaces) override;
 
   // Overridden from aura::WindowTreeHost:
   gfx::Point GetLocationOnScreenInPixels() const override;

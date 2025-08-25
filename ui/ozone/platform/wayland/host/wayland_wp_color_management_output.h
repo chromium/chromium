@@ -34,8 +34,9 @@ class WaylandWpColorManagementOutput {
       const WaylandWpColorManagementOutput&) = delete;
   ~WaylandWpColorManagementOutput();
 
-  const gfx::DisplayColorSpaces& display_color_spaces() const {
-    return display_color_spaces_;
+  const gfx::DisplayColorSpaces* display_color_spaces() const {
+    return display_color_spaces_ ? &display_color_spaces_->color_spaces()
+                                 : nullptr;
   }
 
  private:
@@ -52,7 +53,7 @@ class WaylandWpColorManagementOutput {
   const raw_ptr<WaylandOutput> wayland_output_;
   const raw_ptr<WaylandConnection> connection_;
 
-  gfx::DisplayColorSpaces display_color_spaces_;
+  scoped_refptr<gfx::DisplayColorSpacesRef> display_color_spaces_;
   scoped_refptr<WaylandWpImageDescription> image_description_;
 
   base::WeakPtrFactory<WaylandWpColorManagementOutput> weak_factory_{this};

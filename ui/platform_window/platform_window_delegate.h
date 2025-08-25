@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
@@ -16,6 +17,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
+class DisplayColorSpacesRef;
 class Size;
 class PointF;
 }  // namespace gfx
@@ -203,6 +205,9 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // synchronized. For example, this can happen if the old and new states are
   // the same, or it only changes the origin of the bounds.
   virtual int64_t OnStateUpdate(const State& old, const State& latest);
+
+  virtual void OnDisplayColorSpacesChanged(
+      scoped_refptr<gfx::DisplayColorSpacesRef> color_spaces);
 
   // Returns optional information for owned windows that require anchor for
   // positioning. Useful for such backends as Wayland as it provides flexibility

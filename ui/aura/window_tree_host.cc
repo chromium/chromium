@@ -570,7 +570,9 @@ void WindowTreeHost::InitCompositor() {
 
   display::Display display =
       display::Screen::Get()->GetDisplayNearestWindow(window());
-  compositor_->SetDisplayColorSpaces(display.GetColorSpaces());
+  compositor_->SetDisplayColorSpaces(display_color_spaces_
+                                         ? display_color_spaces_->color_spaces()
+                                         : display.GetColorSpaces());
 }
 
 void WindowTreeHost::OnAcceleratedWidgetAvailable() {
@@ -620,8 +622,9 @@ void WindowTreeHost::OnHostWorkspaceChanged() {
 }
 
 void WindowTreeHost::OnHostDisplayChanged() {
-  if (!compositor_)
+  if (!compositor_ || display_color_spaces_) {
     return;
+  }
   display::Display display =
       display::Screen::Get()->GetDisplayNearestWindow(window());
   compositor_->SetDisplayColorSpaces(display.GetColorSpaces());
@@ -646,8 +649,9 @@ void WindowTreeHost::OnHostLostWindowCapture() {
 void WindowTreeHost::OnDisplayMetricsChanged(const display::Display& display,
                                              uint32_t metrics) {
   if (metrics & DisplayObserver::DISPLAY_METRIC_COLOR_SPACE && compositor_ &&
-      display.id() == GetDisplayId())
+      display.id() == GetDisplayId() && !display_color_spaces_) {
     compositor_->SetDisplayColorSpaces(display.GetColorSpaces());
+  }
 
 // Chrome OS is handled in WindowTreeHostManager::OnDisplayMetricsChanged.
 // Chrome OS requires additional handling for the bounds that we do not need to
@@ -657,6 +661,15 @@ void WindowTreeHost::OnDisplayMetricsChanged(const display::Display& display,
       display.id() == GetDisplayId())
     OnHostResizedInPixels(GetBoundsInPixels().size());
 #endif
+}
+
+void WindowTreeHost::OnDisplayColorSpacesChanged(
+    scoped_refptr<gfx::DisplayColorSpacesRef> color_spaces) {
+  DCHECK(color_spaces);
+  display_color_spaces_ = color_spaces;
+  if (compositor_) {
+    compositor_->SetDisplayColorSpaces(color_spaces->color_spaces());
+  }
 }
 
 gfx::Rect WindowTreeHost::GetTransformedRootWindowBoundsFromPixelSize(

@@ -487,6 +487,11 @@ void WaylandWindow::OnFontScaleFactorChanged() {
   UpdateWindowScale(/*update_bounds=*/false);
 }
 
+void WaylandWindow::OnDisplayColorSpacesChanged(
+    scoped_refptr<gfx::DisplayColorSpacesRef> display_color_spaces) {
+  delegate_->OnDisplayColorSpacesChanged(std::move(display_color_spaces));
+}
+
 void WaylandWindow::DumpState(std::ostream& out) const {
   constexpr auto kWindowTypeToString =
       base::MakeFixedFlatMap<PlatformWindowType, const char*>(

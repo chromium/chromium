@@ -237,12 +237,14 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
   if (auto* wayland_output =
           connection_->wayland_output_manager()->GetOutput(metrics.output_id)) {
     if (auto* output = wayland_output->wp_color_management_output()) {
-      color_spaces = output->display_color_spaces();
+      if (auto* output_color_spaces = output->display_color_spaces()) {
+        color_spaces = *output_color_spaces;
+      }
     }
   }
   color_spaces.SetOutputBufferFormats(image_format_no_alpha_.value(),
                                       image_format_alpha_.value());
-  changed_display.SetColorSpaces(color_spaces);
+  changed_display.SetColorSpaces(std::move(color_spaces));
 
   // There are 2 cases where |changed_display| must be set as primary:
   // 1. When it is the first one being added to the |display_list_|. Or

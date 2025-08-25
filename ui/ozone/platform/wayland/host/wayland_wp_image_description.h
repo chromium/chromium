@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
@@ -37,6 +38,8 @@ class WaylandWpImageDescription
   WaylandWpImageDescription(const WaylandWpImageDescription&) = delete;
   WaylandWpImageDescription& operator=(const WaylandWpImageDescription&) =
       delete;
+
+  scoped_refptr<gfx::DisplayColorSpacesRef> AsDisplayColorSpaces() const;
 
   wp_image_description_v1* object() const { return image_description_.get(); }
 

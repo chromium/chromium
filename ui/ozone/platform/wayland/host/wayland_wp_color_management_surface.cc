@@ -9,6 +9,7 @@
 #include "base/notimplemented.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 
 namespace ui {
@@ -75,15 +76,35 @@ void WaylandWpColorManagementSurface::OnSetColorSpace(
       management_surface_.get(), image_description->object(), render_intent);
 }
 
+void WaylandWpColorManagementSurface::OnImageDescription(
+    scoped_refptr<WaylandWpImageDescription> image_description) {
+  if (!image_description) {
+    LOG(ERROR) << "Failed to get image description.";
+    return;
+  }
+
+  if (WaylandWindow* root = wayland_surface_->root_window()) {
+    root->OnDisplayColorSpacesChanged(
+        image_description->AsDisplayColorSpaces());
+  }
+}
+
 // static
 void WaylandWpColorManagementSurface::OnPreferredChanged(
     void* data,
     wp_color_management_surface_feedback_v1* feedback_surface,
     uint32_t identity) {
-  // TODO(https://crbug.com/375959958): The image description is currently set
-  // based on the output the surface resides on. We should be using this hint
-  // from the compositor instead.
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<WaylandWpColorManagementSurface*>(data);
+  CHECK(self);
+  CHECK_EQ(feedback_surface, self->feedback_surface_.get());
+
+  auto image_description_object = wl::Object<wp_image_description_v1>(
+      wp_color_management_surface_feedback_v1_get_preferred(feedback_surface));
+
+  self->image_description_ = base::MakeRefCounted<WaylandWpImageDescription>(
+      std::move(image_description_object), self->connection_, std::nullopt,
+      base::BindOnce(&WaylandWpColorManagementSurface::OnImageDescription,
+                     self->weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace ui

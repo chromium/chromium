@@ -48,10 +48,15 @@ class WaylandWpColorManagementSurface {
   void OnSetColorSpace(
       scoped_refptr<WaylandWpImageDescription> image_description);
 
+  void OnImageDescription(
+      scoped_refptr<WaylandWpImageDescription> image_description);
+
   const raw_ptr<WaylandSurface> wayland_surface_;
   const raw_ptr<WaylandConnection> connection_;
   wl::Object<wp_color_management_surface_v1> management_surface_;
   wl::Object<wp_color_management_surface_feedback_v1> feedback_surface_;
+
+  scoped_refptr<WaylandWpImageDescription> image_description_;
 
   base::WeakPtrFactory<WaylandWpColorManagementSurface> weak_factory_{this};
 };

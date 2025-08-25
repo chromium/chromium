@@ -407,4 +407,9 @@ int64_t WindowTreeHostPlatform::OnStateUpdate(
   return window()->GetLocalSurfaceId().parent_sequence_number();
 }
 
+void WindowTreeHostPlatform::OnDisplayColorSpacesChanged(
+    scoped_refptr<gfx::DisplayColorSpacesRef> color_spaces) {
+  WindowTreeHost::OnDisplayColorSpacesChanged(std::move(color_spaces));
+}
+
 }  // namespace aura

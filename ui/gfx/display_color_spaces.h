@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/buffer_types.h"
@@ -148,6 +149,24 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   SkColorSpacePrimaries primaries_ = SkNamedPrimariesExt::kSRGB;
   float sdr_max_luminance_nits_ = ColorSpace::kDefaultSDRWhiteLevel;
   float hdr_max_luminance_relative_ = 1.f;
+};
+
+// A ref counted object to avoid copying DisplayColorSpaces.
+class COLOR_SPACE_EXPORT DisplayColorSpacesRef
+    : public base::RefCountedThreadSafe<DisplayColorSpacesRef> {
+ public:
+  DisplayColorSpacesRef();
+  explicit DisplayColorSpacesRef(const gfx::DisplayColorSpaces& color_spaces);
+  DisplayColorSpacesRef(const DisplayColorSpacesRef& color_spaces) = delete;
+  const DisplayColorSpacesRef& operator=(const DisplayColorSpacesRef) = delete;
+
+  const gfx::DisplayColorSpaces& color_spaces() const { return color_spaces_; }
+
+ private:
+  friend class base::RefCountedThreadSafe<DisplayColorSpacesRef>;
+
+  ~DisplayColorSpacesRef() = default;
+  const gfx::DisplayColorSpaces color_spaces_;
 };
 
 }  // namespace gfx

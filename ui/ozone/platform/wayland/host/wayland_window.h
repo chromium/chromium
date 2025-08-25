@@ -392,6 +392,9 @@ class WaylandWindow : public PlatformWindow,
   // scale changes, eg: accessibility's "large text" setting.
   void OnFontScaleFactorChanged();
 
+  void OnDisplayColorSpacesChanged(
+      scoped_refptr<gfx::DisplayColorSpacesRef> display_color_spaces);
+
   virtual void DumpState(std::ostream& out) const;
 
 #if DCHECK_IS_ON()
