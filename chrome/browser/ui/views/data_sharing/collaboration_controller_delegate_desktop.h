@@ -85,6 +85,7 @@ class CollaborationControllerDelegateDesktop
   void MaybeShowSignInOrSyncPromptDialog();
   void OnPromptDialogOk();
   void OnPromptDialogCancel();
+  void OnErrorDialogOkForUpdate();
   void OnErrorDialogOk();
   void MaybeCloseDialogs();
   void ExitFlow();
