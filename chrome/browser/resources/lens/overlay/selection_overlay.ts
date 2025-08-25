@@ -143,6 +143,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         reflectToAttribute: true,
         value: false,
+        observer: 'onIsResizedChanged',
       },
       isInitialSize: {
         type: Boolean,
@@ -491,7 +492,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           if (event.animationName !== 'initial-inset-animation') {
             return;
           }
-
           this.onInitialFlashAnimationEnd();
         });
     this.eventTracker_.add(
@@ -628,6 +628,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         CURSOR_SIZE_PIXEL / this.selectionOverlayRect.width,
         CURSOR_SIZE_PIXEL / this.selectionOverlayRect.height,
         ShimmerControlRequester.CURSOR);
+  }
+
+  protected onIsResizedChanged(newValue: boolean): void {
+    this.browserProxy.handler.setLiveBlur(newValue);
   }
 
   private getHiddenCursorClass(isPointerInside: boolean, state: GestureState):
@@ -1011,7 +1015,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       }
 
       this.positionSelectedRegionContextMenu();
-
       this.isResized = !doesScreenshotFillContainer;
       if (this.isResized) {
         this.isInitialSize = false;
@@ -1337,11 +1340,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.eventTracker_.remove(this.$.initialFlashScrim, 'animationend');
 
     this.browserProxy.handler.addBackgroundBlur();
-
-    // TODO(crbug.com/433758209): onInitialFlashAnimationEnd is currently a
-    // proxy for when to start blurring, but ideally the live blur is kept in
-    // sync with this.isResized.
-    this.browserProxy.handler.setLiveBlur(this.isResized);
 
     // Let the parent know the initial flash image animation has finished.
     this.dispatchEvent(new CustomEvent(

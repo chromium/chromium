@@ -38,9 +38,6 @@ LensOverlayBlurLayerDelegate::LensOverlayBlurLayerDelegate(
   layer()->set_delegate(this);
 
   render_widget_host_observer_.Observe(background_view_host);
-
-  // Fetch the initial screenshot to be used for blurring.
-  FetchBackgroundImage();
 }
 
 LensOverlayBlurLayerDelegate::~LensOverlayBlurLayerDelegate() = default;
@@ -48,7 +45,7 @@ LensOverlayBlurLayerDelegate::~LensOverlayBlurLayerDelegate() = default;
 void LensOverlayBlurLayerDelegate::StartBackgroundImageCapture() {
   // If there is no background_view_host_, there is nothing to take a screenshot
   // of, so we should exit early.
-  if (screenshot_timer_.IsRunning() || !background_view_host_) {
+  if (IsLiveBlurActive() || !background_view_host_) {
     return;
   }
   // Start taking screenshots to render on the layer.
@@ -60,10 +57,14 @@ void LensOverlayBlurLayerDelegate::StartBackgroundImageCapture() {
 }
 
 void LensOverlayBlurLayerDelegate::StopBackgroundImageCapture() {
-  if (!screenshot_timer_.IsRunning()) {
+  if (!IsLiveBlurActive()) {
     return;
   }
   screenshot_timer_.Stop();
+}
+
+bool LensOverlayBlurLayerDelegate::IsLiveBlurActive() {
+  return screenshot_timer_.IsRunning();
 }
 
 bool LensOverlayBlurLayerDelegate::IsCapturingBackgroundImageForTesting() {
