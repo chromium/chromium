@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/lazy_instance.h"
+#include "chrome/browser/extensions/api/tabs/windows_event_router.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
@@ -17,17 +18,14 @@
 #include "chrome/browser/extensions/api/tabs/tabs_event_router_android.h"
 #else
 #include "chrome/browser/extensions/api/tabs/tabs_event_router.h"
-#include "chrome/browser/extensions/api/tabs/windows_event_router.h"
 #endif
 
 namespace extensions {
 
 TabsWindowsAPI::TabsWindowsAPI(content::BrowserContext* context)
     : browser_context_(context) {
-#if !BUILDFLAG(IS_ANDROID)
   windows_event_router_ = std::make_unique<WindowsEventRouter>(
       Profile::FromBrowserContext(browser_context_));
-#endif
   EventRouter* event_router = EventRouter::Get(browser_context_);
 
   // Tabs API Events.
@@ -83,11 +81,11 @@ TabsEventRouterAndroid* TabsWindowsAPI::tabs_event_router_android() {
 TabsEventRouter* TabsWindowsAPI::tabs_event_router() {
   return tabs_event_router_.get();
 }
+#endif
 
 WindowsEventRouter* TabsWindowsAPI::windows_event_router() {
   return windows_event_router_.get();
 }
-#endif
 
 void TabsWindowsAPI::Shutdown() {
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
