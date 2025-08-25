@@ -6,6 +6,9 @@
 
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
+#include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_util.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -45,6 +48,8 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
   std::unique_ptr<ModelExecutorSession> session_;
   InquireOnDeviceModelDoneCallback callback_;
   std::string rendered_texts_;
+  base::TimeTicks session_creation_start_time_;
+  base::TimeTicks session_execution_start_time_;
 
   base::WeakPtrFactory<Inquiry> weak_factory_{this};
 };
@@ -66,6 +71,7 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Start(
   SessionConfigParams config_params = SessionConfigParams{
       .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
   };
+  session_creation_start_time_ = base::TimeTicks::Now();
   parent_->model_broker_client_->CreateSession(
       kScamDetection, config_params,
       base::BindOnce(&ClientSideDetectionIntelligentScanDelegateAndroid::
@@ -76,6 +82,8 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Start(
 void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
     OnSessionCreated(std::unique_ptr<ModelExecutorSession> session) {
   CHECK(session) << "model broker client should not create a null session.";
+  client_side_detection::LogOnDeviceModelSessionCreationTime(
+      session_creation_start_time_);
   session_ = std::move(session);
 
   if (parent_->pause_session_execution_for_testing_) {
@@ -86,6 +94,7 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
   ScamDetectionRequest request;
   request.set_rendered_text(rendered_texts_);
 
+  session_execution_start_time_ = base::TimeTicks::Now();
   session_->ExecuteModel(
       *std::make_unique<ScamDetectionRequest>(request),
       base::BindRepeating(&ClientSideDetectionIntelligentScanDelegateAndroid::
@@ -97,6 +106,7 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
     ModelExecutionCallback(
         optimization_guide::OptimizationGuideModelStreamingExecutionResult
             result) {
+  CHECK(callback_);
   int model_version = IntelligentScanResult::kModelVersionUnavailable;
   if (result.execution_info) {
     model_version = result.execution_info->on_device_model_execution_info()
@@ -106,6 +116,8 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
   }
 
   if (!result.response.has_value()) {
+    client_side_detection::LogOnDeviceModelExecutionSuccessAndTime(
+        /*success=*/false, session_execution_start_time_);
     std::move(callback_).Run(IntelligentScanResult::Failure(model_version));
     return;
   }
@@ -115,6 +127,9 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
   if (!result.response->is_complete) {
     return;
   }
+
+  client_side_detection::LogOnDeviceModelExecutionSuccessAndTime(
+      /*success=*/true, session_execution_start_time_);
 
   auto scam_detection_response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::ScamDetectionResponse>(
@@ -181,13 +196,24 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
   if (!model_broker_client_) {
     return false;
   }
-  // TODO(crbug.com/424075615): Add UMA logging for failed eligibility reasons.
   // The HasSubscriber check is required because GetSubscriber may start model
   // download.
-  return model_broker_client_->HasSubscriber(kScamDetection) &&
-         !model_broker_client_->GetSubscriber(kScamDetection)
-              .unavailable_reason()
-              .has_value();
+  if (!model_broker_client_->HasSubscriber(kScamDetection)) {
+    return false;
+  }
+
+  auto reason =
+      model_broker_client_->GetSubscriber(kScamDetection).unavailable_reason();
+  if (reason.has_value()) {
+    if (log_failed_eligibility_reason) {
+      base::UmaHistogramEnumeration(
+          "SBClientPhishing.OnDeviceModelUnavailableReasonAtInquiry.Android",
+          reason.value());
+    }
+    return false;
+  }
+
+  return true;
 }
 
 void ClientSideDetectionIntelligentScanDelegateAndroid::InquireOnDeviceModel(
@@ -241,7 +267,18 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::StartModelDownload() {
   if (!model_broker_client_) {
     return;
   }
-  model_broker_client_->GetSubscriber(kScamDetection);
+  model_broker_client_->GetSubscriber(kScamDetection)
+      .WaitForClient(base::BindOnce(
+          [](base::TimeTicks download_start_time,
+             base::WeakPtr<optimization_guide::ModelClient> model_client) {
+            client_side_detection::LogOnDeviceModelDownloadSuccess(
+                !!model_client);
+            if (model_client) {
+              client_side_detection::LogOnDeviceModelFetchTime(
+                  download_start_time);
+            }
+          },
+          base::TimeTicks::Now()));
 }
 
 }  // namespace safe_browsing

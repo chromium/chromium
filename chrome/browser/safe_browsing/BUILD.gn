@@ -142,6 +142,8 @@ static_library("safe_browsing") {
       "chrome_v4_protocol_config_provider.h",
       "client_side_detection_intelligent_scan_delegate_factory.cc",
       "client_side_detection_intelligent_scan_delegate_factory.h",
+      "client_side_detection_intelligent_scan_delegate_util.cc",
+      "client_side_detection_intelligent_scan_delegate_util.h",
       "client_side_detection_service_factory.cc",
       "client_side_detection_service_factory.h",
       "delayed_warning_navigation_throttle.cc",

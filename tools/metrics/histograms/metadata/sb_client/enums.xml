@@ -142,6 +142,13 @@ chromium-metrics-reviews@google.com.
   <int value="1000" label="Scam experiment verdict catch all telemetry"/>
 </enum>
 
+<enum name="OptimizationGuideOnDeviceModelUnavailableReason">
+  <int value="0" label="Unknown"/>
+  <int value="2" label="NotSupported"/>
+  <int value="3" label="PendingAssets"/>
+  <int value="4" label="PendingUsage"/>
+</enum>
+
 <!-- LINT.IfChange(SafeBrowsingAndroidGetReferringAppInfoResult) -->
 
 <enum name="SafeBrowsingAndroidGetReferringAppInfoResult">

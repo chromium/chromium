@@ -948,6 +948,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SBClientPhishing.OnDeviceModelUnavailableReasonAtInquiry.Android"
+    enum="OptimizationGuideOnDeviceModelUnavailableReason"
+    expires_after="2026-02-21">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the reason why the on-device model is unavailable at the time of
+    inquiry on Android. This is logged when IsOnDeviceModelAvailable is called
+    with log_failed_eligibility_reason=true and the model is not available.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.OptimizationGuide.ModelFetchTime" units="ms"
     expires_after="2025-12-28">
   <owner>andysjlim@chromium.org</owner>

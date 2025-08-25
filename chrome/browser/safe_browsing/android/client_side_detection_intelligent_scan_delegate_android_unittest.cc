@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
@@ -93,6 +94,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroidTestBase
   content::BrowserTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<optimization_guide::FakeModelBroker> fake_broker_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<ClientSideDetectionIntelligentScanDelegateAndroid> delegate_;
 };
 
@@ -195,6 +197,10 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(delegate_->IsOnDeviceModelAvailable(
       /*log_failed_eligibility_reason=*/false));
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 1);
+  histogram_tester_.ExpectTotalCount("SBClientPhishing.OnDeviceModelFetchTime",
+                                     1);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
@@ -204,6 +210,21 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(delegate_->IsOnDeviceModelAvailable(
       /*log_failed_eligibility_reason=*/false));
+  // Not logged because log_failed_eligibility_reason is false.
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelUnavailableReasonAtInquiry.Android", 0);
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
+       IsOnDeviceModelAvailable_LogsUnavailableReason) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true,
+                 ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(delegate_->IsOnDeviceModelAvailable(
+      /*log_failed_eligibility_reason=*/true));
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelUnavailableReasonAtInquiry.Android",
+      optimization_guide::mojom::ModelUnavailableReason::kPendingAssets, 1);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
@@ -268,6 +289,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_EQ(future.Get().intent, "test_intent");
   // Session should be reset after a successful response.
   EXPECT_FALSE(delegate_->IsSessionAliveForTesting());
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelExecutionSuccess", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionDuration", 1);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
@@ -283,6 +310,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_EQ(future.Get().model_version, -1);
   EXPECT_EQ(future.Get().brand, "");
   EXPECT_EQ(future.Get().intent, "");
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelExecutionSuccess", false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionDuration", 1);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
