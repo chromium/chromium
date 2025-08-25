@@ -121,10 +121,6 @@ class KeywordWebDataService : public WebDataServiceBase {
   // Sets the version of the builtin keyword data.
   void SetBuiltinKeywordDataVersion(int version);
 
-  // Clears the Chrome milestone associated with the builtin keyword data. Used
-  // for cleanup.
-  void ClearBuiltinKeywordMilestone();
-
   // Sets the country ID associated with the builtin keyword data.
   void SetBuiltinKeywordCountry(country_codes::CountryId country_id);
 

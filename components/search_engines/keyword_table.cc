@@ -59,7 +59,6 @@ enum class HashValidationStatus {
 
 // Keys used in the meta table.
 constexpr char kBuiltinKeywordDataVersion[] = "Builtin Keyword Version";
-constexpr char kBuiltinKeywordMilestone[] = "Builtin Keyword Milestone";
 constexpr char kBuiltinKeywordCountry[] = "Builtin Keyword Country";
 constexpr char kStarterPackKeywordVersion[] = "Starter Pack Keyword Version";
 
@@ -303,10 +302,6 @@ int KeywordTable::GetBuiltinKeywordDataVersion() {
   int version = 0;
   return meta_table()->GetValue(kBuiltinKeywordDataVersion, &version) ? version
                                                                       : 0;
-}
-
-bool KeywordTable::ClearBuiltinKeywordMilestone() {
-  return meta_table()->DeleteKey(kBuiltinKeywordMilestone);
 }
 
 bool KeywordTable::SetBuiltinKeywordCountry(CountryId country_id) {

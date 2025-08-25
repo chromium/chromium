@@ -53,12 +53,6 @@ WebDatabase::State SetBuiltinKeywordDataVersionImpl(int version,
              : WebDatabase::COMMIT_NOT_NEEDED;
 }
 
-WebDatabase::State ClearBuiltinKeywordMilestoneImpl(WebDatabase* db) {
-  return KeywordTable::FromWebDatabase(db)->ClearBuiltinKeywordMilestone()
-             ? WebDatabase::COMMIT_NEEDED
-             : WebDatabase::COMMIT_NOT_NEEDED;
-}
-
 WebDatabase::State SetBuiltinKeywordCountryImpl(CountryId country_id,
                                                 WebDatabase* db) {
   return KeywordTable::FromWebDatabase(db)->SetBuiltinKeywordCountry(country_id)
@@ -164,11 +158,6 @@ WebDataServiceBase::Handle KeywordWebDataService::GetKeywords(
 void KeywordWebDataService::SetBuiltinKeywordDataVersion(int version) {
   wdbs_->ScheduleDBTask(
       FROM_HERE, base::BindOnce(&SetBuiltinKeywordDataVersionImpl, version));
-}
-
-void KeywordWebDataService::ClearBuiltinKeywordMilestone() {
-  wdbs_->ScheduleDBTask(FROM_HERE,
-                        base::BindOnce(&ClearBuiltinKeywordMilestoneImpl));
 }
 
 void KeywordWebDataService::SetBuiltinKeywordCountry(CountryId version) {
