@@ -111,6 +111,7 @@ source_set("impl") {
     "//components/feature_engagement/public:feature_constants",
     "//components/strings:components_strings_grit",
     "//components/user_prefs",
+    "//components/webauthn/content/browser",
   ]
 
   if (is_android) {
@@ -150,7 +151,6 @@ source_set("impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_action",
       "//chrome/common",
       "//components/autofill/core/common:credit_card_number_validation",

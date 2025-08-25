@@ -80,6 +80,7 @@ static_library("content") {
     "//components/strings:components_strings_grit",
     "//components/ukm/content",
     "//components/url_formatter",
+    "//components/webauthn/content/browser",
     "//components/webauthn/core/browser",
     "//components/webdata/common",
     "//components/webdata_services",
