@@ -405,7 +405,7 @@ class NET_EXPORT HttpResponseHeaders
 
   // Returns the value of the specified header or nullopt if there is no such
   // header in the response.
-  std::optional<int64_t> GetInt64HeaderValue(const std::string& header) const;
+  std::optional<int64_t> GetInt64HeaderValue(std::string_view header) const;
 
   // Extracts the values in a Content-Range header and returns true if all three
   // values are present and valid for a 206 response; otherwise returns false.

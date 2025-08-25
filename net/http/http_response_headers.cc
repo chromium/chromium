@@ -1527,7 +1527,7 @@ std::optional<base::ByteCount> HttpResponseHeaders::GetContentLength() const {
 }
 
 std::optional<int64_t> HttpResponseHeaders::GetInt64HeaderValue(
-    const std::string& header) const {
+    std::string_view header) const {
   size_t iter = 0;
   std::optional<std::string_view> content_length =
       EnumerateHeader(&iter, header);

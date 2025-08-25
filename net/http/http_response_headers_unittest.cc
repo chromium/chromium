@@ -1589,6 +1589,102 @@ INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          GetContentLengthTest,
                          testing::ValuesIn(kContentLengthTests));
 
+struct GetInt64HeaderValueTestData {
+  const char* headers;
+  std::optional<int64_t> expected_len;
+};
+
+class GetInt64HeaderValueTest
+    : public HttpResponseHeadersTest,
+      public ::testing::WithParamInterface<GetInt64HeaderValueTestData> {};
+
+TEST_P(GetInt64HeaderValueTest, GetInt64HeaderValue) {
+  const GetInt64HeaderValueTestData test = GetParam();
+
+  std::string headers(test.headers);
+  HeadersToRaw(&headers);
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
+
+  EXPECT_EQ(test.expected_len, parsed->GetInt64HeaderValue("heaDer"));
+}
+
+constexpr GetInt64HeaderValueTestData kGetInt64HeaderValueTests[] = {
+    {"HTTP/1.1 200 OK\n", std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Not-Header: 10\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 0\n",
+     0},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 10\n",
+     10},
+    {"HTTP/1.1 200 OK\n"
+     "Header: \n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: abc\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: -10\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header:  +10\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 23xb5\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 0xA\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 010\n",
+     10},
+    // Header too big, will overflow an int64_t.
+    {"HTTP/1.1 200 OK\n"
+     "Header: 40000000000000000000\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header:       10\n",
+     10},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 10  \n",
+     10},
+    {"HTTP/1.1 200 OK\n"
+     "Header: \t10\n",
+     10},
+    {"HTTP/1.1 200 OK\n"
+     "Header: \v10\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: \f10\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "hEaDeR: 33\n",
+     33},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 34\r\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Bar: 1\n"
+     "Header: 34\n"
+     "Foo: 10\n",
+     34},
+    // In the case of multiple headers, the value of the first is returned.
+    {"HTTP/1.1 200 OK\n"
+     "Header: 1\n"
+     "Header: 2\n"
+     "Header: 3\n",
+     1},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 1, 2, 3\n",
+     1},
+};
+
+INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
+                         GetInt64HeaderValueTest,
+                         testing::ValuesIn(kGetInt64HeaderValueTests));
+
 struct ContentRangeTestData {
   const char* headers;
   bool expected_return_value;
