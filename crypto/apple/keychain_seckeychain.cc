@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/types/expected.h"
-#include "crypto/mac_security_services_lock.h"
+#include "crypto/apple/security_framework_lock.h"
 
 // Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
 // Removal of its use is tracked in https://crbug.com/40233280 but deprecation
@@ -26,7 +26,7 @@ KeychainSecKeychain::~KeychainSecKeychain() = default;
 base::expected<std::vector<uint8_t>, OSStatus>
 KeychainSecKeychain::FindGenericPassword(std::string_view service_name,
                                          std::string_view account_name) const {
-  base::AutoLock lock(GetMacSecurityServicesLock());
+  base::AutoLock lock(GetSecurityFrameworkLock());
   uint32_t password_length = 0;
   void* password_data = nullptr;
   OSStatus status = SecKeychainFindGenericPassword(
@@ -50,7 +50,7 @@ OSStatus KeychainSecKeychain::AddGenericPassword(
     std::string_view service_name,
     std::string_view account_name,
     base::span<const uint8_t> password) const {
-  base::AutoLock lock(GetMacSecurityServicesLock());
+  base::AutoLock lock(GetSecurityFrameworkLock());
   return SecKeychainAddGenericPassword(
       nullptr, base::checked_cast<uint32_t>(service_name.length()),
       service_name.data(), base::checked_cast<uint32_t>(account_name.length()),

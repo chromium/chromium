@@ -22,7 +22,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "crypto/mac_security_services_lock.h"
+#include "crypto/apple/security_framework_lock.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/cert/internal/test_helpers.h"
@@ -338,7 +338,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     // Check if this cert is considered a trust anchor by the OS.
     base::apple::ScopedCFTypeRef<SecTrustRef> trust;
     {
-      base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+      base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
       ASSERT_EQ(noErr, SecTrustCreateWithCertificates(cert_handle.get(),
                                                       sec_policy.get(),
                                                       trust.InitializeInto()));

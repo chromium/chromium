@@ -25,7 +25,7 @@
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "crypto/mac_security_services_lock.h"
+#include "crypto/apple/security_framework_lock.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_apple.h"
@@ -66,7 +66,7 @@ OSStatus CopyCertChain(
   OSStatus result;
   SecTrustRef trust_ref = nullptr;
   {
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+    base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
     result = SecTrustCreateWithCertificates(input_certs.get(), ssl_policy.get(),
                                             &trust_ref);
   }
@@ -76,7 +76,7 @@ OSStatus CopyCertChain(
 
   // Evaluate trust, which creates the cert chain.
   {
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+    base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
     // The return value is intentionally ignored since we only care about
     // building a cert chain, not whether it is trusted (the server is the
     // only one that can decide that.)
@@ -313,7 +313,7 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
     // libsecurity_keychain, specifically
     // _SecIdentityCopyPreferenceMatchingName().
     {
-      base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+      base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
       preferred_sec_identity.reset(
           SecIdentityCopyPreferred(domain_str.get(), nullptr, nullptr));
     }
@@ -332,7 +332,7 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
   ScopedCFTypeRef<CFArrayRef> result;
   OSStatus err;
   {
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+    base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
     err = SecItemCopyMatching(
         query.get(), reinterpret_cast<CFTypeRef*>(result.InitializeInto()));
   }

@@ -4,9 +4,9 @@
 
 #include "net/cert/internal/trust_store_mac.h"
 
-#include <atomic>
 #include <Security/Security.h>
 
+#include <atomic>
 #include <map>
 #include <string_view>
 #include <vector>
@@ -26,8 +26,8 @@
 #include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
+#include "crypto/apple/security_framework_lock.h"
 #include "crypto/hash.h"
-#include "crypto/mac_security_services_lock.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/network_notification_thread_mac.h"
@@ -95,7 +95,7 @@ TrustStatus IsTrustDictionaryTrustedForPolicy(
     CFDictionaryRef trust_dict,
     bool is_self_issued,
     const CFStringRef target_policy_oid) {
-  crypto::GetMacSecurityServicesLock().AssertAcquired();
+  crypto::apple::GetSecurityFrameworkLock().AssertAcquired();
 
   // An empty trust dict should be interpreted as
   // kSecTrustSettingsResultTrustRoot. This is handled by falling through all
@@ -213,7 +213,7 @@ TrustStatus IsSecCertificateTrustedForPolicyInDomain(
     const bool is_self_issued,
     const CFStringRef policy_oid,
     SecTrustSettingsDomain trust_domain) {
-  crypto::GetMacSecurityServicesLock().AssertAcquired();
+  crypto::apple::GetSecurityFrameworkLock().AssertAcquired();
 
   base::apple::ScopedCFTypeRef<CFArrayRef> trust_settings;
   OSStatus err = SecTrustSettingsCopyTrustSettings(
@@ -261,7 +261,7 @@ TrustStatus IsCertificateTrustedForPolicyInDomain(
 TrustStatus IsCertificateTrustedForPolicy(const bssl::ParsedCertificate* cert,
                                           SecCertificateRef cert_handle,
                                           const CFStringRef policy_oid) {
-  crypto::GetMacSecurityServicesLock().AssertAcquired();
+  crypto::apple::GetSecurityFrameworkLock().AssertAcquired();
 
   const bool is_self_issued =
       cert->normalized_subject() == cert->normalized_issuer();
@@ -347,7 +347,7 @@ class TrustDomainCacheFullCerts {
     base::apple::ScopedCFTypeRef<CFArrayRef> cert_array;
     OSStatus rv;
     {
-      base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+      base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
       rv = SecTrustSettingsCopyCertificates(domain_,
                                             cert_array.InitializeInto());
     }
@@ -404,7 +404,7 @@ class TrustDomainCacheFullCerts {
       return cache_iter->second.trust_status;
     }
 
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+    base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
 
     // Cert has trust settings but trust has not been calculated yet.
     // Calculate it now, insert into cache, and return.
@@ -744,7 +744,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
     CFDictionarySetValue(query.get(), kSecReturnRef, kCFBooleanTrue);
     CFDictionarySetValue(query.get(), kSecMatchLimit, kSecMatchLimitAll);
 
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+    base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
 
     base::apple::ScopedCFTypeRef<CFArrayRef>
         scoped_alternate_keychain_search_list;
@@ -938,7 +938,7 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
     CFDictionarySetValue(query.get(), kSecReturnRef, kCFBooleanTrue);
     CFDictionarySetValue(query.get(), kSecMatchLimit, kSecMatchLimitAll);
 
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+    base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
 
     base::apple::ScopedCFTypeRef<CFArrayRef>
         scoped_alternate_keychain_search_list;
