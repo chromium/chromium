@@ -657,6 +657,10 @@ void LensOverlaySidePanelCoordinator::AimHandshakeReceived() {
 }
 
 void LensOverlaySidePanelCoordinator::AimResultsChanged(bool on_aim) {
+  // Close the overlay if the user transitions to the AIM UI.
+  if (on_aim && lens::features::ShouldCloseOverlayOnAimTransition()) {
+    lens_search_controller_->HideOverlay();
+  }
   if (side_panel_page_) {
     side_panel_page_->AimResultsChanged(on_aim);
   }
