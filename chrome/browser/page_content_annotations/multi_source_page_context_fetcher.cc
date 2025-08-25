@@ -488,7 +488,7 @@ const base::FeatureParam<int> kScreenshotJpegQuality{
     &kGlicTabScreenshotExperiment, "screenshot_jpeg_quality", 40};
 
 const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
-    &kGlicTabScreenshotExperiment, "screenshot_timeout_ms", base::Seconds(1)};
+    &kGlicTabScreenshotExperiment, "screenshot_timeout_ms", base::Seconds(5)};
 
 BASE_FEATURE(kGlicTabScreenshotPaintPreviewBackend,
              "GlicTabScreenshotPaintPreviewBackend",
