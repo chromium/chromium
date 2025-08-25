@@ -50,6 +50,7 @@ import urllib
 from pathlib import Path
 
 # Get variables and helpers from Clang update script.
+THIS_DIR = os.path.dirname(__file__)
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
@@ -64,6 +65,8 @@ from update import (CHROMIUM_DIR, DownloadAndUnpack, EnsureDirExists,
 from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
                          STAGE0_JSON_SHA256, THIRD_PARTY_DIR, VERSION_SRC_PATH,
                          GetRustClangRevision)
+
+from package import TeeCmd
 
 EXCLUDED_TESTS = [
     # Temporarily disabled due to https://crbug.com/396424971
@@ -664,6 +667,18 @@ def main():
         action='store_true',
         help='Checkout and build against the most recent llvm revision,'
         'rather than the one specified in tools/clang/scripts/update.py')
+    parser.add_argument(
+        '--build-bindgen',
+        action='store_true',
+        help='After building rust, also build bindgen using build_bindgen.py')
+    parser.add_argument(
+        '--build-vet',
+        action='store_true',
+        help='After building rust, also build cargo-vet using build_vet.py')
+    parser.add_argument(
+        '--build-crubit',
+        action='store_true',
+        help='After building rust, also build crubit using build_crubit.py')
     if sys.platform == 'win32':
         parser.add_argument('--sh', help='path to the sh.exe to use')
     args, rest = parser.parse_known_args()
@@ -832,24 +847,49 @@ def main():
         print('Installing stage 2 artifacts...')
         xpy.run('build', xpy_args + ['--stage', '2'] + BUILD_TARGETS)
 
-    if args.skip_install:
-        # Rust is fully built. We can quit.
-        return 0
+    if not args.skip_install:
+        print(f'Installing Rust to {RUST_TOOLCHAIN_OUT_DIR} ...')
+        # Clean output directory.
+        if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
+            RmTree(RUST_TOOLCHAIN_OUT_DIR)
 
-    print(f'Installing Rust to {RUST_TOOLCHAIN_OUT_DIR} ...')
-    # Clean output directory.
-    if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
-        RmTree(RUST_TOOLCHAIN_OUT_DIR)
+        xpy.run('install', xpy_args + [])
 
-    xpy.run('install', xpy_args + [])
+        with open(VERSION_SRC_PATH, 'w') as stamp:
+            stamp.write(MakeVersionStamp(checkout_revision))
 
     # The Rust stdlib deps are vendored to rust-src/library/vendor, and later
     # the x.py install process copies all subdirs of rust-src/library to the
     # toolchain package, so we do not need to explicitly copy the vendor dir.
     # This is left as a note in case that behavior changes.
 
-    with open(VERSION_SRC_PATH, 'w') as stamp:
-        stamp.write(MakeVersionStamp(checkout_revision))
+    with open(os.path.join(THIRD_PARTY_DIR,
+                           f'rust-buildlog-{checkout_revision}.txt'),
+              'w',
+              encoding='utf-8') as log:
+        if args.build_bindgen:
+            build_cmd = [
+                sys.executable,
+                os.path.join(THIS_DIR, 'build_bindgen.py')
+            ]
+            TeeCmd(build_cmd, log)
+
+        if args.build_vet:
+            build_cmd = [
+                sys.executable,
+                os.path.join(THIS_DIR, 'build_vet.py')
+            ]
+            TeeCmd(build_cmd, log)
+
+        if args.build_crubit:
+            build_cmd = [
+                sys.executable,
+                os.path.join(THIS_DIR, 'build_crubit.py')
+            ]
+            # TODO: crbug.com/40226863 - Remove `fail_hard=False` once we can
+            # depend on the OSS Crubit build staying green with latest Rust and
+            # Clang.
+            TeeCmd(build_cmd, log, fail_hard=False)
 
     return 0
 
