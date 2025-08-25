@@ -41,4 +41,16 @@ void LogSaveAndFillCreateCardResultAndLatency(bool succeeded,
       latency);
 }
 
+void LogSaveAndFillStrikeDatabaseBlockReason(
+    AutofillMetrics::AutofillStrikeDatabaseBlockReason reason) {
+  base::UmaHistogramEnumeration(
+      "Autofill.StrikeDatabase.SaveAndFillStrikeDatabaseBlockReason", reason);
+}
+
+void LogSaveAndFillNumOfStrikesPresentWhenDialogAccepted(int strike_count) {
+  base::UmaHistogramCounts100(
+      "Autofill.StrikeDatabase.NumOfStrikesPresentWhenSaveAndFillAccepted",
+      strike_count);
+}
+
 }  // namespace autofill::autofill_metrics

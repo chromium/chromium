@@ -1019,7 +1019,7 @@ bool ShouldShowCreditCardSaveAndFill(AutofillClient& client,
   // Verify that the feature isn't blocked by the strike database. This can
   // happen when the maximum number of strikes is reached or the cooldown
   // period hasn't passed.
-  if (save_and_fill_manager->IsMaxStrikesLimitReached()) {
+  if (save_and_fill_manager->ShouldBlockFeature()) {
     save_and_fill_manager->MaybeLogSaveAndFillSuggestionNotShownReason(
         autofill_metrics::SaveAndFillSuggestionNotShownReason::
             kBlockedByStrikeDatabase);

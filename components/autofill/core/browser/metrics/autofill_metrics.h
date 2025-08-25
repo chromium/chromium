@@ -485,6 +485,17 @@ class AutofillMetrics {
     kMaxValue = kCreditCardShown,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(AutofillStrikeDatabaseBlockReason)
+  enum class AutofillStrikeDatabaseBlockReason {
+    kMaxStrikeLimitReached = 0,
+    kRequiredDelayNotMet = 1,
+    kMaxValue = kRequiredDelayNotMet,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillStrikeDatabaseBlockReason)
+
   // Utility class for determining the seamlessness of a credit card fill.
   class CreditCardSeamlessness {
    public:

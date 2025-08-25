@@ -739,6 +739,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="FidoAuthentication"
       summary="Fido authentication (Better Auth Project)"/>
   <variant name="IBANSave" summary="IBAN save"/>
+  <variant name="SaveAndFill" summary="save and fill"/>
   <variant name="VirtualCardEnrollment" summary="virtual card enrollment"/>
 </variants>
 
@@ -6734,6 +6735,30 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
   <token key="AutofillStrikeDatabaseProjectType"
       variants="AutofillStrikeDatabaseProjectType"/>
+</histogram>
+
+<histogram
+    name="Autofill.StrikeDatabase.NumOfStrikesPresentWhenSaveAndFillAccepted"
+    units="strikes" expires_after="2026-06-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>averina@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the number of &quot;strikes&quot; when a user accepted the Save and
+    Fill dialog.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.StrikeDatabase.SaveAndFillStrikeDatabaseBlockReason"
+    enum="AutofillStrikeDatabaseBlockReason" expires_after="2026-06-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>averina@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the reason why Save and Fill offer is blocked by the strike
+    database. Logged when Chrome checks for prerequisites for the Save and Fill
+    flow.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikeDatabaseInitFailed"

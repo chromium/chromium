@@ -68,11 +68,28 @@ void SaveAndFillManagerImpl::OnCreditCardFormSubmitted() {
   }
 }
 
-bool SaveAndFillManagerImpl::IsMaxStrikesLimitReached() {
+bool SaveAndFillManagerImpl::ShouldBlockFeature() {
+  SaveAndFillStrikeDatabase::StrikeDatabaseDecision decision =
+      SaveAndFillStrikeDatabase::kDoNotBlock;
   if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
-    return strike_database->ShouldBlockFeature();
+    decision = strike_database->GetStrikeDatabaseDecision();
   }
-  return false;
+  switch (decision) {
+    case SaveAndFillStrikeDatabase::StrikeDatabaseDecision::kDoNotBlock:
+      return false;
+    case SaveAndFillStrikeDatabase::StrikeDatabaseDecision::
+        kMaxStrikeLimitReached:
+      autofill_metrics::LogSaveAndFillStrikeDatabaseBlockReason(
+          AutofillMetrics::AutofillStrikeDatabaseBlockReason::
+              kMaxStrikeLimitReached);
+      return true;
+    case SaveAndFillStrikeDatabase::StrikeDatabaseDecision::
+        kRequiredDelayNotPassed:
+      autofill_metrics::LogSaveAndFillStrikeDatabaseBlockReason(
+          AutofillMetrics::AutofillStrikeDatabaseBlockReason::
+              kRequiredDelayNotMet);
+      return true;
+  }
 }
 
 void SaveAndFillManagerImpl::MaybeLogSaveAndFillSuggestionNotShownReason(
@@ -91,6 +108,8 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
   switch (user_decision) {
     case CardSaveAndFillDialogUserDecision::kAccepted: {
       if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
+        autofill_metrics::LogSaveAndFillNumOfStrikesPresentWhenDialogAccepted(
+            strike_database->GetStrikes());
         strike_database->ClearStrikes();
       }
       CreditCard card_save_candidate;
@@ -267,6 +286,8 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
     case CardSaveAndFillDialogUserDecision::kAccepted:
       upload_save_and_fill_dialog_accepted_ = true;
       if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
+        autofill_metrics::LogSaveAndFillNumOfStrikesPresentWhenDialogAccepted(
+            strike_database->GetStrikes());
         strike_database->ClearStrikes();
       }
       PopulateCreditCardInfo(upload_details_.card,

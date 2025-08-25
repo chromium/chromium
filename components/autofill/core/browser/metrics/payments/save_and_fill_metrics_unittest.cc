@@ -121,4 +121,37 @@ TEST_F(SaveAndFillMetricsTest, LogCreateCardRequestLatencyAndResult) {
       /*sample=*/1000, 1);
 }
 
+TEST_F(SaveAndFillMetricsTest, LogStrikeDbMetrics_MaxStrikesReached) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveAndFillStrikeDatabaseBlockReason(
+      AutofillMetrics::AutofillStrikeDatabaseBlockReason::
+          kMaxStrikeLimitReached);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase.SaveAndFillStrikeDatabaseBlockReason",
+      /*sample=*/0, 1);
+}
+
+TEST_F(SaveAndFillMetricsTest, LogStrikeDbMetrics_RequiredDelayNotMet) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveAndFillStrikeDatabaseBlockReason(
+      AutofillMetrics::AutofillStrikeDatabaseBlockReason::kRequiredDelayNotMet);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase.SaveAndFillStrikeDatabaseBlockReason",
+      /*sample=*/1, 1);
+}
+
+TEST_F(SaveAndFillMetricsTest, LogStrikeDbMetrics_NumOfStrikesPresent) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveAndFillNumOfStrikesPresentWhenDialogAccepted(5);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase.NumOfStrikesPresentWhenSaveAndFillAccepted",
+      /*sample=*/5, 1);
+}
+
 }  // namespace autofill::autofill_metrics

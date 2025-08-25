@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_SAVE_AND_FILL_METRICS_H_
 
 #include "base/time/time.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {
 
@@ -55,6 +56,10 @@ void LogSaveAndFillGetDetailsForCreateCardResultAndLatency(
     base::TimeDelta latency);
 void LogSaveAndFillCreateCardResultAndLatency(bool succeeded,
                                               base::TimeDelta latency);
+
+void LogSaveAndFillStrikeDatabaseBlockReason(
+    AutofillMetrics::AutofillStrikeDatabaseBlockReason reason);
+void LogSaveAndFillNumOfStrikesPresentWhenDialogAccepted(int strike_count);
 
 }  // namespace autofill::autofill_metrics
 

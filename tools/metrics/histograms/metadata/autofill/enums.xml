@@ -2878,6 +2878,15 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/prediction_quality_metrics.h:FieldPredictionOverlapHeader) -->
 
+<!-- LINT.IfChange(AutofillStrikeDatabaseBlockReason) -->
+
+<enum name="AutofillStrikeDatabaseBlockReason">
+  <int value="0" label="Max strike limit reached"/>
+  <int value="1" label="Required delay not met"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/autofill_metrics.h:AutofillStrikeDatabaseBlockReason) -->
+
 <enum name="AutofillSubmissionSource">
   <int value="0" label="Same document navigation"/>
   <int value="1" label="XHR succeeded"/>

@@ -32,8 +32,8 @@ class SaveAndFillManager {
   // Called when the form is submitted. This is used to check if a strike should
   // be added if the suggestion was shown but not selected.
   virtual void OnCreditCardFormSubmitted() = 0;
-  // Returns true if the maximum number of strikes has been reached.
-  virtual bool IsMaxStrikesLimitReached() = 0;
+  // Returns true if the feature offer should be blocked.
+  virtual bool ShouldBlockFeature() = 0;
   // Logs the reason why the Save and Fill suggestion was not shown if this
   // metric has not yet been recorded, as this is logged once per page load.
   virtual void MaybeLogSaveAndFillSuggestionNotShownReason(

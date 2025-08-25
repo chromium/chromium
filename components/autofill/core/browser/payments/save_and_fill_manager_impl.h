@@ -30,7 +30,7 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
       FillCardCallback fill_card_callback) override;
   void OnSuggestionOffered() override;
   void OnCreditCardFormSubmitted() override;
-  bool IsMaxStrikesLimitReached() override;
+  bool ShouldBlockFeature() override;
   void MaybeLogSaveAndFillSuggestionNotShownReason(
       autofill_metrics::SaveAndFillSuggestionNotShownReason reason) override;
 

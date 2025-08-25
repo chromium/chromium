@@ -2107,7 +2107,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                                 ->GetPaymentsAutofillClient()
                                                 ->GetSaveAndFillManager());
 
-  EXPECT_CALL(mock_save_and_fill_manager, IsMaxStrikesLimitReached())
+  EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
       .WillOnce(testing::Return(false));
 
   CreditCardSuggestionSummary summary;
@@ -2145,7 +2145,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                                 ->GetPaymentsAutofillClient()
                                                 ->GetSaveAndFillManager());
 
-  EXPECT_CALL(mock_save_and_fill_manager, IsMaxStrikesLimitReached())
+  EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
       .WillOnce(testing::Return(false));
 
   CreditCardSuggestionSummary summary;
@@ -2303,7 +2303,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                                 ->GetPaymentsAutofillClient()
                                                 ->GetSaveAndFillManager());
 
-  EXPECT_CALL(mock_save_and_fill_manager, IsMaxStrikesLimitReached())
+  EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
       .WillOnce(testing::Return(true));
 
   EXPECT_CALL(mock_save_and_fill_manager,
@@ -2340,7 +2340,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                                 ->GetPaymentsAutofillClient()
                                                 ->GetSaveAndFillManager());
 
-  EXPECT_CALL(mock_save_and_fill_manager, IsMaxStrikesLimitReached())
+  EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
       .WillOnce(testing::Return(false));
 
   // Verify user is not in incognito mode.

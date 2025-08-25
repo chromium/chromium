@@ -26,8 +26,6 @@ namespace autofill::payments {
 
 namespace {
 
-using base::ASCIIToUTF16;
-
 using CardSaveAndFillDialogUserDecision =
     PaymentsAutofillClient::CardSaveAndFillDialogUserDecision;
 using UserProvidedCardSaveAndFillDetails =
@@ -805,8 +803,8 @@ TEST_F(SaveAndFillManagerImplTest, ResetOnFlowEnds_ServerSave) {
   auto user_provided_details = CreateUserProvidedCardDetails(
       /*card_number=*/u"1111222233334444",
       /*cardholder_name=*/u"Jane Smith",
-      /*expiration_date_month=*/ASCIIToUTF16(test::NextMonth()),
-      /*expiration_date_year=*/ASCIIToUTF16(test::NextYear()),
+      /*expiration_date_month=*/u"06",
+      /*expiration_date_year=*/u"2035",
       /*security_code=*/u"456");
   ON_CALL(*payments_autofill_client_, ShowCreditCardUploadSaveAndFillDialog)
       .WillByDefault([&, this](const LegalMessageLines&,
@@ -862,8 +860,8 @@ TEST_F(SaveAndFillManagerImplTest, ResetOnFlowEnds_LocalSave) {
       CardSaveAndFillDialogUserDecision::kAccepted,
       CreateUserProvidedCardDetails(
           /*card_number=*/u"4444333322221111", /*cardholder_name=*/u"John Doe",
-          /*expiration_date_month=*/ASCIIToUTF16(test::NextMonth()),
-          /*expiration_date_year=*/ASCIIToUTF16(test::NextYear()),
+          /*expiration_date_month=*/u"06",
+          /*expiration_date_year=*/u"2035",
           /*security_code=*/u"123"));
 
   // Verifies that the states variable in the SaveAndFillManagerImpl get reset
@@ -872,6 +870,44 @@ TEST_F(SaveAndFillManagerImplTest, ResetOnFlowEnds_LocalSave) {
   EXPECT_FALSE(save_and_fill_manager_impl_->save_and_fill_suggestion_offered_);
   EXPECT_FALSE(save_and_fill_manager_impl_->save_and_fill_suggestion_selected_);
   EXPECT_TRUE(save_and_fill_manager_impl_->fill_card_callback_.is_null());
+}
+
+TEST_F(SaveAndFillManagerImplTest, StrikeDatabaseMetrics) {
+  base::HistogramTester histogram_tester;
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+
+  save_and_fill_strike_database.AddStrike();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase.NthStrikeAdded.SaveAndFill",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+
+  EXPECT_EQ(save_and_fill_manager_impl_->ShouldBlockFeature(), true);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase.SaveAndFillStrikeDatabaseBlockReason",
+      /*sample=*/1, 1);
+
+  save_and_fill_strike_database.AddStrikes(
+      save_and_fill_strike_database.GetMaxStrikesLimit() - 1);
+
+  EXPECT_EQ(save_and_fill_manager_impl_->ShouldBlockFeature(), true);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.StrikeDatabase.SaveAndFillStrikeDatabaseBlockReason",
+      /*sample=*/0, 1);
+
+  save_and_fill_strike_database.RemoveStrikes(1);
+  save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
+      CardSaveAndFillDialogUserDecision::kAccepted,
+      CreateUserProvidedCardDetails(
+          /*card_number=*/u"4444333322221111", /*cardholder_name=*/u"John Doe",
+          /*expiration_date_month=*/u"06",
+          /*expiration_date_year=*/u"2035",
+          /*security_code=*/u"123"));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase.NumOfStrikesPresentWhenSaveAndFillAccepted",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace autofill::payments
