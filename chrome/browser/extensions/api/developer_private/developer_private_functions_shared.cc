@@ -62,8 +62,11 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "extensions/browser/ui_util.h"
+#include "ui/base/base_window.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace extensions {
@@ -1545,6 +1548,99 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
 }
 
 void DeveloperPrivateUpdateSiteAccessFunction::OnSiteSettingsUpdated() {
+  Respond(NoArguments());
+}
+
+DeveloperPrivateRemoveMultipleExtensionsFunction::
+    DeveloperPrivateRemoveMultipleExtensionsFunction() = default;
+DeveloperPrivateRemoveMultipleExtensionsFunction::
+    ~DeveloperPrivateRemoveMultipleExtensionsFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateRemoveMultipleExtensionsFunction::Run() {
+  std::optional<developer::RemoveMultipleExtensions::Params> params =
+      developer::RemoveMultipleExtensions::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  profile_ = Profile::FromBrowserContext(browser_context());
+  extension_ids_ = std::move(params->extension_ids);
+
+  // Verify the input extension list.
+  for (const auto& extension_id : extension_ids_) {
+    CHECK(profile_);
+    const Extension* current_extension =
+        ExtensionRegistry::Get(profile_)->GetExtensionById(
+            extension_id, ExtensionRegistry::EVERYTHING);
+    if (!current_extension) {
+      // Return early if the extension is a non-existent extension.
+      return RespondNow(Error(kFailToUninstallNoneExistentExtensions));
+    }
+    // If enterprise or component extensions are found, do nothing and respond
+    // with an error.
+    if (Manifest::IsComponentLocation(current_extension->location()) ||
+        Manifest::IsPolicyLocation(current_extension->location())) {
+      return RespondNow(Error(kFailToUninstallEnterpriseOrComponentExtensions));
+    }
+  }
+
+  if (accept_bubble_for_testing_.has_value()) {
+    if (*accept_bubble_for_testing_) {
+      OnDialogAccepted();
+    } else {
+      OnDialogCancelled();
+    }
+    return AlreadyResponded();
+  }
+
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  gfx::NativeWindow parent;
+  if (!GetSenderWebContents()) {
+    CHECK_IS_TEST();
+    parent = gfx::NativeWindow();
+  } else {
+    parent = chrome::FindBrowserWithTab(GetSenderWebContents())
+                 ->window()
+                 ->GetNativeWindow();
+  }
+
+  ShowExtensionMultipleUninstallDialog(
+      profile_, parent, extension_ids_,
+      base::BindOnce(
+          &DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogAccepted,
+          this),
+      base::BindOnce(
+          &DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogCancelled,
+          this));
+  return RespondLater();
+#else
+  DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogAccepted();
+  return AlreadyResponded();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
+
+void DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogCancelled() {
+  // Let the consumer end know that the Close button was clicked.
+  Respond(Error(kUserCancelledError));
+}
+
+void DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogAccepted() {
+  for (const auto& extension_id : extension_ids_) {
+    if (!browser_context()) {
+      return;
+    }
+    const Extension* current_extension =
+        ExtensionRegistry::Get(profile_)->GetExtensionById(
+            extension_id, ExtensionRegistry::EVERYTHING);
+    // Extensions can be uninstalled externally while the dialog is open. Only
+    // uninstall extensions that are still existent.
+    if (!current_extension) {
+      continue;
+    }
+    // If an extension fails to be uninstalled, it will not pause the
+    // uninstall of the other extensions on the list.
+    ExtensionRegistrar::Get(profile_)->UninstallExtension(
+        extension_id, UNINSTALL_REASON_USER_INITIATED, nullptr);
+  }
   Respond(NoArguments());
 }
 

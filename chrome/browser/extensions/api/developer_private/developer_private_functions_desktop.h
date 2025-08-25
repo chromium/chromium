@@ -94,44 +94,6 @@ class DeveloperPrivateLoadDirectoryFunction : public ExtensionFunction {
   std::string error_;
 };
 
-class DeveloperPrivateRemoveMultipleExtensionsFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.removeMultipleExtensions",
-                             DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS)
-  DeveloperPrivateRemoveMultipleExtensionsFunction();
-
-  DeveloperPrivateRemoveMultipleExtensionsFunction(
-      const DeveloperPrivateRemoveMultipleExtensionsFunction&) = delete;
-  DeveloperPrivateRemoveMultipleExtensionsFunction& operator=(
-      const DeveloperPrivateRemoveMultipleExtensionsFunction&) = delete;
-
-  void accept_bubble_for_testing(bool accept_bubble) {
-    accept_bubble_for_testing_ = accept_bubble;
-  }
-
- private:
-  ~DeveloperPrivateRemoveMultipleExtensionsFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
-  // A callback function to run when the user accepts the action dialog.
-  void OnDialogAccepted();
-
-  // A callback function to run when the user cancels the action dialog.
-  void OnDialogCancelled();
-
-  // The IDs of the extensions to be uninstalled.
-  std::vector<ExtensionId> extension_ids_;
-
-  raw_ptr<Profile> profile_;
-
-  // If true, immediately accept the blocked action dialog by running the
-  // callback.
-  std::optional<bool> accept_bubble_for_testing_;
-};
-
 class DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction
     : public DeveloperPrivateAPIFunction {
  public:
