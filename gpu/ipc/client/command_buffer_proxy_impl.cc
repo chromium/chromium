@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
@@ -436,13 +437,13 @@ void CommandBufferProxyImpl::EnsureWorkVisible() {
 
   const base::ElapsedTimer elapsed_timer;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu,login", kEnsureWorkVisible,
-                                    TRACE_ID_LOCAL(kEnsureWorkVisible));
+  TRACE_EVENT_BEGIN("gpu,login", kEnsureWorkVisible,
+                    perfetto::NamedTrack(kEnsureWorkVisible));
 
   channel_->VerifyFlush(UINT32_MAX);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("gpu,login", kEnsureWorkVisible,
-                                  TRACE_ID_LOCAL(kEnsureWorkVisible));
+  TRACE_EVENT_END("gpu,login", /*kEnsureWorkVisible*/
+                  perfetto::NamedTrack(kEnsureWorkVisible));
 
   if (base::ShouldRecordSubsampledMetric(0.001)) {
     GetUMAHistogramEnsureWorkVisibleDuration()->Add(

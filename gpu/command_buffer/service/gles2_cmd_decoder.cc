@@ -90,6 +90,7 @@
 #include "gpu/command_buffer/service/vertex_attrib_manager.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"
@@ -14989,8 +14990,8 @@ error::Error GLES2DecoderImpl::HandleDescheduleUntilFinishedCHROMIUM(
     return error::kNoError;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "cc", "GLES2DecoderImpl::DescheduleUntilFinished", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("cc", "GLES2DecoderImpl::DescheduleUntilFinished",
+                    perfetto::Track::FromPointer(this));
   client()->OnDescheduleUntilFinished();
   return error::kDeferLaterCommands;
 }
@@ -15075,8 +15076,8 @@ void GLES2DecoderImpl::ProcessDescheduleUntilFinished() {
   if (!deschedule_until_finished_fences_[0]->HasCompleted())
     return;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "cc", "GLES2DecoderImpl::DescheduleUntilFinished", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("cc", /*"GLES2DecoderImpl::DescheduleUntilFinished"*/
+                  perfetto::Track::FromPointer(this));
   deschedule_until_finished_fences_.erase(
       deschedule_until_finished_fences_.begin());
   client()->OnRescheduleAfterFinished();

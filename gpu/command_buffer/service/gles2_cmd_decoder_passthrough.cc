@@ -37,6 +37,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
@@ -2501,9 +2502,9 @@ void GLES2DecoderPassthroughImpl::ProcessDescheduleUntilFinished() {
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "cc", "GLES2DecoderPassthroughImpl::DescheduleUntilFinished",
-      TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END(
+      "cc", /*"GLES2DecoderPassthroughImpl::DescheduleUntilFinished"*/
+      perfetto::Track::FromPointer(this));
   deschedule_until_finished_fences_.pop_front();
   client()->OnRescheduleAfterFinished();
 }

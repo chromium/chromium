@@ -34,6 +34,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
@@ -4836,9 +4837,9 @@ error::Error GLES2DecoderPassthroughImpl::DoDescheduleUntilFinishedCHROMIUM() {
     return error::kNoError;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "cc", "GLES2DecoderPassthroughImpl::DescheduleUntilFinished",
-      TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("cc",
+                    "GLES2DecoderPassthroughImpl::DescheduleUntilFinished",
+                    perfetto::Track::FromPointer(this));
   client()->OnDescheduleUntilFinished();
   return error::kDeferLaterCommands;
 }
