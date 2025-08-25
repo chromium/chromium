@@ -110,9 +110,11 @@ scoped_refptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
     return nullptr;
   }
 
+  // WebGPU interop requires WebNN's submission fence to be shared via shared
+  // handle.
   ComPtr<ID3D12Fence> fence;
-  hr =
-      d3d12_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+  hr = d3d12_device->CreateFence(0, D3D12_FENCE_FLAG_SHARED,
+                                 IID_PPV_ARGS(&fence));
   if (FAILED(hr)) {
     LOG(ERROR) << "[WebNN] Failed to create ID3D12Fence: "
                << logging::SystemErrorCodeToString(hr);
