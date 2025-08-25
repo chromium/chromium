@@ -72,8 +72,6 @@ class CORE_EXPORT HTMLSelectElement final
 
     const ComputedStyle* CustomStyleForLayoutObject(
         const StyleRecalcContext& style_recalc_context) override;
-    Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
-    void RemovedFrom(ContainerNode&) override;
 
     void Trace(Visitor*) const override;
 

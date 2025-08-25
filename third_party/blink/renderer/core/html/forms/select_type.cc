@@ -187,27 +187,6 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
     return PopoverHideResult::kHidden;
   }
 
-  InsertionNotificationRequest InsertedInto(ContainerNode& container) override {
-    InsertionNotificationRequest return_value =
-        HTMLDivElement::InsertedInto(container);
-    if (container == parentNode()) {
-      CHECK(ParentSelect());
-      ParentSelect()->IncrementImplicitlyAnchoredElementCount();
-    }
-    return return_value;
-  }
-
-  void RemovedFrom(ContainerNode& container) override {
-    if (!parentNode()) {
-      auto* shadowroot = DynamicTo<ShadowRoot>(container);
-      CHECK(shadowroot);
-      auto* select = DynamicTo<HTMLSelectElement>(shadowroot->host());
-      CHECK(select);
-      select->DecrementImplicitlyAnchoredElementCount();
-    }
-    HTMLDivElement::RemovedFrom(container);
-  }
-
   void DidRecalcStyle(const StyleRecalcChange change) override {
     HTMLDivElement::DidRecalcStyle(change);
     if (auto* style = GetComputedStyle()) {
@@ -267,9 +246,10 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
 // TODO(crbug.com/1511354): Rename this class to PopUpSelectType
 class MenuListSelectType final : public SelectType {
  public:
-  explicit MenuListSelectType(HTMLSelectElement& select) : SelectType(select) {}
+  explicit MenuListSelectType(HTMLSelectElement& select);
   void Trace(Visitor* visitor) const override;
 
+  void WillBeDestroyed() override;
   bool DefaultEventHandler(const Event& event) override;
   void DidSelectOption(HTMLOptionElement* element,
                        HTMLSelectElement::SelectOptionFlags flags,
@@ -340,6 +320,21 @@ class MenuListSelectType final : public SelectType {
   bool is_appearance_base_select_ = false;
   bool is_appearance_base_picker_for_display_none_ = false;
 };
+
+MenuListSelectType::MenuListSelectType(HTMLSelectElement& select)
+    : SelectType(select) {
+  // MenuList selects always have two implicitly anchored elements: the
+  // ::picker and the autofill popover. We only need to tell the select element
+  // that there is one of them, and we can just decrement by one if the select
+  // switches from MenuList to ListBox, which happens in
+  // MenuListSelectType::WillBeDestroyed.
+  select_->IncrementImplicitlyAnchoredElementCount();
+}
+
+void MenuListSelectType::WillBeDestroyed() {
+  SelectType::WillBeDestroyed();
+  select_->DecrementImplicitlyAnchoredElementCount();
+}
 
 void MenuListSelectType::Trace(Visitor* visitor) const {
   visitor->Trace(popup_);

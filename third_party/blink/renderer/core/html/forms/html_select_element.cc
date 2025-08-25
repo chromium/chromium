@@ -1837,19 +1837,6 @@ HTMLSelectElement::SelectAutofillPreviewElement::CustomStyleForLayoutObject(
   return style_builder.TakeStyle();
 }
 
-Node::InsertionNotificationRequest
-HTMLSelectElement::SelectAutofillPreviewElement::InsertedInto(
-    ContainerNode& container) {
-  select_->IncrementImplicitlyAnchoredElementCount();
-  return HTMLDivElement::InsertedInto(container);
-}
-
-void HTMLSelectElement::SelectAutofillPreviewElement::RemovedFrom(
-    ContainerNode& container) {
-  HTMLDivElement::RemovedFrom(container);
-  select_->DecrementImplicitlyAnchoredElementCount();
-}
-
 void HTMLSelectElement::SelectAutofillPreviewElement::Trace(
     Visitor* visitor) const {
   visitor->Trace(select_);
