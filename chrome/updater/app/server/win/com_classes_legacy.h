@@ -31,6 +31,7 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/app_command_runner.h"
 #include "chrome/updater/win/setup/setup_util.h"
+#include "components/update_client/update_client.h"
 
 // Definitions for COM updater classes provided for backward compatibility
 // with Google Update.
@@ -261,10 +262,12 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
     int extra_code1 = 0;
   };
 
-  using PingSender = base::RepeatingCallback<void(UpdaterScope scope,
-                                                  const std::string& app_id,
-                                                  const std::string& command_id,
-                                                  ErrorParams error_params)>;
+  using PingSender =
+      base::RepeatingCallback<void(UpdaterScope scope,
+                                   const std::string& app_id,
+                                   const std::string& command_id,
+                                   ErrorParams error_params,
+                                   update_client::Callback callback)>;
   LegacyAppCommandWebImpl();
   LegacyAppCommandWebImpl(const LegacyAppCommandWebImpl&) = delete;
   LegacyAppCommandWebImpl& operator=(const LegacyAppCommandWebImpl&) = delete;
@@ -311,7 +314,8 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
   static void SendPing(UpdaterScope scope,
                        const std::string& app_id,
                        const std::string& command_id,
-                       ErrorParams error_params);
+                       ErrorParams error_params,
+                       update_client::Callback callback);
 
   ~LegacyAppCommandWebImpl() override;
 

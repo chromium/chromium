@@ -33,6 +33,7 @@
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
+#include "components/update_client/update_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -113,7 +114,8 @@ TEST_F(LegacyAppCommandWebImplTest, Execute) {
       base::BindLambdaForTesting(
           [&ping_sent](UpdaterScope scope, const std::string& app_id,
                        const std::string& command_id,
-                       LegacyAppCommandWebImpl::ErrorParams error_params) {
+                       LegacyAppCommandWebImpl::ErrorParams error_params,
+                       update_client::Callback callback) {
             ping_sent = true;
             EXPECT_EQ(GetUpdaterScopeForTesting(), scope);
             EXPECT_EQ(app_id, base::WideToUTF8(kAppId1));
@@ -158,7 +160,8 @@ TEST_F(LegacyAppCommandWebImplTest, ExecuteParameterizedCommand) {
       base::BindLambdaForTesting(
           [&ping_sent](UpdaterScope scope, const std::string& app_id,
                        const std::string& command_id,
-                       LegacyAppCommandWebImpl::ErrorParams error_params) {
+                       LegacyAppCommandWebImpl::ErrorParams error_params,
+                       update_client::Callback callback) {
             ping_sent = true;
             EXPECT_EQ(GetUpdaterScopeForTesting(), scope);
             EXPECT_EQ(app_id, base::WideToUTF8(kAppId1));
@@ -194,7 +197,8 @@ TEST_F(LegacyAppCommandWebImplTest, FailedToLaunchStatus) {
       base::BindLambdaForTesting(
           [&ping_sent](UpdaterScope scope, const std::string& app_id,
                        const std::string& command_id,
-                       LegacyAppCommandWebImpl::ErrorParams error_params) {
+                       LegacyAppCommandWebImpl::ErrorParams error_params,
+                       update_client::Callback callback) {
             ping_sent = true;
             EXPECT_EQ(GetUpdaterScopeForTesting(), scope);
             EXPECT_EQ(app_id, base::WideToUTF8(kAppId1));
@@ -240,7 +244,8 @@ TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
       base::BindLambdaForTesting(
           [&ping_sent](UpdaterScope scope, const std::string& app_id,
                        const std::string& command_id,
-                       LegacyAppCommandWebImpl::ErrorParams error_params) {
+                       LegacyAppCommandWebImpl::ErrorParams error_params,
+                       update_client::Callback callback) {
             ping_sent = true;
             EXPECT_EQ(GetUpdaterScopeForTesting(), scope);
             EXPECT_EQ(app_id, base::WideToUTF8(kAppId1));

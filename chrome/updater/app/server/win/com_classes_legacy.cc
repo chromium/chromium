@@ -1244,13 +1244,22 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
   }
 
   const HRESULT hr = app_command_runner_->Run(substitutions, process_);
+  using LegacyAppCommandWebImplPtr =
+      Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>;
+  update_client::Callback callback = base::BindOnce(
+      [](LegacyAppCommandWebImplPtr obj, update_client::Error error) {
+        VLOG(1) << "App command ping for appid: " << obj->app_id_
+                << " completed: " << error;
+      },
+      LegacyAppCommandWebImplPtr(this));
   if (FAILED(hr)) {
     VLOG(2) << __func__ << ": AppCommand failed to launch: " << hr;
     ping_sender_.Run(scope_, app_id_, command_id_,
                      {
                          .error_code = hr,
                          .extra_code1 = kErrorAppCommandLaunchFailed,
-                     });
+                     },
+                     std::move(callback));
     return hr;
   }
 
@@ -1275,18 +1284,27 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
             };
           },
           process_.Duplicate())
-          .Then(base::BindOnce(ping_sender_, scope_, app_id_, command_id_)));
+          .Then(base::BindOnce(
+              [](PingSender ping_sender, UpdaterScope scope,
+                 const std::string& app_id, const std::string& command_id,
+                 update_client::Callback callback, ErrorParams error_params) {
+                ping_sender.Run(scope, app_id, command_id, error_params,
+                                std::move(callback));
+              },
+              ping_sender_, scope_, app_id_, command_id_,
+              std::move(callback))));
   return hr;
 }
 
 void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
                                        const std::string& app_id,
                                        const std::string& command_id,
-                                       ErrorParams error_params) {
+                                       ErrorParams error_params,
+                                       update_client::Callback callback) {
   base::OnceCallback<void(bool enable_usage_stats)> rpc_task = base::BindOnce(
       [](UpdaterScope scope, const std::string& app_id,
          const std::string& command_id, ErrorParams error_params,
-         bool enable_usage_stats) {
+         update_client::Callback callback, bool enable_usage_stats) {
         if (!enable_usage_stats) {
           return;
         }
@@ -1314,11 +1332,9 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
                 .extra_code1 = error_params.extra_code1,
                 .app_command_id = command_id,
             },
-            base::BindOnce([](update_client::Error error) {
-              VLOG(1) << "App command ping completed: " << error;
-            }));
+            std::move(callback));
       },
-      scope, app_id, command_id, error_params);
+      scope, app_id, command_id, error_params, std::move(callback));
   AppServerWin::PostRpcTask(base::BindOnce(
       [](UpdaterScope scope, base::OnceCallback<void(bool)> rpc_task) {
         base::ThreadPool::PostTaskAndReplyWithResult(
