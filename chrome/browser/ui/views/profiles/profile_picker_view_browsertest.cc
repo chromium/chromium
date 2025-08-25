@@ -2021,14 +2021,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ReShow) {
   EXPECT_FALSE(widget_weak->IsClosed());
 }
 
-// TODO(crbug.com/325310963): Re-enable this flaky test on macOS.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_OpenProfile DISABLED_OpenProfile
-#else
-#define MAYBE_OpenProfile OpenProfile
-#endif
+// TODO(crbug.com/426520088): Re-enable this flaky test.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       MAYBE_OpenProfile) {
+                       DISABLED_OpenProfile) {
   base::HistogramTester histogram_tester;
 
   auto scoped_iph_delay =
