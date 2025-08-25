@@ -61,6 +61,10 @@ p {
   display: none;
 }
 
+.red {
+  color: red;
+}
+
 a, span.readOnlyMode {
   margin-block-end: 10px;
   margin-block-start: 10px;

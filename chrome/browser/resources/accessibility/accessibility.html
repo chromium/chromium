@@ -119,6 +119,16 @@ found in the LICENSE file.
         Is the active AT a screen reader:
         <span id="active_at_is_screen_reader"></span>
       </div>
+
+      <if expr="is_win">
+        <h2>Accessible node counters</h2>
+        <div>Number of accessible nodes available to accessibility tools (ATs):
+          <span id="dormantCount"></span>.</div>
+        <div>Number of accessible nodes referenced by one or more ATs:
+          <span id="liveCount"></span>.</div>
+        <div>Number of previously active nodes no longer available in the
+          browser: <span id="ghostCount"></span>.</div>
+      </if>
     </div>
     <div class="column">
       <h2>

@@ -92,6 +92,12 @@ interface InitData {
 
   detectedATName: string;
   isScreenReaderActive: boolean;
+
+  // <if expr="is_win">
+  dormantCount: string;
+  liveCount: string;
+  ghostCount: string;
+  // </if>
 }
 
 type RequestType = 'showOrRefreshTree';
@@ -304,6 +310,8 @@ function initialize() {
     getRequiredElement('widgets-header').style.display = 'none';
   }
 
+  updateDisplay(data);
+
   // Cache filters so they're easily accessible on page refresh.
   const allow = window.localStorage['chrome-accessibility-filter-allow'];
   const allowEmpty =
@@ -318,6 +326,7 @@ function initialize() {
   addWebUiListener('copyTree', copyTree);
   addWebUiListener('showOrRefreshTree', showOrRefreshTree);
   addWebUiListener('startOrStopEvents', startOrStopEvents);
+  addWebUiListener('updateDisplay', updateDisplay);
 }
 
 function bindCheckbox(name: string, value: boolean, disable?: boolean) {
@@ -734,6 +743,68 @@ function copyTree(data: PageData) {
     showOrRefreshTree(data);
     getRequiredElement(id + '-copyTree').focus();
   }
+}
+
+// State that may be periodically updated. Absent members retain their previous
+// state.
+interface DisplayData {
+  native?: boolean;
+  web?: boolean;
+  text?: boolean;
+  extendedProperties?: boolean;
+  screenReader?: boolean;
+  html?: boolean;
+
+  // <if expr="is_win">
+  dormantCount?: string;
+  liveCount?: string;
+  ghostCount?: string;
+  // </if>
+}
+
+// Updates the page with the state contained in `data`.
+function updateDisplay(data: DisplayData) {
+  if (data.native !== undefined) {
+    getRequiredElement<HTMLInputElement>('native').checked = data.native;
+  }
+  if (data.web !== undefined) {
+    getRequiredElement<HTMLInputElement>('web').checked = data.web;
+  }
+  if (data.text !== undefined) {
+    getRequiredElement<HTMLInputElement>('text').checked = data.text;
+  }
+  if (data.extendedProperties !== undefined) {
+    getRequiredElement<HTMLInputElement>('extendedProperties').checked =
+        data.extendedProperties;
+  }
+  if (data.screenReader !== undefined) {
+    getRequiredElement<HTMLInputElement>('screenReader').checked =
+        data.screenReader;
+  }
+  if (data.html !== undefined) {
+    getRequiredElement<HTMLInputElement>('html').checked = data.html;
+  }
+
+  // <if expr="is_win">
+  if (data.dormantCount !== undefined) {
+    getRequiredElement<HTMLElement>('dormantCount').innerText =
+        data.dormantCount;
+  }
+  if (data.liveCount !== undefined) {
+    getRequiredElement<HTMLElement>('liveCount').innerText = data.liveCount;
+  }
+
+  if (data.ghostCount !== undefined) {
+    // All ghost nodes are leaks, so show it in red if non-zero.
+    const ghostSpan = getRequiredElement<HTMLElement>('ghostCount');
+    ghostSpan.innerText = data.ghostCount;
+    if (data.ghostCount !== '0') {
+      ghostSpan.classList.add('red');
+    } else {
+      ghostSpan.classList.remove('red');
+    }
+  }
+  // </if>
 }
 
 // type is either 'tree' or 'eventLogs'
