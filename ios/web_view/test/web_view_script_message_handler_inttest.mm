@@ -70,9 +70,9 @@ TEST_F(WebViewScriptMessageHandlerTest, MessageReceived) {
       }
              forCommand:kMessageHandlerCommandName];
 
-  NSString* script =
-      @"let payload = {'key1':'value1', 'key2':42};"
-      @"__gCrWeb.cwvMessaging.messageHost('messageHandlerCommand', payload);";
+  NSString* script = @"let payload = {'key1':'value1', 'key2':42};"
+                     @"__gCrWeb.getRegisteredApi('cwvMessaging').getFunction('"
+                     @"messageHost')('messageHandlerCommand', payload);";
   NSError* error;
   test::EvaluateJavaScript(web_view_, script, &error);
   ASSERT_FALSE(error);
@@ -102,9 +102,9 @@ TEST_F(WebViewScriptMessageHandlerTest, MessageReceivedAfterStateRestoration) {
 
   LoadTestPage();
 
-  NSString* script =
-      @"let payload = {'key1':'value1', 'key2':42};"
-      @"__gCrWeb.cwvMessaging.messageHost('messageHandlerCommand', payload);";
+  NSString* script = @"let payload = {'key1':'value1', 'key2':42};"
+                     @"__gCrWeb.getRegisteredApi('cwvMessaging').getFunction('"
+                     @"messageHost')('messageHandlerCommand', payload);";
   NSError* error;
   test::EvaluateJavaScript(web_view_, script, &error);
   ASSERT_FALSE(error);
@@ -140,11 +140,13 @@ TEST_F(WebViewScriptMessageHandlerTest, NonregisteredMessagesIgnored) {
 
   [web_view_ removeMessageHandlerForCommand:@"command1"];
 
-  NSString* script =
-      @"let payload = {'key1':'value1', 'key2':42};"
-      @"__gCrWeb.cwvMessaging.messageHost('invalidCommand', payload);"
-      @"__gCrWeb.cwvMessaging.messageHost('command1', payload);"
-      @"__gCrWeb.cwvMessaging.messageHost('command2', payload);";
+  NSString* script = @"let payload = {'key1':'value1', 'key2':42};"
+                     @"__gCrWeb.getRegisteredApi('cwvMessaging').getFunction('"
+                     @"messageHost')('invalidCommand', payload);"
+                     @"__gCrWeb.getRegisteredApi('cwvMessaging').getFunction('"
+                     @"messageHost')('command1', payload);"
+                     @"__gCrWeb.getRegisteredApi('cwvMessaging').getFunction('"
+                     @"messageHost')('command2', payload);";
   NSError* error;
   test::EvaluateJavaScript(web_view_, script, &error);
   ASSERT_FALSE(error);
