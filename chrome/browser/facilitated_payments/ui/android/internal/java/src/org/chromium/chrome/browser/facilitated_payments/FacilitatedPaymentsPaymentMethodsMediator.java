@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ON_EWALLET_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PAYMENT_LINK_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_HEIGHT;
@@ -286,8 +287,10 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     @VisibleForTesting
     ListItem buildPaymentLinkHeader(
             Context context, List<Ewallet> ewallets, List<ResolveInfo> apps) {
-        PropertyModel.Builder headerBuilder = new PropertyModel.Builder(HeaderProperties.ALL_KEYS);
-        if (!ewallets.isEmpty()) {
+        PropertyModel.Builder headerBuilder =
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(PRODUCT_ICON_DRAWABLE_ID, 0);
+        if (ewallets != null && !ewallets.isEmpty()) {
             int productIconHeight =
                     (int)
                             context.getResources()
@@ -299,6 +302,14 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                     .with(
                             PRODUCT_ICON_CONTENT_DESCRIPTION_ID,
                             R.string.facilitated_payments_google_pay);
+        }
+        if (apps != null && !apps.isEmpty()) {
+            headerBuilder.with(
+                    PAYMENT_LINK_TITLE_TOP_MARGIN,
+                    (int)
+                            context.getResources()
+                                    .getDimension(
+                                            R.dimen.facilitated_payments_fop_title_top_margin));
         }
         headerBuilder.with(TITLE, getPaymentLinkHeaderTitle(context, ewallets, apps));
 

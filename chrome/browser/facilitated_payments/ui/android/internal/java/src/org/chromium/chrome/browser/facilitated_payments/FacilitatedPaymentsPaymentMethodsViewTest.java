@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -582,6 +583,63 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
+    public void testEwalletAndPaymentAppHeaderProductIconAndTitleMargin() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    mMediator.buildPaymentLinkHeader(
+                                            mActivityTestRule.getActivity(),
+                                            List.of(EWALLET_1),
+                                            List.of(PAYMENT_APP_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(1));
+        ImageView headerProductIcon = getHeaderProductIconAt(0);
+        TextView headerTitle = getHeaderTitleAt(0);
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) headerTitle.getLayoutParams();
+
+        assertThat(headerProductIcon.getVisibility(), is(View.VISIBLE));
+        assertThat(params.topMargin, is(not(0)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testPaymentAppHeaderProductIconAndTitleMargin() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    mMediator.buildPaymentLinkHeader(
+                                            mActivityTestRule.getActivity(),
+                                            List.of(),
+                                            List.of(PAYMENT_APP_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(1));
+        ImageView headerProductIcon = getHeaderProductIconAt(0);
+        TextView headerTitle = getHeaderTitleAt(0);
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) headerTitle.getLayoutParams();
+
+        assertThat(headerProductIcon.getVisibility(), is(View.GONE));
+        assertThat(params.topMargin, is(not(0)));
+    }
+
+    @Test
+    @MediumTest
     public void testPixDescriptionLine() {
         runOnUiThreadBlocking(
                 () -> {
@@ -950,6 +1008,10 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     private TextView getHeaderDescriptionAt(int index) {
         return getSheetItems().getChildAt(index).findViewById(R.id.description_text);
+    }
+
+    private TextView getHeaderTitleAt(int index) {
+        return getSheetItems().getChildAt(index).findViewById(R.id.sheet_title);
     }
 
     private static boolean containsViewOfClass(ViewGroup parent, Class<?> clazz) {
