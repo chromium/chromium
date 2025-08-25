@@ -320,8 +320,8 @@ std::string GetGroupIconUrl(const password_manager::AffiliatedGroup& group,
     return group.GetFallbackIconURL().spec();
   }
 
-  // TODO(crbug.com/40067296): Migrate away from `ConsentLevel::kSync` on
-  // desktop platforms.
+  // TODO(crbug.com/40066949): Remove this codepath once
+  // `IsSyncFeatureEnabled()` is fully deprecated.
   if (password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
           sync_service)) {
     // Syncing users can use icon provided by the affiliation service.

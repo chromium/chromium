@@ -126,6 +126,8 @@ void PasskeyUpgradeRequestController::ContinuePendingUpgradeRequest() {
                          .get();
   } else if (password_manager::sync_util::
                  IsSyncFeatureEnabledIncludingPasswords(sync_service)) {
+    // TODO(crbug.com/40066949): Remove this codepath once
+    // `IsSyncFeatureEnabled()` is fully deprecated.
     password_store = ProfilePasswordStoreFactory::GetForProfile(
                          profile(), ServiceAccessType::EXPLICIT_ACCESS)
                          .get();

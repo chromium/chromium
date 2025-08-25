@@ -115,11 +115,8 @@ std::u16string CredentialManagerDialogControllerImpl::GetAutoSigninText()
 bool CredentialManagerDialogControllerImpl::ShouldShowFooter() const {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
-  // TODO(crbug.com/40067296): Migrate away from `ConsentLevel::kSync` on
-  // desktop platforms and remove #ifdef below.
-#if BUILDFLAG(IS_ANDROID)
-#error If this code is built on Android, please update TODO above.
-#endif  // BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/40066949): Remove this codepath once
+  // `IsSyncFeatureEnabled()` is fully deprecated.
   return password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
       sync_service);
 }
