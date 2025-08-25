@@ -339,8 +339,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
 
     // NOTE: The above invocation of WillDrawInternal() ensures that this
     // invocation of GetSyncToken() will generate a new sync token.
+    gpu::SyncToken sync_token = resource_->GetSyncToken();
     if (internal_access_sync_token) {
-      *internal_access_sync_token = resource_->GetSyncToken();
+      *internal_access_sync_token = sync_token;
     }
 
     return resource_->GetClientSharedImage();
