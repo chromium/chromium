@@ -385,18 +385,6 @@ class CORE_EXPORT HTMLInputElement
   bool IsKeyboardFocusableSlow(UpdateBehavior update_behavior =
                                    UpdateBehavior::kStyleAndLayout) const final;
 
-  // These methods are used to determine what the nearest ancestor <select>
-  // element is and whether this is the first <input> in tree order within that
-  // <select>. These are populated lazily by the select element's
-  // MutationObserver and are not guaranteed to be correct all of the time
-  // since that MutationObserver only runs when the select element has base
-  // appearance.
-  bool IsFirstTextInputInAncestorSelect() const;
-  HTMLSelectElement* FirstAncestorSelectElement() const;
-  void SetFirstAncestorSelectElement(HTMLSelectElement* select) {
-    first_ancestor_select_ = select;
-  }
-
  protected:
   void DefaultEventHandler(Event&) override;
   bool IsInnerEditorValueEmpty() const final;
@@ -526,7 +514,6 @@ class CORE_EXPORT HTMLInputElement
   // element lives on.
   Member<HTMLImageLoader> image_loader_;
   Member<ListAttributeTargetObserver> list_attribute_target_observer_;
-  Member<HTMLSelectElement> first_ancestor_select_;
 
   FRIEND_TEST_ALL_PREFIXES(HTMLInputElementTest, RadioKeyDownDCHECKFailure);
 };

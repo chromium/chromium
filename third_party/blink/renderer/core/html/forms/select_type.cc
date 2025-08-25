@@ -143,28 +143,17 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
           control->Focus(FocusParams(FocusTrigger::kScript));
         }
       } else {
-        HTMLElement* element_to_focus = nullptr;
-        if (auto* input = select->FirstDescendantTextInput();
-            input &&
-            (RuntimeEnabledFeatures::
-                 SelectAccessibilityReparentInputEnabled() ||
-             RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled())) {
-          // If there is a filter input at the top of the picker, then that
-          // should be focused instead of options when opening.
-          element_to_focus = input;
-        } else {
-          element_to_focus = select->SelectedOption();
-          if (!element_to_focus || !element_to_focus->IsFocusable()) {
-            for (auto& option : select->GetOptionList()) {
-              if (option.IsFocusable()) {
-                element_to_focus = &option;
-                break;
-              }
+        HTMLOptionElement* option_to_focus = select->SelectedOption();
+        if (!option_to_focus || !option_to_focus->IsFocusable()) {
+          for (auto& option : select->GetOptionList()) {
+            if (option.IsFocusable()) {
+              option_to_focus = &option;
+              break;
             }
           }
         }
-        if (element_to_focus) {
-          element_to_focus->Focus(FocusParams(FocusTrigger::kScript));
+        if (option_to_focus) {
+          option_to_focus->Focus(FocusParams(FocusTrigger::kScript));
         }
       }
       if (AXObjectCache* cache =

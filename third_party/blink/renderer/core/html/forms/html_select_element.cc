@@ -1371,7 +1371,6 @@ void HTMLSelectElement::Trace(Visitor* visitor) const {
   visitor->Trace(last_on_change_option_);
   visitor->Trace(suggested_option_);
   visitor->Trace(descendant_selectedcontents_);
-  visitor->Trace(descendant_text_inputs_);
   visitor->Trace(select_type_);
   visitor->Trace(descendants_observer_);
   HTMLFormControlElementWithState::Trace(visitor);
@@ -1767,33 +1766,6 @@ void HTMLSelectElement::SelectedContentElementRemoved(
     (*descendant_selectedcontents_.begin())
         ->CloneContentsFromOptionElement(SelectedOption());
   }
-}
-
-void HTMLSelectElement::AddDescendantTextInput(HTMLInputElement* input) {
-  CHECK(RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
-        RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled());
-  CHECK(input->IsTextField());
-  descendant_text_inputs_.Add(input);
-  input->SetFirstAncestorSelectElement(this);
-}
-
-void HTMLSelectElement::RemoveDescendantTextInput(HTMLInputElement* input) {
-  CHECK(RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
-        RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled());
-  descendant_text_inputs_.Remove(input);
-  input->SetFirstAncestorSelectElement(nullptr);
-}
-
-HTMLInputElement* HTMLSelectElement::FirstDescendantTextInput() const {
-  if (descendant_text_inputs_.IsEmpty()) {
-    return nullptr;
-  }
-  HTMLInputElement* first_input = *descendant_text_inputs_.begin();
-  if (!first_input->isConnected() || !first_input->IsTextField() ||
-      Traversal<HTMLSelectElement>::FirstAncestor(*first_input) != this) {
-    return nullptr;
-  }
-  return first_input;
 }
 
 HTMLSelectElement::SelectAutofillPreviewElement*

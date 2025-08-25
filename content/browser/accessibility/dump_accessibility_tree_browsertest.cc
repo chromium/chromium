@@ -185,46 +185,6 @@ class SummaryAsHeadingDumpAccessibilityTreeTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-class SelectReparentInputDumpAccessibilityTreeTest
-    : public DumpAccessibilityTreeTest {
- protected:
-  SelectReparentInputDumpAccessibilityTreeTest() {
-    feature_list_.InitWithFeatures(
-        {{blink::features::kSelectAccessibilityReparentInput}},
-        {/* disabled_features */});
-  }
-
-  ~SelectReparentInputDumpAccessibilityTreeTest() override {
-    // Ensure that the feature lists are destroyed in the same order they
-    // were created in.
-    scoped_feature_list_.Reset();
-    feature_list_.Reset();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class SelectNestedInputDumpAccessibilityTreeTest
-    : public DumpAccessibilityTreeTest {
- protected:
-  SelectNestedInputDumpAccessibilityTreeTest() {
-    feature_list_.InitWithFeatures(
-        {{blink::features::kSelectAccessibilityNestedInput}},
-        {/* disabled_features */});
-  }
-
-  ~SelectNestedInputDumpAccessibilityTreeTest() override {
-    // Ensure that the feature lists are destroyed in the same order they
-    // were created in.
-    scoped_feature_list_.Reset();
-    feature_list_.Reset();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 class OnScreenModeDumpAccessibilityTreeTest : public DumpAccessibilityTreeTest {
 };
 
@@ -259,18 +219,6 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     SummaryAsHeadingDumpAccessibilityTreeTest,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
-    DumpAccessibilityTreeTestPassToString());
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SelectReparentInputDumpAccessibilityTreeTest,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
-    DumpAccessibilityTreeTestPassToString());
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SelectNestedInputDumpAccessibilityTreeTest,
     ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
@@ -2312,16 +2260,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilitySlowlyBuildSelect) {
   RunHtmlTest(FILE_PATH_LITERAL("select-slowly-build.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(SelectReparentInputDumpAccessibilityTreeTest,
-                       AccessibilityCustomSelectWithInput) {
-  RunHtmlTest(FILE_PATH_LITERAL("select-with-input.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(SelectNestedInputDumpAccessibilityTreeTest,
-                       AccessibilityCustomSelectWithInput) {
-  RunHtmlTest(FILE_PATH_LITERAL("select-with-input-2.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDd) {

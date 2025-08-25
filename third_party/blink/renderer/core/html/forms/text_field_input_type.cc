@@ -43,8 +43,6 @@
 #include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -218,21 +216,6 @@ void TextFieldInputType::SetValue(const String& sanitized_value,
 void TextFieldInputType::HandleKeydownEvent(KeyboardEvent& event) {
   if (!GetElement().IsFocused())
     return;
-
-  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
-      RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) {
-    if (auto* select = GetElement().FirstAncestorSelectElement()) {
-      if (AtomicString(event.key()) == keywords::kArrowDown) {
-        if (auto* option =
-                select->GetOptionList().FirstKeyboardFocusableOption()) {
-          option->Focus();
-          event.SetDefaultHandled();
-          return;
-        }
-      }
-    }
-  }
-
   if (ChromeClient* chrome_client = GetChromeClient()) {
     chrome_client->HandleKeyboardEventOnTextField(GetElement(), event);
     return;

@@ -5364,12 +5364,6 @@ data/accessibility/html/select-open.html
 data/accessibility/html/select-slowly-build-expected-auralinux.txt
 data/accessibility/html/select-slowly-build-expected-blink.txt
 data/accessibility/html/select-slowly-build.html
-data/accessibility/html/select-with-input-2-expected-auralinux.txt
-data/accessibility/html/select-with-input-2-expected-blink.txt
-data/accessibility/html/select-with-input-2.html
-data/accessibility/html/select-with-input-expected-auralinux.txt
-data/accessibility/html/select-with-input-expected-blink.txt
-data/accessibility/html/select-with-input.html
 data/accessibility/html/select.html
 data/accessibility/html/selection-container-expected-android-assist-data.txt
 data/accessibility/html/selection-container-expected-android-external.txt
