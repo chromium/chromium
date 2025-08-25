@@ -300,13 +300,22 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
                 if (keep_alive) {
                   std::move(keep_alive).Run();
                 }
+                if (result->IsEmpty()) {
+                  // Report a null shared image in case there was a failure.
+                  std::move(result_callback).Run(nullptr);
+                  return;
+                }
                 std::move(result_callback).Run(std::move(result_image));
               },
               std::move(callback), shared_image,
               std::move(keep_surface_alive)));
 
   auto sync_token = shared_image_interface->GenVerifiedSyncToken();
-  request->set_result_selection(gfx::Rect(image_size));
+  viz::SetCopyOutputRequestResultSize(request.get(), src_subrect, output_size,
+                                      surface_size_in_pixels_);
+  if (!request->has_result_selection()) {
+    request->set_result_selection(gfx::Rect(image_size));
+  }
   request->set_blit_request(
       viz::BlitRequest(gfx::Point(), viz::LetterboxingBehavior::kDoNotLetterbox,
                        std::move(shared_image), sync_token,
@@ -317,9 +326,6 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
   // runner to the current thread.
   request->set_result_task_runner(
       base::SequencedTaskRunner::GetCurrentDefault());
-
-  viz::SetCopyOutputRequestResultSize(request.get(), src_subrect, output_size,
-                                      surface_size_in_pixels_);
 
   host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request),
                                                 capture_exact_surface_id);
