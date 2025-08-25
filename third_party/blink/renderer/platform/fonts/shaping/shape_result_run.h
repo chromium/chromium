@@ -370,7 +370,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
     }
 
     void Reverse() {
-      std::reverse(begin(), end());
+      std::ranges::reverse(*this);
       offsets_.Reverse();
     }
 

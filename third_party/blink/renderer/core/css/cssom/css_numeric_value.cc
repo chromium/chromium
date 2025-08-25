@@ -234,7 +234,7 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
 
   // Our algorithm collects the children in reverse order, so we have to reverse
   // the values.
-  std::reverse(values.begin(), values.end());
+  std::ranges::reverse(values);
   CSSMathOperator operator_type =
       To<CSSMathExpressionOperation>(root).OperatorType();
   if (operator_type == CSSMathOperator::kAdd ||

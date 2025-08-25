@@ -654,8 +654,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeRelativeSelector(
   }
 
   // See ConsumeComplexSelector().
-  std::reverse(reset_vector.AddedElements().begin(),
-               reset_vector.AddedElements().end());
+  std::ranges::reverse(reset_vector.AddedElements());
 
   MarkAsEntireComplexSelector(reset_vector.AddedElements());
   return reset_vector.CommitAddedElements();
@@ -794,8 +793,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeNestedRelativeSelector(
     return {};
   }
 
-  std::reverse(reset_vector.AddedElements().begin(),
-               reset_vector.AddedElements().end());
+  std::ranges::reverse(reset_vector.AddedElements());
 
   MarkAsEntireComplexSelector(reset_vector.AddedElements());
   return reset_vector.CommitAddedElements();
@@ -822,7 +820,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
 
   // Reverse the compound selector, so that it comes out properly
   // after we reverse everything below.
-  std::reverse(compound_selector.begin(), compound_selector.end());
+  std::ranges::reverse(compound_selector);
 
   if (CSSSelector::RelationType combinator = ConsumeCombinator(stream)) {
     result_flags |= kContainsComplexSelector;
@@ -855,8 +853,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
   // The boundaries between the compound selectors are implicit; they are given
   // by having a Relation() not equal to kSubSelector, so they follow
   // automatically when we do the reversal.
-  std::reverse(reset_vector.AddedElements().begin(),
-               reset_vector.AddedElements().end());
+  std::ranges::reverse(reset_vector.AddedElements());
 
   if (nesting_type != CSSNestingType::kNone) {
     // In nested top-level rules, if we do not have a & anywhere in the list,
@@ -903,7 +900,7 @@ bool CSSSelectorParser::ConsumePartialComplexSelector(
     compound_selector.back().SetRelation(combinator);
 
     // See ConsumeComplexSelector().
-    std::reverse(compound_selector.begin(), compound_selector.end());
+    std::ranges::reverse(compound_selector);
 
     if (previous_compound_flags & kHasPseudoElementForRightmostCompound) {
       // If we've already seen a compound that needs to be rightmost, and still

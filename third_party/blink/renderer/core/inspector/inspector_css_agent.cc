@@ -3571,7 +3571,7 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
   result->setMedia(std::move(media_list));
   result->setSupports(std::move(supports_list));
   result->setScopes(std::move(scopes_list));
-  std::reverse(layers_list.get()->begin(), layers_list.get()->end());
+  std::ranges::reverse(*layers_list);
   result->setLayers(std::move(layers_list));
   result->setContainerQueries(std::move(container_queries_list));
   result->setRuleTypes(std::move(rule_types_list));

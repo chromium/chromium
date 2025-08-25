@@ -168,7 +168,7 @@ Vector<wtf_size_t> AlphabeticAlgorithm(unsigned value, wtf_size_t num_symbols) {
     // Since length is logarithmic to value, we won't exceed the length limit.
     DCHECK_LE(result.size(), kCounterLengthLimit);
   }
-  std::reverse(result.begin(), result.end());
+  std::ranges::reverse(result);
   return result;
 }
 
@@ -187,7 +187,7 @@ Vector<wtf_size_t> NumericAlgorithm(unsigned value, wtf_size_t num_symbols) {
     // Since length is logarithmic to value, we won't exceed the length limit.
     DCHECK_LE(result.size(), kCounterLengthLimit);
   }
-  std::reverse(result.begin(), result.end());
+  std::ranges::reverse(result);
   return result;
 }
 
@@ -576,7 +576,7 @@ String EthiopicNumericAlgorithm(unsigned value) {
     }
   }
 
-  std::reverse(result.begin(), result.end());
+  std::ranges::reverse(result);
   // Remove the extra character from group 0
   result.pop_back();
   return String(result);
