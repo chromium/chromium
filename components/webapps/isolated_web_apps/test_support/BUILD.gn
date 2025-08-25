@@ -9,12 +9,18 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "signed_web_bundle_utils.cc",
+    "signed_web_bundle_utils.h",
     "signing_keys.h",
+    "test_iwa_client.cc",
+    "test_iwa_client.h",
     "test_signed_web_bundle_builder.cc",
     "test_signed_web_bundle_builder.h",
   ]
 
   deps = [
+    "//base/test:test_support",
+    "//components/webapps/isolated_web_apps/reading",
     "//net",
     "//skia",
   ]
@@ -24,6 +30,8 @@ source_set("test_support") {
     "//components/web_package",
     "//components/web_package/test_support",
     "//components/webapps/isolated_web_apps/types",
+    "//components/webapps/isolated_web_apps:iwa_client",
+    "//mojo/public/cpp/system",
     "//url",
   ]
 }

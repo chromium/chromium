@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
+#include "components/webapps/isolated_web_apps/test_support/signed_web_bundle_utils.h"
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"

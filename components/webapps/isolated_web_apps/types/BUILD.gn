@@ -24,9 +24,16 @@ source_set("types") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "iwa_version_unittest.cc" ]
+  sources = [
+    "iwa_version_unittest.cc",
+    "source_unittest.cc",
+  ]
   deps = [
     ":types",
+    "//base",
     "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
   ]
 }

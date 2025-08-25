@@ -1,0 +1,6 @@
+specific_include_rules = {
+  ".*unittest.cc": [
+    "+content/public/test",
+    "+content/public/common/content_features.h",
+  ],
+}

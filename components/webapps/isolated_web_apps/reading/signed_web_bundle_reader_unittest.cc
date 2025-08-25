@@ -25,8 +25,6 @@
 #include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -39,7 +37,9 @@
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/webapps/isolated_web_apps/identity/iwa_identity_validator.h"
+#include "components/webapps/isolated_web_apps/test_support/signed_web_bundle_utils.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/test_support/test_iwa_client.h"
 #include "components/webapps/isolated_web_apps/test_support/test_signed_web_bundle_builder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -83,7 +83,9 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
  protected:
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    SetTrustedWebBundleIdsForTesting({test::GetDefaultEd25519WebBundleId()});
+    ON_CALL(iwa_client_,
+            ValidateTrust(_, test::GetDefaultEd25519WebBundleId(), _))
+        .WillByDefault(testing::Return(base::ok()));
     IwaIdentityValidator::CreateSingleton();
   }
 
@@ -138,6 +140,7 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
       reset_signature_verifier_ =
           web_app::SignedWebBundleReader::SetSignatureVerifierForTesting(
               &signature_verifier_);
+  testing::NiceMock<test::MockIwaClient> iwa_client_;
 };
 
 // Note that Isolated Web Apps (IWAs) don't support having primary URLs, but the
@@ -889,7 +892,9 @@ class UnsecureSignedWebBundleReaderTest : public testing::Test {
  protected:
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    SetTrustedWebBundleIdsForTesting({test::GetDefaultEd25519WebBundleId()});
+    ON_CALL(iwa_client_,
+            ValidateTrust(_, test::GetDefaultEd25519WebBundleId(), _))
+        .WillByDefault(testing::Return(base::ok()));
   }
 
   void TearDown() override {
@@ -901,6 +906,7 @@ class UnsecureSignedWebBundleReaderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
+  testing::NiceMock<test::MockIwaClient> iwa_client_;
 };
 
 TEST_F(UnsecureSignedWebBundleReaderTest, ReadValidId) {

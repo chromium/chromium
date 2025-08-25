@@ -65,6 +65,7 @@ group("unit_tests") {
   deps = [
     "//components/webapps/isolated_web_apps/download:unit_tests",
     "//components/webapps/isolated_web_apps/error:unit_tests",
+    "//components/webapps/isolated_web_apps/reading:unit_tests",
     "//components/webapps/isolated_web_apps/types:unit_tests",
   ]
 }

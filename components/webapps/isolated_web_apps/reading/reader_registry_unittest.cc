@@ -23,10 +23,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -35,15 +31,19 @@
 #include "components/web_package/test_support/signed_web_bundles/key_pair.h"
 #include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
+#include "components/webapps/isolated_web_apps/identity/iwa_identity_validator.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_registry.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 #include "components/webapps/isolated_web_apps/reading/validator.h"
+#include "components/webapps/isolated_web_apps/test_support/signed_web_bundle_utils.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/test_support/test_iwa_client.h"
 #include "components/webapps/isolated_web_apps/test_support/test_signed_web_bundle_builder.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -57,10 +57,12 @@ namespace {
 using base::test::ErrorIs;
 using base::test::HasValue;
 using base::test::RunOnceCallback;
+using testing::_;
 using testing::AllOf;
 using testing::ElementsAre;
 using testing::Field;
 using testing::HasSubstr;
+using testing::Return;
 
 using ReadResponseError = IsolatedWebAppReaderRegistry::ReadResponseError;
 using VerifierError = web_package::SignedWebBundleSignatureVerifier::Error;
@@ -80,9 +82,11 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
  protected:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
-    SetTrustedWebBundleIdsForTesting({kWebBundleId});
+    IwaIdentityValidator::CreateSingleton();
+    ON_CALL(iwa_client_, ValidateTrust(_, kWebBundleId, _))
+        .WillByDefault(Return(base::ok()));
 
-    profile_ = std::make_unique<TestingProfile>();
+    browser_context_ = std::make_unique<content::TestBrowserContext>();
 
     parser_factory_ = std::make_unique<web_package::MockWebBundleParserFactory>(
         on_create_parser_future_.GetCallback());
@@ -126,8 +130,9 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
         web_package::test::GetAttributesForSignedWebBundleId(kWebBundleId.id());
 
     registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-        profile_.get(),
-        std::make_unique<IsolatedWebAppResponseReaderFactory>(profile_.get()));
+        browser_context_.get(),
+        std::make_unique<IsolatedWebAppResponseReaderFactory>(
+            browser_context_.get()));
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     EXPECT_TRUE(
@@ -138,13 +143,11 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
         base::BindRepeating(
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
-
-    AddTrustedWebBundleIdForTesting(kWebBundleId);
   }
 
   void TearDown() override {
     registry_.reset();
-    profile_.reset();
+    browser_context_.reset();
   }
 
   void FulfillIntegrityBlock() {
@@ -163,6 +166,8 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
         response_->Clone());
   }
 
+  test::MockIwaClient& iwa_client() { return iwa_client_; }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -170,7 +175,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
   base::ScopedTempDir temp_dir_;
   base::FilePath web_bundle_path_;
   base::test::RepeatingTestFuture<std::optional<GURL>> on_create_parser_future_;
-  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::TestBrowserContext> browser_context_;
 
   const web_package::SignedWebBundleId kWebBundleId =
       *web_package::SignedWebBundleId::Create(
@@ -192,6 +197,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
       reset_signature_verifier_ =
           web_app::SignedWebBundleReader::SetSignatureVerifierForTesting(
               &signature_verifier_);
+  testing::NiceMock<test::MockIwaClient> iwa_client_;
 };
 
 using ReadResult =
@@ -219,10 +225,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
                        read_response_future.Take());
   EXPECT_EQ(response.head()->response_code, 200);
 
-  GURL expected_parser_base_url(
-      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-                    kWebBundleId.id()}));
-  EXPECT_EQ(expected_parser_base_url, on_create_parser_future_.Take());
+  EXPECT_EQ(iwa_client().CreateBaseURLForWebBundleId(kWebBundleId),
+            on_create_parser_future_.Take());
 
   histogram_tester.ExpectBucketCount(
       ToSuccessHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -257,7 +261,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
     EXPECT_THAT(read_response_future.Take(), HasValue());
   }
 
-  SetTrustedWebBundleIdsForTesting({});
+  testing::Mock::VerifyAndClearExpectations(&iwa_client());
+  ON_CALL(iwa_client(), ValidateTrust(_, _, _))
+      .WillByDefault(Return(base::unexpected("public key(s) are not trusted")));
+
   {
     base::test::TestFuture<ReadResult> read_response_future;
     registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
@@ -336,7 +343,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
 
   // Now revoke trust for this bundle and clear the cache. New requests will
   // fail from now on.
-  SetTrustedWebBundleIdsForTesting({});
+  testing::Mock::VerifyAndClearExpectations(&iwa_client());
+  ON_CALL(iwa_client(), ValidateTrust(_, _, _))
+      .WillByDefault(Return(base::unexpected("public key(s) are not trusted")));
   base::test::TestFuture<void> close_future;
 
   registry_->ClearCacheForPath(web_bundle_path_, close_future.GetCallback());
@@ -766,14 +775,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
       result,
       ErrorIs(AllOf(
           Field(&ReadResponseError::type, ReadResponseError::Type::kOtherError),
-          Field(
-              &ReadResponseError::message,
-              "Failed to validate metadata: The URL of an exchange is invalid: "
-              "The host of isolated-app:// URLs must be a valid Signed Web "
-              "Bundle ID (got foo): The signed web bundle ID must be exactly "
-              "56 "
-              "characters long (for Ed25519) or 58 characters long (for ECDSA "
-              "P-256), but was 3 characters long."))));
+          Field(&ReadResponseError::message,
+                HasSubstr(
+                    "Failed to validate metadata: The URL of an exchange is "
+                    "invalid")))));
 }
 
 class IsolatedWebAppReaderRegistryResponseHeadParserErrorTest

@@ -37,3 +37,25 @@ source_set("reading") {
     "//url",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "reader_registry_unittest.cc",
+    "signed_web_bundle_reader_unittest.cc",
+  ]
+  deps = [
+    ":reading",
+    "//base",
+    "//base/test:test_support",
+    "//components/web_package",
+    "//components/web_package/test_support",
+    "//components/webapps/isolated_web_apps/identity",
+    "//components/webapps/isolated_web_apps/test_support",
+    "//content/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
