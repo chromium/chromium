@@ -176259,6 +176259,45 @@
         {}
        ]
       ],
+      "block-ellipsis-023.html": [
+       "d491f9502854a983f7c3617d18832c7be6eaf0cd",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/block-ellipsis-023-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-024.html": [
+       "532a9967d934a17316c8fb68a7681d1f8d0398f3",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/block-ellipsis-023-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-025.html": [
+       "b5a4bd3e4115ff84aecda476b140a6ed12ba0763",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/block-ellipsis-025-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "block-ellipsis-repaint-001.html": [
        "b8ba9872f9958ae4b4ec23a669910e37fe091f6e",
        [
@@ -364728,7 +364767,7 @@
       []
      ],
      "inheritance-expected.txt": [
-      "4a57f459d0d7152aec425a44e54433efc6efe8cd",
+      "f92ece73ff8ae4c6b1857655e246b89ad235bccd",
       []
      ],
      "line-clamp": {
@@ -364795,6 +364834,14 @@
        ],
        "block-ellipsis-022-ref.html": [
         "1e89789852b9ed51a0ae9e6ab6995ad996b8f438",
+        []
+       ],
+       "block-ellipsis-023-ref.html": [
+        "1c3400848e88effc9fb44756c8d9f1eaf316ad25",
+        []
+       ],
+       "block-ellipsis-025-ref.html": [
+        "d602a7238457a409dd2a5242b77d78908975a7e0",
         []
        ],
        "block-ellipsis-repaint-001-ref.html": [
@@ -365397,7 +365444,7 @@
        []
       ],
       "block-ellipsis-valid-expected.txt": [
-       "44fafffe6bee42515a362d6529f0faa89a0a65fb",
+       "7d981b47419975cf5c39e94f61828033bd20d893",
        []
       ],
       "continue-valid-expected.txt": [
@@ -365405,7 +365452,7 @@
        []
       ],
       "line-clamp-valid-expected.txt": [
-       "8253f838ffd72482334d4fb044826daecc4684be",
+       "a9fbfcea0ef2831da821d636cdc2b54be34aed67",
        []
       ],
       "scroll-markers-computed-expected.txt": [
@@ -380594,7 +380641,7 @@
       []
      ],
      "calc-linear-radial-conic-gradient-001-expected.txt": [
-      "faed530112822a605af26c6b73ec2b8068b7be11",
+      "7171e51b97888cc61c9aa794c696161c707d3f8a",
       []
      ],
      "calc-margin-block-1-ref.html": [
@@ -444694,10 +444741,6 @@
      "bf8b7535ba9e0c9292ddcb90d7efaf27d149756b",
      []
     ],
-    "script-transform-sendKeyFrameRequest.https-expected.txt": [
-     "8f074d15a45b6450ef764bf44cc184704364d4ee",
-     []
-    ],
     "script-transform-sendKeyFrameRequest.js": [
      "990b43d2e5fe1cb3e70d2e0908047c29e5004caf",
      []
@@ -450081,7 +450124,7 @@
       ]
      ],
      "Blob-slice.any.js": [
-      "6a7d9c3fab153a53294ed709138725a3a21055fa",
+      "bedc8d737302a0f4c0464db103c66bfe1ca2e3e2",
       [
        "FileAPI/blob/Blob-slice.any.html",
        {
@@ -522502,7 +522545,7 @@
       ]
      ],
      "inheritance.html": [
-      "bc166cb4205fc176b9e859e776150136ef33b28a",
+      "ced9fa1b6995da1ba4284598d9581da2597c1bf8",
       [
        null,
        {}
@@ -522638,14 +522681,14 @@
      ],
      "parsing": {
       "block-ellipsis-invalid.html": [
-       "2b9c059a45d0e315a350e0c09fd7cd86be72c61e",
+       "e9fcca411d90a4363c058026818682d2214b7eeb",
        [
         null,
         {}
        ]
       ],
       "block-ellipsis-valid.html": [
-       "06148ef01b29be24e18eabb2915919f0c0d23816",
+       "c761e7cf6644d967dc7b3f22b07d157015d93303",
        [
         null,
         {}
@@ -522673,7 +522716,7 @@
        ]
       ],
       "line-clamp-valid.html": [
-       "43de2e01372b7b9909868341ab42d8663b562c85",
+       "1a8cd19a200735bd0c9e4120999143e23595834d",
        [
         null,
         {}
@@ -558858,6 +558901,13 @@
      ],
      "recursive-exec-command-calls.tentative.html": [
       "60a3b03099f358cf88e8e10c67347d9322cc9124",
+      [
+       null,
+       {}
+      ]
+     ],
+     "removeformat_background_color.html": [
+      "bfed7439b2f2901d0513e671cc49baae190db228",
       [
        null,
        {}
@@ -726652,45 +726702,45 @@
        {}
       ]
      ],
-     "cookie-indices.https.html": [
-      "f5fac65822ed7433ffd803ddf74ed91e4b69a4bb",
+     "cookie-indices.tentative.https.html": [
+      "bc6998b29dace7b131dd95f0adc30003a0eac621",
       [
-       "speculation-rules/prefetch/cookie-indices.https.html?include=changed",
+       "speculation-rules/prefetch/cookie-indices.tentative.https.html?include=changed",
        {
         "testdriver": true,
         "timeout": "long"
        }
       ],
       [
-       "speculation-rules/prefetch/cookie-indices.https.html?include=changedWithRedirect",
+       "speculation-rules/prefetch/cookie-indices.tentative.https.html?include=changedWithRedirect",
        {
         "testdriver": true,
         "timeout": "long"
        }
       ],
       [
-       "speculation-rules/prefetch/cookie-indices.https.html?include=changedWithRedirect2",
+       "speculation-rules/prefetch/cookie-indices.tentative.https.html?include=changedWithRedirect2",
        {
         "testdriver": true,
         "timeout": "long"
        }
       ],
       [
-       "speculation-rules/prefetch/cookie-indices.https.html?include=changedWithRedirect3",
+       "speculation-rules/prefetch/cookie-indices.tentative.https.html?include=changedWithRedirect3",
        {
         "testdriver": true,
         "timeout": "long"
        }
       ],
       [
-       "speculation-rules/prefetch/cookie-indices.https.html?include=unchanged",
+       "speculation-rules/prefetch/cookie-indices.tentative.https.html?include=unchanged",
        {
         "testdriver": true,
         "timeout": "long"
        }
       ],
       [
-       "speculation-rules/prefetch/cookie-indices.https.html?include=unchangedWithRedirect",
+       "speculation-rules/prefetch/cookie-indices.tentative.https.html?include=unchangedWithRedirect",
        {
         "testdriver": true,
         "timeout": "long"
@@ -726893,6 +726943,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "mutate-rules.https.html": [
+      "a57f18932714eecf25efcdc43ab6d103309bb3f0",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
       ]
      ],
      "navigation-timing-delivery-type.https.html": [
