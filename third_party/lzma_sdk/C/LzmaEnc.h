@@ -1,5 +1,5 @@
 /*  LzmaEnc.h -- LZMA Encoder
-2023-04-13 : Igor Pavlov : Public domain */
+: Igor Pavlov : Public domain */
 
 #ifndef ZIP7_INC_LZMA_ENC_H
 #define ZIP7_INC_LZMA_ENC_H
@@ -29,11 +29,13 @@ typedef struct
   int numThreads;  /* 1 or 2, default = 2 */
 
   // int _pad;
+  Int32 affinityGroup;
 
   UInt64 reduceSize; /* estimated size of data that will be compressed. default = (UInt64)(Int64)-1.
                         Encoder uses this value to reduce dictionary size */
 
   UInt64 affinity;
+  UInt64 affinityInGroup;
 } CLzmaEncProps;
 
 void LzmaEncProps_Init(CLzmaEncProps *p);

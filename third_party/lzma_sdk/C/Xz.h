@@ -1,5 +1,5 @@
 /* Xz.h - Xz interface
-2024-01-26 : Igor Pavlov : Public domain */
+Igor Pavlov : Public domain */
 
 #ifndef ZIP7_INC_XZ_H
 #define ZIP7_INC_XZ_H
@@ -121,6 +121,7 @@ typedef struct
   UInt64 startOffset;
 } CXzStream;
 
+#define Xz_CONSTRUCT(p) { (p)->numBlocks = 0;  (p)->blocks = NULL;  (p)->flags = 0; }
 void Xz_Construct(CXzStream *p);
 void Xz_Free(CXzStream *p, ISzAllocPtr alloc);
 
@@ -136,8 +137,13 @@ typedef struct
   CXzStream *streams;
 } CXzs;
 
+#define Xzs_CONSTRUCT(p) { (p)->num = 0;  (p)->numAllocated = 0;  (p)->streams = NULL; }
 void Xzs_Construct(CXzs *p);
 void Xzs_Free(CXzs *p, ISzAllocPtr alloc);
+/*
+Xzs_ReadBackward() must be called for empty CXzs object.
+Xzs_ReadBackward() can return non empty object with (p->num != 0) even in case of error.
+*/
 SRes Xzs_ReadBackward(CXzs *p, ILookInStreamPtr inStream, Int64 *startOffset, ICompressProgressPtr progress, ISzAllocPtr alloc);
 
 UInt64 Xzs_GetNumBlocks(const CXzs *p);
@@ -268,8 +274,8 @@ typedef struct
   size_t outBufSize;
   size_t outDataWritten; // the size of data in (outBuf) that were fully unpacked
 
-  Byte shaDigest[SHA256_DIGEST_SIZE];
-  Byte buf[XZ_BLOCK_HEADER_SIZE_MAX];
+  UInt32 shaDigest32[SHA256_DIGEST_SIZE / 4];
+  Byte buf[XZ_BLOCK_HEADER_SIZE_MAX]; // it must be aligned for 4-bytes
 } CXzUnpacker;
 
 /* alloc : aligned for cache line allocation is better */

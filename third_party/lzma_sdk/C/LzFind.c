@@ -1,5 +1,5 @@
 /* LzFind.c -- Match finder for LZ algorithms
-2024-03-01 : Igor Pavlov : Public domain */
+: Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -404,7 +404,7 @@ int MatchFinder_Create(CMatchFinder *p, UInt32 historySize,
         const unsigned nbMax =
             (p->numHashBytes == 2 ? 16 :
             (p->numHashBytes == 3 ? 24 : 32));
-        if (numBits > nbMax)
+        if (numBits >= nbMax)
           numBits = nbMax;
         if (numBits >= 32)
           hs = (UInt32)0 - 1;
@@ -416,14 +416,14 @@ int MatchFinder_Create(CMatchFinder *p, UInt32 historySize,
           hs |= (256 << kLzHash_CrcShift_2) - 1;
         {
           const UInt32 hs2 = MatchFinder_GetHashMask2(p, historySize);
-          if (hs > hs2)
+          if (hs >= hs2)
             hs = hs2;
         }
         hsCur = hs;
         if (p->expectedDataSize < historySize)
         {
           const UInt32 hs2 = MatchFinder_GetHashMask2(p, (UInt32)p->expectedDataSize);
-          if (hsCur > hs2)
+          if (hsCur >= hs2)
             hsCur = hs2;
         }
       }
@@ -434,7 +434,7 @@ int MatchFinder_Create(CMatchFinder *p, UInt32 historySize,
         if (p->expectedDataSize < historySize)
         {
           hsCur = MatchFinder_GetHashMask(p, (UInt32)p->expectedDataSize);
-          if (hsCur > hs) // is it possible?
+          if (hsCur >= hs) // is it possible?
             hsCur = hs;
         }
       }
@@ -598,7 +598,7 @@ void MatchFinder_Init(void *_p)
 #if 0
 #ifdef MY_CPU_X86_OR_AMD64
   #if defined(__clang__) && (__clang_major__ >= 4) \
-    || defined(Z7_GCC_VERSION) && (Z7_GCC_VERSION >= 40701)
+    || defined(Z7_GCC_VERSION) && (Z7_GCC_VERSION >= 40900)
     // || defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1900)
 
       #define USE_LZFIND_SATUR_SUB_128
@@ -890,7 +890,7 @@ static UInt32 * Hc_GetMatchesSpec(size_t lenLimit, UInt32 curMatch, UInt32 pos, 
       return d;
     {
       const Byte *pb = cur - delta;
-      curMatch = son[_cyclicBufferPos - delta + ((delta > _cyclicBufferPos) ? _cyclicBufferSize : 0)];
+      curMatch = son[_cyclicBufferPos - delta + (_cyclicBufferPos < delta ? _cyclicBufferSize : 0)];
       if (pb[maxLen] == cur[maxLen] && *pb == *cur)
       {
         UInt32 len = 0;
@@ -925,7 +925,7 @@ static UInt32 * Hc_GetMatchesSpec(size_t lenLimit, UInt32 curMatch, UInt32 pos, 
       break;
     {
       ptrdiff_t diff;
-      curMatch = son[_cyclicBufferPos - delta + ((delta > _cyclicBufferPos) ? _cyclicBufferSize : 0)];
+      curMatch = son[_cyclicBufferPos - delta + (_cyclicBufferPos < delta ? _cyclicBufferSize : 0)];
       diff = (ptrdiff_t)0 - (ptrdiff_t)delta;
       if (cur[maxLen] == cur[(ptrdiff_t)maxLen + diff])
       {
@@ -972,7 +972,7 @@ UInt32 * GetMatchesSpec1(UInt32 lenLimit, UInt32 curMatch, UInt32 pos, const Byt
   // if (curMatch >= pos) { *ptr0 = *ptr1 = kEmptyHashValue; return NULL; }
 
   cmCheck = (UInt32)(pos - _cyclicBufferSize);
-  if ((UInt32)pos <= _cyclicBufferSize)
+  if ((UInt32)pos < _cyclicBufferSize)
     cmCheck = 0;
 
   if (cmCheck < curMatch)
@@ -980,7 +980,7 @@ UInt32 * GetMatchesSpec1(UInt32 lenLimit, UInt32 curMatch, UInt32 pos, const Byt
   {
     const UInt32 delta = pos - curMatch;
     {
-      CLzRef *pair = son + ((size_t)(_cyclicBufferPos - delta + ((delta > _cyclicBufferPos) ? _cyclicBufferSize : 0)) << 1);
+      CLzRef *pair = son + ((size_t)(_cyclicBufferPos - delta + (_cyclicBufferPos < delta ? _cyclicBufferSize : 0)) << 1);
       const Byte *pb = cur - delta;
       unsigned len = (len0 < len1 ? len0 : len1);
       const UInt32 pair0 = pair[0];
@@ -1039,7 +1039,7 @@ static void SkipMatchesSpec(UInt32 lenLimit, UInt32 curMatch, UInt32 pos, const 
   UInt32 cmCheck;
 
   cmCheck = (UInt32)(pos - _cyclicBufferSize);
-  if ((UInt32)pos <= _cyclicBufferSize)
+  if ((UInt32)pos < _cyclicBufferSize)
     cmCheck = 0;
 
   if (// curMatch >= pos ||  // failure
@@ -1048,7 +1048,7 @@ static void SkipMatchesSpec(UInt32 lenLimit, UInt32 curMatch, UInt32 pos, const 
   {
     const UInt32 delta = pos - curMatch;
     {
-      CLzRef *pair = son + ((size_t)(_cyclicBufferPos - delta + ((delta > _cyclicBufferPos) ? _cyclicBufferSize : 0)) << 1);
+      CLzRef *pair = son + ((size_t)(_cyclicBufferPos - delta + (_cyclicBufferPos < delta ? _cyclicBufferSize : 0)) << 1);
       const Byte *pb = cur - delta;
       unsigned len = (len0 < len1 ? len0 : len1);
       if (pb[len] == cur[len])
@@ -1595,7 +1595,7 @@ static void Bt5_MatchFinder_Skip(void *_p, UInt32 num)
     UInt32 pos = p->pos; \
     UInt32 num2 = num; \
     /* (p->pos == p->posLimit) is not allowed here !!! */ \
-    { const UInt32 rem = p->posLimit - pos; if (num2 > rem) num2 = rem; } \
+    { const UInt32 rem = p->posLimit - pos; if (num2 >= rem) num2 = rem; } \
     num -= num2; \
     { const UInt32 cycPos = p->cyclicBufferPos; \
       son = p->son + cycPos; \

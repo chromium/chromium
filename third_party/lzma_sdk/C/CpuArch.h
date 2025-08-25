@@ -47,6 +47,12 @@ MY_CPU_64BIT means that processor can work with 64-bit registers.
   #define MY_CPU_SIZEOF_POINTER 4
 #endif
 
+#if defined(__SSE2__) \
+    || defined(MY_CPU_AMD64) \
+    || defined(_M_IX86_FP) && (_M_IX86_FP >= 2)
+#define MY_CPU_SSE2
+#endif
+
 
 #if  defined(_M_ARM64) \
   || defined(_M_ARM64EC) \
@@ -575,10 +581,12 @@ problem-4 : performace:
 #define Z7_CONV_BE_TO_NATIVE_CONST32(v)  (v)
 #define Z7_CONV_LE_TO_NATIVE_CONST32(v)  Z7_BSWAP32_CONST(v)
 #define Z7_CONV_NATIVE_TO_BE_32(v)       (v)
+// #define Z7_GET_NATIVE16_FROM_2_BYTES(b0, b1)  ((b1) | ((b0) << 8))
 #elif defined(MY_CPU_LE)
 #define Z7_CONV_BE_TO_NATIVE_CONST32(v)  Z7_BSWAP32_CONST(v)
 #define Z7_CONV_LE_TO_NATIVE_CONST32(v)  (v)
 #define Z7_CONV_NATIVE_TO_BE_32(v)       Z7_BSWAP32(v)
+// #define Z7_GET_NATIVE16_FROM_2_BYTES(b0, b1)  ((b0) | ((b1) << 8))
 #else
 #error Stop_Compiling_Unknown_Endian_CONV
 #endif

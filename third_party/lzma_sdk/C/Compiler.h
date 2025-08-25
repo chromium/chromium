@@ -1,5 +1,5 @@
 /* Compiler.h : Compiler specific defines and pragmas
-2024-01-22 : Igor Pavlov : Public domain */
+: Igor Pavlov : Public domain */
 
 #ifndef ZIP7_INC_COMPILER_H
 #define ZIP7_INC_COMPILER_H
@@ -182,6 +182,16 @@ typedef void (*Z7_void_Function)(void);
   #define Z7_PRAGMA_OPT_DISABLE_LOOP_UNROLL_VECTORIZE
   #define Z7_ATTRIB_NO_VECTORIZE
 #endif
+
+#if defined(Z7_MSC_VER_ORIGINAL) && (Z7_MSC_VER_ORIGINAL >= 1920)
+  #define Z7_PRAGMA_OPTIMIZE_FOR_CODE_SIZE _Pragma("optimize ( \"s\", on )")
+  #define Z7_PRAGMA_OPTIMIZE_DEFAULT       _Pragma("optimize ( \"\", on )")
+#else
+  #define Z7_PRAGMA_OPTIMIZE_FOR_CODE_SIZE
+  #define Z7_PRAGMA_OPTIMIZE_DEFAULT
+#endif
+
+
 
 #if defined(MY_CPU_X86_OR_AMD64) && ( \
        defined(__clang__) && (__clang_major__ >= 4) \

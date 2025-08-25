@@ -1,5 +1,5 @@
 /* XzCrc64Opt.c -- CRC64 calculation (optimized functions)
-2023-12-08 : Igor Pavlov : Public domain */
+: Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -235,7 +235,7 @@ CRC64_FUNC_PRE_BE(Z7_CRC64_NUM_TABLES_USE)
       v  = Q32BE(1, w1) ^ Q32BE(0, w0);
       v ^= Q32BE(3, d1) ^ Q32BE(2, d0);
   #endif
-#elif
+#else
 #error Stop_Compiling_Bad_CRC64_NUM_TABLES
 #endif
       p += Z7_CRC64_NUM_TABLES_USE;

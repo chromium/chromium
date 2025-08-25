@@ -1,63 +1,123 @@
-diff '--color=auto' -r --strip-trailing-cr /usr/local/google/home/waffles/Downloads/lzma2409/Asm/x86/LzmaDecOpt.asm ./Asm/x86/LzmaDecOpt.asm
-42c42,44
-< _TEXT$LZMADECOPT SEGMENT ALIGN(64) 'CODE'
----
-> ; Make this deterministic
-> ; _TEXT$LZMADECOPT SEGMENT ALIGN(64) 'CODE'
-> LZMADEC SEGMENT ALIGN(64) 'CODE'
-1336c1338
-< _TEXT$LZMADECOPT ENDS
----
-> LZMADEC ENDS
-diff '--color=auto' -r --strip-trailing-cr /usr/local/google/home/waffles/Downloads/lzma2409/C/CpuArch.c ./C/CpuArch.c
-873a874
-> #if defined(__FreeBSD__) || (defined(__has_include) && __has_include(<asm/hwcap.h>))
-876a878
-> #endif  // Z7_GETAUXV_AVAILABLE
-diff '--color=auto' -r --strip-trailing-cr /usr/local/google/home/waffles/Downloads/lzma2409/C/CpuArch.h ./C/CpuArch.h
-413c413,417
-< 
----
-> // Disable MY_CPU_LE_UNALIGN. Although the underlying ISA may be able to load
-> // unaligned words, doing so via pointer casts is undefined behavior in C and
-> // C++, under both strict aliasing and because it is invalid to construct
-> // unaligned pointers. Instead, load the bytes generically and leave optimizing
-> // this to the compiler.
-419,420c423,424
-<     #define MY_CPU_LE_UNALIGN
-<     #define MY_CPU_LE_UNALIGN_64
----
->     // #define MY_CPU_LE_UNALIGN
->     // #define MY_CPU_LE_UNALIGN_64
-diff '--color=auto' -r --strip-trailing-cr /usr/local/google/home/waffles/Downloads/lzma2409/C/LzFind.c ./C/LzFind.c
-598c598
-< 
----
-> #if 0
-642c642
-< 
----
-> #endif // #if 0
-diff '--color=auto' -r --strip-trailing-cr /usr/local/google/home/waffles/Downloads/lzma2409/C/Util/SfxSetup/SfxSetup.c ./C/Util/SfxSetup/SfxSetup.c
-13a14,17
-> // SHELLEXECUTEINFO
-> #include <windows.h>
-> #include <shellapi.h>
-> 
-144c148
-< #define kSignatureSearchLimit (1 << 22)
----
-> #define kSignatureSearchLimit (1 << 26)
-diff '--color=auto' -r --strip-trailing-cr third_party/lzma_sdk/C/7zCrc.h ~/chrome/7zip/C/7zCrc.h
-12d11
-< extern unsigned g_Crc_Algo;
-diff '--color=auto' -r --strip-trailing-cr third_party/lzma_sdk/C/7zCrc.c ~/chrome/7zip/C/7zCrc.c
-12c12
-< #if defined(__ARM_FEATURE_CRC32) && !defined(Z7_NO_CRC_HW_FORCE)
----
-> #ifdef __ARM_FEATURE_CRC32
-240,241d239
-< unsigned g_Crc_Algo;
-< 
-247a246
-> static unsigned g_Crc_Algo;
+diff -wur --strip-trailing-cr a/Asm/x86/LzmaDecOpt.asm b/Asm/x86/LzmaDecOpt.asm
+--- a/Asm/x86/LzmaDecOpt.asm	2024-06-18 15:00:00.000000000 +0200
++++ b/Asm/x86/LzmaDecOpt.asm	2025-08-25 10:51:19.083406100 +0200
+@@ -39,7 +39,9 @@
+ endif
+ 
+ ifdef Z7_LZMA_DEC_OPT_ASM_USE_SEGMENT
+-_TEXT$LZMADECOPT SEGMENT ALIGN(64) 'CODE'
++; Make this deterministic
++; _TEXT$LZMADECOPT SEGMENT ALIGN(64) 'CODE'
++LZMADEC SEGMENT ALIGN(64) 'CODE'
+ MY_ALIGN macro num:req
+         align  num
+         ; align  16
+@@ -1333,7 +1335,7 @@
+ MY_ENDP
+ 
+ ifdef Z7_LZMA_DEC_OPT_ASM_USE_SEGMENT
+-_TEXT$LZMADECOPT ENDS
++LZMADEC ENDS
+ endif
+ 
+ end
+diff -wur --strip-trailing-cr a/C/7zCrc.c b/C/7zCrc.c
+--- a/C/7zCrc.c	2024-03-01 07:00:00.000000000 +0100
++++ b/C/7zCrc.c	2025-08-25 10:53:42.879173600 +0200
+@@ -9,7 +9,7 @@
+ // for debug:
+ // #define __ARM_FEATURE_CRC32 1
+ 
+-#ifdef __ARM_FEATURE_CRC32
++#if defined(__ARM_FEATURE_CRC32) && !defined(Z7_NO_CRC_HW_FORCE)
+ // #pragma message("__ARM_FEATURE_CRC32")
+ #define Z7_CRC_HW_FORCE
+ #endif
+@@ -237,13 +237,14 @@
+ 
+ #ifndef Z7_CRC_HW_FORCE
+ 
++unsigned g_Crc_Algo;
++
+ #if defined(Z7_CRC_HW_USE) || defined(Z7_CRC_UPDATE_T1_FUNC_NAME)
+ /*
+ typedef UInt32 (Z7_FASTCALL *Z7_CRC_UPDATE_WITH_TABLE_FUNC)
+     (UInt32 v, const void *data, size_t size, const UInt32 *table);
+ Z7_CRC_UPDATE_WITH_TABLE_FUNC g_CrcUpdate;
+ */
+-static unsigned g_Crc_Algo;
+ #if (!defined(MY_CPU_LE) && !defined(MY_CPU_BE))
+ static unsigned g_Crc_Be;
+ #endif
+diff -wur --strip-trailing-cr a/C/7zCrc.h b/C/7zCrc.h
+--- a/C/7zCrc.h	2024-01-22 14:00:00.000000000 +0100
++++ b/C/7zCrc.h	2025-08-25 10:54:38.141078100 +0200
+@@ -9,6 +9,7 @@
+ EXTERN_C_BEGIN
+ 
+ extern UInt32 g_CrcTable[];
++extern unsigned g_Crc_Algo;
+ 
+ /* Call CrcGenerateTable one time before other CRC functions */
+ void Z7_FASTCALL CrcGenerateTable(void);
+diff -wur --strip-trailing-cr a/C/CpuArch.c b/C/CpuArch.c
+--- a/C/CpuArch.c	2024-11-24 06:00:00.000000000 +0100
++++ b/C/CpuArch.c	2025-08-25 10:56:09.123756900 +0200
+@@ -871,9 +871,11 @@
+ 
+ #ifdef Z7_GETAUXV_AVAILABLE
+ // #pragma message("=== Z7_GETAUXV_AVAILABLE === ")
++#if defined(__FreeBSD__) || (defined(__has_include) && __has_include(<asm/hwcap.h>))
+ #include <sys/auxv.h>
+ #define USE_HWCAP
+ #endif
++#endif  // Z7_GETAUXV_AVAILABLE
+ 
+ #ifdef USE_HWCAP
+ 
+diff -wur --strip-trailing-cr a/C/CpuArch.h b/C/CpuArch.h
+--- a/C/CpuArch.h	2025-04-05 10:00:00.000000000 +0200
++++ b/C/CpuArch.h	2025-08-25 10:58:11.432440400 +0200
+@@ -416,14 +416,18 @@
+ #endif
+ 
+ 
+-
++// Disable MY_CPU_LE_UNALIGN. Although the underlying ISA may be able to load
++// unaligned words, doing so via pointer casts is undefined behavior in C and
++// C++, under both strict aliasing and because it is invalid to construct
++// unaligned pointers. Instead, load the bytes generically and leave optimizing
++// this to the compiler.
+ #ifdef MY_CPU_LE
+   #if defined(MY_CPU_X86_OR_AMD64) \
+       || defined(MY_CPU_ARM64) \
+       || defined(MY_CPU_RISCV) && defined(__riscv_misaligned_fast) \
+       || defined(MY_CPU_E2K) && defined(__iset__) && (__iset__ >= 6)
+-    #define MY_CPU_LE_UNALIGN
+-    #define MY_CPU_LE_UNALIGN_64
++    // #define MY_CPU_LE_UNALIGN
++    // #define MY_CPU_LE_UNALIGN_64
+   #elif defined(__ARM_FEATURE_UNALIGNED)
+ /* === ALIGNMENT on 32-bit arm and LDRD/STRD/LDM/STM instructions.
+   Description of problems:
+diff -wur --strip-trailing-cr a/C/LzFind.c b/C/LzFind.c
+--- a/C/LzFind.c	2025-07-25 09:00:00.000000000 +0200
++++ b/C/LzFind.c	2025-08-25 10:59:27.573275600 +0200
+@@ -595,7 +595,7 @@
+ }
+ 
+ 
+-
++#if 0
+ #ifdef MY_CPU_X86_OR_AMD64
+   #if defined(__clang__) && (__clang_major__ >= 4) \
+     || defined(Z7_GCC_VERSION) && (Z7_GCC_VERSION >= 40900)
+@@ -639,7 +639,7 @@
+   #endif
+ 
+ #endif
+-
++#endif // #if 0
+ 
+ #ifdef USE_LZFIND_SATUR_SUB_128
+ 

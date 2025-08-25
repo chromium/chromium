@@ -1,5 +1,5 @@
 /* XzDec.c -- Xz Decode
-2024-03-01 : Igor Pavlov : Public domain */
+: Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -59,7 +59,7 @@ unsigned Xz_ReadVarInt(const Byte *p, size_t maxSize, UInt64 *value)
 
   for (i = 0; i < limit;)
   {
-    Byte b = p[i];
+    const unsigned b = p[i];
     *value |= (UInt64)(b & 0x7F) << (7 * i++);
     if ((b & 0x80) == 0)
       return (b == 0 && i != 1) ? 0 : i;
@@ -796,11 +796,10 @@ SRes Xz_ParseHeader(CXzStreamFlags *p, const Byte *buf)
 
 static BoolInt Xz_CheckFooter(CXzStreamFlags flags, UInt64 indexSize, const Byte *buf)
 {
-  return indexSize == (((UInt64)GetUi32(buf + 4) + 1) << 2)
-      && GetUi32(buf) == CrcCalc(buf + 4, 6)
-      && flags == GetBe16(buf + 8)
-      && buf[10] == XZ_FOOTER_SIG_0
-      && buf[11] == XZ_FOOTER_SIG_1;
+  return indexSize == (((UInt64)GetUi32a(buf + 4) + 1) << 2)
+      && GetUi32a(buf) == CrcCalc(buf + 4, 6)
+      && flags == GetBe16a(buf + 8)
+      && GetUi16a(buf + 10) == (XZ_FOOTER_SIG_0 | (XZ_FOOTER_SIG_1 << 8));
 }
 
 #define READ_VARINT_AND_CHECK(buf, pos, size, res) \
@@ -1166,7 +1165,7 @@ SRes XzUnpacker_Code(CXzUnpacker *p, Byte *dest, SizeT *destLen,
             p->indexPreSize = 1 + Xz_WriteVarInt(p->buf + 1, p->numBlocks);
             p->indexPos = p->indexPreSize;
             p->indexSize += p->indexPreSize;
-            Sha256_Final(&p->sha, p->shaDigest);
+            Sha256_Final(&p->sha, (Byte *)(void *)p->shaDigest32);
             Sha256_Init(&p->sha);
             p->crc = CrcUpdate(CRC_INIT_VAL, p->buf, p->indexPreSize);
             p->state = XZ_STATE_STREAM_INDEX;
@@ -1241,10 +1240,10 @@ SRes XzUnpacker_Code(CXzUnpacker *p, Byte *dest, SizeT *destLen,
               break;
           }
           {
-            Byte digest[XZ_CHECK_SIZE_MAX];
+            UInt32 digest32[XZ_CHECK_SIZE_MAX / 4];
             p->state = XZ_STATE_BLOCK_HEADER;
             p->pos = 0;
-            if (XzCheck_Final(&p->check, digest) && memcmp(digest, p->buf, checkSize) != 0)
+            if (XzCheck_Final(&p->check, (void *)digest32) && memcmp(digest32, p->buf, checkSize) != 0)
               return SZ_ERROR_CRC;
             if (p->decodeOnlyOneBlock)
             {
@@ -1289,12 +1288,12 @@ SRes XzUnpacker_Code(CXzUnpacker *p, Byte *dest, SizeT *destLen,
           }
           else
           {
-            Byte digest[SHA256_DIGEST_SIZE];
+            UInt32 digest32[SHA256_DIGEST_SIZE / 4];
             p->state = XZ_STATE_STREAM_INDEX_CRC;
             p->indexSize += 4;
             p->pos = 0;
-            Sha256_Final(&p->sha, digest);
-            if (memcmp(digest, p->shaDigest, SHA256_DIGEST_SIZE) != 0)
+            Sha256_Final(&p->sha, (void *)digest32);
+            if (memcmp(digest32, p->shaDigest32, SHA256_DIGEST_SIZE) != 0)
               return SZ_ERROR_CRC;
           }
         }
@@ -1313,7 +1312,7 @@ SRes XzUnpacker_Code(CXzUnpacker *p, Byte *dest, SizeT *destLen,
           const Byte *ptr = p->buf;
           p->state = XZ_STATE_STREAM_FOOTER;
           p->pos = 0;
-          if (CRC_GET_DIGEST(p->crc) != GetUi32(ptr))
+          if (CRC_GET_DIGEST(p->crc) != GetUi32a(ptr))
             return SZ_ERROR_CRC;
         }
         break;
@@ -1343,7 +1342,7 @@ SRes XzUnpacker_Code(CXzUnpacker *p, Byte *dest, SizeT *destLen,
       {
         if (*src != 0)
         {
-          if (((UInt32)p->padSize & 3) != 0)
+          if ((unsigned)p->padSize & 3)
             return SZ_ERROR_NO_ARCHIVE;
           p->pos = 0;
           p->state = XZ_STATE_STREAM_HEADER;
