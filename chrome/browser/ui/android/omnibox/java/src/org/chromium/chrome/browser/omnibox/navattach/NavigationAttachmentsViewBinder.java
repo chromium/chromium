@@ -18,11 +18,8 @@ class NavigationAttachmentsViewBinder {
      */
     public static void bind(
             PropertyModel model, NavigationAttachmentsViewHolder view, PropertyKey propertyKey) {
-        if (propertyKey == NavigationAttachmentsProperties.TOOLBAR_VISIBLE) {
-            view.navigationToolbar.setVisibility(
-                    model.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE)
-                            ? View.VISIBLE
-                            : View.GONE);
+        if (propertyKey == NavigationAttachmentsProperties.ADAPTER) {
+            view.attachmentsView.setAdapter(model.get(NavigationAttachmentsProperties.ADAPTER));
         } else if (propertyKey == NavigationAttachmentsProperties.BUTTON_ADD_CLICKED) {
             view.addButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run());
@@ -32,6 +29,11 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED) {
             view.popup.mGalleryButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED).run());
+        } else if (propertyKey == NavigationAttachmentsProperties.TOOLBAR_VISIBLE) {
+            view.navigationToolbar.setVisibility(
+                    model.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         }
     }
 }

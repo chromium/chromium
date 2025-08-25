@@ -15,6 +15,7 @@ import android.util.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -32,7 +33,8 @@ class NavigationAttachmentsMediator {
     NavigationAttachmentsMediator(
             WindowAndroid windowAndroid,
             PropertyModel model,
-            NavigationAttachmentsViewHolder viewHolder) {
+            NavigationAttachmentsViewHolder viewHolder,
+            ModelList modelList) {
         mWindowAndroid = windowAndroid;
         mModel = model;
         mPopup = viewHolder.popup;

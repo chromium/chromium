@@ -27,6 +27,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /** Unit tests for {@link NavigationAttachmentsViewBinder}. */
@@ -40,6 +41,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     private @Mock ChromeImageButton mAddButton;
     private @Mock Button mCameraButton;
     private @Mock Button mGalleryButton;
+    private @Mock NavigationAttachmentsRecyclerView mRecyclerView;
 
     private PropertyModel mModel;
     private NavigationAttachmentsViewHolder mViewHolder;
@@ -48,6 +50,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     public void setUp() {
         doReturn(mNavigationView).when(mParent).findViewById(R.id.location_bar_navigation_toolbar);
         doReturn(mAddButton).when(mParent).findViewById(R.id.location_bar_attachments_add);
+        doReturn(mRecyclerView).when(mParent).findViewById(R.id.location_bar_attachments);
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
         mViewHolder.popup.mCameraButton = mCameraButton;
@@ -63,6 +66,13 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
         mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, false);
         verify(mNavigationView).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void adapter_isSet() {
+        SimpleRecyclerViewAdapter adapter = mock(SimpleRecyclerViewAdapter.class);
+        mModel.set(NavigationAttachmentsProperties.ADAPTER, adapter);
+        verify(mRecyclerView).setAdapter(adapter);
     }
 
     @Test

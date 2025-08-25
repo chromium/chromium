@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link NavigationAttachmentsMediator}. */
@@ -45,7 +46,9 @@ public class NavigationAttachmentsMediatorUnitTest {
     public void setUp() {
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mViewGroup, mPopup);
-        mMediator = new NavigationAttachmentsMediator(mWindowAndroid, mModel, mViewHolder);
+        mMediator =
+                new NavigationAttachmentsMediator(
+                        mWindowAndroid, mModel, mViewHolder, new ModelList());
     }
 
     @Test
