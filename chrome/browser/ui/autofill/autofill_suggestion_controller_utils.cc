@@ -95,11 +95,19 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
-    case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kBnplEntry:
     case SuggestionType::kOneTimePasswordEntry:
       return false;
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+      // The hybrid item is reintroduced as a footer.
+#if !BUILDFLAG(IS_ANDROID)
+      return base::FeatureList::IsEnabled(
+          password_manager::features::
+              kAutofillReintroduceHybridPasskeyDropdownItem);
+#else
+      return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 }
 

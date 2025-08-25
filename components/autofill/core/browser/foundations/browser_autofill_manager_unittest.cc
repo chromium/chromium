@@ -126,6 +126,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/security_state.h"
@@ -159,6 +160,7 @@ using test::AddFieldPredictionsToForm;
 using test::CreateFieldPrediction;
 using test::CreateTestAddressFormData;
 using test::CreateTestFormField;
+using test::CreateTestHybridSignUpFormData;
 using test::CreateTestIbanFormData;
 using ::testing::_;
 using ::testing::AllOf;
@@ -1845,6 +1847,94 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_EmptyValue) {
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Tests that the `kWebauthnSignInWithAnotherDevice` suggestion is present if
+// the `PasswordManagerDelegate` returns it.
+TEST_F(BrowserAutofillManagerTest, WebauthnSignInWithAnotherDeviceSuggestion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {
+          autofill::features::kAutofillAndPasswordsInSameSurface,
+          password_manager::features::
+              kAutofillReintroduceHybridPasskeyDropdownItem,
+      },
+      /*disabled_features=*/{});
+  FormData form = CreateTestHybridSignUpFormData();
+  FormsSeen({form});
+
+  auto password_manager_delegate =
+      std::make_unique<NiceMock<MockPasswordManagerDelegate>>();
+  ON_CALL(*password_manager_delegate,
+          GetWebauthnSignInWithAnotherDeviceSuggestion)
+      .WillByDefault(
+          Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
+  client().set_password_manager_delegate(std::move(password_manager_delegate));
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      Contains(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       WebauthnSignInWithAnotherDeviceSuggestion_FlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::
+                                kAutofillAndPasswordsInSameSurface},
+      /*disabled_features=*/{
+          password_manager::features::
+              kAutofillReintroduceHybridPasskeyDropdownItem});
+  FormData form = CreateTestHybridSignUpFormData();
+  FormsSeen({form});
+
+  auto password_manager_delegate =
+      std::make_unique<NiceMock<MockPasswordManagerDelegate>>();
+  // This ON_CALL should not be decisive since the flag is off.
+  ON_CALL(*password_manager_delegate,
+          GetWebauthnSignInWithAnotherDeviceSuggestion)
+      .WillByDefault(
+          Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
+  client().set_password_manager_delegate(std::move(password_manager_delegate));
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  EXPECT_THAT(external_delegate()->suggestions(),
+              Not(Contains(Suggestion(
+                  SuggestionType::kWebauthnSignInWithAnotherDevice))));
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       WebauthnSignInWithAnotherDeviceSuggestion_NullOpt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {
+          autofill::features::kAutofillAndPasswordsInSameSurface,
+          password_manager::features::
+              kAutofillReintroduceHybridPasskeyDropdownItem,
+      },
+      /*disabled_features=*/{});
+  FormData form = CreateTestHybridSignUpFormData();
+  FormsSeen({form});
+
+  auto password_manager_delegate =
+      std::make_unique<NiceMock<MockPasswordManagerDelegate>>();
+  ON_CALL(*password_manager_delegate,
+          GetWebauthnSignInWithAnotherDeviceSuggestion)
+      .WillByDefault(Return(std::nullopt));  // Explicitly return nullopt
+  client().set_password_manager_delegate(std::move(password_manager_delegate));
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  EXPECT_THAT(external_delegate()->suggestions(),
+              Not(Contains(Suggestion(
+                  SuggestionType::kWebauthnSignInWithAnotherDevice))));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Test that we return only matching address profile suggestions when the
 // selected form field has been partially filled out.

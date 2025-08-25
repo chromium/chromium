@@ -157,6 +157,11 @@ void PasswordAutofillManager::ShowKeyboardReplacingSurface(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+std::optional<autofill::Suggestion>
+PasswordAutofillManager::GetWebauthnSignInWithAnotherDeviceSuggestion() const {
+  return suggestion_generator_.GetWebauthnSignInWithAnotherDeviceSuggestion();
+}
+
 std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
 PasswordAutofillManager::GetDriver() {
   return password_manager_driver_.get();

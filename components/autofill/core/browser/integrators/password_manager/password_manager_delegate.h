@@ -9,6 +9,8 @@
 
 namespace autofill {
 
+struct Suggestion;
+
 // This delegate is queried for PWM suggestions for a given field. It injects
 // Password Manager logic into `AutofillManager::OnAskForForValuesToFill`.
 // If password suggestions are required, the work is performed by the underlying
@@ -24,6 +26,11 @@ class PasswordManagerDelegate {
   virtual void ShowKeyboardReplacingSurface(
       const autofill::PasswordSuggestionRequest& request) = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Returns a suggestion to sign in with a passkey from another device.
+  // Returns `std::nullopt` if the suggestion is not available.
+  virtual std::optional<Suggestion>
+  GetWebauthnSignInWithAnotherDeviceSuggestion() const = 0;
 };
 
 }  // namespace autofill

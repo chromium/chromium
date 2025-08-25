@@ -107,6 +107,11 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
 [[nodiscard]] FormData CreateTestAddressFormData(
     const char* unique_id = nullptr);
 
+// Returns a `FormData` corresponding to a simple sign-up form that also
+// accepts a passkey.
+[[nodiscard]] FormData CreateTestHybridSignUpFormData(
+    const char* unique_id = nullptr);
+
 // Returns a full profile with valid info according to rules for Canada.
 AutofillProfile GetFullValidProfileForCanada();
 

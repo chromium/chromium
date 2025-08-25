@@ -165,6 +165,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -1445,6 +1446,25 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     }
     return;
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kAutofillReintroduceHybridPasskeyDropdownItem)) {
+    // TODO: crbug.com/440918921 - restrict to webauthn-annotated fields.
+    if (PasswordManagerDelegate* password_delegate =
+            client().GetPasswordManagerDelegate(field.global_id())) {
+      // If any field **on the page** allows starting the hybrid passkey flow,
+      // this suggestion becomes available.
+      if (std::optional<Suggestion> passkey_suggestion =
+              password_delegate
+                  ->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
+        suggestions.push_back(*std::move(passkey_suggestion));
+      }
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   AutofillAiManager* ai_manager = client().GetAutofillAiManager();
   if (form_structure && autofill_field && ai_manager &&
       !context.do_not_generate_autofill_suggestions &&

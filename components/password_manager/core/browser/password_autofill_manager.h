@@ -66,6 +66,8 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
 #endif  // BUILDFLAG(IS_ANDROID)
   void ShowSuggestions(
       const autofill::TriggeringField& triggering_field) override;
+  std::optional<autofill::Suggestion>
+  GetWebauthnSignInWithAnotherDeviceSuggestion() const override;
 
   // AutofillSuggestionDelegate implementation.
   std::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
