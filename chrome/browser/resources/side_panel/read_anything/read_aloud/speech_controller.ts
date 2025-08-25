@@ -397,7 +397,8 @@ export class SpeechController {
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.
     setTimeout(() => {
-      this.movePlaybackToNode_(startingNodeId, startingOffset);
+      this.movePlaybackToNode_(
+          new AxReadAloudNode(startingNodeId), startingOffset);
       // Set everything to previous and then play the next granularity, which
       // includes the selection.
       this.highlighter_.resetPreviousHighlight();
@@ -845,8 +846,10 @@ export class SpeechController {
       return false;
     }
 
-    if (this.nodeStore_.getDomNode(lastPosition.nodeId)) {
-      this.movePlaybackToNode_(lastPosition.nodeId, lastPosition.offset);
+    const lastNode = lastPosition.node;
+    if (lastNode instanceof AxReadAloudNode &&
+        this.nodeStore_.getDomNode(lastNode.axNodeId)) {
+      this.movePlaybackToNode_(lastNode, lastPosition.offset);
       this.setState_(savedSpeechPlayingState);
       this.wordBoundaries_.state = savedWordBoundaryState;
       // Since we're setting the reading position after a content update when
@@ -860,14 +863,13 @@ export class SpeechController {
     }
   }
 
-  private movePlaybackToNode_(nodeId: number, offset: number): void {
+  private movePlaybackToNode_(node: ReadAloudNode, offset: number): void {
     let currentTextNodes = this.readAloudModel_.getCurrentText();
     let hasCurrentText = currentTextNodes.length > 0;
     // Since a node could spread across multiple granularities, we use the
     // offset to determine if the selected text is in this granularity or if
     // we have to move to the next one.
-    let nodeForSelection = currentTextNodes.find(
-        n => n instanceof AxReadAloudNode && n.axNodeId === nodeId);
+    let nodeForSelection = currentTextNodes.find(n => node.equals(n));
     let startOfSelectionIsInCurrentText = !!nodeForSelection &&
         this.readAloudModel_.getCurrentTextEndIndex(nodeForSelection) > offset;
     while (hasCurrentText && !startOfSelectionIsInCurrentText) {
@@ -878,8 +880,7 @@ export class SpeechController {
       this.moveToNextGranularity_();
       currentTextNodes = this.readAloudModel_.getCurrentText();
       hasCurrentText = currentTextNodes.length > 0;
-      nodeForSelection = currentTextNodes.find(
-          n => n instanceof AxReadAloudNode && n.axNodeId === nodeId);
+      nodeForSelection = currentTextNodes.find(n => node.equals(n));
       startOfSelectionIsInCurrentText = !!nodeForSelection &&
           this.readAloudModel_.getCurrentTextEndIndex(nodeForSelection) >
               offset;
@@ -895,7 +896,7 @@ export class SpeechController {
       const firstNode = nodes[0];
       if (firstNode instanceof AxReadAloudNode) {
         this.model_.setLastPosition({
-          nodeId: firstNode.axNodeId,
+          node: firstNode,
           offset: this.readAloudModel_.getCurrentTextStartIndex(firstNode),
         });
       }

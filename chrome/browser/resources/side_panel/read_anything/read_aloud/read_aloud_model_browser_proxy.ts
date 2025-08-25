@@ -8,11 +8,21 @@
 // Wrapper class to represent a node used by read aloud. The type of node
 // could be either a DOM node or an AXNode depending on what type of text
 // segmentation method is used.
-export abstract class ReadAloudNode {}
+export abstract class ReadAloudNode {
+  abstract equals(other: ReadAloudNode|undefined|null): boolean;
+}
 
 export class AxReadAloudNode extends ReadAloudNode {
   constructor(public readonly axNodeId: number) {
     super();
+  }
+
+  equals(other: ReadAloudNode|undefined|null): boolean {
+    if (!(other instanceof AxReadAloudNode)) {
+      return false;
+    }
+
+    return this.axNodeId === other.axNodeId;
   }
 }
 

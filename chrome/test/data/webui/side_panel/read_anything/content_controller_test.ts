@@ -449,7 +449,7 @@ suite('ContentController', () => {
 
       assertEquals('', canvas.style.display);
       assertEquals('', figure.style.display);
-      assertFalse(nodeStore.areNodesAllHidden([textId]));
+      assertFalse(nodeStore.areNodesAllHidden([new AxReadAloudNode(textId)]));
     });
   });
 });

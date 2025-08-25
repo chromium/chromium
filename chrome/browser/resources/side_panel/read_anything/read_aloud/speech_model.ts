@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ReadAloudNode} from './read_aloud_model_browser_proxy.js';
 import type {WordBoundaryState} from './word_boundaries.js';
 
 export enum PauseActionSource {
@@ -44,7 +45,7 @@ export enum SpeechEngineState {
 }
 
 interface ReadingPosition {
-  nodeId: number;
+  node: ReadAloudNode;
   offset: number;
 }
 
