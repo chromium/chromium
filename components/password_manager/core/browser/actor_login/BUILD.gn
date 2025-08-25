@@ -8,7 +8,10 @@ assert(!is_android)
 
 # All actor_login code should be able to depend on this.
 source_set("common") {
-  sources = [ "actor_login_types.h" ]
+  sources = [
+    "actor_login_types.cc",
+    "actor_login_types.h",
+  ]
 
   deps = [
     "//base",

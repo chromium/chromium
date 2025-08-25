@@ -23,6 +23,7 @@ Credential PasswordFormToCredential(
   CHECK_NE(form.match_type.value(),
            password_manager::PasswordForm::MatchType::kGrouped);
   Credential credential;
+  credential.id = Credential::GenerateCredentialId();
   credential.username = form.username_value;
   // TODO(crbug.com/427171031): Clarify the format.
   credential.source_site_or_app = GetSourceSiteOrAppFromUrl(form.url);

@@ -38,6 +38,7 @@ actor_login::Credential MakeTestCredential(
     const GURL& url,
     bool immediately_available_to_login) {
   actor_login::Credential credential;
+  credential.id = actor_login::Credential::GenerateCredentialId();
   credential.username = username;
   // TODO(crbug.com/427171031): Clarify the format.
   credential.source_site_or_app =

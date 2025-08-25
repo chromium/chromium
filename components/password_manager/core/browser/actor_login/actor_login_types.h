@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
+#include "base/types/id_type.h"
 #include "base/types/strong_alias.h"
 #include "url/gurl.h"
 
@@ -20,6 +21,11 @@ enum CredentialType {
 };
 
 struct Credential {
+  // A unique identifier for this credential. Used for internal tracking.
+  // Should not be displayed to the user.
+  using Id = base::IdType32<Credential>;
+  Id id;
+
   // The username associated with the credential.
   // This could be an email address or a username used to identify the user
   // during the login process. It is unique for this `source_site_or_app`.
@@ -43,6 +49,9 @@ struct Credential {
   // associated with this `CredentialType` report that this login is available
   // on the provided Tab.
   bool immediatelyAvailableToLogin = false;
+
+  // Generates a unique ID for this `Credential`.
+  static Id GenerateCredentialId();
 
 #if defined(UNIT_TEST)
   // An exact equality comparison of all the fields is only useful for tests.
