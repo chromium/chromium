@@ -1071,6 +1071,7 @@ chromium-metrics-reviews@google.com.
   <int value="93" label="Show tab search declutter page"/>
   <int value="94" label="Open glic"/>
   <int value="95" label="Find Extensions"/>
+  <int value="96" label="Show signin page"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->

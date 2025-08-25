@@ -114,6 +114,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -639,9 +640,18 @@ bool ProfileSubMenuModel::BuildSyncSection() {
                                      IDS_PROFILE_ROW_SYNC_IS_ON,
                                      vector_icons::kSyncChromeRefreshIcon);
   } else {
-    AddItemWithStringIdAndVectorIcon(this, IDC_TURN_ON_SYNC,
-                                     IDS_PROFILE_ROW_TURN_ON_SYNC,
-                                     vector_icons::kSyncOffChromeRefreshIcon);
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+        AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SIGNIN,
+                                         IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON,
+                                         vector_icons::kAccountCircleIcon);
+      }
+    } else {
+      AddItemWithStringIdAndVectorIcon(this, IDC_TURN_ON_SYNC,
+                                       IDS_PROFILE_ROW_TURN_ON_SYNC,
+                                       vector_icons::kSyncOffChromeRefreshIcon);
+    }
   }
   return true;
 }
@@ -1585,6 +1595,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
             "WrenchMenu.TimeToAction.ShowSyncSettings", delta);
       }
       LogMenuAction(MENU_SHOW_SYNC_SETTINGS);
+      break;
+    case IDC_SHOW_SIGNIN:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowSignin",
+                                      delta);
+      }
+      LogMenuAction(MENU_SHOW_SIGNIN);
       break;
     case IDC_TURN_ON_SYNC:
       if (!uma_action_recorded_) {

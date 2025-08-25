@@ -745,6 +745,11 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
           browser_->profile(), GetAccountInfoFromProfile(browser_->profile()),
           signin_metrics::AccessPoint::kMenu);
       break;
+    case IDC_SHOW_SIGNIN:
+      signin_ui_util::SignInFromSingleAccountPromo(
+          browser_->profile(), GetAccountInfoFromProfile(browser_->profile()),
+          signin_metrics::AccessPoint::kMenu);
+      break;
     case IDC_SHOW_SIGNIN_WHEN_PAUSED:
       signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
           browser_->profile(), signin_metrics::AccessPoint::kMenu);
@@ -1504,6 +1509,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_SHOW_SYNC_SETTINGS, true);
   command_updater_.UpdateCommandEnabled(IDC_TURN_ON_SYNC, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_SIGNIN_WHEN_PAUSED, true);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_SIGNIN, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_ADDRESSES, !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_HELP_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_HELP_PAGE_VIA_KEYBOARD, true);

@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -46,6 +47,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -474,6 +476,7 @@ INSTANTIATE_TEST_SUITE_P(
                     IDC_SHOW_SIGNIN_WHEN_PAUSED,
                     IDC_SHOW_SYNC_SETTINGS,
                     IDC_TURN_ON_SYNC,
+                    IDC_SHOW_SIGNIN,
                     IDC_OPEN_GUEST_PROFILE,
                     IDC_ADD_NEW_PROFILE,
                     IDC_MANAGE_CHROME_PROFILES,
@@ -501,7 +504,48 @@ TEST_F(AppMenuModelTest, ProfileSyncOnTest) {
   EXPECT_TRUE(profile_menu->IsEnabledAt(sync_settings_index));
 }
 
-#endif
+class AppMenuModelSigninPromoTest : public base::test::WithFeatureOverride,
+                                    public AppMenuModelTest {
+ public:
+  AppMenuModelSigninPromoTest()
+      : WithFeatureOverride(syncer::kReplaceSyncPromosWithSignInPromos) {}
+  ~AppMenuModelSigninPromoTest() override = default;
+};
+
+TEST_P(AppMenuModelSigninPromoTest, SignedIn) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSignin);
+  AppMenuModel model(this, browser());
+  model.Init();
+  const size_t profile_menu_index =
+      model.GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value();
+  ui::SimpleMenuModel* profile_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(profile_menu_index));
+
+  EXPECT_EQ(!IsParamFeatureEnabled(),
+            profile_menu->GetIndexOfCommandId(IDC_TURN_ON_SYNC).has_value());
+  EXPECT_FALSE(profile_menu->GetIndexOfCommandId(IDC_SHOW_SIGNIN).has_value());
+}
+
+TEST_P(AppMenuModelSigninPromoTest, SignedOut) {
+  AppMenuModel model(this, browser());
+  model.Init();
+  const size_t profile_menu_index =
+      model.GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value();
+  ui::SimpleMenuModel* profile_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(profile_menu_index));
+
+  EXPECT_EQ(!IsParamFeatureEnabled(),
+            profile_menu->GetIndexOfCommandId(IDC_TURN_ON_SYNC).has_value());
+  EXPECT_EQ(IsParamFeatureEnabled(),
+            profile_menu->GetIndexOfCommandId(IDC_SHOW_SIGNIN).has_value());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AppMenuModelSigninPromoTest);
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests settings menu items is disabled in the app menu when

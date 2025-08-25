@@ -119,6 +119,7 @@
   E(kActionOpenGuestProfile, IDC_OPEN_GUEST_PROFILE) \
   E(kActionAddNewProfile, IDC_ADD_NEW_PROFILE) \
   E(kActionManageChromeProfiles, IDC_MANAGE_CHROME_PROFILES) \
+  E(kActionShowSignin, IDC_SHOW_SIGNIN) \
   /* Zoom */ \
   E(kActionZoomMenu, IDC_ZOOM_MENU) \
   E(kActionZoomPlus, IDC_ZOOM_PLUS) \

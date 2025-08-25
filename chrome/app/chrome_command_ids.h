@@ -180,11 +180,12 @@
 #define IDC_CLOSE_PROFILE               35351
 #define IDC_MANAGE_GOOGLE_ACCOUNT       35352
 #define IDC_SHOW_SYNC_SETTINGS          35353
-#define IDC_TURN_ON_SYNC                35354
+#define IDC_TURN_ON_SYNC                35354  // Deprecated.
 #define IDC_SHOW_SIGNIN_WHEN_PAUSED     35355
 #define IDC_OPEN_GUEST_PROFILE          35356
 #define IDC_ADD_NEW_PROFILE             35357
 #define IDC_MANAGE_CHROME_PROFILES      35358
+#define IDC_SHOW_SIGNIN                 35359
 
 // Zoom
 #define IDC_ZOOM_MENU                   38000

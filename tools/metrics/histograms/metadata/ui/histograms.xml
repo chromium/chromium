@@ -874,6 +874,7 @@ features through Chrome Labs. -->
     <variant name="ShowPerformanceSettings"/>
     <variant name="ShowReadingModeSidePanel"/>
     <variant name="ShowSavedTabGroups"/>
+    <variant name="ShowSignin"/>
     <variant name="ShowSigninWhenPaused"/>
     <variant name="ShowSyncSettings"/>
     <variant name="ShowTranslate"/>
