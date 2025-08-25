@@ -16,6 +16,8 @@ bool IsDownloadEvent(const component_updater::CrxUpdateItem& item) {
   // See class comment: components/update_client/component.h
   switch (item.state) {
     case update_client::ComponentState::kDownloading:
+    case update_client::ComponentState::kDecompressing:
+    case update_client::ComponentState::kPatching:
     case update_client::ComponentState::kUpdating:
     case update_client::ComponentState::kUpToDate:
       return item.downloaded_bytes >= 0 && item.total_bytes >= 0;
@@ -39,6 +41,8 @@ bool IsAlreadyInstalled(const component_updater::CrxUpdateItem& item) {
     case update_client::ComponentState::kChecking:
     case update_client::ComponentState::kCanUpdate:
     case update_client::ComponentState::kDownloading:
+    case update_client::ComponentState::kDecompressing:
+    case update_client::ComponentState::kPatching:
     case update_client::ComponentState::kUpdating:
     case update_client::ComponentState::kUpdateError:
     case update_client::ComponentState::kRun:

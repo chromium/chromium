@@ -28,6 +28,7 @@
 #include "components/update_client/pipeline_util.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/task_traits.h"
+#include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
 #include "third_party/puffin/src/include/puffin/puffpatch.h"
@@ -145,11 +146,13 @@ base::OnceClosure PuffOperation(
     scoped_refptr<CrxCache> crx_cache,
     scoped_refptr<Patcher> patcher,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(ComponentState)> state_tracker,
     const std::string& old_hash,
     const std::string& output_hash,
     const base::FilePath& patch_file,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback) {
+  state_tracker.Run(ComponentState::kPatching);
   crx_cache->GetByHash(
       old_hash,
       base::BindOnce(&CacheLookupDone, event_adder, patcher, patch_file,

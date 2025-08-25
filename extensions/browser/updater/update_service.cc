@@ -123,6 +123,8 @@ void UpdateService::OnCrxStateChange(UpdateFoundCallback update_found_callback,
     case update_client::ComponentState::kNew:
     case update_client::ComponentState::kChecking:
     case update_client::ComponentState::kDownloading:
+    case update_client::ComponentState::kDecompressing:
+    case update_client::ComponentState::kPatching:
     case update_client::ComponentState::kUpdating:
     case update_client::ComponentState::kUpdated:
     case update_client::ComponentState::kUpdateError:

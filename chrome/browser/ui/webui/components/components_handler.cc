@@ -91,6 +91,10 @@ std::u16string ComponentsHandler::ServiceStatusToString(
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_UPDATE);
     case update_client::ComponentState::kDownloading:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_DNL);
+    case update_client::ComponentState::kDecompressing:
+      return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_DECOMPRESSING);
+    case update_client::ComponentState::kPatching:
+      return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_PATCHING);
     case update_client::ComponentState::kUpdating:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_UPDATING);
     case update_client::ComponentState::kUpdated:

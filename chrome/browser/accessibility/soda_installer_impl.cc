@@ -159,6 +159,8 @@ void SodaInstallerImpl::OnEvent(const update_client::CrxUpdateItem& item) {
   switch (item.state) {
     case update_client::ComponentState::kCanUpdate:
     case update_client::ComponentState::kDownloading:
+    case update_client::ComponentState::kDecompressing:
+    case update_client::ComponentState::kPatching:
     case update_client::ComponentState::kUpdating:
       downloading_components_[language_code] = item;
 

@@ -55,6 +55,13 @@ class ZucchiniOperationTest : public testing::Test {
         [&](base::Value::Dict ping) { pings_.push_back(std::move(ping)); });
   }
 
+  base::RepeatingCallback<void(update_client::ComponentState)>
+  MakeStateCallback() {
+    return base::BindRepeating([](update_client::ComponentState state) {
+      ASSERT_EQ(state, update_client::ComponentState::kPatching);
+    });
+  }
+
   SEQUENCE_CHECKER(sequence_checker_);
   base::RunLoop loop_;
   std::vector<base::Value::Dict> pings_;
@@ -83,7 +90,7 @@ TEST_F(ZucchiniOperationTest, Success) {
             base::MakeRefCounted<PatchChromiumFactory>(
                 base::BindRepeating(&patch::LaunchInProcessFilePatcher))
                 ->Create(),
-            MakePingCallback(), "hash1",
+            MakePingCallback(), MakeStateCallback(), "hash1",
             "30ab1a10edb5b33a63f61263f702b71c2ad3043773fef2a2122111ea542b765a",
             patch_file,
             base::BindLambdaForTesting(
@@ -128,7 +135,7 @@ TEST_F(ZucchiniOperationTest, BadPatch) {
             base::MakeRefCounted<PatchChromiumFactory>(
                 base::BindRepeating(&patch::LaunchInProcessFilePatcher))
                 ->Create(),
-            MakePingCallback(), "hash1",
+            MakePingCallback(), MakeStateCallback(), "hash1",
             "30ab1a10edb5b33a63f61263f702b71c2ad3043773fef2a2122111ea542b765a",
             patch_file,
             base::BindLambdaForTesting(
@@ -167,7 +174,7 @@ TEST_F(ZucchiniOperationTest, NotInCache) {
       base::MakeRefCounted<PatchChromiumFactory>(
           base::BindRepeating(&patch::LaunchInProcessFilePatcher))
           ->Create(),
-      MakePingCallback(), {},
+      MakePingCallback(), MakeStateCallback(), {},
       "30ab1a10edb5b33a63f61263f702b71c2ad3043773fef2a2122111ea542b765a",
       patch_file,
       base::BindLambdaForTesting(
@@ -201,7 +208,7 @@ TEST_F(ZucchiniOperationTest, NoCache) {
       base::MakeRefCounted<PatchChromiumFactory>(
           base::BindRepeating(&patch::LaunchInProcessFilePatcher))
           ->Create(),
-      MakePingCallback(), {},
+      MakePingCallback(), MakeStateCallback(), {},
       "30ab1a10edb5b33a63f61263f702b71c2ad3043773fef2a2122111ea542b765a",
       patch_file,
       base::BindLambdaForTesting(
@@ -245,7 +252,8 @@ TEST_F(ZucchiniOperationTest, OutHashMismatch) {
             base::MakeRefCounted<PatchChromiumFactory>(
                 base::BindRepeating(&patch::LaunchInProcessFilePatcher))
                 ->Create(),
-            MakePingCallback(), "hash1", "incorrecthash", patch_file,
+            MakePingCallback(), MakeStateCallback(), "hash1", "incorrecthash",
+            patch_file,
             base::BindLambdaForTesting(
                 [&](base::expected<base::FilePath, CategorizedError> result) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

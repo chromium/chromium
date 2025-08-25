@@ -6967,6 +6967,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COMPONENTS_SVC_STATUS_DNL" desc="Service Status">
         Downloading
       </message>
+      <message name="IDS_COMPONENTS_SVC_STATUS_DECOMPRESSING" desc="Service status displayed when decompressing a compressed file.">
+        Decompressing
+      </message>
+      <message name="IDS_COMPONENTS_SVC_STATUS_PATCHING" desc="Service status displayed when applying a patch file.">
+        Patching
+      </message>
       <message name="IDS_COMPONENTS_SVC_STATUS_UPDATING" desc="Service Status">
         Updating
       </message>
