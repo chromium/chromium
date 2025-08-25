@@ -278,6 +278,10 @@ class TabGridViewBinder {
             @TabCardHighlightState int highlightState = model.get(TabProperties.HIGHLIGHT_STATE);
             ((TabGridView) view)
                     .setIsHighlighted(highlightState, model.get(TabProperties.IS_INCOGNITO));
+            if (model.get(TabProperties.HIGHLIGHT_STATE)
+                    == TabCardHighlightState.TO_BE_HIGHLIGHTED) {
+                model.set(TabProperties.HIGHLIGHT_STATE, TabCardHighlightState.HIGHLIGHTED);
+            }
         }
     }
 
