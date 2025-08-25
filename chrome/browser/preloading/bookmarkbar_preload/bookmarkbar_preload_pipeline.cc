@@ -20,8 +20,11 @@
 
 namespace {
 
-const char kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl[] =
+constexpr char kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl[] =
     "Prerender.IsPrerenderingSRPUrl.Embedder_BookmarkBar";
+
+// TODO(crbug.com/413259638): Create `preloading_utils` and move this to it.
+constexpr char kBookmarkBarMetricSuffix[] = "BookmarkBar";
 
 void AttachBookmarkBarNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
@@ -48,9 +51,38 @@ BookmarkBarPreloadPipeline::BookmarkBarPreloadPipeline(GURL url)
 
 BookmarkBarPreloadPipeline::~BookmarkBarPreloadPipeline() = default;
 
+void BookmarkBarPreloadPipeline::StartPrefetch(
+    content::WebContents& web_contents,
+    content::PreloadingPredictor predictor) {
+  CHECK(!prerender_handle_);
+  // Don't trigger prefetch if already triggered.
+  if (prefetch_handle_) {
+    return;
+  }
+
+  auto* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(&web_contents);
+
+  content::PreloadingURLMatchCallback same_url_matcher =
+      content::PreloadingData::GetSameURLMatcher(url_);
+  content::PreloadingAttempt* attempt = preloading_data->AddPreloadingAttempt(
+      predictor, content::PreloadingType::kPrefetch,
+      std::move(same_url_matcher),
+      web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
+
+  prefetch_handle_ = web_contents.StartPrefetch(
+      url_, /*use_prefetch_proxy=*/false, kBookmarkBarMetricSuffix,
+      blink::mojom::Referrer(), /*referring_origin=*/std::nullopt,
+      /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
+      pipeline_info_, attempt->GetWeakPtr(),
+      /*holdback_status_override=*/std::nullopt, /*ttl=*/std::nullopt);
+}
+
 void BookmarkBarPreloadPipeline::StartPrerender(
     content::WebContents& web_contents,
     content::PreloadingPredictor predictor) {
+  CHECK(!base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch) ||
+        prefetch_handle_);
   if (base::FeatureList::IsEnabled(
           features::kBookmarkTriggerForPrerender2KillSwitch)) {
     return;
@@ -109,4 +141,15 @@ void BookmarkBarPreloadPipeline::StartPrerender(
       /*url_match_predicate=*/{},
       std::move(prerender_navigation_handle_callback),
       /*allow_reuse=*/false);
+}
+
+void BookmarkBarPreloadPipeline::
+    SetOnPrefetchCompletedOrFailedCallbackForTesting(
+        base::RepeatingCallback<
+            void(const network::URLLoaderCompletionStatus& completion_status,
+                 const std::optional<int>& response_code)>
+            on_prefetch_completed_or_failed) {
+  CHECK(prefetch_handle_);
+  prefetch_handle_->SetOnPrefetchCompletedOrFailedCallback(
+      std::move(on_prefetch_completed_or_failed));
 }

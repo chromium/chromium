@@ -35,6 +35,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(TriggerTypeAndEagerness) -->
 
 <variants name="TriggerTypeAndEagerness">
+  <variant name="Embedder_BookmarkBar" summary="Embedder trigger, BookmarkBar"/>
   <variant name="Embedder_ChromeCustomTabs"
       summary="Embedder trigger, ChromeCustomTabs"/>
   <variant name="Embedder_DefaultSearchEngine"

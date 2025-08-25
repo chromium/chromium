@@ -43,6 +43,9 @@ enum class PreloadBookmarkMetricsEvent {
 const base::FeatureParam<int> kPreconnectStartDelayOnMouseHoverByMiliseconds{
     &features::kBookmarkTriggerForPreconnect,
     "preconnect_start_delay_on_mouse_hover_ms", 100};
+const base::FeatureParam<int> kPrefetchStartDelayOnMouseHoverByMiliseconds{
+    &features::kBookmarkTriggerForPrefetch,
+    "prefetch_start_delay_on_mouse_hover_ms", 300};
 
 // BookmarkButtonBase -----------------------------------------------
 
@@ -174,6 +177,15 @@ void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
                             base::Unretained(this), *url_));
   }
 
+  if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch)) {
+    prefetch_timer_.Start(
+        FROM_HERE,
+        base::Milliseconds(kPrefetchStartDelayOnMouseHoverByMiliseconds.Get()),
+        base::BindRepeating(&BookmarkButton::StartPreloading,
+                            base::Unretained(this), *url_,
+                            content::PreloadingType::kPrefetch));
+  }
+
   // Now we should register the callback function that will be used to
   // compute the preloading recall.
   if (auto* web_contents =
@@ -193,9 +205,19 @@ void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
   }
 }
 
+void BookmarkButton::StopPreloadingTimers() {
+  if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPreconnect)) {
+    preconnect_timer_.Stop();
+  }
+
+  if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch)) {
+    prefetch_timer_.Stop();
+  }
+}
+
 void BookmarkButton::OnMouseExited(const ui::MouseEvent& event) {
   BookmarkButtonBase::OnMouseExited(event);
-  preconnect_timer_.Stop();
+  StopPreloadingTimers();
   auto* active_web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!active_web_contents) {
@@ -212,8 +234,21 @@ bool BookmarkButton::OnMousePressed(const ui::MouseEvent& event) {
     base::UmaHistogramEnumeration("Prerender.Experimental.BookmarkMetrics",
                                   PreloadBookmarkMetricsEvent::kMouseDown);
   }
+
   if (event.IsOnlyLeftMouseButton()) {
-    StartPrerendering(*url_);
+    // Stopping preloading timers to avoid starting preconnect/prefetch after
+    // prerender has been started.
+    StopPreloadingTimers();
+    // Starting prefetch before prerender. With
+    // `UsePrefetchPrerenderIntegration()` being true, preloading can fall back
+    // to prefetch if prerender fails. If a prefetch has been started, this
+    // function call will do nothing.
+    if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch)) {
+      StartPreloading(*url_, content::PreloadingType::kPrefetch);
+    }
+    // Starting prerender. If a prerender has been started, this function call
+    // will do nothing.
+    StartPreloading(*url_, content::PreloadingType::kPrerender);
   }
   return result;
 }
@@ -249,16 +284,32 @@ void BookmarkButton::StartPreconnecting(GURL url) {
   }
 }
 
-void BookmarkButton::StartPrerendering(GURL url) {
+void BookmarkButton::StartPreloading(const GURL& url,
+                                     content::PreloadingType preloadingType) {
   auto* active_web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!active_web_contents) {
     return;
   }
 
-  BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
-      active_web_contents)
-      ->StartPrerender(url);
+  switch (preloadingType) {
+    case content::PreloadingType::kPrerender:
+      BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
+          active_web_contents)
+          ->StartPrerender(url);
+      break;
+    case content::PreloadingType::kPrefetch:
+      BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
+          active_web_contents)
+          ->StartPrefetch(url);
+      break;
+    case content::PreloadingType::kUnspecified:
+    case content::PreloadingType::kPreconnect:
+    case content::PreloadingType::kNoStatePrefetch:
+    case content::PreloadingType::kLinkPreview:
+    case content::PreloadingType::kPrerenderUntilScript:
+      NOTREACHED();
+  }
 }
 
 void BookmarkButton::UpdateMaxTooltipWidth() {

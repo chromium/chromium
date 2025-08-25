@@ -37,6 +37,18 @@ BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
   return bookmarkbar_preload_manager;
 }
 
+void BookmarkBarPreloadPipelineManager::StartPrefetch(const GURL& url) {
+  EnsurePipelineForUrl(url);
+  pipeline_->StartPrefetch(
+      *web_contents(),
+      chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar);
+
+  if (on_prefetch_completed_or_failed_for_testing_) {
+    pipeline_->SetOnPrefetchCompletedOrFailedCallbackForTesting(  // IN-TEST
+        std::move(on_prefetch_completed_or_failed_for_testing_));
+  }
+}
+
 void BookmarkBarPreloadPipelineManager::StartPrerender(const GURL& url) {
   EnsurePipelineForUrl(url);
   pipeline_->StartPrerender(
@@ -54,6 +66,27 @@ void BookmarkBarPreloadPipelineManager::EnsurePipelineForUrl(const GURL& url) {
   }
 }
 
+void BookmarkBarPreloadPipelineManager::
+    SetOnPrefetchCompletedOrFailedCallbackForTesting(
+        base::RepeatingCallback<
+            void(const network::URLLoaderCompletionStatus& completion_status,
+                 const std::optional<int>& response_code)>
+            on_prefetch_completed_or_failed) {
+  if (pipeline_) {
+    pipeline_->SetOnPrefetchCompletedOrFailedCallbackForTesting(  // IN-TEST
+        on_prefetch_completed_or_failed);
+  } else {
+    // This callback is used in tests only. Since the test triggers
+    // preloading by mouse events, and it is currently no way to sync between
+    // setting the callback and triggering preloading. If pipeline hasn't been
+    // triggered yet, buffer the callback function for the upcoming trigger.
+    // This is necessary for
+    // PreloadBookmarkBarPrefetchEnabledPrerenderEnabledNavigationTest.*
+    on_prefetch_completed_or_failed_for_testing_ =
+        std::move(on_prefetch_completed_or_failed);
+  }
+}
+
 void BookmarkBarPreloadPipelineManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() ||
@@ -67,5 +100,7 @@ void BookmarkBarPreloadPipelineManager::DidFinishNavigation(
 }
 
 void BookmarkBarPreloadPipelineManager::ResetPrerender() {
-  pipeline_.reset();
+  if (pipeline_) {
+    pipeline_->ResetPrerender();
+  }
 }
