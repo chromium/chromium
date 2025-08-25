@@ -33,11 +33,29 @@ struct GnomeDisplayConfig {
     kPersistent = 2,
   };
 
+  // Represents in what way logical monitors are laid out on the screen. The
+  // layout mode can be either of the ones listed below.
+  enum class LayoutMode : guint {
+    // The dimension of a logical monitor is derived from the monitor modes
+    // associated with it, then scaled using the logical monitor scale.
+    kLogical = 1,
+
+    // The dimension of a logical monitor is derived from the monitor modes
+    // associated with it.
+    kPhysical = 2,
+  };
+
   struct MonitorMode {
+    MonitorMode();
+    MonitorMode(const MonitorMode&);
+    MonitorMode& operator=(const MonitorMode&);
+    ~MonitorMode();
+
     std::string name;
     int width;
     int height;
     bool is_current;
+    std::vector<double> supported_scales;
   };
 
   struct MonitorInfo {
@@ -82,6 +100,12 @@ struct GnomeDisplayConfig {
   std::map<std::string, MonitorInfo>::iterator FindMonitor(
       webrtc::ScreenId screen_id);
 
+  // Switches to the specified layout mode and recalculates monitor offsets.
+  // Note that we currently only support horizontal and vertical display
+  // layouts.
+  // TODO: crbug.com/432217140 - Add tests for this method.
+  void SwitchLayoutMode(LayoutMode new_layout_mode);
+
   // The serial number returned by GNOME. When applying a new monitor config,
   // GNOME will check that the serial number matches, to avoid race-conditions
   // from trying to modify a stale config.
@@ -94,7 +118,36 @@ struct GnomeDisplayConfig {
   // The "method" parameter to pass to the ApplyMonitorsConfig() API.
   Method method = Method::kPersistent;
 
+  // The "layout-mode" property. Use SwitchLayoutMode() if you want to change
+  // the layout mode and recalculate monitor offsets.
+  LayoutMode layout_mode = LayoutMode::kLogical;
+
   std::map<std::string, MonitorInfo> monitors;
+
+ private:
+  // Returns true if the monitors appear to be roughly laid out vertically.
+  bool LayoutIsVertical() const;
+
+  // Stacks monitors vertically without gaps for the new layout mode. If they
+  // are not all right-aligned, this will position the monitors against the left
+  // edge of the desktop.
+  // On return, the layout mode will become `new_layout_mode`.
+  void PackVertically(LayoutMode new_layout_mode);
+
+  // Transposes all the monitors by swapping x and y coordinates. This allows
+  // the vertical layout code to be reused for horizontal layout.
+  void Transpose();
+
+  // Computes the bounding-box of the monitors. If the bounding-box is not
+  // aligned at the origin, all the monitor offsets will be shifted by the same
+  // amount so that the new bounding-box's top-left corner is at (0, 0).
+  void NormalizeMonitorOffsets();
+
+  // Returns the width or height for the current layout mode. For physical
+  // layout, the returned value will be in physical pixels; for logical layout,
+  // it will be in density-independent pixels.
+  int GetLayoutSize(const MonitorInfo& monitor,
+                    int MonitorMode::* width_or_height) const;
 };
 
 }  // namespace remoting

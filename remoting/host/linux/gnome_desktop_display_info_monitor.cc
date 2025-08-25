@@ -6,14 +6,10 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "remoting/base/constants.h"
+#include "remoting/host/linux/gnome_display_config.h"
 
 namespace remoting {
-
-namespace {
-
-constexpr int kDefaultDPI = 96;
-
-}  // namespace
 
 GnomeDesktopDisplayInfoMonitor::GnomeDesktopDisplayInfoMonitor(
     base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client)
@@ -53,6 +49,8 @@ void GnomeDesktopDisplayInfoMonitor::OnGnomeDisplayConfigReceived(
     GnomeDisplayConfig config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // This is the mode that the client uses for Linux hosts.
+  config.SwitchLayoutMode(GnomeDisplayConfig::LayoutMode::kPhysical);
   DesktopDisplayInfo info;
   for (const auto& [name, monitor] : config.monitors) {
     const GnomeDisplayConfig::MonitorMode* current_mode =
@@ -66,10 +64,10 @@ void GnomeDesktopDisplayInfoMonitor::OnGnomeDisplayConfigReceived(
     // causes the client to resize the display to the actual screen resolution
     // at 1x scale when "High-DPI mode" is disabled.
     // TODO: crbug.com/431816005 - fix this bug on the host and set the the DPI
-    // to `kDefaultDPI * monitor.scale * text_scaling_factor`.
+    // to `kDefaultDpi * monitor.scale * text_scaling_factor`.
     info.AddDisplay(DisplayGeometry(
         GnomeDisplayConfig::GetScreenId(name), monitor.x, monitor.y,
-        current_mode->width, current_mode->height, kDefaultDPI * monitor.scale,
+        current_mode->width, current_mode->height, kDefaultDpi * monitor.scale,
         /*bpp=*/24, monitor.is_primary, name));
   }
   callback_list_.Notify(info);

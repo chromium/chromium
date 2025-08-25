@@ -254,6 +254,8 @@ void GnomeDisplayConfigDBusClient::OnDisplayConfigCurrentState(
   display_config.global_scale_required = global_scale_required;
   HOST_LOG << "Global scale required: "
            << (global_scale_required ? "yes" : "no");
+  g_variant_lookup(properties.get(), "layout-mode", "u",
+                   &display_config.layout_mode);
 
   std::move(pending_callbacks_).Notify(display_config);
 }
