@@ -130,8 +130,10 @@ void DataProtectionNavigationController::
 void DataProtectionNavigationController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // The referrer chain should stay the same in the cache for as long as the
-  // document doesn't change.
-  if (navigation_handle->IsSameDocument()) {
+  // main document doesn't change.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument()) {
     return;
   }
 

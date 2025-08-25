@@ -25,6 +25,10 @@ safe_browsing::ReferrerChain GetReferrerChain(
 // `web_contents`'s user data.
 void SetReferrerChain(const GURL& url, content::WebContents& web_contents);
 
+// Test-only helper to check if a value has already been cached for the existing
+// web contents.
+bool HasCachedChainForTesting(content::WebContents& web_contents);
+
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_REFERRER_CACHE_UTILS_H_

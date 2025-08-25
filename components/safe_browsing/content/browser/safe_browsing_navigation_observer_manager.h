@@ -32,6 +32,10 @@ class NavigationHandle;
 struct GlobalRenderFrameHostId;
 }
 
+namespace enterprise_data_protection {
+class DataProtectionNavigationControllerTest;
+}
+
 namespace safe_browsing {
 
 class SafeBrowsingNavigationObserver;
@@ -372,6 +376,8 @@ class SafeBrowsingNavigationObserverManager
   friend class SBNavigationObserverBrowserTest;
   friend class SBNavigationObserverTest;
   friend class ChromeClientSideDetectionHostDelegateTest;
+  friend class enterprise_data_protection::
+      DataProtectionNavigationControllerTest;
 
   struct GurlHash {
     std::size_t operator()(const GURL& url) const {

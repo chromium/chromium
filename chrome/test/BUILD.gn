@@ -5918,7 +5918,9 @@ if (!is_android) {
       sources += [
         "//chrome/browser/enterprise/data_protection/clipboard_browsertest.cc",
         "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils_browsertest.cc",
+        "//chrome/browser/enterprise/data_protection/data_protection_navigation_controller_browsertest.cc",
       ]
+      deps += [ "//components/enterprise/connectors/core:test_support" ]
     }
     if (enterprise_data_controls && !is_android) {
       sources += [ "//chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_browsertest.cc" ]

@@ -77,4 +77,8 @@ void SetReferrerChain(const GURL& url, content::WebContents& web_contents) {
   }
 }
 
+bool HasCachedChainForTesting(content::WebContents& web_contents) {
+  return web_contents.GetUserData(kReferrerChainDataKey);
+}
+
 }  // namespace enterprise_connectors
