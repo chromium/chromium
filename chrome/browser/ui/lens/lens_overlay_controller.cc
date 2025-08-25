@@ -2499,6 +2499,10 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   results_side_panel_coordinator_->SetShowProtectedErrorPage(
       !is_context_eligible);
 
+  // Update the entry points state here in case InitializeOverlay() was
+  // bypassed by straight to SRP flows.
+  UpdateEntryPointsState();
+
   MaybeLaunchSurvey();
 }
 
