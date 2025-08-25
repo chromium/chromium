@@ -176,7 +176,7 @@ void HeadlessWindow::SizeConstraintsChanged() {}
 
 void HeadlessWindow::ZoomWindowBounds() {
   gfx::Rect zoomed_bounds =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds_).work_area();
+      display::Screen::Get()->GetDisplayMatching(bounds_).work_area();
   UpdateBounds(zoomed_bounds);
 }
 

@@ -24,7 +24,7 @@ class VirtualDisplayUtilMacInteractiveUitest : public testing::Test {
   void SetUp() override {
     virtual_display_util_mac_ =
         std::make_unique<display::test::VirtualDisplayUtilMac>(
-            display::Screen::GetScreen());
+            display::Screen::Get());
     if (!virtual_display_util_mac_->IsAPIAvailable()) {
       GTEST_SKIP() << "Skipping test for unsupported MacOS version.";
     }
@@ -45,9 +45,9 @@ class VirtualDisplayUtilMacInteractiveUitest : public testing::Test {
 // Tests that VirtualDisplayUtil::TryCreate returns a valid instance for this
 // platform.
 TEST_F(VirtualDisplayUtilMacInteractiveUitest, TryCreate) {
-  EXPECT_NE(display::test::VirtualDisplayUtil::TryCreate(
-                display::Screen::GetScreen()),
-            nullptr);
+  EXPECT_NE(
+      display::test::VirtualDisplayUtil::TryCreate(display::Screen::Get()),
+      nullptr);
 }
 
 TEST_F(VirtualDisplayUtilMacInteractiveUitest, AddDisplay) {
@@ -56,21 +56,21 @@ TEST_F(VirtualDisplayUtilMacInteractiveUitest, AddDisplay) {
   EXPECT_NE(id, display::kInvalidDisplayId);
 
   display::Display d;
-  bool found = display::Screen::GetScreen()->GetDisplayWithDisplayId(id, &d);
+  bool found = display::Screen::Get()->GetDisplayWithDisplayId(id, &d);
   EXPECT_TRUE(found);
 }
 
 TEST_F(VirtualDisplayUtilMacInteractiveUitest, RemoveDisplay) {
   int64_t id = virtual_display_util_mac_->AddDisplay(
       display::test::VirtualDisplayUtilMac::k1920x1080);
-  int display_count = display::Screen::GetScreen()->GetNumDisplays();
+  int display_count = display::Screen::Get()->GetNumDisplays();
   EXPECT_GT(display_count, 1);
 
   virtual_display_util_mac_->RemoveDisplay(id);
-  EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), display_count - 1);
+  EXPECT_EQ(display::Screen::Get()->GetNumDisplays(), display_count - 1);
 
   display::Display d;
-  bool found = display::Screen::GetScreen()->GetDisplayWithDisplayId(id, &d);
+  bool found = display::Screen::Get()->GetDisplayWithDisplayId(id, &d);
   EXPECT_FALSE(found);
 }
 
@@ -79,18 +79,18 @@ TEST_F(VirtualDisplayUtilMacInteractiveUitest, IsAPIAvailable) {
 }
 
 TEST_F(VirtualDisplayUtilMacInteractiveUitest, HotPlug) {
-  int display_count = display::Screen::GetScreen()->GetNumDisplays();
+  int display_count = display::Screen::Get()->GetNumDisplays();
 
   virtual_display_util_mac_->AddDisplay(
       display::test::VirtualDisplayUtilMac::k1920x1080);
-  EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), display_count + 1);
+  EXPECT_EQ(display::Screen::Get()->GetNumDisplays(), display_count + 1);
 
   virtual_display_util_mac_->AddDisplay(
       display::test::VirtualDisplayUtilMac::k1920x1080);
-  EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), display_count + 2);
+  EXPECT_EQ(display::Screen::Get()->GetNumDisplays(), display_count + 2);
 
   virtual_display_util_mac_->ResetDisplays();
-  EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), display_count);
+  EXPECT_EQ(display::Screen::Get()->GetNumDisplays(), display_count);
 }
 
 TEST_F(VirtualDisplayUtilMacInteractiveUitest, EnsureDisplayWithResolutionHD) {
@@ -98,7 +98,7 @@ TEST_F(VirtualDisplayUtilMacInteractiveUitest, EnsureDisplayWithResolutionHD) {
       display::test::VirtualDisplayUtil::k1920x1080);
 
   display::Display d;
-  display::Screen::GetScreen()->GetDisplayWithDisplayId(id, &d);
+  display::Screen::Get()->GetDisplayWithDisplayId(id, &d);
   EXPECT_EQ(d.size(), gfx::Size(1920, 1080));
 }
 
@@ -107,6 +107,6 @@ TEST_F(VirtualDisplayUtilMacInteractiveUitest, EnsureDisplayWithResolutionXGA) {
       display::test::VirtualDisplayUtil::k1024x768);
 
   display::Display d;
-  display::Screen::GetScreen()->GetDisplayWithDisplayId(id, &d);
+  display::Screen::Get()->GetDisplayWithDisplayId(id, &d);
   EXPECT_EQ(d.size(), gfx::Size(1024, 768));
 }

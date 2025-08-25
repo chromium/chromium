@@ -63,7 +63,7 @@ bool UIControlsOzone::SendKeyEventsNotifyWhenDone(
 
   int flags = button_down_mask_;
   int64_t display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+      display::Screen::Get()->GetDisplayNearestWindow(window).id();
 
   if (has_press) {
     if (has_control) {
@@ -364,9 +364,8 @@ void UIControlsOzone::PostTouchEventTask(ui::EventType type,
 bool UIControlsOzone::ScreenDIPToHostPixels(gfx::PointF* location,
                                             int64_t* display_id) {
   // The location needs to be in display's coordinate.
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(
-          gfx::ToFlooredPoint(*location));
+  display::Display display = display::Screen::Get()->GetDisplayNearestPoint(
+      gfx::ToFlooredPoint(*location));
   if (!display.is_valid()) {
     LOG(ERROR) << "Failed to find the display for " << location->ToString();
     return false;

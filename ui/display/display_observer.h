@@ -75,9 +75,9 @@ class DISPLAY_EXPORT DisplayObserver : public base::CheckedObserver {
 
 // Caller must ensure the lifetime of `observer` outlives ScopedDisplayObserver
 // and ScopedOptionalDisplayObserver.  The "Optional" version does not care
-// whether there is a display::Screen::GetScreen() to observe or not and will
+// whether there is a display::Screen::Get() to observe or not and will
 // silently noop when there is not.  The non-optional ScopedDisplayObserver
-// will CHECK that display::Screen::GetScreen() exists on construction to
+// will CHECK that display::Screen::Get() exists on construction to
 // receive events from.
 class DISPLAY_EXPORT ScopedOptionalDisplayObserver {
  public:

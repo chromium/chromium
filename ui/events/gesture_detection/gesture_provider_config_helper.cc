@@ -99,7 +99,7 @@ GestureProvider::Config GetGestureProviderConfig(
       break;
   }
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   // |screen| is sometimes NULL during tests.
   if (screen)
     config.display = screen->GetPrimaryDisplay();

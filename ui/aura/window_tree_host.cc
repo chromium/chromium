@@ -136,7 +136,7 @@ WindowTreeHost* WindowTreeHost::GetForAcceleratedWidget(
 }
 
 void WindowTreeHost::InitHost() {
-  device_scale_factor_ = display::Screen::GetScreen()
+  device_scale_factor_ = display::Screen::Get()
                              ->GetPreferredScaleFactorForWindow(window())
                              .value_or(1.f);
 
@@ -325,7 +325,7 @@ ui::EventSink* WindowTreeHost::GetEventSink() {
 }
 
 int64_t WindowTreeHost::GetDisplayId() {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window()).id();
+  return display::Screen::Get()->GetDisplayNearestWindow(window()).id();
 }
 
 void WindowTreeHost::Show() {
@@ -345,7 +345,7 @@ void WindowTreeHost::Hide() {
 
 gfx::Rect WindowTreeHost::GetBoundsInDIP() const {
   aura::Window* root_window = const_cast<aura::Window*>(window());
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   gfx::Rect screen_bounds = GetBoundsInPixels();
   return screen->ScreenToDIPRectInWindow(root_window, screen_bounds);
 }
@@ -470,7 +470,7 @@ WindowTreeHost::WindowTreeHost(std::unique_ptr<Window> window)
   if (!window_) {
     window_ = new Window(nullptr);
   }
-  device_scale_factor_ = display::Screen::GetScreen()
+  device_scale_factor_ = display::Screen::Get()
                              ->GetPreferredScaleFactorForWindow(window_)
                              .value_or(1.f);
 #if BUILDFLAG(IS_WIN)
@@ -569,7 +569,7 @@ void WindowTreeHost::InitCompositor() {
   compositor_->SetRootLayer(window()->layer());
 
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window());
+      display::Screen::Get()->GetDisplayNearestWindow(window());
   compositor_->SetDisplayColorSpaces(display.GetColorSpaces());
 }
 
@@ -599,7 +599,7 @@ void WindowTreeHost::OnHostResizedInPixels(
 
   // If we don't have the actual preferred scale, don't overwrite the scale
   // factor with the default value. See https://crbug.com/1285476 for details.
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   if (auto scale = screen->GetPreferredScaleFactorForWindow(window())) {
     device_scale_factor_ = scale.value();
   }
@@ -623,7 +623,7 @@ void WindowTreeHost::OnHostDisplayChanged() {
   if (!compositor_)
     return;
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window());
+      display::Screen::Get()->GetDisplayNearestWindow(window());
   compositor_->SetDisplayColorSpaces(display.GetColorSpaces());
 }
 
@@ -790,7 +790,7 @@ void WindowTreeHost::MoveCursorToInternal(const gfx::Point& root_location,
   client::CursorClient* cursor_client = client::GetCursorClient(window());
   if (cursor_client) {
     const display::Display& display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window());
+        display::Screen::Get()->GetDisplayNearestWindow(window());
     cursor_client->SetDisplay(display);
   }
   dispatcher()->OnCursorMovedToRootLocation(root_location);

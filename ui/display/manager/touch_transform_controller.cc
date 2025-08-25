@@ -347,7 +347,7 @@ void TouchTransformController::UpdateTouchTransforms(
     std::size_t primary_display_id_index = std::distance(
         display_id_list.begin(),
         std::ranges::find(display_id_list,
-                          Screen::GetScreen()->GetPrimaryDisplay().id()));
+                          Screen::Get()->GetPrimaryDisplay().id()));
 
     for (std::size_t index = 0; index < display_id_list.size(); index++) {
       // In extended but software mirroring mode, there is a WindowTreeHost

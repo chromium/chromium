@@ -315,7 +315,7 @@ WindowAndroid* WindowAndroid::GetWindowAndroid() const {
 
 display::Display WindowAndroid::GetDisplayWithWindowColorSpace() {
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(this);
+      display::Screen::Get()->GetDisplayNearestWindow(this);
   DisplayAndroidManager::DoUpdateDisplay(
       &display, display.label(), display.bounds(), display.work_area(),
       display.GetSizeInPixel(), display.device_scale_factor(),

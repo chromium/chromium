@@ -112,7 +112,7 @@ bool ShouldDefaultToNaturalScroll() {
 }
 
 display::Display::TouchSupport GetInternalDisplayTouchSupport() {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   // No screen in some unit tests.
   if (!screen)
     return display::Display::TouchSupport::UNKNOWN;

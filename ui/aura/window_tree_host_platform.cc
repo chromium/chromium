@@ -263,7 +263,7 @@ void WindowTreeHostPlatform::OnBoundsChanged(const BoundsChange& change) {
   }
 
   const auto preferred_scale =
-      display::Screen::GetScreen()->GetPreferredScaleFactorForWindow(window());
+      display::Screen::Get()->GetPreferredScaleFactorForWindow(window());
   float current_scale = compositor()->device_scale_factor();
   float new_scale = preferred_scale.value_or(1.0f);
   auto weak_ref = GetWeakPtr();
@@ -337,8 +337,7 @@ void WindowTreeHostPlatform::OnActivationChanged(bool active) {}
 void WindowTreeHostPlatform::OnCursorUpdate() {
   client::CursorClient* cursor_client = client::GetCursorClient(window());
   if (cursor_client) {
-    auto display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window());
+    auto display = display::Screen::Get()->GetDisplayNearestWindow(window());
     DCHECK(display.is_valid());
     cursor_client->SetDisplay(display);
   }

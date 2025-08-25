@@ -941,7 +941,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   if (state.bounds_dip.IsEmpty()) {
     // If bounds are not specified, place the window on the appropriate display,
     // if supported.
-    auto* screen = display::Screen::GetScreen();
+    auto* screen = display::Screen::Get();
     DCHECK(screen) << "A TestScreen must be instantiated for tests creating "
                       "windows with no initial bounds.";
     state.bounds_dip = gfx::Rect({0, 0}, {1, 1});

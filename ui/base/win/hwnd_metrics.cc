@@ -46,7 +46,7 @@ int GetResizableFrameThicknessFromMonitorInDIP(HMONITOR monitor,
 }
 
 int GetFrameThicknessFromWindow(HWND hwnd, DWORD default_options) {
-  if (display::Screen::GetScreen()->IsHeadless()) {
+  if (display::Screen::Get()->IsHeadless()) {
     return GetFrameThicknessFromDisplayId(
         display::win::GetScreenWinHeadless()->GetDisplayIdFromWindow(
             hwnd, default_options));
@@ -58,7 +58,7 @@ int GetFrameThicknessFromWindow(HWND hwnd, DWORD default_options) {
 }
 
 int GetFrameThicknessFromScreenRect(const gfx::Rect& screen_rect) {
-  if (display::Screen::GetScreen()->IsHeadless()) {
+  if (display::Screen::Get()->IsHeadless()) {
     return GetFrameThicknessFromDisplayId(
         display::win::GetScreenWinHeadless()->GetDisplayIdFromScreenRect(
             screen_rect));

@@ -206,7 +206,7 @@ DBusScreenSaverWatcher* GetDBusScreenSaverWatcher() {
 #endif  // BUILDFLAG(USE_DBUS)
 
 int CalculateIdleTime() {
-  auto* const screen = display::Screen::GetScreen();
+  auto* const screen = display::Screen::Get();
   // The screen can be nullptr in tests.
   if (!screen) {
     return 0;
@@ -226,7 +226,7 @@ bool CheckIdleStateIsLocked() {
   }
 #endif
 
-  auto* const screen = display::Screen::GetScreen();
+  auto* const screen = display::Screen::Get();
   // The screen can be nullptr in tests.
   if (!screen) {
     return false;

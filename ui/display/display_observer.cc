@@ -13,7 +13,7 @@ DisplayObserver::~DisplayObserver() {}
 
 ScopedOptionalDisplayObserver::ScopedOptionalDisplayObserver(
     DisplayObserver* observer) {
-  if (auto* screen = display::Screen::GetScreen()) {
+  if (auto* screen = display::Screen::Get()) {
     observer_ = observer;
     screen->AddObserver(observer_);
   }
@@ -22,13 +22,14 @@ ScopedOptionalDisplayObserver::ScopedOptionalDisplayObserver(
 ScopedOptionalDisplayObserver::~ScopedOptionalDisplayObserver() {
   if (!observer_)
     return;
-  if (auto* screen = display::Screen::GetScreen())
+  if (auto* screen = display::Screen::Get()) {
     screen->RemoveObserver(observer_);
+  }
 }
 
 ScopedDisplayObserver::ScopedDisplayObserver(DisplayObserver* observer)
     : ScopedOptionalDisplayObserver(observer) {
-  CHECK(Screen::GetScreen());
+  CHECK(Screen::Get());
 }
 
 }  // namespace display

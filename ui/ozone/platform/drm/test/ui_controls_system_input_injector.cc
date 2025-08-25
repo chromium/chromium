@@ -207,7 +207,7 @@ bool UIControlsSystemInputInjector::SendMouseClick(
 bool UIControlsSystemInputInjector::ScreenToHostCoord(gfx::PointF* location) {
   // The location needs to be in display's coordinate.
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(
+      display::Screen::Get()->GetDisplayNearestPoint(
           gfx::ToFlooredPoint(*location));
   if (!display.is_valid()) {
     LOG(ERROR) << "Failed to find the display for " << location->ToString();

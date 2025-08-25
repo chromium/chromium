@@ -84,7 +84,7 @@ TEST_F(WindowTargeterTest, FindTargetInRootWindow) {
   WindowTargeter targeter;
 
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window());
+      display::Screen::Get()->GetDisplayNearestWindow(root_window());
   EXPECT_EQ(display.bounds(), root_window()->GetBoundsInScreen());
 
   // Mouse and touch presses inside the display yield null targets.

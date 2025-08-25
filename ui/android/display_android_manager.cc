@@ -42,7 +42,7 @@ using display::DisplayList;
 void SetScreenAndroid(bool use_display_wide_color_gamut) {
   TRACE_EVENT0("startup", "SetScreenAndroid");
   // Do not override existing Screen.
-  DCHECK_EQ(display::Screen::GetScreen(), nullptr);
+  DCHECK_EQ(display::Screen::Get(), nullptr);
 
   DisplayAndroidManager* manager =
       new DisplayAndroidManager(use_display_wide_color_gamut);

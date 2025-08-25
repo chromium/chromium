@@ -1764,7 +1764,7 @@ gfx::Size X11Window::AdjustSizeForDisplay(
   // We do not need to apply the workaround for the ChromeOS.
   return requested_size_in_pixels;
 #else
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   if (screen && !UseTestConfigForPlatformWindows()) {
     std::vector<display::Display> displays = screen->GetAllDisplays();
     // Compare against all monitor sizes. The window manager can move the window

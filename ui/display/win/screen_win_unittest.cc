@@ -147,7 +147,7 @@ class TestScreenWin : public ScreenWin {
 };
 
 Screen* GetScreen() {
-  return Screen::GetScreen();
+  return Screen::Get();
 }
 
 // Allows tests to specify the screen and associated state.

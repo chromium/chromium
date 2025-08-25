@@ -861,10 +861,9 @@ void WindowEventDispatcher::PostSynthesizeMouseMove(Window* window) {
 
 #if BUILDFLAG(IS_WIN)
   // Gets the window at the current cursor point.
-  gfx::Point cursor_point =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point cursor_point = display::Screen::Get()->GetCursorScreenPoint();
   gfx::NativeWindow window_under_cursor =
-      display::Screen::GetScreen()->GetWindowAtScreenPoint(cursor_point);
+      display::Screen::Get()->GetWindowAtScreenPoint(cursor_point);
 
   ConvertPointFromScreen(&cursor_point);
   // If the mouse cursor is within the |window|, but |window_under_cursor| is
@@ -921,8 +920,7 @@ ui::EventDispatchDetails WindowEventDispatcher::SynthesizeMouseMoveEvent() {
 
   // Do not use GetLastMouseLocationInRoot here because it's not updated when
   // the mouse is not over the window or when the window is minimized.
-  gfx::Point mouse_location =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point mouse_location = display::Screen::Get()->GetCursorScreenPoint();
   ConvertPointFromScreen(&mouse_location);
   if (!window()->bounds().Contains(mouse_location))
     return details;

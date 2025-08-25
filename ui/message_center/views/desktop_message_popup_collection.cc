@@ -15,7 +15,7 @@ DesktopMessagePopupCollection::DesktopMessagePopupCollection() = default;
 DesktopMessagePopupCollection::~DesktopMessagePopupCollection() = default;
 
 void DesktopMessagePopupCollection::StartObserving() {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   if (screen_ || !screen)
     return;
 
