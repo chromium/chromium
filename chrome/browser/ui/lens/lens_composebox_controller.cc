@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_composebox_controller.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_composebox_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
@@ -31,8 +32,9 @@ lens::LensOverlayVisualInputType LensMimeTypeToVisualInputType(
 namespace lens {
 
 LensComposeboxController::LensComposeboxController(
-    LensSearchController* lens_search_controller)
-    : lens_search_controller_(lens_search_controller) {}
+    LensSearchController* lens_search_controller,
+    Profile* profile)
+    : lens_search_controller_(lens_search_controller), profile_(profile) {}
 
 LensComposeboxController::~LensComposeboxController() = default;
 
@@ -49,7 +51,7 @@ void LensComposeboxController::BindComposebox(
 
 void LensComposeboxController::IssueComposeboxQuery(
     const std::string& query_text) {
-  if (!lens::features::GetAimSearchboxEnabled()) {
+  if (!lens::IsAimM3Enabled(profile_)) {
     return;
   }
   // Can only issue a query if the remote UI supports the DEFAULT feature.
@@ -98,7 +100,7 @@ void LensComposeboxController::CloseUI() {
 void LensComposeboxController::OnAimMessage(
     const std::vector<uint8_t>& message) {
   // Ignore the message if the searchbox is disabled.
-  if (!lens::features::GetAimSearchboxEnabled()) {
+  if (!lens::IsAimM3Enabled(profile_)) {
     return;
   }
   // Try and parse the message as an AimToClientMessage. Since it is the only
