@@ -156,6 +156,8 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   bool SetHasKeyboardCapture(bool keyboard_capture);
 
+  std::optional<gfx::Rect> GetBoundsInScreenCoordinates();
+
   class TestHooks {
    public:
     virtual ~TestHooks() = default;
