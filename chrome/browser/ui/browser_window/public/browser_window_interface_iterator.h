@@ -42,12 +42,6 @@ GetBrowserWindowInterfacesOrderedByActivation();
 //         // do something with |browser_window|
 //         return true;
 //       });
-//
-// These functions are not thread-safe and only guarantee correctness if there
-// is no other thread modifying the browser windows in the background.
-//
-// Care should be taken not to cause the |browser_window| parameter in the
-// lambda to be deleted before being used.
 void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
     base::FunctionRef<bool(BrowserWindowInterface*)> on_browser);
 
