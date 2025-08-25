@@ -927,6 +927,13 @@ static bool NeedsResolution(const CSSPrimitiveValue* value) {
   if (!value) {
     return false;
   }
+
+  // In order to get rid of the "calc" prefix in expressions like calc(50px) we
+  // need to consider math functions as needing resolution unconditionally.
+  if (value->IsMathFunctionValue()) {
+    return true;
+  }
+
   return !value->IsComputationallyIndependent();
 }
 
@@ -2065,8 +2072,13 @@ const CSSConicGradientValue* CSSConicGradientValue::ResolveValuesIfNeeded(
   bool stops_changed = false;
   HeapVector<CSSGradientColorStop> stops;
   for (const auto& stop : stops_) {
-    const auto* offset = DynamicTo<CSSPrimitiveValue>(
-        ResolveLength(stop.offset_, conversion_data));
+    // TODO(crbug.com/40620723): We may need a new Length category for degrees,
+    // so it's better to skip the resolution for now.
+    const CSSPrimitiveValue* offset = stop.offset_;
+    if (offset && !offset->IsAngle()) {
+      offset =
+          DynamicTo<CSSPrimitiveValue>(ResolveLength(offset, conversion_data));
+    }
     stops_changed = stops_changed || (offset != stop.offset_);
     stops.push_back(CSSGradientColorStop(offset, stop.color_));
   }
