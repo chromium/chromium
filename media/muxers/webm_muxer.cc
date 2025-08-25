@@ -44,6 +44,8 @@ namespace {
 namespace av1 {
 // CodecPrivate for AV1. See
 // https://github.com/ietf-wg-cellar/matroska-specification/blob/master/codec/av1.md.
+constexpr int marker = 1;
+constexpr int version = 1;
 constexpr int high_bitdepth = 0;
 constexpr int twelve_bit = 0;
 constexpr int monochrome = 0;
@@ -56,7 +58,7 @@ constexpr int seq_tier_0 = 0;
 constexpr int chroma_subsampling_x = 1;
 constexpr int chroma_subsampling_y = 1;
 constexpr uint8_t codec_private[4] = {
-    255,                                         //
+    (marker << 7) | version,                     //
     (seq_profile << 5) | seq_level_idx_0,        //
     (seq_tier_0 << 7) |                          //
         (high_bitdepth << 6) |                   //
