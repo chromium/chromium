@@ -9,9 +9,11 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
@@ -67,6 +69,20 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
       ActorUiTabController::From(browser()->tab_strip_model()->GetActiveTab())
           ->SetHandoffButtonHoverStatus(is_hovering);
     });
+  }
+
+  auto HoverOverlayOnTab(::ui::ElementIdentifier tab_id, bool is_hovering) {
+    return WithElement(
+               tab_id,
+               [=](::ui::TrackedElement* tracked_element) {
+                 auto* const web_contents =
+                     AsInstrumentedWebContents(tracked_element)->web_contents();
+                 auto* const tab =
+                     tabs::TabInterface::GetFromContents(web_contents);
+                 ActorUiTabController::From(tab)->SetHandoffButtonHoverStatus(
+                     is_hovering);
+               })
+        .SetMustBeVisibleAtStart(false);
   }
 
  protected:
@@ -139,6 +155,38 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
           WaitForHide(HandoffButtonController::kHandoffButtonElementId)),
       // Switch back to the first tab.
       SelectTab(kTabStripElementId, 0), HoverOverlay(true),
+      InAnyContext(
+          WaitForShow(HandoffButtonController::kHandoffButtonElementId)));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
+                       ButtonReparentsToNewWindowOnDrag) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kMovedTabId);
+  StartActingOnTab();
+  RunTestSequence(
+      // Show the button in the original window.
+      HoverOverlay(true),
+      InAnyContext(
+          WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
+      HoverOverlay(false),
+      InAnyContext(
+          WaitForHide(HandoffButtonController::kHandoffButtonElementId)),
+      // Label the new tab with the previously defined local identifier.
+      InstrumentNextTab(kMovedTabId, AnyBrowser()),
+      // Move the first tab (at index 0) to a new window.
+      Do([&]() { chrome::MoveTabsToNewWindow(browser(), {0}); }),
+      InAnyContext(WaitForWebContentsReady(kMovedTabId)),
+      InAnyContext(CheckElement(
+          kMovedTabId,
+          [](::ui::TrackedElement* el) {
+            auto* const web_contents =
+                AsInstrumentedWebContents(el)->web_contents();
+            // This will be true only when the tab is fully attached.
+            return tabs::TabInterface::GetFromContents(web_contents) != nullptr;
+          })),
+      InAnyContext(ActivateSurface(kMovedTabId)),
+      // Verify the button shows up in the new window.
+      InAnyContext(HoverOverlayOnTab(kMovedTabId, true)),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)));
 }
