@@ -1349,7 +1349,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     LocalStorageProxyImpl.getInstance().setItem(
         LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY,
-        (this.sidenavCollapsed_ ? 1 : 0).toString());
+        this.sidenavCollapsed_ ? '1' : '0');
   }
 
   // <if expr="enable_pdf_ink2">
