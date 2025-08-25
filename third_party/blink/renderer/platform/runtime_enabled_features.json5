@@ -1647,6 +1647,7 @@
       // https://issues.chromium.org/issues/357649033
       name: "CustomizableSelectInPage",
       status: "experimental",
+      depends_on: ["SelectMobileDesktopParity"],
     },
     {
       // appearance:base-select for <select multiple size=1> with a picker.
@@ -4359,7 +4360,14 @@
       name: "SelectivePermissionsIntervention",
       status: "experimental",
     },
-
+    {
+      // Makes the logic to choose between ListBox (in-page) or MenuList
+      // (dropdown) select element modes the same between mobile and desktop.
+      // Without this flag, mobile will always use MenuList and desktop always
+      // makes <select multiple> a ListBox.
+      name: "SelectMobileDesktopParity",
+      status: "experimental",
+    },
     {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       public: true,

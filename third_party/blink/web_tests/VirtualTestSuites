@@ -520,10 +520,12 @@
     "platforms": [
       "Linux"
     ],
-    "bases": [],
+    "bases": [
+      "external/wpt/html/semantics/forms/the-select-element",
+      "wpt_internal/html/semantics/forms/the-select-element"
+    ],
     "args": [
-      "--disable-features=CustomizableSelectInPage",
-      "--enable-features=CustomizableSelect"
+      "--disable-features=CustomizableSelectInPage"
     ],
     "expires": "Aug 1, 2026",
     "owners": [

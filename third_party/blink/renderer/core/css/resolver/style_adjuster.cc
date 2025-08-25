@@ -511,7 +511,15 @@ static void AdjustStyleForMarker(ComputedStyleBuilder& builder,
 static void AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
                                       HTMLElement& element) {
   if (builder.HasBaseSelectAppearance()) {
-    builder.SetInBaseSelectAppearance(true);
+    HTMLSelectElement* select = DynamicTo<HTMLSelectElement>(element);
+    if (!select) {
+      select = HTMLSelectElement::GetSelectForPopoverPickerElement(&element);
+    }
+    if (select && !select->SupportsBaseAppearance()) {
+      builder.SetInBaseSelectAppearance(false);
+    } else {
+      builder.SetInBaseSelectAppearance(true);
+    }
   }
 
   // <div> and <span> are the most common elements on the web, we skip all the

@@ -693,7 +693,7 @@ bool MenuListSelectType::IsAppearanceBasePicker() const {
 
 bool MenuListSelectType::PickerIsPopover() const {
   if (select_->IsMultiple()) {
-    if (!RuntimeEnabledFeatures::CustomizableSelectMultiplePopupEnabled()) {
+    if (!RuntimeEnabledFeatures::SelectMobileDesktopParityEnabled()) {
       return false;
     }
     if (IsAppearanceBasePicker()) {

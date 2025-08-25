@@ -220,9 +220,14 @@ unsigned HTMLSelectElement::ListBoxSize() const {
 }
 
 void HTMLSelectElement::UpdateUsesMenuList() {
-  // If the author explicitly sets the size attribute, then we allow that to
-  // control whether we actually delegate menulist rendering.
-  if (RuntimeEnabledFeatures::CustomizableSelectMultiplePopupEnabled()) {
+  if (RuntimeEnabledFeatures::SelectMobileDesktopParityEnabled()) {
+    // Choose MenuList or ListBox the same regardless of the platform:
+    // <select>                  MenuList (popup)
+    // <select size=1>           MenuList (popup)
+    // <select multiple size=1>  MenuList (popup)
+    // <select multiple>         ListBox  (in-page)
+    // <select size=4>           ListBox  (in-page)
+    // <select multiple size=4>  ListBox  (in-page)
     if (is_multiple_) {
       // <select multiple> does not use MenuList by default. The author must
       // specify <select multiple size=1> to get MenuList.
@@ -969,7 +974,7 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
 void HTMLSelectElement::SelectOptionFromPopoverPickerOrBaseListbox(
     HTMLOptionElement* option) {
   if (!UsesMenuList() || IsMultiple()) {
-    CHECK(RuntimeEnabledFeatures::CustomizableSelectInPageEnabled());
+    CHECK(RuntimeEnabledFeatures::SelectMobileDesktopParityEnabled());
     option->SetSelectedState(!option->Selected());
     option->SetDirty(true);
     if (!IsMultiple()) {
@@ -1730,6 +1735,17 @@ bool HTMLSelectElement::IsPopoverPickerElement(const Element* element) {
   return false;
 }
 
+// static
+HTMLSelectElement* HTMLSelectElement::GetSelectForPopoverPickerElement(
+    const Element* element) {
+  if (auto* root = DynamicTo<ShadowRoot>(element->parentNode())) {
+    if (element->ShadowPseudoId() == shadow_element_names::kPickerSelect) {
+      return DynamicTo<HTMLSelectElement>(root->host());
+    }
+  }
+  return nullptr;
+}
+
 bool HTMLSelectElement::IsAppearanceBase() const {
   return select_type_->IsAppearanceBase();
 }
@@ -1941,6 +1957,21 @@ String HTMLSelectElement::MultipleOptionsSelectedText(
       locale.ConvertToLocalizedNumber(String::Number(selected_count));
   return locale.QueryString(IDS_FORM_SELECT_MENU_LIST_TEXT,
                             localized_number_string);
+}
+
+bool HTMLSelectElement::SupportsBaseAppearance() const {
+  if (!IsMultiple() ||
+      RuntimeEnabledFeatures::CustomizableSelectMultiplePopupEnabled()) {
+    // Single-selects are always supported. When
+    // CustomizableSelectMultiplePopup is enabled, then all modes are
+    // supported.
+    return true;
+  } else if (RuntimeEnabledFeatures::CustomizableSelectInPageEnabled()) {
+    // CustomizableSelectInPage allows multi-selects to be base appearance
+    // but only if they are in-page ListBox selects.
+    return !UsesMenuList();
+  }
+  return false;
 }
 
 }  // namespace blink
