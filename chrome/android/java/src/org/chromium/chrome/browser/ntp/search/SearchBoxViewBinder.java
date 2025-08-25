@@ -63,13 +63,17 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.LENS_CLICK_CALLBACK == propertyKey) {
             lensButton.setOnClickListener(model.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
         } else if (SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK == propertyKey) {
-            searchBoxTextView.setOnClickListener(
-                    model.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
+            var searchBoxClickListener = model.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK);
+            searchBoxTextView.setOnClickListener(searchBoxClickListener);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                searchBoxTextView.setHandwritingDelegatorCallback(
-                        () ->
-                                model.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK)
-                                        .onClick(searchBoxTextView));
+                if (searchBoxClickListener != null) {
+                    searchBoxTextView.setHandwritingDelegatorCallback(
+                            () ->
+                                    model.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK)
+                                            .onClick(searchBoxTextView));
+                } else {
+                    searchBoxTextView.setHandwritingDelegatorCallback(null);
+                }
             }
         } else if (SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK == propertyKey) {
             searchBoxTextView.setOnDragListener(

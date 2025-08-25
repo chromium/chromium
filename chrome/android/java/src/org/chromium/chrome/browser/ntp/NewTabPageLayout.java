@@ -159,6 +159,7 @@ public class NewTabPageLayout extends LinearLayout
     private @Nullable Supplier<GURL> mComposeplateUrlSupplier;
     private OnClickListener mVoiceSearchButtonClickListener;
     private OnClickListener mLensButtonClickListener;
+    private View.@Nullable OnClickListener mComposeplateButtonClickListener;
     private @Nullable ComposeplateCoordinator mComposeplateCoordinator;
     // Previous visibility states for metrics.
     private @Nullable Boolean mPreviousVoiceSearchButtonVisible;
@@ -172,6 +173,7 @@ public class NewTabPageLayout extends LinearLayout
     private final int mFakeSearchBoxStartPaddingWithDseLogo;
     private int mCurrentNtpFakeSearchBoxTransitionStartOffset;
     private int mTopInset;
+    private @Nullable OnLayoutChangeListener mOnLayoutChangeListener;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
@@ -460,8 +462,8 @@ public class NewTabPageLayout extends LinearLayout
     private void initializeComposeplate() {
         if (!mIsComposeplateEnabled) return;
 
-        View.OnClickListener composeplateButtonClickListener =
-                v -> {
+        mComposeplateButtonClickListener =
+                view -> {
                     if (mComposeplateUrlSupplier == null
                             || !mComposeplateUrlSupplier.hasValue()
                             || mComposeplateUrlSupplier.get() == null) {
@@ -471,9 +473,9 @@ public class NewTabPageLayout extends LinearLayout
                             .loadUrl(
                                     new LoadUrlParams(mComposeplateUrlSupplier.get()),
                                     /* incognito= */ false);
+                    ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
                 };
-        mSearchBoxCoordinator.setComposeplateButtonClickListener(
-                createEnhancedClickListener(composeplateButtonClickListener));
+        mSearchBoxCoordinator.setComposeplateButtonClickListener(mComposeplateButtonClickListener);
         int iconRawResId =
                 ColorUtils.inNightMode(mContext)
                         ? R.raw.composeplate_loop_dark
@@ -496,25 +498,9 @@ public class NewTabPageLayout extends LinearLayout
         mManager.getNativePageHost().loadUrl(new LoadUrlParams(UrlConstants.NTP_URL), true);
     }
 
-    /**
-     * Wraps the given {@link View.OnClickListener} to record the click metric before invoking the
-     * original listener.
-     *
-     * @param originalListener The original click listener to be wrapped.
-     */
-    private View.OnClickListener createEnhancedClickListener(
-            View.OnClickListener originalListener) {
-        return v -> {
-            if (originalListener != null) {
-                originalListener.onClick(v);
-            }
-            ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
-        };
-    }
-
     private void initializeLayoutChangeListener() {
         TraceEvent.begin(TAG + ".initializeLayoutChangeListener()");
-        addOnLayoutChangeListener(
+        mOnLayoutChangeListener =
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     int oldHeight = oldBottom - oldTop;
                     int newHeight = bottom - top;
@@ -530,7 +516,8 @@ public class NewTabPageLayout extends LinearLayout
                     // The positioning of elements may have been changed (since the elements expand
                     // to fill the available vertical space), so adjust the scroll.
                     if (mScrollDelegate.isScrollViewInitialized()) mScrollDelegate.snapScroll();
-                });
+                };
+        addOnLayoutChangeListener(mOnLayoutChangeListener);
         TraceEvent.end(TAG + ".initializeLayoutChangeListener()");
     }
 
@@ -1156,6 +1143,7 @@ public class NewTabPageLayout extends LinearLayout
         }
 
         mSearchBoxCoordinator.destroy();
+        mSearchBoxCoordinator = null;
 
         if (mMostVisitedTilesCoordinator != null) {
             mMostVisitedTilesCoordinator.destroyMvtiles();
@@ -1173,10 +1161,22 @@ public class NewTabPageLayout extends LinearLayout
             mSearchEngineUtils = null;
         }
 
+        removeOnLayoutChangeListener(mOnLayoutChangeListener);
+        mOnLayoutChangeListener = null;
+
         if (mComposeplateCoordinator != null) {
             mComposeplateCoordinator.destroy();
             mComposeplateCoordinator = null;
         }
+
+        mComposeplateButtonClickListener = null;
+        mLensButtonClickListener = null;
+        mVoiceSearchButtonClickListener = null;
+        mSearchBoxScrollListener = null;
+        mComposeplateUrlSupplier = null;
+
+        mFakeSearchBoxEditText = null;
+        mFakeSearchBoxLayout = null;
     }
 
     MostVisitedTilesCoordinator getMostVisitedTilesCoordinatorForTesting() {
