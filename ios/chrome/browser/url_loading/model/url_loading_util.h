@@ -12,7 +12,6 @@
 
 class Browser;
 class GURL;
-class ProfileIOS;
 
 namespace web {
 class WebState;
@@ -25,7 +24,7 @@ bool IsURLAllowedInIncognito(const GURL& url);
 // `profile`. It is an error to pass a value of GURL that doesn't have a
 // javascript: scheme.
 void LoadJavaScriptURL(const GURL& url,
-                       ProfileIOS* profile,
+                       Browser* browser,
                        web::WebState* web_state);
 
 // Restores the closed tab identified by `session_id`, using `disposition`,

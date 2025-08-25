@@ -739,14 +739,15 @@ enum class PresentedState {
 }
 
 - (void)openURLInCurrentTab:(const GURL&)url {
-  WebStateList* webStateList = self.browser->GetWebStateList();
+  Browser* browser = self.browser;
+  WebStateList* webStateList = browser->GetWebStateList();
   if (url.SchemeIs(url::kJavaScriptScheme) && webStateList) {  // bookmarklet
-    LoadJavaScriptURL(url, _profile.get(), webStateList->GetActiveWebState());
+    LoadJavaScriptURL(url, browser, webStateList->GetActiveWebState());
     return;
   }
   UrlLoadParams params = UrlLoadParams::InCurrentTab(url);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+  UrlLoadingBrowserAgent::FromBrowser(browser)->Load(params);
 }
 
 - (void)openURLInNewTab:(const GURL&)url

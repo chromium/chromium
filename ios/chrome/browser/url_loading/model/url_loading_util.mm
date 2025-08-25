@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/model/live_tab_context_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -26,12 +27,12 @@ bool IsURLAllowedInIncognito(const GURL& url) {
 }
 
 void LoadJavaScriptURL(const GURL& url,
-                       ProfileIOS* profile,
+                       Browser* browser,
                        web::WebState* web_state) {
   DCHECK(url.SchemeIs(url::kJavaScriptScheme));
   DCHECK(web_state);
   PrerenderService* prerenderService =
-      PrerenderServiceFactory::GetForProfile(profile);
+      PrerenderServiceFactory::GetForProfile(browser->GetProfile());
   if (prerenderService) {
     prerenderService->CancelAllPrerenders();
   }

@@ -492,7 +492,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     destination_url_entered_without_scheme:
         (bool)destination_url_entered_without_scheme {
   if (url.SchemeIs(url::kJavaScriptScheme)) {
-    LoadJavaScriptURL(url, self.profile,
+    LoadJavaScriptURL(url, self.browser,
                       self.webStateList->GetActiveWebState());
   } else {
     // TODO(crbug.com/40550038): Is it ok to call `cancelOmniboxEdit` after
