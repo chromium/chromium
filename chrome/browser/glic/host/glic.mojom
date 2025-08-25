@@ -274,6 +274,8 @@ struct WebClientInitialState {
   array<HostCapability> host_capabilities;
   // Whether get page metadata is enabled.
   bool enable_get_page_metadata;
+  // Whether kGlicApiActivationGating is enabled.
+  bool enable_api_activation_gating;
 };
 
 // Options for getting tab context.

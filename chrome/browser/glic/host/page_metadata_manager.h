@@ -35,7 +35,8 @@ namespace glic {
 // client. It also handles caching of metadata when the Glic panel is inactive.
 class PageMetadataManager {
  public:
-  PageMetadataManager(mojo::Remote<glic::mojom::WebClient>* web_client);
+  explicit PageMetadataManager(
+      mojo::Remote<glic::mojom::WebClient>* web_client);
   ~PageMetadataManager();
 
   PageMetadataManager(const PageMetadataManager&) = delete;
@@ -47,9 +48,6 @@ class PageMetadataManager {
       int32_t tab_id,
       const std::vector<std::string>& names,
       glic::mojom::WebClientHandler::SubscribeToPageMetadataCallback callback);
-
-  // Pauses or unpauses emission of metadata events.
-  void SetPaused(bool paused);
 
  private:
   struct PageMetadataSubscription;
@@ -64,11 +62,9 @@ class PageMetadataManager {
 
   // Unowned. The client is owned by the owner of this PageMetadataManager.
   const raw_ptr<mojo::Remote<glic::mojom::WebClient>> web_client_;
-  bool paused_ = true;
 
   absl::flat_hash_map<int32_t, PageMetadataSubscription>
       tab_id_to_page_metadata_subscriptions_;
-  absl::flat_hash_set<int32_t> tab_ids_with_pending_metadata_;
 };
 
 }  // namespace glic

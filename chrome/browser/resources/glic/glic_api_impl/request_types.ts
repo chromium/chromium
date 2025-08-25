@@ -9,31 +9,46 @@ import type {ActiveBrowserInfo, ActorTaskPauseReason, ActorTaskState, ActorTaskS
 This file defines messages sent over postMessage in-between the Glic WebUI
 and the Glic web client.
 
-Request type entries should have this structure
-// The name of the function, should be unique.
-name: {
-  // The type of payload sent. Defaults to 'undefined', which means the request
-  // has no request payload.
-  request: {},
-  // The type of response payload. Defaults to 'void', which means the request
-  // sends no response payload.
-  response: {},
-}
-
 Most requests closely match signatures of API methods. Where possible, name
 messages by concatenating the interface name with the method name. This helps
 readability, and ensures that each name is unique.
 */
 
+/**
+ * Defines a request and optionally a corresponding response messages.
+ */
+export interface RequestDef {
+  // The type of payload sent. Defaults to 'undefined', which means the request
+  // has no request payload.
+  request?: any;
+  // The type of response payload. Defaults to 'void', which means the request
+  // sends no response payload.
+  response?: any;
+  /**
+   * Whether the request can be processed in the background.
+   *
+   * If true, the request is allowed to be sent and serviced in the
+   * background.
+   * If false (the default if omitted):
+   * For Host requests, `BACKGROUND_RESPONSES` defines how these are handled.
+   * For Client requests, it affects usage of `GatedSender`.
+   */
+  backgroundAllowed?: boolean;
+}
+
+// Validates each key is a RequestDef.
+type ValidateRequestMap<T extends Record<string, RequestDef>> = T;
+
 // Types of requests to the host (Chrome).
-export declare interface HostRequestTypes {
+export declare type HostRequestTypes = ValidateRequestMap<{
   // This message is sent just before calling initialize() on the web client.
   // It is not part of the GlicBrowserHost public API.
   glicBrowserWebClientCreated: {
     response: {
       initialState: WebClientInitialStatePrivate,
     },
-  };
+    backgroundAllowed: true,
+  },
   // This message is sent after the client returns from initialize(). It is not
   // part of the GlicBrowserHost public API.
   glicBrowserWebClientInitialized: {
@@ -43,7 +58,8 @@ export declare interface HostRequestTypes {
       // is false).
       exception?: TransferableException,
     },
-  };
+    backgroundAllowed: true,
+  },
 
   // The messages that fulfil the GlicBrowserHost public API follow below.
 
@@ -56,18 +72,25 @@ export declare interface HostRequestTypes {
       // Undefined on failure.
       tabData?: TabDataPrivate,
     },
-  };
+    backgroundAllowed: false,
+  },
   glicBrowserOpenGlicSettingsPage: {
     request: {options?: OpenSettingsOptions},
-  };
-  glicBrowserClosePanel: {};
-  glicBrowserClosePanelAndShutdown: {};
-  glicBrowserShowProfilePicker: {};
+    backgroundAllowed: true,
+  },
+  glicBrowserClosePanel: {
+    backgroundAllowed: true,
+  },
+  glicBrowserClosePanelAndShutdown: {
+    backgroundAllowed: true,
+  },
+  glicBrowserShowProfilePicker: {},
   glicBrowserGetModelQualityClientId: {
     response: {
       modelQualityClientId: string,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserGetContextFromFocusedTab: {
     request: {
       options: TabContextOptions,
@@ -75,8 +98,10 @@ export declare interface HostRequestTypes {
     response: {
       tabContextResult: TabContextResultPrivate,
     },
-  };
+    backgroundAllowed: false,
+  },
   glicBrowserGetContextFromTab: {
+    backgroundAllowed: false,
     request: {
       tabId: string,
       options: TabContextOptions,
@@ -84,7 +109,7 @@ export declare interface HostRequestTypes {
     response: {
       tabContextResult: TabContextResultPrivate,
     },
-  };
+  },
   glicBrowserGetContextForActorFromTab: {
     request: {
       tabId: string,
@@ -93,7 +118,7 @@ export declare interface HostRequestTypes {
     response: {
       tabContextResult: TabContextResultPrivate,
     },
-  };
+  },
   glicBrowserSetMaximumNumberOfPinnedTabs: {
     request: {
       requestedMax: number,
@@ -101,12 +126,13 @@ export declare interface HostRequestTypes {
     response: {
       effectiveMax: number,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserCreateTask: {
     response: {
       taskId: number,
     },
-  };
+  },
   glicBrowserPerformActions: {
     request: {
       actions: ArrayBuffer,
@@ -114,19 +140,19 @@ export declare interface HostRequestTypes {
     response: {
       actionsResult: ArrayBuffer,
     },
-  };
+  },
   glicBrowserStopActorTask: {
     request: {
       taskId: number,
       stopReason: ActorTaskStopReason,
     },
-  };
+  },
   glicBrowserPauseActorTask: {
     request: {
       taskId: number,
       pauseReason: ActorTaskPauseReason,
     },
-  };
+  },
   glicBrowserResumeActorTask: {
     request: {
       taskId: number,
@@ -135,12 +161,13 @@ export declare interface HostRequestTypes {
     response: {
       tabContextResult: TabContextResultPrivate,
     },
-  };
+  },
   glicBrowserCaptureScreenshot: {
     response: {
       screenshot: Screenshot,
     },
-  };
+    backgroundAllowed: false,
+  },
   glicBrowserResizeWindow: {
     request: {
       size: {
@@ -151,17 +178,20 @@ export declare interface HostRequestTypes {
         durationMs?: number,
       },
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserEnableDragResize: {
     request: {
       enabled: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserSetWindowDraggableAreas: {
     request: {
       areas: DraggableArea[],
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserSetMinimumWidgetSize: {
     request: {
       size: {
@@ -169,49 +199,62 @@ export declare interface HostRequestTypes {
         height: number,
       },
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserSetMicrophonePermissionState: {
     request: {
       enabled: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserSetLocationPermissionState: {
     request: {
       enabled: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserSetTabContextPermissionState: {
     request: {
       enabled: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserSetClosedCaptioningSetting: {
     request: {
       enabled: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserSetContextAccessIndicator: {
     request: {
       show: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserGetUserProfileInfo: {
     response: {
       profileInfo?: UserProfileInfoPrivate,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserRefreshSignInCookies: {
     response: {
       success: boolean,
     },
-  };
-  glicBrowserAttachPanel: {};
-  glicBrowserDetachPanel: {};
+    backgroundAllowed: true,
+  },
+  glicBrowserAttachPanel: {
+    backgroundAllowed: true,
+  },
+  glicBrowserDetachPanel: {
+    backgroundAllowed: true,
+  },
   glicBrowserSetAudioDucking: {
     request: {
       enabled: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserLogBeginAsyncEvent: {
     request: {
       asyncEventId: number,
@@ -219,21 +262,26 @@ export declare interface HostRequestTypes {
       event: string,
       details: string,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserLogEndAsyncEvent: {
     request: {
       asyncEventId: number,
       details: string,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserLogInstantEvent: {
     request: {
       taskId: number,
       event: string,
       details: string,
     },
-  };
-  glicBrowserJournalClear: {};
+    backgroundAllowed: true,
+  },
+  glicBrowserJournalClear: {
+    backgroundAllowed: true,
+  },
   glicBrowserJournalSnapshot: {
     request: {
       clear: boolean,
@@ -241,84 +289,114 @@ export declare interface HostRequestTypes {
     response: {
       journal: Journal,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserJournalStart: {
     request: {
       maxBytes: number,
       captureScreenshots: boolean,
     },
-  };
-  glicBrowserJournalStop: {};
+    backgroundAllowed: true,
+  },
+  glicBrowserJournalStop: {
+    backgroundAllowed: true,
+  },
   glicBrowserJournalRecordFeedback: {
     request: {
       positive: boolean,
       reason: string,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserOnUserInputSubmitted: {
     request: {
       mode: number,
     },
-  };
-  glicBrowserOnResponseStarted: {};
-  glicBrowserOnResponseStopped: {request: {details?: OnResponseStoppedDetails}};
-  glicBrowserOnSessionTerminated: {};
+    backgroundAllowed: true,
+  },
+  glicBrowserOnResponseStarted: {
+    backgroundAllowed: true,
+  },
+  glicBrowserOnResponseStopped: {
+    request: {details?: OnResponseStoppedDetails},
+    backgroundAllowed: true,
+  },
+  glicBrowserOnSessionTerminated: {
+    backgroundAllowed: true,
+  },
   glicBrowserOnTurnCompleted: {
     request: {
       model: number,
       duration: number,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserOnResponseRated: {
     request: {
       positive: boolean,
     },
-  };
-  glicBrowserOnClosedCaptionsShown: {};
+    backgroundAllowed: true,
+  },
+  glicBrowserOnClosedCaptionsShown: {
+    backgroundAllowed: true,
+  },
   glicBrowserScrollTo: {
-    request: {params: ScrollToParams},
-  };
-  glicBrowserDropScrollToHighlight: {};
+    request: {
+      params: ScrollToParams,
+    },
+    backgroundAllowed: false,
+  },
+  glicBrowserDropScrollToHighlight: {
+    backgroundAllowed: true,
+  },
   glicBrowserSetSyntheticExperimentState: {
     request: {
       trialName: string,
       groupName: string,
     },
-  };
-  glicBrowserOpenOsPermissionSettingsMenu: {request: {permission: string}};
+    backgroundAllowed: true,
+  },
+  glicBrowserOpenOsPermissionSettingsMenu: {request: {permission: string}},
   glicBrowserGetOsMicrophonePermissionStatus: {
     response: {
       enabled: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserPinTabs: {
+    backgroundAllowed: false,
     request: {
       tabIds: string[],
     },
     response: {
       pinnedAll: boolean,
     },
-  };
+  },
   glicBrowserUnpinTabs: {
+    backgroundAllowed: true,
     request: {
       tabIds: string[],
     },
     response: {
       unpinnedAll: boolean,
     },
-  };
-  glicBrowserUnpinAllTabs: {};
+  },
+  glicBrowserUnpinAllTabs: {
+    backgroundAllowed: false,
+  },
   glicBrowserSubscribeToPinCandidates: {
+    backgroundAllowed: false,
     request: {
       options: GetPinCandidatesOptions,
       observationId: number,
     },
-  };
+  },
   glicBrowserUnsubscribeFromPinCandidates: {
     request: {
       observationId: number,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserGetZeroStateSuggestionsForFocusedTab: {
     request: {
       isFirstRun?: boolean,
@@ -326,8 +404,12 @@ export declare interface HostRequestTypes {
     response: {
       suggestions?: ZeroStateSuggestions,
     },
-  };
-  glicBrowserMaybeRefreshUserStatus: {};
+    backgroundAllowed: false,
+  },
+  glicBrowserMaybeRefreshUserStatus: {
+    backgroundAllowed: true,
+  },
+
   glicBrowserGetZeroStateSuggestionsAndSubscribe: {
     request: {
       hasActiveSubscription: boolean,
@@ -336,12 +418,13 @@ export declare interface HostRequestTypes {
     response: {
       suggestions?: ZeroStateSuggestionsV2,
     },
-  };
+  },
   glicBrowserOnViewChanged: {
     request: {
       notification: ViewChangedNotification,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicBrowserSubscribeToPageMetadata: {
     request: {
       tabId: string,
@@ -350,11 +433,12 @@ export declare interface HostRequestTypes {
     response: {
       success: boolean,
     },
-  };
-}
+    backgroundAllowed: true,
+  },
+}>;
 
 // Types of requests to the GlicWebClient.
-export declare interface WebClientRequestTypes {
+export declare type WebClientRequestTypes = ValidateRequestMap<{
   glicWebClientNotifyPanelWillOpen: {
     request: {
       panelOpeningData: PanelOpeningData,
@@ -362,115 +446,132 @@ export declare interface WebClientRequestTypes {
     response: {
       openPanelInfo?: OpenPanelInfo,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyPanelWasClosed: {
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientPanelStateChanged: {
     request: {
       panelState: PanelState,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientRequestViewChange: {
     request: {
       request: ViewChangeRequest,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientCanAttachStateChanged: {
     request: {
       canAttach: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyMicrophonePermissionStateChanged: {
     request: {
       enabled: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyLocationPermissionStateChanged: {
     request: {
       enabled: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyTabContextPermissionStateChanged: {
     request: {
       enabled: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyOsLocationPermissionStateChanged: {
     request: {
       enabled: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyClosedCaptioningSettingChanged: {
     request: {
       enabled: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyFocusedTabChanged: {
     request: {
       focusedTabDataPrivate: FocusedTabDataPrivate,
     },
-  };
+  },
   glicWebClientNotifyPanelActiveChanged: {
     request: {
       panelActive: boolean,
     },
-  };
-  glicWebClientCheckResponsive: {};
+    backgroundAllowed: true,
+  },
+  glicWebClientCheckResponsive: {
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyManualResizeChanged: {
     request: {
       resizing: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientBrowserIsOpenChanged: {
     request: {
       browserIsOpen: boolean,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyOsHotkeyStateChanged: {
     request: {
       hotkey: string,
     },
-  };
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyPinnedTabsChanged: {
     request: {
       tabData: TabDataPrivate[],
     },
-  };
+  },
   glicWebClientNotifyPinnedTabDataChanged: {
     request: {
       tabData: TabDataPrivate,
     },
-  };
+  },
   glicWebClientPinCandidatesChanged: {
     request: {
       candidates: PinCandidatePrivate[],
       observationId: number,
     },
-  };
+  },
   glicWebClientZeroStateSuggestionsChanged: {
     request: {
       suggestions: ZeroStateSuggestionsV2,
       options: ZeroStateSuggestionsOptions,
     },
-  };
+  },
   glicWebClientNotifyActorTaskStateChanged: {
     request: {
       taskId: number,
       state: ActorTaskState,
     },
-  };
+  },
   glicWebClientPageMetadataChanged: {
     request: {
       tabId: string,
-      pageMetadata: PageMetadata|null,
+      pageMetadata: PageMetadata | null,
     },
-  };
+  },
   glicWebClientNotifyActiveBrowserChanged: {
     request: {
       activeBrowserInfo?: ActiveBrowserInfo,
     },
-  };
-}
+    backgroundAllowed: true,
+  },
+}>;
 
 
 type RemoveStringPrefix<S extends string, Prefix extends string> =
@@ -563,6 +664,10 @@ export type AllRequestTypes = HostRequestTypes&WebClientRequestTypes;
 export type AllRequestTypesWithoutReturn = {
   [K in keyof AllRequestTypes as
        RequestResponseType<K> extends void ? K : never]: AllRequestTypes[K]
+};
+export type AllRequestTypesWithReturn = {
+  [K in keyof AllRequestTypes as
+       RequestResponseType<K> extends void ? never : K]: AllRequestTypes[K]
 };
 
 export type RequestRequestType<T extends keyof AllRequestTypes> =

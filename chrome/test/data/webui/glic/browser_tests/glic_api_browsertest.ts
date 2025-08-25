@@ -1609,7 +1609,7 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     // While still hidden (preloaded), focused tab extraction should fail.
     await assertRejects(this.host.getContextFromFocusedTab({}), {
       withErrorMessage:
-          'tabContext failed: permission denied: window not showing',
+          'GetContextFromFocusedTab not allowed while backgrounded',
     });
 
     // Glic panel is open, so both focused and arbitrary tab extraction should
@@ -1638,11 +1638,10 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     await observeSequence(this.host.panelActive()).waitForValue(false);
     await assertRejects(this.host.getContextFromFocusedTab({}), {
       withErrorMessage:
-          'tabContext failed: permission denied: window not showing',
+          'GetContextFromFocusedTab not allowed while backgrounded',
     });
     await assertRejects(this.host.getContextFromTab(tabId, {}), {
-      withErrorMessage:
-          'tabContext failed: permission denied: window not showing',
+      withErrorMessage: 'GetContextFromTab not allowed while backgrounded',
     });
   }
 }

@@ -60,7 +60,6 @@ void PageMetadataManager::SubscribeToPageMetadata(
     glic::mojom::WebClientHandler::SubscribeToPageMetadataCallback callback) {
   // Erase any existing subscription for this tab.
   tab_id_to_page_metadata_subscriptions_.erase(tab_id);
-  tab_ids_with_pending_metadata_.erase(tab_id);
 
   if (names.empty()) {
     // An empty name list is an unsubscription. We've already erased the
@@ -102,22 +101,6 @@ void PageMetadataManager::SubscribeToPageMetadata(
                   std::move(will_discard_contents_subscription), names});
 
   std::move(callback).Run(true);
-}
-
-void PageMetadataManager::SetPaused(bool paused) {
-  paused_ = paused;
-  if (paused_) {
-    return;
-  }
-
-  for (auto tab_id : std::exchange(tab_ids_with_pending_metadata_, {})) {
-    auto it = tab_id_to_page_metadata_subscriptions_.find(tab_id);
-    if (it != tab_id_to_page_metadata_subscriptions_.end()) {
-      if (it->second.observer) {
-        it->second.observer->DispatchMetadata();
-      }
-    }
-  }
 }
 
 void PageMetadataManager::OnTabWillDiscardContents(
@@ -164,14 +147,8 @@ void PageMetadataManager::OnTabWillDetach(
 void PageMetadataManager::NotifyPageMetadataChanged(
     int32_t tab_id,
     blink::mojom::PageMetadataPtr page_metadata) {
-  if (paused_ && page_metadata) {
-    // If paused, cache the metadata to be sent later. A null metadata
-    // indicates completion and should be sent immediately.
-    tab_ids_with_pending_metadata_.insert(tab_id);
-  } else {
-    web_client_->get()->NotifyPageMetadataChanged(tab_id,
-                                                  std::move(page_metadata));
-  }
+  web_client_->get()->NotifyPageMetadataChanged(tab_id,
+                                                std::move(page_metadata));
 }
 
 }  // namespace glic

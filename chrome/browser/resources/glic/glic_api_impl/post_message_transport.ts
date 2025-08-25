@@ -8,7 +8,7 @@ import {exceptionFromTransferable, newTransferableException} from './request_typ
 // This file contains helpers to send and receive messages over postMessage.
 
 // Requests sent over postMessage have this structure.
-declare interface RequestMessage {
+export declare interface RequestMessage {
   // Unique ID of the sender.
   senderId: string;
   // Present for any Glic request message.

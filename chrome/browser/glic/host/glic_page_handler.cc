@@ -620,24 +620,15 @@ class GlicWebClientHandler
     state->can_attach = browser_attach_observation_->CanAttachToBrowser();
     state->panel_is_active = active_state_calculator_.IsActive();
 
-    if (ShouldDoApiActivationGating()) {
-      // We will force a notification to be sent later when the panel
-      // is activated, so skip here.
-      cached_focused_tab_data_ =
-          CreateFocusedTabData(glic_sharing_manager_->GetFocusedTabData());
-      state->focused_tab_data = CreateFocusedTabData(FocusedTabData(
-          std::string("glic not active"), /*unfocused_tab=*/nullptr));
-    } else {
-      state->focused_tab_data =
-          CreateFocusedTabData(glic_sharing_manager_->GetFocusedTabData());
-      if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab)) {
-        OnPinningChanged(glic_sharing_manager_->GetPinnedTabs());
-      }
+    state->focused_tab_data =
+        CreateFocusedTabData(glic_sharing_manager_->GetFocusedTabData());
+
+    if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab)) {
+      OnPinningChanged(glic_sharing_manager_->GetPinnedTabs());
     }
 
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
-    browser_active_ = glic_sharing_manager_->GetFocusedBrowser();
-    state->browser_is_active = browser_active_;
+    state->browser_is_active = glic_sharing_manager_->GetFocusedBrowser();
 
     state->active_browser_info = CreateActiveBrowserInfo(
         profile_,
@@ -681,6 +672,8 @@ class GlicWebClientHandler
     }
     state->enable_get_page_metadata =
         base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver);
+    state->enable_api_activation_gating =
+        base::FeatureList::IsEnabled(features::kGlicApiActivationGating);
 
     std::move(callback).Run(std::move(state));
   }
@@ -708,11 +701,6 @@ class GlicWebClientHandler
       bool has_active_subscription,
       mojom::ZeroStateSuggestionsOptionsPtr options,
       GetZeroStateSuggestionsAndSubscribeCallback callback) override {
-    if (ShouldDoApiActivationGating()) {
-      std::move(callback).Run(nullptr);
-      return;
-    }
-
     glic_service_->zero_state_suggestions_manager().ObserveZeroStateSuggestions(
         has_active_subscription, options->is_first_run,
         options->supported_tools, std::move(callback));
@@ -722,10 +710,6 @@ class GlicWebClientHandler
                  bool open_in_background,
                  const std::optional<int32_t> window_id,
                  CreateTabCallback callback) override {
-    if (ShouldDoApiActivationGating()) {
-      std::move(callback).Run(nullptr);
-      return;
-    }
     if (base::FeatureList::IsEnabled(media::kMediaLinkHelpers)) {
       if (auto* tab = glic_sharing_manager_->GetFocusedTabData().focus()) {
         const bool replaced =
@@ -809,13 +793,6 @@ class GlicWebClientHandler
   void GetContextFromFocusedTab(
       glic::mojom::GetTabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
-    if (ShouldDoApiActivationGating()) {
-      glic_service_->metrics()->LogGetContextFromFocusedTabError(
-          GlicGetContextFromFocusedTabError::kPermissionDeniedWindowNotShowing);
-      std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-          "permission denied: window not showing"));
-      return;
-    }
     auto* tab = glic_sharing_manager_->GetFocusedTabData().focus();
     auto tab_handle = tab ? tab->GetHandle() : tabs::TabHandle::Null();
 
@@ -831,12 +808,6 @@ class GlicWebClientHandler
   void GetContextFromTab(int32_t tab_id,
                          glic::mojom::GetTabContextOptionsPtr options,
                          GetContextFromTabCallback callback) override {
-    // TODO(b/433328453): add GetContextFromTab error histogram.
-    if (ShouldDoApiActivationGating()) {
-      std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-          "permission denied: window not showing"));
-      return;
-    }
     // Extra activation gating is done in this function.
     glic_sharing_manager_->GetContextFromTab(
         tabs::TabHandle(tab_id), *options,
@@ -865,10 +836,6 @@ class GlicWebClientHandler
 
   void PinTabs(const std::vector<int32_t>& tab_ids,
                PinTabsCallback callback) override {
-    if (ShouldDoApiActivationGating()) {
-      std::move(callback).Run(false);
-      return;
-    }
     std::vector<tabs::TabHandle> tab_handles;
     for (auto tab_id : tab_ids) {
       tab_handles.push_back(tabs::TabHandle(tab_id));
@@ -886,9 +853,6 @@ class GlicWebClientHandler
   }
 
   void UnpinAllTabs() override {
-    if (ShouldDoApiActivationGating()) {
-      return;
-    }
     glic_sharing_manager_->UnpinAllTabs();
   }
 
@@ -934,11 +898,6 @@ class GlicWebClientHandler
   }
 
   void CaptureScreenshot(CaptureScreenshotCallback callback) override {
-    if (ShouldDoApiActivationGating()) {
-      std::move(callback).Run(mojom::CaptureScreenshotResult::NewErrorReason(
-          glic::mojom::CaptureScreenshotErrorReason::kUnknown));
-      return;
-    }
     glic_service_->CaptureScreenshot(std::move(callback));
   }
 
@@ -1170,10 +1129,6 @@ class GlicWebClientHandler
           "feature enabled.");
       return;
     }
-    if (ShouldDoApiActivationGating()) {
-      std::move(callback).Run(glic::mojom::ScrollToErrorReason::kNotSupported);
-      return;
-    }
     annotation_manager_->ScrollTo(std::move(params), std::move(callback));
   }
 
@@ -1217,9 +1172,6 @@ class GlicWebClientHandler
   void SubscribeToPinCandidates(
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override {
-    if (ShouldDoApiActivationGating()) {
-      return;
-    }
     glic_sharing_manager_->SubscribeToPinCandidates(std::move(options),
                                                     std::move(observer));
   }
@@ -1272,24 +1224,6 @@ class GlicWebClientHandler
     if (web_client_) {
       web_client_->NotifyPanelActiveChange(is_active);
     }
-    page_metadata_manager_.SetPaused(!is_active);
-
-    if (!is_active) {
-      return;
-    }
-
-    // The panel is active. If applicable, send out any cached or delayed
-    // updates to the web client.
-    if (base::FeatureList::IsEnabled(features::kGlicApiActivationGating) &&
-        web_client_) {
-      if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab)) {
-        OnPinningChanged(glic_sharing_manager_->GetPinnedTabs());
-      }
-      if (cached_focused_tab_data_) {
-        MaybeNotifyFocusedTabChanged(std::move(cached_focused_tab_data_));
-        cached_focused_tab_data_ = nullptr;
-      }
-    }
   }
 
   // BrowserIsOpenCalculator implementation.
@@ -1307,11 +1241,6 @@ class GlicWebClientHandler
           "Client should not call "
           "GetZeroStateSuggestionsForFocusedTab "
           "without the GlicZeroStateSuggestions feature enabled.");
-      return;
-    }
-
-    if (ShouldDoApiActivationGating()) {
-      std::move(callback).Run(nullptr);
       return;
     }
 
@@ -1366,9 +1295,6 @@ class GlicWebClientHandler
 
   void OnPinningChanged(
       const std::vector<content::WebContents*>& pinned_contents) {
-    if (ShouldDoApiActivationGating()) {
-      return;
-    }
     std::vector<glic::mojom::TabDataPtr> tab_data;
     for (content::WebContents* web_contents : pinned_contents) {
       tab_data.push_back(CreateTabData(web_contents));
@@ -1388,22 +1314,12 @@ class GlicWebClientHandler
     if (!change.tab_data) {
       return;
     }
-    if (ShouldDoApiActivationGating()) {
-      // We will resend all pinned data when shown. No need to cache here.
-      return;
-    }
     web_client_->NotifyPinnedTabDataChanged(change.tab_data->Clone());
   }
 
   void NotifyZeroStateSuggestionsChanged(
       glic::mojom::ZeroStateSuggestionsV2Ptr suggestions,
       mojom::ZeroStateSuggestionsOptionsPtr options) {
-    if (ShouldDoApiActivationGating()) {
-      // The zero state suggestions will get updated if needed. No need to cache
-      // here.
-      return;
-    }
-
     web_client_->NotifyZeroStateSuggestionsChanged(std::move(suggestions),
                                                    std::move(options));
   }
@@ -1449,20 +1365,11 @@ class GlicWebClientHandler
   }
 
   void OnFocusedTabChanged(const FocusedTabData& focused_tab_data) {
-    if (ShouldDoApiActivationGating()) {
-      cached_focused_tab_data_ = CreateFocusedTabData(focused_tab_data);
-      return;
-    }
     MaybeNotifyFocusedTabChanged(CreateFocusedTabData(focused_tab_data));
   }
 
   void OnFocusedTabDataChanged(const glic::mojom::TabData* tab_data) {
     if (!tab_data) {
-      return;
-    }
-    if (ShouldDoApiActivationGating()) {
-      cached_focused_tab_data_ =
-          glic::mojom::FocusedTabData::NewFocusedTab(tab_data->Clone());
       return;
     }
     MaybeNotifyFocusedTabChanged(
@@ -1471,10 +1378,6 @@ class GlicWebClientHandler
 
   void OnFocusedBrowserChanged(BrowserWindowInterface* browser_interface) {
     const bool is_browser_active = browser_interface != nullptr;
-    if (browser_active_ == is_browser_active) {
-      return;
-    }
-    browser_active_ = is_browser_active;
     web_client_->NotifyBrowserIsActiveChanged(is_browser_active);
   }
 
@@ -1520,8 +1423,6 @@ class GlicWebClientHandler
     web_client_->NotifyActorTaskStateChanged(task.id().value(), state);
   }
 
-  glic::mojom::FocusedTabDataPtr cached_focused_tab_data_ = nullptr;
-  bool browser_active_ = false;
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;
