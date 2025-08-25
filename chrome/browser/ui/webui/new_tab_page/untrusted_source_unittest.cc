@@ -143,7 +143,7 @@ TEST_F(UntrustedSourceTest, OneGoogleBarRequest_DefaultABPAsyncParam) {
   ASSERT_EQ(one_google_bar_service()->additional_query_params().count("async"),
             1u);
   ASSERT_EQ(one_google_bar_service()->additional_query_params().at("async"),
-            "fixed:0,abp:1");
+            "abp:1,fixed:0");
 }
 
 TEST_F(UntrustedSourceTest, OneGoogleBarRequest_ParamsEncoded) {

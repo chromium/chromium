@@ -72,7 +72,7 @@ void ServeBackgroundImageData(content::URLDataSource::GotDataCallback callback,
 }
 
 std::string AsyncParamDataAsCSV(
-    const std::unordered_map<std::string, std::string> param_data) {
+    const std::map<std::string, std::string>& param_data) {
   if (param_data.empty()) {
     return "";
   }
@@ -169,7 +169,7 @@ void UntrustedSource::StartDataRequest(
     }
 
     if (params.find("async") == params.end()) {
-      std::unordered_map<std::string, std::string> async_param_data;
+      std::map<std::string, std::string> async_param_data;
       async_param_data["fixed"] = "0";
 
       bool async_bar_parts = base::FeatureList::IsEnabled(
