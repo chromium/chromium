@@ -136,7 +136,7 @@ section {
   padding: 12px var(--cr-section-padding);
 }
 
-section:not(.page-subtitle) h2 {
+section:not(.page-subtitle) h3 {
   font-size: 100%;
   margin: 0;
 }
