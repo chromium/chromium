@@ -118,20 +118,20 @@ class WebRtcVideoTrackSourceTest
   void SendTestFrameWithMappableGMB(const FrameParameters& frame_parameters,
                                     base::TimeDelta timestamp,
                                     bool premapped) {
-    std::optional<gfx::BufferFormat> buffer_format =
-        media::VideoPixelFormatToGfxBufferFormat(frame_parameters.pixel_format);
-    CHECK(buffer_format) << "Pixel format "
-                         << media::VideoPixelFormatToString(
-                                frame_parameters.pixel_format)
-                         << " has no corresponding gfx::BufferFormat";
+    std::optional<viz::SharedImageFormat> si_format =
+        media::VideoPixelFormatToSharedImageFormat(
+            frame_parameters.pixel_format);
+    CHECK(si_format) << "Pixel format "
+                     << media::VideoPixelFormatToString(
+                            frame_parameters.pixel_format)
+                     << " has no corresponding viz::SharedImageFormat";
 
     // Setting some default usage in order to get a mappable shared image.
     auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     auto shared_image = test_sii_->CreateSharedImageWithAsyncMapControl(
-        {viz::GetSharedImageFormat(*buffer_format), frame_parameters.coded_size,
-         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
-         "WebRtcVideoTrackSourceTest"},
+        {*si_format, frame_parameters.coded_size, gfx::ColorSpace(),
+         gpu::SharedImageUsageSet(si_usage), "WebRtcVideoTrackSourceTest"},
         gfx::BufferUsage::GPU_READ_CPU_READ_WRITE, premapped,
         base::BindRepeating(&WebRtcVideoTrackSourceTest::RegisterCallback,
                             base::Unretained(this)));
