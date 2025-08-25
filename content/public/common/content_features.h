@@ -108,7 +108,8 @@ CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kBtmClientBounceDetectionTimeout;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBtmDualUse);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebContentsDiscard);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kDisablePartialStorageCleanupForGPUDiskCache);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kDisablePartialStorageCleanupForGPUDiskCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDrawCutoutEdgeToEdge);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEarlyEstablishGpuChannel);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableCanvas2DLayers);
@@ -205,6 +206,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateNetworkAccessForWorkersWarningOnly);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPrivateNetworkAccessRespectPreflightResults);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateNetworkAccessSendPreflights);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessSelectionDeferringConditions);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kOriginKeyedProcessesByDefault);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPushSubscriptionChangeEventOnInvalidation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPushSubscriptionChangeEventOnResubscribe);

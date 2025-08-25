@@ -359,7 +359,6 @@ BASE_FEATURE(kDisablePartialStorageCleanupForGPUDiskCache,
              "PerformStorageCleanupForGPUDiskCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-
 // Enable drawing under System Bars within DisplayCutout.
 BASE_FEATURE(DrawCutoutEdgeToEdge, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -709,6 +708,13 @@ BASE_FEATURE(PrivateNetworkAccessRespectPreflightResults,
 // Enables sending CORS preflight requests ahead of private network requests.
 // See: https://wicg.github.io/private-network-access/#cors-preflight
 BASE_FEATURE(PrivateNetworkAccessSendPreflights,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, ProcessSelectionDeferringConditions will be run. This allows
+// the embedder to provide conditions that may delay the final process selection
+// until the conditions have their results.
+BASE_FEATURE(kProcessSelectionDeferringConditions,
+             "ProcessSelectionDeferringConditions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables origin-keyed processes by default, unless origins opt out using

@@ -54,6 +54,8 @@ class SiteProtectionMetricsObserver
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // Returns whether there are any pending asynchronous tasks.
   bool HasPendingTasksForTesting();
@@ -132,6 +134,9 @@ class SiteProtectionMetricsObserver
       bool was_site_likely_previously_familiar);
 
   void LogMetrics(std::unique_ptr<MetricsData> metrics_data);
+
+  // Logs UMA metrics related to the v8-optimizer state.
+  void LogV8OptimizerUma(content::NavigationHandle* navigation_handle);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
