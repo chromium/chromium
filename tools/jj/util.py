@@ -23,8 +23,17 @@ def run_command(args: list[str],
   return ps
 
 
+def run_jj(args: list[str],
+           ignore_working_copy=False,
+           **kwargs) -> subprocess.CompletedProcess:
+  prefix = ['jj', '--no-pager']
+  if ignore_working_copy:
+    prefix.append('--ignore-working-copy')
+  return run_command(prefix + args, **kwargs)
+
+
 def _log(args: list[str], templates: dict[str, str],
-         ignore_working_copy: bool) -> list[dict[str, str]]:
+         **kwargs) -> list[dict[str, str]]:
   """Log acts akin to a database query on a table.
 
   The user will provide templates such as {
@@ -44,13 +53,12 @@ def _log(args: list[str], templates: dict[str, str],
   # We're just creating a jj template that outputs CSV files.
   template = f' ++ "{_COMMA}" ++ '.join(templates)
   template += f' ++ "{_NEWLINE}"'
-  if ignore_working_copy:
-    args.append('--ignore-working-copy')
 
-  stdout = run_command(
-      ['jj', *args, '--no-pager', '--no-graph', '-T', template],
+  stdout = run_jj(
+      [*args, '--no-graph', '-T', template],
       stdout=subprocess.PIPE,
       text=True,
+      **kwargs,
   ).stdout
 
   # Now we parse our CSV file.
@@ -63,10 +71,8 @@ def _log(args: list[str], templates: dict[str, str],
 def jj_log(*,
            templates: dict[str, str],
            revisions='@',
-           ignore_working_copy=False) -> list[dict[str, str]]:
+           **kwargs) -> list[dict[str, str]]:
   """Retrieves information about jj revisions.
 
   See _log for details."""
-  return _log(['log', '-r', revisions],
-              templates,
-              ignore_working_copy=ignore_working_copy)
+  return _log(['log', '-r', revisions], templates, **kwargs)

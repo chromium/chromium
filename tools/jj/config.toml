@@ -8,6 +8,9 @@
 "cr-sync" = ["util", "exec", "tools/jj/sync.py", "--"]
 "sync" = ["cr-sync"]
 
+"cr-upload" = ["util", "exec", "tools/jj/upload.py", "--"]
+"upload" = ["cr-upload"]
+
 [revset-aliases]
 "trunk()" = "main@origin"
 "immutable_heads()" = "remote_bookmarks() | tags()"
