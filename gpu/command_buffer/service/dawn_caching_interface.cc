@@ -149,6 +149,8 @@ DawnCachingBackend::Entry::Entry(const std::string& key,
                                  size_t value_size)
     : key_(key), data_(static_cast<const char*>(value), value_size) {}
 
+DawnCachingBackend::Entry::~Entry() = default;
+
 const std::string& DawnCachingBackend::Entry::Key() const {
   return key_;
 }

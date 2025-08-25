@@ -52,6 +52,7 @@ class GPU_GLES2_EXPORT DawnCachingBackend
   class Entry : public base::LinkNode<Entry> {
    public:
     Entry(const std::string& key, const void* value, size_t value_size);
+    ~Entry();
 
     const std::string& Key() const;
 

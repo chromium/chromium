@@ -335,14 +335,13 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
   class GPU_GLES2_EXPORT GraphiteTextureHolder
       : public base::RefCountedThreadSafe<GraphiteTextureHolder> {
    public:
-    explicit GraphiteTextureHolder(skgpu::graphite::BackendTexture texture)
-        : texture_(std::move(texture)) {}
+    explicit GraphiteTextureHolder(skgpu::graphite::BackendTexture texture);
 
     const skgpu::graphite::BackendTexture& texture() { return texture_; }
 
    protected:
     friend class base::RefCountedThreadSafe<GraphiteTextureHolder>;
-    virtual ~GraphiteTextureHolder() = default;
+    virtual ~GraphiteTextureHolder();
 
     skgpu::graphite::BackendTexture texture_;
   };

@@ -73,6 +73,13 @@ CreateGraphiteSkImageReleaseProc(
 }
 }  // namespace
 
+SkiaImageRepresentation::GraphiteTextureHolder::GraphiteTextureHolder(
+    skgpu::graphite::BackendTexture texture)
+    : texture_(std::move(texture)) {}
+
+SkiaImageRepresentation::GraphiteTextureHolder::~GraphiteTextureHolder() =
+    default;
+
 ///////////////////////////////////////////////////////////////////////////////
 // SharedImageRepresentation
 
