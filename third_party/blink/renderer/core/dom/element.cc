@@ -11270,9 +11270,9 @@ void Element::ChangeInterestState(Element* target, InterestState new_state) {
     invoker_data->SetInterestState(new_state);
     invoker_data->SetActiveInterestTarget(target);
   }
-  PseudoStateChanged(CSSSelector::kPseudoHasInterest);
+  PseudoStateChanged(CSSSelector::kPseudoInterestSource);
   if (target) {
-    target->PseudoStateChanged(CSSSelector::kPseudoTargetOfInterest);
+    target->PseudoStateChanged(CSSSelector::kPseudoInterestTarget);
   }
 }
 

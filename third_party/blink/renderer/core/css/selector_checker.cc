@@ -630,13 +630,14 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoFocusVisible:
     case CSSSelector::kPseudoFocusWithin:
     case CSSSelector::kPseudoFullPageMedia:
-    case CSSSelector::kPseudoHasInterest:
     case CSSSelector::kPseudoHasSlotted:
     case CSSSelector::kPseudoHorizontal:
     case CSSSelector::kPseudoHover:
     case CSSSelector::kPseudoIncrement:
     case CSSSelector::kPseudoIndeterminate:
     case CSSSelector::kPseudoInterestHint:
+    case CSSSelector::kPseudoInterestSource:
+    case CSSSelector::kPseudoInterestTarget:
     case CSSSelector::kPseudoInvalid:
     case CSSSelector::kPseudoLang:
     case CSSSelector::kPseudoLastChild:
@@ -681,7 +682,6 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoStart:
     case CSSSelector::kPseudoState:
     case CSSSelector::kPseudoTarget:
-    case CSSSelector::kPseudoTargetOfInterest:
     case CSSSelector::kPseudoUnknown:
     case CSSSelector::kPseudoUnparsed:
     case CSSSelector::kPseudoUserInvalid:
@@ -2256,11 +2256,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return true;
       }
       return element.HasFocusWithin();
-    case CSSSelector::kPseudoHasInterest:
+    case CSSSelector::kPseudoInterestSource:
       DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
       return element.GetInterestState() != Element::InterestState::kNoInterest;
-    case CSSSelector::kPseudoTargetOfInterest: {
+    case CSSSelector::kPseudoInterestTarget: {
       DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
       Element* invoker = element.SourceInterestInvoker();
