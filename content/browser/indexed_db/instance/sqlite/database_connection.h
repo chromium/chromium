@@ -221,11 +221,15 @@ class DatabaseConnection {
   // May return `nullptr` if the statement has been destroyed.
   sql::Statement* GetLongLivedStatement(uint64_t id);
 
+  // Returns a `Status` for the last operation on `db_`.
+  Status GetStatusOfLastOperation();
+
   // Also for internal use only; exposed for RecordIterator implementations.
   // This adds external objects to `value` which should later be further hooked
   // up via `CreateAllExternalObjects()`.
-  IndexedDBValue AddExternalObjectMetadataToValue(IndexedDBValue value,
-                                                  int64_t record_row_id);
+  StatusOr<IndexedDBValue> AddExternalObjectMetadataToValue(
+      IndexedDBValue value,
+      int64_t record_row_id);
 
  private:
   DatabaseConnection(base::FilePath path,

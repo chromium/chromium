@@ -413,12 +413,14 @@ class ObjectStoreRecordIterator : public RecordIterator {
     statement->BindNull(position_index_ = param_index++);
     statement->BindNull(target_key_index_ = param_index++);
     statement->BindInt64(offset_index_ = param_index++, 0);
-    if (!statement->Step()) {
-      TRANSIENT_CHECK(statement->Succeeded());
+    if (statement->Step()) {
+      return ReadRow(*statement);
+    }
+    if (statement->Succeeded()) {
       // Empty range.
       return nullptr;
     }
-    return ReadRow(*statement);
+    return base::unexpected(db_->GetStatusOfLastOperation());
   }
 
   void SavePosition() override { saved_position_ = position_; }
@@ -459,9 +461,12 @@ class ObjectStoreRecordIterator : public RecordIterator {
     IndexedDBValue value;
     statement.ColumnBlobAsVector(1, &value.bits);
     int64_t record_row_id = statement.ColumnInt64(2);
-    return std::make_unique<ObjectStoreRecord>(
-        std::move(key),
-        db_->AddExternalObjectMetadataToValue(std::move(value), record_row_id));
+    return db_
+        ->AddExternalObjectMetadataToValue(std::move(value), record_row_id)
+        .transform([&](IndexedDBValue value_with_metadata) {
+          return std::make_unique<ObjectStoreRecord>(
+              std::move(key), std::move(value_with_metadata));
+        });
   }
 
   sql::Statement* GetStatement() override {
@@ -602,12 +607,16 @@ class IndexRecordIterator : public RecordIterator {
     statement->BindNull(target_key_index_ = param_index++);
     statement->BindNull(target_primary_key_index_ = param_index++);
     statement->BindInt64(offset_index_ = param_index++, 0);
-    if (!statement->Step()) {
-      TRANSIENT_CHECK(statement->Succeeded());
+    if (statement->Step()) {
+      return ReadRow(*statement);
+    }
+
+    if (statement->Succeeded()) {
       // Empty range.
       return nullptr;
     }
-    return ReadRow(*statement);
+
+    return base::unexpected(db_->GetStatusOfLastOperation());
   }
 
   void SavePosition() override {
@@ -662,9 +671,13 @@ class IndexRecordIterator : public RecordIterator {
     IndexedDBValue value;
     statement.ColumnBlobAsVector(2, &value.bits);
     int64_t record_row_id = statement.ColumnInt64(3);
-    return std::make_unique<IndexRecord>(
-        std::move(key), std::move(primary_key),
-        db_->AddExternalObjectMetadataToValue(std::move(value), record_row_id));
+    return db_
+        ->AddExternalObjectMetadataToValue(std::move(value), record_row_id)
+        .transform([&](IndexedDBValue value_with_metadata) {
+          return std::make_unique<IndexRecord>(std::move(key),
+                                               std::move(primary_key),
+                                               std::move(value_with_metadata));
+        });
   }
 
   sql::Statement* GetStatement() override {
@@ -1328,7 +1341,7 @@ StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
   return AddExternalObjectMetadataToValue(std::move(value), record_row_id);
 }
 
-IndexedDBValue DatabaseConnection::AddExternalObjectMetadataToValue(
+StatusOr<IndexedDBValue> DatabaseConnection::AddExternalObjectMetadataToValue(
     IndexedDBValue value,
     int64_t record_row_id) {
   // First add Blob and File objects' metadata (not FSA handles).
@@ -1376,7 +1389,7 @@ IndexedDBValue DatabaseConnection::AddExternalObjectMetadataToValue(
         }
       }
     }
-    TRANSIENT_CHECK(statement.Succeeded());
+    RETURN_IF_STATEMENT_ERRORED(statement);
   }
   // Then add FileSystemAccessHandle objects' metadata.
   {
@@ -1408,7 +1421,7 @@ IndexedDBValue DatabaseConnection::AddExternalObjectMetadataToValue(
             serialized_handle.begin(), serialized_handle.end()));
       }
     }
-    TRANSIENT_CHECK(statement.Succeeded());
+    RETURN_IF_STATEMENT_ERRORED(statement);
   }
 
   return value;
@@ -1826,6 +1839,10 @@ sql::Statement* DatabaseConnection::GetLongLivedStatement(uint64_t id) {
     return nullptr;
   }
   return it->second.get();
+}
+
+Status DatabaseConnection::GetStatusOfLastOperation() {
+  return Status(*db_);
 }
 
 }  // namespace content::indexed_db::sqlite

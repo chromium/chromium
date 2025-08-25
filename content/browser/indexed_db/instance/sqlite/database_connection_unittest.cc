@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/browser/indexed_db/file_path_util.h"
@@ -18,6 +19,7 @@
 #include "content/browser/indexed_db/status.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-data-view.h"
 
 namespace content::indexed_db::sqlite {
 
@@ -113,79 +115,115 @@ BlobWriteCallback CreateBlobWriteCallback(
       succeeded, std::move(on_done));
 }
 
-TEST_F(DatabaseConnectionTest, Corruption) {
-  constexpr int kObjectStoreId = 42;
-  const blink::IndexedDBKey kKey("key");
-  const IndexedDBValue kValue("deadbeef", {});
-  const std::u16string kDbName{u"test db"};
+class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
+ public:
+  static constexpr int kObjectStoreId = 42;
+  const blink::IndexedDBKey kKey;
 
-  auto db = OpenDb(kDbName);
+  DatabaseConnectionCorruptionTest() : kKey("key") {}
 
-  // Create an object store with one record in it.
-  {
-    auto vc =
-        db->CreateTransaction(blink::mojom::IDBTransactionDurability::Default,
-                              blink::mojom::IDBTransactionMode::VersionChange);
-    vc->Begin({});
-    ASSERT_TRUE(
-        vc->CreateObjectStore(kObjectStoreId, u"object store name", {}, true)
-            .ok());
-    ASSERT_TRUE(vc->PutRecord(kObjectStoreId, kKey.Clone(), kValue.Clone())
-                    .has_value());
-    ASSERT_TRUE(vc->SetDatabaseVersion(1).ok());
-    bool succeeded = false;
-    ASSERT_TRUE(
-        vc->CommitPhaseOne(CreateBlobWriteCallback(&succeeded), {}).ok());
-    EXPECT_TRUE(succeeded);
-    ASSERT_TRUE(vc->CommitPhaseTwo().ok());
-  }
+  // Writes a record to the DB and reads it back with `read_value_callback`,
+  // which should normally succeed. Then corrupts the DB and tries to read
+  // again, which is expected to fail gracefully. Then handles the failure by
+  // recovering or deleting the DB. In short: the code in `read_value_callback`
+  // is being verified for its error reporting, and the rest of the code in this
+  // function is verifying DatabaseConnection's error *handling*.
+  void VerifyCorruptionHandling(
+      base::RepeatingCallback<StatusOr<IndexedDBValue>(
+          BackingStore::Transaction&)> read_value_callback) {
+    const IndexedDBValue kValue("deadbeef", {});
+    const std::u16string kDbName{u"test db"};
 
-  // Make sure that reading the record works.
-  auto read_value = [&]() {
-    auto ro =
-        db->CreateTransaction(blink::mojom::IDBTransactionDurability::Default,
-                              blink::mojom::IDBTransactionMode::ReadOnly);
-    ro->Begin({});
-    StatusOr<IndexedDBValue> value =
-        ro->GetRecord(kObjectStoreId, kKey.Clone());
-    ro->Rollback();
-    return value;
-  };
+    auto db = OpenDb(kDbName);
 
-  StatusOr<IndexedDBValue> value = read_value();
+    // Create an object store with one record in it.
+    {
+      auto vc = db->CreateTransaction(
+          blink::mojom::IDBTransactionDurability::Default,
+          blink::mojom::IDBTransactionMode::VersionChange);
+      vc->Begin({});
+      ASSERT_TRUE(
+          vc->CreateObjectStore(kObjectStoreId, u"object store name", {}, true)
+              .ok());
+      ASSERT_TRUE(vc->PutRecord(kObjectStoreId, kKey.Clone(), kValue.Clone())
+                      .has_value());
+      ASSERT_TRUE(vc->SetDatabaseVersion(1).ok());
+      bool succeeded = false;
+      ASSERT_TRUE(
+          vc->CommitPhaseOne(CreateBlobWriteCallback(&succeeded), {}).ok());
+      EXPECT_TRUE(succeeded);
+      ASSERT_TRUE(vc->CommitPhaseTwo().ok());
+    }
 
-  ASSERT_TRUE(value.has_value());
-  EXPECT_EQ(value.value().bits, kValue.bits);
+    // Make sure that reading the record works.
+    auto read_value = [&]() {
+      auto ro =
+          db->CreateTransaction(blink::mojom::IDBTransactionDurability::Default,
+                                blink::mojom::IDBTransactionMode::ReadOnly);
+      ro->Begin({});
+      StatusOr<IndexedDBValue> value = read_value_callback.Run(*ro);
+      ro->Rollback();
+      return value;
+    };
 
-  // Close the database and then corrupt it.
-  db.reset();
-  base::FilePath db_path =
-      temp_dir_.GetPath().Append(DatabaseNameToFileName(kDbName));
-  ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path, "records_by_key"));
+    StatusOr<IndexedDBValue> value = read_value();
 
-  // Reopen the database. The corruption isn't detected until the index is
-  // used, which happens when reading from the records table.
-  db = OpenDb(kDbName);
+    ASSERT_TRUE(value.has_value());
+    EXPECT_EQ(value.value().bits, kValue.bits);
 
-  value = read_value();
-  ASSERT_FALSE(value.has_value());
-  EXPECT_TRUE(value.error().IsCorruption());
+    // Close the database and then corrupt it.
+    db.reset();
+    base::FilePath db_path =
+        temp_dir_.GetPath().Append(DatabaseNameToFileName(kDbName));
+    ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path, "records_by_key"));
 
-  // Closing the database should run the recovery routine.
-  db.reset();
-  db = OpenDb(kDbName);
+    // Reopen the database. The corruption isn't detected until the index is
+    // used, which happens when reading from the records table.
+    db = OpenDb(kDbName);
 
-  value = read_value();
+    value = read_value();
+    ASSERT_FALSE(value.has_value());
+    EXPECT_TRUE(value.error().IsCorruption());
+
+    // Closing the database should run the recovery routine.
+    db.reset();
+    db = OpenDb(kDbName);
+
+    value = read_value();
 #if BUILDFLAG(IS_FUCHSIA)
-  // Read "works" in that it doesn't fail, but the record doesn't exist,
-  // since the corrupted DB was deleted and recreated.
-  ASSERT_TRUE(value.has_value());
-  EXPECT_TRUE(value.value().empty());
+    // Read "works" in that it doesn't fail, but the record doesn't exist,
+    // since the corrupted DB was deleted and recreated.
+    ASSERT_TRUE(value.has_value());
+    EXPECT_TRUE(value.value().empty());
 #else
-  // Read works because the DB was recovered.
-  ASSERT_TRUE(value.has_value());
-  EXPECT_EQ(value.value().bits, kValue.bits);
+    // Read works because the DB was recovered.
+    ASSERT_TRUE(value.has_value());
+    EXPECT_EQ(value.value().bits, kValue.bits);
 #endif
+  }
+};
+
+TEST_F(DatabaseConnectionCorruptionTest, Get) {
+  VerifyCorruptionHandling(
+      base::BindLambdaForTesting([&](BackingStore::Transaction& ro) {
+        return ro.GetRecord(kObjectStoreId, kKey);
+      }));
+}
+
+TEST_F(DatabaseConnectionCorruptionTest, ObjectStoreCursor) {
+  VerifyCorruptionHandling(
+      base::BindLambdaForTesting([&](BackingStore::Transaction& ro) {
+        return ro
+            .OpenObjectStoreCursor(kObjectStoreId, blink::IndexedDBKeyRange(),
+                                   blink::mojom::IDBCursorDirection::Next)
+            .transform([](std::unique_ptr<BackingStore::Cursor> cursor)
+                           -> IndexedDBValue {
+              if (!cursor) {
+                return {};
+              }
+              return cursor->GetValue().Clone();
+            });
+      }));
 }
 
 }  // namespace content::indexed_db::sqlite
