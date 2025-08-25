@@ -1963,6 +1963,18 @@ KleeneValue MediaQueryEvaluator::EvalStyleRange(const CSSValue& reference_value,
   const CSSNumericLiteralValue* query_numeric =
       DynamicTo<CSSNumericLiteralValue>(query_value);
 
+  if (reference_numeric->IsNumber() && !reference_numeric->DoubleValue() &&
+      query_numeric->IsLength()) {
+    reference_numeric =
+        CSSNumericLiteralValue::Create(0, query_numeric->GetType());
+  }
+
+  if (query_numeric->IsNumber() && !query_numeric->DoubleValue() &&
+      reference_numeric->IsLength()) {
+    query_numeric =
+        CSSNumericLiteralValue::Create(0, reference_numeric->GetType());
+  }
+
   if (!reference_numeric || !query_numeric ||
       !TypesMatch(*reference_numeric, *query_numeric)) {
     return KleeneValue::kFalse;

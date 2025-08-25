@@ -1,10 +1,16 @@
 This is a testharness.js-based test.
-Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] style(5 >= calc(3 + 1))
   assert_equals: expected "true" but got "false"
 [FAIL] style(1px <= 1em)
   assert_equals: expected "true" but got "false"
 [FAIL] style(5 >= 3)
+  assert_equals: expected "true" but got "false"
+[FAIL] style(0 = 0px)
+  assert_equals: expected "true" but got "false"
+[FAIL] style(0 >= 0px)
+  assert_equals: expected "true" but got "false"
+[FAIL] style(0 < 3px)
   assert_equals: expected "true" but got "false"
 [FAIL] style(3px >= 3px)
   assert_equals: expected "true" but got "false"
