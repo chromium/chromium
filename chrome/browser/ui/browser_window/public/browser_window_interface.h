@@ -112,10 +112,16 @@ class BrowserWindowInterface : public content::PageNavigator {
   // SessionService::WindowType mirrors these values.  If you add to this
   // enum, look at SessionService::WindowType to see if it needs to be
   // updated.
+  //
   // TODO(https://crbug.com/331031753): Several of these existing Window Types
   // likely should not have been using Browser as a base to begin with and
   // should be migrated. Other types are not available on all platforms.
   // Please refrain from adding new types.
+  //
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.chrome.browser.ui.browser_window)
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: BrowserWindowType
+  // GENERATED_JAVA_PREFIX_TO_STRIP: TYPE_
   enum Type {
     // Normal tabbed non-app browser (previously TYPE_TABBED).
     TYPE_NORMAL,

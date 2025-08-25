@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -98,7 +99,9 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var mockAndroidBrowserWindowNatives =
                 mockNatives ? createMockAndroidBrowserWindowNatives() : null;
         var chromeAndroidTask =
-                new ChromeAndroidTaskImpl(activityWindowAndroidMocks.mMockActivityWindowAndroid);
+                new ChromeAndroidTaskImpl(
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroidMocks.mMockActivityWindowAndroid);
 
         return new ChromeAndroidTaskWithMockDeps(
                 chromeAndroidTask, activityWindowAndroidMocks, mockAndroidBrowserWindowNatives);
@@ -146,7 +149,8 @@ public final class ChromeAndroidTaskUnitTestSupport {
      */
     private static AndroidBrowserWindow.Natives createMockAndroidBrowserWindowNatives() {
         var mockAndroidBrowserWindowNatives = mock(AndroidBrowserWindow.Natives.class);
-        when(mockAndroidBrowserWindowNatives.create(any()))
+        when(mockAndroidBrowserWindowNatives.create(
+                        /* caller= */ any(), /* browserWindowType= */ anyInt()))
                 .thenReturn(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
 
         AndroidBrowserWindowJni.setInstanceForTesting(mockAndroidBrowserWindowNatives);

@@ -280,6 +280,7 @@ import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlockerFactory;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.browser_window.BrowserWindowType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -1249,7 +1250,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
             var activityWindowAndroid = getWindowAndroid();
             assert activityWindowAndroid != null;
 
-            var chromeAndroidTask = chromeAndroidTaskTracker.obtainTask(activityWindowAndroid);
+            var chromeAndroidTask =
+                    chromeAndroidTaskTracker.obtainTask(
+                            BrowserWindowType.NORMAL, activityWindowAndroid);
 
             mTabModelSelector
                     .getCurrentModel()

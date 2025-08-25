@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.browser_window;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -42,7 +43,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
 
         // Act.
-        var chromeAndroidTask = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid);
+        var chromeAndroidTask =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL, activityWindowAndroid);
 
         // Assert.
         assertEquals(1, chromeAndroidTask.getId());
@@ -50,13 +53,16 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     }
 
     @Test
-    public void obtainTask_activityWindowAndroidBelongsToExistingTask_reusesExistingTask() {
+    public void
+            obtainTask_activityWindowAndroidBelongsToExistingTask_sameBrowserWindowType_reusesExistingTask() {
         // Arrange.
         // (1) Create a new task.
         int taskId = 1;
         var activityWindowAndroid1 =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
-        var chromeAndroidTask1 = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid1);
+        var chromeAndroidTask1 =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL, activityWindowAndroid1);
 
         // (2) Clear the ActivityWindowAndroid from the task.
         // This simulates the case where ChromeActivity is killed in the background, but the Task
@@ -70,7 +76,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
 
         // Act.
-        var chromeAndroidTask2 = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid2);
+        var chromeAndroidTask2 =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL, activityWindowAndroid2);
 
         // Assert.
         assertEquals(chromeAndroidTask1, chromeAndroidTask2);
@@ -79,11 +87,45 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     }
 
     @Test
+    public void
+            obtainTask_activityWindowAndroidBelongsToExistingTask_differentBrowserWindowType_throwsException() {
+        // Arrange.
+        // (1) Create a new task.
+        int taskId = 1;
+        var activityWindowAndroid1 =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
+        var chromeAndroidTask =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL, activityWindowAndroid1);
+
+        // (2) Clear the ActivityWindowAndroid from the task.
+        // This simulates the case where ChromeActivity is killed in the background, but the Task
+        // (window) is still alive.
+        chromeAndroidTask.clearActivityWindowAndroid();
+
+        // (3) Create another ActivityWindowAndroid that belongs to the same Task.
+        // This can happen when ChromeActivity is recreated, e.g. after ChromeActivity is killed by
+        // OS in the background, and the user later brings it back to foreground.
+        var activityWindowAndroid2 =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
+
+        // Act & Assert.
+        // Note that we use a different browser window type here.
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        mChromeAndroidTaskTracker.obtainTask(
+                                BrowserWindowType.POPUP, activityWindowAndroid2));
+    }
+
+    @Test
     public void get_taskExists_returnsTask() {
         // Arrange.
         var activityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
-        var chromeAndroidTask = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid);
+        var chromeAndroidTask =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL, activityWindowAndroid);
 
         // Act & Assert.
         assertEquals(chromeAndroidTask, mChromeAndroidTaskTracker.get(/* taskId= */ 1));
@@ -94,7 +136,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Arrange.
         var activityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
-        mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid);
+        mChromeAndroidTaskTracker.obtainTask(BrowserWindowType.NORMAL, activityWindowAndroid);
 
         // Act & Assert.
         assertEquals(null, mChromeAndroidTaskTracker.get(/* taskId= */ 2));
@@ -107,7 +149,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
         var activityWindowAndroid2 =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 2);
-        var chromeAndroidTask = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid1);
+        var chromeAndroidTask =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL, activityWindowAndroid1);
 
         // Act.
         mChromeAndroidTaskTracker.onActivityWindowAndroidDestroy(activityWindowAndroid2);
@@ -126,7 +170,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
         var activityWindowAndroid2 =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
-        var chromeAndroidTask = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid1);
+        var chromeAndroidTask =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL, activityWindowAndroid1);
 
         // Act.
         mChromeAndroidTaskTracker.onActivityWindowAndroidDestroy(activityWindowAndroid2);
@@ -143,7 +189,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Arrange.
         var activityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
-        var chromeAndroidTask = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid);
+        var chromeAndroidTask =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL, activityWindowAndroid);
 
         // Act.
         mChromeAndroidTaskTracker.onActivityWindowAndroidDestroy(activityWindowAndroid);
@@ -161,7 +209,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         int taskId = 1;
         var activityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
-        var chromeAndroidTask = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid);
+        var chromeAndroidTask =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL, activityWindowAndroid);
 
         // Act.
         mChromeAndroidTaskTracker.remove(taskId);
@@ -176,7 +226,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Arrange.
         var activityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
-        var chromeAndroidTask = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid);
+        var chromeAndroidTask =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL, activityWindowAndroid);
 
         // Act.
         mChromeAndroidTaskTracker.remove(/* taskId= */ 2);
@@ -195,7 +247,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Act (add task).
         var activityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
-        var chromeAndroidTask = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid);
+        var chromeAndroidTask =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL, activityWindowAndroid);
 
         // Assert (add task).
         verify(observer).onTaskAdded(chromeAndroidTask);

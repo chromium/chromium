@@ -19,7 +19,8 @@ final class BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport {
         var mockActivityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
         var chromeAndroidTask =
-                ChromeAndroidTaskTrackerImpl.getInstance().obtainTask(mockActivityWindowAndroid);
+                ChromeAndroidTaskTrackerImpl.getInstance()
+                        .obtainTask(BrowserWindowType.NORMAL, mockActivityWindowAndroid);
         return chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
     }
 

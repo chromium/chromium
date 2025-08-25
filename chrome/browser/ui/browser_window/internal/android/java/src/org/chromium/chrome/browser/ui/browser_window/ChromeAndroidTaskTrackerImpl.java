@@ -45,17 +45,20 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     private ChromeAndroidTaskTrackerImpl() {}
 
     @Override
-    public ChromeAndroidTask obtainTask(ActivityWindowAndroid activityWindowAndroid) {
+    public ChromeAndroidTask obtainTask(
+            @BrowserWindowType int browserWindowType, ActivityWindowAndroid activityWindowAndroid) {
         int taskId = getTaskId(activityWindowAndroid);
 
         synchronized (mTasksLock) {
             var existingTask = mTasks.get(taskId);
             if (existingTask != null) {
+                assert existingTask.getBrowserWindowType() == browserWindowType
+                        : "The browser window type of an existing task can't be changed.";
                 existingTask.setActivityWindowAndroid(activityWindowAndroid);
                 return existingTask;
             }
 
-            var newTask = new ChromeAndroidTaskImpl(activityWindowAndroid);
+            var newTask = new ChromeAndroidTaskImpl(browserWindowType, activityWindowAndroid);
             mTasks.put(taskId, newTask);
             mObservers.forEach((observer) -> observer.onTaskAdded(newTask));
             return newTask;

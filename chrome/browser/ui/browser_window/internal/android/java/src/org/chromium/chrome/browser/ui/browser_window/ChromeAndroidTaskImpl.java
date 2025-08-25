@@ -63,6 +63,8 @@ final class ChromeAndroidTaskImpl
 
     private final AtomicReference<State> mState = new AtomicReference<>(State.ALIVE);
 
+    private final @BrowserWindowType int mBrowserWindowType;
+
     private final int mId;
 
     private final AndroidBrowserWindow mAndroidBrowserWindow;
@@ -114,7 +116,9 @@ final class ChromeAndroidTaskImpl
         return ((ActivityLifecycleDispatcherProvider) activity).getLifecycleDispatcher();
     }
 
-    ChromeAndroidTaskImpl(ActivityWindowAndroid activityWindowAndroid) {
+    ChromeAndroidTaskImpl(
+            @BrowserWindowType int browserWindowType, ActivityWindowAndroid activityWindowAndroid) {
+        mBrowserWindowType = browserWindowType;
         mId = getActivity(activityWindowAndroid).getTaskId();
         mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
         setActivityWindowAndroidInternal(activityWindowAndroid);
@@ -123,6 +127,11 @@ final class ChromeAndroidTaskImpl
     @Override
     public int getId() {
         return mId;
+    }
+
+    @Override
+    public @BrowserWindowType int getBrowserWindowType() {
+        return mBrowserWindowType;
     }
 
     @Override

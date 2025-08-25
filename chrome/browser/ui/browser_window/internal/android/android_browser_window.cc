@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/internal/jni/AndroidBrowserWindow_jni.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
@@ -23,14 +24,18 @@ using base::android::JavaParamRef;
 // Implements Java |AndroidBrowserWindow.Natives#create|.
 static jlong JNI_AndroidBrowserWindow_Create(
     JNIEnv* env,
-    const JavaParamRef<jobject>& caller) {
-  return reinterpret_cast<intptr_t>(new AndroidBrowserWindow(env, caller));
+    const JavaParamRef<jobject>& caller,
+    jint browser_window_type) {
+  return reinterpret_cast<intptr_t>(new AndroidBrowserWindow(
+      env, caller,
+      static_cast<BrowserWindowInterface::Type>(browser_window_type)));
 }
 
 AndroidBrowserWindow::AndroidBrowserWindow(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_android_browser_window)
-    : session_id_(SessionID::NewUnique()) {
+    const JavaParamRef<jobject>& java_android_browser_window,
+    const BrowserWindowInterface::Type type)
+    : type_(type), session_id_(SessionID::NewUnique()) {
   java_android_browser_window_.Reset(env, java_android_browser_window);
 }
 
@@ -75,8 +80,7 @@ const SessionID& AndroidBrowserWindow::GetSessionID() const {
 }
 
 BrowserWindowInterface::Type AndroidBrowserWindow::GetType() const {
-  NOTIMPLEMENTED();
-  return TYPE_NORMAL;
+  return type_;
 }
 
 content::WebContents* AndroidBrowserWindow::OpenURL(

@@ -17,7 +17,8 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
  public:
   AndroidBrowserWindow(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_android_browser_window);
+      const base::android::JavaParamRef<jobject>& java_android_browser_window,
+      const BrowserWindowInterface::Type type);
   AndroidBrowserWindow(const AndroidBrowserWindow&) = delete;
   AndroidBrowserWindow& operator=(const AndroidBrowserWindow&) = delete;
   ~AndroidBrowserWindow() override;
@@ -48,6 +49,8 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_android_browser_window_;
   ui::UnownedUserDataHost unowned_user_data_host_;
+
+  const BrowserWindowInterface::Type type_;
   const SessionID session_id_;
 };
 

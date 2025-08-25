@@ -72,7 +72,8 @@ public class ChromeAndroidTaskImplUnitTest {
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
 
         // Act.
-        var chromeAndroidTask = new ChromeAndroidTaskImpl(activityWindowAndroid);
+        var chromeAndroidTask =
+                new ChromeAndroidTaskImpl(BrowserWindowType.NORMAL, activityWindowAndroid);
 
         // Assert.
         assertEquals(activityWindowAndroid, chromeAndroidTask.getActivityWindowAndroid());

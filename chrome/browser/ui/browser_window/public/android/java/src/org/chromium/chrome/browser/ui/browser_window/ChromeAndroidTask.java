@@ -53,6 +53,14 @@ public interface ChromeAndroidTask {
     int getId();
 
     /**
+     * Returns the browser window type of this {@link ChromeAndroidTask}.
+     *
+     * <p>The types are defined in the native {@code BrowserWindowInterface::Type} enum.
+     */
+    @BrowserWindowType
+    int getBrowserWindowType();
+
+    /**
      * Sets the current {@link ActivityWindowAndroid} in this Task.
      *
      * <p>As a {@link ChromeAndroidTask} is meant to track an Android Task, but an {@link

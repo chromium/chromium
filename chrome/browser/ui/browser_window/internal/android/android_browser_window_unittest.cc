@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/internal/android/android_base_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/native_unit_test_support_jni/AndroidBrowserWindowNativeUnitTestSupport_jni.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -144,4 +145,23 @@ TEST_F(AndroidBrowserWindowUnitTest, GetSessionIDReturnsUniqueID) {
       AttachCurrentThread(), java_test_support1);
   Java_AndroidBrowserWindowNativeUnitTestSupport_invokeDestroy(
       AttachCurrentThread(), java_test_support2);
+}
+
+TEST_F(AndroidBrowserWindowUnitTest, GetTypeReturnsBrowserWindowInterfaceType) {
+  // Arrange.
+  ScopedJavaLocalRef<jobject> java_test_support =
+      Java_AndroidBrowserWindowNativeUnitTestSupport_Constructor(
+          AttachCurrentThread(), BrowserWindowInterface::TYPE_POPUP);
+  AndroidBrowserWindow* android_browser_window = reinterpret_cast<
+      AndroidBrowserWindow*>(
+      Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetOrCreateNativePtr(
+          AttachCurrentThread(), java_test_support));
+
+  // Assert.
+  EXPECT_EQ(BrowserWindowInterface::TYPE_POPUP,
+            android_browser_window->GetType());
+
+  // Clean up.
+  Java_AndroidBrowserWindowNativeUnitTestSupport_invokeDestroy(
+      AttachCurrentThread(), java_test_support);
 }

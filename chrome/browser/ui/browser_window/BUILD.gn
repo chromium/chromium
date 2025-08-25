@@ -58,14 +58,20 @@ if (is_android) {
     ]
     deps = [
       "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
+    srcjar_deps = [ ":java_enum_srcjar" ]
   }
 
   # Public Java factory
   android_library_factory("factory_java") {
     deps = [ ":java" ]
     sources = [ "internal/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java" ]
+  }
+
+  java_cpp_enum("java_enum_srcjar") {
+    sources = [ "public/browser_window_interface.h" ]
   }
 } else {
   source_set("browser_tests") {

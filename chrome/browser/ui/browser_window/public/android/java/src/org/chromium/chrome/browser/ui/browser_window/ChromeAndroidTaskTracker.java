@@ -26,13 +26,20 @@ public interface ChromeAndroidTaskTracker {
      *
      * <p>As a {@link ChromeAndroidTask} is meant to track an Android Task, but an {@link
      * ActivityWindowAndroid} is associated with a {@code ChromeActivity}, it's possible that when
-     * this method is called, a {@link ChromeAndroidTask} already exists, in which case the existing
-     * {@link ChromeAndroidTask} will be returned.
+     * this method is called, a {@link ChromeAndroidTask} already exists, in which case the {@code
+     * browserWindowType} must be the same as that of the existing {@link ChromeAndroidTask}, and
+     * the existing {@link ChromeAndroidTask} will be returned.
      *
      * <p>Otherwise, this method will create a new {@link ChromeAndroidTask}, add it to the internal
      * collection, and return it.
+     *
+     * @param browserWindowType The browser window type of the returned {@link ChromeAndroidTask}.
+     *     The types are defined in the native {@code BrowserWindowInterface::Type} enum.
+     * @param activityWindowAndroid The {@link ActivityWindowAndroid} to be associated with the
+     *     returned {@link ChromeAndroidTask}.
      */
-    ChromeAndroidTask obtainTask(ActivityWindowAndroid activityWindowAndroid);
+    ChromeAndroidTask obtainTask(
+            @BrowserWindowType int browserWindowType, ActivityWindowAndroid activityWindowAndroid);
 
     /**
      * Returns the {@link ChromeAndroidTask} with the given {@code taskId}.
