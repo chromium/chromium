@@ -111,6 +111,7 @@ class PredictionModelStore {
 
   // Allows tests to reset the store for subsequent tests since the store is a
   // singleton.
+  // TODO:(crbug.com/440098411): Remove this once downstream stops using it.
   void ResetForTesting();
 
  private:

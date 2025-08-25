@@ -39,69 +39,10 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-#import "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
-#import "components/optimization_guide/core/model_execution/on_device_model_component.h"
-#import "ios/chrome/browser/optimization_guide/model/on_device_model_service_controller_ios.h"
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-
 namespace {
 
 using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-using ::optimization_guide::OnDeviceModelComponentStateManager;
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-class OnDeviceModelComponentStateManagerDelegate
-    : public OnDeviceModelComponentStateManager::Delegate {
- public:
-  ~OnDeviceModelComponentStateManagerDelegate() override = default;
-
-  base::FilePath GetInstallDirectory() override {
-    // The model is located in the app bundle.
-    return base::apple::OuterBundlePath();
-  }
-
-  void GetFreeDiskSpace(const base::FilePath& path,
-                        base::OnceCallback<void(int64_t)> callback) override {
-    base::TaskTraits traits = {base::MayBlock(),
-                               base::TaskPriority::BEST_EFFORT};
-    if (optimization_guide::switches::
-            ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask()) {
-      traits.UpdatePriority(base::TaskPriority::USER_VISIBLE);
-    }
-
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, traits,
-        base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, path),
-        std::move(callback));
-  }
-
-  void RegisterInstaller(
-      scoped_refptr<OnDeviceModelComponentStateManager> state_manager,
-      bool is_already_installing) override {
-    // If a model is bundled with the app, call SetReady() and treat
-    // it as an override. Otherwise return and do nothing.
-    base::FilePath model_path =
-        base::apple::OuterBundlePath().Append("on_device_model");
-    LOG(ERROR) << "model_file_path: " << model_path;
-
-    state_manager->SetReady(
-        base::Version("override"), model_path,
-        base::Value::Dict().Set("BaseModelSpec", base::Value::Dict()
-                                                     .Set("version", "override")
-                                                     .Set("name", "override")));
-  }
-
-  void Uninstall(scoped_refptr<OnDeviceModelComponentStateManager>
-                     state_manager) override {
-    // Do nothing since the model is bundled with the app.
-  }
-};
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 }  // namespace
 
@@ -148,48 +89,19 @@ OptimizationGuideService::OptimizationGuideService(
   if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
     prediction_manager_ =
         std::make_unique<optimization_guide::PredictionManager>(
-            optimization_guide::IOSChromePredictionModelStore::GetInstance(),
+            &GetApplicationContext()
+                 ->GetOptimizationGuideGlobalState()
+                 ->prediction_model_store(),
             url_loader_factory, GetApplicationContext()->GetLocalState(),
             application_locale, optimization_guide_logger_.get(),
             base::BindRepeating(&unzip::LaunchInProcessUnzipper));
   }
 
   if (!off_the_record_) {
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-    PrefService* local_state = GetApplicationContext()->GetLocalState();
-
-    // Create and startup the on-device model's state manager.
-    on_device_model_state_manager_ =
-        optimization_guide::OnDeviceModelComponentStateManager::CreateOrGet(
-            local_state,
-            std::make_unique<OnDeviceModelComponentStateManagerDelegate>());
-    on_device_model_state_manager_->OnStartup();
-
-    // TODO(crbug.com/387509291): Always set a high perfomance class for
-    // prototyping.
-    on_device_model_state_manager_->DevicePerformanceClassChanged(
-        optimization_guide::OnDeviceModelPerformanceClass::kHigh);
-
-    // Create the manager for on-device model execution.
-    scoped_refptr<optimization_guide::OnDeviceModelServiceController>
-        on_device_model_service_controller =
-            GetApplicationContext()->GetOnDeviceModelServiceController(
-                on_device_model_state_manager_->GetWeakPtr());
-    on_device_asset_manager_ =
-        std::make_unique<optimization_guide::OnDeviceAssetManager>(
-            local_state, on_device_model_service_controller->GetWeakPtr(),
-            on_device_model_state_manager_->GetWeakPtr(), this);
-    model_execution_manager_ =
-        std::make_unique<optimization_guide::ModelExecutionManager>(
-            url_loader_factory, identity_manager,
-            std::move(on_device_model_service_controller),
-            optimization_guide_logger_.get(), nullptr);
-#else   // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(
             url_loader_factory, identity_manager, nullptr,
             optimization_guide_logger_.get(), nullptr);
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   }
 
   OPTIMIZATION_GUIDE_LOG(
@@ -416,69 +328,3 @@ void OptimizationGuideService::ExecuteModel(
       feature, request_metadata, execution_timeout,
       /*log_ai_data_request=*/nullptr, std::move(callback));
 }
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-
-void OptimizationGuideService::AddOnDeviceModelAvailabilityChangeObserver(
-    optimization_guide::ModelBasedCapabilityKey feature,
-    optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
-  if (!on_device_model_state_manager_) {
-    return;
-  }
-  optimization_guide::OnDeviceModelServiceController* service_controller =
-      GetApplicationContext()->GetOnDeviceModelServiceController(
-          on_device_model_state_manager_->GetWeakPtr());
-  if (service_controller) {
-    service_controller->AddOnDeviceModelAvailabilityChangeObserver(feature,
-                                                                   observer);
-  }
-}
-
-void OptimizationGuideService::RemoveOnDeviceModelAvailabilityChangeObserver(
-    optimization_guide::ModelBasedCapabilityKey feature,
-    optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
-  if (!on_device_model_state_manager_) {
-    return;
-  }
-  optimization_guide::OnDeviceModelServiceController* service_controller =
-      GetApplicationContext()->GetOnDeviceModelServiceController(
-          on_device_model_state_manager_->GetWeakPtr());
-  if (service_controller) {
-    service_controller->RemoveOnDeviceModelAvailabilityChangeObserver(feature,
-                                                                      observer);
-  }
-}
-
-#pragma mark - optimization_guide::OptimizationGuideOnDeviceCapabilityProvider implementation
-
-optimization_guide::OnDeviceModelEligibilityReason
-OptimizationGuideService::GetOnDeviceModelEligibility(
-    optimization_guide::ModelBasedCapabilityKey feature) {
-  if (!model_execution_manager_) {
-    return optimization_guide::OnDeviceModelEligibilityReason::
-        kFeatureNotEnabled;
-  }
-
-  return model_execution_manager_->GetOnDeviceModelEligibility(feature);
-}
-
-std::optional<optimization_guide::SamplingParamsConfig>
-OptimizationGuideService::GetSamplingParamsConfig(
-    optimization_guide::ModelBasedCapabilityKey feature) {
-  if (!model_execution_manager_) {
-    return std::nullopt;
-  }
-
-  return model_execution_manager_->GetSamplingParamsConfig(feature);
-}
-
-std::optional<const optimization_guide::proto::Any>
-OptimizationGuideService::GetFeatureMetadata(
-    optimization_guide::ModelBasedCapabilityKey feature) {
-  if (!model_execution_manager_) {
-    return std::nullopt;
-  }
-
-  return model_execution_manager_->GetFeatureMetadata(feature);
-}
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)

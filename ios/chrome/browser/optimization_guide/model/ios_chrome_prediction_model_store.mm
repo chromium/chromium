@@ -4,14 +4,17 @@
 
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_global_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace optimization_guide {
 
+// TODO:(crbug.com/440098411): Remove this once downstream stops using it.
 // static
 IOSChromePredictionModelStore* IOSChromePredictionModelStore::GetInstance() {
-  static base::NoDestructor<IOSChromePredictionModelStore> model_store;
-  return model_store.get();
+  return &GetApplicationContext()
+              ->GetOptimizationGuideGlobalState()
+              ->prediction_model_store();
 }
 
 IOSChromePredictionModelStore::IOSChromePredictionModelStore() = default;

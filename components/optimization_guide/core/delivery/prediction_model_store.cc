@@ -525,10 +525,7 @@ base::FilePath PredictionModelStore::GetBaseStoreDirForTesting() const {
 }
 
 void PredictionModelStore::ResetForTesting() {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base_store_dir_ = base::FilePath();
-  background_task_runner_.reset();
+  // TODO:(crbug.com/440098411): Remove this once downstream stops using it.
 }
 
 }  // namespace optimization_guide
