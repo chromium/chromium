@@ -30,6 +30,7 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
   const ui::UnownedUserDataHost& GetUnownedUserDataHost() const override;
   ui::BaseWindow* GetWindow() override;
   Profile* GetProfile() override;
+  const Profile* GetProfile() const override;
   const SessionID& GetSessionID() const override;
   Type GetType() const override;
 

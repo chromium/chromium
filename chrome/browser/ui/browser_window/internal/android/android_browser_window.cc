@@ -64,6 +64,12 @@ Profile* AndroidBrowserWindow::GetProfile() {
   return nullptr;
 }
 
+const Profile* AndroidBrowserWindow::GetProfile() const {
+  // TODO(crbug.com/429037015): Return a proper Profile.
+  // Temporarily return nullptr to avoid crashing callers.
+  return nullptr;
+}
+
 const SessionID& AndroidBrowserWindow::GetSessionID() const {
   return session_id_;
 }

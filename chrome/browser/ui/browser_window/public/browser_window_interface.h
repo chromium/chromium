@@ -104,6 +104,7 @@ class BrowserWindowInterface : public content::PageNavigator {
   // when implemented, this will return a single Profile for the given browser
   // window.
   virtual Profile* GetProfile() = 0;
+  virtual const Profile* GetProfile() const = 0;
 
   // Returns a session-unique ID.
   virtual const SessionID& GetSessionID() const = 0;

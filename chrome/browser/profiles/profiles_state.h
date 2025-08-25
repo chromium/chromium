@@ -16,7 +16,7 @@
 
 struct AccountInfo;
 struct CoreAccountInfo;
-class Browser;
+class BrowserWindowInterface;
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
@@ -74,7 +74,7 @@ void UpdateProfileName(Profile* profile,
 // or a guest session).
 // The distinction is needed because guest profiles and incognito profiles are
 // implemented as off-the-record profiles.
-bool IsRegularOrGuestSession(Browser* browser);
+bool IsRegularOrGuestSession(const BrowserWindowInterface* browser);
 
 // Returns true if starting in guest mode is requested at startup (e.g. through
 // command line argument). If |show_warning| is true, send a warning if guest

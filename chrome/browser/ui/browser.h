@@ -795,6 +795,7 @@ class Browser : public TabStripModelObserver,
   // BrowserWindowInterface overrides:
   views::WebView* GetWebView() override;
   Profile* GetProfile() override;
+  const Profile* GetProfile() const override;
   void OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) override;
   content::WebContents* OpenURL(
       const content::OpenURLParams& params,

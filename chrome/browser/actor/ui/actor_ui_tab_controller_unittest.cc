@@ -86,7 +86,7 @@ class ActorUiTabControllerTest : public testing::Test {
         .WillByDefault(Return(&mock_browser_window_interface_));
     ON_CALL(mock_tab_, GetUnownedUserDataHost())
         .WillByDefault(::testing::ReturnRef(user_data_host_));
-    ON_CALL(mock_browser_window_interface_, GetProfile)
+    ON_CALL(mock_browser_window_interface_, GetProfile())
         .WillByDefault(Return(profile()));
     ON_CALL(mock_browser_window_interface_, GetTabStripModel())
         .WillByDefault(Return(&tab_strip_model_));

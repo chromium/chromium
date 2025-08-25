@@ -629,8 +629,8 @@ class TabContainerOverlayView : public views::View {
         BrowserFrameActiveState::kUseCurrent);
     canvas->DrawColor(frame_color);
 
-    auto* theme_service =
-        ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
+    auto* theme_service = ThemeServiceFactory::GetForProfile(
+        browser_view_->browser()->GetProfile());
     if (!theme_service->UsingSystemTheme()) {
       auto* non_client_frame_view = browser_view_->frame()->GetFrameView();
       non_client_frame_view->PaintThemedFrame(canvas);
@@ -954,7 +954,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   SetProperty(views::kElementIdentifierKey, kBrowserViewElementId);
 
   // Add any legal notices required for the user to the queue.
-  QueueLegalAndPrivacyNotices(browser_->profile());
+  QueueLegalAndPrivacyNotices(browser_->GetProfile());
 
   browser_->tab_strip_model()->AddObserver(this);
 
@@ -1321,11 +1321,11 @@ bool BrowserView::ShouldDrawTabStrip() const {
 }
 
 bool BrowserView::GetIncognito() const {
-  return browser_->profile()->IsIncognitoProfile();
+  return browser_->GetProfile()->IsIncognitoProfile();
 }
 
 bool BrowserView::GetGuestSession() const {
-  return browser_->profile()->IsGuestSession();
+  return browser_->GetProfile()->IsGuestSession();
 }
 
 bool BrowserView::GetRegularOrGuestSession() const {
@@ -3081,7 +3081,7 @@ void BrowserView::TouchModeChanged() {
 void BrowserView::MaybeShowReadingListInSidePanelIPH() {
   // TODO(dfried): This promo is potentially superfluous since the pref is never
   // set; remove.
-  const PrefService* const pref_service = browser()->profile()->GetPrefs();
+  const PrefService* const pref_service = browser()->GetProfile()->GetPrefs();
   if (pref_service &&
       pref_service->GetBoolean(
           reading_list::prefs::kReadingListDesktopFirstUseExperienceShown)) {
@@ -3229,7 +3229,7 @@ BrowserView::ShowScreenshotCapturedBubble(content::WebContents* contents,
                                           const gfx::Image& image) {
   auto* bubble = new sharing_hub::ScreenshotCapturedBubble(
       toolbar_button_provider()->GetAnchorView(std::nullopt), contents, image,
-      browser_->profile());
+      browser_->GetProfile());
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
@@ -3912,7 +3912,7 @@ std::u16string BrowserView::GetAccessibleWindowTitle() const {
   }
 
   return GetAccessibleWindowTitleForChannelAndProfile(chrome::GetChannel(),
-                                                      browser_->profile());
+                                                      browser_->GetProfile());
 }
 
 std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
@@ -5122,12 +5122,12 @@ void BrowserView::AddedToWidget() {
   // Stow a pointer to the browser's profile onto the window handle so that we
   // can get it later when all we have is a native view.
   GetWidget()->SetNativeWindowProperty(Profile::kProfileKey,
-                                       browser_->profile());
+                                       browser_->GetProfile());
 
 #if defined(USE_AURA)
   // Stow a pointer to the browser's profile onto the window handle so
   // that windows will be styled with the appropriate NativeTheme.
-  SetThemeProfileForWindow(GetNativeWindow(), browser_->profile());
+  SetThemeProfileForWindow(GetNativeWindow(), browser_->GetProfile());
 #endif
 
   toolbar_->Init();
@@ -5405,7 +5405,7 @@ void BrowserView::LoadingAnimationCallback(base::TimeTicks timestamp) {
 void BrowserView::CreateJumpList() {
   // Ensure that this browser's Profile has a JumpList so that the JumpList is
   // kept up to date.
-  JumpListFactory::GetForProfile(browser_->profile());
+  JumpListFactory::GetForProfile(browser_->GetProfile());
 }
 #endif
 
@@ -5710,8 +5710,8 @@ void BrowserView::LoadAccelerators() {
   const bool is_app_mode = IsRunningInForcedAppMode();
 #if BUILDFLAG(IS_CHROMEOS)
   const bool is_captive_portal_signin_window =
-      browser_->profile()->IsOffTheRecord() &&
-      browser_->profile()->GetOTRProfileID().IsCaptivePortal();
+      browser_->GetProfile()->IsOffTheRecord() &&
+      browser_->GetProfile()->GetOTRProfileID().IsCaptivePortal();
 #endif
   const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());
   for (const auto& entry : accelerator_list) {
@@ -6032,7 +6032,7 @@ void BrowserView::ObserveAppBannerManager(
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, ExclusiveAccessContext implementation:
 Profile* BrowserView::GetProfile() {
-  return browser_->profile();
+  return browser_->GetProfile();
 }
 
 void BrowserView::UpdateUIForTabFullscreen() {

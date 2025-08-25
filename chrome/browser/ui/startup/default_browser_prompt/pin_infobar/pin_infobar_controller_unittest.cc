@@ -78,7 +78,7 @@ class PinInfoBarControllerTest : public testing::Test {
 
     ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model()));
-    ON_CALL(*browser_window_interface_, GetProfile)
+    ON_CALL(*browser_window_interface_, GetProfile())
         .WillByDefault(::testing::Return(profile()));
     delegate_->SetBrowserWindowInterface(browser_window_interface());
   }
@@ -152,7 +152,7 @@ TEST_F(PinInfoBarControllerTest, DontShowIfBrowserNotNormal) {
 
 // Don't show the infobar if the browser is incognito.
 TEST_F(PinInfoBarControllerTest, DontShowIfIncognito) {
-  ON_CALL(*browser_window_interface(), GetProfile)
+  ON_CALL(*browser_window_interface(), GetProfile())
       .WillByDefault(::testing::Return(
           profile()->GetOffTheRecordProfile(Profile::OTRProfileID::PrimaryID(),
                                             /*create_if_needed=*/true)));

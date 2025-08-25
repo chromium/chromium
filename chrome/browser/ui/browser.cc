@@ -1111,6 +1111,10 @@ Profile* Browser::GetProfile() {
   return profile();
 }
 
+const Profile* Browser::GetProfile() const {
+  return profile();
+}
+
 void Browser::OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) {
   OpenURL(content::OpenURLParams(gurl, content::Referrer(), disposition,
                                  ui::PAGE_TRANSITION_LINK,

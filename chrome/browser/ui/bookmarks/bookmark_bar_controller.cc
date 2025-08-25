@@ -88,6 +88,12 @@ BookmarkBarController* BookmarkBarController::From(
       browser_window_interface->GetUnownedUserDataHost());
 }
 
+const BookmarkBarController* BookmarkBarController::From(
+    const BrowserWindowInterface* browser_window_interface) {
+  return ui::ScopedUnownedUserData<BookmarkBarController>::Get(
+      browser_window_interface->GetUnownedUserDataHost());
+}
+
 void BookmarkBarController::SetForceShowBookmarkBarFlag(ForceShowFlag flag) {
   force_show_bookmark_bar_flags_ |= flag;
   UpdateBookmarkBarState(StateChangeReason::kForceShow);

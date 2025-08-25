@@ -182,8 +182,8 @@ void UpdateProfileName(Profile* profile,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-bool IsRegularOrGuestSession(Browser* browser) {
-  Profile* profile = browser->profile();
+bool IsRegularOrGuestSession(const BrowserWindowInterface* browser) {
+  const Profile* profile = browser->GetProfile();
   return profile->IsRegularProfile() || profile->IsGuestSession();
 }
 

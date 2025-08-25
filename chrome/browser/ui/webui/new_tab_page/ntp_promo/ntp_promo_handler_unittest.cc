@@ -122,7 +122,7 @@ class NtpPromoHandlerTest : public testing::Test {
   void SetUp() override {
     // Construct a WebContents that the handler can work with.
     profile_ = TestingProfile::Builder().Build();
-    ON_CALL(mock_browser(), GetProfile)
+    ON_CALL(mock_browser(), GetProfile())
         .WillByDefault(::testing::Return(profile_.get()));
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
