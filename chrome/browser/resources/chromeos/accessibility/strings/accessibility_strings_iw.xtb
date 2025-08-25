@@ -95,7 +95,7 @@
 <translation id="1465097259579587977">הפעלה מחדש של ההדרכה המהירה</translation>
 <translation id="1480046233931937785">שותפים לעשייה</translation>
 <translation id="1487494366197411587">‏ב-Chromebook, מקש החיפוש נמצא בדיוק מעל מקש Shift השמאלי.</translation>
-<translation id="1498498210836053409">השבתת ההקשה ביד אחת במהלך עריכת טקסט (הקשה חכמה ביד אחת)</translation>
+<translation id="1498498210836053409">השבתת ההקשה ביד אחת במהלך עריכת טקסט (הפעלה חכמה של הקשה ביד אחת)</translation>
 <translation id="1499041187027566160">הגברת עוצמת הקול</translation>
 <translation id="1502086903961450562">הגרפיקה הקודמת</translation>
 <translation id="1506187449813838456">הגברת גובה הצליל</translation>
@@ -394,7 +394,7 @@
 <translation id="335581015389089642">דיבור</translation>
 <translation id="3356951775008366684">הקראת הגייה פונטית של מילים</translation>
 <translation id="3359142382821736686">seprtr</translation>
-<translation id="3363015957057974366">‏גם באמצעות מקש Tab אפשר לעבור לפריט האינטראקטיבי הבא במסך. מקש Tab נמצא בדיוק מעל מקש החיפוש. כדי להמשיך, יש להקיש על מקש Tab.</translation>
+<translation id="3363015957057974366">‏אפשר לעבור לפריט האינטראקטיבי הבא במסך גם באמצעות מקש Tab. מקש Tab נמצא בדיוק מעל מקש החיפוש. כדי להמשיך, צריך ללחוץ על מקש Tab.</translation>
 <translation id="3366946046494222386">מדריך <ph name="TOPIC" />, <ph name="LESSONS" /> שיעורים</translation>
 <translation id="338583716107319301">מפריד</translation>
 <translation id="3389259863310851658">שדה קודם בטופס</translation>
@@ -575,7 +575,7 @@
 <translation id="4615592953348396470">התעלמות מלחיצת המקש הבאה</translation>
 <translation id="4617384941327705512">התכונה 'הפעלה חכמה של ההקשה ביד אחת' מושבתת</translation>
 <translation id="4623097797855662355">קולופון</translation>
-<translation id="4624970070706497034">‏אין יותר ב-TalkBack אפשרויות להתאמה אישית במכשירי Chromebook. עדיין אפשר להשתמש ב-TalkBack, אבל רק עם מקשי קיצור המוגדרים כברירת מחדל. כדי לראות את מקשי הקיצור הזמינים, מקישים על מקש החיפוש + A ואז על K. אם רוצים להמשיך להשתמש ב-TalkBack, מקישים שוב על הפקודה.</translation>
+<translation id="4624970070706497034">‏האפשרויות להתאמה אישית ב-TalkBack לא זמינות יותר במכשירי Chromebook. עדיין אפשר להשתמש ב-TalkBack, אבל רק עם מקשי הקיצור שמוגדרים כברירת מחדל. לחיצה על מקש החיפוש + A ואז על K תציג את מקשי הקיצור הזמינים. כדי להמשיך להשתמש ב-TalkBack, צריך ללחוץ שוב על הפקודה.</translation>
 <translation id="4636816104159717853">.input {$$COUNT :number} .match $$COUNT 1{{bullet}} *{{{$$COUNT} bullets}}</translation>
 <translation id="4649220074413114917">‏לוחצים על המסך בעזרת שתי אצבעות כדי להפסיק את הדיבור המופעל. אפשר לעשות זאת כשלא רוצים ש-ChromeVox יקריא טקסט. כדי להמשיך יש ללחוץ על המסך בעזרת שתי אצבעות.</translation>
 <translation id="4661075872484491155">tree</translation>
@@ -1007,7 +1007,7 @@
 <translation id="7596131838331109045">סלמון בהיר</translation>
 <translation id="7604026522577407655">מעבר לתחילת העמודה הנוכחית</translation>
 <translation id="7604451927827590395">hdng</translation>
-<translation id="7609342235116740824">הכרזה על כתובת האתר של הדף הנוכחי</translation>
+<translation id="7609342235116740824">הצגת כתובת האתר של הדף הנוכחי</translation>
 <translation id="7609363189280667021">החלפת כיתובי ברייל</translation>
 <translation id="761303759119251275">קרדיט</translation>
 <translation id="762020119231868829">השהיית כל הווידאג'טים של מדיה הפועלים כעת</translation>
@@ -1033,7 +1033,7 @@
 <translation id="7731002461127710752">.input {$$COUNT :number} .match $$COUNT 1{{backtick}} *{{{$$COUNT} backticks}}</translation>
 <translation id="7731785449856576010">אין עוד ווידג'טים של מדיה</translation>
 <translation id="7735498529470878067">בעזרת 'גילוי באמצעות מגע', קל להבין במהירות מה מוצג במסך.</translation>
-<translation id="773906353055481349">‏כדי לנווט לפי תא, יש להקיש על Search+Ctrl+Alt ביחד עם מקשי החיצים</translation>
+<translation id="773906353055481349">‏כדי לעבור בין התאים בטבלה, אפשר ללחוץ על Search+Ctrl+Alt יחד עם אחד ממקשי החיצים</translation>
 <translation id="7746976083433980639"><ph name="ACTION" /> עד <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">ההורדה של <ph name="FILE_NAME" /> התחילה</translation>
 <translation id="7768784765476638775">הקראה</translation>

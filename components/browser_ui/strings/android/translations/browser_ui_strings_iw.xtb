@@ -5,7 +5,7 @@
 
 ההגנה המתקדמת שולטת בהגדרות האלה של Chrome:
 ‫• האפשרות "להשתמש תמיד בחיבורים מאובטחים" מופעלת.
-‫• כלי האופטימיזציה של JavaScript מושבת. <ph name="BEGIN_LINK2" />ניהול החריגים של האתר<ph name="END_LINK2" /></translation>
+‫• כלי האופטימיזציה של JavaScript מושבת. <ph name="BEGIN_LINK2" />לניהול החריגים של האתר<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">פתיחה באינטרנט</translation>
 <translation id="1036348656032585052">כיבוי</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
@@ -113,7 +113,7 @@
 <translation id="2390272837142897736">הגדלת הזום</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}one{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}two{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
-<translation id="2410940059315936967">‏לאתרים שמבקרים בהם יש אפשרות להטמיע תוכן מאתרים אחרים, למשל תמונות, מודעות וטקסט. קובצי cookie שהוגדרו על ידי האתרים האלה נקראים 'קובצי cookie של צד שלישי'.</translation>
+<translation id="2410940059315936967">‏לאתרים שמבקרים בהם יש אפשרות להטמיע תוכן מאתרים אחרים, למשל תמונות, מודעות וטקסט. קובצי cookie שהוגדרו על ידי האתרים האלה נקראים "קובצי cookie של צד שלישי".</translation>
 <translation id="2434158240863470628">ההורדה הושלמה <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">‏אישרת לאתר הזה להשתמש בקובצי Cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו בלי בעיות. <ph name="BEGIN_LINK" />שליחת משוב<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">יכול להיות שתכונות באתרים מסוימים לא יפעלו במצב פרטי</translation>
@@ -205,7 +205,7 @@
 <translation id="3521663503435878242">אתרים ב-<ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">אין הרשאה לאתרים לעקוב אחר תנועות הידיים</translation>
 <translation id="3536227077203206203">יש אישור לשימוש חד-פעמי</translation>
-<translation id="3538390592868664640">חסימה של יצירת מפה בתלת ממד של הסביבה שלך או של מעקב אחר מיקום המצלמה על ידי אתרים.</translation>
+<translation id="3538390592868664640">חסימת אתרים מיצירת מפה תלת־ממדית של הסביבה שלך או ממעקב אחר מיקום המצלמה.</translation>
 <translation id="3544058026430919413">‏חברות יכולות להגדיר קבוצה של אתרים שיכולים להשתמש בקובצי cookie כדי לשתף את הפעילות שלך בין האתרים בקבוצה. האפשרות הזו מושבתת במצב הפרטי.</translation>
 <translation id="3551268116566418498">לצאת מהמצב האנונימי?</translation>
 <translation id="3586500876634962664">שימוש במצלמה ובמיקרופון</translation>
@@ -478,7 +478,7 @@
 <translation id="6900883974539674431">יצירת קבוצות של כרטיסיות שנשמרות באופן אוטומטי ושמתעדכנות בכל המכשירים</translation>
 <translation id="6912998170423641340">חסימת היכולת של אתרים לקרוא טקסט ותמונות מלוח העריכה</translation>
 <translation id="6945221475159498467">בחירה</translation>
-<translation id="6950072572526089586">אתר שמבקרים בו יכול לשמור מידע על הפעולות שמבצעים בו כדי לפעול כצפוי. למשל, כדי להשאיר את החשבון מחובר לאתר או לשמור פריטים בעגלת הקניות. לרוב, אתרים שומרים את המידע הזה במכשיר באופן זמני.</translation>
+<translation id="6950072572526089586">כשמבקרים אתר הוא עשוי לשמור מידע על הפעולות שמבצעים בו כדי לפעול חלק. למשל, כדי להשאיר את החשבון שלך מחובר לאתר או לשמור פריטים בעגלת הקניות. לרוב, אתרים שומרים את המידע הזה על המכשיר שלך באופן זמני.</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6980861169612950611">למחוק את הנתונים מהאתר? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">נגישות</translation>
@@ -563,7 +563,7 @@
 <translation id="8113501330600751161">{DAYS,plural, =1{‏קובצי Cookie יוגבלו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי Cookie יוגבלו שוב ב-Chrome}two{‏יש עוד יומיים עד שקובצי Cookie יוגבלו שוב ב-Chrome}other{‏יש עוד # ימים עד שקובצי Cookie יוגבלו שוב ב-Chrome}}</translation>
 <translation id="8116925261070264013">מושתקים</translation>
 <translation id="8117244575099414087">כשהאפשרות מופעלת, אתרים יכולים להשתמש בחיישני המכשיר. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש בחיישנים.</translation>
-<translation id="813082847718468539">הצגת נתוני אתר</translation>
+<translation id="813082847718468539">להצגת נתוני האתר</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8168435359814927499">תוכן</translation>
 <translation id="818487310457576362">כדי לצאת מהמסך המלא, גוררים את האצבע מהצד של המסך.</translation>
@@ -580,7 +580,7 @@
 <translation id="8315509175050791576">מתבצע שיתוף של כרטיסייה</translation>
 <translation id="8324158725704657629">לא לשאול שוב</translation>
 <translation id="8362795839483915693">אפשר להגדיל או להקטין את התצוגה של האתרים שבהם מבקרים</translation>
-<translation id="8372893542064058268">אישור סנכרון ברקע לאתר ספציפי.</translation>
+<translation id="8372893542064058268">מתן אישור לסנכרון ברקע של אתר ספציפי.</translation>
 <translation id="83792324527827022">אתר כלשהו משתמש במצלמה ובמיקרופון שלך</translation>
 <translation id="8380167699614421159">באתר הזה מוצגות מודעות מפריעות או מטעות</translation>
 <translation id="8394832520002899662">כדי לחזור לאתר, יש ללחוץ כאן</translation>

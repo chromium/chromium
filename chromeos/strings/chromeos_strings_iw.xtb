@@ -55,7 +55,7 @@
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1191518099344003522">‏ה-APN מופעל.</translation>
 <translation id="1195447618553298278">שגיאה לא ידועה.</translation>
-<translation id="1196264380943975940">לא ניתן לסכם. צריך לנסות תמליל ארוך יותר.</translation>
+<translation id="1196264380943975940">אין מספיק תמליל לסכם. צריך לנסות תמליל ארוך יותר.</translation>
 <translation id="1196959502276349371">גרסה <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">הפעלה/השהיה</translation>
 <translation id="1201402288615127009">הבא</translation>
@@ -328,7 +328,7 @@
 <translation id="224421911978987610">חשיפה ארוכה</translation>
 <translation id="2244834438220057800">ירוק</translation>
 <translation id="225692081236532131">סטטוס הפעלה</translation>
-<translation id="2267285889943769271">הוספה של צילום מסך</translation>
+<translation id="2267285889943769271">הוספת צילום מסך</translation>
 <translation id="2268044343513325586">צמצום</translation>
 <translation id="2271469253353559191">תזמון מצב כהה</translation>
 <translation id="2276999893457278469">תוכן עזרה מוביל</translation>
@@ -608,7 +608,7 @@
 <translation id="3708186454126126312">מכשירים שחוברו בעבר</translation>
 <translation id="3715651196924935218">יציאה ממצב צף</translation>
 <translation id="3716250181321371108">יצירת אמצעי בקרה</translation>
-<translation id="3716830479327464973">אם בחרת לאשר, מכשיר ההקלטה ינתח את הקלטות האודיו כדי:</translation>
+<translation id="3716830479327464973">אם בחרת לאשר, מכשיר ההקלטה ינתח את הקלטות האודיו שלך כדי:</translation>
 <translation id="3719826155360621982">דף הבית</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ביקורות)</translation>
 <translation id="3748026146096797577">לא מחובר</translation>
@@ -878,7 +878,7 @@
 <translation id="484790837831576105">‏רזולוציית DNS ‏(Android)</translation>
 <translation id="4848429997038228357">הבדיקה מתבצעת</translation>
 <translation id="4854586501323951986">מסך מגע מובנה</translation>
-<translation id="4855250849489639581">ניתן להחליק למטה כדי לראות אפשרויות פריסה נוספות</translation>
+<translation id="4855250849489639581">אפשר להחליק למטה לאפשרויות פריסה נוספות</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />. נותר ניסיון אחד ({0})}one{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}two{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}other{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}}</translation>
 <translation id="4868181314237714900">פליז</translation>
 <translation id="4873827928179867585">האלגוריתם לאימות</translation>
@@ -959,7 +959,7 @@
 <translation id="5220549459260334974">התקדמות ההורדה: %<ph name="PROGRESS_PERCENTAGE" /></translation>
 <translation id="5222676887888702881">יציאה</translation>
 <translation id="522307662484862935">ללא כתובת אימייל</translation>
-<translation id="5223226274641517059">בזמן ההקלטה יוצגו תמלילים בזמן אמת. אפשר להשבית את התכונה הזו ב'הגדרות' בכל שלב.</translation>
+<translation id="5223226274641517059">בזמן ההקלטה יוצגו תמלילים בזמן אמת. אפשר להשבית את התכונה הזו ב"הגדרות" בכל שלב.</translation>
 <translation id="5226879510707344687">ייצוא התמליל</translation>
 <translation id="5227902338748591677">תזמון העיצוב הכהה</translation>
 <translation id="5229104491259541281">המרה של '<ph name="QUERY" />'</translation>
@@ -1102,7 +1102,7 @@
 <translation id="5904994456462260490">‏הוספת APN חדש</translation>
 <translation id="590746845088109442">חתולים</translation>
 <translation id="5907649332524363701">הצבע העיקרי</translation>
-<translation id="5908813850962688338">התקנת העדכון הזה תימשך כמה דקות. צריך להשאיר את המכשיר מחובר למטען ומופעל בזמן הורדת העדכון. יכול להיות שהמכשיר יופעל מחדש מעצמו כמה פעמים ויוצג מסך שחור במהלך התהליך. תוצג לך בקשה להפעיל מחדש את המכשיר כדי להשלים את ההתקנה.</translation>
+<translation id="5908813850962688338">התקנת העדכון הזה תימשך כמה דקות. צריך להשאיר את המכשיר מחובר למטען ומופעל בזמן ההתקנה. המכשיר יופעל מחדש אוטומטית כמה פעמים ומסך שחור יוצג במהלך התהליך. בסוף ההתקנה, תופיע בקשה להפעיל מחדש את המכשיר כדי להשלים את התהליך.</translation>
 <translation id="5915794087373112615">המסך שלך יוצג בפני המורה בעוד <ph name="NUM_SECONDS" /> שניות</translation>
 <translation id="5916084858004523819">אסור</translation>
 <translation id="5916664084637901428">פועל</translation>
@@ -1524,7 +1524,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">תאורה במקלדת</translation>
-<translation id="7730077286107534951">‏פרטים מסוימים על החשבון והמערכת עשויים להישלח ל-Google. אנחנו משתמשים בפרטים האלה כדי לפתור בעיות טכניות ולשפר את השירותים שלנו, בכפוף ל<ph name="BEGIN_LINK2" />מדיניות הפרטיות<ph name="END_LINK2" /> ו<ph name="BEGIN_LINK3" />לתנאים ולהגבלות<ph name="END_LINK3" /> שלנו. כדי לבקש שינויים בתוכן, צריך לעבור אל <ph name="BEGIN_LINK1" />העזרה המשפטית<ph name="END_LINK1" />.</translation>
+<translation id="7730077286107534951">‏פרטים מסוימים על החשבון והמערכת עשויים להישלח ל-Google. אנחנו משתמשים בפרטים האלה כדי לפתור בעיות טכניות ולשפר את השירותים שלנו, בכפוף ל<ph name="BEGIN_LINK2" />מדיניות הפרטיות<ph name="END_LINK2" /> ו<ph name="BEGIN_LINK3" />לתנאים ולהגבלות<ph name="END_LINK3" /> שלנו. כדי לבקש שינויים בתוכן, צריך לעבור ל<ph name="BEGIN_LINK1" />עזרה המשפטית<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">מספר המחזורים</translation>
 <translation id="7746357909584236306">ניתנת לעריכה</translation>
 <translation id="7747039790905080783">מפתח משותף מראש</translation>
@@ -1852,7 +1852,7 @@
 <translation id="9149391708638971077">הפעלה של בדיקת זיכרון</translation>
 <translation id="9159524746324788320">המבורגרים</translation>
 <translation id="9161276708550942948">מקש רווח</translation>
-<translation id="9169345239923038539">‏אין עדיין חיבור. אם לפי ספק הסלולר מומלץ להשתמש ב-APN בהתאמה אישית, <ph name="BEGIN_LINK" />צריך להזין את פרטי ה-APN<ph name="END_LINK" />.</translation>
+<translation id="9169345239923038539">‏אין עדיין חיבור. אם ספק הסלולר שלך ממליץ על APN בהתאמה אישית, <ph name="BEGIN_LINK" />צריך להזין את פרטי ה-APN<ph name="END_LINK" />.</translation>
 <translation id="9173638680043580060">נותרה פחות מדקה</translation>
 <translation id="9174334653006917325">הצבע של ממשק המשתמש</translation>
 <translation id="917720651393141712">בדיקה</translation>

@@ -20,7 +20,7 @@
 <translation id="146407871188825689">‏שימוש ב-Chromium באייפד כברירת מחדל</translation>
 <translation id="1471084500615228555">‏מחיקה של נתוני הגלישה ב-Chromium</translation>
 <translation id="1472013873724362412">‏החשבון שלך לא פועל ב-Chromium. יש לפנות אל מנהל הדומיין או להשתמש בחשבון Google רגיל כדי להיכנס לחשבון.</translation>
-<translation id="148576268809812097">‏שמירת הסיסמאות ב-Chromium</translation>
+<translation id="148576268809812097">‏לשמירת הסיסמאות ב-Chromium</translation>
 <translation id="1501302548410882220">‏אפשר להשתמש ב-Chromium בכל מקום</translation>
 <translation id="1503199973012840174">‏ה-Chromium שלך לא מעודכן. צריך לעדכן אותו כדי לשמור על הבטיחות.</translation>
 <translation id="1515748263297244785">‏שימוש ב-Chromium באייפד כברירת מחדל</translation>
@@ -106,7 +106,7 @@
 <translation id="3541247799006476453">‏אפשר לגשת בקלות לסיסמאות ולמפתחות גישה באמצעות Chromium למילוי אוטומטי</translation>
 <translation id="3567399274263440288">‏אפשר להיכנס ל-Chromium באמצעות חשבון Google כדי להפיק את המרב מ-Chromium.</translation>
 <translation id="3581385059720151202">‏חיפוש רכיבים חזותיים ב-Chromium</translation>
-<translation id="3582640969619785896">‏‫Chromium יציע לשמור את הסיסמה</translation>
+<translation id="3582640969619785896">‏תינתן לך האפשרות לשמור את הסיסמה ב-‫Chromium</translation>
 <translation id="3594315078412605236">‏ניהול אמצעי תשלום ב-Chromium</translation>
 <translation id="3634039384458740619">‏פתיחת ההגדרות של Chromium</translation>
 <translation id="3639997914391704523">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
@@ -162,7 +162,7 @@
 <translation id="4985291216379576555">‏אופליין, Chromium לא יכול לחפש עדכונים</translation>
 <translation id="4996471330284142407">‏Chromium מאפשר לך להספיק יותר באופן פשוט, מאובטח ומהיר מאי פעם.</translation>
 <translation id="4999538639245140991">‏מכיוון שבחרת לצאת מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" />, נתוני Chromium שלך יימחקו מהמכשיר הזה. הם יישארו בחשבון Google שלך.</translation>
-<translation id="5042011327527167688">‏לוחצים על 'הצגה במפות Google ב-Chromium'.</translation>
+<translation id="5042011327527167688">‏לוחצים על "הצגה במפות Google ב-Chromium".</translation>
 <translation id="5044871537677053278">‏מערכת Chromium מזהה כתובות ונעזרת במפות Google כדי לספק מסלולים ומידע מקומי.</translation>
 <translation id="5048140766121299007">‏בהגדרות של "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", מפעילים את "Chromium"</translation>
 <translation id="5048795749726991615">‏אפשר להשתמש ב-Chromium למילוי אוטומטי כדי לגשת בקלות לסיסמאות השמורות שלך באפליקציות אחרות</translation>
@@ -186,7 +186,7 @@
 1. פותחים את ההגדרות
 2. לוחצים על אפליקציית הדפדפן שמוגדרת כברירת מחדל
 3. בוחרים באפשרות Chromium</translation>
-<translation id="5482686278086727777">‏כדי לקבל תזכורות לגבי כרטיסיות מ-Chromium, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
+<translation id="5482686278086727777">‏כדי לקבל תזכורות לגבי כרטיסיות מ-Chromium, צריך להפעיל התראות בהגדרות iOS.</translation>
 <translation id="5521125884468363740">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chromium יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="5534584691915394889">‏הנתונים מ-Chromium ומ-Google Lens ישמשו ליצירת אירועים ב-Apple Calendar.</translation>
 <translation id="5571094606370987472">‏ייפתחו הכרטיסיות האחרונות ב-Chromium.</translation>
@@ -324,7 +324,7 @@
 <translation id="8975812008711371178">‏חיפוש קולי ב-Chromium</translation>
 <translation id="900560297598578021">‏נכנסת לחשבון בתור <ph name="EMAIL" />.
 
-הנתונים שלך הוצפנו באמצעות ביטוי הסיסמה ב-<ph name="TIME" />. כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, עליך להזין אותו.</translation>
+הנתונים שלך הוצפנו באמצעות ביטוי הסיסמה ב-<ph name="TIME" />. כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, צריך להזין אותו.</translation>
 <translation id="9022552996538154597">‏כניסה אל Chromium</translation>
 <translation id="9031260906956926157">‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון Google.
 כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו.</translation>

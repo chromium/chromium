@@ -3172,7 +3172,7 @@
 <translation id="3201237270673604992">Z 到 A</translation>
 <translation id="3201422919974259695">可用的 USB 裝置將會顯示在這裡。</translation>
 <translation id="3202499879214571401">暫停將畫面投放到「<ph name="DEVICE_NAME" />」</translation>
-<translation id="3202578601642193415">最新記錄</translation>
+<translation id="3202578601642193415">最新</translation>
 <translation id="3204648577100496185">系統可能會從這部裝置中移除與這個應用程式相關聯的資料</translation>
 <translation id="3204717934117444051">只儲存在這部裝置上的資料會保留在現有設定檔，不會同步到「<ph name="EMAIL" />」</translation>
 <translation id="3206289903841621620">使用者字典 <ph name="NUMBER" /></translation>
@@ -4554,7 +4554,7 @@
 <translation id="4147099377280085053">選取點字表</translation>
 <translation id="4147911968024186208">請再試一次。如果這個錯誤再次發生，請與你的產品支援代表聯絡。</translation>
 <translation id="4148195018520464922">你可以限制只有特定使用者才能登入。設定完成後，系統會移除登入畫面上的「新增使用者」選項。你也可以移除現有的使用者。</translation>
-<translation id="4148957013307229264">安裝中...</translation>
+<translation id="4148957013307229264">正在安裝...</translation>
 <translation id="4149385644005013189">看起來很乾淨俐落！</translation>
 <translation id="4150201353443180367">顯示設定</translation>
 <translation id="4150569944729499860">畫面內容</translation>

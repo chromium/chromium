@@ -458,7 +458,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1751544761369730824">Smazat web <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">Schránka 8</translation>
 <translation id="1753706481035618306">Číslo stránky</translation>
-<translation id="1755203724116202818">K měření výkonu reklamy jsou mezi weby sdíleny omezené typy dat, například informace o tom, zda jste po návštěvě webu uskutečnili nákup.</translation>
+<translation id="1755203724116202818">K měření výkonu reklamy se mezi weby sdílejí omezené typy dat, například informace o tom, zda jste po návštěvě webu uskutečnili nákup.</translation>
 <translation id="1755621011177747277">Adopce</translation>
 <translation id="1756026472674246267">Otevřít odkaz na nové kartě</translation>
 <translation id="1756555787993603971">Nyní můžete k bezpečnějšímu placení pomocí automatického vyplňování používat virtuální kartu.</translation>
@@ -1913,7 +1913,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="422722221769396062">Rozvoz jídel z restaurací</translation>
 <translation id="4230204356098880324">Může žádat o použití a pohybování kamerou</translation>
 <translation id="4231448684371260244">8 × 13 palců</translation>
-<translation id="4233220688695460165">Témata a weby, které navrhují reklamy, Chrome do 30 dnů automaticky maže. Případně můžete zablokovat konkrétní témata a weby, které se vám nelíbí.</translation>
+<translation id="4233220688695460165">Témata a weby, které navrhují reklamy, Chrome do 30 dnů automaticky maže. Konkrétní témata a weby, které se vám nelíbí, můžete případně zablokovat.</translation>
 <translation id="4235360514405112390">Platný</translation>
 <translation id="4239799716689808527">Štítky</translation>
 <translation id="4241830393007970744">Útočníci na webu, který jste se pokusili navštívit, by vás mohli přimět k instalaci softwaru nebo prozrazení věcí, jako jsou vaše hesla, telefon nebo čísla kreditních karet.</translation>
@@ -3387,7 +3387,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6786145470008421571">Obálka 6 × 9 palců</translation>
 <translation id="67862343314499040">Fialová</translation>
 <translation id="6786747875388722282">Rozšíření</translation>
-<translation id="6787094689637422836">Zavádíme nové funkce ochrany soukromí, které vám dávají více možností výběru nad zobrazovanými reklamami.</translation>
+<translation id="6787094689637422836">Zavádíme nové funkce ochrany soukromí, které vám dávají větší kontrolu nad zobrazovanými reklamami.</translation>
 <translation id="6789062271869667677">Nepřetržité (spojené delšími okraji)</translation>
 <translation id="678982761784843853">Chráněná ID obsahu</translation>
 <translation id="6790428901817661496">Přehrát</translation>
@@ -3994,7 +3994,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7791543448312431591">Přidat</translation>
 <translation id="7798389633136518089">Ignorováno, protože tuto zásadu nenastavil cloudový zdroj.</translation>
 <translation id="7800304661137206267">Připojení je šifrováno pomocí standardu <ph name="CIPHER" /> s algoritmem <ph name="MAC" /> pro ověřování zpráv a mechanizmem výměny klíčů <ph name="KX" />.</translation>
-<translation id="7800977246388195491">Chrome zaznamenává témata, která vás podle vaší nedávné historie prohlížení zajímají. Navštívené weby také mohou určit, co se vám líbí. Později weby o tyto informace mohou požádat, aby vám mohly zobrazit personalizované reklamy. Můžete si vybrat, která témata a weby se budou používat k zobrazování reklam.</translation>
+<translation id="7800977246388195491">Chrome zaznamenává témata, která vás na základě vaší nedávné historie prohlížení zajímají. Také navštívené weby mohou určovat, co se vám líbí. Weby mohou o tyto informace později požádat, aby vám mohly zobrazit personalizované reklamy. Můžete si vybrat, která témata a weby se budou k zobrazování reklam používat.</translation>
 <translation id="7802523362929240268">Web je důvěryhodný</translation>
 <translation id="7802989406998618639">Zadejte <ph name="NUMBER_OF_DIGITS" />místný bezpečnostní kód na kartě <ph name="SIDE_OF_CARD" />, aby banka mohla ověřit vaši totožnost</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>

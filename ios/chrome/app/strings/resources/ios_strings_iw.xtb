@@ -10,11 +10,11 @@
 <translation id="1030376737535466765">פתיחה של מנהל הסיסמאות</translation>
 <translation id="1035980983510608210">אם סוגרים את כל הכרטיסיות, גם הכרטיסיות המוצמדות נסגרות.</translation>
 <translation id="1036348656032585052">כיבוי</translation>
-<translation id="1041322626941363065">הצגת אזהרה אם סיסמאות נחשפות עקב פרצה באבטחת המידע</translation>
+<translation id="1041322626941363065">מזהיר אותך אם סיסמאות נחשפות בגלל פרצה באבטחת המידע</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
 <translation id="104491362976654916">דף אופליין</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
-<translation id="1053651653201045802">החשבון לא מחובר. כדי להשתמש בסימניות, בסיסמאות ובפרטים נוספים בחשבון שלך, עליך להיכנס שוב לחשבון.</translation>
+<translation id="1053651653201045802">החשבון לא מחובר. כדי להשתמש בסימניות, בסיסמאות ובפרטים נוספים בחשבון, צריך להתחבר שוב.</translation>
 <translation id="1054745118061919935">לחיצה על המשך מבטאת הסכמה ל<ph name="BEGIN_LINK" />תנאים ולהגבלות<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">פריטים שאף פעם לא יישמרו</translation>
 <translation id="1062138828266376352">קוד האימות לא השתנה. מומלץ לבדוק את החיבור לאינטרנט ולנסות שוב</translation>
@@ -301,7 +301,7 @@
 <translation id="2196428379625389579">חיפוש באינטרנט</translation>
 <translation id="2199562093267256223">הפעולה הזו תמחק את הקבוצה מכל המכשירים שמחוברים לחשבון <ph name="USER_EMAIL" /></translation>
 <translation id="2202084845446535117">אין חשבונות אימייל</translation>
-<translation id="2214453882118345682">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה.</translation>
+<translation id="2214453882118345682">אפשר לקנות, לתרגם ולזהות דברים שמופיעים מולך בעזרת המצלמה שלך.</translation>
 <translation id="2215819824168709130">הסתרת הכרטיס "מעקב אחר מחירים"</translation>
 <translation id="2216366330550244277">מעבר לדף של מוצר</translation>
 <translation id="2220529011494928058">דיווח על בעיה</translation>
@@ -588,7 +588,7 @@
 <translation id="3464194322481586217">לא ניתן היה לעקוב אחר המחיר.</translation>
 <translation id="3469117812148449995">אפשרויות לשמירת סיסמה</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{לאתר אחד או לאפליקציה אחת ({COUNT})}one{ל-{COUNT} אתרים ואפליקציות}two{ל-{COUNT} אתרים ואפליקציות}other{ל-{COUNT} אתרים ואפליקציות}}</translation>
-<translation id="3474624961160222204">המשך כ-<ph name="NAME" /></translation>
+<translation id="3474624961160222204">המשך בתור <ph name="NAME" /></translation>
 <translation id="3476450923187944815">יש לך גישה לסיסמאות שלך באפליקציות אחרות.</translation>
 <translation id="3488501490964659223">הכרטיסיות נסגרו ונתוני הגלישה נמחקו. המערכת הוציאה אותך מהחשבון</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על הצעות לתוכן</translation>
@@ -640,7 +640,7 @@
 <translation id="3695446226812920698">איך עושים זאת</translation>
 <translation id="3700134753671613714">היכנס כדי שהסימניות יופיעו בכל המכשירים שלך.</translation>
 <translation id="3706112388989951153">עריכת סימנייה</translation>
-<translation id="3708944822379815019">{COUNT,plural, =1{‏סיסמה אחת ({COUNT}) שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google עם הכתובת {EMAIL}.}one{‏{COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {EMAIL}.}two{‏{COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {EMAIL}.}other{‏{COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {EMAIL}.}}</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{‏סיסמה אחת ({COUNT}) שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון שלך ב-Google, {EMAIL}.}one{‏{COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון שלך ב-Google, {EMAIL}.}two{‏{COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון שלך ב-Google, {EMAIL}.}other{‏{COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון שלך ב-Google, {EMAIL}.}}</translation>
 <translation id="371230970611282515">המערכת חוזה אירועים מסוכנים ומזהירה אותך לגביהם לפני שהם מתרחשים.</translation>
 <translation id="372115889256123713">קבצים במטמון</translation>
 <translation id="3725081662140949903">כדי למנוע מאנשים אחרים להשתמש בסיסמה שלך, צריך לפתוח את האפליקציה <ph name="APP" /> ולשנות את הסיסמה</translation>
@@ -858,7 +858,7 @@
 <translation id="4601095002996233687">סריקות מעמיקות לאיתור הורדות חשודות.</translation>
 <translation id="4606247758155004938">הדפדפן מנוהל על ידי הארגון שלך.</translation>
 <translation id="4607887340472970274">מעקב מחירים</translation>
-<translation id="4611811151908969241">הסתרת האפשרות 'ביטול המעקב אחרי <ph name="DOMAIN_NAME" />'</translation>
+<translation id="4611811151908969241">הסתרת "ביטול המעקב אחרי <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">‏חיפוש באמצעות Google</translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
 <translation id="4619615317237390068">כרטיסיות ממכשירים אחרים</translation>
@@ -953,7 +953,7 @@
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="4936354130727646074">לא להעביר אף פעם</translation>
 <translation id="4937410517508563815">שמירת סיסמאות בחשבון</translation>
-<translation id="4938338714234463591">כך תהיה לך אפשרות השתמש בקול עם תכונות מסוימות באתרים.</translation>
+<translation id="4938338714234463591">זה יאפשר לך להשתמש בקול עם תכונות מסוימות באתרים.</translation>
 <translation id="4938560988715301237">כל הנתונים שזמינים למילוי אוטומטי</translation>
 <translation id="4938716880833771969">מתבצעת מסירה שקטה של ההתראות</translation>
 <translation id="4941089862236492464">מצטערים, אירעה בעיה בשיתוף הפריט שלכם.</translation>
@@ -1127,7 +1127,7 @@
 <translation id="5657156137487675418">‏אישור של כל קובצי ה-Cookie</translation>
 <translation id="5659593005791499971">אימייל</translation>
 <translation id="5666313630530585305">צריך להיכנס לחשבון באתר כלשהו.</translation>
-<translation id="5669335982068190158">‏יצאת מהחשבון במהלך האיפוס של iPhone. כדי להיכנס שוב לחשבון, יש ללחוץ על 'המשך' למטה.</translation>
+<translation id="5669335982068190158">‏יצאת מהחשבון שלך כחלק מהאיפוס של ה-iPhone שלך. כדי להיכנס שוב לחשבון, יש ללחוץ על "המשך" למטה.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">גרסה <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">לעבור לחשבון השני? נתוני החשבון שלא נשמרו יימחקו.</translation>
@@ -1204,7 +1204,7 @@
 <translation id="5972844218283131174">ביטול הבחירה בכול הכרטיסיות</translation>
 <translation id="5977976211062815271">במכשיר הזה</translation>
 <translation id="598634819525651074">שטח</translation>
-<translation id="5988097621740394599">יוצגו הנחות בכרטיסיות.</translation>
+<translation id="5988097621740394599">הצגת ירידת מחירים בכרטיסיות שלך</translation>
 <translation id="5988851877894965432">‏פתיחת כתובות URL ב-Chrome</translation>
 <translation id="6001839398155993679">קדימה!</translation>
 <translation id="6011308810877101166">שיפור של ההצעות לחיפוש</translation>
@@ -1750,7 +1750,7 @@
 <translation id="8084285576995584326">‏שלטו בנתונים שבחשבון Google שלכם</translation>
 <translation id="809543534949702122">חיפוש בהיסטוריה</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי יום אחד ({COUNT})}one{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי {COUNT} ימים}two{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי יומיים ({COUNT})}other{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי {COUNT} ימים}}</translation>
-<translation id="8096559642098770318">אפשר להגדיר תזכורת בכרטיסייה כדי לחזור שוב לאתר הזה בעתיד</translation>
+<translation id="8096559642098770318">אפשר ליצור תזכורת בכרטיסייה כדי לחזור שוב לאתר הזה בעתיד</translation>
 <translation id="8101409298456377967">ניתן ליצור, לנהל ולשמור סיסמאות כדי להיכנס בקלות לאתרים ולאפליקציות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">ח</translation>
 <translation id="8114753159095730575">יש קובץ זמין להורדה. האפשרויות זמינות בחלק התחתון של המסך.</translation>
