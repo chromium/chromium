@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_instant_controller.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_location_bar_model_delegate.h"
+#include "chrome/browser/ui/browser_select_file_dialog_controller.h"
 #include "chrome/browser/ui/browser_tab_menu_model_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -188,16 +189,16 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // Features that are only enabled for normal browser windows (e.g. a window
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
+  Profile* const profile = browser->GetProfile();
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
     if (search::IsInstantExtendedAPIEnabled()) {
       instant_controller_ = std::make_unique<BrowserInstantController>(
-          browser->GetProfile(), browser->GetTabStripModel());
+          profile, browser->GetTabStripModel());
     }
 
-    if (browser->GetProfile()->IsRegularProfile()) {
+    if (profile->IsRegularProfile()) {
       auto* shopping_service =
-          commerce::ShoppingServiceFactory::GetForBrowserContext(
-              browser->GetProfile());
+          commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
       if (shopping_service && commerce::CanLoadProductSpecificationsFullPageUi(
                                   shopping_service->GetAccountChecker())) {
         product_specifications_entry_point_controller_ =
@@ -208,28 +209,25 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       }
     }
 
-    if (browser->GetProfile()->IsRegularProfile() &&
+    if (profile->IsRegularProfile() &&
         browser->GetTabStripModel()->SupportsTabGroups() &&
-        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-            browser->GetProfile())) {
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {
       session_service_tab_group_sync_observer_ =
           std::make_unique<tab_groups::SessionServiceTabGroupSyncObserver>(
-              browser->GetProfile(), browser->GetTabStripModel(),
-              browser->GetSessionID());
+              profile, browser->GetTabStripModel(), browser->GetSessionID());
 
       most_recent_shared_tab_update_store_ =
           std::make_unique<tab_groups::MostRecentSharedTabUpdateStore>(browser);
     }
 
     if (features::IsTabstripDeclutterEnabled() &&
-        (browser->GetProfile()->IsRegularProfile() ||
-         browser->GetProfile()->IsGuestSession())) {
+        (profile->IsRegularProfile() || profile->IsGuestSession())) {
       tab_declutter_controller_ =
           std::make_unique<tabs::TabDeclutterController>(browser);
     }
 
 #if BUILDFLAG(ENABLE_GLIC)
-    if (glic::GlicEnabling::IsProfileEligible(browser->GetProfile())) {
+    if (glic::GlicEnabling::IsProfileEligible(profile)) {
       DCHECK(features::HasTabSearchToolbarButton());
       glic_iph_controller_ = std::make_unique<glic::GlicIphController>(browser);
       glic_nudge_controller_ =
@@ -240,7 +238,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     if (tabs::AreVerticalTabsEnabled()) {
       vertical_tab_strip_state_controller_ =
           std::make_unique<tabs::VerticalTabStripStateController>(
-              browser->GetProfile()->GetPrefs());
+              profile->GetPrefs());
     }
   }
 
@@ -270,12 +268,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   tab_menu_model_delegate_ =
       std::make_unique<chrome::BrowserTabMenuModelDelegate>(
-          browser->GetSessionID(), browser->GetProfile(),
-          app_browser_controller_.get());
+          browser->GetSessionID(), profile, app_browser_controller_.get());
 
   tab_group_deletion_dialog_controller_ =
-      std::make_unique<tab_groups::DeletionDialogController>(
-          browser, browser->GetProfile(), tab_strip_model_);
+      std::make_unique<tab_groups::DeletionDialogController>(browser, profile,
+                                                             tab_strip_model_);
 
   user_education_ =
       GetUserDataFactory().CreateInstance<BrowserUserEducationInterfaceImpl>(
@@ -288,10 +285,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   reading_list_side_panel_coordinator_ =
       std::make_unique<ReadingListSidePanelCoordinator>(
-          browser->GetProfile(), browser->GetTabStripModel());
+          profile, browser->GetTabStripModel());
 
   signin_view_controller_ = std::make_unique<SigninViewController>(
-      browser, browser->GetProfile(), tab_strip_model_);
+      browser, profile, tab_strip_model_);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
@@ -305,8 +302,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 #endif
 
   data_sharing_bubble_controller_ =
-      std::make_unique<DataSharingBubbleController>(
-          browser, browser->GetProfile(), tab_strip_model_);
+      std::make_unique<DataSharingBubbleController>(browser, profile,
+                                                    tab_strip_model_);
 
   content_setting_bubble_model_delegate_ =
       std::make_unique<BrowserContentSettingBubbleModelDelegate>(browser);
@@ -318,13 +315,13 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   extension_browser_window_helper_ =
       std::make_unique<extensions::ExtensionBrowserWindowHelper>(
           browser_command_controller_.get(), browser->GetTabStripModel(),
-          browser->GetProfile());
+          profile);
 #endif
 
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
     breadcrumb_manager_browser_agent_ =
         std::make_unique<BreadcrumbManagerBrowserAgent>(
-            browser->GetTabStripModel(), browser->GetProfile());
+            browser->GetTabStripModel(), profile);
   }
 
 #if defined(USE_AURA)
@@ -337,6 +334,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     actor_border_view_controller_ =
         std::make_unique<ActorBorderViewController>(browser);
   }
+
+  browser_select_file_dialog_controller_ =
+      std::make_unique<BrowserSelectFileDialogController>(profile);
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {

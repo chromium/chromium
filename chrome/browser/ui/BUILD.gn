@@ -1015,6 +1015,8 @@ static_library("ui") {
       "browser_navigator.h",
       "browser_otr_state.cc",
       "browser_otr_state.h",
+      "browser_select_file_dialog_controller.cc",
+      "browser_select_file_dialog_controller.h",
       "browser_tab_menu_model_delegate.cc",
       "browser_tab_menu_model_delegate.h",
       "browser_tab_restorer.cc",

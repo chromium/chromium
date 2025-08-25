@@ -63,6 +63,7 @@ class PinnedToolbarActionsController;
 class ProfileMenuCoordinator;
 class ReadingListSidePanelCoordinator;
 class RecentActivityBubbleCoordinator;
+class BrowserSelectFileDialogController;
 class SidePanelCoordinator;
 class SidePanelUI;
 class SigninViewController;
@@ -404,6 +405,10 @@ class BrowserWindowFeatures {
   }
 #endif  // defined(USE_AURA)
 
+  BrowserSelectFileDialogController* browser_select_file_dialog_controller() {
+    return browser_select_file_dialog_controller_.get();
+  }
+
   // Get the FindBarController for this browser window, creating it if it does
   // not yet exist.
   FindBarController* GetFindBarController();
@@ -547,6 +552,9 @@ class BrowserWindowFeatures {
       actor_overlay_window_controller_;
 
   std::unique_ptr<ActorBorderViewController> actor_border_view_controller_;
+
+  std::unique_ptr<BrowserSelectFileDialogController>
+      browser_select_file_dialog_controller_;
 
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
 

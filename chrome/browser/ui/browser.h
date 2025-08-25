@@ -53,7 +53,6 @@
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/shell_dialogs/select_file_dialog.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
@@ -97,10 +96,6 @@ namespace gfx {
 class Image;
 }
 
-namespace ui {
-struct SelectedFileInfo;
-}
-
 namespace web_app {
 class AppBrowserController;
 }
@@ -134,7 +129,6 @@ class Browser : public TabStripModelObserver,
                 public BookmarkTabHelperObserver,
                 public zoom::ZoomObserver,
                 public ThemeServiceObserver,
-                public ui::SelectFileDialog::Listener,
                 public BrowserWindowInterface,
                 public DesktopBrowserWindowCapabilitiesDelegate {
  public:
@@ -1077,10 +1071,6 @@ class Browser : public TabStripModelObserver,
   void OnZoomChanged(
       const zoom::ZoomController::ZoomChangedEventData& data) override;
 
-  // Overridden from SelectFileDialog::Listener:
-  void FileSelected(const ui::SelectedFileInfo& file_info, int index) override;
-  void FileSelectionCanceled() override;
-
   // Overridden from ThemeServiceObserver:
   void OnThemeChanged() override;
 
@@ -1130,6 +1120,8 @@ class Browser : public TabStripModelObserver,
 
   // Removes all entries from scheduled_updates_ whose source is contents.
   void RemoveScheduledUpdatesFor(content::WebContents* contents);
+
+  void OnFileSelectedFromDialog(const GURL& url);
 
   // Getters for UI ///////////////////////////////////////////////////////////
 
@@ -1362,9 +1354,6 @@ class Browser : public TabStripModelObserver,
   CreationSource creation_source_ = CreationSource::kUnknown;
 
   UnloadController unload_controller_;
-
-  // Dialog box used for opening and saving files.
-  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
   // True if the browser window has been shown at least once.
   bool window_has_shown_;
