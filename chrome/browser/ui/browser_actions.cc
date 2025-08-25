@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -422,13 +423,19 @@ void BrowserActions::InitializeBrowserActions() {
               ui::ImageModel::FromVectorIcon(vector_icons::kShoppingmodeIcon))
           .Build());
 
-  // Clicking the Mandatory Reauth page action is a no-op. This is because the
-  // icon is always shown with a dialog bubble. The expected behavior is to
-  // simply close this bubble, which happens automatically due to focus change
-  // when the user clicks the icon. Therefore, a `base::DoNothing()` callback is
-  // used.
   root_action_item_->AddChild(
-      actions::ActionItem::Builder(base::DoNothing())
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* tab_interface = bwi->GetActiveTabInterface();
+                CHECK(tab_interface);
+
+                autofill::MandatoryReauthBubbleControllerImpl::FromWebContents(
+                    tab_interface->GetContents())
+                    ->ShowBubble();
+              },
+              bwi))
           .SetActionId(kActionAutofillMandatoryReauth)
           .SetTooltipText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP))
