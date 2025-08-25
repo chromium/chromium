@@ -467,6 +467,7 @@ bool BrowserNonClientFrameViewMac::GetCaptionButtonRegion(
   return true;
 }
 
+// LINT.IfChange(MacTabStripInsets)
 gfx::Insets BrowserNonClientFrameViewMac::GetCaptionButtonInsets(
     int visual_overlap) const {
   int button_total_width;
@@ -498,6 +499,7 @@ gfx::Insets BrowserNonClientFrameViewMac::GetCaptionButtonInsets(
     return gfx::Insets::TLBR(0, 0, 0, caption_button_inset);
   }
 }
+// LINT.ThenChange(//chrome/browser/ui/views/frame/immersive_mode_controller_mac.mm:MacTabStripInsets)
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, protected:
