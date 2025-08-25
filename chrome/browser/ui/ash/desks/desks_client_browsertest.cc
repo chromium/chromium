@@ -54,6 +54,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -128,6 +129,8 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -436,31 +439,29 @@ class BrowsersAddedObserver : public BrowserListObserver {
   base::RunLoop run_loop_;
 };
 
-class BrowsersRemovedObserver : public BrowserListObserver {
+class WindowDestroyedObserver : public aura::WindowObserver {
  public:
-  explicit BrowsersRemovedObserver(int browser_removes_expected)
-      : browser_removes_left_(browser_removes_expected) {
-    BrowserList::AddObserver(this);
+  explicit WindowDestroyedObserver(aura::Window* window) {
+    CHECK(window);
+    window_observation_.Observe(window);
   }
-  BrowsersRemovedObserver(const BrowsersRemovedObserver&) = delete;
-  BrowsersRemovedObserver& operator=(const BrowsersRemovedObserver&) = delete;
-  ~BrowsersRemovedObserver() override { BrowserList::RemoveObserver(this); }
 
-  void Wait() { run_loop_.Run(); }
-
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {}
-
-  void OnBrowserRemoved(Browser* browser) override {
-    --browser_removes_left_;
-    if (browser_removes_left_ == 0) {
-      run_loop_.Quit();
+  void Wait() {
+    if (window_observation_.IsObserving()) {
+      run_loop_.Run();
     }
   }
 
+  // aura::WindowObserver:
+  void OnWindowDestroyed(aura::Window* window) override {
+    window_observation_.Reset();
+    run_loop_.Quit();
+  }
+
  private:
-  int browser_removes_left_;
   base::RunLoop run_loop_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 };
 
 }  // namespace
@@ -2989,10 +2990,14 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   ash::SavedDeskPresenterTestApi::WaitForSaveAndRecallBlockingDialog();
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
-  // Send a key to OK the close dialog.
-  BrowsersRemovedObserver browsers_removed(/*browser_removes_expected=*/1);
+  // Send a key to OK the close dialog. Wait for the Browser to close and its
+  // NativeWindow to be destroyed (which may occur async and independently to
+  // Browser destruction).
+  WindowDestroyedObserver window_destroyed_observer(
+      browser()->window()->GetNativeWindow());
   SendKey(ui::VKEY_RETURN);
-  browsers_removed.Wait();
+  ui_test_utils::WaitForBrowserToClose(browser());
+  window_destroyed_observer.Wait();
 
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 
