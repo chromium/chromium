@@ -505,11 +505,12 @@ LogicalRect InkOverflow::ComputeCaretOverflow(
   // Care-shape applies to text or elements that accept text input.
   const LayoutObject* layout_object = cursor.Current().GetLayoutObject();
   const Node* node = layout_object->GetNode();
-  const auto* const block = DynamicTo<LayoutBlock>(layout_object);
+  const PhysicalBoxFragment* box_fragment = cursor.Current().BoxFragment();
   const LocalFrame* frame = layout_object->GetFrame();
   // Keep the behaviour of bar shape as it is.
   if (caret_shape != CaretShape::kBar && node && IsEditable(*node) && frame &&
-      block && frame->Selection().ShouldPaintCaret(*block)) [[unlikely]] {
+      box_fragment && frame->Selection().ShouldPaintCaret(*box_fragment))
+      [[unlikely]] {
     unsigned offset = cursor.Current().TextEndOffset();
     LogicalRect caret_rect =
         GetCaretRectAtTextOffset(cursor, offset, caret_shape);
