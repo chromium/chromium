@@ -452,8 +452,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     in_asbd.mReserved = 0;
 
     // Request AAC-LC encoding, with no downmixing or downsampling.
-    AudioStreamBasicDescription out_asbd;
-    UNSAFE_TODO(memset(&out_asbd, 0, sizeof(AudioStreamBasicDescription)));
+    AudioStreamBasicDescription out_asbd = {};
     out_asbd.mSampleRate = sampling_rate;
     out_asbd.mFormatID = kAudioFormatMPEG4AAC;
     out_asbd.mChannelsPerFrame = num_channels_;

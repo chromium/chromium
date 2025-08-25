@@ -394,8 +394,7 @@ bool VaapiJpegEncoder::Encode(const gfx::Size& input_size,
       FillJpegHeader(input_size, exif_buffer, exif_buffer_size, quality,
                      jpeg_header, exif_offset);
 
-  VAEncPackedHeaderParameterBuffer header_param;
-  UNSAFE_TODO(memset(&header_param, 0, sizeof(header_param)));
+  VAEncPackedHeaderParameterBuffer header_param = {};
   header_param.type = VAEncPackedHeaderRawData;
   header_param.bit_length = length_in_bits;
   header_param.has_emulation_bytes = 0;

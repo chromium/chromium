@@ -140,8 +140,7 @@ void H264VaapiWrapper::SubmitFrameMetadata(
     const H264Picture::Vector& ref_pic_listb0,
     const H264Picture::Vector& ref_pic_listb1,
     scoped_refptr<H264Picture> pic) {
-  VAPictureParameterBufferH264 pic_param;
-  UNSAFE_TODO(memset(&pic_param, 0, sizeof(pic_param)));
+  VAPictureParameterBufferH264 pic_param = {};
 
 #define FROM_SPS_TO_PP(a) pic_param.a = sps->a
 #define FROM_SPS_TO_PP2(a, b) pic_param.b = sps->a
@@ -211,8 +210,7 @@ void H264VaapiWrapper::SubmitFrameMetadata(
 
   pic_param.num_ref_frames = sps->max_num_ref_frames;
 
-  VAIQMatrixBufferH264 iq_matrix_buf;
-  UNSAFE_TODO(memset(&iq_matrix_buf, 0, sizeof(iq_matrix_buf)));
+  VAIQMatrixBufferH264 iq_matrix_buf = {};
 
   if (pps->pic_scaling_matrix_present_flag) {
     for (int i = 0; i < 6; ++i) {
@@ -262,8 +260,7 @@ void H264VaapiWrapper::SubmitSlice(
     const uint8_t* data,
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
-  VASliceParameterBufferH264 slice_param;
-  UNSAFE_TODO(memset(&slice_param, 0, sizeof(slice_param)));
+  VASliceParameterBufferH264 slice_param = {};
 
   slice_param.slice_data_size = slice_hdr->nalu_size;
   slice_param.slice_data_offset = 0;

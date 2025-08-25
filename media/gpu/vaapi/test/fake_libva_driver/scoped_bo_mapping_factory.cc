@@ -18,8 +18,7 @@ namespace media::internal {
 ScopedBOMapping::ScopedAccess::ScopedAccess(const ScopedBOMapping& mapping)
     : mapping_(mapping) {
   for (const auto& plane : mapping_->planes_) {
-    struct dma_buf_sync sync_start;
-    UNSAFE_TODO(memset(&sync_start, 0, sizeof(sync_start)));
+    struct dma_buf_sync sync_start = {};
     sync_start.flags = DMA_BUF_SYNC_START | DMA_BUF_SYNC_RW;
 
     // This will fail for the fake GBM backend, so ignore the return result. We
@@ -31,8 +30,7 @@ ScopedBOMapping::ScopedAccess::ScopedAccess(const ScopedBOMapping& mapping)
 
 ScopedBOMapping::ScopedAccess::~ScopedAccess() {
   for (const auto& plane : mapping_->planes_) {
-    struct dma_buf_sync sync_end;
-    UNSAFE_TODO(memset(&sync_end, 0, sizeof(sync_end)));
+    struct dma_buf_sync sync_end = {};
     sync_end.flags = DMA_BUF_SYNC_END | DMA_BUF_SYNC_RW;
     HANDLE_EINTR(ioctl(plane.prime_fd.get(), DMA_BUF_IOCTL_SYNC, &sync_end));
   }

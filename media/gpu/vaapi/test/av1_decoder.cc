@@ -484,7 +484,7 @@ bool FillAV1SliceParameters(
   va_slice_params.resize(num_tiles);
   for (uint16_t tile = 0; tile < num_tiles; ++tile) {
     VASliceParameterBufferAV1& va_tile_param = va_slice_params[tile];
-    UNSAFE_TODO(memset(&va_tile_param, 0, sizeof(VASliceParameterBufferAV1)));
+    va_tile_param = {};
     va_tile_param.slice_data_flag = VA_SLICE_DATA_FLAG_ALL;
     va_tile_param.tile_row = tile / base::checked_cast<uint16_t>(tile_columns);
     va_tile_param.tile_column =
@@ -736,8 +736,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
       base::strict_cast<int>(current_frame->frame_height()));
 
   // Create surfaces for decode.
-  VASurfaceAttrib attribute;
-  UNSAFE_TODO(memset(&attribute, 0, sizeof(VASurfaceAttrib)));
+  VASurfaceAttrib attribute = {};
   attribute.type = VASurfaceAttribUsageHint;
   attribute.flags = VA_SURFACE_ATTRIB_SETTABLE;
   attribute.value.type = VAGenericValueTypeInteger;
@@ -746,9 +745,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
       *va_device_, va_config_->va_rt_format(), visible_size, attribute);
 
   // Set up buffer for pic parameters
-  VADecPictureParameterBufferAV1 pic_parameters;
-  UNSAFE_TODO(
-      memset(&pic_parameters, 0, sizeof(VADecPictureParameterBufferAV1)));
+  VADecPictureParameterBufferAV1 pic_parameters = {};
   pic_parameters.profile =
       base::strict_cast<uint8_t>(current_sequence_header_->profile);
 

@@ -289,7 +289,6 @@ class FFmpegH264ToAnnexBBitstreamConverterTest : public testing::Test {
     // Set up AVCConfigurationRecord correctly for tests.
     // It's ok to do const cast here as data in kHeaderDataOkWithFieldLen4 is
     // never written to.
-    UNSAFE_TODO(memset(&test_parameters_, 0, sizeof(AVCodecParameters)));
     test_parameters_.extradata =
         const_cast<uint8_t*>(kHeaderDataOkWithFieldLen4);
     test_parameters_.extradata_size = sizeof(kHeaderDataOkWithFieldLen4);
@@ -307,7 +306,7 @@ class FFmpegH264ToAnnexBBitstreamConverterTest : public testing::Test {
   }
 
   // Variable to hold valid dummy parameters for testing.
-  AVCodecParameters test_parameters_;
+  AVCodecParameters test_parameters_ = {};
 };
 
 TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_Success) {
