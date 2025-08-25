@@ -270,37 +270,51 @@ TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtree) {
   )HTML");
   auto* div = GetDocument().getElementById(AtomicString("div"));
   EXPECT_FALSE(div->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(div->IsInCanvasSubtree());
   auto* canvas = GetDocument().getElementById(AtomicString("canvas"));
   EXPECT_TRUE(canvas->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(canvas->IsInCanvasSubtree());
   auto* nested_div = GetDocument().getElementById(AtomicString("nested_div"));
   EXPECT_TRUE(nested_div->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(nested_div->IsInCanvasSubtree());
   auto* nested_canvas =
       GetDocument().getElementById(AtomicString("nested_canvas"));
   EXPECT_TRUE(nested_canvas->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(nested_canvas->IsInCanvasSubtree());
   auto* nested_input =
       GetDocument().getElementById(AtomicString("nested_input"));
   EXPECT_TRUE(nested_input->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(nested_input->IsInCanvasSubtree());
   auto* nested_input_shadow =
       To<Element>(nested_input->UserAgentShadowRoot()->firstChild());
   EXPECT_TRUE(nested_input_shadow->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(nested_input_shadow->IsInCanvasSubtree());
 
   // Check `IsCanvasOrInCanvasSubtree` after a dynamic change where the nested
   // elements are individually moved out of the canvas subtree.
   div->appendChild(nested_div);
   EXPECT_FALSE(nested_div->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(nested_div->IsInCanvasSubtree());
   div->appendChild(nested_canvas);
   EXPECT_TRUE(nested_canvas->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(nested_canvas->IsInCanvasSubtree());
   div->appendChild(nested_input);
   EXPECT_FALSE(nested_input->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(nested_input->IsInCanvasSubtree());
   EXPECT_FALSE(nested_input_shadow->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(nested_input_shadow->IsInCanvasSubtree());
 
   // Check `IsCanvasOrInCanvasSubtree` after a dynamic change where an
   // entire subtree is moved under canvas.
   canvas->appendChild(div);
   EXPECT_TRUE(nested_div->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(nested_div->IsInCanvasSubtree());
   EXPECT_TRUE(nested_canvas->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(nested_canvas->IsInCanvasSubtree());
   EXPECT_TRUE(nested_input->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(nested_input->IsInCanvasSubtree());
   EXPECT_TRUE(nested_input_shadow->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(nested_input_shadow->IsInCanvasSubtree());
 }
 
 class HTMLCanvasElementWithTracingTest : public RenderingTest {

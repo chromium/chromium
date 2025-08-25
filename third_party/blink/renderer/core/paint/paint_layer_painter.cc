@@ -264,15 +264,9 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
 
   if (((paint_flags & PaintFlag::kPaintingCanvasDrawElement) == 0) &&
       IsA<Element>(object.GetNode()) &&
-      To<Element>(object.GetNode())->IsCanvasOrInCanvasSubtree()) {
-    bool is_outermost_canvas =
-        IsA<HTMLCanvasElement>(object.GetNode()) &&
-        (!object.GetNode()->parentElement() ||
-         !object.GetNode()->parentElement()->IsCanvasOrInCanvasSubtree());
-    if (!is_outermost_canvas) {
-      // This prevents canvas fallback content from being rendered.
-      return kFullyPainted;
-    }
+      To<Element>(object.GetNode())->IsInCanvasSubtree()) {
+    // This prevents canvas fallback content from being rendered.
+    return kFullyPainted;
   }
 
   std::optional<CheckAncestorPositionVisibilityScope>

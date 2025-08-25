@@ -9146,6 +9146,11 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
   return style.Display() == EDisplay::kContents;
 }
 
+bool Element::IsInCanvasSubtree() const {
+  auto* parent = ParentOrShadowHostElement();
+  return parent && parent->IsCanvasOrInCanvasSubtree();
+}
+
 AtomicString Element::ComputeInheritedLanguage() const {
   const Node* n = this;
   AtomicString value;

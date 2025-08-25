@@ -998,6 +998,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsCanvasOrInCanvasSubtree() const {
     return HasElementFlag(ElementFlags::kIsCanvasOrInCanvasSubtree);
   }
+  // Like `IsCanvasOrInCanvasSubtree()`, but excludes the outermost <canvas>.
+  bool IsInCanvasSubtree() const;
 
   bool IsDefined() const {
     // An element whose custom element state is "uncustomized" or "custom"
