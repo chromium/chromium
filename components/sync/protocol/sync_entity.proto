@@ -234,9 +234,27 @@ message SyncEntity {
   // types.
   // Introduced in M124.
   message CollaborationMetadata {
+    // Attribution metadata for this whole SyncEntity.
     message Attribution {
       // Obfuscated Gaia ID of the user.
       optional string obfuscated_gaia_id = 1;
+    }
+
+    // Per field attribution metadata (e.g, tab_group_color, tab_group_name.)
+    // Introduced in M141.
+    message PerFieldAttribution {
+      // Name of the attribution that uniquely identifies the changed field
+      // (e.g. tab_group_title). These should have the same values as those
+      // provided through the proto FieldOptions. See
+      // `SharedTabGroupDataSpecifics` for examples.
+      optional string attribution_name = 1;
+
+      // Obfuscated Gaia ID of the user that last modified this.
+      optional string last_update_obfuscated_gaia_id = 2;
+
+      // Last modification time of the specific attribution, in milliseconds
+      // since Unix epoch.
+      optional int64 mtime = 3;
     }
 
     // Collaboration ID which the current entity belongs to.
@@ -247,6 +265,8 @@ message SyncEntity {
 
     // Information about when the specifics was last updated.
     optional Attribution last_update_attribution = 3;
+
+    repeated PerFieldAttribution per_field_attributions = 4;
   }
 
   optional CollaborationMetadata collaboration = 27;

@@ -1463,11 +1463,20 @@ VISIT_PROTO_FIELDS(const sync_pb::SyncEntity::CollaborationMetadata& proto) {
   VISIT(collaboration_id);
   VISIT(creation_attribution);
   VISIT(last_update_attribution);
+  VISIT_REP(per_field_attributions);
 }
 
 VISIT_PROTO_FIELDS(
     const sync_pb::SyncEntity::CollaborationMetadata::Attribution& proto) {
   VISIT(obfuscated_gaia_id);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::SyncEntity::CollaborationMetadata::PerFieldAttribution&
+        proto) {
+  VISIT(attribution_name);
+  VISIT(last_update_obfuscated_gaia_id);
+  VISIT(mtime);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SyncInvalidationsPayload& proto) {
