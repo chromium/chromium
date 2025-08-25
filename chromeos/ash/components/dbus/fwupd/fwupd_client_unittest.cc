@@ -20,6 +20,8 @@
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/fake_cros_settings_provider.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -159,6 +161,17 @@ namespace ash {
 
 class FwupdClientTest : public testing::Test {
  public:
+  void SetUp() override {
+    cros_settings_ = std::make_unique<ash::CrosSettings>();
+    // for ensuring enrolled users only get internal updates
+    // when FlexSyStemFirmwareUpdates are enabled
+    auto provider =
+        std::make_unique<ash::FakeCrosSettingsProvider>(base::DoNothing());
+    provider->Set(ash::kDeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled,
+                  false);
+    cros_settings_->AddSettingsProvider(std::move(provider));
+  }
+  void TearDown() override { cros_settings_.reset(); }
   FwupdClientTest() {
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
@@ -375,6 +388,8 @@ class FwupdClientTest : public testing::Test {
   std::unique_ptr<FwupdProperties> expected_properties_;
   ash::ScopedStubInstallAttributes test_install_attributes_;
 
+  std::unique_ptr<ash::CrosSettings> cros_settings_;
+
  private:
   // Handles calls to |proxy_|'s ConnectToSignal() method.
   void ConnectToSignal(
@@ -417,6 +432,20 @@ class FwupdClientTest : public testing::Test {
  protected:
   // This field must come after |task_environment_|.
   base::RunLoop run_loop_;
+};
+
+class FwupdClientTestPolicyEnabled : public FwupdClientTest {
+ public:
+  void SetUp() override {
+    cros_settings_ = std::make_unique<ash::CrosSettings>();
+    // for ensuring enrolled users only get internal updates
+    // when FlexSyStemFirmwareUpdates are enabled
+    auto provider =
+        std::make_unique<ash::FakeCrosSettingsProvider>(base::DoNothing());
+    provider->Set(ash::kDeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled,
+                  true);
+    cros_settings_->AddSettingsProvider(std::move(provider));
+  }
 };
 
 // TODO (swifton): Rewrite this test with an observer when it's available.
@@ -475,6 +504,35 @@ TEST_F(FwupdClientTest, RequestDevicesEnrolledFlexEnabled) {
   EXPECT_CALL(observer, OnDeviceListResponse(_))
       .Times(1)
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckDevices));
+  fwupd_client_->AddObserver(&observer);
+
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  AddDbusMethodCallResultSimulation(CreateCheckDevicesResponse(), nullptr);
+
+  // Enable reven firmware updates.
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitch(switches::kRevenBranding);
+  EnableFeatureFlag(features::kFlexFirmwareUpdate);
+
+  // Set enrolled.
+  test_install_attributes_.Get()->SetCloudManaged("test-domain",
+                                                  "FAKE_DEVICE_ID");
+
+  fwupd_client_->RequestDevices();
+
+  run_loop_.Run();
+}
+
+TEST_F(FwupdClientTestPolicyEnabled,
+       RequestDevicesEnrolledFlexEnabledPolicyEnabled) {
+  // The observer will check that the device description is parsed and passed
+  // correctly.
+  MockObserver observer;
+  EXPECT_CALL(observer, OnDeviceListResponse(_))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckDevicesWithInternal));
   fwupd_client_->AddObserver(&observer);
 
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
