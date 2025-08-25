@@ -154,6 +154,12 @@ TEST_F(MediaFoundationPackageLocatorTest, HEVC) {
 }
 
 TEST_F(MediaFoundationPackageLocatorTest, EAC3) {
+  // TODO(crbug.com/439873322): The inbox Dolby decoder is removed from
+  // Windows 11 24H2 and later. The test is disabled for now.
+  if (base::win::GetVersion() >= base::win::Version::WIN11_24H2) {
+    GTEST_SKIP() << "Test is disabled on Windows 11 24H2 and later.";
+  }
+
   AddPackageFamilyName(
       L"DolbyLaboratories.DolbyDigitalPlusDecoderOEM_rz1tebttyb220");
   std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
