@@ -454,7 +454,19 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     }
 
     /**
-     * Sets the margin for the popup window.  This should be called before the popup is shown.
+     * Changes whether the popup is touch modal or if outside touches will be sent to other windows
+     * behind it. See {@link PopupWindow#setTouchModal(boolean)}.
+     *
+     * @param touchModal True to sent all outside touches to this window, false to other windows
+     *     behind it.
+     */
+    public void setTouchModal(boolean touchModal) {
+        mPopupWindow.setTouchModal(touchModal);
+    }
+
+    /**
+     * Sets the margin for the popup window. This should be called before the popup is shown.
+     *
      * @param margin The margin in pixels.
      */
     public void setMargin(int margin) {

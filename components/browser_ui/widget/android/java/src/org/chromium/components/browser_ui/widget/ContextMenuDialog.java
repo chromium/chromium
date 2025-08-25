@@ -215,9 +215,13 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                             mPopupWindow.setOutsideTouchable(false);
                             mPopupWindow.setAnimateFromAnchor(true);
                             // Set popup focusable so the screen reader can announce the popup
-                            // properly. It is also required so that the key press events are
-                            // handdled correctly for context menu keyboard navigation.
+                            // properly, and key press events are handdled correctly for context
+                            // menu keyboard navigation.
                             mPopupWindow.setFocusable(true);
+                            // Set touch modal false (outside touches will be sent to other windows
+                            // behind it) so that touches from drag-drop will dismiss the context
+                            // menu.
+                            mPopupWindow.setTouchModal(false);
                             // If the popup is dismissed, dismiss this dialog as well. This is
                             // required when the popup is dismissed through backpress / hardware
                             // accessiries where the #dismiss is not triggered by #onTouchEvent.
