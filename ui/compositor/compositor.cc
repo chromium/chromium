@@ -397,9 +397,15 @@ void Compositor::SetExternalBeginFrameController(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void Compositor::OnChildResizing() {
-  observer_list_.Notify(&CompositorObserver::OnCompositingChildResizing, this);
+  observer_list_.Notify(&CompositorObserver::OnCompositingChildResizing);
 }
+
+void Compositor::OnChildResizeActivated() {
+  observer_list_.Notify(&CompositorObserver::OnChildResizeActivated);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void Compositor::ScheduleDraw() {
   host_->SetNeedsCommit();

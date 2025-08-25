@@ -352,8 +352,11 @@ void DelegatedFrameHost::EmbedSurface(
     client_->DelegatedFrameHostGetLayer()->SetShowSurface(
         new_primary_surface_id, current_frame_size_in_dip_, GetGutterColor(),
         deadline_policy, false /* stretch_content_to_fill_bounds */);
-    if (compositor_)
+#if BUILDFLAG(IS_CHROMEOS)
+    if (compositor_) {
       compositor_->OnChildResizing();
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 }
 
@@ -366,7 +369,13 @@ SkColor DelegatedFrameHost::GetGutterColor() const {
 
 void DelegatedFrameHost::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (compositor_) {
+    compositor_->OnChildResizeActivated();
+  }
+#else
   NOTREACHED();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void DelegatedFrameHost::OnFrameTokenChanged(uint32_t frame_token,
@@ -710,7 +719,13 @@ void DelegatedFrameHost::SetIsFrameSinkIdOwner(bool is_owner) {
   owns_frame_sink_id_ = is_owner;
   if (owns_frame_sink_id_) {
     host_frame_sink_manager_->RegisterFrameSinkId(
-        frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
+        frame_sink_id_, this,
+#if BUILDFLAG(IS_CHROMEOS)
+        viz::ReportFirstSurfaceActivation::kYes
+#else
+        viz::ReportFirstSurfaceActivation::kNo
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    );
     host_frame_sink_manager_->SetFrameSinkDebugLabel(frame_sink_id_,
                                                      "DelegatedFrameHost");
   }
