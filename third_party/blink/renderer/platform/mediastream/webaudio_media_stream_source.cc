@@ -20,7 +20,7 @@ WebAudioMediaStreamSource::WebAudioMediaStreamSource(
     : MediaStreamAudioSource(std::move(task_runner), false /* is_remote */),
       fifo_(ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &WebAudioMediaStreamSource::DeliverRebufferedAudio,
-          WTF::CrossThreadUnretained(this)))) {
+          CrossThreadUnretained(this)))) {
   DVLOG(1) << "WebAudioMediaStreamSource::WebAudioMediaStreamSource()";
 }
 

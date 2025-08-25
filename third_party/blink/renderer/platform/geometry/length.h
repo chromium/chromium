@@ -390,7 +390,7 @@ class PLATFORM_EXPORT Length {
 
   static wtf_size_t GetCalcHandleMapSizeForTest();
 
-  WTF::String ToString() const;
+  String ToString() const;
 
   unsigned GetHash() const;
 

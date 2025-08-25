@@ -28,9 +28,8 @@ class Receiver : public GarbageCollected<Receiver> {
 TEST_F(PersistentTest, BindCancellation) {
   Receiver* receiver = MakeGarbageCollected<Receiver>();
   int counter = 0;
-  base::RepeatingClosure function =
-      WTF::BindRepeating(&Receiver::Increment, WrapWeakPersistent(receiver),
-                         WTF::Unretained(&counter));
+  base::RepeatingClosure function = BindRepeating(
+      &Receiver::Increment, WrapWeakPersistent(receiver), Unretained(&counter));
 
   function.Run();
   EXPECT_EQ(1, counter);
@@ -46,7 +45,7 @@ TEST_F(PersistentTest, CrossThreadBindCancellation) {
   int counter = 0;
   CrossThreadOnceClosure function = CrossThreadBindOnce(
       &Receiver::Increment, WrapCrossThreadWeakPersistent(receiver),
-      WTF::CrossThreadUnretained(&counter));
+      CrossThreadUnretained(&counter));
 
   receiver = nullptr;
   PreciselyCollectGarbage();

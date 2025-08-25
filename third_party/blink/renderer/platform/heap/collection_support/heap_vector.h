@@ -169,7 +169,7 @@ constexpr BasicHeapVector<CollectionType, T, inlineCapacity>::TypeConstraints::
   // should only be used as fields of traceable types.
 }
 
-// On-stack for in-field version of WTF::Vector for referring to
+// On-stack for in-field version of Vector for referring to
 // GarbageCollected objects.
 template <typename T, wtf_size_t inlineCapacity = 0>
 using HeapVector = BasicHeapVector<internal::HeapCollectionType::kDisallowNew,
@@ -178,7 +178,7 @@ using HeapVector = BasicHeapVector<internal::HeapCollectionType::kDisallowNew,
 static_assert(IsDisallowNew<HeapVector<int>>);
 ASSERT_SIZE(Vector<int>, HeapVector<int>);
 
-// GCed version of WTF::Vector for referring to GarbageCollected objects.
+// GCed version of Vector for referring to GarbageCollected objects.
 template <typename T, wtf_size_t inlineCapacity = 0>
 using GCedHeapVector =
     BasicHeapVector<internal::HeapCollectionType::kGCed, T, inlineCapacity>;

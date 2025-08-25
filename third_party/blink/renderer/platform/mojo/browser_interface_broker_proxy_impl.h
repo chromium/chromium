@@ -52,9 +52,9 @@ class PLATFORM_EXPORT TestableBrowserInterfaceBrokerProxy
   TestBinder* FindTestBinder(std::string_view interface_name) const;
 
  private:
-  using BinderMap = WTF::HashMap<
-      String,
-      base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)>>;
+  using BinderMap =
+      HashMap<String,
+              base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)>>;
   mutable BinderMap binder_map_for_testing_;
 };
 

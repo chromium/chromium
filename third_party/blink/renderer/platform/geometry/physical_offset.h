@@ -97,7 +97,7 @@ struct PLATFORM_EXPORT PhysicalFixedOffset {
   constexpr explicit operator gfx::PointF() const { return {left, top}; }
   constexpr explicit operator gfx::Vector2dF() const { return {left, top}; }
 
-  WTF::String ToString() const;
+  String ToString() const;
 };
 
 using PhysicalOffset = PhysicalFixedOffset<LayoutUnit>;

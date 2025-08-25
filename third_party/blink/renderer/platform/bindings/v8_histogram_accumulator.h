@@ -66,7 +66,7 @@ class PLATFORM_EXPORT V8HistogramAccumulator {
   std::atomic<int> compile_background_sum_microseconds_ = 0;
   std::atomic<int> execute_sum_microseconds_ = 0;
 
-  WTF::Vector<std::unique_ptr<HistogramAndSum>> histogram_and_sums_;
+  Vector<std::unique_ptr<HistogramAndSum>> histogram_and_sums_;
 
   // Protects histogram_and_sums_.
   std::mutex histogram_and_sums_mutex_;

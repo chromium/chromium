@@ -71,7 +71,7 @@ class BasicHeapHashMap final
   NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
-// On-stack for in-field version of WTF::HashSet for referring to
+// On-stack for in-field version of HashSet for referring to
 // GarbageCollected objects.
 template <typename KeyArg,
           typename MappedArg,
@@ -88,7 +88,7 @@ static_assert(IsDisallowNew<HeapHashMap<int, int>>);
 ASSERT_SIZE(HashMap<int COMMA int>, HeapHashMap<int COMMA int>);
 #undef COMMA
 
-// GCed version of WTF::HashSet for referring to GarbageCollected objects.
+// GCed version of HashSet for referring to GarbageCollected objects.
 template <typename KeyArg,
           typename MappedArg,
           typename KeyTraitsArg = HashTraits<KeyArg>,

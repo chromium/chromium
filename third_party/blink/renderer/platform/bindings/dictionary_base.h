@@ -49,7 +49,7 @@ class PLATFORM_EXPORT DictionaryBase : public InputDictionaryBase {
 
   virtual const void* TemplateKey() const = 0;
   virtual void FillTemplateProperties(
-      WTF::Vector<std::string_view>& properties) const = 0;
+      Vector<std::string_view>& properties) const = 0;
   virtual v8::Local<v8::Object> FillValues(
       ScriptState* script_state,
       v8::Local<v8::DictionaryTemplate> dict_template) const = 0;

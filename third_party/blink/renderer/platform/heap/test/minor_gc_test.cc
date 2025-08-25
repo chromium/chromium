@@ -126,7 +126,7 @@ TYPED_TEST(MinorGCTestForType, InterGenerationalPointerInCollection) {
 
 TYPED_TEST(MinorGCTestForType, InterGenerationalPointerInPlaceBarrier) {
   using Type = typename TestFixture::Type;
-  using ValueType = std::pair<WTF::String, Member<Type>>;
+  using ValueType = std::pair<String, Member<Type>>;
   using CollectionType = HeapVector<ValueType>;
 
   static constexpr size_t kCollectionSize = 1;
@@ -169,7 +169,7 @@ TYPED_TEST(MinorGCTestForType,
   using Type = typename TestFixture::Type;
   using ValueType = std::pair<int, Member<Type>>;
   using CollectionType = HeapVector<ValueType>;
-  static_assert(WTF::VectorTraits<ValueType>::kCanCopyWithMemcpy,
+  static_assert(VectorTraits<ValueType>::kCanCopyWithMemcpy,
                 "Only when copying with memcpy the "
                 "Allocator::NotifyNewElements is called");
 

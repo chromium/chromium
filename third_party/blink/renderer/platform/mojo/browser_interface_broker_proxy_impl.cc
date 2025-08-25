@@ -16,7 +16,7 @@ namespace blink {
 namespace {
 
 // Helper for looking up `std::string_view`-represented mojo interface names in
-// a `WTF::HashMap<String, ...>`.  Mojo interface names are ASCII-only, so
+// a `HashMap<String, ...>`.  Mojo interface names are ASCII-only, so
 // `StringHasher::DefaultConverter` and `StringView(const LChar* chars, unsigned
 // length)` work fine here.
 struct InterfaceNameHashTranslator {

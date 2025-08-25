@@ -81,12 +81,12 @@ class HeapMojoReceiverGCBaseTest : public TestSupportingGC {
         base::MakeRefCounted<base::NullTaskRunner>();
     remote_ = mojo::Remote<sample::blink::Service>(
         owner_->receiver().BindNewPipeAndPassRemote(null_task_runner));
-    remote_.set_disconnect_handler(WTF::BindOnce(
+    remote_.set_disconnect_handler(BindOnce(
         [](HeapMojoReceiverGCBaseTest* receiver_test) {
           receiver_test->run_loop().Quit();
           receiver_test->disconnected() = true;
         },
-        WTF::Unretained(this)));
+        Unretained(this)));
   }
   void TearDown() override {
     owner_ = nullptr;
@@ -118,13 +118,13 @@ class HeapMojoReceiverDisconnectWithReasonHandlerBaseTest
         base::MakeRefCounted<base::NullTaskRunner>();
     this->remote_ = mojo::Remote<sample::blink::Service>(
         this->owner_->receiver().BindNewPipeAndPassRemote(null_task_runner));
-    this->remote_.set_disconnect_with_reason_handler(WTF::BindOnce(
+    this->remote_.set_disconnect_with_reason_handler(BindOnce(
         [](HeapMojoReceiverDisconnectWithReasonHandlerBaseTest* receiver_test,
            const uint32_t custom_reason, const std::string& description) {
           receiver_test->run_loop().Quit();
           receiver_test->disconnected_reason() = description;
         },
-        WTF::Unretained(this)));
+        Unretained(this)));
   }
 
   std::string disconnected_reason_;

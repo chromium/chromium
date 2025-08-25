@@ -158,12 +158,11 @@ class PLATFORM_EXPORT DOMWrapperWorld final
 
   static DOMWrapperWorld& MainWorld(v8::Isolate* isolate);
 
-  static void SetNonMainWorldStableId(int32_t world_id, const WTF::String&);
-  WTF::String NonMainWorldStableId() const;
+  static void SetNonMainWorldStableId(int32_t world_id, const String&);
+  String NonMainWorldStableId() const;
 
-  static void SetNonMainWorldHumanReadableName(int32_t world_id,
-                                               const WTF::String&);
-  WTF::String NonMainWorldHumanReadableName() const;
+  static void SetNonMainWorldHumanReadableName(int32_t world_id, const String&);
+  String NonMainWorldHumanReadableName() const;
 
   // Associates an isolated world (see above for description) with a security
   // origin. XMLHttpRequest instances used in that world will be considered

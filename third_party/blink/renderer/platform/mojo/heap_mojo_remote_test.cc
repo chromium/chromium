@@ -87,13 +87,13 @@ class HeapMojoRemoteDisconnectWithReasonHandlerBaseTest
         base::MakeRefCounted<base::NullTaskRunner>();
     impl_.receiver().Bind(
         owner_->remote().BindNewPipeAndPassReceiver(null_task_runner));
-    impl_.receiver().set_disconnect_with_reason_handler(WTF::BindOnce(
+    impl_.receiver().set_disconnect_with_reason_handler(BindOnce(
         [](HeapMojoRemoteDisconnectWithReasonHandlerBaseTest* remote_test,
            const uint32_t custom_reason, const std::string& description) {
           remote_test->run_loop().Quit();
           remote_test->disconnected_with_reason() = true;
         },
-        WTF::Unretained(this)));
+        Unretained(this)));
   }
 
   ServiceImpl impl_;

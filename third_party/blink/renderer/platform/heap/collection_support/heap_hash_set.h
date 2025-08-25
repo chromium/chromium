@@ -72,7 +72,7 @@ class BasicHeapHashSet final
   NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
-// On-stack for in-field version of WTF::HashSet for referring to
+// On-stack for in-field version of HashSet for referring to
 // GarbageCollected objects.
 template <typename T, typename Traits = HashTraits<T>>
 using HeapHashSet =
@@ -81,7 +81,7 @@ using HeapHashSet =
 static_assert(IsDisallowNew<HeapHashSet<int>>);
 ASSERT_SIZE(HashSet<int>, HeapHashSet<int>);
 
-// GCed version of WTF::HashSet for referring to GarbageCollected objects.
+// GCed version of HashSet for referring to GarbageCollected objects.
 template <typename T, typename Traits = HashTraits<T>>
 using GCedHeapHashSet =
     BasicHeapHashSet<internal::HeapCollectionType::kGCed, T, Traits>;

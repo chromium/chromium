@@ -42,7 +42,7 @@ class PLATFORM_EXPORT CanvasMemoryDumpProvider final
   CanvasMemoryDumpProvider() = default;
 
   base::Lock lock_;
-  WTF::HashSet<CanvasMemoryDumpClient*> clients_ GUARDED_BY(lock_);
+  HashSet<CanvasMemoryDumpClient*> clients_ GUARDED_BY(lock_);
 };
 
 }  // namespace blink

@@ -86,7 +86,7 @@ ScriptRegexp::ScriptRegexp(v8::Isolate* isolate,
 int ScriptRegexp::Match(StringView string,
                         int start_from,
                         int* match_length,
-                        WTF::Vector<String>* group_list) const {
+                        Vector<String>* group_list) const {
   if (match_length) {
     *match_length = 0;
   }

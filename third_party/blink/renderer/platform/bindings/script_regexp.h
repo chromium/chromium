@@ -63,7 +63,7 @@ class PLATFORM_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp>
   int Match(StringView,
             int start_from = 0,
             int* match_length = nullptr,
-            WTF::Vector<String>* group_list = nullptr) const;
+            Vector<String>* group_list = nullptr) const;
 
   bool IsValid() const { return !regex_.IsEmpty(); }
   // exceptionMessage is available only if !isValid().

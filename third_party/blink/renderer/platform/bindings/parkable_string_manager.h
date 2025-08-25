@@ -112,9 +112,9 @@ class PLATFORM_EXPORT ParkableStringManager : public RAILModeObserver {
 
   // Relies on secure hash equality for deduplication. If one day SHA256 becomes
   // insecure, then this would need to be updated to a more robust hash.
-  using StringMap = WTF::HashMap<const ParkableStringImpl::SecureDigest*,
-                                 ParkableStringImpl*,
-                                 SecureDigestHashTraits>;
+  using StringMap = HashMap<const ParkableStringImpl::SecureDigest*,
+                            ParkableStringImpl*,
+                            SecureDigestHashTraits>;
 
   bool IsOnParkedMapForTesting(ParkableStringImpl* string);
   bool IsOnDiskMapForTesting(ParkableStringImpl* string);

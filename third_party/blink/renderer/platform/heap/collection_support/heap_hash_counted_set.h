@@ -47,7 +47,7 @@ class BasicHeapHashCountedSet final
   NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
-// On-stack for in-field version of WTF::HashCountedSet for referring to
+// On-stack for in-field version of HashCountedSet for referring to
 // GarbageCollected or DISALLOW_NEW() objects with Trace() methods.
 template <typename T, typename Traits = HashTraits<T>>
 using HeapHashCountedSet =
@@ -58,7 +58,7 @@ using HeapHashCountedSet =
 static_assert(IsDisallowNew<HeapHashCountedSet<int>>);
 ASSERT_SIZE(HashCountedSet<int>, HeapHashCountedSet<int>);
 
-// GCed version of WTF::HashCountedSet for referring to GarbageCollected or
+// GCed version of HashCountedSet for referring to GarbageCollected or
 // DISALLOW_NEW() objects with Trace() methods.
 template <typename T, typename Traits = HashTraits<T>>
 using GCedHeapHashCountedSet =

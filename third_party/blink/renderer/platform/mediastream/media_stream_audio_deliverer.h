@@ -161,7 +161,7 @@ class MediaStreamAudioDeliverer {
   }
 
  private:
-  void SendLogMessage(const WTF::String& message) {
+  void SendLogMessage(const String& message) {
     WebRtcLogMessage(String::Format("MSAD::%s [this=0x%" PRIXPTR "]",
                                     message.Utf8().c_str(),
                                     reinterpret_cast<uintptr_t>(this))

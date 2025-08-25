@@ -343,7 +343,7 @@ class PLATFORM_EXPORT FixedPoint {
   std::optional<FixedPoint> NullOptIf(FixedPoint null_value) const;
   std::optional<FixedPoint> NullOptIfMin() const { return NullOptIf(Min()); }
 
-  WTF::String ToString() const;
+  String ToString() const;
 
  private:
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS) && \

@@ -48,7 +48,7 @@ class PLATFORM_EXPORT LanguageDetectionModel
 
   using LanguagePrediction = language_detection::Prediction;
   using DetectLanguageCallback = base::OnceCallback<void(
-      base::expected<WTF::Vector<LanguagePrediction>, DetectLanguageError>)>;
+      base::expected<Vector<LanguagePrediction>, DetectLanguageError>)>;
 
   // Detects the language(s) used in the string using the TFLite model on the
   // whole string.
@@ -56,13 +56,13 @@ class PLATFORM_EXPORT LanguageDetectionModel
   // This is an asynchronous operation. The result will be passed to the
   // `on_complete` callback.
   void DetectLanguage(scoped_refptr<base::SequencedTaskRunner>& task_runner,
-                      const WTF::String& text,
+                      const String& text,
                       DetectLanguageCallback on_complete);
 
   int64_t GetModelSize() const;
 
  private:
-  void DetectLanguageImpl(const WTF::String& text,
+  void DetectLanguageImpl(const String& text,
                           DetectLanguageCallback on_complete);
   // This model is shared across all execution contexts in the process.
   language_detection::LanguageDetectionModel language_detection_model_;

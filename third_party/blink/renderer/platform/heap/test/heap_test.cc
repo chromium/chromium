@@ -2621,11 +2621,11 @@ int OffHeapInt::destructor_calls_ = 0;
 
 TEST_F(HeapTest, Bind) {
   base::OnceClosure closure =
-      WTF::BindOnce(static_cast<void (Bar::*)(Visitor*) const>(&Bar::Trace),
-                    WrapPersistent(MakeGarbageCollected<Bar>()), nullptr);
+      BindOnce(static_cast<void (Bar::*)(Visitor*) const>(&Bar::Trace),
+               WrapPersistent(MakeGarbageCollected<Bar>()), nullptr);
   // OffHeapInt* should not make Persistent.
   base::OnceClosure closure2 =
-      WTF::BindOnce(&OffHeapInt::VoidFunction, OffHeapInt::Create(1));
+      blink::BindOnce(&OffHeapInt::VoidFunction, OffHeapInt::Create(1));
   PreciselyCollectGarbage();
   // The closure should have a persistent handle to the Bar.
   EXPECT_EQ(1u, Bar::live_);
@@ -2633,8 +2633,8 @@ TEST_F(HeapTest, Bind) {
   UseMixin::trace_count_ = 0;
   auto* mixin = MakeGarbageCollected<UseMixin>();
   base::OnceClosure mixin_closure =
-      WTF::BindOnce(static_cast<void (Mixin::*)(Visitor*) const>(&Mixin::Trace),
-                    WrapPersistent(mixin), nullptr);
+      BindOnce(static_cast<void (Mixin::*)(Visitor*) const>(&Mixin::Trace),
+               WrapPersistent(mixin), nullptr);
   PreciselyCollectGarbage();
   // The closure should have a persistent handle to the mixin.
   EXPECT_LE(1, UseMixin::trace_count_);

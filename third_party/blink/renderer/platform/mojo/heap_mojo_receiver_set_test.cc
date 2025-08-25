@@ -104,12 +104,12 @@ class HeapMojoReceiverSetDisconnectHandlerBaseTest
     this->owner_->receiver_set().Add(
         pending_remote.InitWithNewPipeAndPassReceiver(), this->task_runner());
     remote_.Bind(std::move(pending_remote));
-    remote_.set_disconnect_handler(WTF::BindOnce(
+    remote_.set_disconnect_handler(BindOnce(
         [](HeapMojoReceiverSetDisconnectHandlerBaseTest* receiver_set_test) {
           receiver_set_test->run_loop().Quit();
           receiver_set_test->disconnected() = true;
         },
-        WTF::Unretained(this)));
+        Unretained(this)));
   }
 
   base::RunLoop run_loop_;
@@ -138,7 +138,7 @@ class HeapMojoReceiverSetDisconnectWithReasonHandlerBaseTest
     this->owner_->receiver_set().Add(
         pending_remote.InitWithNewPipeAndPassReceiver(), this->task_runner());
     this->remote_.Bind(std::move(pending_remote));
-    this->remote_.set_disconnect_with_reason_handler(WTF::BindOnce(
+    this->remote_.set_disconnect_with_reason_handler(BindOnce(
         [](HeapMojoReceiverSetDisconnectWithReasonHandlerBaseTest*
                receiver_set_test,
            const uint32_t custom_reason, const std::string& description) {
@@ -146,7 +146,7 @@ class HeapMojoReceiverSetDisconnectWithReasonHandlerBaseTest
           receiver_set_test->disconnected_reason_code() = custom_reason;
           receiver_set_test->disconnected_description() = description;
         },
-        WTF::Unretained(this)));
+        Unretained(this)));
   }
 
   std::optional<uint32_t> disconnected_reason_code_;

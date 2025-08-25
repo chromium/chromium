@@ -14,7 +14,7 @@ namespace blink::bindings {
 namespace {
 
 struct to_string {
-  WTF::String operator()(int n) const { return WTF::String::Number(n); }
+  String operator()(int n) const { return String::Number(n); }
 };
 
 static_assert(std::forward_iterator<

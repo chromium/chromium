@@ -58,7 +58,7 @@ namespace blink {
 // to core/ or bindings/core. For core-specific helper functions, see
 // bindings/core/v8/v8_binding_for_core.h.
 
-// Convert v8::String to a WTF::String. If the V8 string is not already
+// Convert v8::String to a blink::String. If the V8 string is not already
 // an external string then it is transformed into an external string at this
 // point to avoid repeated conversions.
 inline String ToCoreString(v8::Isolate* isolate, v8::Local<v8::String> value) {

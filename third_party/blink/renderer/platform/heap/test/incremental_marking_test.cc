@@ -1249,7 +1249,7 @@ TEST_F(IncrementalMarkingTest, StepDuringObjectConstruction) {
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   MakeGarbageCollected<O>(
-      WTF::BindOnce(
+      BindOnce(
           [](IncrementalMarkingTestDriver* driver, Holder* holder, O* thiz) {
             // Publish not-fully-constructed object |thiz| by triggering write
             // barrier for the object.
@@ -1257,7 +1257,7 @@ TEST_F(IncrementalMarkingTest, StepDuringObjectConstruction) {
             // Finish call incremental steps.
             driver->TriggerMarkingStepsWithStack();
           },
-          WTF::Unretained(&driver), WrapWeakPersistent(holder.Get())),
+          Unretained(&driver), WrapWeakPersistent(holder.Get())),
       MakeGarbageCollected<LinkedObject>());
   driver.FinishGC();
   PreciselyCollectGarbage();
@@ -1274,7 +1274,7 @@ TEST_F(IncrementalMarkingTest, StepDuringMixinObjectConstruction) {
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   MakeGarbageCollected<Parent>(
-      WTF::BindOnce(
+      BindOnce(
           [](IncrementalMarkingTestDriver* driver, Holder* holder,
              Mixin* thiz) {
             // Publish not-fully-constructed object
@@ -1284,7 +1284,7 @@ TEST_F(IncrementalMarkingTest, StepDuringMixinObjectConstruction) {
             // Finish call incremental steps.
             driver->TriggerMarkingStepsWithStack();
           },
-          WTF::Unretained(&driver), WrapWeakPersistent(holder.Get())),
+          Unretained(&driver), WrapWeakPersistent(holder.Get())),
       MakeGarbageCollected<LinkedObject>());
   driver.FinishGC();
   PreciselyCollectGarbage();

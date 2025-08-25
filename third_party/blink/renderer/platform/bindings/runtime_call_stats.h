@@ -321,7 +321,7 @@ class PLATFORM_EXPORT RuntimeCallStats {
     return UNSAFE_TODO(&(counters_[static_cast<uint16_t>(id)]));
   }
 
-  WTF::String ToString() const;
+  String ToString() const;
 
   static void SetRuntimeCallStatsForTesting();
   static void ClearRuntimeCallStatsForTesting();
@@ -349,7 +349,7 @@ class PLATFORM_EXPORT RuntimeCallStats {
   CounterMap counter_map_;
 
   Vector<RuntimeCallCounter*> CounterMapToSortedArray() const;
-  void AddCounterMapStatsToBuilder(WTF::StringBuilder&) const;
+  void AddCounterMapStatsToBuilder(StringBuilder&) const;
 #endif
 };
 

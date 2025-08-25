@@ -356,7 +356,7 @@ struct TraceTrait<blink::HeapHashTableBacking<Table>> {
     }
   };
 
-  // Specialization for WTF::KeyValuePair, which is default bucket storage type.
+  // Specialization for KeyValuePair, which is default bucket storage type.
   template <typename K, typename V>
   struct GetWeakTraceDescriptorImpl<blink::KeyValuePair<K, V>> {
     static TraceDescriptor GetWeakTraceDescriptor(const void* backing) {

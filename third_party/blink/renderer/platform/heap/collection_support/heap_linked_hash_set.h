@@ -50,7 +50,7 @@ class BasicHeapLinkedHashSet final
   NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
-// On-stack for in-field version of WTF::LinkedHashSet for referring to
+// On-stack for in-field version of LinkedHashSet for referring to
 // GarbageCollected objects.
 template <typename T, typename Traits = HashTraits<T>>
 using HeapLinkedHashSet =
@@ -61,7 +61,7 @@ using HeapLinkedHashSet =
 static_assert(IsDisallowNew<HeapLinkedHashSet<int>>);
 ASSERT_SIZE(LinkedHashSet<int>, HeapLinkedHashSet<int>);
 
-// GCed version of WTF::LinkedHashSet for referring to GarbageCollected objects.
+// GCed version of LinkedHashSet for referring to GarbageCollected objects.
 template <typename T, typename Traits = HashTraits<T>>
 using GCedHeapLinkedHashSet =
     BasicHeapLinkedHashSet<internal::HeapCollectionType::kGCed, T, Traits>;
