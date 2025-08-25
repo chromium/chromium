@@ -406,7 +406,7 @@ class AudioManagerAndroid {
      * @param channels number of channels
      */
     @CalledByNative
-    private static int getMinInputFrameSize(int sampleRate, int channels) {
+    private static int getMinInputFramesPerBuffer(int sampleRate, int channels) {
         int channelConfig;
         if (channels == 1) {
             channelConfig = AudioFormat.CHANNEL_IN_MONO;
@@ -428,7 +428,7 @@ class AudioManagerAndroid {
      * @param channels number of channels
      */
     @CalledByNative
-    private static int getMinOutputFrameSize(int sampleRate, int channels) {
+    private static int getMinOutputFramesPerBuffer(int sampleRate, int channels) {
         int channelConfig;
         if (channels == 1) {
             channelConfig = AudioFormat.CHANNEL_OUT_MONO;
@@ -451,7 +451,7 @@ class AudioManagerAndroid {
     }
 
     @CalledByNative
-    private int getAudioLowLatencyOutputFrameSize() {
+    private int getAudioLowLatencyOutputFramesPerBuffer() {
         String framesPerBuffer =
                 mAudioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
         return framesPerBuffer == null ? 0 : Integer.parseInt(framesPerBuffer);

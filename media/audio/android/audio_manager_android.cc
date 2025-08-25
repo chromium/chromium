@@ -128,9 +128,9 @@ class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
     return devices;
   }
 
-  int GetMinInputFrameSize(int sample_rate, int channels) override {
-    return Java_AudioManagerAndroid_getMinInputFrameSize(AttachCurrentThread(),
-                                                         sample_rate, channels);
+  int GetMinInputFramesPerBuffer(int sample_rate, int channels) override {
+    return Java_AudioManagerAndroid_getMinInputFramesPerBuffer(
+        AttachCurrentThread(), sample_rate, channels);
   }
 
   bool AcousticEchoCancelerIsAvailable() override {
@@ -178,13 +178,13 @@ class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
         AttachCurrentThread(), j_audio_manager_);
   }
 
-  int GetAudioLowLatencyOutputFrameSize() override {
-    return Java_AudioManagerAndroid_getAudioLowLatencyOutputFrameSize(
+  int GetAudioLowLatencyOutputFramesPerBuffer() override {
+    return Java_AudioManagerAndroid_getAudioLowLatencyOutputFramesPerBuffer(
         AttachCurrentThread(), j_audio_manager_);
   }
 
-  int GetMinOutputFrameSize(int sample_rate, int channels) override {
-    return Java_AudioManagerAndroid_getMinOutputFrameSize(
+  int GetMinOutputFramesPerBuffer(int sample_rate, int channels) override {
+    return Java_AudioManagerAndroid_getMinOutputFramesPerBuffer(
         AttachCurrentThread(), sample_rate, channels);
   }
 
@@ -617,14 +617,14 @@ AudioParameters AudioManagerAndroid::GetInputStreamParameters(
     sample_rate = GetJniDelegate().GetNativeOutputSampleRate();
   }
 
-  int buffer_size = GetJniDelegate().GetMinInputFrameSize(
+  int frames_per_buffer = GetJniDelegate().GetMinInputFramesPerBuffer(
       sample_rate, channel_layout_config.channels());
-  if (buffer_size <= 0) {
-    buffer_size = kDefaultInputBufferSize;
+  if (frames_per_buffer <= 0) {
+    frames_per_buffer = kDefaultInputBufferSize;
   }
   int user_buffer_size = GetUserBufferSize();
   if (user_buffer_size) {
-    buffer_size = user_buffer_size;
+    frames_per_buffer = user_buffer_size;
   }
 
   AudioParameters::PlatformEffectsMask effects =
@@ -633,7 +633,7 @@ AudioParameters AudioManagerAndroid::GetInputStreamParameters(
           : AudioParameters::NO_EFFECTS;
 
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         channel_layout_config, sample_rate, buffer_size);
+                         channel_layout_config, sample_rate, frames_per_buffer);
   params.set_effects(effects);
   return params;
 }
@@ -992,12 +992,13 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
         GetJniDelegate().GetNativeOutputSampleRate());
   }
 
-  int buffer_size = GetOptimalOutputFrameSize(sample_rate, 2);
+  int frames_per_buffer = GetOptimalOutputFramesPerBuffer(sample_rate, 2);
 
   // Use the client's input parameters if they are valid.
   if (input_params_are_valid) {
-    // AudioManager APIs for GetOptimalOutputFrameSize() don't support channel
-    // layouts greater than stereo unless low latency audio is supported.
+    // AudioManager APIs for GetOptimalOutputFramesPerBuffer() don't support
+    // channel layouts greater than stereo unless low latency audio is
+    // supported.
     if (input_params.channels() <= 2 ||
         GetJniDelegate().IsAudioLowLatencySupported()) {
       channel_layout_config = input_params.channel_layout_config();
@@ -1007,10 +1008,10 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
     // requested buffer size; this provides significant power savings (~25%) and
     // reduces the potential for glitches under load.
     if (input_params.latency_tag() == AudioLatency::Type::kPlayback) {
-      buffer_size = input_params.frames_per_buffer();
+      frames_per_buffer = input_params.frames_per_buffer();
     } else {
-      buffer_size = GetOptimalOutputFrameSize(sample_rate,
-                                              channel_layout_config.channels());
+      frames_per_buffer = GetOptimalOutputFramesPerBuffer(
+          sample_rate, channel_layout_config.channels());
     }
   }
 
@@ -1028,7 +1029,7 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
 
   int user_buffer_size = GetUserBufferSize();
   if (user_buffer_size) {
-    buffer_size = user_buffer_size;
+    frames_per_buffer = user_buffer_size;
   }
 
   // Specify hardware capabilities for HDMI audio passthrough
@@ -1037,7 +1038,7 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
       /*require_encapsulation=*/false);
 
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         channel_layout_config, sample_rate, buffer_size,
+                         channel_layout_config, sample_rate, frames_per_buffer,
                          hardware_capabilities);
 }
 
@@ -1095,33 +1096,35 @@ int AudioManagerAndroid::SelectSampleRate(
                           });
 }
 
-int AudioManagerAndroid::GetOptimalOutputFrameSize(int sample_rate,
-                                                   int channels) {
+int AudioManagerAndroid::GetOptimalOutputFramesPerBuffer(int sample_rate,
+                                                         int channels) {
   if (base::FeatureList::IsEnabled(
           features::kAlwaysUseAudioManagerOutputFramesPerBuffer)) {
-    int buffer_size = GetJniDelegate().GetAudioLowLatencyOutputFrameSize();
+    int frames_per_buffer =
+        GetJniDelegate().GetAudioLowLatencyOutputFramesPerBuffer();
     // Use AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER value if Android
     // supports it.
-    if (buffer_size) {
-      return buffer_size;
+    if (frames_per_buffer) {
+      return frames_per_buffer;
     }
     // Use small buffer size for low latency audio devices as a fallback.
     if (GetJniDelegate().IsAudioLowLatencySupported()) {
       return kDefaultLowLatencyOutputBufferSize;
     }
   } else if (GetJniDelegate().IsAudioLowLatencySupported()) {
-    int buffer_size = GetJniDelegate().GetAudioLowLatencyOutputFrameSize();
-    if (buffer_size == 0) {
-      buffer_size = kDefaultLowLatencyOutputBufferSize;
+    int frames_per_buffer =
+        GetJniDelegate().GetAudioLowLatencyOutputFramesPerBuffer();
+    if (frames_per_buffer == 0) {
+      frames_per_buffer = kDefaultLowLatencyOutputBufferSize;
     }
-    return buffer_size;
+    return frames_per_buffer;
   }
 
   // Use 2048 frames or bigger buffer size for non-low latency audio devices to
   // be conservative.
   return std::max(
       kDefaultOutputBufferSize,
-      GetJniDelegate().GetMinOutputFrameSize(sample_rate, channels));
+      GetJniDelegate().GetMinOutputFramesPerBuffer(sample_rate, channels));
 }
 
 AudioParameters::Format AudioManagerAndroid::GetHdmiOutputEncodingFormats() {

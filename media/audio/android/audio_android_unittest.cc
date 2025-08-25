@@ -181,7 +181,7 @@ class MockJniDelegate : public JniDelegate {
               (),
               (override));
   MOCK_METHOD(int,
-              GetMinInputFrameSize,
+              GetMinInputFramesPerBuffer,
               (int sample_rate, int channels),
               (override));
   MOCK_METHOD(bool, AcousticEchoCancelerIsAvailable, (), (override));
@@ -194,9 +194,9 @@ class MockJniDelegate : public JniDelegate {
   MOCK_METHOD(void, MaybeSetBluetoothScoState, (bool state), (override));
   MOCK_METHOD(int, GetNativeOutputSampleRate, (), (override));
   MOCK_METHOD(bool, IsAudioLowLatencySupported, (), (override));
-  MOCK_METHOD(int, GetAudioLowLatencyOutputFrameSize, (), (override));
+  MOCK_METHOD(int, GetAudioLowLatencyOutputFramesPerBuffer, (), (override));
   MOCK_METHOD(int,
-              GetMinOutputFrameSize,
+              GetMinOutputFramesPerBuffer,
               (int sample_rate, int channels),
               (override));
   MOCK_METHOD(AudioParameters::Format,
@@ -927,7 +927,7 @@ TEST_F(AudioAndroidInputTest, GetInputStreamParametersForDevice) {
       .WillRepeatedly(Return(true));
   EXPECT_CALL(jni_delegate, GetNativeOutputSampleRate())
       .WillRepeatedly(Return(90000));
-  EXPECT_CALL(jni_delegate, GetMinInputFrameSize(_, _))
+  EXPECT_CALL(jni_delegate, GetMinInputFramesPerBuffer(_, _))
       .WillRepeatedly(Return(64));
 
   // Ensure device metadata is fetched and cached.
@@ -980,7 +980,7 @@ TEST_F(AudioAndroidOutputTest, GetOutputStreamParametersForDevice) {
       .WillRepeatedly(Return(true));
   EXPECT_CALL(jni_delegate, GetNativeOutputSampleRate())
       .WillRepeatedly(Return(90000));
-  EXPECT_CALL(jni_delegate, GetAudioLowLatencyOutputFrameSize())
+  EXPECT_CALL(jni_delegate, GetAudioLowLatencyOutputFramesPerBuffer())
       .WillRepeatedly(Return(64));
   EXPECT_CALL(jni_delegate, GetHdmiOutputEncodingFormats())
       .WillRepeatedly(Return(static_cast<AudioParameters::Format>(0)));
@@ -1035,7 +1035,7 @@ TEST_F(AudioAndroidOutputTest,
                                        /*sample_rates=*/{}}}));
   EXPECT_CALL(jni_delegate, IsAudioLowLatencySupported())
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(jni_delegate, GetAudioLowLatencyOutputFrameSize())
+  EXPECT_CALL(jni_delegate, GetAudioLowLatencyOutputFramesPerBuffer())
       .WillRepeatedly(Return(64));
   EXPECT_CALL(jni_delegate, GetHdmiOutputEncodingFormats())
       .WillRepeatedly(Return(static_cast<AudioParameters::Format>(0)));
