@@ -43,10 +43,12 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/nth_index_cache.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
@@ -726,6 +728,8 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoVideoPersistent:
     case CSSSelector::kPseudoVideoPersistentAncestor:
     case CSSSelector::kPseudoTargetCurrent:
+    case CSSSelector::kPseudoTargetBefore:
+    case CSSSelector::kPseudoTargetAfter:
     case CSSSelector::kPseudoViewTransition:
     case CSSSelector::kPseudoViewTransitionGroup:
     case CSSSelector::kPseudoViewTransitionGroupChildren:
@@ -2499,6 +2503,39 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                 anchor_element->GetScrollTargetGroupContainerData()) {
           return data->Selected() == element;
         }
+      }
+      break;
+    }
+    case CSSSelector::kPseudoTargetBefore:
+    case CSSSelector::kPseudoTargetAfter: {
+      Element* scroll_marker = nullptr;
+      Element* active_scroll_marker = nullptr;
+      // ::scroll-marker pseudo element case.
+      if (auto* pseudo_scroll_marker =
+              DynamicTo<ScrollMarkerPseudoElement>(element)) {
+        if (auto* scroll_marker_group =
+                pseudo_scroll_marker->ScrollMarkerGroup()) {
+          scroll_marker = pseudo_scroll_marker;
+          active_scroll_marker = scroll_marker_group->Selected();
+        }
+      }
+      // html anchor scroll marker case.
+      if (auto* anchor_element = DynamicTo<HTMLAnchorElement>(element)) {
+        if (ScrollMarkerGroupData* data =
+                anchor_element->GetScrollTargetGroupContainerData()) {
+          scroll_marker = anchor_element;
+          active_scroll_marker = data->Selected();
+        }
+      }
+      // Compare the layout tree position of the scroll marker and the
+      // active scroll marker to determine before/after relationship.
+      if (scroll_marker && active_scroll_marker) {
+        int order_result =
+            LayoutTreeBuilderTraversal::ComparePreorderTreePosition(
+                *scroll_marker, *active_scroll_marker);
+        return selector.GetPseudoType() == CSSSelector::kPseudoTargetBefore
+                   ? order_result == -1
+                   : order_result == 1;
       }
       break;
     }

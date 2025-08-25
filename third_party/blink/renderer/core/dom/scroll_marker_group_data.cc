@@ -342,6 +342,14 @@ void ScrollMarkerGroupData::ApplyPendingScrollMarker() {
           DynamicTo<HTMLAnchorElement>(selected_marker_.Get())) {
     anchor_scroll_marker->PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
   }
+  // Notify all scroll markers in the group that their
+  // :target-before and :target-after pseudo-elements have changed.
+  if (RuntimeEnabledFeatures::CSSScrollMarkerTargetBeforeAfterEnabled()) {
+    for (Element* scroll_marker : focus_group_) {
+      scroll_marker->PseudoStateChanged(CSSSelector::kPseudoTargetBefore);
+      scroll_marker->PseudoStateChanged(CSSSelector::kPseudoTargetAfter);
+    }
+  }
   apply_snap_alignment_ = false;
   pending_selected_marker_.Clear();
 }

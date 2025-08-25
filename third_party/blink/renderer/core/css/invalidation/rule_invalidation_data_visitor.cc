@@ -86,6 +86,8 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoIndeterminate:
     case CSSSelector::kPseudoTarget:
     case CSSSelector::kPseudoTargetCurrent:
+    case CSSSelector::kPseudoTargetBefore:
+    case CSSSelector::kPseudoTargetAfter:
     case CSSSelector::kPseudoCurrent:
     case CSSSelector::kPseudoCheckMark:
     case CSSSelector::kPseudoBefore:
@@ -1665,6 +1667,8 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoIndeterminate:
       case CSSSelector::kPseudoTarget:
       case CSSSelector::kPseudoTargetCurrent:
+      case CSSSelector::kPseudoTargetBefore:
+      case CSSSelector::kPseudoTargetAfter:
       case CSSSelector::kPseudoLang:
       case CSSSelector::kPseudoDir:
       case CSSSelector::kPseudoFullScreen:

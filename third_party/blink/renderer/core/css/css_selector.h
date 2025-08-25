@@ -372,6 +372,8 @@ class CORE_EXPORT CSSSelector {
     kPseudoVideoPersistent,
     kPseudoVideoPersistentAncestor,
 
+    kPseudoTargetAfter,
+    kPseudoTargetBefore,
     // Active ::scroll-marker styling.
     // https://drafts.csswg.org/css-overflow-5/#active-scroll-marker
     kPseudoTargetCurrent,
