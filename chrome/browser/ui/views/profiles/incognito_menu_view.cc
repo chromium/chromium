@@ -27,9 +27,9 @@
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
-IncognitoMenuView::IncognitoMenuView(views::Button* anchor_button,
+IncognitoMenuView::IncognitoMenuView(ui::TrackedElement* anchor_element,
                                      Browser* browser)
-    : ProfileMenuViewBase(anchor_button, browser) {
+    : ProfileMenuViewBase(anchor_element, browser) {
   CHECK(profile().IsIncognitoProfile());
   GetViewAccessibility().SetName(GetAccessibleWindowTitle(),
                                  ax::mojom::NameFrom::kAttribute);

@@ -28,6 +28,7 @@ export interface WebuiBrowserAppElement {
   $: {
     address: SearchboxElement,
     appMenuButton: HTMLElement,
+    avatarButton: HTMLElement,
     bookmarkBar: BookmarkBar,
     contentRegion: ContentRegion,
     tabstrip: TabStrip,
@@ -76,6 +77,8 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     super.connectedCallback();
     this.trackedElementManager_.startTracking(
         this.$.appMenuButton, 'kToolbarAppMenuButtonElementId');
+    this.trackedElementManager_.startTracking(
+        this.$.avatarButton, 'kToolbarAvatarButtonElementId');
   }
 
   // LayoutManager:

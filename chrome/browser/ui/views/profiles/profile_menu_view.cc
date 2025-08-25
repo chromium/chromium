@@ -87,6 +87,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "net/base/url_util.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -198,10 +199,10 @@ std::u16string GetSyncPromoButtonLabel() {
 bool ProfileMenuView::close_on_deactivate_for_testing_ = true;
 
 ProfileMenuView::ProfileMenuView(
-    views::Button* anchor_button,
+    ui::TrackedElement* anchor_element,
     Browser* browser,
     std::optional<signin_metrics::AccessPoint> explicit_signin_access_point)
-    : ProfileMenuViewBase(anchor_button, browser),
+    : ProfileMenuViewBase(anchor_element, browser),
       browser_(raw_ref<Browser>::from_ptr(browser)),
       explicit_signin_access_point_(explicit_signin_access_point) {
   set_close_on_deactivate(close_on_deactivate_for_testing_);

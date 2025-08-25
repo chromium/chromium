@@ -68,6 +68,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -270,17 +271,21 @@ ProfileMenuViewBase::IdentitySectionParams::operator=(IdentitySectionParams&&) =
 
 // ProfileMenuViewBase ---------------------------------------------------------
 
-ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
+ProfileMenuViewBase::ProfileMenuViewBase(ui::TrackedElement* anchor_element,
                                          Browser* browser)
-    : BubbleDialogDelegateView(anchor_button, views::BubbleBorder::TOP_RIGHT),
+    : BubbleDialogDelegateView(anchor_element, views::BubbleBorder::TOP_RIGHT),
       profile_(raw_ref<Profile>::from_ptr(browser->profile())),
-      anchor_button_(anchor_button),
       close_bubble_helper_(this, browser->tab_strip_model()) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_margins(gfx::Insets(0));
-  DCHECK(anchor_button);
-  views::InkDrop::Get(anchor_button)
-      ->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
+  DCHECK(anchor_element);
+
+  if (anchor_element->IsA<views::TrackedElementViews>()) {
+    anchor_view_.SetView(
+        anchor_element->AsA<views::TrackedElementViews>()->view());
+    views::InkDrop::Get(anchor_view_.view())
+        ->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
+  }
 
   SetEnableArrowKeyTraversal(true);
 
@@ -751,11 +756,11 @@ void ProfileMenuViewBase::Init() {
 }
 
 void ProfileMenuViewBase::OnWindowClosing() {
-  if (!anchor_button_) {
+  if (!anchor_view_) {
     return;
   }
 
-  views::InkDrop::Get(anchor_button_.view())
+  views::InkDrop::Get(anchor_view_.view())
       ->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
 }
 

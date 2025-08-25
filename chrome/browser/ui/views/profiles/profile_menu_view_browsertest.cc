@@ -266,6 +266,7 @@ class ProfileMenuViewTestBase {
   void OpenProfileMenuFromToolbar(ToolbarButtonProvider* toolbar) {
     // Click the avatar button to open the menu.
     views::View* avatar_button = toolbar->GetAvatarToolbarButton();
+    views::test::WidgetVisibleWaiter(avatar_button->GetWidget()).Wait();
     ASSERT_TRUE(avatar_button);
     Click(avatar_button);
     ASSERT_NO_FATAL_FAILURE(WaitForMenuToBeActive(profile_menu_view()));
