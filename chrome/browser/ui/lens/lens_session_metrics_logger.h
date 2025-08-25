@@ -70,18 +70,6 @@ class LensSessionMetricsLogger {
   // Called when the zero prefix suggestions are shown to the user.
   void OnZeroSuggestShown(bool is_initial_query);
 
-  // Called when the AIM composebox is shown in the side panel.
-  void OnAimComposeboxShown();
-
-  // Called when the AIM handshake is received.
-  void OnAimHandshakeCompleted();
-
-  // Called when the AIM composebox is focused.
-  void OnAimComposeboxFocused();
-
-  // Called when a query is issued in the AIM searchbox.
-  void OnAimQueryIssued();
-
   // Records Lens invocation.
   void RecordInvocation();
 
@@ -157,10 +145,6 @@ class LensSessionMetricsLogger {
   // Metrics for the contextual searchbox that will be recorded at the end of a
   // session.
   ContextualSearchboxSessionEndMetrics csb_session_end_metrics_;
-
-  // Metrics for the AIM searchbox that will be recorded at the end of a
-  // session.
-  AimSessionEndMetrics aim_session_end_metrics_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensSessionMetricsLogger> weak_factory_{this};

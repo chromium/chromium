@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
-#include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
@@ -48,14 +47,6 @@ void LensComposeboxController::BindComposebox(
   composebox_handler_ = std::make_unique<LensComposeboxHandler>(
       this, std::move(pending_handler), std::move(pending_page),
       std::move(pending_searchbox_handler));
-
-  // Record that the composebox was shown. The composebox handler is always
-  // bound, so check if the composebox is actually enabled before logging as
-  // shown.
-  if (lens::IsAimM3Enabled(profile_) &&
-      lens::features::GetAimSearchboxEnabled()) {
-    GetSessionMetricsLogger()->OnAimComposeboxShown();
-  }
 }
 
 void LensComposeboxController::IssueComposeboxQuery(
@@ -81,9 +72,6 @@ void LensComposeboxController::IssueComposeboxQuery(
   // Send the message to the remote UI.
   lens_search_controller_->lens_overlay_side_panel_coordinator()
       ->SendClientMessageToAim(serialized_message);
-
-  // Record that a query was issued.
-  GetSessionMetricsLogger()->OnAimQueryIssued();
 }
 
 void LensComposeboxController::OnFocusChanged(bool focused) {
@@ -91,9 +79,6 @@ void LensComposeboxController::OnFocusChanged(bool focused) {
   if (!focused) {
     return;
   }
-
-  // Record that the composebox was focused.
-  GetSessionMetricsLogger()->OnAimComposeboxFocused();
 
   // Ignore if recontextualization on focus is disabled.
   if (!lens::features::GetShouldComposeboxContextualizeOnFocus()) {
@@ -127,7 +112,6 @@ void LensComposeboxController::OnAimMessage(
   }
 
   if (aim_to_client_message.has_handshake_response()) {
-    remote_ui_capabilities_.clear();
     // Store the remote UI's capabilities. This should only be done once.
     for (int capability_int :
          aim_to_client_message.handshake_response().capabilities()) {
@@ -137,13 +121,7 @@ void LensComposeboxController::OnAimMessage(
 
     lens_search_controller_->lens_overlay_side_panel_coordinator()
         ->AimHandshakeReceived();
-    GetSessionMetricsLogger()->OnAimHandshakeCompleted();
   }
-}
-
-lens::LensSessionMetricsLogger*
-LensComposeboxController::GetSessionMetricsLogger() {
-  return lens_search_controller_->lens_session_metrics_logger();
 }
 
 lens::ClientToAimMessage LensComposeboxController::BuildSubmitQueryMessage(

@@ -19,7 +19,7 @@
 class LensSearchController;
 
 namespace lens {
-class LensSessionMetricsLogger;
+
 class LensComposeboxHandler;
 
 // Controller for the Lens compose box. This class is responsible for handling
@@ -56,9 +56,6 @@ class LensComposeboxController {
 
   // Handles AIM messages from the side panel remote UI.
   void OnAimMessage(const std::vector<uint8_t>& message);
-
-  // Returns the session metrics logger for the current Lens session.
-  LensSessionMetricsLogger* GetSessionMetricsLogger();
 
   LensComposeboxHandler* composebox_handler_for_testing() {
     return composebox_handler_.get();
