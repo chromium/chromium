@@ -40,8 +40,7 @@ void LensComposeboxController::BindComposebox(
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler) {
-  // The composebox handler should only be bound once.
-  CHECK(composebox_handler_ == nullptr);
+  composebox_handler_.reset();
   composebox_handler_ = std::make_unique<LensComposeboxHandler>(
       this, std::move(pending_handler), std::move(pending_page),
       std::move(pending_searchbox_handler));
