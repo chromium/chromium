@@ -221,8 +221,8 @@ ScriptPromise<IDLSequence<ContactInfo>> ContactsManager::select(
   GetContactsManager(script_state)
       ->Select(options->multiple(), include_names, include_emails, include_tel,
                include_addresses, include_icons,
-               WTF::BindOnce(&ContactsManager::OnContactsSelected,
-                             WrapPersistent(this), WrapPersistent(resolver)));
+               BindOnce(&ContactsManager::OnContactsSelected,
+                        WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }

@@ -24,8 +24,8 @@ void FakePressureService::BindRequest(mojo::ScopedMessagePipeHandle handle) {
       std::move(handle));
   DCHECK(!manager_receiver_.is_bound());
   manager_receiver_.Bind(std::move(receiver));
-  manager_receiver_.set_disconnect_handler(WTF::BindOnce(
-      &FakePressureService::OnConnectionError, WTF::Unretained(this)));
+  manager_receiver_.set_disconnect_handler(
+      BindOnce(&FakePressureService::OnConnectionError, Unretained(this)));
 }
 
 void FakePressureService::AddClient(
@@ -52,8 +52,8 @@ ComputePressureTestingContext::ComputePressureTestingContext(
     FakePressureService* mock_pressure_service) {
   DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::WebPressureManager::Name_,
-      WTF::BindRepeating(&FakePressureService::BindRequest,
-                         WTF::Unretained(mock_pressure_service)));
+      BindRepeating(&FakePressureService::BindRequest,
+                    Unretained(mock_pressure_service)));
 }
 
 ComputePressureTestingContext::~ComputePressureTestingContext() {

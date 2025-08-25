@@ -33,8 +33,8 @@ class ClipboardTest : public PageTestBase {
   void BindMockPermissionService(ExecutionContext* executionContext) {
     executionContext->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::PermissionService::Name_,
-        WTF::BindRepeating(&MockClipboardPermissionService::BindRequest,
-                           WTF::Unretained(&permission_service_)));
+        BindRepeating(&MockClipboardPermissionService::BindRequest,
+                      Unretained(&permission_service_)));
   }
 
   void SetSecureOrigin(ExecutionContext* executionContext) {

@@ -265,11 +265,10 @@ void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
     will_read_unprocessed_html_ = true;
   }
 
-  ValidatePreconditions(
-      mojom::blink::PermissionName::CLIPBOARD_READ,
-      /*will_be_sanitized=*/false,
-      WTF::BindOnce(&ClipboardPromise::HandleReadWithPermission,
-                    WrapPersistent(this)));
+  ValidatePreconditions(mojom::blink::PermissionName::CLIPBOARD_READ,
+                        /*will_be_sanitized=*/false,
+                        BindOnce(&ClipboardPromise::HandleReadWithPermission,
+                                 WrapPersistent(this)));
 }
 
 void ClipboardPromise::HandleReadText() {
@@ -277,8 +276,8 @@ void ClipboardPromise::HandleReadText() {
   ValidatePreconditions(
       mojom::blink::PermissionName::CLIPBOARD_READ,
       /*will_be_sanitized=*/true,
-      WTF::BindOnce(&ClipboardPromise::HandleReadTextWithPermission,
-                    WrapPersistent(this)));
+      BindOnce(&ClipboardPromise::HandleReadTextWithPermission,
+               WrapPersistent(this)));
 }
 
 void ClipboardPromise::HandleWrite(
@@ -316,8 +315,8 @@ void ClipboardPromise::HandleWrite(
   ValidatePreconditions(
       mojom::blink::PermissionName::CLIPBOARD_WRITE,
       /*will_be_sanitized=*/write_custom_format_types_.empty(),
-      WTF::BindOnce(&ClipboardPromise::HandleWriteWithPermission,
-                    WrapPersistent(this)));
+      BindOnce(&ClipboardPromise::HandleWriteWithPermission,
+               WrapPersistent(this)));
 }
 
 void ClipboardPromise::HandleWriteText(const String& data) {
@@ -326,8 +325,8 @@ void ClipboardPromise::HandleWriteText(const String& data) {
   ValidatePreconditions(
       mojom::blink::PermissionName::CLIPBOARD_WRITE,
       /*will_be_sanitized=*/true,
-      WTF::BindOnce(&ClipboardPromise::HandleWriteTextWithPermission,
-                    WrapPersistent(this)));
+      BindOnce(&ClipboardPromise::HandleWriteTextWithPermission,
+               WrapPersistent(this)));
 }
 
 void ClipboardPromise::HandleReadWithPermission(
@@ -346,14 +345,14 @@ void ClipboardPromise::HandleReadWithPermission(
   // Check macOS platform permission state if the runtime flag is enabled
   if (RuntimeEnabledFeatures::MacSystemClipboardPermissionCheckEnabled()) {
     GetLocalFrame()->GetSystemClipboard()->GetPlatformPermissionState(
-        WTF::BindOnce(&ClipboardPromise::OnPlatformPermissionResultForRead,
-                      WrapPersistent(this)));
+        BindOnce(&ClipboardPromise::OnPlatformPermissionResultForRead,
+                 WrapPersistent(this)));
     return;
   }
 #endif
   // Non-Mac platforms or when flag is disabled proceed directly
   SystemClipboard* system_clipboard = GetLocalFrame()->GetSystemClipboard();
-  system_clipboard->ReadAvailableCustomAndStandardFormats(WTF::BindOnce(
+  system_clipboard->ReadAvailableCustomAndStandardFormats(BindOnce(
       &ClipboardPromise::OnReadAvailableFormatNames, WrapPersistent(this)));
 }
 
@@ -448,8 +447,8 @@ void ClipboardPromise::HandleReadTextWithPermission(
   // Check macOS platform permission state if the runtime flag is enabled
   if (RuntimeEnabledFeatures::MacSystemClipboardPermissionCheckEnabled()) {
     GetLocalFrame()->GetSystemClipboard()->GetPlatformPermissionState(
-        WTF::BindOnce(&ClipboardPromise::OnPlatformPermissionResultForReadText,
-                      WrapPersistent(this)));
+        BindOnce(&ClipboardPromise::OnPlatformPermissionResultForReadText,
+                 WrapPersistent(this)));
     return;
   }
 #endif
@@ -497,7 +496,7 @@ void ClipboardPromise::OnPlatformPermissionResultForRead(
 
   // For read operations, proceed to read available formats
   SystemClipboard* system_clipboard = GetLocalFrame()->GetSystemClipboard();
-  system_clipboard->ReadAvailableCustomAndStandardFormats(WTF::BindOnce(
+  system_clipboard->ReadAvailableCustomAndStandardFormats(BindOnce(
       &ClipboardPromise::OnReadAvailableFormatNames, WrapPersistent(this)));
 }
 #endif
@@ -508,8 +507,8 @@ void ClipboardPromise::HandlePromiseWrite(
 
   GetClipboardTaskRunner()->PostTask(
       FROM_HERE,
-      WTF::BindOnce(&ClipboardPromise::WriteClipboardItemData,
-                    WrapPersistent(this), WrapPersistent(clipboard_item_list)));
+      BindOnce(&ClipboardPromise::WriteClipboardItemData, WrapPersistent(this),
+               WrapPersistent(clipboard_item_list)));
 }
 
 void ClipboardPromise::WriteClipboardItemData(
@@ -674,8 +673,8 @@ void ClipboardPromise::ValidatePreconditions(
             ->GetContentSettingsClient()
             ->AllowWriteToClipboard()))) {
     GetClipboardTaskRunner()->PostTask(
-        FROM_HERE, WTF::BindOnce(std::move(callback),
-                                 mojom::blink::PermissionStatus::GRANTED));
+        FROM_HERE, blink::BindOnce(std::move(callback),
+                                   mojom::blink::PermissionStatus::GRANTED));
     return;
   }
 
@@ -684,8 +683,8 @@ void ClipboardPromise::ValidatePreconditions(
       (permission == mojom::blink::PermissionName::CLIPBOARD_READ &&
        ClipboardCommands::IsExecutingPaste(*context))) {
     GetClipboardTaskRunner()->PostTask(
-        FROM_HERE, WTF::BindOnce(std::move(callback),
-                                 mojom::blink::PermissionStatus::GRANTED));
+        FROM_HERE, blink::BindOnce(std::move(callback),
+                                   mojom::blink::PermissionStatus::GRANTED));
     return;
   }
 

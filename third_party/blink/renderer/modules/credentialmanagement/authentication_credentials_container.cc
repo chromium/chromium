@@ -469,7 +469,7 @@ void OnRequestToken(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
                     const CredentialRequestOptions* options,
                     RequestTokenStatus status,
                     const std::optional<KURL>& selected_idp_config_url,
-                    const WTF::String& token,
+                    const String& token,
                     mojom::blink::TokenErrorPtr error,
                     bool is_auto_selected) {
   auto* resolver =
@@ -714,7 +714,7 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
     FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle feature_handle,
     const String& rp_id_for_payment_extension,
-    const WTF::Vector<uint8_t>& user_id_for_payment_extension,
+    const Vector<uint8_t>& user_id_for_payment_extension,
     AuthenticatorStatus status,
     MakeCredentialAuthenticatorResponsePtr credential,
     WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
@@ -745,10 +745,10 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
   spc_service->StorePaymentCredential(
       std::move(credential_id), rp_id_for_payment_extension,
       std::move(user_id_for_payment_extension),
-      WTF::BindOnce(&OnSaveCredentialIdForPaymentExtension,
-                    std::make_unique<ScopedPromiseResolver>(resolver),
-                    std::move(scoped_abort_state), std::move(feature_handle),
-                    std::move(credential)));
+      BindOnce(&OnSaveCredentialIdForPaymentExtension,
+               std::make_unique<ScopedPromiseResolver>(resolver),
+               std::move(scoped_abort_state), std::move(feature_handle),
+               std::move(credential)));
 }
 
 void OnGetAssertionComplete(
@@ -1564,15 +1564,15 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
           CredentialManagerProxy::From(script_state)->Authenticator();
       authenticator->GetCredential(
           std::move(mojo_options),
-          WTF::BindOnce(&OnAuthenticatorGetCredentialComplete,
-                        std::make_unique<ScopedPromiseResolver>(resolver),
-                        std::move(scoped_abort_state),
-                        ExecutionContext::From(script_state)
-                            ->GetScheduler()
-                            ->RegisterFeature(
-                                SchedulingPolicy::Feature::kWebAuthentication,
-                                SchedulingPolicy::DisableBackForwardCache()),
-                        mediation));
+          BindOnce(&OnAuthenticatorGetCredentialComplete,
+                   std::make_unique<ScopedPromiseResolver>(resolver),
+                   std::move(scoped_abort_state),
+                   ExecutionContext::From(script_state)
+                       ->GetScheduler()
+                       ->RegisterFeature(
+                           SchedulingPolicy::Feature::kWebAuthentication,
+                           SchedulingPolicy::DisableBackForwardCache()),
+                   mediation));
     } else {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
@@ -1599,8 +1599,8 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     auto* webotp_service =
         CredentialManagerProxy::From(script_state)->WebOTPService();
     webotp_service->Receive(
-        WTF::BindOnce(&OnSmsReceive, WrapPersistent(resolver),
-                      std::move(scoped_abort_state), base::TimeTicks::Now()));
+        blink::BindOnce(&OnSmsReceive, WrapPersistent(resolver),
+                        std::move(scoped_abort_state), base::TimeTicks::Now()));
 
     UseCounter::Count(context, WebFeature::kWebOTP);
     return promise;
@@ -1666,9 +1666,9 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
       CredentialManagerProxy::From(script_state)->CredentialManager();
   credential_manager->Get(
       requirement, options->password(), std::move(providers),
-      WTF::BindOnce(&OnGetComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver),
-                    required_origin_type, Mediation::MODAL));
+      BindOnce(&OnGetComplete,
+               std::make_unique<ScopedPromiseResolver>(resolver),
+               required_origin_type, Mediation::MODAL));
 
   return promise;
 }
@@ -1726,8 +1726,8 @@ ScriptPromise<Credential> AuthenticationCredentialsContainer::store(
 
   credential_manager->Store(
       CredentialInfo::From(credential),
-      WTF::BindOnce(&OnStoreComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver)));
+      BindOnce(&OnStoreComplete,
+               std::make_unique<ScopedPromiseResolver>(resolver)));
 
   return promise;
 }
@@ -1985,7 +1985,7 @@ AuthenticationCredentialsContainer::create(
   }
   // An empty list uses default algorithm identifiers.
   if (options->publicKey()->pubKeyCredParams().size() != 0) {
-    WTF::HashSet<int16_t> algorithm_set;
+    HashSet<int16_t> algorithm_set;
     for (const auto& param : options->publicKey()->pubKeyCredParams()) {
       // 0 and -1 are special values that cannot be inserted into the HashSet.
       if (param->alg() != 0 && param->alg() != -1) {
@@ -2037,7 +2037,7 @@ AuthenticationCredentialsContainer::create(
                             SchedulingPolicy::DisableBackForwardCache());
   if (mojo_options->is_payment_credential_creation) {
     String rp_id_for_payment_extension = mojo_options->relying_party->id;
-    WTF::Vector<uint8_t> user_id_for_payment_extension = mojo_options->user->id;
+    Vector<uint8_t> user_id_for_payment_extension = mojo_options->user->id;
     if (base::FeatureList::IsEnabled(
             blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
       auto* spc_service =
@@ -2045,19 +2045,19 @@ AuthenticationCredentialsContainer::create(
               ->SecurePaymentConfirmationService();
       spc_service->MakePaymentCredential(
           std::move(mojo_options),
-          WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
-                        std::make_unique<ScopedPromiseResolver>(resolver),
-                        std::move(scoped_abort_state),
-                        std::move(feature_handle), rp_id_for_payment_extension,
-                        std::move(user_id_for_payment_extension)));
+          BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
+                   std::make_unique<ScopedPromiseResolver>(resolver),
+                   std::move(scoped_abort_state), std::move(feature_handle),
+                   rp_id_for_payment_extension,
+                   std::move(user_id_for_payment_extension)));
     } else {
       authenticator->MakeCredential(
           std::move(mojo_options),
-          WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
-                        std::make_unique<ScopedPromiseResolver>(resolver),
-                        std::move(scoped_abort_state),
-                        std::move(feature_handle), rp_id_for_payment_extension,
-                        std::move(user_id_for_payment_extension)));
+          BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
+                   std::make_unique<ScopedPromiseResolver>(resolver),
+                   std::move(scoped_abort_state), std::move(feature_handle),
+                   rp_id_for_payment_extension,
+                   std::move(user_id_for_payment_extension)));
     }
   } else {
     if (RuntimeEnabledFeatures::WebAuthenticationConditionalCreateEnabled()) {
@@ -2065,10 +2065,10 @@ AuthenticationCredentialsContainer::create(
     }
     authenticator->MakeCredential(
         std::move(mojo_options),
-        WTF::BindOnce(&OnMakePublicKeyCredentialComplete,
-                      std::make_unique<ScopedPromiseResolver>(resolver),
-                      std::move(scoped_abort_state), std::move(feature_handle),
-                      required_origin_type, is_rk_required));
+        BindOnce(&OnMakePublicKeyCredentialComplete,
+                 std::make_unique<ScopedPromiseResolver>(resolver),
+                 std::move(scoped_abort_state), std::move(feature_handle),
+                 required_origin_type, is_rk_required));
   }
 
   return promise;
@@ -2095,16 +2095,16 @@ AuthenticationCredentialsContainer::preventSilentAccess(
   auto* credential_manager =
       CredentialManagerProxy::From(script_state)->CredentialManager();
   credential_manager->PreventSilentAccess(
-      WTF::BindOnce(&OnPreventSilentAccessComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver)));
+      BindOnce(&OnPreventSilentAccessComplete,
+               std::make_unique<ScopedPromiseResolver>(resolver)));
 
   // TODO(https://crbug.com/1441075): Unify the implementation for
   // different CredentialTypes and avoid the duplication eventually.
   auto* auth_request =
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
   auth_request->PreventSilentAccess(
-      WTF::BindOnce(&OnPreventSilentAccessComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver)));
+      BindOnce(&OnPreventSilentAccessComplete,
+               std::make_unique<ScopedPromiseResolver>(resolver)));
 
   return promise;
 }
@@ -2280,8 +2280,8 @@ void AuthenticationCredentialsContainer::GetForIdentity(
   if (auto* signal = options.getSignalOr(nullptr)) {
     // Checked signal->aborted() at the top of get().
 
-    auto callback = WTF::BindOnce(&AbortIdentityCredentialRequest,
-                                  WrapPersistent(script_state));
+    auto callback =
+        BindOnce(&AbortIdentityCredentialRequest, WrapPersistent(script_state));
 
     auto* handle = signal->AddAlgorithm(std::move(callback));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
@@ -2297,9 +2297,9 @@ void AuthenticationCredentialsContainer::GetForIdentity(
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
   auth_request->RequestToken(
       std::move(idp_get_params), mediation_requirement,
-      WTF::BindOnce(&OnRequestToken,
-                    std::make_unique<ScopedPromiseResolver>(resolver),
-                    std::move(scoped_abort_state), WrapPersistent(&options)));
+      BindOnce(&OnRequestToken,
+               std::make_unique<ScopedPromiseResolver>(resolver),
+               std::move(scoped_abort_state), WrapPersistent(&options)));
 }
 
 }  // namespace blink

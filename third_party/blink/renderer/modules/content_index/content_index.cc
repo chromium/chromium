@@ -27,8 +27,8 @@ namespace {
 
 // Validates |description|. If there is an error, an error message to be passed
 // to a TypeError is passed. Otherwise a null string is returned.
-WTF::String ValidateDescription(const ContentDescription& description,
-                                ServiceWorkerRegistration* registration) {
+String ValidateDescription(const ContentDescription& description,
+                           ServiceWorkerRegistration* registration) {
   // TODO(crbug.com/973844): Should field sizes be capped?
 
   if (description.id().empty())
@@ -62,7 +62,7 @@ WTF::String ValidateDescription(const ContentDescription& description,
   if (!launch_url.GetString().StartsWith(registration->scope()))
     return "Launch URL must belong to the Service Worker's scope";
 
-  return WTF::String();
+  return String();
 }
 
 }  // namespace
@@ -95,7 +95,7 @@ ScriptPromise<IDLUndefined> ContentIndex::add(
     return EmptyPromise();
   }
 
-  WTF::String description_error =
+  String description_error =
       ValidateDescription(*description, registration_.Get());
   if (!description_error.IsNull()) {
     exception_state.ThrowTypeError(description_error);
@@ -110,8 +110,8 @@ ScriptPromise<IDLUndefined> ContentIndex::add(
   auto category = mojo_description->category;
   GetService()->GetIconSizes(
       category,
-      WTF::BindOnce(&ContentIndex::DidGetIconSizes, WrapPersistent(this),
-                    std::move(mojo_description), WrapPersistent(resolver)));
+      BindOnce(&ContentIndex::DidGetIconSizes, WrapPersistent(this),
+               std::move(mojo_description), WrapPersistent(resolver)));
 
   return promise;
 }
@@ -137,10 +137,10 @@ void ContentIndex::DidGetIconSizes(
   }
 
   auto* icon_loader = MakeGarbageCollected<ContentIndexIconLoader>();
-  icon_loader->Start(
-      registration_->GetExecutionContext(), std::move(description), icon_sizes,
-      WTF::BindOnce(&ContentIndex::DidGetIcons, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+  icon_loader->Start(registration_->GetExecutionContext(),
+                     std::move(description), icon_sizes,
+                     BindOnce(&ContentIndex::DidGetIcons, WrapPersistent(this),
+                              WrapPersistent(resolver)));
 }
 
 void ContentIndex::DidGetIcons(ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -162,10 +162,9 @@ void ContentIndex::DidGetIcons(ScriptPromiseResolver<IDLUndefined>* resolver,
   KURL launch_url = registration_->GetExecutionContext()->CompleteURL(
       description->launch_url);
 
-  GetService()->Add(
-      registration_->RegistrationId(), std::move(description), icons,
-      launch_url,
-      WTF::BindOnce(&ContentIndex::DidAdd, WrapPersistent(resolver)));
+  GetService()->Add(registration_->RegistrationId(), std::move(description),
+                    icons, launch_url,
+                    BindOnce(&ContentIndex::DidAdd, WrapPersistent(resolver)));
 }
 
 void ContentIndex::DidAdd(ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -210,9 +209,9 @@ ScriptPromise<IDLUndefined> ContentIndex::deleteDescription(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  GetService()->Delete(registration_->RegistrationId(), id,
-                       WTF::BindOnce(&ContentIndex::DidDeleteDescription,
-                                     WrapPersistent(resolver)));
+  GetService()->Delete(
+      registration_->RegistrationId(), id,
+      BindOnce(&ContentIndex::DidDeleteDescription, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -260,9 +259,9 @@ ScriptPromise<IDLSequence<ContentDescription>> ContentIndex::getDescriptions(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  GetService()->GetDescriptions(registration_->RegistrationId(),
-                                WTF::BindOnce(&ContentIndex::DidGetDescriptions,
-                                              WrapPersistent(resolver)));
+  GetService()->GetDescriptions(
+      registration_->RegistrationId(),
+      BindOnce(&ContentIndex::DidGetDescriptions, WrapPersistent(resolver)));
 
   return promise;
 }

@@ -413,8 +413,8 @@ void DecodeImageOnDecoderThread(
     ArrayBufferContents contents,
     ImageDecoder::AlphaOption alpha_option,
     ColorBehavior color_behavior,
-    WTF::CrossThreadOnceFunction<
-        void(sk_sp<SkImage>, const ImageOrientationEnum)> result_callback) {
+    CrossThreadOnceFunction<void(sk_sp<SkImage>, const ImageOrientationEnum)>
+        result_callback) {
   const bool data_complete = true;
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       SegmentReader::CreateFromSkData(

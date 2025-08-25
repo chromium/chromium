@@ -130,7 +130,7 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
                const String& method_name,
                const HeapVector<Member<Request>>&,
                const HeapVector<Member<Response>>&,
-               const WTF::Vector<scoped_refptr<BlobDataHandle>>& blob_list,
+               const Vector<scoped_refptr<BlobDataHandle>>& blob_list,
                ExceptionState&,
                int64_t trace_id);
   ScriptPromise<IDLSequence<Request>> KeysImpl(ScriptState*,

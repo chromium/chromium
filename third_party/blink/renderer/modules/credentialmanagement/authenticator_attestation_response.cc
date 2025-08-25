@@ -34,7 +34,7 @@ Vector<String> AuthenticatorAttestationResponse::getTransports() const {
   for (auto transport : transports_) {
     ret.emplace_back(mojo::ConvertTo<String>(transport));
   }
-  std::sort(ret.begin(), ret.end(), WTF::CodeUnitCompareLessThan);
+  std::sort(ret.begin(), ret.end(), CodeUnitCompareLessThan);
   ret.erase(std::unique(ret.begin(), ret.end()), ret.end());
   return ret;
 }

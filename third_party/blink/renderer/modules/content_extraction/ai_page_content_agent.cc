@@ -731,7 +731,7 @@ void AIPageContentAgent::GetAIPageContent(
 
   // We don't expect many overlapping calls to this service as the browser will
   // only issue one request at a time.
-  async_extraction_tasks_.push_back(WTF::BindOnce(
+  async_extraction_tasks_.push_back(blink::BindOnce(
       &AIPageContentAgent::GetAIPageContentSync, WrapWeakPersistent(this),
       std::move(options), std::move(callback), start_time));
 }
@@ -859,7 +859,7 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
 
 void AIPageContentAgent::ContentBuilder::AddMetaData(
     const LocalFrame& frame,
-    WTF::Vector<mojom::blink::AIPageContentMetaPtr>& meta_data) const {
+    Vector<mojom::blink::AIPageContentMetaPtr>& meta_data) const {
   int max = options_->max_meta_elements;
   if (max == 0) {
     return;
@@ -1351,7 +1351,7 @@ void AIPageContentAgent::ContentBuilder::ComputeHitTestableNodesInViewport(
 
   std::vector<DOMNodeId> hit_nodes;
   HitTestRequest::HitNodeCb hit_node_cb =
-      WTF::BindRepeating(&CollectHitTestNodes, std::ref(hit_nodes));
+      BindRepeating(&CollectHitTestNodes, std::ref(hit_nodes));
   HitTestRequest request(
       HitTestRequest::kReadOnly | HitTestRequest::kActive |
           HitTestRequest::kListBased | HitTestRequest::kPenetratingList |

@@ -65,7 +65,7 @@ ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
   }
   request->SetIdpSigninStatus(
       context->GetSecurityOrigin(), status, nullptr,
-      WTF::BindOnce(&OnSetIdpSigninStatus, WrapPersistent(resolver)));
+      BindOnce(&OnSetIdpSigninStatus, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -117,7 +117,7 @@ ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
   request->SetIdpSigninStatus(
       context->GetSecurityOrigin(), status,
       mojo::ConvertTo<blink::mojom::blink::LoginStatusOptionsPtr>(*options),
-      WTF::BindOnce(&OnSetIdpSigninStatus, WrapPersistent(resolver)));
+      BindOnce(&OnSetIdpSigninStatus, WrapPersistent(resolver)));
   return promise;
 }
 

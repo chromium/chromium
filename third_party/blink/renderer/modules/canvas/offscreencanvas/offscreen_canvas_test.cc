@@ -123,7 +123,7 @@ void OffscreenCanvasTest::SetUp() {
     return std::make_unique<FakeWebGraphicsContext3DProvider>(gl);
   };
   SharedGpuContext::SetContextProviderFactoryForTesting(
-      WTF::BindRepeating(factory, WTF::Unretained(&gl_)));
+      BindRepeating(factory, Unretained(&gl_)));
 
   web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
   web_view_helper_->Initialize();

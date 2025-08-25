@@ -79,7 +79,7 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
                        std::unique_ptr<ScopedAbortState> scoped_abort_state,
                        DigitalIdentityRequestType request_type,
                        RequestDigitalIdentityStatus status,
-                       const WTF::String& protocol,
+                       const String& protocol,
                        std::optional<base::Value> token) {
   switch (status) {
     case RequestDigitalIdentityStatus::kErrorTooManyRequests: {
@@ -114,11 +114,10 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     case RequestDigitalIdentityStatus::kErrorNoTransientUserActivation:
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
-          WTF::String::Format(
-              "The '%s' feature requires transient activation.",
-              request_type == DigitalIdentityRequestType::kCreate
-                  ? "digital-credentials-create"
-                  : "digital-credentials-get")));
+          String::Format("The '%s' feature requires transient activation.",
+                         request_type == DigitalIdentityRequestType::kCreate
+                             ? "digital-credentials-create"
+                             : "digital-credentials-get")));
       return;
 
     case RequestDigitalIdentityStatus::kError: {
@@ -214,7 +213,7 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
   if (auto* signal = options.getSignalOr(nullptr)) {
-    auto callback = WTF::BindOnce(&AbortRequest, WrapPersistent(script_state));
+    auto callback = BindOnce(&AbortRequest, WrapPersistent(script_state));
     auto* handle = signal->AddAlgorithm(std::move(callback));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
@@ -222,9 +221,9 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
   auto* request =
       CredentialManagerProxy::From(script_state)->DigitalIdentityRequest();
   request->Get(std::move(requests),
-               WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
-                             std::move(scoped_abort_state),
-                             DigitalIdentityRequestType::kGet));
+               blink::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
+                               std::move(scoped_abort_state),
+                               DigitalIdentityRequestType::kGet));
 }
 
 void CreateDigitalIdentityCredentialInExternalSource(
@@ -287,7 +286,7 @@ void CreateDigitalIdentityCredentialInExternalSource(
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
   if (auto* signal = options.getSignalOr(nullptr)) {
-    auto callback = WTF::BindOnce(&AbortRequest, WrapPersistent(script_state));
+    auto callback = BindOnce(&AbortRequest, WrapPersistent(script_state));
     auto* handle = signal->AddAlgorithm(std::move(callback));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
@@ -295,9 +294,9 @@ void CreateDigitalIdentityCredentialInExternalSource(
   CredentialManagerProxy::From(script_state)
       ->DigitalIdentityRequest()
       ->Create(std::move(requests),
-               WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
-                             std::move(scoped_abort_state),
-                             DigitalIdentityRequestType::kCreate));
+               blink::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
+                               std::move(scoped_abort_state),
+                               DigitalIdentityRequestType::kCreate));
 }
 
 }  // namespace blink

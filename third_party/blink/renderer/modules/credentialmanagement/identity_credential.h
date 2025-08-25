@@ -22,10 +22,9 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static IdentityCredential* Create(
-      const String& token,
-      bool is_auto_selected = false,
-      const String& config_url = WTF::g_empty_string);
+  static IdentityCredential* Create(const String& token,
+                                    bool is_auto_selected = false,
+                                    const String& config_url = g_empty_string);
 
   static bool IsRejectingPromiseDueToCSP(ContentSecurityPolicy* policy,
                                          ScriptPromiseResolverBase* resolver,

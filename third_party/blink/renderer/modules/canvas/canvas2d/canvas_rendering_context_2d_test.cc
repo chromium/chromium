@@ -2963,7 +2963,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
 
   ThreadScheduler::Current()->PostIdleTask(
-      FROM_HERE, WTF::BindOnce(
+      FROM_HERE, BindOnce(
                      [](CanvasRenderingContext2DTestAccelerated* fixture,
                         base::TimeTicks /*idleDeadline*/) {
                        NonThrowableExceptionState exception_state;
@@ -2986,7 +2986,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
                            /*dx=*/0, /*dy=*/0, /*dw=*/1, /*dh=*/1,  //
                            exception_state);
                      },
-                     WTF::Unretained(this)));
+                     Unretained(this)));
   blink::test::RunPendingTasks();
 
   // Hibernate the canvas. Hibernation is handled in a idle task.

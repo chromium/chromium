@@ -87,9 +87,8 @@ mojom::blink::FederatedAuthRequest*
 CredentialManagerProxy::FederatedAuthRequest() {
   BindRemoteForFedCm(
       federated_auth_request_,
-      WTF::BindOnce(
-          &CredentialManagerProxy::OnFederatedAuthRequestConnectionError,
-          WrapWeakPersistent(this)));
+      BindOnce(&CredentialManagerProxy::OnFederatedAuthRequestConnectionError,
+               WrapWeakPersistent(this)));
   return federated_auth_request_.get();
 }
 
@@ -103,9 +102,8 @@ mojom::blink::DigitalIdentityRequest*
 CredentialManagerProxy::DigitalIdentityRequest() {
   BindRemoteForFedCm(
       digital_identity_request_,
-      WTF::BindOnce(
-          &CredentialManagerProxy::OnDigitalIdentityRequestConnectionError,
-          WrapWeakPersistent(this)));
+      BindOnce(&CredentialManagerProxy::OnDigitalIdentityRequestConnectionError,
+               WrapWeakPersistent(this)));
   return digital_identity_request_.get();
 }
 

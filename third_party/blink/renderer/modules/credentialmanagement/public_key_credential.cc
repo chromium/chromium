@@ -171,8 +171,8 @@ PublicKeyCredential::getClientCapabilities(ScriptState* script_state) {
 
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
-  authenticator->GetClientCapabilities(WTF::BindOnce(
-      &OnGetClientCapabilitiesComplete, WrapPersistent(resolver)));
+  authenticator->GetClientCapabilities(
+      BindOnce(&OnGetClientCapabilitiesComplete, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -201,7 +201,7 @@ PublicKeyCredential::isUserVerifyingPlatformAuthenticatorAvailable(
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(
-      WTF::BindOnce(&OnIsUserVerifyingComplete, WrapPersistent(resolver)));
+      BindOnce(&OnIsUserVerifyingComplete, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -231,9 +231,9 @@ ScriptPromise<IDLBoolean> PublicKeyCredential::isConditionalMediationAvailable(
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->IsConditionalMediationAvailable(
-      WTF::BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
-                       bool available) { resolver->Resolve(available); },
-                    WrapPersistent(resolver)));
+      BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
+                  bool available) { resolver->Resolve(available); },
+               WrapPersistent(resolver)));
   return promise;
 }
 
@@ -332,8 +332,8 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalUnknownCredential(
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->Report(
       std::move(mojo_options),
-      WTF::BindOnce(&OnSignalReportComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver)));
+      BindOnce(&OnSignalReportComplete,
+               std::make_unique<ScopedPromiseResolver>(resolver)));
   return promise;
 }
 
@@ -352,7 +352,7 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalAllAcceptedCredentials(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  for (WTF::String credential_id : options->allAcceptedCredentialIds()) {
+  for (String credential_id : options->allAcceptedCredentialIds()) {
     Vector<uint8_t> decoded_cred_id;
     if (!Base64UnpaddedURLDecode(credential_id, decoded_cred_id)) {
       resolver->RejectWithTypeError(
@@ -371,8 +371,8 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalAllAcceptedCredentials(
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->Report(
       std::move(mojo_options),
-      WTF::BindOnce(&OnSignalReportComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver)));
+      BindOnce(&OnSignalReportComplete,
+               std::make_unique<ScopedPromiseResolver>(resolver)));
   return promise;
 }
 
@@ -402,8 +402,8 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalCurrentUserDetails(
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->Report(
       std::move(mojo_options),
-      WTF::BindOnce(&OnSignalReportComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver)));
+      BindOnce(&OnSignalReportComplete,
+               std::make_unique<ScopedPromiseResolver>(resolver)));
   return promise;
 }
 

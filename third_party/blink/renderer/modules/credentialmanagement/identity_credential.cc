@@ -80,7 +80,7 @@ bool IdentityCredential::IsRejectingPromiseDueToCSP(
                               FedCmCspStatus::kFailedOrigin);
   }
 
-  WTF::String error =
+  String error =
       "Refused to connect to '" + provider_url.ElidedString() +
       "' because it violates the document's Content Security Policy.";
   resolver->RejectWithDOMException(DOMExceptionCode::kNetworkError, error);
@@ -144,9 +144,8 @@ ScriptPromise<IDLUndefined> IdentityCredential::disconnect(
 
   mojom::blink::IdentityCredentialDisconnectOptionsPtr disconnect_options =
       blink::mojom::blink::IdentityCredentialDisconnectOptions::From(*options);
-  auth_request->Disconnect(
-      std::move(disconnect_options),
-      WTF::BindOnce(&OnDisconnect, WrapPersistent(resolver)));
+  auth_request->Disconnect(std::move(disconnect_options),
+                           BindOnce(&OnDisconnect, WrapPersistent(resolver)));
   return promise;
 }
 

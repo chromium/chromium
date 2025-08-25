@@ -121,7 +121,7 @@ ScriptPromise<IDLSequence<IdentityUserInfo>> IdentityProvider::getUserInfo(
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
   user_info_request->RequestUserInfo(
       std::move(identity_provider),
-      WTF::BindOnce(&OnRequestUserInfo, WrapPersistent(resolver)));
+      BindOnce(&OnRequestUserInfo, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -183,7 +183,7 @@ ScriptPromise<IDLBoolean> IdentityProvider::registerIdentityProvider(
   auto* request =
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
   request->RegisterIdP(KURL(configURL),
-                       WTF::BindOnce(&OnRegisterIdP, WrapPersistent(resolver)));
+                       BindOnce(&OnRegisterIdP, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -208,9 +208,8 @@ ScriptPromise<IDLUndefined> IdentityProvider::unregisterIdentityProvider(
 
   auto* request =
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-  request->UnregisterIdP(
-      KURL(configURL),
-      WTF::BindOnce(&OnUnregisterIdP, WrapPersistent(resolver)));
+  request->UnregisterIdP(KURL(configURL),
+                         BindOnce(&OnUnregisterIdP, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -252,7 +251,7 @@ ScriptPromise<IDLUndefined> IdentityProvider::resolve(
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
   request->ResolveTokenRequest(
       account_id, token,
-      WTF::BindOnce(&OnResolveTokenRequest, WrapPersistent(resolver)));
+      BindOnce(&OnResolveTokenRequest, WrapPersistent(resolver)));
 
   return promise;
 }

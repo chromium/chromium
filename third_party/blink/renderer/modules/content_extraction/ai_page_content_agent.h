@@ -122,7 +122,7 @@ class MODULES_EXPORT AIPageContentAgent final
         mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) const;
     void AddMetaData(
         const LocalFrame& frame,
-        WTF::Vector<mojom::blink::AIPageContentMetaPtr>& meta_data) const;
+        Vector<mojom::blink::AIPageContentMetaPtr>& meta_data) const;
     void AddNodeGeometry(
         const LayoutObject& object,
         mojom::blink::AIPageContentAttributes& attributes) const;
@@ -173,7 +173,7 @@ class MODULES_EXPORT AIPageContentAgent final
   // Already registered for lifetime notifications.
   bool is_registered_ = false;
   // Tasks to run when post lifecycle.
-  WTF::Vector<base::OnceClosure> async_extraction_tasks_;
+  Vector<base::OnceClosure> async_extraction_tasks_;
 };
 
 }  // namespace blink

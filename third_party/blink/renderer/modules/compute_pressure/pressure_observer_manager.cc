@@ -76,8 +76,8 @@ void PressureObserverManager::AddObserver(V8PressureSource::Enum source,
     pressure_manager_->AddClient(
         V8PressureSourceToPressureSource(source),
         client->BindNewEndpointAndPassRemote(task_runner),
-        WTF::BindOnce(&PressureObserverManager::DidAddClient,
-                      WrapWeakPersistent(this), source));
+        BindOnce(&PressureObserverManager::DidAddClient,
+                 WrapWeakPersistent(this), source));
   } else if (state == PressureClientImpl::State::kInitialized) {
     observer->OnBindingSucceeded(source);
   }
@@ -120,7 +120,7 @@ void PressureObserverManager::EnsureConnection(
   if (!pressure_manager_.is_bound()) {
     GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
         pressure_manager_.BindNewPipeAndPassReceiver(task_runner));
-    pressure_manager_.set_disconnect_handler(WTF::BindOnce(
+    pressure_manager_.set_disconnect_handler(BindOnce(
         &PressureObserverManager::OnConnectionError, WrapWeakPersistent(this)));
   }
 }

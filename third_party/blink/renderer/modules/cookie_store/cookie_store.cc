@@ -340,8 +340,8 @@ ScriptPromise<IDLSequence<CookieListItem>> CookieStore::getAll(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   DoRead(script_state, options,
-         WTF::BindOnce(&CookieStore::GetAllForUrlToGetAllResult,
-                       WrapPersistent(resolver)),
+         BindOnce(&CookieStore::GetAllForUrlToGetAllResult,
+                  WrapPersistent(resolver)),
          exception_state);
   if (exception_state.HadException()) {
     resolver->Detach();
@@ -375,10 +375,10 @@ ScriptPromise<IDLNullable<CookieListItem>> CookieStore::get(
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<CookieListItem>>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
-  DoRead(script_state, options,
-         WTF::BindOnce(&CookieStore::GetAllForUrlToGetResult,
-                       WrapPersistent(resolver)),
-         exception_state);
+  DoRead(
+      script_state, options,
+      BindOnce(&CookieStore::GetAllForUrlToGetResult, WrapPersistent(resolver)),
+      exception_state);
   if (exception_state.HadException()) {
     resolver->Detach();
     return EmptyPromise();
@@ -607,8 +607,8 @@ ScriptPromise<IDLUndefined> CookieStore::DoWrite(
       default_site_for_cookies_, default_top_frame_origin_,
       context->GetStorageAccessApiStatus(), status, is_ad_tagged,
       should_apply_devtools_overrides,
-      WTF::BindOnce(&CookieStore::OnSetCanonicalCookieResult,
-                    WrapPersistent(resolver)));
+      BindOnce(&CookieStore::OnSetCanonicalCookieResult,
+               WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

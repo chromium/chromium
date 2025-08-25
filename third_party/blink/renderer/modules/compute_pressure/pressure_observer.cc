@@ -181,9 +181,9 @@ void PressureObserver::OnUpdate(ExecutionContext* execution_context,
           PostDelayedCancellableTask(
               *execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI),
               FROM_HERE,
-              WTF::BindOnce(&PressureObserver::QueueAfterPenaltyRecord,
-                            WrapWeakPersistent(this),
-                            WrapWeakPersistent(execution_context), source),
+              BindOnce(&PressureObserver::QueueAfterPenaltyRecord,
+                       WrapWeakPersistent(this),
+                       WrapWeakPersistent(execution_context), source),
               change_rate_monitor_.penalty_duration());
       change_rate_monitor_.ResetChangeCount(source);
       return;
@@ -222,9 +222,8 @@ void PressureObserver::QueuePressureRecord(ExecutionContext* execution_context,
   }
   pending_report_to_callback_ = PostCancellableTask(
       *execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI), FROM_HERE,
-      WTF::BindOnce(&PressureObserver::ReportToCallback,
-                    WrapWeakPersistent(this),
-                    WrapWeakPersistent(execution_context)));
+      BindOnce(&PressureObserver::ReportToCallback, WrapWeakPersistent(this),
+               WrapWeakPersistent(execution_context)));
 }
 
 void PressureObserver::OnBindingSucceeded(V8PressureSource::Enum source) {
