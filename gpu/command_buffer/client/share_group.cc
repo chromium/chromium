@@ -14,6 +14,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/stack.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
@@ -195,12 +196,8 @@ class StrictIdHandler : public IdHandlerInterface {
                          GLenum target,
                          GLuint id,
                          BindFn bind_fn) override {
-#ifndef NDEBUG
-    if (id != 0) {
-      base::AutoLock auto_lock(lock_);
-      DCHECK(id_states_[id - 1] == kIdInUse);
-    }
-#endif
+    DCHECK(IdValidForBind(id));
+
     // StrictIdHandler is used if |bind_generates_resource| is false. In that
     // case, |bind_fn| will not use Flush() after helper->Bind*(), so it is OK
     // to call |bind_fn| without holding the lock.
@@ -212,12 +209,8 @@ class StrictIdHandler : public IdHandlerInterface {
                          GLuint index,
                          GLuint id,
                          BindIndexedFn bind_fn) override {
-#ifndef NDEBUG
-    if (id != 0) {
-      base::AutoLock auto_lock(lock_);
-      DCHECK(id_states_[id - 1] == kIdInUse);
-    }
-#endif
+    DCHECK(IdValidForBind(id));
+
     // StrictIdHandler is used if |bind_generates_resource| is false. In that
     // case, |bind_fn| will not use Flush() after helper->Bind*(), so it is OK
     // to call |bind_fn| without holding the lock.
@@ -231,12 +224,8 @@ class StrictIdHandler : public IdHandlerInterface {
                          GLintptr offset,
                          GLsizeiptr size,
                          BindIndexedRangeFn bind_fn) override {
-#ifndef NDEBUG
-    if (id != 0) {
-      base::AutoLock auto_lock(lock_);
-      DCHECK(id_states_[id - 1] == kIdInUse);
-    }
-#endif
+    DCHECK(IdValidForBind(id));
+
     // StrictIdHandler is used if |bind_generates_resource| is false. In that
     // case, |bind_fn| will not use Flush() after helper->Bind*(), so it is OK
     // to call |bind_fn| without holding the lock.
@@ -252,6 +241,14 @@ class StrictIdHandler : public IdHandlerInterface {
 
  private:
   enum IdState { kIdFree, kIdPendingFree, kIdInUse };
+
+  bool IdValidForBind(GLuint id) {
+    if (id == 0) {
+      return true;
+    }
+    base::AutoLock auto_lock(lock_);
+    return id_states_.size() > id - 1 && id_states_[id - 1] == kIdInUse;
+  }
 
   void CollectPendingFreeIds(GLES2Implementation* gl_impl)
       EXCLUSIVE_LOCKS_REQUIRED(lock_) {
