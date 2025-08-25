@@ -211,7 +211,7 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
     }
   }
 
-  if (!browser_is_inactive && !browser_is_temporary) {
+  if (!browser_is_inactive && !browser_is_temporary && !browser_is_off_record) {
     PrerenderBrowserAgent::CreateForBrowser(browser);
   }
 
