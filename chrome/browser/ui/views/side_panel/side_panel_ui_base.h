@@ -1,0 +1,106 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_BASE_H_
+#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_BASE_H_
+
+#include <memory>
+#include <optional>
+
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/views/chrome_views_export.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+
+class Browser;
+class SidePanelEntry;
+class SidePanelEntryWaiter;
+
+namespace views {
+class View;
+}
+
+// Base class for Side Panel UIs that contains the common logic for managing
+// side panel entries and state.
+class CHROME_VIEWS_EXPORT SidePanelUIBase : public SidePanelUI,
+                                            public TabStripModelObserver {
+ public:
+  explicit SidePanelUIBase(Browser* browser);
+  ~SidePanelUIBase() override;
+
+  SidePanelUIBase(const SidePanelUIBase&) = delete;
+  SidePanelUIBase& operator=(const SidePanelUIBase&) = delete;
+
+  // The side panel entry to be shown is uniquely specified via a tuple:
+  //  (tab or window-scoped registry, SidePanelEntry::Key). `tab_handle` is
+  //  necessary since it's possible for a Key to be present in both the
+  //  tab-scoped and window-scoped registry, or in multiple different tab-scoped
+  //  registries.
+  struct UniqueKey {
+    std::optional<tabs::TabHandle> tab_handle;
+    SidePanelEntry::Key key;
+    friend bool operator==(const UniqueKey&, const UniqueKey&) = default;
+  };
+
+  // SidePanelUI:
+  using SidePanelUI::Show;
+  void Show(
+      SidePanelEntry::Id entry_id,
+      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
+  void Show(
+      SidePanelEntry::Key entry_key,
+      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
+
+  Browser* browser() const { return browser_; }
+  SidePanelRegistry* GetWindowRegistry() { return window_registry_.get(); }
+
+ protected:
+  friend class SidePanelEntryWaiter;
+
+  // This method does not show the side panel. Instead, it queues the side panel
+  // to be shown once the contents have been loaded. This process may be either
+  // synchronous or asynchronous.
+  virtual void Show(
+      const UniqueKey& entry,
+      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+      bool suppress_animations) = 0;
+
+  // Removes existing SidePanelEntry contents from the side panel if any exist
+  // and populates the side panel with the provided SidePanelEntry and
+  // `content_view` if provided, otherwise get the content_view from the
+  // provided SidePanelEntry.
+  virtual void PopulateSidePanel(
+      bool suppress_animations,
+      const UniqueKey& unique_key,
+      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+      SidePanelEntry* entry,
+      std::optional<std::unique_ptr<views::View>> content_view) = 0;
+
+  std::optional<UniqueKey> GetUniqueKeyForKey(
+      const SidePanelEntry::Key& entry_key) const;
+
+  SidePanelRegistry* GetActiveContextualRegistry() const;
+
+  const raw_ptr<Browser> browser_;
+
+  // This registry is scoped to the browser window and is owned by this class.
+  std::unique_ptr<SidePanelRegistry> window_registry_;
+
+  // Inner class that waits for side panel entries to load.
+  std::unique_ptr<SidePanelEntryWaiter> waiter_;
+
+ private:
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_BASE_H_

@@ -19,14 +19,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui_base.h"
 #include "ui/actions/actions.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -34,7 +29,6 @@
 #include "ui/views/view_observer.h"
 
 class BrowserView;
-class SidePanelEntryWaiter;
 
 namespace actions {
 class ActionItem;
@@ -58,10 +52,9 @@ class View;
 // registry's active_entry() then global registry's. These values are reset when
 // the side panel is closed and |last_active_global_entry_id_| is used to
 // determine what entry is seen when the panel is reopened.
-class SidePanelCoordinator final : public TabStripModelObserver,
+class SidePanelCoordinator final : public SidePanelUIBase,
                                    public views::ViewObserver,
                                    public PinnedToolbarActionsModel::Observer,
-                                   public SidePanelUI,
                                    public ToolbarActionsModel::Observer {
  public:
   explicit SidePanelCoordinator(BrowserView* browser_view);
@@ -72,16 +65,7 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   void Init(Browser* browser);
   void TearDownPreBrowserWindowDestruction();
 
-  SidePanelRegistry* GetWindowRegistry();
-
   // SidePanelUI:
-  using SidePanelUI::Show;
-  void Show(
-      SidePanelEntry::Id entry_id,
-      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
-  void Show(
-      SidePanelEntry::Key entry_key,
-      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
   void Close() override;
   void Toggle(SidePanelEntryKey key,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
@@ -125,23 +109,11 @@ class SidePanelCoordinator final : public TabStripModelObserver,
 
   void Close(bool suppress_animations);
 
-  // The side panel entry to be shown is uniquely specified via a tuple:
-  //  (tab or window-scoped registry, SidePanelEntry::Key). `tab_handle` is
-  //  necessary since it's possible for a Key to be present in both the
-  //  tab-scoped and window-scoped registry, or in multiple different tab-scoped
-  //  registries.
-  struct UniqueKey {
-    std::optional<tabs::TabHandle> tab_handle;
-    SidePanelEntry::Key key;
-    friend bool operator==(const UniqueKey&, const UniqueKey&) = default;
-  };
-
-  // This method does not show the side panel. Instead, it queues the side panel
-  // to be shown once the contents has been loaded. This process may be either
-  // synchronous or asynchronous.
+  // SidePanelUIBase:
+  using SidePanelUIBase::Show;
   void Show(const UniqueKey& entry,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
-            bool suppress_animations);
+            bool suppress_animations) override;
 
   std::optional<UniqueKey> current_key() { return current_key_; }
 
@@ -164,22 +136,17 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   // not registered in the currently observed registries. This looks through the
   // active contextual registry first, then the global registry.
   SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key) const;
-  std::optional<UniqueKey> GetUniqueKeyForKey(
-      const SidePanelEntry::Key& entry_key) const;
 
   SidePanelEntry* GetActiveContextualEntryForKey(
       const SidePanelEntry::Key& entry_key) const;
 
-  // Removes existing SidePanelEntry contents from the side panel if any exist
-  // and populates the side panel with the provided SidePanelEntry and
-  // `content_view` if provided, otherwise get the content_view from the
-  // provided SidePanelEntry.
+  // SidePanelUIBase:
   void PopulateSidePanel(
       bool suppress_animations,
       const UniqueKey& unique_key,
       std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
       SidePanelEntry* entry,
-      std::optional<std::unique_ptr<views::View>> content_view);
+      std::optional<std::unique_ptr<views::View>> content_view) override;
 
   // Clear cached views for registry entries for global and contextual
   // registries.
@@ -201,8 +168,6 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   // Called when the action item associated with the side panel entry changes.
   // The key is the unique key of the action item that has changed.
   void OnActionItemChanged(UniqueKey key);
-
-  SidePanelRegistry* GetActiveContextualRegistry() const;
 
   std::unique_ptr<views::View> CreateHeader();
 
@@ -254,9 +219,6 @@ class SidePanelCoordinator final : public TabStripModelObserver,
 
   const raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
 
-  // This registry is scoped to the browser window and is owned by this class.
-  std::unique_ptr<SidePanelRegistry> window_registry_;
-
   // This subscription is used to update the side panel title when the action
   // item associated with the side panel entry changes.
   base::CallbackListSubscription action_item_controller_subscription_;
@@ -302,9 +264,6 @@ class SidePanelCoordinator final : public TabStripModelObserver,
 
   // Provides delay on pinning promo.
   base::OneShotTimer pin_promo_timer_;
-
-  // Inner class that waits for side panel entries to load.
-  std::unique_ptr<SidePanelEntryWaiter> waiter_;
 
   // Set to the appropriate pin promo for the current side panel entry, or null
   // if none. (Not set if e.g. already pinned.)
