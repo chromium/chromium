@@ -111,15 +111,7 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
 
-    auto execution_engine =
-        std::make_unique<ExecutionEngine>(browser()->profile());
-    ExecutionEngine* raw_execution_engine = execution_engine.get();
-    auto event_dispatcher = ui::NewUiEventDispatcher(
-        actor_keyed_service()->GetActorUiStateManager());
-    auto task = std::make_unique<ActorTask>(
-        GetProfile(), std::move(execution_engine), std::move(event_dispatcher));
-    raw_execution_engine->SetOwner(task.get());
-    task_id_ = actor_keyed_service()->AddActiveTask(std::move(task));
+    StartNewTask();
 
     // Optimization guide uses this histogram to signal initialization in tests.
     optimization_guide::RetryForHistogramUntilCountReached(
@@ -138,6 +130,18 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  void StartNewTask() {
+    auto execution_engine =
+        std::make_unique<ExecutionEngine>(browser()->profile());
+    ExecutionEngine* raw_execution_engine = execution_engine.get();
+    auto event_dispatcher = ui::NewUiEventDispatcher(
+        actor_keyed_service()->GetActorUiStateManager());
+    auto task = std::make_unique<ActorTask>(
+        GetProfile(), std::move(execution_engine), std::move(event_dispatcher));
+    raw_execution_engine->SetOwner(task.get());
+    task_id_ = actor_keyed_service()->AddActiveTask(std::move(task));
+  }
+
   tabs::TabInterface* active_tab() {
     return browser()->tab_strip_model()->GetActiveTab();
   }
@@ -385,6 +389,12 @@ class ExecutionEngineOriginGatingBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+std::string EncodeURI(const std::string& component) {
+  url::RawCanonOutputT<char> encoded;
+  url::EncodeURIComponent(component, &encoded);
+  return std::string(encoded.view());
+}
+
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        GateCrossOriginNavigations) {
   const GURL start_url =
@@ -405,6 +415,58 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
               origin_gating_enabled()
                   ? mojom::ActionResultCode::kTriggeredNavigationBlocked
                   : mojom::ActionResultCode::kOk);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       OriginGatingNavigateAction) {
+  // This test is not meaningful if origin gating is disabled.
+  if (!origin_gating_enabled()) {
+    return;
+  }
+
+  const GURL start_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+  const GURL cross_origin_url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
+  const GURL link_page_url = embedded_https_test_server().GetURL(
+      "foo.com", base::StrCat({"/actor/link_full_page.html?href=",
+                               EncodeURI(cross_origin_url.spec())}));
+
+  // Start on foo.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  // Navigate to bar.com.
+  std::unique_ptr<ToolRequest> navigate_x_origin =
+      MakeNavigateRequest(*active_tab(), cross_origin_url.spec());
+  // Navigate to foo.com page with a link to bar.com.
+  std::unique_ptr<ToolRequest> navigate_to_link_page =
+      MakeNavigateRequest(*active_tab(), link_page_url.spec());
+  // Clicks on full-page link to bar.com.
+  std::unique_ptr<ToolRequest> click_link =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  ActResultFuture result1;
+  actor_task().Act(
+      ToRequestList(navigate_x_origin, navigate_to_link_page, click_link),
+      result1.GetCallback());
+  ExpectOkResult(result1);
+
+  // Test that navigation allowlist is not persisted across separate tasks.
+  auto previous_id = actor_task().id();
+  actor_keyed_service()->ResetForTesting();
+  StartNewTask();
+  ASSERT_NE(previous_id, actor_task().id());
+
+  // Start on link page on foo.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), link_page_url));
+  // Click on full-page link to bar.com only.
+  std::unique_ptr<ToolRequest> click_link_only =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  ActResultFuture result2;
+  actor_task().Act(ToRequestList(click_link_only), result2.GetCallback());
+  // Expect the navigation to be blocked by origin gating.
+  ExpectErrorResult(result2,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

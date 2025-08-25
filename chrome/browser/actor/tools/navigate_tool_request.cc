@@ -40,4 +40,8 @@ std::string NavigateToolRequest::JournalEvent() const {
   return "Navigate";
 }
 
+std::optional<url::Origin> NavigateToolRequest::AssociatedOriginGrant() const {
+  return url::Origin::Create(url_);
+}
+
 }  // namespace actor

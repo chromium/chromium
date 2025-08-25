@@ -40,6 +40,10 @@ tabs::TabHandle ToolRequest::GetTabHandle() const {
   return tabs::TabHandle();
 }
 
+std::optional<url::Origin> ToolRequest::AssociatedOriginGrant() const {
+  return std::nullopt;
+}
+
 TabToolRequest::TabToolRequest(const tabs::TabHandle tab_handle)
     : tab_handle_(tab_handle) {
   // The given handle need not be valid - the handle is validated at time of

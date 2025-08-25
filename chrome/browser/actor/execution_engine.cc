@@ -26,6 +26,7 @@
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/task_id.h"
+#include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -169,9 +170,15 @@ bool ExecutionEngine::ShouldGateNavigation(
   }
 
   const GURL& navigation_url = navigation_handle.GetURL();
+
+  for (const auto& origin : allowed_navigation_origins_) {
+    if (origin.IsSameOriginWith(navigation_url)) {
+      return false;
+    }
+  }
+
   const std::optional<url::Origin>& initiator_origin =
       navigation_handle.GetInitiatorOrigin();
-
   return initiator_origin &&
          !initiator_origin->IsSameOriginWith(navigation_url);
 }
@@ -221,10 +228,19 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   absl::flat_hash_set<int32_t> acting_tab_handles;
 
   action_sequence_ = std::move(actions);
+  bool origin_gating_enabled =
+      base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating);
   for (const std::unique_ptr<ToolRequest>& action : action_sequence_) {
     CHECK(action);
     if (action->GetTabHandle() != tabs::TabHandle::Null()) {
       acting_tab_handles.insert(action->GetTabHandle().raw_value());
+    }
+    if (origin_gating_enabled) {
+      if (std::optional<url::Origin> maybe_origin =
+              action->AssociatedOriginGrant();
+          maybe_origin) {
+        allowed_navigation_origins_.insert(maybe_origin.value());
+      }
     }
   }
 

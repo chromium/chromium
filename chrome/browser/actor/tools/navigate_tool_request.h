@@ -28,6 +28,8 @@ class NavigateToolRequest : public TabToolRequest {
                               ToolDelegate& tool_delegate) const override;
   std::string JournalEvent() const override;
 
+  std::optional<url::Origin> AssociatedOriginGrant() const override;
+
  private:
   GURL url_;
 };

@@ -188,6 +188,11 @@ class ExecutionEngine : public ToolDelegate {
   // The results for script tool invocations so far.
   std::vector<optimization_guide::proto::ScriptToolResult> script_tool_results_;
 
+  // Origins which the browser is allowed to navigate to under actor control
+  // without prompting the user. This is applied to all navigations, including
+  // those initiated by the renderer with web content.
+  std::set<url::Origin> allowed_navigation_origins_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Normally, a WeakPtrFactory only invalidates its WeakPtrs when the object is

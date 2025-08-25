@@ -15,6 +15,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace actor {
 
@@ -64,6 +65,14 @@ class ToolRequest {
   // Instantiates the tool requested by this object.
   virtual CreateToolResult CreateTool(TaskId task_id,
                                       ToolDelegate& tool_delegate) const = 0;
+
+  // Gets origin associated with the tool request, if one exists. Right now only
+  // navigate requests have this origin. When origin gating is enabled, these
+  // origins are cached and the browser may navigate the browser via link or
+  // other means to this origin without prompting the user. Since this is a
+  // security feature, new tool requests should not use this method unless it is
+  // safe to use their origins as a trust signal.
+  virtual std::optional<url::Origin> AssociatedOriginGrant() const;
 };
 
 // Tool requests targeting a specific, existing tab should inherit from this
