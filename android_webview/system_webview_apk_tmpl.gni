@@ -29,6 +29,14 @@ template("system_webview_apk_or_module_tmpl") {
          "If trichrome library is used, static_library_provider must be set " +
              "so that a dep can be added on the library APK.")
 
+  if (!_is_trichrome) {
+    if (!defined(mergeable_android_manifests)) {
+      mergeable_android_manifests = []
+    }
+    mergeable_android_manifests +=
+        [ "//android_webview/AndroidManifest_standalone_webview.xml" ]
+  }
+
   _include_64_bit_webview =
       android_64bit_target_cpu && (!defined(invoker.include_64_bit_webview) ||
                                    invoker.include_64_bit_webview)

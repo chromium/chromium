@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="standalone">
+  <!--
+    The package="standalone" attribute is a placeholder and does not affect the
+    final manifest package. It is required because the build system assumes a
+    non-null value here.
+  -->
+  <application tools:node="merge">
+    <!--
+      Needed on Android 14, where the platform expects at least one
+      <uses-library> declaration. See crbug.com/353572106.
+    -->
+    <uses-library
+        android:name="android.test.base"
+        android:required="false" />
+    <!--
+      Prioritizes pinning the APK in memory over the shared libraries.
+    -->
+    <meta-data
+        android:name="PIN_SHARED_LIBS_FIRST"
+        android:value="false" />
+  </application>
+</manifest>
