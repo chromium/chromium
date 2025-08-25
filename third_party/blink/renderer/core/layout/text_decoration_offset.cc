@@ -29,7 +29,8 @@ int ComputeUnderlineOffsetAuto(const blink::FontMetrics& font_metrics,
                   : 0};
 
   // Position underline near the alphabetic baseline.
-  return font_metrics.Ascent() + gap + roundf(text_underline_offset);
+  return ClampTo<int>(font_metrics.Ascent() + gap +
+                      roundf(text_underline_offset));
 }
 
 std::optional<int> ComputeUnderlineOffsetFromFont(
