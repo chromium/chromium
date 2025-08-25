@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/lens/lens_composebox_controller.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,11 +25,15 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/lens/lens_composebox_user_action.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_dismissal_source.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 namespace {
@@ -307,4 +312,128 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   ASSERT_EQ(lens_image_query_data.request_id().sequence_id(), 4);
   ASSERT_EQ(lens_image_query_data.request_id().long_context_id(), 1);
   ASSERT_EQ(lens_image_query_data.request_id().image_sequence_id(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       LogsComposeboxMetrics) {
+  base::HistogramTester histogram_tester;
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+
+  // Open the overlay directly to the side panel so composebox is visible.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  auto* overlay_controller = GetLensOverlayController();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() == State::kOverlayAndResults;
+  }));
+
+  // Wait for the composebox handler to be set and then send a fake AIM query
+  // via mojo.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetLensComposeboxController()->composebox_handler_for_testing() !=
+           nullptr;
+  }));
+
+  auto* composebox_handler =
+      GetLensComposeboxController()->composebox_handler_for_testing();
+  ASSERT_TRUE(composebox_handler);
+
+  // Mock a focus of the composebox. Should be logged.
+  composebox_handler->FocusChanged(true);
+  histogram_tester.ExpectBucketCount("Lens.Composebox.UserAction",
+                                     lens::LensComposeboxUserAction::kFocused,
+                                     1);
+
+  // Mock a focus out of the composebox. Should not be logged.
+  composebox_handler->FocusChanged(false);
+  histogram_tester.ExpectBucketCount("Lens.Composebox.UserAction",
+                                     lens::LensComposeboxUserAction::kFocused,
+                                     1);
+
+  // A new focus should be logged.
+  composebox_handler->FocusChanged(true);
+  histogram_tester.ExpectBucketCount("Lens.Composebox.UserAction",
+                                     lens::LensComposeboxUserAction::kFocused,
+                                     2);
+
+  // Mock a handshake response for the session end metrics.
+  lens::AimToClientMessage aim_to_client_message;
+  aim_to_client_message.mutable_handshake_response()->add_capabilities(
+      lens::FeatureCapability::DEFAULT);
+  MockAimToClientMessage(aim_to_client_message);
+
+  // Send a query.
+  GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
+      "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
+      /*meta_key=*/false,
+      /*shift_key=*/false);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserAction",
+      lens::LensComposeboxUserAction::kQuerySubmitted, 1);
+
+  // Send another query.
+  GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
+      "test query 2", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
+      /*meta_key=*/false,
+      /*shift_key=*/false);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserAction",
+      lens::LensComposeboxUserAction::kQuerySubmitted, 2);
+
+  // Close the overlay to trigger session end metrics.
+  lens_controller->CloseLensSync(
+      lens::LensOverlayDismissalSource::kOverlayCloseButton);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return overlay_controller->state() == State::kOff; }));
+
+  // Verify session end metrics are logged once.
+  histogram_tester.ExpectUniqueSample("Lens.Composebox.ShownInSession", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.HandshakeCompletedInSession", true, 1);
+  histogram_tester.ExpectBucketCount("Lens.Composebox.UserActionInSession",
+                                     lens::LensComposeboxUserAction::kFocused,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserActionInSession",
+      lens::LensComposeboxUserAction::kQuerySubmitted, 1);
+
+  // Start a new session.
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() == State::kOverlayAndResults;
+  }));
+
+  // Wait for the composebox handler to be set.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetLensComposeboxController()->composebox_handler_for_testing() !=
+           nullptr;
+  }));
+
+  // Close the overlay to trigger session end metrics again.
+  lens_controller->CloseLensSync(
+      lens::LensOverlayDismissalSource::kSidePanelCloseButton);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return overlay_controller->state() == State::kOff; }));
+
+  // Verify session end metrics totals.
+  histogram_tester.ExpectUniqueSample("Lens.Composebox.ShownInSession", true,
+                                      2);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.HandshakeCompletedInSession", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.HandshakeCompletedInSession", false, 1);
+  histogram_tester.ExpectBucketCount("Lens.Composebox.UserActionInSession",
+                                     lens::LensComposeboxUserAction::kFocused,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserActionInSession",
+      lens::LensComposeboxUserAction::kQuerySubmitted, 1);
 }
