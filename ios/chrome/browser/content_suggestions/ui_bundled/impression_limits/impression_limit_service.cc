@@ -9,6 +9,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -156,6 +157,32 @@ void ImpressionLimitService::LogImpressionForURL(
                  << " must be registered with ImpressionLimitService";
   }
   LogImpressionForURLAtTime(url, pref_name, base::Time::Now());
+  size_t storage_size_kb =
+      pref_service_->GetDict(pref_name).EstimateMemoryUsage() / 1024;
+  if (pref_name == shop_card_prefs::kShopCardPriceDropUrlImpressions) {
+    base::UmaHistogramMemoryKB(
+        "IOS.MagicStack.ShopCard.PriceDropOnTrackedItem."
+        "ImpressionLimitStorageSize",
+        storage_size_kb);
+  } else if (pref_name ==
+             tab_resumption_prefs::kTabResumptionRegularUrlImpressions) {
+    base::UmaHistogramMemoryKB(
+        "IOS.MagicStack.ShopCard.TabResumptionRegular."
+        "ImpressionLimitStorageSize",
+        storage_size_kb);
+  } else if (pref_name ==
+             tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions) {
+    base::UmaHistogramMemoryKB(
+        "IOS.MagicStack.ShopCard.TabResumptionWithPriceDrop."
+        "ImpressionLimitStorageSize",
+        storage_size_kb);
+  } else if (pref_name == tab_resumption_prefs::
+                              kTabResumptionWithPriceTrackableUrlImpressions) {
+    base::UmaHistogramMemoryKB(
+        "IOS.MagicStack.ShopCard.TabResumptionWithPriceTracking."
+        "ImpressionLimitStorageSize",
+        storage_size_kb);
+  }
 }
 
 std::optional<int> ImpressionLimitService::GetImpressionCount(
