@@ -600,6 +600,12 @@ constexpr base::FeatureParam<bool> kContextualizeOnFocus{
 constexpr base::FeatureParam<bool> kCloseOverlayOnAimTransition{
     &kLensSearchAimM3, "close-overlay-on-aim-transition", true};
 
+constexpr base::FeatureParam<bool> kEnableFloatingGForHeader{
+    &kLensSearchAimM3, "enable-floating-g-for-header", false};
+
+constexpr base::FeatureParam<bool> kEnableClientSideHeader{
+    &kLensSearchAimM3, "enable-client-side-header", false};
+
 const base::FeatureParam<int> kLensOverlayEntrypointLabelAltId{
     &kLensOverlayEntrypointLabelAlt, "id", 0};
 
@@ -1136,6 +1142,16 @@ bool GetShouldComposeboxContextualizeOnFocus() {
 bool ShouldCloseOverlayOnAimTransition() {
   return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
          kCloseOverlayOnAimTransition.Get();
+}
+
+bool GetEnableFloatingGForHeader() {
+  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
+         kEnableFloatingGForHeader.Get();
+}
+
+bool GetEnableClientSideHeader() {
+  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
+         kEnableClientSideHeader.Get();
 }
 
 bool ShouldUseAltLoadingHintWeb() {

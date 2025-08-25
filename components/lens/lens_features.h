@@ -874,6 +874,16 @@ extern bool GetShouldComposeboxContextualizeOnFocus();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldCloseOverlayOnAimTransition();
 
+// Whether to enable the floating G for the header. This is a transparent G that
+// will float to on top of the remotely rendered header.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetEnableFloatingGForHeader();
+
+// Whether to enable the client side header. This is a header that is rendered
+// on the client side and takes up space from the results UI.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetEnableClientSideHeader();
+
 // Whether to use the alt loading hint when overlay is opened on web pages.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldUseAltLoadingHintWeb();

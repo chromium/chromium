@@ -4,6 +4,40 @@
     --cr-searchbox-min-width: min(calc(100%), 1100px);
   }
 
+  /* Light mode not on AIM results */
+  :host(:not([is-on-aim-results]):not([dark-mode])) {
+    --ntp-composebox-background-color: #f3f5f6;
+    --search-background-color: white;
+  }
+
+  /* Light mode on AIM results */
+  :host([is-on-aim-results]:not([dark-mode])) {
+    --ntp-composebox-background-color: #f3f5f6;
+    --search-background-color: white;
+  }
+
+  /* Dark mode not on AIM results */
+  :host(:not([is-on-aim-results])[dark-mode]) {
+    --ntp-composebox-background-color: #28292a;
+    --color-new-tab-page-composebox-cancel-button: #bfbfbf;
+    --color-new-tab-page-composebox-hover: #3e3f43;
+    --search-background-color: #1f1f1f;
+  }
+
+  /* Dark mode on AIM results */
+  :host([is-on-aim-results][dark-mode]) {
+    --ntp-composebox-background-color: #1d1e26;
+    --search-background-color: #101218;
+  }
+
+  :host([is-on-aim-results]) {
+    /* Only set this transition for AIM results so it only applies when going
+      * from All tab to AIM results and not the reverse. */
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
+    transition-property: --search-background-color, --ntp-composebox-background-color;
+  }
+
   .results-pane {
     border: none;
     /* Viewport height minus the searchbox height and margin. */
@@ -28,7 +62,7 @@
     background-color: #1f1f1f;
   }
 
-  :host([enable-aim-searchbox]) .results-pane {
+  :host([enable-aim-searchbox]:not([enable-client-side-aim-header])) .results-pane {
     /*
      * If AIM searchbox is enabled, make the results pane the full height of
      * the side panel.
@@ -36,6 +70,16 @@
     height: 100%;
     inset-block-start: 0;
     position: absolute;
+  }
+
+  :host([enable-client-side-aim-header]) .results-pane {
+    inset-block-start: 66px;
+    height: calc(100vh - 66px);
+  }
+
+  :host([enable-floating-g-for-header]) #ghostLoader {
+    /* Push the ghost loader down to account for the floating G. */
+    padding-top: 60px;
   }
 
   /* Set z-index to hide results to prevent ghost frames when reshowing. */
@@ -184,37 +228,12 @@
 
   /* Composebox default colors are for light mode on AIM results. */
   #composeboxContainer {
-    --ntp-composebox-background-color: #f3f5f6;
+    --color-new-tab-page-composebox-scrim-background: var(--search-background-color);
     display: none;
     inset-block-end: 0;
     position: absolute;
     width: 100%;
     z-index: 2;
-  }
-
-  :host([is-on-aim-results]) #composeboxContainer {
-    /* Only set this transition for AIM results so it only applies when going
-      * from All tab to AIM results and not the reverse. */
-    transition: --color-new-tab-page-composebox-scrim-background 0.5s ease-in-out;
-  }
-
-  /* Light mode not on AIM results */
-  :host(:not([is-on-aim-results])) #composeboxContainer {
-    --color-new-tab-page-composebox-scrim-background: white;
-  }
-
-  /* Dark mode not on AIM results */
-  :host(:not([is-on-aim-results])[dark-mode]) #composeboxContainer {
-    --ntp-composebox-background-color: #28292a;
-    --color-new-tab-page-composebox-cancel-button: #bfbfbf;
-    --color-new-tab-page-composebox-hover: #3e3f43;
-    --color-new-tab-page-composebox-scrim-background: #1f1f1f;
-  }
-
-  /* Dark mode on AIM results */
-  :host([is-on-aim-results][dark-mode]) #composeboxContainer {
-    --ntp-composebox-background-color: #1d1e26;
-    --color-new-tab-page-composebox-scrim-background: #101218;
   }
 
   #composeboxContainer::before {
@@ -237,6 +256,34 @@
     align-items: center;
     display: flex;
     flex-direction: column;
+  }
+
+  #floatingG {
+    position: fixed;
+    z-index: 5;
+  }
+
+  .gradient-g {
+    background-image: url(chrome-untrusted://resources/cr_components/searchbox/icons/google_g_gradient.svg);
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    background-size: contain;
+    box-sizing: border-box;
+    inset-block-start: 19px;
+    inset-inline-start: 18px;
+    height: 40px;
+    padding: 2px;
+    width: 40px;
+  }
+
+  #aimHeader {
+    inset-inline: 0;
+    height: 66px;
+    background-color: var(--search-background-color);
+  }
+
+  #aimHeaderLogo {
+    position: absolute;
   }
 
   #composebox {
@@ -301,6 +348,14 @@
     opacity: 1;
   }
 </style>
+<template is="dom-if" if="[[enableFloatingGForHeader]]">
+  <div id="floatingG" class="gradient-g"></div>
+</template>
+<template is="dom-if" if="[[enableClientSideAimHeader]]">
+  <div id="aimHeader">
+    <div id="aimHeaderLogo" class="gradient-g"></div>
+  </div>
+</template>
 <div
   id="searchboxContainer"
   on-escape-searchbox="handleEscapeSearchbox"

@@ -84,6 +84,16 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableAimSearchbox'),
       },
+      enableFloatingGForHeader: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableFloatingGForHeader'),
+      },
+      enableClientSideAimHeader: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableClientSideAimHeader'),
+      },
       enableCsbMotionTweaks: {
         reflectToAttribute: true,
         type: Boolean,
@@ -222,6 +232,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   declare private autocompleteRequestStarted: boolean;
   // Whether the AIM searchbox is enabled via feature flag.
   declare private enableAimSearchbox: boolean;
+  // Whether the floating G for header is enabled via feature flag.
+  declare private enableFloatingGForHeader: boolean;
+  // Whether the client side header is enabled via feature flag.
+  declare private enableClientSideAimHeader: boolean;
   declare private isErrorPageVisible: boolean;
   // Whether the results iframe is currently loading. This needs to be done via
   // browser because the iframe is cross-origin. Default true since the side
@@ -609,7 +623,13 @@ declare global {
 // registered once per document, so this must be done in the main window, rather
 // than in the class itself.
 window.CSS.registerProperty({
-  name: '--color-new-tab-page-composebox-scrim-background',
+  name: '--search-background-color',
+  syntax: '<color>',
+  inherits: true,
+  initialValue: 'white',
+});
+window.CSS.registerProperty({
+  name: '--ntp-composebox-background-color',
   syntax: '<color>',
   inherits: true,
   initialValue: 'white',
