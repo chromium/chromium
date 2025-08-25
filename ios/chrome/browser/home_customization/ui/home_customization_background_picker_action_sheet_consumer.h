@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol HomeCustomizationBackgroundPickerActionSheetPresentationDelegate;
+@protocol HomeCustomizationBackgroundPickerPresentationDelegate;
 
 // A consumer protocol for the background picker's action sheet.
 @protocol HomeCustomizationBackgroundPickerActionSheetConsumer
@@ -15,9 +15,9 @@
 // Returns the UINavigationItem associated with the action sheet..
 @property(nonatomic, readonly) UINavigationItem* navigationItem;
 
-// Presentation delegate for the action sheet.
+// Presentation delegate for background picker UI.
 @property(nonatomic, weak)
-    id<HomeCustomizationBackgroundPickerActionSheetPresentationDelegate>
+    id<HomeCustomizationBackgroundPickerPresentationDelegate>
         presentationDelegate;
 
 @end

@@ -66,7 +66,6 @@
     _backgroundService->SetCurrentUserUploadedBackground(
         imagePath.value(),
         FramingCoordinatesFromHomeCustomizationFramingCoordinates(coordinates));
-    _backgroundService->StoreCurrentTheme();
   }
   std::move(completion).Run();
 }

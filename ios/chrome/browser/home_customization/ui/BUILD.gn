@@ -22,7 +22,6 @@ source_set("ui") {
     "home_customization_background_photo_library_picker_view_controller.mm",
     "home_customization_background_picker_action_sheet_consumer.h",
     "home_customization_background_picker_action_sheet_mutator.h",
-    "home_customization_background_picker_action_sheet_presentation_delegate.h",
     "home_customization_background_picker_cell.h",
     "home_customization_background_picker_cell.mm",
     "home_customization_background_picker_presentation_delegate.h",

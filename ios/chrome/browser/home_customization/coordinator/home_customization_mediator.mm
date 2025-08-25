@@ -48,6 +48,9 @@
   // The Background customization service for getting current and recently used
   // backgrounds.
   raw_ptr<HomeBackgroundCustomizationService> _backgroundService;
+
+  // Whether the theme has been changed.
+  BOOL _themeHasChanged;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
@@ -160,6 +163,13 @@
   [self.magicStackPageConsumer populateToggles:toggleMap];
 }
 
+- (void)saveCurrentTheme {
+  if (_themeHasChanged) {
+    _backgroundService->StoreCurrentTheme();
+    _themeHasChanged = NO;
+  }
+}
+
 #pragma mark - Private
 
 // Returns whether the module with `type` is enabled in the preferences.
@@ -224,7 +234,6 @@
   _backgroundService->SetCurrentUserUploadedBackground(
       base::SysNSStringToUTF8(configurationItem.userUploadedImagePath),
       coordinates);
-  _backgroundService->StoreCurrentTheme();
 }
 
 // Applies the preset gallery background for the given collection image.
@@ -244,7 +253,6 @@
       collectionImage.image_url, collectionImage.thumbnail_image_url,
       attribution_line_1, attribution_line_2,
       collectionImage.attribution_action_url, collectionImage.collection_id);
-  _backgroundService->StoreCurrentTheme();
 }
 
 - (void)applyPresetGalleryBackgroundForCustomBackground:
@@ -257,7 +265,6 @@
       customBackground.attribution_line_2(),
       GURL(customBackground.attribution_action_url()),
       customBackground.collection_id());
-  _backgroundService->StoreCurrentTheme();
 }
 
 // Applies a background color to the NTP.
@@ -282,13 +289,11 @@
   _backgroundService->SetBackgroundColor(
       skia::UIColorToSkColor(configurationItem.backgroundColor),
       SchemeVariantToProtoEnum(configurationItem.colorVariant));
-  _backgroundService->StoreCurrentTheme();
 }
 
 // Sets the NTP to the default background (no color, no image, etc.).
 - (void)applyDefaultBackground {
   _backgroundService->ClearCurrentBackground();
-  _backgroundService->StoreCurrentTheme();
 }
 
 // Generates a `BackgroundCustomizationConfigurationItem` for the provided
@@ -451,6 +456,8 @@
           isKindOfClass:[BackgroundCustomizationConfigurationItem class]]) {
     return;
   }
+
+  _themeHasChanged = YES;
 
   BackgroundCustomizationConfigurationItem* configurationItem =
       static_cast<BackgroundCustomizationConfigurationItem*>(

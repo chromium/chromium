@@ -37,6 +37,10 @@
 // Whether the NTP custom background is enabled by enterprise policy.
 @property(nonatomic, assign) BOOL isNTPCustomBackgroundEnabledByPolicy;
 
+// Whether interaction with the background customization section is enabled.
+// Prevents the background from changing when it should not change.
+@property(nonatomic, assign) BOOL backgroundCustomizationUserInteractionEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_MAIN_VIEW_CONTROLLER_H_

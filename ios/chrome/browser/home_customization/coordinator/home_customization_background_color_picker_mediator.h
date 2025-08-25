@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_mutator.h"
+
 @protocol HomeCustomizationBackgroundColorPickerConsumer;
 class HomeBackgroundCustomizationService;
 

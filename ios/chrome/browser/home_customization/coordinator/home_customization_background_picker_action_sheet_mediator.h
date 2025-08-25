@@ -11,7 +11,7 @@
 
 class HomeBackgroundCustomizationService;
 @protocol HomeCustomizationBackgroundPickerActionSheetConsumer;
-@protocol HomeCustomizationBackgroundPickerActionSheetPresentationDelegate;
+@protocol HomeCustomizationBackgroundPickerPresentationDelegate;
 
 // Mediator responsible for managing the background customization action sheet,
 // which allows the user to pick a background option.
@@ -26,9 +26,9 @@ class HomeBackgroundCustomizationService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// presentation delegate for the background picker's action sheet.
+// Presentation delegate for the background picker UI.
 @property(nonatomic, weak)
-    id<HomeCustomizationBackgroundPickerActionSheetPresentationDelegate>
+    id<HomeCustomizationBackgroundPickerPresentationDelegate>
         delegate;
 
 // The consumer for the background picker's action sheet.
@@ -36,5 +36,16 @@ class HomeBackgroundCustomizationService;
     id<HomeCustomizationBackgroundPickerActionSheetConsumer>
         consumer;
 
+// Whether this mediator has changed the theme.
+@property(nonatomic, readonly) BOOL themeHasChanged;
+
+// Saves the currently selected theme data, if it has been changed by this
+// mediator.
+- (void)saveCurrentTheme;
+
+// Does any necessary clean up if the selection is cancelled.
+- (void)cancelThemeSelection;
+
 @end
+
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_HOME_CUSTOMIZATION_BACKGROUND_PICKER_ACTION_SHEET_MEDIATOR_H_

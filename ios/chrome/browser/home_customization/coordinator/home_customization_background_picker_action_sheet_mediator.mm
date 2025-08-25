@@ -14,12 +14,16 @@
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_presentation_delegate.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "skia/ext/skia_utils_ios.h"
 
 @interface HomeCustomizationBackgroundPickerActionSheetMediator () <
     HomeBackgroundCustomizationServiceObserving>
+
+// Redefine public property as readwrite
+@property(nonatomic, readwrite, assign) BOOL themeHasChanged;
+
 @end
 
 @implementation HomeCustomizationBackgroundPickerActionSheetMediator {
@@ -73,12 +77,26 @@
   }
 }
 
+- (void)saveCurrentTheme {
+  if (self.themeHasChanged) {
+    _homeBackgroundCustomizationService->StoreCurrentTheme();
+    self.themeHasChanged = NO;
+  }
+}
+
+- (void)cancelThemeSelection {
+  self.themeHasChanged = NO;
+  _homeBackgroundCustomizationService->RestoreCurrentTheme();
+}
+
 #pragma mark - HomeBackgroundCustomizationServiceObserving
 
 - (void)onBackgroundChanged {
   if (self.consumer.navigationItem.leftBarButtonItem) {
     return;
   }
+
+  self.themeHasChanged = YES;
 
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
@@ -154,16 +172,15 @@
   _homeBackgroundCustomizationService->ClearCurrentBackground();
 }
 
-// Discards customization changes and dismiss the menu.
+// Discards customization changes and cancels the menu.
 - (void)discardBackground {
-  _homeBackgroundCustomizationService->RestoreCurrentTheme();
-  [self.delegate backgroundPickerActionSheetDidRequestDismissal];
+  [self cancelThemeSelection];
+  [self.delegate cancelBackgroundPicker];
 }
 
-// Saves customization changes and dismiss the menu.
+// Dismiss the menu. The current background will be saved on menu dismiss.
 - (void)confirmBackground {
-  _homeBackgroundCustomizationService->StoreCurrentTheme();
-  [self.delegate backgroundPickerActionSheetDidRequestDismissal];
+  [self.delegate dismissBackgroundPicker];
 }
 
 @end

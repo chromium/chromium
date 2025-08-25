@@ -61,6 +61,10 @@ class ImageFetcherService;
 // `consumer`.
 - (void)configureMagicStackPageData;
 
+// Saves the currently selected theme data, if it has been changed by this
+// mediator.
+- (void)saveCurrentTheme;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_HOME_CUSTOMIZATION_MEDIATOR_H_

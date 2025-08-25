@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_presentation_delegate.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_header_view.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_skeleton_cell.h"
@@ -216,7 +216,7 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   NSString* itemIdentifier =
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
-  [self.presentationDelegate
+  [self.customizationMutator
       applyBackgroundForConfiguration:_backgroundCustomizationConfigurationMap
                                           [itemIdentifier]];
 }
@@ -232,7 +232,7 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 
   if (backgroundConfiguration &&
       !backgroundConfiguration.thumbnailURL.is_empty()) {
-    [self.mutator
+    [self.galleryMutator
         fetchBackgroundCustomizationThumbnailURLImage:backgroundConfiguration
                                                           .thumbnailURL
                                            completion:^(UIImage* image,

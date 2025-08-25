@@ -111,12 +111,16 @@ CGFloat const kSheetCornerRadius = 30;
 }
 
 - (void)stop {
+  [self.mediator saveCurrentTheme];
+
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
 
+  [self dismissBackgroundPickerActionSheet];
+
+  _mediator = nil;
   _mainViewController = nil;
   _magicStackViewController = nil;
   _discoverViewController = nil;
-  _mediator = nil;
 
   [super stop];
 }
@@ -294,9 +298,25 @@ CGFloat const kSheetCornerRadius = 30;
           initWithBaseViewController:self.mainViewController
                              browser:self.browser
                           sourceView:sourceView];
+  _backgroundPickerActionSheetCoordinator.presentationDelegate = self;
   _backgroundPickerActionSheetCoordinator.searchEngineLogoMediatorProvider =
       self;
   [_backgroundPickerActionSheetCoordinator start];
+  // Disable customization interactions while the background picker views are
+  // open so the user can't choose a new background from the main menu while in
+  // the process of dismissing the picker views.
+  self.mainViewController.backgroundCustomizationUserInteractionEnabled = NO;
+}
+
+- (void)dismissBackgroundPicker {
+  [self.delegate dismissCustomizationMenu];
+}
+
+- (void)cancelBackgroundPicker {
+  // Reenable interaction when the picker is canceled, as the main menu is now
+  // active again.
+  self.mainViewController.backgroundCustomizationUserInteractionEnabled = YES;
+  [self dismissBackgroundPickerActionSheet];
 }
 
 #pragma mark - HomeCustomizationSearchEngineLogoMediator

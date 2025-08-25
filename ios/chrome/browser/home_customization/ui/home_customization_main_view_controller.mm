@@ -61,6 +61,14 @@
 @synthesize diffableDataSource = _diffableDataSource;
 @synthesize page = _page;
 
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    self.backgroundCustomizationUserInteractionEnabled = YES;
+  }
+  return self;
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
 
@@ -273,6 +281,7 @@
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
 
   return [section isEqualToString:kCustomizationSectionBackground] &&
+         self.backgroundCustomizationUserInteractionEnabled &&
          ![itemIdentifier isEqualToString:kBackgroundPickerCellIdentifier];
 }
 

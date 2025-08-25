@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_color_picker_mediator.h"
@@ -18,7 +19,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_library_picker_view_controller.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_presentation_delegate.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/strings/grit/ui_strings.h"
 
 namespace {
 
@@ -45,7 +47,6 @@ CGFloat const kSheetCornerRadius = 30;
 
 @interface HomeCustomizationBackgroundPickerActionSheetCoordinator () <
     HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate,
-    HomeCustomizationBackgroundPickerActionSheetPresentationDelegate,
     UIAdaptivePresentationControllerDelegate> {
   // The mediator of the background picker action sheet.
   HomeCustomizationBackgroundPickerActionSheetMediator* _mediator;
@@ -99,7 +100,7 @@ CGFloat const kSheetCornerRadius = 30;
   _mediator = [[HomeCustomizationBackgroundPickerActionSheetMediator alloc]
       initWithHomeBackgroundCustomizationService:
           homeBackgroundCustomizationService];
-  _mediator.delegate = self;
+  _mediator.delegate = self.presentationDelegate;
   _backgroundColorPickerMediator =
       [[HomeCustomizationBackgroundColorPickerMediator alloc]
           initWithBackgroundCustomizationService:
@@ -140,6 +141,12 @@ CGFloat const kSheetCornerRadius = 30;
                   }
                    style:UIAlertActionStyleDefault];
 
+  [self addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
+                  action:^{
+                    [weakSelf alertControllerDidCancel];
+                  }
+                   style:UIAlertActionStyleCancel];
+
   // On iPad, an action sheet is presented as a popover and needs a source view
   // to anchor to, otherwise it will crash.
   if (self.alertController.popoverPresentationController) {
@@ -153,7 +160,11 @@ CGFloat const kSheetCornerRadius = 30;
 }
 
 - (void)stop {
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  [_mediator saveCurrentTheme];
+
+  [_mainViewController dismissViewControllerAnimated:YES completion:nil];
+
+  _mediator = nil;
   _backgroundColorPickerMediator = nil;
   _backgroundPresetGalleryPickerMediator = nil;
   if (_photoPickerCoordinator) {
@@ -163,22 +174,17 @@ CGFloat const kSheetCornerRadius = 30;
   [super stop];
 }
 
-#pragma mark - HomeCustomizationBackgroundPickerActionSheetPresentationDelegate
-
-- (void)applyBackgroundForConfiguration:
-    (id<BackgroundCustomizationConfiguration>)backgroundConfiguration {
-  [_mediator applyBackgroundForConfiguration:backgroundConfiguration];
-}
-
-- (void)backgroundPickerActionSheetDidRequestDismissal {
-  [self dismissMenu];
-}
-
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self dismissMenu];
+  if (_mediator.themeHasChanged) {
+    [self.presentationDelegate dismissBackgroundPicker];
+  } else {
+    // Cancel theme selection just in case.
+    [_mediator cancelThemeSelection];
+    [self.presentationDelegate cancelBackgroundPicker];
+  }
 }
 
 #pragma mark - HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate
@@ -187,12 +193,16 @@ CGFloat const kSheetCornerRadius = 30;
     (HomeCustomizationBackgroundPhotoPickerCoordinator*)coordinator {
   [_photoPickerCoordinator stop];
   _photoPickerCoordinator = nil;
+
+  [self.presentationDelegate cancelBackgroundPicker];
 }
 
 - (void)photoPickerCoordinatorDidFinish:
     (HomeCustomizationBackgroundPhotoPickerCoordinator*)coordinator {
   [_photoPickerCoordinator stop];
   _photoPickerCoordinator = nil;
+
+  [self.presentationDelegate dismissBackgroundPicker];
 }
 
 #pragma mark - Private functions
@@ -243,7 +253,7 @@ CGFloat const kSheetCornerRadius = 30;
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                            target:self
-                           action:@selector(dismissMenu)];
+                           action:@selector(cancelMenu)];
   _mainViewController.navigationItem.rightBarButtonItem = dismissButton;
   _mainViewController.navigationItem.leftBarButtonItem = nil;
 
@@ -281,8 +291,8 @@ CGFloat const kSheetCornerRadius = 30;
     createColorPickerViewController {
   HomeCustomizationBackgroundColorPickerViewController* mainViewController =
       [[HomeCustomizationBackgroundColorPickerViewController alloc] init];
-  mainViewController.presentationDelegate = self;
-  mainViewController.mutator = _backgroundColorPickerMediator;
+  mainViewController.presentationDelegate = self.presentationDelegate;
+  mainViewController.mutator = _mediator;
   return mainViewController;
 }
 
@@ -296,18 +306,21 @@ CGFloat const kSheetCornerRadius = 30;
               init];
   mainViewController.searchEngineLogoMediatorProvider =
       self.searchEngineLogoMediatorProvider;
-  mainViewController.presentationDelegate = self;
-  mainViewController.mutator = _backgroundPresetGalleryPickerMediator;
+  mainViewController.presentationDelegate = self.presentationDelegate;
+  mainViewController.galleryMutator = _backgroundPresetGalleryPickerMediator;
+  mainViewController.customizationMutator = _mediator;
   return mainViewController;
 }
 
-// Dismisses the customization menu.
-- (void)dismissMenu {
-  if (!_mainViewController) {
-    return;
-  }
+// Cancels the menu.
+- (void)cancelMenu {
+  [_mediator cancelThemeSelection];
+  [self.presentationDelegate cancelBackgroundPicker];
+}
 
-  [_mainViewController dismissViewControllerAnimated:YES completion:nil];
+// Cancels the menu when the alert controller cancels.
+- (void)alertControllerDidCancel {
+  [self.presentationDelegate cancelBackgroundPicker];
 }
 
 @end

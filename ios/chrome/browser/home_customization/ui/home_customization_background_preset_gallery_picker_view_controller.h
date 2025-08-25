@@ -9,7 +9,8 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_consumer.h"
 
-@protocol HomeCustomizationBackgroundPickerActionSheetPresentationDelegate;
+@protocol HomeCustomizationBackgroundPickerActionSheetMutator;
+@protocol HomeCustomizationBackgroundPickerPresentationDelegate;
 @protocol HomeCustomizationBackgroundPresetGalleryPickerMutator;
 @protocol HomeCustomizationSearchEngineLogoMediatorProvider;
 
@@ -25,14 +26,19 @@
 @property(nonatomic, weak) id<HomeCustomizationSearchEngineLogoMediatorProvider>
     searchEngineLogoMediatorProvider;
 
-// Mutator to handle the user's customization updates.
+// Mutator to handle gallery interactions.
 @property(nonatomic, weak)
     id<HomeCustomizationBackgroundPresetGalleryPickerMutator>
-        mutator;
+        galleryMutator;
 
-// Presentation delegate for the action sheet.
+// Mutator to handle the user's customization updates.
 @property(nonatomic, weak)
-    id<HomeCustomizationBackgroundPickerActionSheetPresentationDelegate>
+    id<HomeCustomizationBackgroundPickerActionSheetMutator>
+        customizationMutator;
+
+// Presentation delegate for background picker UI.
+@property(nonatomic, weak)
+    id<HomeCustomizationBackgroundPickerPresentationDelegate>
         presentationDelegate;
 
 @end
