@@ -230,16 +230,6 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
 
-  if ([self isRunningTest:@selector(testOpenPasswordBottomOnAutofocus)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordBottomSheetAutofocus);
-  }
-
-  if ([self isRunningTest:@selector(testOpenKeyboardOnAutofocus)]) {
-    config.features_disabled.push_back(
-        password_manager::features::kIOSPasswordBottomSheetAutofocus);
-  }
-
   if ([self isRunningTest:@selector
             (testOpenPasswordBottomSheetTapUseKeyboardShowKeyboard_V2)] ||
       [self
@@ -427,25 +417,11 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [self verifyPasswordFieldsHaveBeenFilled:@"user"];
 }
 
-// This test verifies that the bottom sheet opens on autofocus events, when the
-// kIOSPasswordBottomSheetAutofocus feature is enabled.
+// This test verifies that the bottom sheet opens on autofocus events.
 - (void)testOpenPasswordBottomOnAutofocus {
   [self saveGenericPasswordAndLoadLoginAutofocusPage];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UsePasswordButton()];
-}
-
-// This test verifies that the keyboard opens on autofocus events, when the
-// kIOSPasswordBottomSheetAutofocus feature is disabled.
-- (void)testOpenKeyboardOnAutofocus {
-  // TODO(crbug.com/349804536): Test is flaky on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad.")
-  }
-
-  [self saveGenericPasswordAndLoadLoginAutofocusPage];
-
-  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // This test verifies that the password bottom sheet does not open when the

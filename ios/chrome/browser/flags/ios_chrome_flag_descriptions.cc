@@ -799,11 +799,6 @@ const char kIOSManageAccountStorageName[] = "Allow managing Account storage.";
 const char kIOSManageAccountStorageDescription[] =
     "Add entry points to manage Google One account storage.";
 
-const char kIOSPasswordBottomSheetAutofocusName[] =
-    "IOS Password Manager Bottom Sheet Autofocus";
-const char kIOSPasswordBottomSheetAutofocusDescription[] =
-    "Enables triggering the password bottom sheet on autofocus on IOS.";
-
 const char kIOSProactivePasswordGenerationBottomSheetName[] =
     "IOS Proactive Password Generation Bottom Sheet";
 const char kIOSProactivePasswordGenerationBottomSheetDescription[] =

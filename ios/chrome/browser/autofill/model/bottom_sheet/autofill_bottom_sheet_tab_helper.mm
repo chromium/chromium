@@ -330,12 +330,8 @@ void AutofillBottomSheetTabHelper::AttachPasswordListeners(
     return;
   }
 
-  // Whether to only trigger the bottom sheet on trusted events.
-  bool allow_autofocus = base::FeatureList::IsEnabled(
-      password_manager::features::kIOSPasswordBottomSheetAutofocus);
-
   AttachListeners(renderer_ids, registered_password_renderer_ids_[frame_id],
-                  frame_id, allow_autofocus, /*only_new=*/true);
+                  frame_id, /*allow_autofocus=*/true, /*only_new=*/true);
 }
 
 void AutofillBottomSheetTabHelper::AttachPasswordGenerationListeners(

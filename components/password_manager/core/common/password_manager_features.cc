@@ -36,13 +36,6 @@ BASE_FEATURE_PARAM(int,
                    "timeout_ms",
                    kDefaultDelaySuggestionsTimeout);
 
-#if BUILDFLAG(IS_IOS)
-// Enables password bottom sheet to be triggered on autofocus events (on iOS).
-BASE_FEATURE(kIOSPasswordBottomSheetAutofocus,
-             "kIOSPasswordBottomSheetAutofocus",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // IS_IOS
-
 // Removes password suggestion filtering by username.
 BASE_FEATURE(kNoPasswordSuggestionFiltering,
              "NoPasswordSuggestionFiltering",
