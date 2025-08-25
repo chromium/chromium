@@ -8,6 +8,8 @@ source_set("utils") {
     "//services/device/wake_lock/power_save_blocker",
   ]
   sources = [
+    "call_method.cc",
+    "call_method.h",
     "check_for_service_and_start.cc",
     "check_for_service_and_start.h",
     "name_has_owner.cc",
@@ -30,6 +32,7 @@ source_set("unit_tests") {
   testonly = true
   visibility = [ "//components/dbus:unit_tests" ]
   sources = [
+    "call_method_unittest.cc",
     "check_for_service_and_start_unittest.cc",
     "read_write_value_unittest.cc",
     "signature_unittest.cc",
