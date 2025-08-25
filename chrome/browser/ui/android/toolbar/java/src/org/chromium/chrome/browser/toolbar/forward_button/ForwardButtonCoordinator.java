@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
-import org.chromium.chrome.browser.toolbar.top.ToolbarChild;
+import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -33,7 +33,7 @@ import org.chromium.ui.widget.ChromeImageButton;
  * the button and affect its state.
  */
 @NullMarked
-public class ForwardButtonCoordinator extends ToolbarChild {
+public class ForwardButtonCoordinator extends ToolbarChildButton {
     private final Context mContext;
     private final ToolbarDataProvider mToolbarDataProvider;
     private final ToolbarTabController mToolbarTabController;
@@ -69,7 +69,7 @@ public class ForwardButtonCoordinator extends ToolbarChild {
             NavigationPopup.HistoryDelegate historyDelegate,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider) {
-        super(themeColorProvider, incognitoStateProvider);
+        super(context, themeColorProvider, incognitoStateProvider);
         mContext = context;
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = toolbarTabController;
@@ -113,7 +113,7 @@ public class ForwardButtonCoordinator extends ToolbarChild {
         }
     }
 
-    /** Sets the visibility of the forward button. */
+    @Override
     public void setVisibility(boolean visible) {
         mImageButton.setVisibility(visible ? View.VISIBLE : View.GONE);
     }

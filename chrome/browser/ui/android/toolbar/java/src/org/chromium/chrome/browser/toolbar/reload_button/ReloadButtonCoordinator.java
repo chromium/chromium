@@ -18,7 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.top.ToolbarChild;
+import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -30,7 +30,7 @@ import org.chromium.ui.widget.Toast;
  * changes.
  */
 @NullMarked
-public class ReloadButtonCoordinator extends ToolbarChild {
+public class ReloadButtonCoordinator extends ToolbarChildButton {
     /** An interface that allows parent components to control tab reload logic. */
     public interface Delegate {
         /**
@@ -64,7 +64,7 @@ public class ReloadButtonCoordinator extends ToolbarChild {
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             boolean isWebApp) {
-        super(themeColorProvider, incognitoStateProvider);
+        super(view.getContext(), themeColorProvider, incognitoStateProvider);
         mView = view;
 
         // ThemeColorProvider might not be updated by this time. Keep existing color list.
@@ -108,11 +108,7 @@ public class ReloadButtonCoordinator extends ToolbarChild {
         mMediator.onTintChanged(tint, activityFocusTint, brandedColorScheme);
     }
 
-    /**
-     * Sets reload button visibility.
-     *
-     * @param isVisible indicated whether view should be visible or gone.
-     */
+    @Override
     public void setVisibility(boolean isVisible) {
         mMediator.setVisibility(isVisible);
     }

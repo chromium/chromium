@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
-import org.chromium.chrome.browser.toolbar.top.ToolbarChild;
+import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -31,7 +31,7 @@ import org.chromium.ui.widget.ChromeImageButton;
  * the button and affect its state.
  */
 @NullMarked
-public class BackButtonCoordinator extends ToolbarChild {
+public class BackButtonCoordinator extends ToolbarChildButton {
     private final BackButtonMediator mMediator;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
     private final Supplier<@Nullable Tab> mTabSupplier;
@@ -61,7 +61,7 @@ public class BackButtonCoordinator extends ToolbarChild {
             Runnable onNavigationPopupShown,
             NavigationPopup.HistoryDelegate historyDelegate,
             boolean isWebApp) {
-        super(themeColorProvider, incognitoStateProvider);
+        super(view.getContext(), themeColorProvider, incognitoStateProvider);
         mView = view;
         mTabSupplier = tabSupplier;
         mHistoryDelegate = historyDelegate;
@@ -128,11 +128,7 @@ public class BackButtonCoordinator extends ToolbarChild {
                 : ToolbarUtils.asFadeOutAnimation(fadeAnimator);
     }
 
-    /**
-     * Sets back button visibility.
-     *
-     * @param isVisible indicated whether view should be visible or gone.
-     */
+    @Override
     public void setVisibility(boolean isVisible) {
         mMediator.setVisibility(isVisible);
     }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.isToolbarTabletResizeRefactorEnabled;
 import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
 
 import android.animation.Animator;
@@ -54,6 +55,8 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
+import org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId;
+import org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -69,6 +72,8 @@ import java.util.List;
 @SuppressLint("Instantiatable")
 @NullMarked
 public class ToolbarTablet extends ToolbarLayout {
+    private static final int MINIMUM_LOCATION_BAR_WIDTH_DP = 200;
+
     private ImageButton mHomeButton;
     private ImageButton mBackButton;
     private ImageButton mReloadButton;
@@ -94,6 +99,9 @@ public class ToolbarTablet extends ToolbarLayout {
     private @Nullable TabletCaptureStateToken mLastCaptureStateToken;
     private @DrawableRes int mBookmarkButtonImageRes;
     private @Nullable ExtensionToolbarCoordinator mExtensionToolbarCoordinator;
+
+    private final @Nullable ToolbarWidthConsumer[] mToolbarWidthConsumers =
+            new ToolbarWidthConsumer[ToolbarComponentId.COUNT];
 
     /**
      * Constructs a ToolbarTablet object.
@@ -381,6 +389,10 @@ public class ToolbarTablet extends ToolbarLayout {
                         themeColorProvider,
                         incognitoStateProvider,
                         mToolbarButtonsVisible);
+
+        mToolbarWidthConsumers[ToolbarComponentId.BACK] = mBackButtonCoordinator;
+        mToolbarWidthConsumers[ToolbarComponentId.FORWARD] = mForwardButtonCoordinator;
+        mToolbarWidthConsumers[ToolbarComponentId.RELOAD] = mReloadButtonCoordinator;
     }
 
     @Override
@@ -423,17 +435,68 @@ public class ToolbarTablet extends ToolbarLayout {
         super.onLayout(changed, left, top, right, bottom);
     }
 
+    // TODO(clhager): Remove this once all components are accounted for in the toolbar tablet
+    //  refactor.
+    private int consumeWidthForOtherComponents(int availableWidth) {
+        int buttonWidth =
+                getContext().getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        if (mOptionalButton != null && mOptionalButton.getVisibility() == VISIBLE) {
+            availableWidth -= buttonWidth;
+        }
+        if (getMenuButtonCoordinator().isVisible()) {
+            availableWidth -= buttonWidth;
+        }
+        if (mHomeButton.getVisibility() == VISIBLE) {
+            availableWidth -= buttonWidth;
+        }
+        View tabSwitcherButton = findViewById(R.id.tab_switcher_button);
+        if (tabSwitcherButton != null && tabSwitcherButton.getVisibility() == VISIBLE) {
+            availableWidth -= buttonWidth;
+        }
+        // Account for the minimum width of the location bar.
+        availableWidth -=
+                (int)
+                        (MINIMUM_LOCATION_BAR_WIDTH_DP
+                                * getContext().getResources().getDisplayMetrics().density);
+        // Account for padding on the start and end of the toolbar.
+        availableWidth -= 2 * mStartPaddingWithButtons;
+        return availableWidth;
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // Hide or show toolbar buttons if needed. With the introduction of multi-window on
-        // Android N, the Activity can be < 600dp, in which case the toolbar buttons need to be
-        // moved into the menu so that the location bar is usable. The buttons must be shown
-        // in onMeasure() so that the location bar gets measured and laid out correctly.
-        setToolbarButtonsVisible(
-                MeasureSpec.getSize(widthMeasureSpec)
-                        >= DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(getContext()));
-
+        if (isToolbarTabletResizeRefactorEnabled()) {
+            int width = MeasureSpec.getSize(widthMeasureSpec);
+            allocateAvailableToolbarWidth(
+                    mToolbarWidthConsumers, consumeWidthForOtherComponents(width));
+            this.setPaddingRelative(
+                    mStartPaddingWithoutButtons,
+                    getPaddingTop(),
+                    mStartPaddingWithoutButtons,
+                    getPaddingBottom());
+        } else {
+            // Hide or show toolbar buttons if needed. With the introduction of multi-window on
+            // Android N, the Activity can be < 600dp, in which case the toolbar buttons need to be
+            // moved into the menu so that the location bar is usable. The buttons must be shown
+            // in onMeasure() so that the location bar gets measured and laid out correctly.
+            setToolbarButtonsVisible(
+                    MeasureSpec.getSize(widthMeasureSpec)
+                            >= DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(
+                                    getContext()));
+        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @VisibleForTesting
+    static void allocateAvailableToolbarWidth(
+            @Nullable ToolbarWidthConsumer[] toolbarWidthConsumer, int availableWidthDp) {
+        // Iterate through the toolbar components, which will show if there is enough available
+        // width.
+        for (@ToolbarComponentId int toolbarComponentId : ToolbarUtils.RANKED_TOOLBAR_COMPONENTS) {
+            @Nullable ToolbarWidthConsumer widthConsumer = toolbarWidthConsumer[toolbarComponentId];
+            if (widthConsumer == null) continue;
+            availableWidthDp -= widthConsumer.updateVisibility(availableWidthDp);
+        }
     }
 
     @Override

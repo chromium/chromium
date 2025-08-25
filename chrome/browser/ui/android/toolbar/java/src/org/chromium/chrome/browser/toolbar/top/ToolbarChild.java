@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.isToolbarTabletResizeRefactorEnabled;
+
+import android.animation.Animator;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.view.View;
@@ -15,10 +18,14 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
+import org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarWidthConsumer;
+
+import java.util.Collection;
 
 /** A child of top toolbar. Holds common methods that the sub-class should implement. */
 @NullMarked
-public abstract class ToolbarChild implements Destroyable, TintObserver, IncognitoStateObserver {
+public abstract class ToolbarChild
+        implements Destroyable, TintObserver, IncognitoStateObserver, ToolbarWidthConsumer {
 
     protected final ThemeColorProvider mTopUiThemeColorProvider;
     protected final IncognitoStateProvider mIncognitoStateProvider;
@@ -62,5 +69,17 @@ public abstract class ToolbarChild implements Destroyable, TintObserver, Incogni
      */
     public void draw(View root, Canvas canvas) {
         throw new UnsupportedOperationException("This method call is not implemented.");
+    }
+
+    @Override
+    public int updateVisibility(int availableWidth) {
+        assert isToolbarTabletResizeRefactorEnabled();
+        return 0;
+    }
+
+    @Override
+    public int updateVisibilityWithAnimation(int availableWidth, Collection<Animator> animators) {
+        assert isToolbarTabletResizeRefactorEnabled();
+        return 0;
     }
 }
