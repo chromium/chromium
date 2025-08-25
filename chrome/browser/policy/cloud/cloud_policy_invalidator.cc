@@ -239,7 +239,8 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::HandlePolicyRefresh(
   const int64_t store_invalidation_version = store->invalidation_version();
   // Whether the refresh was caused by invalidation.
   const bool invalidated =
-      store_invalidation_version == in_progress_invalidation_version_;
+      in_progress_invalidation_.has_value() &&
+      store_invalidation_version == in_progress_invalidation_.value().version();
 
   RecordPolicyRefreshMetric(
       scope_,
@@ -316,8 +317,8 @@ int64_t CloudPolicyInvalidator::highest_handled_invalidation_version() const {
 void CloudPolicyInvalidator::PolicyInvalidationHandler::HandleInvalidation(
     const invalidation::DirectInvalidation& invalidation) {
   // Ignore old invalidations.
-  if (in_progress_invalidation_version_.has_value() &&
-      invalidation.version() <= in_progress_invalidation_version_.value()) {
+  if (in_progress_invalidation_.has_value() &&
+      invalidation.version() <= in_progress_invalidation_.value().version()) {
     return;
   }
 
@@ -328,13 +329,9 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::HandleInvalidation(
 
   // If there is still a pending invalidation, finish it, since we only
   // care about the latest invalidation.
-  if (in_progress_invalidation_version_.has_value()) {
+  if (in_progress_invalidation_.has_value()) {
     FinishInvalidationHandling();
   }
-
-  // Get the version and payload from the invalidation.
-  const int64_t version = invalidation.version();
-  const std::string payload = invalidation.payload();
 
   // Ignore the invalidation if it is expired.
   const auto* policy = core_->store()->policy();
@@ -344,7 +341,7 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::HandleInvalidation(
   const auto current_time = clock_->Now();
   const bool is_expired =
       IsInvalidationExpired(invalidation, last_fetch_time, current_time);
-  const bool is_missing_payload = payload.empty();
+  const bool is_missing_payload = invalidation.payload().empty();
 
   RecordPolicyInvalidationMetric(scope_, is_expired, is_missing_payload);
 
@@ -353,7 +350,7 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::HandleInvalidation(
   }
 
   // Update invalidation state.
-  in_progress_invalidation_version_ = version;
+  in_progress_invalidation_ = invalidation;
 
   // In order to prevent the cloud policy server from becoming overwhelmed when
   // a policy with many users is modified, delay for a random period of time
@@ -362,12 +359,9 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::HandleInvalidation(
   // performed.
   base::TimeDelta delay = base::RandTimeDelta(kMinFetchDelay, max_fetch_delay_);
 
-  // If there is a payload, the policy can be refreshed at any time, so set
-  // the version and payload on the client immediately. Otherwise, the refresh
-  // must only run after at least kMissingPayloadDelay minutes.
-  if (!payload.empty()) {
-    core_->client()->SetInvalidationInfo(version, payload);
-  } else {
+  // If there is no payload, the refresh must only run after at least
+  // `kMissingPayloadDelay` minutes.
+  if (is_missing_payload) {
     delay += kMissingPayloadDelay;
   }
 
@@ -376,7 +370,7 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::HandleInvalidation(
       FROM_HERE,
       base::BindOnce(
           &CloudPolicyInvalidator::PolicyInvalidationHandler::RefreshPolicy,
-          weak_factory_.GetWeakPtr(), payload.empty() /* is_missing_payload */),
+          weak_factory_.GetWeakPtr()),
       delay);
 }
 
@@ -421,17 +415,14 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::
   }
 }
 
-void CloudPolicyInvalidator::PolicyInvalidationHandler::RefreshPolicy(
-    bool is_missing_payload) {
+void CloudPolicyInvalidator::PolicyInvalidationHandler::RefreshPolicy() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  CHECK(in_progress_invalidation_version_.has_value())
+  CHECK(in_progress_invalidation_.has_value())
       << "Policy refresh is scheduled by invalidator without invalidaiton";
-  // In the missing payload case, the invalidation version has not been set on
-  // the client yet, so set it now that the required time has elapsed.
-  if (is_missing_payload) {
-    core_->client()->SetInvalidationInfo(
-        in_progress_invalidation_version_.value(), std::string());
-  }
+  // Set the handled invalidation's info for the upcoming policy fetch.
+  core_->client()->SetInvalidationInfo(
+      in_progress_invalidation_.value().version(),
+      in_progress_invalidation_.value().payload());
   core_->refresh_scheduler()->RefreshSoon(PolicyFetchReason::kInvalidation);
 }
 
@@ -450,7 +441,8 @@ bool CloudPolicyInvalidator::PolicyInvalidationHandler::
 
 void CloudPolicyInvalidator::PolicyInvalidationHandler::
     FinishInvalidationHandling() {
-  in_progress_invalidation_version_.reset();
+  in_progress_invalidation_.reset();
+  // Reset client's invalidation info.
   core_->client()->SetInvalidationInfo(/*version=*/0,
                                        /*payload=*/std::string());
   // Cancel any scheduled policy refreshes.

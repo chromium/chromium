@@ -404,7 +404,7 @@ TEST_F(CloudPolicyInvalidatorTest, HandlesInvalidation) {
 
   // Verify that invalidation is not yet handled as we did not pass random
   // delay.
-  EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
+  EXPECT_TRUE(ClientInvalidationInfoIsUnset());
   EXPECT_EQ(GetPolicyRefreshCountAndReset(), 0);
 
   FastForwardByInvalidationDelay();
@@ -477,18 +477,12 @@ TEST_F(CloudPolicyInvalidatorTest, HandlesMultipleInvalidations) {
 
   // Fire invalidations out of order.
   const invalidation::DirectInvalidation inv2 = FireInvalidation(V(2), "test1");
-  FastForwardBy(base::TimeDelta());
-  EXPECT_TRUE(ClientInvalidationInfoMatches(inv2));
   const invalidation::DirectInvalidation inv1 = FireInvalidation(V(1), "test2");
-  FastForwardBy(base::TimeDelta());
-  EXPECT_TRUE(ClientInvalidationInfoMatches(inv2));
   const invalidation::DirectInvalidation inv3 = FireInvalidation(V(3), "test3");
-  FastForwardBy(base::TimeDelta());
-  EXPECT_TRUE(ClientInvalidationInfoMatches(inv3));
-
   FastForwardByInvalidationDelay();
 
   // Make sure the policy is refreshed once.
+  EXPECT_TRUE(ClientInvalidationInfoMatches(inv3));
   EXPECT_EQ(GetPolicyRefreshCountAndReset(), 1);
   EXPECT_EQ(0, invalidator()->highest_handled_invalidation_version());
 
