@@ -58,6 +58,7 @@
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/search_provider.h"
@@ -106,6 +107,12 @@ using omnibox::mojom::NavigationPredictor;
 // Helpers --------------------------------------------------------------------
 
 namespace {
+
+const char kOmniboxAimEntrypointShown[] = "Omnibox.AimEntrypoint.Shown";
+const char kOmniboxAimEntrypointActivatedUserTextPresent[] =
+    "Omnibox.AimEntrypoint.Activated.UserTextPresent";
+const char kOmniboxAimEntrypointActivatedViaKeyboard[] =
+    "Omnibox.AimEntrypoint.Activated.ViaKeyboard";
 
 // The possible histogram values emitted when escape is pressed.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -742,15 +749,9 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
                    u"");
 }
 
-void OmniboxEditModel::OpenAiMode() {
-  std::u16string query_text;
-  if (popup_selection_.line != OmniboxPopupSelection::kNoMatch) {
-    query_text = autocomplete_controller()
-                     ->result()
-                     .match_at(popup_selection_.line)
-                     .contents;
-  }
-
+void OmniboxEditModel::OpenAiMode(bool via_keyboard) {
+  std::u16string query_text = current_match_.contents;
+  RecordAiModeMetrics(query_text, /*activated=*/true, via_keyboard);
   GURL ai_mode_url =
       GetUrlForAim(controller_->client()->GetTemplateURLService(),
                    omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
@@ -760,14 +761,18 @@ void OmniboxEditModel::OpenAiMode() {
 
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
                                      base::TimeTicks timestamp,
-                                     WindowOpenDisposition disposition) {
+                                     WindowOpenDisposition disposition,
+                                     bool via_keyboard) {
   // Check for AIM button focus state first, since it can have a line selection
   // of `kNoMatch`, which would otherwise be handled by the `AcceptInput` case
   // below.
   if (selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
-    OpenAiMode();
+    OpenAiMode(via_keyboard);
     return;
   }
+  // If the AIM page action was NOT activated, then make sure we still record
+  // the appropriate AI Mode UMA metrics.
+  RecordAiModeMetrics(/*query_text=*/u"", /*activated=*/false, via_keyboard);
 
   // Intentionally accept input when selection has no line.
   // This will usually reach `OpenMatch` indirectly.
@@ -806,8 +811,9 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
 }
 
 void OmniboxEditModel::OpenSelection(base::TimeTicks timestamp,
-                                     WindowOpenDisposition disposition) {
-  OpenSelection(popup_selection_, timestamp, disposition);
+                                     WindowOpenDisposition disposition,
+                                     bool via_keyboard) {
+  OpenSelection(popup_selection_, timestamp, disposition, via_keyboard);
 }
 
 bool OmniboxEditModel::AcceptKeyword(
@@ -2906,4 +2912,47 @@ void OmniboxEditModel::SetKeyword(const std::u16string& keyword) {
 void OmniboxEditModel::SetKeywordPlaceholder(
     const std::u16string& keyword_placeholder) {
   keyword_placeholder_ = keyword_placeholder;
+}
+
+void OmniboxEditModel::RecordAiModeMetrics(const std::u16string& query_text,
+                                           bool activated,
+                                           bool via_keyboard) {
+  const auto* triggered_feature_service =
+      autocomplete_controller()
+          ->autocomplete_provider_client()
+          ->GetOmniboxTriggeredFeatureService();
+  const std::string page_context =
+      ::metrics::OmniboxEventProto::PageClassification_Name(
+          GetPageClassification());
+
+  // Record whether or not the AIM page action was shown during the session.
+  const bool shown_in_session =
+      triggered_feature_service->GetFeatureTriggeredInSession(
+          metrics::OmniboxEventProto_Feature::
+              OmniboxEventProto_Feature_AIM_PAGE_ACTION_OMNIBOX_ENTRYPOINT);
+  base::UmaHistogramBoolean(kOmniboxAimEntrypointShown, shown_in_session);
+  base::UmaHistogramBoolean(base::StrCat({kOmniboxAimEntrypointShown,
+                                          ".ByPageContext.", page_context}),
+                            shown_in_session);
+
+  if (!activated) {
+    return;
+  }
+
+  // Record whether or not the AIM page action was activated with non-empty
+  // query text.
+  base::UmaHistogramBoolean(kOmniboxAimEntrypointActivatedUserTextPresent,
+                            !query_text.empty());
+  base::UmaHistogramBoolean(
+      base::StrCat({kOmniboxAimEntrypointActivatedUserTextPresent,
+                    ".ByPageContext.", page_context}),
+      !query_text.empty());
+
+  // Record the entry method used to activate the AIM page action.
+  base::UmaHistogramBoolean(kOmniboxAimEntrypointActivatedViaKeyboard,
+                            via_keyboard);
+  base::UmaHistogramBoolean(
+      base::StrCat({kOmniboxAimEntrypointActivatedViaKeyboard,
+                    ".ByPageContext.", page_context}),
+      via_keyboard);
 }

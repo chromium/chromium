@@ -1888,7 +1888,8 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       if (model()->PopupIsOpen() && !control) {
         // Normal case of pressing <return> when the popup is open.
         model()->OpenSelection(model()->GetPopupSelection(), event.time_stamp(),
-                               disposition);
+                               disposition,
+                               /*via_keyboard=*/true);
       } else {
         // There are two cases handled here.
         // 1. The popup is closed and the AIM page action icon has "fake" focus
@@ -1907,7 +1908,7 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
                 : OmniboxPopupSelection::LineState::NORMAL;
         model()->OpenSelection(
             OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch, line_state),
-            event.time_stamp(), disposition);
+            event.time_stamp(), disposition, /*via_keyboard=*/true);
       }
       return true;
     }
@@ -2019,7 +2020,8 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
               OmniboxPopupSelection(
                   OmniboxPopupSelection::kNoMatch,
                   OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM),
-              event.time_stamp(), WindowOpenDisposition::CURRENT_TAB);
+              event.time_stamp(), WindowOpenDisposition::CURRENT_TAB,
+              /*via_keyboard=*/true);
           return true;
         }
       } else if (!control && !alt && !shift) {
@@ -2028,7 +2030,9 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
         }
         OmniboxPopupSelection selection = model()->GetPopupSelection();
         if (selection.IsButtonFocused()) {
-          model()->OpenSelection(selection, event.time_stamp());
+          model()->OpenSelection(selection, event.time_stamp(),
+                                 WindowOpenDisposition::CURRENT_TAB,
+                                 /*via_keyboard=*/true);
           return true;
         }
       }
