@@ -505,11 +505,9 @@ TrackHeader::TrackHeader()
       layer(-1),
       alternate_group(-1),
       volume(-1),
+      display_matrix(kDisplayIdentityMatrix),
       width(0),
-      height(0) {
-  std::copy(std::begin(kDisplayIdentityMatrix),
-            std::end(kDisplayIdentityMatrix), display_matrix);
-}
+      height(0) {}
 TrackHeader::TrackHeader(const TrackHeader& other) = default;
 TrackHeader::~TrackHeader() = default;
 FourCC TrackHeader::BoxType() const { return FOURCC_TKHD; }

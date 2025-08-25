@@ -225,9 +225,9 @@ bool BoxReader::ScanChildren() {
   return true;
 }
 
-bool BoxReader::ReadDisplayMatrix(DisplayMatrix matrix) {
-  for (int i = 0; i < kDisplayMatrixDimension; i++) {
-    if (!Read4s(&UNSAFE_TODO(matrix[i]))) {
+bool BoxReader::ReadDisplayMatrix(DisplayMatrix& matrix) {
+  for (int32_t& i : matrix) {
+    if (!Read4s(&i)) {
       return false;
     }
   }

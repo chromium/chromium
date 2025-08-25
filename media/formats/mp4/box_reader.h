@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <map>
 #include <memory>
@@ -33,7 +34,7 @@ enum DisplayMatrixSize {
   kDisplayMatrixDimension = kDisplayMatrixHeight * kDisplayMatrixWidth
 };
 
-using DisplayMatrix = int32_t[kDisplayMatrixDimension];
+using DisplayMatrix = std::array<int32_t, kDisplayMatrixDimension>;
 
 class BoxReader;
 
@@ -155,7 +156,7 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
 
   // ISO-BMFF streams files use a 3x3 matrix consisting of 6 16.16 fixed point
   // decimals and 3 2.30 fixed point decimals.
-  bool ReadDisplayMatrix(DisplayMatrix matrix);
+  bool ReadDisplayMatrix(DisplayMatrix& matrix);
 
   // Read at least one child. False means error or no such child present.
   template <typename T>
