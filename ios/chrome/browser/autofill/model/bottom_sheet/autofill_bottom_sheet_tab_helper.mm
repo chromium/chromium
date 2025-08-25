@@ -205,21 +205,18 @@ void AutofillBottomSheetTabHelper::ShowPasswordBottomSheet(
   // Attempt to show the password suggestions bottom sheet. There is no
   // guarantee that it will be actually shown.
   [commands_handler_ showPasswordBottomSheet:params];
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kIOSPasswordBottomSheetV2)) {
-    // In V2, detach the listeners right now since they've filled their purpose
-    // of attempting to trigger the bottom sheet upon focusing on the login
-    // field, making the listeners inoperative from now on. This helps
-    // preventing having rogue listeners preempting the login fields forever
-    // because the bottom sheet isn't behaving as expected (e.g. the bottom
-    // sheet remains invisible while still waiting on an interaction from the
-    // user to detach the listeners). In short, detaching the listeners can't
-    // rely on signals from the bottom sheet UI, so we detach right here. There
-    // is another mechanism used in the bottom sheet view itself to prevent the
-    // keyboard from popping up over the bottom sheet. Postpone refocus for
-    // later once the bottom sheet is dismissed.
-    DetachPasswordListenersForAllFrames(/*refocus=*/false);
-  }
+  // Detach the listeners right now since they've filled their purpose of
+  // attempting to trigger the bottom sheet upon focusing on the login
+  // field, making the listeners inoperative from now on. This helps
+  // preventing having rogue listeners preempting the login fields forever
+  // because the bottom sheet isn't behaving as expected (e.g. the bottom
+  // sheet remains invisible while still waiting on an interaction from the
+  // user to detach the listeners). In short, detaching the listeners can't
+  // rely on signals from the bottom sheet UI, so we detach right here. There
+  // is another mechanism used in the bottom sheet view itself to prevent the
+  // keyboard from popping up over the bottom sheet. Postpone refocus for
+  // later once the bottom sheet is dismissed.
+  DetachPasswordListenersForAllFrames(/*refocus=*/false);
 }
 
 void AutofillBottomSheetTabHelper::MaybeShowPaymentsBottomSheet(

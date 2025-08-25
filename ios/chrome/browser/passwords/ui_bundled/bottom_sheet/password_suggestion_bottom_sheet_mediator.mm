@@ -14,7 +14,6 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/core/image_fetcher_impl.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -101,79 +100,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 }  // namespace
 
 // TODO(crbug.com/372426818): Move this is to its own specific file/module.
-// Interface that wraps a concrete provider to provide and fill suggestions for
-// the bottom sheet.
-@protocol BottomSheetFormSuggestionProviderWrapper <NSObject>
-
-// Retrieves suggestions for the form.
-- (void)retrieveSuggestionsForForm:(autofill::FormActivityParams)params
-                          webState:(web::WebState*)webState
-                        completion:
-                            (void (^)(NSArray<FormSuggestion*>* suggestions))
-                                completion;
-
-// Handles suggestions selection.
-- (void)didSelectSuggestion:(FormSuggestion*)suggestion
-                    atIndex:(NSInteger)index
-                   webState:(web::WebState*)webState;
-
-// Returns the type of the provider.
-- (SuggestionProviderType)type;
-
-@end
-
-// TODO(crbug.com/372426818): Move this is to its own specific file/module.
-// Provider for V1.
-@interface BottomSheetFormSuggestionProviderWrapperV1
-    : NSObject <BottomSheetFormSuggestionProviderWrapper>
-
-- (instancetype)initWithFormInputSuggestionProvider:
-    (id<FormInputSuggestionsProvider>)provider;
-
-@end
-
-@implementation BottomSheetFormSuggestionProviderWrapperV1 {
-  __weak id<FormInputSuggestionsProvider> _providerWrapper;
-}
-
-- (instancetype)initWithFormInputSuggestionProvider:
-    (id<FormInputSuggestionsProvider>)provider {
-  if ((self = [super init])) {
-    _providerWrapper = provider;
-  }
-  return self;
-}
-
-- (void)retrieveSuggestionsForForm:(autofill::FormActivityParams)params
-                          webState:(web::WebState*)webState
-                        completion:
-                            (void (^)(NSArray<FormSuggestion*>* suggestions))
-                                completion {
-  [_providerWrapper
-      retrieveSuggestionsForForm:params
-                        webState:webState
-        accessoryViewUpdateBlock:^(NSArray<FormSuggestion*>* suggestions,
-                                   id<FormInputSuggestionsProvider> provider) {
-          completion(suggestions);
-        }];
-}
-
-- (void)didSelectSuggestion:(FormSuggestion*)suggestion
-                    atIndex:(NSInteger)index
-                   webState:(web::WebState*)webState {
-  [_providerWrapper didSelectSuggestion:suggestion atIndex:index];
-}
-
-- (SuggestionProviderType)type {
-  return _providerWrapper.type;
-}
-
-@end
-
-// TODO(crbug.com/372426818): Move this is to its own specific file/module.
-// Provider for V2.
-@interface BottomSheetFormSuggestionProviderWrapperV2
-    : NSObject <BottomSheetFormSuggestionProviderWrapper>
+@interface BottomSheetFormSuggestionProviderWrapper : NSObject
 
 - (instancetype)
     initWithFormSuggestionProvider:(id<FormSuggestionProvider>)provider
@@ -191,7 +118,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 
 @end
 
-@implementation BottomSheetFormSuggestionProviderWrapperV2 {
+@implementation BottomSheetFormSuggestionProviderWrapper {
   // Suggestions provider for the bottom sheet.
   __weak id<FormSuggestionProvider> _providerWrapper;
 
@@ -327,7 +254,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   // Provider wrapper that gives suggestions and handles suggestion selection.
   // The underlying concrete provider will be determined during initialization
   // depending on the version of the sheet.
-  id<BottomSheetFormSuggestionProviderWrapper> _suggestionsProviderWrapper;
+  BottomSheetFormSuggestionProviderWrapper* _suggestionsProviderWrapper;
 }
 
 @synthesize defaultGlobeIconAttributes = _defaultGlobeIconAttributes;
@@ -379,33 +306,16 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
     _params = params;
 
     if (activeWebState) {
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::kIOSPasswordBottomSheetV2)) {
-        // Use the V2 provider.
-        PasswordTabHelper* passwordTabHelper =
-            PasswordTabHelper::FromWebState(activeWebState);
-        CHECK(passwordTabHelper);
-        id<FormSuggestionProvider> provider =
-            passwordTabHelper->GetSuggestionProvider();
-        CHECK(provider);
-        _suggestionsProviderWrapper =
-            [[BottomSheetFormSuggestionProviderWrapperV2 alloc]
-                initWithFormSuggestionProvider:provider
-                                        params:_params];
-      } else {
-        // Use the V1 provider;
-        FormSuggestionTabHelper* tabHelper =
-            FormSuggestionTabHelper::FromWebState(activeWebState);
-        DCHECK(tabHelper);
-
-        id<FormInputSuggestionsProvider> provider =
-            tabHelper->GetAccessoryViewProvider();
-        CHECK(provider);
-
-        _suggestionsProviderWrapper =
-            [[BottomSheetFormSuggestionProviderWrapperV1 alloc]
-                initWithFormInputSuggestionProvider:provider];
-      }
+      PasswordTabHelper* passwordTabHelper =
+          PasswordTabHelper::FromWebState(activeWebState);
+      CHECK(passwordTabHelper);
+      id<FormSuggestionProvider> provider =
+          passwordTabHelper->GetSuggestionProvider();
+      CHECK(provider);
+      _suggestionsProviderWrapper =
+          [[BottomSheetFormSuggestionProviderWrapper alloc]
+              initWithFormSuggestionProvider:provider
+                                      params:_params];
 
       // The 'params' argument may go out of scope before the completion block
       // is called, so we need to store variables used in the completion block

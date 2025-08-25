@@ -101,10 +101,6 @@ BASE_DECLARE_FEATURE(kIosCleanupHangingPasswordFormExtractionRequests);
 extern const base::FeatureParam<int>
     kIosPasswordFormExtractionRequestsTimeoutMs;
 
-// Enables the second version of the bottom sheet to fix a few bugs that we've
-// seen in production since the launch of the V1 of the feature.
-BASE_DECLARE_FEATURE(kIOSPasswordBottomSheetV2);
-
 // Enables password generation bottom sheet to be displayed (on iOS) when a user
 // is signed-in and taps on a new password field.
 BASE_DECLARE_FEATURE(kIOSProactivePasswordGenerationBottomSheet);

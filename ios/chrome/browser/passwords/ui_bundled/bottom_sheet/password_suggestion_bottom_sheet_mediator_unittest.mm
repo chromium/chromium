@@ -287,8 +287,7 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
     frames_manager_ptr_ = frames_manager.get();
     web_state_->SetWebFramesManager(std::move(frames_manager));
 
-    // Create the PasswordTabHelper so the password provider is available when
-    // the sheet V2 is used.
+    // Create the PasswordTabHelper so the password provider is available.
     PasswordTabHelper::CreateForWebState(web_state_.get());
 
     consumer_ =
@@ -340,8 +339,7 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
                 profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
 
-    // Set up the fill data for the real password provider used by password
-    // sheet V2 when the mediator is tested with providers.
+    // Set up the fill data for the real password provider.
     if ([suggestion_providers_ count] > 0) {
       ASSERT_EQ(1u, [suggestion_providers_ count]);
       PasswordSuggestionBottomSheetMediatorTestSuggestionProvider* provider =

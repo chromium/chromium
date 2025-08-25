@@ -167,11 +167,6 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
-  if (self.disableBottomSheetOnExit &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kIOSPasswordBottomSheetV2)) {
-    [self.delegate disableBottomSheet];
-  }
   [self.handler viewDidDisappear];
 }
 
@@ -330,11 +325,10 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 #pragma mark - UIResponder
 
 - (BOOL)canBecomeFirstResponder {
-  // In V2, allow the sheet to become a first responder to not allow the
-  // keyboard popping over the sheet when there is a focus event on the WebView
+  // Allow the sheet to become a first responder to not allow the keyboard
+  // popping over the sheet when there is a focus event on the WebView
   // underneath the sheet.
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSPasswordBottomSheetV2);
+  return YES;
 }
 
 #pragma mark - Private

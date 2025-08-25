@@ -6,10 +6,8 @@
 
 #import <optional>
 
-#import "base/feature_list.h"
 #import "base/not_fatal_until.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
@@ -263,14 +261,11 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
   // Terminate dismissal if the entrypoint that dismissed the bottom sheet
   // wasn't handled yet (e.g. when swipped away).
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kIOSPasswordBottomSheetV2)) {
-    // Explicitly refocus the field if the sheet is dismissed without using any
-    // of its features. This is only required for V2 where the listeners are
-    // detached as soon as the sheet is presented which requires another means
-    // to refocus the blurred field once the sheet is dismissed.
-    [self.mediator refocus];
-  }
+  // Explicitly refocus the field if the sheet is dismissed without using any
+  // of its features. The listeners are detached as soon as the sheet is
+  // presented which requires another means to refocus the blurred field once
+  // the sheet is dismissed.
+  [self.mediator refocus];
 
   [self.mediator logExitReason:kDismissal];
   [self.mediator onDismissWithoutAnyPasswordAction];
