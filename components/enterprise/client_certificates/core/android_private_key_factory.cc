@@ -5,7 +5,9 @@
 #include "components/enterprise/client_certificates/core/android_private_key_factory.h"
 
 #include <array>
+#include <iterator>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -55,26 +57,13 @@ scoped_refptr<AndroidPrivateKey> CreateOrLoadKeyFromKeyStore(
 }  // namespace
 
 // static
-std::unique_ptr<AndroidPrivateKeyFactory> AndroidPrivateKeyFactory::TryCreate(
-    scoped_refptr<BrowserKeyStore> bk_key_store) {
-  if (!bk_key_store) {
-    return nullptr;
-  }
-
-  return base::WrapUnique<AndroidPrivateKeyFactory>(
-      new AndroidPrivateKeyFactory(bk_key_store));
-}
-
-// static
 std::unique_ptr<AndroidPrivateKeyFactory>
 AndroidPrivateKeyFactory::TryCreate() {
-  return TryCreate(CreateBrowserKeyStoreInstance());
+  return base::WrapUnique<AndroidPrivateKeyFactory>(
+      new AndroidPrivateKeyFactory());
 }
 
-AndroidPrivateKeyFactory::AndroidPrivateKeyFactory(
-    scoped_refptr<BrowserKeyStore> bk_key_store)
-    : bk_key_store_(bk_key_store) {}
-
+AndroidPrivateKeyFactory::AndroidPrivateKeyFactory() = default;
 AndroidPrivateKeyFactory::~AndroidPrivateKeyFactory() = default;
 
 void AndroidPrivateKeyFactory::CreatePrivateKey(PrivateKeyCallback callback) {
@@ -82,7 +71,9 @@ void AndroidPrivateKeyFactory::CreatePrivateKey(PrivateKeyCallback callback) {
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(CreateOrLoadKeyFromKeyStore,
                      CreateBrowserKeyStoreInstance(),
-                     kManagedProfileAndroidKeyStoreIdentity),
+                     std::vector<uint8_t>(
+                         std::begin(kManagedProfileAndroidKeyStoreIdentity),
+                         std::end(kManagedProfileAndroidKeyStoreIdentity))),
       std::move(callback));
 }
 

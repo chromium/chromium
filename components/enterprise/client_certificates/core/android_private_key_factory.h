@@ -19,9 +19,6 @@ class AndroidPrivateKeyFactory : public PrivateKeyFactory {
  public:
   static std::unique_ptr<AndroidPrivateKeyFactory> TryCreate();
 
-  static std::unique_ptr<AndroidPrivateKeyFactory> TryCreate(
-      scoped_refptr<BrowserKeyStore> bk_key_store);
-
   ~AndroidPrivateKeyFactory() override;
 
   // PrivateKeyFactory:
@@ -33,8 +30,7 @@ class AndroidPrivateKeyFactory : public PrivateKeyFactory {
                               PrivateKeyCallback callback) override;
 
  private:
-  explicit AndroidPrivateKeyFactory(
-      scoped_refptr<BrowserKeyStore> bk_key_store);
+  AndroidPrivateKeyFactory();
 
   base::WeakPtrFactory<AndroidPrivateKeyFactory> weak_factory_{this};
 };
