@@ -31,6 +31,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -122,7 +123,10 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
          toast_features::kReadingListToast,
          toast_features::kPinnedTabToastOnClose,
          plus_addresses::features::kPlusAddressesEnabled},
-        {});
+        // Disable `kAiModeOmniboxEntryPoint` as it changes the focus and popup
+        // opening order of the omnibox. If it launches, updates the tests to
+        // match the new expectations.
+        {omnibox::kAiModeOmniboxEntryPoint});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -140,7 +144,6 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
   ToastController* GetToastController() {
     return browser()->browser_window_features()->toast_controller();
   }
-
 
   auto ShowToast(ToastParams params) {
     return Do(base::BindOnce(

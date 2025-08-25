@@ -104,6 +104,7 @@
 #include "components/lens/lens_overlay_side_panel_menu_option.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "components/permissions/test/permission_request_observer.h"
@@ -4548,10 +4549,12 @@ class LensOverlayControllerEntrypointsBrowserTest
                {::features::kPageActionsMigrationLensOverlay.name, "true"},
            }});
     }
+    // TODO(crbug.com/441102004): Update OverlayHidesEntrypoints to support
+    //   kAiModeOmniboxEntryPoint.
     feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
-        /*disabled_features=*/{
-            lens::features::kLensOverlaySimplifiedSelection});
+        /*disabled_features=*/{lens::features::kLensOverlaySimplifiedSelection,
+                               omnibox::kAiModeOmniboxEntryPoint});
   }
 
   void VerifyEntrypoints(bool expected_visible) {

@@ -8512,7 +8512,6 @@
                         "OmniboxHideSuggestionGroupHeaders",
                         "OmniboxShowPopupOnMouseReleased",
                         "OmniboxZpsSuggestionLimit",
-                        "OpenLensActionUITweaks",
                         "SendContextualUrlSuggestParam",
                         "SendPageTitleSuggestParam",
                         "ShowSuggestionsOnNoApc",
@@ -16402,6 +16401,28 @@
             "experiments": [
                 {
                     "name": "Enabled"
+                }
+            ]
+        }
+    ],
+    "OmniboxAiRhsEchoLensToolbeltDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AiModeOmniboxEntryPoint",
+                        "AllowAiModeMatches",
+                        "OmniboxHideAimEntrypointOnUserInput",
+                        "OmniboxToolbelt",
+                        "OpenLensActionUITweaks"
+                    ]
                 }
             ]
         }
