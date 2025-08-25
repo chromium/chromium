@@ -56,6 +56,10 @@ constexpr char kDocumentSuggestionsServiceName[] =
 constexpr char kEnterpriseSearchAggregatorName[] =
     "enterprise_search_aggregator";
 constexpr char kParentPermissionDialogName[] = "parent_permission_dialog";
+constexpr char kUserCloudSigninRestrictionPolicyFetcherName[] =
+    "user_cloud_signin_restriction_policy_fetcher";
+constexpr char kCloudPolicyClientRegistrationName[] =
+    "cloud_policy_client_registration";
 
 }  // namespace
 
@@ -240,6 +244,15 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kParentPermissionDialogName,
           /*scopes=*/{GaiaConstants::kAccountsReauthOAuth2Scope});
+    case OAuthConsumerId::kUserCloudSigninRestrictionPolicyFetcher:
+      return OAuthConsumer(
+          /*name=*/kUserCloudSigninRestrictionPolicyFetcherName,
+          /*scopes=*/{GaiaConstants::kSecureConnectOAuth2Scope});
+    case OAuthConsumerId::kCloudPolicyClientRegistration:
+      return OAuthConsumer(
+          /*name=*/kCloudPolicyClientRegistrationName,
+          /*scopes=*/{GaiaConstants::kDeviceManagementServiceOAuth,
+                      GaiaConstants::kGoogleUserInfoEmail});
   }
   NOTREACHED();
 }

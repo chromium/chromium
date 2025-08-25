@@ -111,8 +111,8 @@ void UserCloudSigninRestrictionPolicyFetcher::FetchAccessToken(
   // base::Unretained is safe here because `access_token_fetcher_` is owned by
   // `this`.
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
-      account_id, /*oauth_consumer_name=*/"cloud_policy", /*scopes=*/
-      {GaiaConstants::kSecureConnectOAuth2Scope},
+      account_id,
+      signin::OAuthConsumerId::kUserCloudSigninRestrictionPolicyFetcher,
       base::BindOnce(
           &UserCloudSigninRestrictionPolicyFetcher::OnFetchAccessTokenResult,
           base::Unretained(this), std::move(callback)),
