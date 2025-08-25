@@ -78,9 +78,6 @@ class UserPolicyOidcSigninService : public UserPolicySigninServiceBase,
   // CloudPolicyClient::Observer implementation:
   void OnPolicyFetched(CloudPolicyClient* client) override;
 
-  // UserPolicySigninServiceBase implementation:
-  void ShutdownCloudPolicyManager() override;
-
   void FetchPolicyForOidcUser(
       const AccountId& account_id,
       const std::string& dm_token,
