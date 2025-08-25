@@ -67,6 +67,38 @@ bool CalculateNonOverflowingRangeInOneAxis(
     std::optional<LayoutUnit>* out_scroll_min,
     std::optional<LayoutUnit>* out_scroll_max) {
   const LayoutUnit start_available_space = margin_box_start - imcb_inset_start;
+  const LayoutUnit end_available_space = imcb_inset_end - margin_box_end;
+
+  if (RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
+    // Check if our margin-box overflows the IMCB.
+    if (start_available_space < LayoutUnit()) {
+      return false;
+    }
+    if (end_available_space < LayoutUnit()) {
+      return false;
+    }
+
+    // Determine how far we can scroll in each direction until the margin-box
+    // hits the edge of the container.
+    //
+    // TODO(crbug.com/438515315): We shouldn't be doing this for all elements,
+    // instead just fixed position at the ICB. We currently do this for all see:
+    // https://github.com/w3c/csswg-drafts/issues/12607
+    //
+    // TODO(crbug.com/438515315): This isn't in the specification yet, we have:
+    // https://drafts.csswg.org/css-anchor-position-1/#fallback-apply
+    //   "When a positioned box (shifted by its default scroll shift) overflows
+    //    its inset-modified containing block"
+    if (!has_non_auto_inset_start) {
+      *out_scroll_max = start_available_space;
+    }
+    if (!has_non_auto_inset_end) {
+      *out_scroll_min = -end_available_space;
+    }
+
+    return true;
+  }
+
   if (has_non_auto_inset_start) {
     // If the start inset is non-auto, then the start edges of both the
     // scroll-adjusted inset-modified containing block and the scroll-shifted
@@ -83,7 +115,6 @@ bool CalculateNonOverflowingRangeInOneAxis(
     *out_scroll_max = position_area_start + start_available_space;
   }
   // Calculation for the end edge is symmetric.
-  const LayoutUnit end_available_space = imcb_inset_end - margin_box_end;
   if (has_non_auto_inset_end) {
     if (end_available_space < 0) {
       return false;
