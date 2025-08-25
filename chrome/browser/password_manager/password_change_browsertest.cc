@@ -1493,27 +1493,59 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   auto* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
+  auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
 
   // Verify that the background tab was not created yet.
-  EXPECT_FALSE(static_cast<PasswordChangeDelegateImpl*>(delegate)->executor());
-  EXPECT_TRUE(
-      static_cast<PasswordChangeDelegateImpl*>(delegate)->login_checker());
+  EXPECT_FALSE(delegate_impl->executor());
+  EXPECT_TRUE(delegate_impl->login_checker());
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
-  static_cast<PasswordChangeDelegateImpl*>(delegate)
-      ->login_checker()
-      ->ResponseWithLoginStatusFirstCheck();
+  delegate_impl->login_checker()->ResponseWithLoginStatusFirstCheck();
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kLoginFormDetected);
   // Verify that password change fails if the user is not logged in.
-  static_cast<PasswordChangeDelegateImpl*>(delegate)
-      ->login_checker()
-      ->RespondWithLoginStatus(false);
-  EXPECT_FALSE(
-      static_cast<PasswordChangeDelegateImpl*>(delegate)->login_checker());
+  delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  EXPECT_FALSE(delegate_impl->login_checker());
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
+                       OpenTabWhenLoggedOut) {
+  const GURL main_url = WebContents()->GetLastCommittedURL();
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(Return(GURL(kChangePasswordURL)));
+  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
+                                                   u"password", WebContents());
+  auto* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  delegate->StartPasswordChangeFlow();
+  auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
+  // Verify that the background tab was not created yet.
+  EXPECT_FALSE(delegate_impl->executor());
+  EXPECT_TRUE(delegate_impl->login_checker());
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+
+  delegate_impl->login_checker()->ResponseWithLoginStatusFirstCheck();
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kLoginFormDetected);
+  // Verify that password change fails if the user is not logged in.
+  delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  EXPECT_FALSE(delegate_impl->login_checker());
+  EXPECT_FALSE(delegate_impl->executor());
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+  // When a user is not logged in, we still open a new tab with the
+  // change password URL, so there should be two tabs after.
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  delegate->OpenPasswordChangeTab();
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  auto* change_password_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  ASSERT_EQ(change_password_contents->GetVisibleURL(),
+            GURL(kChangePasswordURL));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,

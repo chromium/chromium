@@ -477,9 +477,20 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
   TabStripModel* tab_strip_model =
       tab_interface->GetBrowserWindowInterface()->GetTabStripModel();
   CHECK(tab_strip_model);
-
-  content::WebContents* web_contents = executor_.get();
-  tab_strip_model->AppendWebContents(std::move(executor_), /*foreground=*/true);
+  content::WebContents* web_contents = nullptr;
+  if (!executor_) {
+    web_contents = originator_->OpenURL(
+        content::OpenURLParams(GURL(change_password_url_), content::Referrer(),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui::PAGE_TRANSITION_LINK,
+                               /* is_renderer_initiated= */ false),
+        /*navigation_handle_callback=*/{});
+    CHECK(web_contents);
+  } else {
+    web_contents = executor_.get();
+    tab_strip_model->AppendWebContents(std::move(executor_),
+                                       /*foreground=*/true);
+  }
   password_change_hats_->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeError,
       /*password_change_duration=*/base::Time::Now() - flow_start_time_,
