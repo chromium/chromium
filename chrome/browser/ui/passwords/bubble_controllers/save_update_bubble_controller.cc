@@ -179,12 +179,6 @@ bool SaveUpdateBubbleController::IsCurrentStateUpdate() const {
                         &password_manager::PasswordForm::username_value);
 }
 
-bool SaveUpdateBubbleController::ShouldShowFooter() const {
-  return (GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
-          GetState() == password_manager::ui::PENDING_PASSWORD_STATE) &&
-         IsSyncUser(GetProfile());
-}
-
 bool SaveUpdateBubbleController::
     IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount() {
   CHECK(GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
