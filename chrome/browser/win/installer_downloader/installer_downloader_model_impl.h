@@ -36,8 +36,7 @@ class InstallerDownloaderObserver;
 //      eligible for in-place upgrade *and* has a OneDrive-synced Desktop.
 //   •  When asked, downloads the installer in the background and
 //      streams progress to the controller.
-//   •  Persists a token for partial downloads: TODO(crbug.com/412976021):
-//   Download payload.
+//   •  Persists a token for partial downloads.
 //
 // All expensive work executes on the ThreadPool; the class itself is
 // constructed and destroyed on the UI thread.

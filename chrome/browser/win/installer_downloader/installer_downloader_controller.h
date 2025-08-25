@@ -56,8 +56,6 @@ class InstallerDownloaderController final
   // A callback that will be run to show the installer download infobar in
   // `web_contents`.  `on_accept` will be run if the user accepts the prompt.
   // This will show the infobar on the actual tab.
-  //
-  // TODO(https://crbug.com/417709084): Make the infobar global to the browser.
   using ShowInfobarCallback = base::RepeatingCallback<infobars::InfoBar*(
       infobars::ContentInfoBarManager*,
       base::OnceClosure on_accept,

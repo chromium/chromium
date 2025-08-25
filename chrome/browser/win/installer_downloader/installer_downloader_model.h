@@ -36,8 +36,6 @@ class InstallerDownloaderModel {
 
   // Kicks off a **transient** download with DownloadManager. Completion is
   // reported through `completion_callback`.
-  //
-  // TODO(crbug.com/412976021): Download payload.
   virtual void StartDownload(const GURL& url,
                              const base::FilePath& destination,
                              content::DownloadManager& download_manager,
