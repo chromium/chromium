@@ -161,7 +161,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/notifications:unit_tests",
     "//chrome/browser/ash/os_feedback:unit_tests",
     "//chrome/browser/ash/ownership:unit_tests",
-    "//chrome/browser/ash/pcie_peripheral:unit_tests",
     "//chrome/browser/ash/phonehub:unit_tests",
     "//chrome/browser/ash/platform_keys:unit_tests",
     "//chrome/browser/ash/plugin_vm:unit_tests",

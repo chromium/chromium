@@ -12,10 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/external_metrics/external_metrics.h"
-#include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 #include "chrome/browser/ash/performance/doze_mode_power_status_scheduler.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
+#include "chromeos/ash/components/pcie_peripheral/ash_usb_detector.h"
 
 class AmbientClientImpl;
 class AssistantBrowserDelegateImpl;

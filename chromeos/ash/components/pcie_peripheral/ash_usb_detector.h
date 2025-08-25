@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_PCIE_PERIPHERAL_ASH_USB_DETECTOR_H_
-#define CHROME_BROWSER_ASH_PCIE_PERIPHERAL_ASH_USB_DETECTOR_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_PCIE_PERIPHERAL_ASH_USB_DETECTOR_H_
+#define CHROMEOS_ASH_COMPONENTS_PCIE_PERIPHERAL_ASH_USB_DETECTOR_H_
 
 #include <memory>
 
-#include "ash/public/cpp/ash_public_export.h"
+#include "base/component_export.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,8 +20,8 @@ namespace ash {
 
 // Detects usb devices when they are connected and notifies ash. Similar to
 // CrosUsbDetector and WebUsbDetector.
-class ASH_PUBLIC_EXPORT AshUsbDetector
-    : public device::mojom::UsbDeviceManagerClient {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PCIE_PERIPHERAL_ASH_USB_DETECTOR)
+    AshUsbDetector : public device::mojom::UsbDeviceManagerClient {
  public:
   AshUsbDetector();
   ~AshUsbDetector() override;
@@ -80,4 +80,4 @@ class ASH_PUBLIC_EXPORT AshUsbDetector
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_PCIE_PERIPHERAL_ASH_USB_DETECTOR_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_PCIE_PERIPHERAL_ASH_USB_DETECTOR_H_

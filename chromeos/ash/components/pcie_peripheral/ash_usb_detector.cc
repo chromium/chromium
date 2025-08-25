@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
+#include "chromeos/ash/components/pcie_peripheral/ash_usb_detector.h"
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
@@ -95,21 +94,24 @@ void AshUsbDetector::RequestAllUpdatesWithRepeatDelay() {
 
 void AshUsbDetector::OnListAttachedDevices(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
-  for (device::mojom::UsbDeviceInfoPtr& device_info : devices)
+  for (device::mojom::UsbDeviceInfoPtr& device_info : devices) {
     AshUsbDetector::OnDeviceAdded(std::move(device_info));
+  }
 }
 
 void AshUsbDetector::OnDeviceChecked(
     device::mojom::UsbDeviceInfoPtr device_info,
     bool allowed) {
-  if (!allowed)
+  if (!allowed) {
     return;
+  }
 
   ash::PeripheralNotificationManager::Get()->OnDeviceConnected(
       device_info.get());
 
-  if (is_testing_)
+  if (is_testing_) {
     ++on_device_checked_counter_for_testing_;
+  }
 }
 
 void AshUsbDetector::OnDeviceManagerConnectionError() {

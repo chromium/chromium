@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
+#include "chromeos/ash/components/pcie_peripheral/ash_usb_detector.h"
 
 #include <memory>
 
+#include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +25,7 @@ const char* kManufacturerName = "Google";
 
 }  // namespace
 
-class AshUsbDetectorTest : public BrowserWithTestWindowTest {
+class AshUsbDetectorTest : public testing::Test {
  public:
   AshUsbDetectorTest() = default;
   AshUsbDetectorTest(const AshUsbDetectorTest&) = delete;
@@ -32,7 +33,12 @@ class AshUsbDetectorTest : public BrowserWithTestWindowTest {
   ~AshUsbDetectorTest() override = default;
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    TypecdClient::InitializeFake();
+
+    PciguardClient::InitializeFake();
+    PeripheralNotificationManager::Initialize(
+        /*is_guest_session=*/false,
+        /*is_pcie_tunneling_allowed=*/false);
 
     ash_usb_detector_ = std::make_unique<AshUsbDetector>();
 
@@ -42,18 +48,13 @@ class AshUsbDetectorTest : public BrowserWithTestWindowTest {
         device_manager.InitWithNewPipeAndPassReceiver());
     AshUsbDetector::Get()->SetDeviceManagerForTesting(
         std::move(device_manager));
-
-    PciguardClient::InitializeFake();
-    PeripheralNotificationManager::Initialize(
-        /*is_guest_session=*/false,
-        /*is_pcie_tunneling_allowed=*/false);
   }
 
   void TearDown() override {
     ash_usb_detector_.reset();
     PeripheralNotificationManager::Shutdown();
     PciguardClient::Shutdown();
-    BrowserWithTestWindowTest::TearDown();
+    TypecdClient::Shutdown();
   }
 
   void ConnectToDeviceManager() {
@@ -75,6 +76,7 @@ class AshUsbDetectorTest : public BrowserWithTestWindowTest {
     ash_usb_detector_->SetFetchUpdatesTimerForTesting(std::move(timer));
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   device::FakeUsbDeviceManager device_manager_;
   std::unique_ptr<AshUsbDetector> ash_usb_detector_;
 };

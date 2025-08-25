@@ -16,7 +16,7 @@ static_library("main_parts") {
   public_deps = [
     "//base",
     "//chrome/browser/ash/external_metrics",
-    "//chrome/browser/ash/pcie_peripheral",
+    "//chromeos/ash/components/pcie_peripheral",
   ]
 
   deps = [

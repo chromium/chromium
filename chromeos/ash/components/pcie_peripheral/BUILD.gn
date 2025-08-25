@@ -6,21 +6,20 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos)
 
-static_library("pcie_peripheral") {
+component("pcie_peripheral") {
   sources = [
     "ash_usb_detector.cc",
     "ash_usb_detector.h",
   ]
 
   deps = [
-    "//ash/public/cpp",
     "//base",
     "//chromeos/ash/components/dbus/fwupd",
     "//chromeos/ash/components/fwupd",
     "//chromeos/ash/components/peripheral_notification",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
-    "//services/device/public/mojom",
+    "//services/device/public/mojom:usb",
   ]
 }
 
