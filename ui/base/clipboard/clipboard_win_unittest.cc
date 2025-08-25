@@ -4,10 +4,13 @@
 
 #include "ui/base/clipboard/clipboard_win.h"
 
+#include <windows.h>
+
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/win/scoped_hglobal.h"
 #include "testing/platform_test.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
@@ -150,6 +153,57 @@ TEST_F(ClipboardWinTest, DataChangedNotificationOnWriteWithClipboardChangeAPI) {
   // Since the WM_CLIPBOARDUPDATE message is sent on the same thread, we
   // need to wait for the thread to process the message.
   WaitForDataChangedCount(1);
+}
+
+TEST_F(ClipboardWinTest, InvalidBitmapDoesNotCrash) {
+  const int kWidth = 1;
+  const int kHeight = 1;
+  const size_t kHeaderSize = sizeof(BITMAPINFOHEADER);
+  const size_t kPixelBytes = 4;
+
+  HGLOBAL hmem_handle =
+      ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, kHeaderSize + kPixelBytes);
+  ASSERT_TRUE(hmem_handle);
+
+  {
+    base::win::ScopedHGlobal<BITMAPINFOHEADER*> hmem(hmem_handle);
+    BITMAPINFOHEADER* hdr = hmem.data();
+    ASSERT_TRUE(hdr);
+
+    hdr->biSize = sizeof(BITMAPINFOHEADER);
+    hdr->biWidth = kWidth;
+    hdr->biHeight = kHeight;
+    hdr->biPlanes = 1;
+    hdr->biBitCount = 0;  // Abnormal value under test.
+    hdr->biCompression = BI_RGB;
+  }
+
+  // Open clipboard and set CF_DIB.
+  // TODO(Guohui Xie): consider reuse retry logic in ScopedClipboard.
+  bool opened = false;
+  for (int attempts = 0; attempts < 5; ++attempts) {
+    if (::OpenClipboard(nullptr)) {
+      opened = true;
+      break;
+    }
+    ::Sleep(5);
+  }
+  ASSERT_TRUE(opened);
+  ::EmptyClipboard();
+  // Ownership of hmem_handle is transferred to the system on success.
+  ASSERT_NE(::SetClipboardData(CF_DIB, hmem_handle), nullptr);
+  ::CloseClipboard();
+
+  // Reading PNG should not crash.
+  base::test::TestFuture<const std::vector<uint8_t>&> png_future;
+  Clipboard::GetForCurrentThread()->ReadPng(ClipboardBuffer::kCopyPaste,
+                                            nullptr, png_future.GetCallback());
+  ASSERT_TRUE(png_future.Wait());
+  const auto& png = png_future.Get();
+  ASSERT_GE(png.size(), 0u);
+
+  // Clear invalid data in clipboard.
+  Clipboard::GetForCurrentThread()->Clear(ClipboardBuffer::kCopyPaste);
 }
 
 }  // namespace ui

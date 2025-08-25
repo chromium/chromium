@@ -968,7 +968,8 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
     case 24:
       break;
     default:
-      NOTREACHED();
+      // Return an empty image for unsupported bit depths.
+      return SkBitmap();
   }
   const void* bitmap_bits = reinterpret_cast<const char*>(bitmap) +
                             bitmap->bmiHeader.biSize +
