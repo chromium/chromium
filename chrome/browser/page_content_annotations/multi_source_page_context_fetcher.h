@@ -99,6 +99,9 @@ extern const base::FeatureParam<base::TimeDelta> kScreenshotTimeout;
 // Enables the Paint Preview backend for taking screenshots.
 BASE_DECLARE_FEATURE(kGlicTabScreenshotPaintPreviewBackend);
 
+// Enables page context eligibility checks.
+BASE_DECLARE_FEATURE(kGlicPageContextEligibility);
+
 using FetchPageContextResultCallback =
     base::OnceCallback<void(FetchPageContextResultCallbackArg)>;
 void FetchPageContext(content::WebContents& web_contents,

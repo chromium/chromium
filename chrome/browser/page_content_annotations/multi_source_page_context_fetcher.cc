@@ -388,7 +388,8 @@ class PageContextFetcher : public content::WebContentsObserver {
       return;
     }
 
-    if (!pending_result_->annotated_page_content_result) {
+    if (!pending_result_->annotated_page_content_result ||
+        !base::FeatureList::IsEnabled(kGlicPageContextEligibility)) {
       std::move(callback_).Run(base::ok(std::move(pending_result_)));
       return;
     }
@@ -492,6 +493,10 @@ const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
 BASE_FEATURE(kGlicTabScreenshotPaintPreviewBackend,
              "GlicTabScreenshotPaintPreviewBackend",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicPageContextEligibility,
+             "GlicPageContextEligibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 FetchPageContextOptions::FetchPageContextOptions() = default;
 
