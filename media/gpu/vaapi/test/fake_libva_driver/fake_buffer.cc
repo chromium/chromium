@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 
 namespace {
@@ -32,10 +33,10 @@ FakeBuffer::FakeBuffer(IdType id,
     : id_(id),
       context_(context),
       type_(type),
-      data_size_(CalculateDataSize(size_per_element, num_elements)),
-      data_(std::make_unique<uint8_t[]>(data_size_)) {
+      data_(base::HeapArray<uint8_t>::Uninit(
+          CalculateDataSize(size_per_element, num_elements))) {
   if (data) {
-    UNSAFE_TODO(memcpy(data_.get(), data, data_size_));
+    UNSAFE_TODO(memcpy(const_cast<uint8_t*>(data_.data()), data, data_.size()));
   }
 }
 
@@ -54,11 +55,11 @@ VABufferType FakeBuffer::GetType() const {
 }
 
 size_t FakeBuffer::GetDataSize() const {
-  return data_size_;
+  return data_.size();
 }
 
 void* FakeBuffer::GetData() const {
-  return data_.get();
+  return static_cast<void*>(const_cast<uint8_t*>(data_.data()));
 }
 
 }  // namespace media::internal
