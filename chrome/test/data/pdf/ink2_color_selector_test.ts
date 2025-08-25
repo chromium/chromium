@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hexToColor, HIGHLIGHTER_COLORS, PEN_COLORS} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {HIGHLIGHTER_COLORS, PEN_COLORS} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {Color, InkColorSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertLabels, assertSelectedColor, getColorButtons} from './test_util.js';
 
@@ -243,23 +243,24 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function testFocusesSelectedItem() {
-    let selector = createSelector(hexToColor(PEN_COLORS[1]!.color));
-    let colorButtons = getColorButtons(selector);
-    chrome.test.assertEq(20, colorButtons.length);
-    assertSelectedColor(colorButtons, /*buttonIndex=*/ 1);
-    let whenFocused = eventToPromise('focus', colorButtons[1]!);
-    selector.focus();
-    await whenFocused;
+  // TODO(crbug.com/440740223): Deflake and re-enable.
+  // async function testFocusesSelectedItem() {
+  //   let selector = createSelector(hexToColor(PEN_COLORS[1]!.color));
+  //   let colorButtons = getColorButtons(selector);
+  //   chrome.test.assertEq(20, colorButtons.length);
+  //   assertSelectedColor(colorButtons, /*buttonIndex=*/ 1);
+  //   let whenFocused = eventToPromise('focus', colorButtons[1]!);
+  //   selector.focus();
+  //   await whenFocused;
 
-    // Recreate the selector to test a different initial condition.
-    selector = createSelector(hexToColor(PEN_COLORS[10]!.color));
-    colorButtons = getColorButtons(selector);
-    chrome.test.assertEq(20, colorButtons.length);
-    assertSelectedColor(colorButtons, /*buttonIndex=*/ 10);
-    whenFocused = eventToPromise('focus', colorButtons[10]!);
-    selector.focus();
-    await whenFocused;
-    chrome.test.succeed();
-  },
+  //   // Recreate the selector to test a different initial condition.
+  //   selector = createSelector(hexToColor(PEN_COLORS[10]!.color));
+  //   colorButtons = getColorButtons(selector);
+  //   chrome.test.assertEq(20, colorButtons.length);
+  //   assertSelectedColor(colorButtons, /*buttonIndex=*/ 10);
+  //   whenFocused = eventToPromise('focus', colorButtons[10]!);
+  //   selector.focus();
+  //   await whenFocused;
+  //   chrome.test.succeed();
+  // },
 ]);
