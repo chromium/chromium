@@ -4100,6 +4100,9 @@ enum class ToolbarKind {
     // but, since it is displayed as full-screen at the top, it requires maximum
     // viewport insets.
     maxViewportInsets.bottom = 0;
+    // In this case as well, the top toolbar is also not showing, so just factor
+    // in the top safe area inset.
+    maxViewportInsets.top = _safeAreaProvider.safeArea.top;
     return maxViewportInsets;
   } else {
     // If the NTP is inactive, the WebState's view is used as the base view for
