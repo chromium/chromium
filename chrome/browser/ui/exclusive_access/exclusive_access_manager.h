@@ -56,12 +56,6 @@ class ExclusiveAccessManager {
 
   url::Origin GetExclusiveAccessBubbleOrigin() const;
 
-  // Records the keyboard/pointer lock state in a histogram. These should be
-  // called when the user enters fullscreen through the Fullscreen API or the
-  // browesr UI, respectively.
-  void RecordLockStateOnEnteringApiFullscreen() const;
-  void RecordLockStateOnEnteringBrowserFullscreen() const;
-
   // Callbacks ////////////////////////////////////////////////////////////////
 
   // Called by Browser::TabDeactivated.
@@ -97,8 +91,6 @@ class ExclusiveAccessManager {
 
  private:
   void HandleUserHeldEscape();
-
-  void RecordLockStateOnEnteringFullscreen(const char histogram_name[]) const;
 
   // The timer starts on Esc key down event and stops on Esc key up event. It
   // invokes `HandleUserHeldEscape()` when the timer is fired.

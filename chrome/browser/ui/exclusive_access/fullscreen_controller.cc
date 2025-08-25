@@ -59,87 +59,12 @@ using content::WebContents;
 
 namespace {
 
-constexpr char kHistogramFullscreenWebsiteStateAtApiRequest[] =
-    "WebCore.Fullscreen.WebsiteStateAtApiRequest";
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class WebsiteStateAtFullscreenRequest {
-  kNotAllowlistedNotVisited = 0,
-  kNotAllowlistedVisited = 1,
-  kNotAllowlistedVisitStateUnknown = 2,
-  kAllowlistedNotVisited = 3,
-  kAllowlistedVisited = 4,
-  kAllowlistedVisitStateUnknown = 5,
-  kAllowlistStateUnknownNotVisited = 6,
-  kAllowlistStateUnknownVisited = 7,
-  kAllowlistStateUnknownVisitStateUnknown = 8,
-  kMaxValue = kAllowlistStateUnknownVisitStateUnknown,
-};
-
 bool IsAnotherScreen(const WebContents& web_contents,
                      const int64_t display_id) {
   if (display_id == display::kInvalidDisplayId) {
     return false;
   }
   return display_id != FullscreenController::GetDisplayId(web_contents);
-}
-
-void RecordWebsiteStateAtApiRequest(history::HistoryLastVisitResult result,
-                                    std::optional<bool> on_allowlist) {
-  auto state = WebsiteStateAtFullscreenRequest::kNotAllowlistedNotVisited;
-  if (!result.success) {
-    if (!on_allowlist.has_value()) {
-      state = WebsiteStateAtFullscreenRequest::
-          kAllowlistStateUnknownVisitStateUnknown;
-    } else if (*on_allowlist) {
-      state = WebsiteStateAtFullscreenRequest::kAllowlistedVisitStateUnknown;
-    } else {
-      state = WebsiteStateAtFullscreenRequest::kNotAllowlistedVisitStateUnknown;
-    }
-  } else if (!result.last_visit.is_null()) {
-    if (!on_allowlist.has_value()) {
-      state = WebsiteStateAtFullscreenRequest::kAllowlistStateUnknownVisited;
-    } else if (*on_allowlist) {
-      state = WebsiteStateAtFullscreenRequest::kAllowlistedVisited;
-    } else {
-      state = WebsiteStateAtFullscreenRequest::kNotAllowlistedVisited;
-    }
-  } else if (!on_allowlist.has_value()) {
-    state = WebsiteStateAtFullscreenRequest::kAllowlistStateUnknownNotVisited;
-  } else if (*on_allowlist) {
-    state = WebsiteStateAtFullscreenRequest::kAllowlistedNotVisited;
-  }
-  base::UmaHistogramEnumeration(kHistogramFullscreenWebsiteStateAtApiRequest,
-                                state);
-}
-
-void CheckUrlForAllowlistAndRecordMetric(
-    const GURL& url,
-    history::HistoryLastVisitResult result) {
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  auto* safe_browsing_service_internal =
-      reinterpret_cast<safe_browsing::SafeBrowsingServiceInterface*>(
-          g_browser_process->safe_browsing_service());
-  if (!safe_browsing_service_internal ||
-      !safe_browsing_service_internal->database_manager()) {
-    RecordWebsiteStateAtApiRequest(result, std::nullopt);
-    return;
-  }
-  safe_browsing_service_internal->database_manager()
-      ->CheckUrlForHighConfidenceAllowlist(
-          url,
-          base::BindOnce(
-              [](history::HistoryLastVisitResult result, bool on_allowlist,
-                 std::optional<safe_browsing::SafeBrowsingDatabaseManager::
-                                   HighConfidenceAllowlistCheckLoggingDetails>
-                     logging_details) {
-                RecordWebsiteStateAtApiRequest(result, on_allowlist);
-              },
-              result));
-#else
-  RecordWebsiteStateAtApiRequest(result, std::nullopt);
-#endif
 }
 
 }  // namespace
@@ -254,7 +179,6 @@ bool FullscreenController::CanEnterFullscreenModeForTab(
 void FullscreenController::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const int64_t display_id) {
-  RecordMetricsOnFullscreenApiRequested(requesting_frame);
   DCHECK(requesting_frame);
   // This function should never fail. Any possible failures must be checked in
   // |CanEnterFullscreenModeForTab()| instead. Silently dropping the request
@@ -464,13 +388,6 @@ void FullscreenController::WindowFullscreenStateChanged() {
     if (!fullscreen_start_time_) {
       fullscreen_start_time_ = base::TimeTicks::Now();
     }
-    // This must be posted because keyboard lock engages right after entering
-    // fullscreen, and we want to record the keyboard/pointer lock state after
-    // that.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FullscreenController::RecordMetricsOnEnteringFullscreen,
-                       ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -773,34 +690,4 @@ url::Origin FullscreenController::GetEmbeddingOrigin() const {
   DCHECK(exclusive_access_tab());
 
   return url::Origin::Create(exclusive_access_tab()->GetLastCommittedURL());
-}
-
-void FullscreenController::RecordMetricsOnFullscreenApiRequested(
-    content::RenderFrameHost* requesting_frame) {
-  history::HistoryService* service =
-      HistoryServiceFactory::GetForProfileWithoutCreating(
-          exclusive_access_manager()->context()->GetProfile());
-  if (service) {
-    // Check if the origin has been visited more than a day ago and whether it's
-    // on an allowlist, then record those bits of information in a metric.
-    service->GetLastVisitToOrigin(
-        requesting_frame->GetLastCommittedOrigin(), base::Time(),
-        base::Time::Now() - base::Days(1),
-        base::BindOnce(&CheckUrlForAllowlistAndRecordMetric,
-                       GURL(requesting_frame->GetLastCommittedURL())),
-        &task_tracker_);
-  } else {
-    // The history is unknown, so just check if the URL is on the allowlist and
-    // record that.
-    CheckUrlForAllowlistAndRecordMetric(requesting_frame->GetLastCommittedURL(),
-                                        history::HistoryLastVisitResult());
-  }
-}
-
-void FullscreenController::RecordMetricsOnEnteringFullscreen() {
-  if (IsFullscreenCausedByTab()) {
-    exclusive_access_manager()->RecordLockStateOnEnteringApiFullscreen();
-  } else {
-    exclusive_access_manager()->RecordLockStateOnEnteringBrowserFullscreen();
-  }
 }
