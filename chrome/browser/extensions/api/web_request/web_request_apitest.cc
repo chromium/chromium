@@ -1860,25 +1860,35 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                                               ReplyBehavior::kWillReply);
   ExtensionTestMessageListener listener_main2("web_request_status2",
                                               ReplyBehavior::kWillReply);
-
+// Android does not support platform apps, so tests for requests from apps are
+// omitted. See https://crbug.com/440452765 for more details.
+#if !BUILDFLAG(IS_ANDROID)
   ExtensionTestMessageListener listener_app("app_done");
+#endif  // !BUILDFLAG(IS_ANDROID)
   ExtensionTestMessageListener listener_extension("extension_done");
 
   // Set up webRequest listener
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("webrequest_extensions/main")));
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(listener_main1.WaitUntilSatisfied());
+#endif  // !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(listener_main2.WaitUntilSatisfied());
 
-  // Perform some network activity in an app and another extension.
+#if !BUILDFLAG(IS_ANDROID)
+  // Perform some network activity in an app.
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("webrequest_extensions/app"),
                     {.context_type = ContextType::kFromManifest}));
+#endif  // !BUILDFLAG(IS_ANDROID)
+  // Perform some network activity in another extension.
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("webrequest_extensions/extension"),
       {.context_type = ContextType::kFromManifest}));
 
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(listener_app.WaitUntilSatisfied());
+#endif  // !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(listener_extension.WaitUntilSatisfied());
 
   // Load a page, a content script from "webrequest_extensions/extension" will
