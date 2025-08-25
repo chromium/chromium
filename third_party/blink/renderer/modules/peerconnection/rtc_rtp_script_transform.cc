@@ -64,7 +64,11 @@ bool IsValidReceiverDirection(
   return direction.value().AsEnum() ==
              V8RTCRtpTransceiverDirection::Enum::kSendrecv ||
          direction.value().AsEnum() ==
-             V8RTCRtpTransceiverDirection::Enum::kRecvonly;
+             V8RTCRtpTransceiverDirection::Enum::kRecvonly ||
+         direction.value().AsEnum() ==
+             V8RTCRtpTransceiverDirection::Enum::kStopped ||
+         direction.value().AsEnum() ==
+             V8RTCRtpTransceiverDirection::Enum::kInactive;
 }
 
 }  // namespace
@@ -183,10 +187,16 @@ void RTCRtpScriptTransform::SetRtpTransformer(
   }
 }
 
+void RTCRtpScriptTransform::Attach() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_attached_ = true;
+  is_unused_ = false;
+}
+
 void RTCRtpScriptTransform::AttachToReceiver(RTCRtpReceiver* receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_attached_);
-  is_attached_ = true;
+  Attach();
   receiver_ = receiver;
 }
 
@@ -209,17 +219,23 @@ RTCRtpScriptTransform::SendKeyFrameRequestResult
 RTCRtpScriptTransform::HandleSendKeyFrameRequestResults() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!rtp_transformer_) {
-    return SendKeyFrameRequestResult::kInvalidState;
+    return SendKeyFrameRequestResult::kNoTransformer;
   }
-  if (!receiver_) {
+  if (is_unused_) {
+    return SendKeyFrameRequestResult::kUnused;
+  }
+  if (is_attached_ && !receiver_) {
     return SendKeyFrameRequestResult::kNoReceiver;
+  }
+  if (!is_attached_) {
+    return SendKeyFrameRequestResult::kDetached;
   }
   if (receiver_->kind() == RTCRtpReceiver::MediaKind::kAudio) {
     return SendKeyFrameRequestResult::kNoVideo;
   }
   if (!IsValidReceiverDirection(receiver_->TransceiverDirection()) ||
       !IsValidReceiverDirection(receiver_->TransceiverCurrentDirection())) {
-    return SendKeyFrameRequestResult::kInvalidState;
+    return SendKeyFrameRequestResult::kInvalidDirection;
   }
   if (receiver_->track()->readyState() ==
       V8MediaStreamTrackState::Enum::kEnded) {

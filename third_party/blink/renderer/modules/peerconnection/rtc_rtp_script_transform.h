@@ -32,10 +32,13 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
  public:
   enum class SendKeyFrameRequestResult {
     kSuccess,
+    kUnused,
     kNoReceiver,
     kNoVideo,
     kTrackEnded,
-    kInvalidState
+    kNoTransformer,
+    kDetached,
+    kInvalidDirection
   };
 
   static RTCRtpScriptTransform* Create(ScriptState*,
@@ -70,10 +73,7 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
       scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
           encoded_video_transformer);
 
-  void Attach() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    is_attached_ = true;
-  }
+  void Attach();
   void AttachToReceiver(RTCRtpReceiver*);
   bool IsAttached() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -126,6 +126,7 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
       encoded_video_transformer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   bool is_attached_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_unused_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
   WeakMember<RTCRtpReceiver> receiver_;
 };
 }  // namespace blink
