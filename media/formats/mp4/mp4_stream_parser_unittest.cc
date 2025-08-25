@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/mp4_stream_parser.h"
 
 #include <stddef.h>
@@ -1104,10 +1099,11 @@ TEST_P(MP4StreamParserRotationMatrixEvaluatorTest, RotationCalculation) {
   MovieHeader movie_header;
 
   // Identity matrix, with 16.16 and 2.30 fixed points.
-  uint32_t identity_matrix[9] = {1 << 16, 0, 0, 0, 1 << 16, 0, 0, 0, 1 << 30};
+  static constexpr std::array<int32_t, 9u> identity_matrix = {
+      1 << 16, 0, 0, 0, 1 << 16, 0, 0, 0, 1 << 30};
 
-  memcpy(movie_header.display_matrix, identity_matrix, sizeof(identity_matrix));
-  memcpy(track_header.display_matrix, identity_matrix, sizeof(identity_matrix));
+  base::span(movie_header.display_matrix).copy_from(identity_matrix);
+  base::span(track_header.display_matrix).copy_from(identity_matrix);
 
   MatrixRotationTestCaseParam data = GetParam();
 
