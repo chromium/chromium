@@ -55,7 +55,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "services/on_device_model/public/cpp/cpu.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/tflite/buildflags.h"
 
@@ -673,13 +672,8 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        MAYBE_GetOnDeviceModelEligibilityModelNotEligible) {
-  // The CPU backend can be used when the GPU is unavailable.
-  const auto expected_elibility =
-      on_device_model::IsCpuCapable()
-          ? OnDeviceModelEligibilityReason::kModelToBeInstalled
-          : OnDeviceModelEligibilityReason::kModelNotEligible;
   EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
-            expected_elibility);
+            OnDeviceModelEligibilityReason::kModelNotEligible);
 }
 
 IN_PROC_BROWSER_TEST_F(
