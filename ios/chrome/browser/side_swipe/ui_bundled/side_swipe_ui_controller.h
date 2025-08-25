@@ -20,6 +20,7 @@ class FullscreenController;
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol SideSwipeUIControllerDelegate;
+class SnapshotBrowserAgent;
 class WebStateList;
 
 // Controls how an edge gesture is processed, either as tab change or a page
@@ -64,9 +65,10 @@ class WebStateList;
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
 // Initializer.
-- (instancetype)initWithFullscreenController:
-                    (FullscreenController*)fullscreenController
-                                webStateList:(WebStateList*)webStateList;
+- (instancetype)
+    initWithFullscreenController:(FullscreenController*)fullscreenController
+                    webStateList:(WebStateList*)webStateList
+            snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent;
 
 // Disconnects the view controller.
 - (void)disconnect;

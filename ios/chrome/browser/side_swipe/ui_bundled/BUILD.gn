@@ -58,6 +58,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/side_swipe/ui_bundled/resources",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:model_common",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/toolbar/ui_bundled/public",
     "//ios/chrome/browser/toolbar/ui_bundled/public:constants",

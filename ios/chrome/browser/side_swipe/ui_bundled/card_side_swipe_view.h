@@ -12,6 +12,7 @@ using TabSwipeHandler = void (^)(int destinationWebStateIndex);
 @protocol CardSwipeViewDelegate;
 @class SideSwipeGestureRecognizer;
 @protocol SideSwipeToolbarSnapshotProviding;
+class SnapshotBrowserAgent;
 class WebStateList;
 
 @interface CardSideSwipeView : UIView
@@ -26,7 +27,8 @@ class WebStateList;
 // Inits with the view `frame`, top `margin` and `webStateList`.
 - (instancetype)initWithFrame:(CGRect)frame
                     topMargin:(CGFloat)margin
-                 webStateList:(WebStateList*)webStateList;
+                 webStateList:(WebStateList*)webStateList
+         snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent;
 
 // Sets up left and right card views depending on current WebState and swipe
 // direction.

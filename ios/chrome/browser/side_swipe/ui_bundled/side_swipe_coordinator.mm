@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller_delegate.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 
 @interface SideSwipeCoordinator () <PageSideSwipeCommands>
 
@@ -36,18 +37,22 @@
 }
 
 - (void)start {
-  _fullscreenController = FullscreenController::FromBrowser(self.browser);
+  Browser* browser = self.browser;
+  WebStateList* webStateList = browser->GetWebStateList();
+
+  _fullscreenController = FullscreenController::FromBrowser(browser);
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
-  _sideSwipeMediator = [[SideSwipeMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()];
+  _sideSwipeMediator =
+      [[SideSwipeMediator alloc] initWithWebStateList:webStateList];
   _sideSwipeMediator.engagementTracker = engagementTracker;
   _sideSwipeMediator.helpHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
+      HandlerForProtocol(browser->GetCommandDispatcher(), HelpCommands);
 
   _sideSwipeUIController = [[SideSwipeUIController alloc]
       initWithFullscreenController:_fullscreenController
-                      webStateList:self.browser->GetWebStateList()];
+                      webStateList:webStateList
+              snapshotBrowserAgent:SnapshotBrowserAgent::FromBrowser(browser)];
 
   _sideSwipeUIController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
