@@ -2628,7 +2628,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodedBufferLifetimeExceedsEncoderLifetime) {
    public:
     explicit EnodedBufferLifetimeVerifier() = default;
     ~EnodedBufferLifetimeVerifier() override {
-      last_encoded_image_->data()[0] = 0;
+      (void)last_encoded_image_->data()[0];
     }
 
     webrtc::EncodedImageCallback::Result OnEncodedImage(

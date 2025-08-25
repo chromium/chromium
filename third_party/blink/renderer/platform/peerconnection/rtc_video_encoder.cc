@@ -219,7 +219,6 @@ class EncodedDataWrapper : public webrtc::EncodedImageBufferInterface {
     std::move(reuse_buffer_callback_).Run();
   }
   const uint8_t* data() const override { return mapping_->front(); }
-  uint8_t* data() override { return mapping_->front(); }
   size_t size() const override { return size_; }
 
  private:
