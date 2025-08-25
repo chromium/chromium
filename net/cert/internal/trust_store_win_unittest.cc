@@ -101,8 +101,7 @@ class TrustStoreWinTest : public testing::Test {
         X509_ASN_ENCODING, CRYPTO_BUFFER_data(cert->cert_buffer()),
         CRYPTO_BUFFER_len(cert->cert_buffer())));
 
-    CERT_ENHKEY_USAGE usage;
-    UNSAFE_TODO(memset(&usage, 0, sizeof(usage)));
+    CERT_ENHKEY_USAGE usage = {};
     if (!CertSetEnhancedKeyUsage(os_cert.get(), &usage)) {
       return false;
     }
