@@ -54,6 +54,10 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/range/range.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 namespace chrome {
 
 ////////////////////////////////////////////////////////////////////////////////

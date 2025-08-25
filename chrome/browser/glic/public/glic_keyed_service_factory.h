@@ -5,12 +5,22 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_KEYED_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_KEYED_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include <memory>
+
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "content/public/browser/browser_context.h"
+
+namespace base {
+template <typename T>
+class NoDestructor;
+}  // namespace base
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace glic {
+
+class GlicKeyedService;
 
 class GlicKeyedServiceFactory : public BrowserContextKeyedServiceFactory {
  public:

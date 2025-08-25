@@ -10,8 +10,10 @@
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
+#include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "components/tabs/public/tab_interface.h"
 #endif
