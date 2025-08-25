@@ -506,7 +506,7 @@
 <translation id="1832730227369924598">סנכרון שולחן העבודה הווירטואלי</translation>
 <translation id="1834452765064623979">בניין ותחזוקה</translation>
 <translation id="1838374766361614909">ניקוי חיפוש</translation>
-<translation id="1839331950812095887">סיכום בכמה מילים של הדברים שרצית לומר</translation>
+<translation id="1839331950812095887">סיכום הרעיונות שלך בכמה מילים</translation>
 <translation id="1839551713262164453">אימות ערכי המדיניות נכשל והתרחשו שגיאות</translation>
 <translation id="1840009953725035797">מערכות קולנוע ביתי</translation>
 <translation id="184153295865602321">כדי להוסיף שכבת הגנה, מומלץ תמיד להשתמש בטביעת האצבע, בזיהוי הפנים או בשיטה אחרת לפתיחת הנעילה כשמשלמים באמצעות מילוי אוטומטי</translation>
@@ -631,7 +631,7 @@
 <translation id="2069913043427250781">בטיחות רכב ובטיחות בדרכים</translation>
 <translation id="2071156619270205202">הכרטיס הזה לא עומד בדרישות לקבלת מספר כרטיס וירטואלי.</translation>
 <translation id="2071692954027939183">ההתראות נחסמו באופן אוטומטי כי ברוב המקרים לא נתת הרשאה להציג אותן</translation>
-<translation id="2071852865256799872">הדפדפן מנוהל על ידי הארגון שלך והפרופיל שלך מנוהל על ידי <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="2071852865256799872">הדפדפן מנוהל על ידי הארגון שלך, והפרופיל שלך מנוהל על ידי <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2074733626795553847">ביטול החסימה של <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">ביקרת כאן</translation>
@@ -2152,7 +2152,7 @@
 <translation id="4628678854894591460">הצעות לחופשה</translation>
 <translation id="4628948037717959914">תמונה</translation>
 <translation id="4629370161347991046">A4x6</translation>
-<translation id="462989688138616749">העלאת הקובץ אל <ph name="CLOUD_PROVIDER" /> תתחיל בעוד <ph name="HOURS" /> שעות</translation>
+<translation id="462989688138616749">העלאת הקובץ שלך אל <ph name="CLOUD_PROVIDER" /> תתחיל בעוד <ph name="HOURS" /> שעות</translation>
 <translation id="4631649115723685955">הקאשבק מקושר</translation>
 <translation id="4631881646528206880">רישום כרטיס וירטואלי</translation>
 <translation id="4635278307999235413">‏נשלחים נתונים אל מסוף Admin</translation>
@@ -2193,7 +2193,7 @@
 <translation id="4702656508969495934">מוצגות כתוביות מיידיות, ניתן להשתמש במעבר בין החלונות כדי להתמקד</translation>
 <translation id="4703342001883078444">משפחה ומערכות יחסים</translation>
 <translation id="4704745399240123930">הכרטיסים שהמוכר הזה לא מקבל, כמו כרטיסים וירטואליים, מושבתים.</translation>
-<translation id="4708268264240856090">החיבור נקטע</translation>
+<translation id="4708268264240856090">החיבור שלך נקטע</translation>
 <translation id="4708276642004148190">אספקת מים וטיפול במים</translation>
 <translation id="4711628883879888561">גישה משותפת לקבוצת הכרטיסיות</translation>
 <translation id="471880041731876836">אין לך הרשאה להיכנס אל האתר הזה</translation>
@@ -2813,7 +2813,7 @@ Del</translation>
 <translation id="5725297205162868298">קיצור הדרך לא יכול להתחיל בתו @: '<ph name="SHORTCUT_NAME" />'</translation>
 <translation id="5728246486828755318">האתר יכול לבקש הרשאה להשתמש בתכונות המתקדמות של המדפסת</translation>
 <translation id="5729442113829771034">חינוך לגיל הרך</translation>
-<translation id="5730040223043577876">‏אם הזנת את הסיסמה שלך באתרים אחרים, ההמלצה של Chrome היא לאפס אותה.</translation>
+<translation id="5730040223043577876">‏אם השתמשת בסיסמה הזו באתרים אחרים, ההמלצה של Chrome היא לאפס אותה.</translation>
 <translation id="5732392974455271431">ההורים שלך יכולים לבטל בשבילך את החסימה</translation>
 <translation id="573555826359077410">‏הכפתור ליצירת טופס. מפעילים אותו כדי ליצור במהירות טופס חדש ב-Google Forms</translation>
 <translation id="5738385766833540397">ניהול ההתראות על ירידות במחיר של מוצרים במעקב</translation>
@@ -4332,7 +4332,7 @@ Del</translation>
 <translation id="8289355894181816810">מומלץ לפנות למנהל הרשת למידע נוסף.</translation>
 <translation id="829335040383910391">צליל</translation>
 <translation id="8294431847097064396">מקור</translation>
-<translation id="8297545700510100061">‏קובצי cookie ונתונים אחרים מאתרים משמשים כדי לזכור את הפרטים שלך, למשל כדי להכניס אותך לחשבון או להציג מודעות בהתאמה אישית. ב<ph name="SETTINGS" /> אפשר לנהל את קובצי ה-cookie מכל האתרים.</translation>
+<translation id="8297545700510100061">‏קובצי Cookie ונתוני אתר אחרים משמשים כדי לזהות אותך, למשל בשביל כניסה לחשבון או כדי להתאים לך מודעות. ב<ph name="SETTINGS" /> אפשר לנהל את קובצי ה-cookie מכל האתרים.</translation>
 <translation id="8298115750975731693">‏ייתכן שרשת ה-Wi-Fi שנעשה בה שימוש (<ph name="WIFI_NAME" />) תחייב כניסה ל-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">הזנת הקוד</translation>
 <translation id="8304912090860925649">טבלת השוואה חדשה</translation>
@@ -4420,7 +4420,7 @@ Del</translation>
 <translation id="8446275044635689572">אומנויות הבמה</translation>
 <translation id="8446884382197647889">למידע נוסף</translation>
 <translation id="8449155699563577224">‏17x24 אינץ'</translation>
-<translation id="8449836157089738489">פתיחת הכול בקבוצת כרטיסיות חדשה</translation>
+<translation id="8449836157089738489">פתיחת כל הכתובות בקבוצת כרטיסיות חדשה</translation>
 <translation id="84561192812921051">‏לאדמין יש אפשרות לבצע מרחוק שינויים בפרופיל ובדפדפן, לנתח מידע על הדפדפן באמצעות דוחות ולבצע משימות חשובות אחרות. אפשר לנהל את הפעילות במכשיר הזה גם מחוץ ל-Chrome.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">הגיליון התחתון סגור.</translation>
 <translation id="8456775115498700722">‏עכשיו אפשר למלא את הפרטים של כרטיסי <ph name="CARD_ISSUER_NAME" /> שלך באופן אוטומטי כי החשבון שלך ב-<ph name="CARD_ISSUER_NAME" /> מקושר ל-Google Pay.</translation>
@@ -4583,7 +4583,7 @@ Del</translation>
 <translation id="8740359287975076522">‏לא ניתן היה למצוא את &lt;abbr id="dnsDefinition"&gt;כתובת ה-DNS&lt;/abbr&gt; של <ph name="HOST_NAME" />. מאבחן את הבעיה.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> הוא הקוד שלך בשביל <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">הוספת הכרטיסייה הזו לסימניות</translation>
-<translation id="8751426954251315517">אפשר לנסות שוב מאוחר יותר.</translation>
+<translation id="8751426954251315517">אפשר לנסות שוב בהמשך</translation>
 <translation id="8753913772043329557">יומני המדיניות</translation>
 <translation id="8754546574216727970">מגפיים</translation>
 <translation id="8755125092386286553">A4x9</translation>
@@ -4642,7 +4642,7 @@ Del</translation>
 <translation id="8855742650226305367">ריקוד</translation>
 <translation id="885730110891505394">‏שיתוף עם Google</translation>
 <translation id="8858065207712248076">‏אם הזנת את הסיסמה של <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> באתרים אחרים, ההמלצה של Chrome היא לאפס אותה.</translation>
-<translation id="885906927438988819">‏אם האיות תקין, <ph name="BEGIN_LINK" />יש לנסות להפעיל את אבחון הרשת של Windows<ph name="END_LINK" />.</translation>
+<translation id="885906927438988819">‏אם האיות תקין, <ph name="BEGIN_LINK" />אפשר לנסות להפעיל את אבחון הרשת של Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">אומנות הצילום ואומנות דיגיטלית</translation>
 <translation id="8863218129525348270">רוצה לשלם מהר יותר בפעם הבאה? כדאי לשמור את פרטי הכרטיס במכשיר</translation>
 <translation id="8864939224504814334">חליפות ערב ולבוש עסקי</translation>
