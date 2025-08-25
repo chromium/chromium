@@ -156,19 +156,26 @@ public class TrustedWebActivityLocationDelegationTest {
                         /* isEmbargoed= */ false,
                         SessionModel.DURABLE);
 
-        if (PermissionsAndroidFeatureMap.isEnabled(
-                PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            info.setGeolocationSetting(
-                                    profile, new GeolocationSetting(setting, setting)));
-        } else {
-            ThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
-        }
+        boolean approxGeoEnabled =
+                PermissionsAndroidFeatureMap.isEnabled(
+                        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (approxGeoEnabled) {
+                        info.setGeolocationSetting(
+                                profile, new GeolocationSetting(setting, setting));
+                    } else {
+                        info.setContentSetting(profile, setting);
+                    }
+                });
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return info.getContentSetting(profile) == setting;
+                    if (approxGeoEnabled) {
+                        return info.getGeolocationSetting(profile).mPrecise == setting;
+                    } else {
+                        return info.getContentSetting(profile) == setting;
+                    }
                 });
     }
 
