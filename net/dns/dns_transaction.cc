@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/base64url.h"
+#include "base/byte_count.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -30,6 +31,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -119,7 +121,8 @@ const char kDnsOverHttpResponseContentType[] = "application/dns-message";
 
 // The maximum size of the DNS message for DoH, per
 // https://datatracker.ietf.org/doc/html/rfc8484#section-6
-const int64_t kDnsOverHttpResponseMaximumSize = 65535;
+constexpr base::ByteCount kDnsOverHttpResponseMaximumSize =
+    base::ByteCount(65535);
 
 // Count labels in the fully-qualified name in DNS format.
 int CountLabels(base::span<const uint8_t> name) {
@@ -542,18 +545,18 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
 
     buffer_ = base::MakeRefCounted<GrowableIOBuffer>();
 
-    if (request->response_headers()->HasHeader(
-            HttpRequestHeaders::kContentLength)) {
-      if (request_->response_headers()->GetContentLength() >
-          kDnsOverHttpResponseMaximumSize) {
+    std::optional<base::ByteCount> content_length =
+        request_->response_headers()->GetContentLength();
+    if (content_length.has_value()) {
+      if (content_length.value() > kDnsOverHttpResponseMaximumSize) {
         ResponseCompleted(ERR_DNS_MALFORMED_RESPONSE);
         return;
       }
-
-      buffer_->SetCapacity(request_->response_headers()->GetContentLength() +
-                           1);
+      buffer_->SetCapacity(
+          base::checked_cast<int>(content_length->InBytes() + 1));
     } else {
-      buffer_->SetCapacity(kDnsOverHttpResponseMaximumSize + 1);
+      buffer_->SetCapacity(base::checked_cast<int>(
+          kDnsOverHttpResponseMaximumSize.InBytes() + 1));
     }
 
     DCHECK(buffer_->data());
@@ -588,7 +591,8 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     DCHECK_GE(bytes_read, 0);
 
     if (bytes_read > 0) {
-      if (buffer_->offset() + bytes_read > kDnsOverHttpResponseMaximumSize) {
+      if (buffer_->offset() + bytes_read >
+          kDnsOverHttpResponseMaximumSize.InBytes()) {
         ResponseCompleted(ERR_DNS_MALFORMED_RESPONSE);
         return;
       }

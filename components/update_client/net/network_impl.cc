@@ -83,7 +83,7 @@ std::string GetStringHeader(const network::SimpleURLLoader* simple_url_loader,
 }
 
 // Returns the integral value of a header of the server response or -1 if
-// if the header is not available or a conversion error has occured.
+// if the header is not available or a conversion error has occurred.
 int64_t GetInt64Header(const network::SimpleURLLoader* simple_url_loader,
                        const char* header_name) {
   CHECK(simple_url_loader);
@@ -93,7 +93,7 @@ int64_t GetInt64Header(const network::SimpleURLLoader* simple_url_loader,
     return -1;
   }
 
-  return response_info->headers->GetInt64HeaderValue(header_name);
+  return response_info->headers->GetInt64HeaderValue(header_name).value_or(-1);
 }
 
 }  // namespace

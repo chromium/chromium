@@ -290,7 +290,9 @@ bool HttpCache::Writers::ShouldTruncate() {
   // Check the response headers for strong validators.
   // Note that if this is a 206, content-length was already fixed after calling
   // PartialData::ResponseHeadersOK().
-  if (response_info_truncation_.headers->GetContentLength() <= 0 ||
+  std::optional<base::ByteCount> content_length =
+      response_info_truncation_.headers->GetContentLength();
+  if (!content_length.has_value() || content_length->is_zero() ||
       response_info_truncation_.headers->HasHeaderValue("Accept-Ranges",
                                                         "none") ||
       !response_info_truncation_.headers->HasStrongValidators()) {
@@ -310,9 +312,7 @@ bool HttpCache::Writers::ShouldTruncate() {
     return false;
   }
 
-  int64_t content_length =
-      response_info_truncation_.headers->GetContentLength();
-  if (content_length >= 0 && content_length <= current_size) {
+  if (content_length->InBytes() <= current_size) {
     return false;
   }
 
@@ -522,8 +522,9 @@ void HttpCache::Writers::OnDataReceived(int result) {
     DCHECK(network_transaction_);
     const HttpResponseInfo* response_info =
         network_transaction_->GetResponseInfo();
-    int64_t content_length = response_info->headers->GetContentLength();
-    if (content_length >= 0 && content_length > current_size) {
+    std::optional<base::ByteCount> content_length =
+        response_info->headers->GetContentLength();
+    if (content_length && content_length->InBytes() > current_size) {
       OnNetworkReadFailure(result);
       return;
     }

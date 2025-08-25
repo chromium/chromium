@@ -16,6 +16,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -1517,27 +1518,31 @@ bool HttpResponseHeaders::HasValidators() const {
 
 // From RFC 2616:
 // Content-Length = "Content-Length" ":" 1*DIGIT
-int64_t HttpResponseHeaders::GetContentLength() const {
-  return GetInt64HeaderValue("content-length");
+std::optional<base::ByteCount> HttpResponseHeaders::GetContentLength() const {
+  std::optional<int64_t> result = GetInt64HeaderValue("content-length");
+  if (result.has_value()) {
+    return base::ByteCount(result.value());
+  }
+  return std::nullopt;
 }
 
-int64_t HttpResponseHeaders::GetInt64HeaderValue(
+std::optional<int64_t> HttpResponseHeaders::GetInt64HeaderValue(
     const std::string& header) const {
   size_t iter = 0;
   std::optional<std::string_view> content_length =
       EnumerateHeader(&iter, header);
   if (!content_length || content_length->empty()) {
-    return -1;
+    return std::nullopt;
   }
 
   if ((*content_length)[0] == '+') {
-    return -1;
+    return std::nullopt;
   }
 
   int64_t result;
   bool ok = base::StringToInt64(*content_length, &result);
   if (!ok || result < 0) {
-    return -1;
+    return std::nullopt;
   }
 
   return result;

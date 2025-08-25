@@ -770,7 +770,10 @@ void SignedExchangeHandler::CreateResponse(
   response_head->load_timing.send_start = now;
   response_head->load_timing.send_end = now;
   response_head->load_timing.receive_headers_end = now;
-  response_head->content_length = response_head->headers->GetContentLength();
+  std::optional<base::ByteCount> content_length =
+      response_head->headers->GetContentLength();
+  response_head->content_length =
+      content_length ? content_length->InBytes() : -1;
   response_head->remote_endpoint = remote_endpoint_;
 
   auto body_stream = CreateResponseBodyStream();

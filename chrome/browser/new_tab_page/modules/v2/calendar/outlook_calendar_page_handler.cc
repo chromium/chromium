@@ -281,13 +281,14 @@ void OutlookCalendarPageHandler::OnJsonReceived(
   // Check for unauthorized and throttling errors.
   auto* response_info = url_loader_->ResponseInfo();
   if (net_error != net::OK && response_info && response_info->headers) {
-    int64_t wait_time =
+    std::optional<int64_t> wait_time =
         response_info->headers->GetInt64HeaderValue("Retry-After");
-    if (wait_time != -1) {
+    if (wait_time) {
       request_result = OutlookCalendarRequestResult::kThrottlingError;
-      RecordThrottlingWaitTime(base::Seconds(wait_time));
-      pref_service_->SetTime(prefs::kNtpOutlookCalendarRetryAfterTime,
-                             base::Time::Now() + base::Seconds(wait_time));
+      RecordThrottlingWaitTime(base::Seconds(wait_time.value()));
+      pref_service_->SetTime(
+          prefs::kNtpOutlookCalendarRetryAfterTime,
+          base::Time::Now() + base::Seconds(wait_time.value()));
     } else if (response_info->headers->response_code() ==
                net::HTTP_UNAUTHORIZED) {
       request_result = OutlookCalendarRequestResult::kAuthError;

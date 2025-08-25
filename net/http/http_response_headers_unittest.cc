@@ -12,6 +12,7 @@
 #include <string_view>
 #include <unordered_set>
 
+#include "base/byte_count.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -1508,7 +1509,7 @@ INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
 
 struct ContentLengthTestData {
   const char* headers;
-  int64_t expected_len;
+  std::optional<base::ByteCount> expected_len;
 };
 
 class GetContentLengthTest
@@ -1527,56 +1528,59 @@ TEST_P(GetContentLengthTest, GetContentLength) {
 }
 
 const ContentLengthTestData content_length_tests[] = {
-    {"HTTP/1.1 200 OK\n", -1},
+    {"HTTP/1.1 200 OK\n", std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Content-Length: 0\n",
+     base::ByteCount(0)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 10\n",
-     10},
+     base::ByteCount(10)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: \n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: abc\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: -10\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length:  +10\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 23xb5\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 0xA\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 010\n",
-     10},
+     base::ByteCount(10)},
     // Content-Length too big, will overflow an int64_t.
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 40000000000000000000\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length:       10\n",
-     10},
+     base::ByteCount(10)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 10  \n",
-     10},
+     base::ByteCount(10)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: \t10\n",
-     10},
+     base::ByteCount(10)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: \v10\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: \f10\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "cOnTeNt-LENgth: 33\n",
-     33},
+     base::ByteCount(33)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 34\r\n",
-     -1},
+     std::nullopt},
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
@@ -2338,14 +2342,17 @@ TEST_P(UpdateWithNewRangeTest, UpdateWithNewRange) {
   std::string orig_headers(test.orig_headers);
   std::replace(orig_headers.begin(), orig_headers.end(), '\n', '\0');
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(orig_headers + '\0');
-  int64_t content_size = parsed->GetContentLength();
+  std::optional<base::ByteCount> content_length = parsed->GetContentLength();
+  ASSERT_TRUE(content_length);
 
   // Update headers without replacing status line.
-  parsed->UpdateWithNewRange(range, content_size, false);
+  parsed->UpdateWithNewRange(range, content_length->InBytes(),
+                             /*replace_status_line=*/false);
   EXPECT_EQ(std::string(test.expected_headers), ToSimpleString(parsed));
 
   // Replace status line too.
-  parsed->UpdateWithNewRange(range, content_size, true);
+  parsed->UpdateWithNewRange(range, content_length->InBytes(),
+                             /*replace_status_line=*/true);
   EXPECT_EQ(std::string(test.expected_headers_with_replaced_status),
             ToSimpleString(parsed));
 }

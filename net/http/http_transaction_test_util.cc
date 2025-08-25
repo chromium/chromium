@@ -640,7 +640,9 @@ int MockNetworkTransaction::DoSendRequest() {
   response_.ssl_info.connection_status = t->ssl_connection_status;
   response_.dns_aliases = t->dns_aliases;
   data_ = std::vector<uint8_t>(resp_data.begin(), resp_data.end());
-  content_length_ = response_.headers->GetContentLength();
+  std::optional<base::ByteCount> content_length =
+      response_.headers->GetContentLength();
+  content_length_ = content_length ? content_length->InBytes() : -1;
 
   if (net_log_.net_log()) {
     socket_log_id_ = net_log_.net_log()->NextID();

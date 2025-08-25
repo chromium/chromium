@@ -14,6 +14,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -398,13 +399,13 @@ class NET_EXPORT HttpResponseHeaders
   // RFC 2616.
   bool HasValidators() const;
 
-  // Extracts the value of the Content-Length header or returns -1 if there is
-  // no such header in the response.
-  int64_t GetContentLength() const;
-
-  // Extracts the value of the specified header or returns -1 if there is no
+  // Returns the value of the Content-Length header or nullopt if there is no
   // such header in the response.
-  int64_t GetInt64HeaderValue(const std::string& header) const;
+  std::optional<base::ByteCount> GetContentLength() const;
+
+  // Returns the value of the specified header or nullopt if there is no such
+  // header in the response.
+  std::optional<int64_t> GetInt64HeaderValue(const std::string& header) const;
 
   // Extracts the values in a Content-Range header and returns true if all three
   // values are present and valid for a 206 response; otherwise returns false.

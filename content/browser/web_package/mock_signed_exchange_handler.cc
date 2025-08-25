@@ -217,7 +217,9 @@ MockSignedExchangeHandler::MockSignedExchangeHandler(
     for (const auto& header : params.response_headers)
       head->headers->AddHeader(header.first, header.second);
     head->is_signed_exchange_inner_response = true;
-    head->content_length = head->headers->GetContentLength();
+    std::optional<base::ByteCount> content_length =
+        head->headers->GetContentLength();
+    head->content_length = content_length ? content_length->InBytes() : -1;
   }
   body = std::make_unique<PrefixStrippingSourceStream>(kMockSxgPrefix,
                                                        std::move(body));

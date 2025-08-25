@@ -241,24 +241,12 @@ void TrustTokenRequestRedemptionHelper::Finalize(
     return;
   }
 
-  // 4. Get lifetime from response header
+  // 4. Get lifetime from response header.
   // If there are multiple lifetime headers, the last one is used.
-  bool has_lifetime = false;
-  uint64_t lifetime = 0;
-  if (response_headers.HasHeader(
-          kTrustTokensResponseHeaderSecTrustTokenLifetime)) {
-    // GetInt64HeaderValue returns -1 in case of errors, if not -1, then
-    // non-negative values ensuring non-negative values is important since we
-    // cast it to unsigned
-    int64_t maybe_lifetime = response_headers.GetInt64HeaderValue(
-        kTrustTokensResponseHeaderSecTrustTokenLifetime);
-    if (maybe_lifetime != -1) {
-      has_lifetime = true;
-      lifetime = static_cast<uint64_t>(maybe_lifetime);
-    }
-    response_headers.RemoveHeader(
-        kTrustTokensResponseHeaderSecTrustTokenLifetime);
-  }
+  std::optional<int64_t> lifetime = response_headers.GetInt64HeaderValue(
+      kTrustTokensResponseHeaderSecTrustTokenLifetime);
+  response_headers.RemoveHeader(
+      kTrustTokensResponseHeaderSecTrustTokenLifetime);
 
   // 5. Otherwise, if these checks succeed, store the RR and return success.
   TrustTokenRedemptionRecord record_to_store;
@@ -267,8 +255,9 @@ void TrustTokenRequestRedemptionHelper::Finalize(
       std::move(token_verification_key_));
   *record_to_store.mutable_creation_time() =
       internal::TimeToTimestamp(base::Time::Now());
-  if (has_lifetime)
-    record_to_store.set_lifetime(lifetime);
+  if (lifetime) {
+    record_to_store.set_lifetime(lifetime.value());
+  }
   token_store_->SetRedemptionRecord(*issuer_, top_level_origin_,
                                     std::move(record_to_store));
 

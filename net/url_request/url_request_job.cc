@@ -517,10 +517,12 @@ void URLRequestJob::NotifyFinalHeadersReceived() {
       // headers, and the response body is not compressed, try to get the
       // expected content size from the headers.
       if (expected_content_size_ == -1 && request_->response_headers()) {
-        // This sets |expected_content_size_| to its previous value of -1 if
-        // there's no Content-Length header.
-        expected_content_size_ =
+        // This keeps |expected_content_size_| at its value of -1 if there's no
+        // Content-Length header.
+        std::optional<base::ByteCount> content_length =
             request_->response_headers()->GetContentLength();
+        expected_content_size_ =
+            content_length ? content_length->InBytes() : -1;
       }
     } else {
       request_->net_log().AddEvent(

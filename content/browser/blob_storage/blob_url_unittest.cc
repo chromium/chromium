@@ -189,7 +189,8 @@ class BlobURLTest : public testing::Test {
     expected_status_code_ = 200;
     expected_response_ = expected_response;
     TestRequest("GET", net::HttpRequestHeaders());
-    EXPECT_EQ(expected_content_length, response_headers_->GetContentLength());
+    EXPECT_EQ(expected_content_length,
+              response_headers_->GetContentLength()->InBytes());
   }
 
   void TestErrorRequest(int expected_error_code) {
@@ -487,7 +488,7 @@ TEST_F(BlobURLTest, TestGetRangeRequest1) {
   expected_response_ = result.substr(5, 10 - 5 + 1);
   TestRequest("GET", extra_headers);
 
-  EXPECT_EQ(6, response_headers_->GetContentLength());
+  EXPECT_EQ(6, response_headers_->GetContentLength()->InBytes());
   EXPECT_FALSE(response_metadata_.has_value());
 
   int64_t first = 0, last = 0, length = 0;
@@ -508,7 +509,7 @@ TEST_F(BlobURLTest, TestGetRangeRequest2) {
   expected_response_ = result.substr(result.length() - 10);
   TestRequest("GET", extra_headers);
 
-  EXPECT_EQ(10, response_headers_->GetContentLength());
+  EXPECT_EQ(10, response_headers_->GetContentLength()->InBytes());
   EXPECT_FALSE(response_metadata_.has_value());
 
   int64_t total = GetTotalBlobLength();
@@ -530,7 +531,7 @@ TEST_F(BlobURLTest, TestGetRangeRequest3) {
   expected_response_ = result.substr(0, 3);
   TestRequest("GET", extra_headers);
 
-  EXPECT_EQ(3, response_headers_->GetContentLength());
+  EXPECT_EQ(3, response_headers_->GetContentLength()->InBytes());
   EXPECT_FALSE(response_metadata_.has_value());
 
   int64_t first = 0, last = 0, length = 0;
@@ -567,7 +568,7 @@ TEST_F(BlobURLTest, TestSideData) {
   expected_response_ = kTestDataHandleData2;
   TestRequest("GET", net::HttpRequestHeaders());
   EXPECT_EQ(static_cast<int>(std::size(kTestDataHandleData2) - 1),
-            response_headers_->GetContentLength());
+            response_headers_->GetContentLength()->InBytes());
 
   EXPECT_EQ(std::string(kTestDiskCacheSideData), *response_metadata_);
 }
@@ -580,7 +581,7 @@ TEST_F(BlobURLTest, TestZeroSizeSideData) {
   expected_response_ = kTestDataHandleData2;
   TestRequest("GET", net::HttpRequestHeaders());
   EXPECT_EQ(static_cast<int>(std::size(kTestDataHandleData2) - 1),
-            response_headers_->GetContentLength());
+            response_headers_->GetContentLength()->InBytes());
 
   EXPECT_FALSE(response_metadata_.has_value());
 }

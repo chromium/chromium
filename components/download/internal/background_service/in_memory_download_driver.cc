@@ -40,7 +40,21 @@ DriverEntry CreateDriverEntry(const InMemoryDownload& download) {
   entry.url_chain = download.url_chain();
   entry.response_headers = download.response_headers();
   if (entry.response_headers) {
-    entry.expected_total_size = entry.response_headers->GetContentLength();
+    std::optional<base::ByteCount> content_length =
+        entry.response_headers->GetContentLength();
+    // TODO(https://crbug.com/440360443): This was migrated as-is from an
+    // earlier version of GetContentLength() where a return value of -1 was used
+    // to indicate that there was no header included. It is not clear as to
+    // whether this code correctly handled this case, and so the previous
+    // behavior with -1 was maintained. Please evaluate whether -1 is being
+    // correctly used in this case, fix any correctness issues, and remove this
+    // TODO comment.
+    //
+    // Specifically: The documentation for `entry.expected_total_size` notes
+    // that its value is "set to 0 if the Content-Length http header is not
+    // presented" but GetContentLength() was directly assigned over, and
+    // GetContentLength() returned -1, not 0, if there was no header present.
+    entry.expected_total_size = content_length ? content_length->InBytes() : -1;
   }
   // Currently incognito mode network backend can't resume in the middle.
   entry.can_resume = false;
