@@ -38,30 +38,31 @@ namespace {
 void ShowPrompt() {
   // Show the default browser request prompt in the most recently active,
   // visible, tabbed browser. Do not show the prompt if no such browser exists.
-  for (BrowserWindowInterface* browser :
-       GetBrowserWindowInterfacesOrderedByActivation()) {
-    // |browser| may be null in UI tests. Also, don't show the prompt in an app
-    // window, which is not meant to be treated as a Chrome window. Only show in
-    // a normal, tabbed browser.
-    if (browser && browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
-      continue;
-    }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [](BrowserWindowInterface* browser) {
+        // |browser| may be null in UI tests. Also, don't show the prompt in an
+        // app window, which is not meant to be treated as a Chrome window. Only
+        // show in a normal, tabbed browser.
+        if (browser &&
+            browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+          return true;  // continue iterating
+        }
 
-    // In ChromeBot tests, there might be a race. This line appears to get
-    // called during shutdown and the active web contents can be nullptr.
-    content::WebContents* web_contents =
-        browser->GetTabStripModel()->GetActiveWebContents();
-    if (!web_contents ||
-        web_contents->GetVisibility() != content::Visibility::VISIBLE) {
-      continue;
-    }
+        // In ChromeBot tests, there might be a race. This line appears to get
+        // called during shutdown and the active web contents can be nullptr.
+        content::WebContents* web_contents =
+            browser->GetTabStripModel()->GetActiveWebContents();
+        if (!web_contents ||
+            web_contents->GetVisibility() != content::Visibility::VISIBLE) {
+          return true;  // continue iterating
+        }
 
-    DefaultBrowserInfoBarDelegate::Create(
-        infobars::ContentInfoBarManager::FromWebContents(web_contents),
-        browser->GetProfile(),
-        /*can_pin_to_taskbar=*/false);
-    break;
-  }
+        DefaultBrowserInfoBarDelegate::Create(
+            infobars::ContentInfoBarManager::FromWebContents(web_contents),
+            browser->GetProfile(),
+            /*can_pin_to_taskbar=*/false);
+        return false;  // stop iterating
+      });
 }
 
 // Do not show the prompt if "suppress_default_browser_prompt_for_version" in
