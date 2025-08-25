@@ -103,7 +103,7 @@ public class BasicListMenu implements ListMenu {
                                 groupContainsIcon)
                         .with(
                                 ListMenuItemProperties.TEXT_APPEARANCE_ID,
-                                R.style.TextAppearance_ListMenuItem)
+                                R.style.TextAppearance_DensityAdaptive_ListMenuItem)
                         .with(
                                 ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
                                 isIconTintable ? R.color.list_menu_item_icon_color_list : 0);

@@ -403,6 +403,7 @@ found in the LICENSE file.
 
     <!-- ListMenu -->
     <style name="ListMenuItemStyle">
+        <item name="android:minHeight">?attr/listItemHeight</item>
         <item name="android:paddingStart">@dimen/list_menu_item_horizontal_padding</item>
         <item name="android:paddingEnd">@dimen/list_menu_item_horizontal_padding</item>
         <item name="android:gravity">center_vertical</item>
@@ -417,11 +418,11 @@ found in the LICENSE file.
         <item name="android:layout_marginStart">0dp</item>
         <item name="android:layout_marginEnd">@dimen/list_menu_item_start_icon_end_margin</item>
     </style>
-    <style name="TextAppearance.ListMenuItem">
+    <style name="TextAppearance.DensityAdaptive.ListMenuItem" parent="TextAppearance">
         <item name="android:textColor">@color/list_menu_item_text_color_list</item>
-        <item name="android:textSize">@dimen/list_menu_item_text_size</item>
+        <item name="android:textSize">?attr/textLargeSize</item>
     </style>
-    <style name="TextAppearance.ListMenuItem.Bold" parent="TextAppearance.ListMenuItem">
+    <style name="TextAppearance.DensityAdaptive.ListMenuItem.Bold">
         <item name="android:textStyle">bold</item>
     </style>
 

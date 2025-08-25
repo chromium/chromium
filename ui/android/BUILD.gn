@@ -301,6 +301,7 @@ android_resources("ui_java_resources") {
     "java/res/values/semantic_colors_non_adaptive.xml",
     "java/res/values/strings.xml",
     "java/res/values/styles.xml",
+    "java/res/values/themes.xml",
     "java/res/values/values.xml",
   ]
 

@@ -398,9 +398,9 @@ found in the LICENSE file.
     </style>
 
     <!-- Misc styles -->
-    <style name="TextAppearance.UpdateMenuItem">
+    <style name="TextAppearance.DensityAdaptive.UpdateMenuItem" parent="TextAppearance">
         <item name="android:textColor">@color/update_menu_item_text_color</item>
-        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textSize">?attr/textLargeSize</item>
     </style>
     <style name="SadTabBodyText">
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Secondary</item>
@@ -494,7 +494,7 @@ found in the LICENSE file.
         <item name="android:gravity">center_vertical</item>
         <item name="android:minHeight">@dimen/min_touch_target_size</item>
         <item name="android:textAlignment">viewStart</item>
-        <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:textAppearance">@style/TextAppearance.DensityAdaptive.TextLarge.Primary</item>
     </style>
 
     <style name="ContextMenuChip" parent="Chip">
@@ -523,7 +523,7 @@ found in the LICENSE file.
 
     <!-- Overflow menu -->
     <style name="AppMenuItemText">
-        <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:textAppearance">@style/TextAppearance.DensityAdaptive.TextLarge.Primary</item>
         <item name="android:singleLine">true</item>
         <item name="android:paddingEnd">9dp</item>
         <item name="android:gravity">center_vertical</item>

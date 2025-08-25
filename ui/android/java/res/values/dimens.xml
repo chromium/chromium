@@ -110,7 +110,6 @@ found in the LICENSE file.
     <dimen name="list_menu_item_icon_horizontal_padding">6dp</dimen>
     <dimen name="list_menu_item_start_icon_end_margin">16dp</dimen>
     <dimen name="list_menu_item_horizontal_padding">16dp</dimen>
-    <dimen name="list_menu_item_text_size">16sp</dimen>
     <dimen name="list_menu_elevation">3dp</dimen>
     <dimen name="list_menu_item_min_height">48dp</dimen>
 

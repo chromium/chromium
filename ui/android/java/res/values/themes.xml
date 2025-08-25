@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <style name="ThemeOverlay.UI.AdaptiveDensityDefaults" parent="">
+        <!-- General dimensions. -->
+        <item name="minInteractTargetSize">@dimen/min_touch_target_size</item>
+        <!-- We've created a new attr instead of android:listPreferredItemHeightSmall to keep the
+             changes limited to the UI components we choose. -->
+        <item name="listItemHeight">?attr/minInteractTargetSize</item>
+
+        <!-- Text dimensions. -->
+        <item name="textLargeSize">@dimen/text_size_large</item>
+        <item name="textLargeLeading">@dimen/text_size_large_leading</item>
+    </style>
+</resources>
