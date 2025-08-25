@@ -77,7 +77,11 @@ StickyActivationManager::StickyActivationManager(PrefService* local_state,
   }
 }
 
-StickyActivationManager::~StickyActivationManager() = default;
+StickyActivationManager::~StickyActivationManager() {
+  if (monitoring_started_ && sticky_activation_enabled_) {
+    base::FieldTrialListIncludingLowAnonymity::RemoveObserver(this);
+  }
+}
 
 // static
 void StickyActivationManager::RegisterPrefs(PrefRegistrySimple& registry) {
