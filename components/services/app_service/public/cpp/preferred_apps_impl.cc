@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -46,10 +45,6 @@ enum class PreferredAppsUpdateAction {
   kUpgraded = 3,
   kMaxValue = kUpgraded,
 };
-
-void LogPreferredAppEntryCount(int entry_count) {
-  base::UmaHistogramCounts10000("Apps.PreferredApps.EntryCount", entry_count);
-}
 
 // Performs blocking I/O. Called on another thread.
 void WriteDataBlocking(const base::FilePath& preferred_apps_file,
@@ -203,8 +198,6 @@ void PreferredAppsImpl::ReadCompleted(std::string preferred_apps_string) {
   if (!preferred_apps_upgraded) {
     WriteToJSON(profile_dir_, preferred_apps_list_);
   }
-
-  LogPreferredAppEntryCount(preferred_apps_list_.GetEntrySize());
 
   while (!pending_preferred_apps_tasks_.empty()) {
     std::move(pending_preferred_apps_tasks_.front()).Run();

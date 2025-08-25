@@ -2657,18 +2657,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.PreferredApps.EntryCount" units="entries"
-    expires_after="2023-07-09">
-  <owner>ovn@google.com</owner>
-  <owner>lt-web-apps-team@google.com</owner>
-  <summary>
-    Records the number of entries in the preferred apps list that was stored on
-    the disk. The preferred apps list is a vector that identifies the preferred
-    app for an intent filter. This value is recorded every time on user login
-    and we read the stored data from the disk.
-  </summary>
-</histogram>
-
 <histogram name="Apps.PromiseApp.LifecycleEvent"
     enum="PromiseAppLifecycleEvent" expires_after="2026-02-23">
   <owner>ovn@google.com</owner>
