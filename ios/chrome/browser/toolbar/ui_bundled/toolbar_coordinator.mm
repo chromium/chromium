@@ -16,8 +16,7 @@
 #import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator_parity.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -50,9 +49,7 @@
 @interface ToolbarCoordinator () <GuidedTourCommands,
                                   PrimaryToolbarViewControllerDelegate,
                                   ToolbarCommands,
-                                  ToolbarMediatorDelegate> {
-  raw_ptr<PrerenderService> _prerenderService;
-}
+                                  ToolbarMediatorDelegate>
 
 /// Whether this coordinator has been started.
 @property(nonatomic, assign) BOOL started;
@@ -200,7 +197,6 @@
   }
 
   [self updateToolbarsLayout];
-  _prerenderService = PrerenderServiceFactory::GetForProfile(self.profile);
 
   [super start];
   self.started = YES;
@@ -211,7 +207,6 @@
     return;
   }
   [super stop];
-  _prerenderService = nullptr;
   self.orchestrator.editViewAnimatee = nil;
   self.orchestrator.locationBarAnimatee = nil;
   self.orchestrator = nil;
@@ -234,7 +229,6 @@
   self.toolbarMediator = nil;
 
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
-  _prerenderService = nullptr;
   self.started = NO;
 }
 
@@ -304,7 +298,13 @@
 }
 
 - (BOOL)isLoadingPrerenderer {
-  return _prerenderService && _prerenderService->IsLoadingPrerender();
+  if (!_started) {
+    return NO;
+  }
+
+  PrerenderBrowserAgent* prerenderBrowserAgent =
+      PrerenderBrowserAgent::FromBrowser(self.browser);
+  return prerenderBrowserAgent && prerenderBrowserAgent->IsInsertingPrerender();
 }
 
 #pragma mark Omnibox and LocationBar

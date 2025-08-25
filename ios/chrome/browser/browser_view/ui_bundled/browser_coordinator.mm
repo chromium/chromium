@@ -167,8 +167,7 @@
 #import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h"
 #import "ios/chrome/browser/prerender/model/preload_controller_delegate.h"
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 #import "ios/chrome/browser/presenters/ui_bundled/vertical_animation_container.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_view_coordinator.h"
 #import "ios/chrome/browser/print/coordinator/print_coordinator.h"
@@ -1213,11 +1212,9 @@ enum class ToolbarKind {
   _keyCommandsProvider.bookmarksHandler =
       static_cast<id<BookmarksCommands>>(_dispatcher);
 
-  if (!profile->IsOffTheRecord()) {
-    PrerenderService* prerenderService =
-        PrerenderServiceFactory::GetForProfile(profile);
-    DCHECK(prerenderService);
-    prerenderService->SetDelegate(self);
+  if (PrerenderBrowserAgent* prerenderBrowserAgent =
+          PrerenderBrowserAgent::FromBrowser(self.browser)) {
+    prerenderBrowserAgent->SetDelegate(self);
   }
 
   _fullscreenController = FullscreenController::FromBrowser(browser);

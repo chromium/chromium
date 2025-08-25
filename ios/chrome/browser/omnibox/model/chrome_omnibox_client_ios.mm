@@ -30,8 +30,7 @@
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -187,10 +186,9 @@ void ChromeOmniboxClientIOS::OnFocusChanged(OmniboxFocusState state,
   // Otherwise, they will live forever in cases where the user navigates to a
   // different URL than what is prerendered.
   if (state == OMNIBOX_FOCUS_NONE) {
-    PrerenderService* service =
-        PrerenderServiceFactory::GetForProfile(profile_);
-    if (service) {
-      service->CancelAllPrerenders();
+    PrerenderBrowserAgent* agent = PrerenderBrowserAgent::FromBrowser(browser_);
+    if (agent) {
+      agent->CancelPrerender();
     }
   }
 }
@@ -213,8 +211,8 @@ void ChromeOmniboxClientIOS::OnResultChanged(
     return;
   }
 
-  PrerenderService* service = PrerenderServiceFactory::GetForProfile(profile_);
-  if (!service) {
+  PrerenderBrowserAgent* agent = PrerenderBrowserAgent::FromBrowser(browser_);
+  if (!agent) {
     return;
   }
 
@@ -231,11 +229,13 @@ void ChromeOmniboxClientIOS::OnResultChanged(
       match.type == AutocompleteMatchType::HISTORY_URL) {
     ui::PageTransition transition = ui::PageTransitionFromInt(
         match.transition | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-    service->StartPrerender(match.destination_url, web::Referrer(), transition,
-                            location_bar_->GetWebState(),
-                            is_inline_autocomplete);
+    agent->StartPrerender(
+        match.destination_url, web::Referrer(), transition,
+        is_inline_autocomplete
+            ? PrerenderBrowserAgent::PrerenderPolicy::kNoDelay
+            : PrerenderBrowserAgent::PrerenderPolicy::kDefaultDelay);
   } else {
-    service->CancelAllPrerenders();
+    agent->CancelPrerender();
   }
 }
 
