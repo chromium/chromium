@@ -455,7 +455,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Chrome Profile management link"/>
   <int value="21" label="Reauth button (Verify it's you)"/>
   <int value="22" label="Autofill settings button"/>
-  <int value="23" label="History sync opt-in button"/>
+  <int value="23" label="(DEPRECATED): History sync opt-in button"/>
   <int value="24" label="Batch upload button"/>
 </enum>
 
