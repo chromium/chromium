@@ -12,6 +12,7 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
+@class PreloadController;
 @protocol PreloadControllerDelegate;
 
 // A BrowserAgent responsible for managing the pre-rendering of web pages.
@@ -61,6 +62,9 @@ class PrerenderBrowserAgent final
  private:
   friend class BrowserUserData<PrerenderBrowserAgent>;
   PrerenderBrowserAgent(Browser* browser);
+
+  __strong PreloadController* controller_;
+  bool loading_prerender_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_PRERENDER_MODEL_PRERENDER_BROWSER_AGENT_H_

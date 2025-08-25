@@ -10,8 +10,6 @@ source_set("model") {
   public = [
     "preload_controller_delegate.h",
     "prerender_browser_agent.h",
-    "prerender_service.h",
-    "prerender_service_factory.h",
     "prerender_tab_helper.h",
     "prerender_tab_helper_delegate.h",
   ]
@@ -19,9 +17,6 @@ source_set("model") {
     "preload_controller.h",
     "preload_controller.mm",
     "prerender_browser_agent.mm",
-    "prerender_service_factory.mm",
-    "prerender_service_impl.h",
-    "prerender_service_impl.mm",
     "prerender_tab_helper.mm",
   ]
 
@@ -64,10 +59,7 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "preload_controller_unittest.mm",
-    "prerender_service_impl_unittest.mm",
-  ]
+  sources = [ "preload_controller_unittest.mm" ]
   deps = [
     ":model",
     ":prerender_pref",

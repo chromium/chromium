@@ -112,7 +112,6 @@
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_factory_ios.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 #import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model_factory.h"
 #import "ios/chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
@@ -346,7 +345,6 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   PlusAddressSettingServiceFactory::GetInstance();
   PolicyBlocklistServiceFactory::GetInstance();
   PowerBookmarkServiceFactory::GetInstance();
-  PrerenderServiceFactory::GetInstance();
   PriceInsightsModelFactory::GetInstance();
   PromosManagerFactory::GetInstance();
   ProvisionalPushNotificationServiceFactory::GetInstance();

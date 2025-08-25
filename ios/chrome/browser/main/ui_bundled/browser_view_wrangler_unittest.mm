@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_observer.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
@@ -65,9 +64,6 @@ class BrowserViewWranglerTest : public PlatformTest {
     test_profile_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
-    test_profile_builder.AddTestingFactory(
-        PrerenderServiceFactory::GetInstance(),
-        PrerenderServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         ios::BookmarkModelFactory::GetInstance(),
         ios::BookmarkModelFactory::GetDefaultFactory());

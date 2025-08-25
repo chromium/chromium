@@ -7,8 +7,6 @@ include_rules = [
   "+ios/chrome/browser/bookmarks/model/bookmarks_utils.h",
   "+ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
-  "+ios/chrome/browser/prerender/model/prerender_service.h",
-  "+ios/chrome/browser/prerender/model/prerender_service_factory.h",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
   "+third_party/omnibox_proto",
 ]
