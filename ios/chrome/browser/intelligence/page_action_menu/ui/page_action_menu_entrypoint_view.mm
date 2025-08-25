@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
+#import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -18,6 +19,11 @@ namespace {
 
 // The point size of the entry point's symbol.
 const CGFloat kIconPointSize = 18.0;
+
+// Constants for the new badge view.
+const CGFloat kNewFeatureBadgeSize = 18.0;
+const CGFloat kNewFeatureFontSize = 10;
+const CGFloat kNewBadgeOffsetFromButtonCenter = 14.0;
 
 // The width of the extended button's tappable area.
 const CGFloat kMinimumWidth = 44;
@@ -33,11 +39,14 @@ const CGFloat kHighlightScaling = 0.7;
 @implementation PageActionMenuEntrypointView {
   // Button's background subview.
   UIView* _backgroundView;
+  // Whether the new badge is visible.
+  BOOL _isNewBadgeVisible;
+  // "New" badge in top-left corner.
+  NewFeatureBadgeView* _newBadgeView;
 }
 
-- (instancetype)init {
-  self = [super init];
-
+- (instancetype)initWithNewBadgeVisible:(BOOL)isNewBadgeVisible {
+  self = [super initWithFrame:CGRectZero];
   if (self) {
     self.accessibilityIdentifier = kAIHubEntrypointAccessibilityIdentifier;
     self.pointerInteractionEnabled = YES;
@@ -72,6 +81,7 @@ const CGFloat kHighlightScaling = 0.7;
     }
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     [self createBackgroundView];
+    [self setNewBadgeVisible:isNewBadgeVisible];
 
     [NSLayoutConstraint activateConstraints:@[
       [self.widthAnchor constraintGreaterThanOrEqualToConstant:kMinimumWidth],
@@ -84,6 +94,16 @@ const CGFloat kHighlightScaling = 0.7;
     ]];
   }
   return self;
+}
+
+- (void)setNewBadgeVisible:(BOOL)enabled {
+  _isNewBadgeVisible = enabled;
+
+  if (_isNewBadgeVisible) {
+    [self setUpButtonWithNewFeatureBadge];
+  } else {
+    [self removeNewFeatureBadge];
+  }
 }
 
 #pragma mark - PageActionMenuEntryPointCommands
@@ -123,6 +143,33 @@ const CGFloat kHighlightScaling = 0.7;
   _backgroundView.userInteractionEnabled = NO;
   _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   [self insertSubview:_backgroundView atIndex:0];
+}
+
+// Creates a new badge and positions the badge relative to the button.
+- (void)setUpButtonWithNewFeatureBadge {
+  _newBadgeView =
+      [[NewFeatureBadgeView alloc] initWithBadgeSize:kNewFeatureBadgeSize
+                                            fontSize:kNewFeatureFontSize];
+  _newBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
+  _newBadgeView.accessibilityElementsHidden = YES;
+  [self addSubview:_newBadgeView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_newBadgeView.centerXAnchor
+        constraintEqualToAnchor:self.centerXAnchor
+                       constant:kNewBadgeOffsetFromButtonCenter],
+    [_newBadgeView.centerYAnchor
+        constraintEqualToAnchor:self.centerYAnchor
+                       constant:-kNewBadgeOffsetFromButtonCenter],
+  ]];
+}
+
+// Removes the new feature badge.
+- (void)removeNewFeatureBadge {
+  if (_newBadgeView) {
+    [_newBadgeView removeFromSuperview];
+    _newBadgeView = nil;
+  }
 }
 
 @end

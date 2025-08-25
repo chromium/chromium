@@ -297,7 +297,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   }
 
   if (IsPageActionMenuEnabled()) {
-    _pageActionMenuEntrypointView = [[PageActionMenuEntrypointView alloc] init];
+    _pageActionMenuEntrypointView = [[PageActionMenuEntrypointView alloc]
+        initWithNewBadgeVisible:_isAIHubNewBadgeVisible];
     [_pageActionMenuEntrypointView
                addTarget:self
                   action:@selector(handlePageActionMenuEntrypointTapped)
