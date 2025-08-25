@@ -89,6 +89,7 @@ declare global {
         NEED_PASSWORD = 'need_password',
         CANCELLED = 'cancelled',
         BUSY = 'busy',
+        CORRUPTED = 'corrupted',
       }
 
       export enum FormatFileSystemType {

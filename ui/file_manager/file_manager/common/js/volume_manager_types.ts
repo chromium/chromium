@@ -179,6 +179,7 @@ export enum VolumeError {
   NEED_PASSWORD = 'need_password',
   CANCELLED = 'cancelled',
   BUSY = 'busy',
+  CORRUPTED = 'corrupted',
 }
 
 /** Source of each volume's data. */

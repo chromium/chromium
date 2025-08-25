@@ -90,7 +90,8 @@ enum MountError {
   unsupported_filesystem,
   need_password,
   cancelled,
-  busy
+  busy,
+  corrupted
 };
 
 // Filesystem to format to.
