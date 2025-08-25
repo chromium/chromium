@@ -83,7 +83,7 @@ class ArcNetUtilsTest : public testing::Test {
   static struct in_addr StringToIPv4Address(const std::string& buf) {
     struct in_addr addr = {};
     if (!inet_pton(AF_INET, buf.c_str(), &addr)) {
-      UNSAFE_TODO(memset(&addr, 0, sizeof(addr)));
+      addr = {};
     }
     return addr;
   }
