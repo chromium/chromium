@@ -750,8 +750,13 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
       return false;
     }
 
-    const HTMLCanvasElement* canvas =
-        Traversal<HTMLCanvasElement>::FirstAncestorOrSelf(*this);
+    const HTMLCanvasElement* canvas = nullptr;
+    for (const Element* element = this; element;
+         element = element->ParentOrShadowHostElement()) {
+      if ((canvas = DynamicTo<HTMLCanvasElement>(element))) {
+        break;
+      }
+    }
     DCHECK(canvas);
     if (LayoutObject* layout_object = canvas->GetLayoutObject()) {
       return layout_object->IsCanvas() &&
@@ -3776,6 +3781,11 @@ Node::InsertionNotificationRequest Element::InsertedInto(
 
   RecomputeDirectionFromParent();
 
+  auto* parent = ParentOrShadowHostElement();
+  if (parent && parent->IsCanvasOrInCanvasSubtree()) {
+    SetIsCanvasOrInCanvasSubtree(true);
+  }
+
   if (AnchorElementObserver* observer = GetAnchorElementObserver()) {
     observer->Notify();
   }
@@ -3855,10 +3865,6 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   EditContext* edit_context = editContext();
   if (edit_context && edit_context->GetExecutionContext() != context) {
     edit_context->SetExecutionContext(context);
-  }
-
-  if (parentElement() && parentElement()->IsCanvasOrInCanvasSubtree()) {
-    SetIsCanvasOrInCanvasSubtree(true);
   }
 
   if (GetDocument().StatePreservingAtomicMoveInProgress() &&
