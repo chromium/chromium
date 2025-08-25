@@ -287,8 +287,7 @@ void FileSystemAccessHandleBase::DoMove(
     bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/40276567): Update if this only needs write-only permission
-  DCHECK_EQ(GetReadWritePermissionStatus(),
+  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   manager()->ResolveTransferToken(
@@ -305,8 +304,7 @@ void FileSystemAccessHandleBase::DoRename(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // To get this far, we must have write access to the entry being moved.
   // Write access to the parent directory is not required for renames.
-  // TODO(crbug.com/40276567): Update if this only needs write-only permission
-  DCHECK_EQ(GetReadWritePermissionStatus(),
+  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   if (!manager()->IsSafePathComponent(
@@ -395,9 +393,8 @@ void FileSystemAccessHandleBase::DidResolveTokenToMove(
       resolved_destination_directory->CreateDirectoryHandle(context_);
 
   // Must have write access to the target directory for cross-directory moves.
-  // TODO(crbug.com/40276567): Update if this only needs write-only permission
   bool has_write_access_to_parent =
-      dir_handle->GetReadWritePermissionStatus() ==
+      dir_handle->GetEffectiveWritePermissionStatus() ==
       blink::mojom::PermissionStatus::GRANTED;
   if (!has_write_access_to_parent) {
     std::move(callback).Run(file_system_access_error::FromStatus(

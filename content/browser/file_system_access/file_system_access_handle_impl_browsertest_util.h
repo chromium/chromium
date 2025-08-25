@@ -69,9 +69,14 @@ class FileSystemAccessHandleImplPermissionBrowserTestBase
   void TearDownOnMainThread() override;
 
  protected:
-  // Sets expectations on the mock permission grants.
+  // Sets up expectations on the mock permission grants.
+  //
+  // `expected_mode`: The permission mode that is expected to be requested.
+  // `expected_shared_handle_state_count`: The number of shared handle states
+  // that are expected to have been created.
   void ExpectGetPermissionStatusAndReturnGranted(
-      blink::mojom::FileSystemAccessPermissionMode expected_mode);
+      blink::mojom::FileSystemAccessPermissionMode expected_mode,
+      size_t expected_shared_handle_state_count = 1u);
 
   std::unique_ptr<SpyingSharedHandleStateFactory> spying_factory_;
 };

@@ -86,13 +86,47 @@ class FileSystemAccessFileHandleImplWriteModeBrowserTest
       public testing::WithParamInterface<WriteModeTestParams> {
  public:
   FileSystemAccessFileHandleImplWriteModeBrowserTest() {
-    if (GetParam().is_feature_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kFileSystemAccessWriteMode);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kFileSystemAccessWriteMode);
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kFileSystemAccessWriteMode,
+        GetParam().is_feature_enabled);
+  }
+
+ protected:
+  // Creates a test file and a test directory in the same JS context to avoid
+  // navigation-related errors.
+  void CreateTestFileAndDirectory(const base::FilePath& directory_path,
+                                  const std::string& file_contents) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath file_path;
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(directory_path, &file_path));
+    EXPECT_TRUE(base::WriteFile(file_path, file_contents));
+
+    base::FilePath dir_path;
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        directory_path, FILE_PATH_LITERAL("test"), &dir_path));
+
+    // Set up file picker to select the file.
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{file_path}));
+    EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+    EXPECT_EQ(file_path.BaseName().AsUTF8Unsafe(),
+              EvalJs(shell(),
+                     "(async () => {"
+                     "  let [e] = await self.showOpenFilePicker();"
+                     "  self.localFile = e;"
+                     "  return e.name; })()"));
+
+    // Set up directory picker to select the directory.
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{dir_path}));
+    EXPECT_EQ(dir_path.BaseName().AsUTF8Unsafe(),
+              EvalJs(shell(),
+                     "(async () => {"
+                     "  let d = await self.showDirectoryPicker();"
+                     "  self.localDir = d;"
+                     "  return d.name; })()"));
   }
 
  private:
@@ -169,6 +203,79 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
                      "(async () => {"
                      "  await self.fileHandle.remove();"
                      "})()"));
+}
+
+// Verifies that `move()` on a local FS requests the correct permission mode
+// depending on whether the `kFileSystemAccessWriteMode` feature is enabled.
+IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
+                       Local_Move_RequestsCorrectPermissions) {
+  CreateTestFileAndDirectory(temp_dir_.GetPath(), "test file");
+
+  // Calling the above setup method creates two shared handle states.
+  ExpectGetPermissionStatusAndReturnGranted(
+      GetParam().expected_mode,
+      /*expected_shared_handle_state_count=*/2u);
+
+  EXPECT_TRUE(ExecJs(shell(), R"((async () => {
+      await self.localFile.move(self.localDir);
+  })())"));
+}
+
+// Verifies that `move()` on a sandboxed FS requests the correct permission
+// mode depending on whether the `kFileSystemAccessWriteMode` feature is
+// enabled.
+IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
+                       Sandboxed_Move_RequestsCorrectPermissions) {
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_));
+  ASSERT_TRUE(ExecJs(shell(), R"((async () => {
+      self.sandboxDir = await navigator.storage.getDirectory();
+      self.fileHandle = await self.sandboxDir.getFileHandle(
+          'test.txt', {create: true});
+      const writable = await self.fileHandle.createWritable();
+      await writable.write('some content');
+      await writable.close();
+    })())"));
+
+  ExpectGetPermissionStatusAndReturnGranted(GetParam().expected_mode);
+
+  EXPECT_TRUE(ExecJs(shell(), R"((async () => {
+      await self.fileHandle.move(self.sandboxDir);
+  })())"));
+}
+
+// Verifies that `rename()` on a local FS requests the correct permission mode
+// depending on whether the `kFileSystemAccessWriteMode` feature is enabled.
+IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
+                       Local_Rename_RequestsCorrectPermissions) {
+  CreateTestFileInDirectory(temp_dir_.GetPath(), "test file");
+
+  ExpectGetPermissionStatusAndReturnGranted(GetParam().expected_mode);
+
+  EXPECT_TRUE(ExecJs(shell(), R"((async () => {
+      await self.localFile.move('test2.txt');
+  })())"));
+}
+
+// Verifies that `rename()` on a sandboxed FS requests the correct permission
+// mode depending on whether the `kFileSystemAccessWriteMode` feature is
+// enabled.
+IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
+                       Sandboxed_Rename_RequestsCorrectPermissions) {
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_));
+  ASSERT_TRUE(ExecJs(shell(), R"((async () => {
+      self.sandboxDir = await navigator.storage.getDirectory();
+      self.fileHandle = await self.sandboxDir.getFileHandle(
+          'test.txt', {create: true});
+      const writable = await self.fileHandle.createWritable();
+      await writable.write('some content');
+      await writable.close();
+    })())"));
+
+  ExpectGetPermissionStatusAndReturnGranted(GetParam().expected_mode);
+
+  EXPECT_TRUE(ExecJs(shell(), R"((async () => {
+      await self.fileHandle.move('test2.txt');
+  })())"));
 }
 
 INSTANTIATE_TEST_SUITE_P(

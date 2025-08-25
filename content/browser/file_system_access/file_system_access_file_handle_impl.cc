@@ -213,9 +213,8 @@ void FileSystemAccessFileHandleImpl::Move(
   RenderFrameHost* rfh = RenderFrameHost::FromID(context().frame_id);
   bool has_transient_user_activation = rfh && rfh->HasTransientUserActivation();
 
-  // TODO(crbug.com/40276567): Review whether to switch to write-only.
   RunWithPermission(
-      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
       base::BindOnce(&FileSystemAccessHandleBase::DoMove,
                      weak_factory_.GetWeakPtr(),
                      std::move(destination_directory), new_entry_name,
@@ -234,9 +233,8 @@ void FileSystemAccessFileHandleImpl::Rename(const std::string& new_entry_name,
   RenderFrameHost* rfh = RenderFrameHost::FromID(context().frame_id);
   bool has_transient_user_activation = rfh && rfh->HasTransientUserActivation();
 
-  // TODO(crbug.com/40276567): Review whether to switch to write-only.
   RunWithPermission(
-      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
       base::BindOnce(&FileSystemAccessHandleBase::DoRename,
                      weak_factory_.GetWeakPtr(), new_entry_name,
                      has_transient_user_activation),

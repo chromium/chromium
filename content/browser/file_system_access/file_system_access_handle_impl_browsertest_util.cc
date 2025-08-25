@@ -127,8 +127,10 @@ void FileSystemAccessHandleImplPermissionBrowserTestBase::
 
 void FileSystemAccessHandleImplPermissionBrowserTestBase::
     ExpectGetPermissionStatusAndReturnGranted(
-        blink::mojom::FileSystemAccessPermissionMode expected_mode) {
-  ASSERT_EQ(spying_factory_->build_count(), 1u);
+        blink::mojom::FileSystemAccessPermissionMode expected_mode,
+        size_t expected_shared_handle_state_count) {
+  ASSERT_EQ(spying_factory_->build_count(),
+            expected_shared_handle_state_count);
 
   auto* read_grant = static_cast<MockFileSystemAccessPermissionGrant*>(
       spying_factory_->spying_read_grant());
