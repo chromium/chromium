@@ -36,7 +36,7 @@
     "postcss": "8.5.3",
     "postcss-minify": "1.1.0",
     "terser": "5.37.0",
-    "ts-proto": "2.7.0",
+    "ts-proto": "2.7.7",
     "typescript": "5.8.2"
   }
 }
