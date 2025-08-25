@@ -53,8 +53,11 @@ final class JniCallbackImpl<T extends @Nullable Object>
 
     @Override
     public void onResult(T result) {
-        // TODO(mheikal): maybe store destroy callstack to output here?
-        assert mNativePointer != 0 : "Called destroyed callback";
+        // Exception rather than assert since this sort of error often happens in low-frequency
+        // edge cases.
+        if (mNativePointer == 0) {
+            throw new NullPointerException();
+        }
         JniCallbackImplJni.get().onResult(mIsRepeating, mNativePointer, result);
         if (!mIsRepeating) {
             mNativePointer = 0;
