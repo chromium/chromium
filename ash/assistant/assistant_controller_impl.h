@@ -20,7 +20,6 @@
 #include "ash/assistant/assistant_suggestions_controller_impl.h"
 #include "ash/assistant/assistant_ui_controller_impl.h"
 #include "ash/assistant/assistant_view_delegate_impl.h"
-#include "ash/assistant/assistant_web_ui_controller.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/public/cpp/assistant/assistant_interface_binder.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
@@ -121,10 +120,6 @@ class ASH_EXPORT AssistantControllerImpl
     return &assistant_setup_controller_;
   }
 
-  AssistantWebUiController* web_ui_controller() {
-    return &assistant_web_ui_controller_;
-  }
-
   AssistantViewDelegate* view_delegate() { return &view_delegate_; }
 
   bool IsAssistantReady() const;
@@ -164,7 +159,6 @@ class ASH_EXPORT AssistantControllerImpl
   AssistantSetupController assistant_setup_controller_{this};
   AssistantSuggestionsControllerImpl assistant_suggestions_controller_;
   AssistantUiControllerImpl assistant_ui_controller_{this};
-  AssistantWebUiController assistant_web_ui_controller_;
 
   AssistantViewDelegateImpl view_delegate_{this};
 
