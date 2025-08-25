@@ -18,6 +18,9 @@ jboolean JNI_ComposeplateUtils_IsAimEntrypointEligible(JNIEnv* env,
 
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
+  if (!aim_eligibility_service) {
+    return false;
+  }
 
   // If the server eligibility is enabled, check overall eligibility alone.
   // The service will control locale rollout so there's no need to check locale.

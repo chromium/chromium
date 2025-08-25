@@ -21,6 +21,9 @@ class AimEligibilityServiceFactory : public ProfileKeyedServiceFactory {
   static AimEligibilityService* GetForProfile(Profile* profile);
   static AimEligibilityServiceFactory* GetInstance();
 
+  // Returns the default factory to pass to `SetTestingFactory()` for testing.
+  static TestingFactory GetDefaultFactory();
+
   AimEligibilityServiceFactory(const AimEligibilityServiceFactory&) = delete;
   AimEligibilityServiceFactory& operator=(const AimEligibilityServiceFactory&) =
       delete;
@@ -34,6 +37,8 @@ class AimEligibilityServiceFactory : public ProfileKeyedServiceFactory {
   // Overrides from BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_AIM_ELIGIBILITY_SERVICE_FACTORY_H_

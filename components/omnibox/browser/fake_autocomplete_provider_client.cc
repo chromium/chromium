@@ -38,7 +38,7 @@ FakeAutocompleteProviderClient::FakeAutocompleteProviderClient() {
       search_engines_test_enviroment_.pref_service().registry());
   mock_aim_eligibility_service_ = std::make_unique<MockAimEligibilityService>(
       search_engines_test_enviroment_.pref_service(),
-      *(search_engines_test_enviroment_.template_url_service()),
+      search_engines_test_enviroment_.template_url_service(),
       /*url_loader_factory=*/nullptr);
 }
 

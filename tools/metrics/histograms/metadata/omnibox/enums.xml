@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kSuccess"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.cc:ServerAimEligibilityRequestStatus) -->
+<!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.h:ServerRequestStatus) -->
 
 <enum name="SuggestionAnswerOptionalType">
   <summary>
