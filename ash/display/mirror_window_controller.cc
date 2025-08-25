@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/display/mirror_window_controller.h"
-#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
@@ -18,6 +17,7 @@
 #include "ash/root_window_settings.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -35,7 +35,7 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 
 namespace ash {
 namespace {

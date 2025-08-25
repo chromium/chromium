@@ -34,7 +34,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 
 namespace ash {
 

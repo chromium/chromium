@@ -34,7 +34,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/test/test_screen.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc {

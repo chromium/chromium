@@ -127,7 +127,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/test_widget_builder.h"
