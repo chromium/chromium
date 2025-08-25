@@ -656,7 +656,7 @@ constexpr char kDeviceFailNotificationId[] = "swa-device-fail-id";
 // In the notification generation logic there is a distinction
 // between parent and child volumes found by the volume is_parent()
 // method. Both parent and child unknown volume filesystems generate
-// the same nofication.
+// the same notification.
 TEST_F(SystemNotificationManagerTest, DeviceUnsupportedDefault) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
