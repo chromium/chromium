@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/lens/lens_features.h"
-#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/variations/service/variations_service.h"
 
 namespace lens {
@@ -45,7 +43,7 @@ bool IsLensOverlayContextualSearchboxEnabled() {
   auto* features = g_browser_process->GetFeatures();
 
   // Safety check since this is a CP'd change.
-  if (!variations_service || !features) {
+  if(!variations_service || !features) {
     return false;
   }
 
@@ -53,19 +51,6 @@ bool IsLensOverlayContextualSearchboxEnabled() {
   return variations_service->GetStoredPermanentCountry() == "us" &&
          features->application_locale_storage() &&
          features->application_locale_storage()->Get() == "en-US";
-}
-
-bool IsAimM3Enabled(Profile* profile) {
-  if (!lens::features::IsAimM3Enabled()) {
-    return false;
-  }
-
-  const auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile);
-
-  // IsAimEligible() checks the local (DSE and Enterprise policy) eligibility
-  // and server eligibility requirements.
-  return aim_eligibility_service->IsAimEligible();
 }
 
 }  // namespace lens

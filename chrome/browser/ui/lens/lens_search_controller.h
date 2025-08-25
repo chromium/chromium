@@ -323,6 +323,7 @@ class LensSearchController {
   State state() { return state_; }
 
  private:
+
   // Passes the correct callbacks and dependencies to the protected
   // CreateLensQueryController method.
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(

@@ -518,9 +518,7 @@ LensSearchController::CreateLensSearchboxController() {
 
 std::unique_ptr<lens::LensComposeboxController>
 LensSearchController::CreateLensComposeboxController() {
-  Profile* profile =
-      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
-  return std::make_unique<lens::LensComposeboxController>(this, profile);
+  return std::make_unique<lens::LensComposeboxController>(this);
 }
 
 std::unique_ptr<lens::LensSearchContextualizationController>

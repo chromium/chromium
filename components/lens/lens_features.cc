@@ -1101,10 +1101,6 @@ bool IsUpdatedClientContextEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayUpdatedClientContext);
 }
 
-bool IsAimM3Enabled() {
-  return base::FeatureList::IsEnabled(kLensSearchAimM3);
-}
-
 bool ShouldShowAimInSidePanel() {
   return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
          kOpenAimInSidePanel.Get();

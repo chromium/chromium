@@ -844,11 +844,6 @@ extern bool ShowContextualSearchboxZeroPrefixSuggest();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsUpdatedClientContextEnabled();
 
-// Whether the AIM M3 flag is enabled. This does not check individual params
-// such as whether to show AIM in the side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsAimM3Enabled();
-
 // Whether to show open AIM search pages in the side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldShowAimInSidePanel();
