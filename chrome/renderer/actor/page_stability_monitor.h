@@ -91,6 +91,11 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
   // Synchronously moves to the given state.
   void MoveToState(State new_state);
 
+  // Returns a closure that synchronously moves to the given state. This avoids
+  // the extra scheduling hop of `PostMoveToStateClosure`, which is useful if
+  // the closure is already being scheduled to run in a separate task.
+  base::OnceClosure MoveToStateClosure(State new_state);
+
   // Helper that provides a closure that invokes MoveToState with the given
   // State on the default task queue for the sequence that created this object.
   base::OnceClosure PostMoveToStateClosure(

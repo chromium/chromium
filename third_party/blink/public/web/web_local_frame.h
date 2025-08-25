@@ -60,6 +60,7 @@
 #include "v8/include/v8-forward.h"
 
 namespace base {
+class Location;
 class SingleThreadTaskRunner;
 }
 
@@ -753,6 +754,11 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // They have the same lifetime as the frame.
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       TaskType) = 0;
+
+  // Schedules a callback to run when the main thread is idle.
+  virtual void PostIdleTask(
+      const base::Location&,
+      base::OnceCallback<void(base::TimeTicks deadline)>) = 0;
 
   // Returns the WebInputMethodController associated with this local frame.
   virtual WebInputMethodController* GetInputMethodController() = 0;

@@ -158,23 +158,26 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     }
     case State::kWaitForNetworkIdle: {
       network_idle_callback_.Reset(
-          PostMoveToStateClosure(State::kWaitForMainThreadIdle));
+          MoveToStateClosure(State::kWaitForMainThreadIdle));
       render_frame()->GetWebFrame()->RequestNetworkIdleCallback(
           network_idle_callback_.callback());
       break;
     }
     case State::kWaitForMainThreadIdle: {
       SetTimeout(State::kTimeoutMainThread, GetMainThreadTimeoutDelay());
-      render_frame()
-          ->GetTaskRunner(blink::TaskType::kIdleTask)
-          ->PostTask(FROM_HERE,
-                     PostMoveToStateClosure(State::kWaitForVisualStateRequest));
+      render_frame()->GetWebFrame()->PostIdleTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](base::OnceClosure callback, base::TimeTicks unused_deadline) {
+                std::move(callback).Run();
+              },
+              MoveToStateClosure(State::kWaitForVisualStateRequest)));
       break;
     }
     case State::kWaitForVisualStateRequest: {
       WebFrameWidget* widget = render_frame()->GetWebFrame()->FrameWidget();
       if (!widget->InsertVisualStateRequest(
-              PostMoveToStateClosure(State::kMaybeDelayCallback))) {
+              MoveToStateClosure(State::kMaybeDelayCallback))) {
         journal_entry_->EndEntry(
             "Failed to wait for new frame presentation due to no "
             "compositor.");
@@ -229,26 +232,26 @@ void PageStabilityMonitor::MoveToState(State new_state) {
   }
 }
 
+base::OnceClosure PageStabilityMonitor::MoveToStateClosure(State new_state) {
+  return base::BindOnce(&PageStabilityMonitor::MoveToState,
+                        weak_ptr_factory_.GetWeakPtr(), new_state);
+}
+
 base::OnceClosure PageStabilityMonitor::PostMoveToStateClosure(
     State new_state,
     base::TimeDelta delay) {
-  base::OnceClosure task =
-      base::BindOnce(&PageStabilityMonitor::MoveToState,
-                     weak_ptr_factory_.GetWeakPtr(), new_state);
   return base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> task_runner,
          base::OnceClosure task, base::TimeDelta delay) {
         task_runner->PostDelayedTask(FROM_HERE, std::move(task), delay);
       },
-      base::SequencedTaskRunner::GetCurrentDefault(), std::move(task), delay);
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      MoveToStateClosure(new_state), delay);
 }
 
 base::OnceCallback<base::DelayedTaskHandle()>
 PageStabilityMonitor::PostCancelableMoveToStateClosure(State new_state,
                                                        base::TimeDelta delay) {
-  base::OnceClosure task =
-      base::BindOnce(&PageStabilityMonitor::MoveToState,
-                     weak_ptr_factory_.GetWeakPtr(), new_state);
   return base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> task_runner,
          base::OnceClosure task, base::TimeDelta delay) {
@@ -256,7 +259,8 @@ PageStabilityMonitor::PostCancelableMoveToStateClosure(State new_state,
             base::subtle::PostDelayedTaskPassKey(), FROM_HERE, std::move(task),
             delay);
       },
-      base::SequencedTaskRunner::GetCurrentDefault(), std::move(task), delay);
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      MoveToStateClosure(new_state), delay);
 }
 
 void PageStabilityMonitor::SetTimeout(State timeout_type,

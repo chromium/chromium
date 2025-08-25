@@ -274,6 +274,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -1256,6 +1257,12 @@ void WebLocalFrameImpl::DeprecatedStopLoading() {
 
 void WebLocalFrameImpl::RequestNetworkIdleCallback(base::OnceClosure callback) {
   GetFrame()->RequestNetworkIdleCallback(std::move(callback));
+}
+
+void WebLocalFrameImpl::PostIdleTask(
+    const base::Location& location,
+    base::OnceCallback<void(base::TimeTicks deadline)> callback) {
+  ThreadScheduler::Current()->PostIdleTask(location, std::move(callback));
 }
 
 void WebLocalFrameImpl::ReplaceSelection(const WebString& text) {

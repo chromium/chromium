@@ -310,6 +310,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   FrameScheduler* Scheduler() const override;
   scheduler::WebAgentGroupScheduler* GetAgentGroupScheduler() const override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override;
+  void PostIdleTask(
+      const base::Location&,
+      base::OnceCallback<void(base::TimeTicks deadline)>) override;
   WebInputMethodController* GetInputMethodController() override;
   std::unique_ptr<WebAssociatedURLLoader> CreateAssociatedURLLoader(
       const WebAssociatedURLLoaderOptions&) override;
