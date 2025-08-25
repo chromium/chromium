@@ -148,7 +148,8 @@ struct EligibleMatchesAndActions {
     // action in order to ensure that there's at most one AIM entrypoint shown
     // in the Omnibox.
     bool is_aim_page_action_enabled =
-        OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(client);
+        OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
+            client->GetAimEligibilityService());
     toolbelt_ai_mode =
         toolbelt &&
         ToolbeltActionEligible(

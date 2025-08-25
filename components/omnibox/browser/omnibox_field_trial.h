@@ -15,6 +15,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -413,7 +414,8 @@ bool IsHideSuggestionGroupHeadersEnabledInContext(
 bool IsDeterministicAimActionInTypedStateEnabled(AutocompleteProviderClient* client);
 
 // Returns whether AIM page action in Omnibox is enabled.
-bool IsAimOmniboxEntrypointEnabled(const AutocompleteProviderClient* client);
+bool IsAimOmniboxEntrypointEnabled(
+    const AimEligibilityService* aim_eligibility_service);
 
 // Rich autocompletion.
 bool IsRichAutocompletionEnabled();
