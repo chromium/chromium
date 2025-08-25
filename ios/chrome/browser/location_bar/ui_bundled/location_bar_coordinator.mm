@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar_delegate.h"
@@ -67,6 +68,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -126,6 +128,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // Must outlive `_toolbarCoordinator`.
   std::unique_ptr<LocationBarModelDelegateIOS> _locationBarModelDelegate;
   std::unique_ptr<LocationBarModel> _locationBarModel;
+
+  // Service for local and profile preferences.
+  raw_ptr<PrefService> _prefService;
 }
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -200,7 +205,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
-  self.viewController.profilePrefs = self.profile->GetPrefs();
+  _prefService = self.profile->GetPrefs();
+  self.viewController.profilePrefs = _prefService;
   self.viewController.delegate = self;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
@@ -222,6 +228,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   id<HelpCommands> helpHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
   [self.viewController setHelpCommandsHandler:helpHandler];
+  self.viewController.isAIHubNewBadgeVisible = [self isAIHubNewBadgeVisible];
 
   _locationBar = std::make_unique<WebLocationBarImpl>(self);
   _locationBar->SetURLLoader(self);
@@ -413,6 +420,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   _locationBarModel = nullptr;
   _locationBarModelDelegate = nullptr;
+  _prefService = nullptr;
 
   _badgeFullscreenUIUpdater = nullptr;
   _incognitoBadgeFullscreenUIUpdater = nullptr;
@@ -801,6 +809,24 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   }
 
   [self cancelOmniboxEdit];
+}
+
+// Decides if AI Hub new badge should show. Start time is only non-null if
+// the time pref was recorded as a result of the FRE Promo showing.
+- (BOOL)isAIHubNewBadgeVisible {
+  if (!base::FeatureList::IsEnabled(kAIHubNewBadge)) {
+    return NO;
+  }
+
+  base::Time expirationTime =
+      _prefService->GetTime(prefs::kAIHubNewBadgeExpirationTime);
+  base::Time now = base::Time::Now();
+
+  if (expirationTime.is_null() || now > expirationTime) {
+    return NO;
+  }
+
+  return YES;
 }
 
 @end

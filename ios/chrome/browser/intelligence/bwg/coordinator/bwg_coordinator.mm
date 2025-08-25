@@ -143,6 +143,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
     _prefService->SetInteger(
         prefs::kIOSBWGPromoImpressionCount,
         _prefService->GetInteger(prefs::kIOSBWGPromoImpressionCount) + 1);
+    [_mediator logAIHubNewBadgeExpirationTime];
   }
 
   _FREWrapperViewController = [[BWGFREWrapperViewController alloc]

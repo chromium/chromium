@@ -12,6 +12,11 @@ namespace prefs {
 inline constexpr char kAddressBarSettingsNewBadgeShownCount[] =
     "ios.address_bar_settings_new_badge_shown_count";
 
+// Timestamp marking when the "new" badge for the AI Hub icon should stop
+// showing.
+inline constexpr char kAIHubNewBadgeExpirationTime[] =
+    "ios.ai_hub_new_badge_expiration_time";
+
 // The application locale.
 inline constexpr char kApplicationLocale[] = "intl.app_locale";
 

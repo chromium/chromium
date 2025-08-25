@@ -1059,6 +1059,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterIntegerPref(prefs::kGeminiEnabledByPolicy, 0);
 
+  registry->RegisterTimePref(prefs::kAIHubNewBadgeExpirationTime, base::Time());
+
   // Deprecated 09/2024 (migrated to localState prefs).
   registry->RegisterBooleanPref(prefs::kIncognitoInterstitialEnabled, false);
 

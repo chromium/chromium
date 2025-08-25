@@ -35,6 +35,9 @@ class WebStateList;
 // Presents the BWG flow, which can either show the FRE or BWG directly.
 - (void)presentBWGFlow;
 
+// Records expiration time for AI Hub's "new" badge criteria.
+- (void)logAIHubNewBadgeExpirationTime;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_BWG_MEDIATOR_H_

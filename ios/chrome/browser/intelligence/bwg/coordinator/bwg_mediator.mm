@@ -101,6 +101,19 @@
   [self prepareBWGOverlay];
 }
 
+- (void)logAIHubNewBadgeExpirationTime {
+  BOOL newBadgeEnabled = base::FeatureList::IsEnabled(kAIHubNewBadge);
+  BOOL isExpirationTimeNull =
+      _prefService->GetTime(prefs::kAIHubNewBadgeExpirationTime).is_null();
+
+  if (!newBadgeEnabled || !isExpirationTimeNull) {
+    return;
+  }
+
+  base::Time twoWeeksLater = base::Time::Now() + base::Days(14);
+  _prefService->SetTime(prefs::kAIHubNewBadgeExpirationTime, twoWeeksLater);
+}
+
 #pragma mark - BWGConsentMutator
 
 // Did consent to BWG.
