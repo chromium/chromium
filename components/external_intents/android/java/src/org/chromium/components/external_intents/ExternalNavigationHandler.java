@@ -43,6 +43,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -2625,11 +2626,13 @@ public class ExternalNavigationHandler {
 
     /**
      * Parses the scheme out of the URL if possible, trimming and getting rid of unsafe characters.
-     * This is useful for determining if a URL has a sneaky, unsafe scheme, e.g. "java  script" or
+     * This is useful for determining if a URL has a sneaky, unsafe scheme, e.g. "java script" or
      * "j$a$r". See: http://crbug.com/248398
+     *
      * @return The sanitized URL scheme or null if no scheme is specified.
      */
-    public static @Nullable String getSanitizedUrlScheme(String url) {
+    @Contract("null -> null")
+    public static @Nullable String getSanitizedUrlScheme(@Nullable String url) {
         if (url == null) {
             return null;
         }

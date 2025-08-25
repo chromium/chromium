@@ -142,6 +142,7 @@ public class DragAndDropLauncherActivity extends Activity {
         if (chromeDropDataAndroid instanceof ChromeTabDropDataAndroid tabDropData) {
             intent = getTabIntent(intent, tabDropData.tab);
         } else if (chromeDropDataAndroid instanceof ChromeTabGroupDropDataAndroid groupDropData) {
+            assert groupDropData.tabGroupMetadata != null;
             intent = getTabGroupIntent(intent, groupDropData.tabGroupMetadata);
         } else if (chromeDropDataAndroid
                 instanceof ChromeMultiTabDropDataAndroid multiTabDropData) {
@@ -210,7 +211,7 @@ public class DragAndDropLauncherActivity extends Activity {
      * @return The intent that will be used to move a dragged tab group to a new Chrome instance.
      */
     @VisibleForTesting
-    static Intent getTabGroupIntent(Intent intent, @Nullable TabGroupMetadata tabGroupMetadata) {
+    static Intent getTabGroupIntent(Intent intent, TabGroupMetadata tabGroupMetadata) {
         intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.TAB_GROUP_IN_STRIP);
         IntentHandler.setTabGroupMetadata(intent, tabGroupMetadata);
         return intent;

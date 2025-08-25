@@ -333,8 +333,10 @@ public class ChromeTabCreator extends TabCreator
                 TabReparentingParams params = (TabReparentingParams) asyncParams;
                 tab = params.getTabToReparent();
 
-                @Nullable
-                TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
+                assert intent != null;
+
+                @Nullable TabGroupMetadata tabGroupMetadata =
+                        IntentHandler.getTabGroupMetadata(intent);
                 if (tabGroupMetadata != null && tabGroupMetadata.selectedTabId != tab.getId()) {
                     type = TabLaunchType.FROM_REPARENTING_BACKGROUND;
                 } else {

@@ -19,6 +19,7 @@ import android.os.Parcelable;
 import android.os.TransactionTooLargeException;
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -540,6 +541,7 @@ public class IntentUtils {
      * @param intent An Intent to be checked.
      * @return Whether an intent originates from the current app.
      */
+    @Contract("null -> false")
     public static boolean isTrustedIntentFromSelf(@Nullable Intent intent) {
         if (intent == null) return false;
 

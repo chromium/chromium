@@ -53,7 +53,7 @@ public class SafeBrowsingReferringAppBridge {
         public ReferringAppInfo(
                 @ReferringAppSource int referringAppSource,
                 String referringAppName,
-                String targetUrl,
+                @Nullable String targetUrl,
                 @Nullable String referringWebApkStartUrl,
                 @Nullable String referringWebApkManifestId) {
             // Do not return null strings to native code.
