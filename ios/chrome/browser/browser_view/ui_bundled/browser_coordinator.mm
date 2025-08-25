@@ -1137,7 +1137,8 @@ enum class ToolbarKind {
 
 // Creates the browser view controller dependencies.
 - (void)createViewControllerDependencies {
-  _dispatcher = self.browser->GetCommandDispatcher();
+  Browser* browser = self.browser;
+  _dispatcher = browser->GetCommandDispatcher();
 
   // Add commands protocols handled by this class in this array to let the
   // dispatcher know where to dispatch such commands. This must be done before
@@ -1191,10 +1192,9 @@ enum class ToolbarKind {
     [_dispatcher startDispatchingToTarget:self forProtocol:protocol];
   }
 
-  ProfileIOS* profile = self.profile;
+  ProfileIOS* profile = browser->GetProfile();
 
-  _keyCommandsProvider =
-      [[KeyCommandsProvider alloc] initWithBrowser:self.browser];
+  _keyCommandsProvider = [[KeyCommandsProvider alloc] initWithBrowser:browser];
   _keyCommandsProvider.applicationHandler =
       HandlerForProtocol(_dispatcher, ApplicationCommands);
   _keyCommandsProvider.settingsHandler =
@@ -1220,29 +1220,27 @@ enum class ToolbarKind {
     prerenderService->SetDelegate(self);
   }
 
-  _fullscreenController = FullscreenController::FromBrowser(self.browser);
-  _layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
-  _webNavigationBrowserAgent =
-      WebNavigationBrowserAgent::FromBrowser(self.browser);
-  _urlLoadingBrowserAgent = UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  _fullscreenController = FullscreenController::FromBrowser(browser);
+  _layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
+  _webNavigationBrowserAgent = WebNavigationBrowserAgent::FromBrowser(browser);
+  _urlLoadingBrowserAgent = UrlLoadingBrowserAgent::FromBrowser(browser);
   _urlLoadingNotifierBrowserAgent =
-      UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
+      UrlLoadingNotifierBrowserAgent::FromBrowser(browser);
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     _tabStripCoordinator =
-        [[TabStripCoordinator alloc] initWithBrowser:self.browser];
+        [[TabStripCoordinator alloc] initWithBrowser:browser];
   }
 
   _bubblePresenterCoordinator =
-      [[BubblePresenterCoordinator alloc] initWithBrowser:self.browser];
+      [[BubblePresenterCoordinator alloc] initWithBrowser:browser];
   _bubblePresenterCoordinator.bubblePresenterDelegate = self;
   [_bubblePresenterCoordinator start];
 
-  _toolbarCoordinator =
-      [[ToolbarCoordinator alloc] initWithBrowser:self.browser];
+  _toolbarCoordinator = [[ToolbarCoordinator alloc] initWithBrowser:browser];
 
   OmniboxPositionBrowserAgent* omniboxPositionBrowserAgent =
-      OmniboxPositionBrowserAgent::FromBrowser(self.browser);
+      OmniboxPositionBrowserAgent::FromBrowser(browser);
   _toolbarAccessoryPresenter = [[ToolbarAccessoryPresenter alloc]
               initWithIsIncognito:profile->IsOffTheRecord()
       omniboxPositionBrowserAgent:omniboxPositionBrowserAgent];
@@ -1253,7 +1251,7 @@ enum class ToolbarKind {
 
   _sideSwipeCoordinator = [[SideSwipeCoordinator alloc]
       initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
+                         browser:browser];
 
   _sideSwipeCoordinator.toolbarInteractionHandler = _toolbarCoordinator;
   _sideSwipeCoordinator.toolbarSnapshotProvider = _toolbarCoordinator;
@@ -1261,26 +1259,26 @@ enum class ToolbarKind {
   [_sideSwipeCoordinator start];
 
   _bookmarksCoordinator =
-      [[BookmarksCoordinator alloc] initWithBrowser:self.browser];
+      [[BookmarksCoordinator alloc] initWithBrowser:browser];
 
-  self.browserContainerCoordinator = [[BrowserContainerCoordinator alloc]
-      initWithBaseViewController:nil
-                         browser:self.browser];
+  self.browserContainerCoordinator =
+      [[BrowserContainerCoordinator alloc] initWithBaseViewController:nil
+                                                              browser:browser];
   [self.browserContainerCoordinator start];
 
   self.downloadManagerCoordinator = [[DownloadManagerCoordinator alloc]
       initWithBaseViewController:self.browserContainerCoordinator.viewController
-                         browser:self.browser];
+                         browser:browser];
   self.downloadManagerCoordinator.presenter =
       [[VerticalAnimationContainer alloc] init];
   self.tabLifecycleMediator.downloadManagerTabHelperDelegate =
       self.downloadManagerCoordinator;
 
   self.qrScannerCoordinator =
-      [[QRScannerLegacyCoordinator alloc] initWithBrowser:self.browser];
+      [[QRScannerLegacyCoordinator alloc] initWithBrowser:browser];
 
   self.popupMenuCoordinator =
-      [[PopupMenuCoordinator alloc] initWithBrowser:self.browser];
+      [[PopupMenuCoordinator alloc] initWithBrowser:browser];
   self.popupMenuCoordinator.UIUpdater = _toolbarCoordinator;
   // Coordinator `start` is executed before setting it's `baseViewController`.
   // It is done intentionally, since this does not affecting the coordinator's
@@ -1288,21 +1286,20 @@ enum class ToolbarKind {
   [self.popupMenuCoordinator start];
 
   _NTPCoordinator = [[NewTabPageCoordinator alloc]
-       initWithBrowser:self.browser
+       initWithBrowser:browser
       componentFactory:[[NewTabPageComponentFactory alloc] init]];
   _NTPCoordinator.toolbarDelegate = _toolbarCoordinator;
 
   if (IsLVFUnifiedExperienceEnabled(profile->GetPrefs())) {
     _lensViewFinderCoordinator =
-        [[LensViewFinderCoordinator alloc] initWithBrowser:self.browser];
+        [[LensViewFinderCoordinator alloc] initWithBrowser:browser];
   } else {
-    _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
+    _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:browser];
   }
 
-  _safeAreaProvider = [[SafeAreaProvider alloc] initWithBrowser:self.browser];
+  _safeAreaProvider = [[SafeAreaProvider alloc] initWithBrowser:browser];
 
-  _voiceSearchController =
-      ios::provider::CreateVoiceSearchController(self.browser);
+  _voiceSearchController = ios::provider::CreateVoiceSearchController(browser);
 
   _viewControllerDependencies.toolbarAccessoryPresenter =
       _toolbarAccessoryPresenter;
@@ -1326,10 +1323,10 @@ enum class ToolbarKind {
   _viewControllerDependencies.isOffTheRecord = profile->IsOffTheRecord();
   _viewControllerDependencies.urlLoadingBrowserAgent = _urlLoadingBrowserAgent;
   _viewControllerDependencies.tabUsageRecorderBrowserAgent =
-      TabUsageRecorderBrowserAgent::FromBrowser(self.browser);
+      TabUsageRecorderBrowserAgent::FromBrowser(browser);
   _viewControllerDependencies.layoutGuideCenter = _layoutGuideCenter;
   _viewControllerDependencies.webStateList =
-      self.browser->GetWebStateList()->AsWeakPtr();
+      browser->GetWebStateList()->AsWeakPtr();
   _viewControllerDependencies.voiceSearchController = _voiceSearchController;
   _viewControllerDependencies.safeAreaProvider = _safeAreaProvider;
 }
