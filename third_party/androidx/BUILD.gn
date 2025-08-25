@@ -9,6 +9,38 @@ define_override_androidx_targets("unused") {
 }
 
 # === Generated Code Start ===
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+androidx_java_group("androidx_annotation_annotation_java") {
+  deps = [ ":androidx_annotation_annotation_jvm_java" ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+androidx_java_prebuilt("androidx_annotation_annotation_jvm_java") {
+  jar_path = "../androidx/cipd/libs/androidx_annotation_annotation_jvm/annotation-jvm-1.10.0-SNAPSHOT.jar"
+  output_name = "androidx_annotation_annotation_jvm"
+  supports_android = true
+  enable_bytecode_checks = false
+  deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+androidx_android_aar_prebuilt("androidx_window_sidecar_sidecar_java") {
+  aar_path = "../androidx/cipd/libs/androidx_window_sidecar_sidecar/sidecar-1.0.0-SNAPSHOT.aar"
+  info_path = "../androidx/committed/libs/androidx_window_sidecar_sidecar/androidx_window_sidecar_sidecar.info"
+  enable_bytecode_checks = false
+  deps = [
+    ":androidx_annotation_annotation_java",
+    "//third_party/android_deps:org_jspecify_jspecify_java",
+  ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+androidx_android_aar_prebuilt("androidx_window_window_extensions_java") {
+  aar_path = "../androidx/cipd/libs/androidx_window_window_extensions/window-extensions-1.0.0-alpha01.aar"
+  info_path = "../androidx/committed/libs/androidx_window_window_extensions/androidx_window_window_extensions.info"
+  enable_bytecode_checks = false
+  deps = [ ":androidx_annotation_annotation_java" ]
+}
 if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_activity_activity_java") {
@@ -53,25 +85,10 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_java_group("androidx_annotation_annotation_java") {
-    deps = [ ":androidx_annotation_annotation_jvm_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_annotation_annotation_experimental_java") {
     aar_path = "../androidx/cipd/libs/androidx_annotation_annotation_experimental/annotation-experimental-1.6.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_annotation_annotation_experimental/androidx_annotation_annotation_experimental.info"
-    enable_bytecode_checks = false
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_java_prebuilt("androidx_annotation_annotation_jvm_java") {
-    jar_path = "../androidx/cipd/libs/androidx_annotation_annotation_jvm/annotation-jvm-1.10.0-SNAPSHOT.jar"
-    output_name = "androidx_annotation_annotation_jvm"
-    supports_android = true
-    requires_android = true
     enable_bytecode_checks = false
     deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
   }
@@ -1560,29 +1577,6 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_experimental_java",
       ":androidx_annotation_annotation_java",
       ":androidx_core_core_java",
-      "//third_party/android_deps:org_jspecify_jspecify_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_android_aar_prebuilt("androidx_window_extensions_extensions_java") {
-    aar_path = "../androidx/cipd/libs/androidx_window_extensions_extensions/extensions-1.5.0-SNAPSHOT.aar"
-    info_path = "../androidx/committed/libs/androidx_window_extensions_extensions/androidx_window_extensions_extensions.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":androidx_annotation_annotation_experimental_java",
-      ":androidx_annotation_annotation_java",
-      "//third_party/android_deps:org_jspecify_jspecify_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_android_aar_prebuilt("androidx_window_sidecar_sidecar_java") {
-    aar_path = "../androidx/cipd/libs/androidx_window_sidecar_sidecar/sidecar-1.0.0-SNAPSHOT.aar"
-    info_path = "../androidx/committed/libs/androidx_window_sidecar_sidecar/androidx_window_sidecar_sidecar.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":androidx_annotation_annotation_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
     ]
   }
