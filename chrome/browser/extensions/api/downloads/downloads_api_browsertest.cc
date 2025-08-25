@@ -2013,7 +2013,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
 // Test that we disallow certain headers case-insensitively.
 // TODO(crbug.com/335421977): Flaky on "Linux ChromiumOS MSan Tests"
-#if (BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER))
+// TODO(crbug.com/441086569): Flaky on "Linux Tests (dbg)"
+#if (BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)) || \
+    (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_DownloadExtensionTest_Download_UnsafeHeaders \
   DISABLED_DownloadExtensionTest_Download_UnsafeHeaders
 #else
