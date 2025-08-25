@@ -217,7 +217,8 @@ void MultiContentsDropTargetView::UpdateVisibility(bool should_be_open) {
 }
 
 bool MultiContentsDropTargetView::ShouldShowAnimation() const {
-  return gfx::Animation::ShouldRenderRichAnimation();
+  return gfx::Animation::ShouldRenderRichAnimation() &&
+         !gfx::Animation::PrefersReducedMotion();
 }
 
 void MultiContentsDropTargetView::OnThemeChanged() {

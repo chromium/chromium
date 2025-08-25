@@ -13,6 +13,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/image_view.h"
@@ -145,6 +146,33 @@ TEST_F(DropTargetViewTest, ViewIsOpenedAfterDelay) {
 
   EXPECT_TRUE(view->animation_for_testing().GetCurrentValue() == 1);
   EXPECT_TRUE(view->GetVisible());
+}
+
+TEST_F(DropTargetViewTest, ViewDoesNotAnimateWithReducedMotion) {
+  MultiContentsDropTargetView* view = drop_target_view();
+
+  // Set a non-zero animation duration to ensure animations would normally run.
+  const base::TimeDelta duration = base::Seconds(kDelayedAnimationDuration);
+  view->animation_for_testing().SetSlideDuration(duration);
+
+  // Enable reduced motion.
+  gfx::Animation::SetPrefersReducedMotionForTesting(true);
+  ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
+
+  gfx::AnimationTestApi animation_api(&view->animation_for_testing());
+
+  // The view should appear immediately without animation.
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kFull);
+  EXPECT_EQ(view->animation_for_testing().GetCurrentValue(), 1.0);
+
+  // The view should hide immediately without animation.
+  view->Hide();
+  EXPECT_FALSE(view->GetVisible());
+  EXPECT_EQ(view->animation_for_testing().GetCurrentValue(), 0.0);
+
+  // Reset the setting to not affect other tests.
+  gfx::Animation::SetPrefersReducedMotionForTesting(false);
 }
 
 TEST_F(DropTargetViewTest, CanDropURL) {
