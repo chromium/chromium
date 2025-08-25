@@ -31,6 +31,7 @@ specific_include_rules = {
     "+ios/chrome/browser/metrics/model",
     "+ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h",
     "+ios/chrome/browser/policy/model/policy_watcher_browser_agent.h",
+    "+ios/chrome/browser/prerender/model/prerender_browser_agent.h",
     "+ios/chrome/browser/reader_mode/model",
     "+ios/chrome/browser/reading_list/model/reading_list_browser_agent.h",
     "+ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h",

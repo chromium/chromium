@@ -9,6 +9,7 @@ source_set("prerender_pref") {
 source_set("model") {
   public = [
     "preload_controller_delegate.h",
+    "prerender_browser_agent.h",
     "prerender_service.h",
     "prerender_service_factory.h",
     "prerender_tab_helper.h",
@@ -17,6 +18,7 @@ source_set("model") {
   sources = [
     "preload_controller.h",
     "preload_controller.mm",
+    "prerender_browser_agent.mm",
     "prerender_service_factory.mm",
     "prerender_service_impl.h",
     "prerender_service_impl.mm",
