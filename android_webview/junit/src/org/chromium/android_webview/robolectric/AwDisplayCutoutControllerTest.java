@@ -146,6 +146,9 @@ public class AwDisplayCutoutControllerTest {
 
         // Note that DIP of 2.0 is applied, so the values are halved.
         mInOrder.verify(mDelegate).setDisplayCutoutSafeArea(eq(new Insets(10, 20, 30, 40)));
+        // Every time the display cutout safe area is changed, we should notify that IME insets have
+        // changed.
+        mInOrder.verify(mDelegate).bottomImeInsetChanged();
     }
 
     @Test
@@ -160,6 +163,9 @@ public class AwDisplayCutoutControllerTest {
 
         // Note that DIP of 2.0 is applied, so the values are halved.
         mInOrder.verify(mDelegate).setDisplayCutoutSafeArea(eq(new Insets(10, 20, 30, 40)));
+        // Every time the display cutout safe area is changed, we should notify that IME insets have
+        // changed.
+        mInOrder.verify(mDelegate).bottomImeInsetChanged();
     }
 
     @Test
@@ -174,6 +180,9 @@ public class AwDisplayCutoutControllerTest {
 
         // Note that DIP of 2.0 is applied, so the values are halved.
         mInOrder.verify(mDelegate).setDisplayCutoutSafeArea(eq(new Insets(10, 20, 30, 40)));
+        // Every time the display cutout safe area is changed, we should notify that IME insets have
+        // changed.
+        mInOrder.verify(mDelegate).bottomImeInsetChanged();
     }
 
     @Test
