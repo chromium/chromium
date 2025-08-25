@@ -1961,6 +1961,16 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                       std::move(global_ai_button_dict));
   }
 
+  if (base::FeatureList::IsEnabled(::features::kDevToolsGdpProfiles)) {
+    base::Value::Dict gdp_profiles_dict;
+    gdp_profiles_dict.Set("enabled", base::FeatureList::IsEnabled(
+                                         ::features::kDevToolsGdpProfiles));
+    gdp_profiles_dict.Set(
+        "starterBadgeEnabled",
+        features::kDevToolsGdpProfilesStarterBadgeEnabled.Get());
+    response_dict.Set("devToolsGdpProfiles", std::move(gdp_profiles_dict));
+  }
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
