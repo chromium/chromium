@@ -42,6 +42,7 @@
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace syncer {
 namespace {
@@ -101,16 +102,13 @@ SyncMetadataConsistency GetSyncMetadataConsistency(
 }
 
 size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
-  size_t count = 0u;
-  std::set<std::string> client_tag_hashes;
+  absl::flat_hash_set<std::string> client_tag_hashes;
   for (const auto& [storage_key, metadata] : metadata_map) {
-    const std::string& client_tag_hash = metadata->client_tag_hash();
-    if (client_tag_hashes.find(client_tag_hash) != client_tag_hashes.end()) {
-      count++;
-    }
-    client_tag_hashes.insert(client_tag_hash);
+    client_tag_hashes.insert(metadata->client_tag_hash());
   }
-  return count;
+  // The number of duplicates is the total number of items minus the number of
+  // unique items.
+  return metadata_map.size() - client_tag_hashes.size();
 }
 
 void RecordDataTypeNumUnsyncedEntitiesOnModelReady(
