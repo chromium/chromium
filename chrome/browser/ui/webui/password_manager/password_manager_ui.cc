@@ -128,6 +128,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_UI_BACK_TO_CHECKUP_ARIA_DESCRIPTION},
       {"backToPasswords",
        IDS_PASSWORD_MANAGER_UI_BACK_TO_PASSWORDS_ARIA_DESCRIPTION},
+      {"backToSettings",
+       IDS_PASSWORD_MANAGER_UI_BACK_TO_PASSWORD_SETTINGS_ARIA_DESCRIPTION},
       {"backupPasswordDetailsCardAriaLabel",
        IDS_PASSWORD_MANAGER_UI_BACKUP_PASSWORD_DETAILS_CARD_ARIA_LABEL},
       {"blockedSitesDescription",
