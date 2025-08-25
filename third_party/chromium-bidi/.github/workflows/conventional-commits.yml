@@ -1,0 +1,20 @@
+name: 'Conventional Commit'
+
+on:
+  workflow_dispatch:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+
+jobs:
+  main:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
