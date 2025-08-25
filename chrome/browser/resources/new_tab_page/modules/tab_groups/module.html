@@ -26,7 +26,8 @@
           </div>
         </div>
         <div id="zeroTabGroupsCreateNewTabGroup">
-          <cr-button id="createNewTabGroupButton">
+          <cr-button id="createNewTabGroupButton" class="create-new-tab-group"
+              @click="${this.onCreateNewTabGroupClick_}">
             <cr-icon id="createNewTabGroupButtonIcon"
                 class="create-new-tab-group-icon"
                 icon="tab_groups:create_new_tab_group" slot="prefix-icon">
@@ -57,18 +58,19 @@
       `)}
       <div id="footer">
         <div id="divider"></div>
-          <div id="createNewTabGroupContainer" class="tab-group-container">
-            <div class="hover-layer"></div>
-            <a id="createNewTabGroup">
-              <cr-icon id="createNewTabGroupIcon"
-                  class="create-new-tab-group-icon"
-                  icon="tab_groups:create_new_tab_group" slot="icon">
-              </cr-icon>
-              <div id="createNewTabGroupText" class="tab-group-title">
-                ${this.i18n('modulesTabGroupsCreateNewTabGroup')}
-              </div>
-            </a>
-          </div>
+        <div id="createNewTabGroupContainer" class="tab-group-container">
+          <div class="hover-layer"></div>
+          <a id="createNewTabGroupLink" class="create-new-tab-group"
+              @click="${this.onCreateNewTabGroupClick_}">
+            <cr-icon id="createNewTabGroupIcon"
+                class="create-new-tab-group-icon"
+                icon="tab_groups:create_new_tab_group" slot="icon">
+            </cr-icon>
+            <div id="createNewTabGroupText" class="tab-group-title">
+              ${this.i18n('modulesTabGroupsCreateNewTabGroup')}
+            </div>
+          </a>
+        </div>
         </div>
       </div>
     </div>

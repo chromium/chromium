@@ -22,6 +22,8 @@ struct TabGroup {
 
 // Browser-side handler for requests from NTP Module UI.
 interface PageHandler {
+  // Creates a new tab group in the current browser window.
+  CreateNewTabGroup();
   // Returns a list of most recently used tab groups.
   // Returns null if the current time is still within the module's dismissal
   // time window.

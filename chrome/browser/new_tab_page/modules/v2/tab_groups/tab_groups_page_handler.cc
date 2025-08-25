@@ -7,9 +7,14 @@
 #include "base/i18n/message_formatter.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -100,9 +105,11 @@ TabGroupsPageHandler::TabGroupsPageHandler(
     mojo::PendingReceiver<ntp::tab_groups::mojom::PageHandler>
         pending_page_handler,
     content::WebContents* web_contents)
-    : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
+    : web_contents_(web_contents),
+      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       pref_service_(profile_->GetPrefs()),
       page_handler_(this, std::move(pending_page_handler)) {
+  DCHECK(web_contents_);
   DCHECK(profile_);
   tab_group_service_ =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_);
@@ -110,6 +117,13 @@ TabGroupsPageHandler::TabGroupsPageHandler(
 }
 
 TabGroupsPageHandler::~TabGroupsPageHandler() = default;
+
+void TabGroupsPageHandler::CreateNewTabGroup() {
+  auto* browser = webui::GetTabInterface(web_contents_)
+                      ->GetBrowserWindowInterface()
+                      ->GetBrowserForMigrationOnly();
+  browser->command_controller()->ExecuteCommand(IDC_CREATE_NEW_TAB_GROUP);
+}
 
 std::optional<std::string> TabGroupsPageHandler::GetDeviceName(
     const std::optional<std::string>& cache_guid) {

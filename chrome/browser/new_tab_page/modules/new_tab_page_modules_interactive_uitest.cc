@@ -10,6 +10,9 @@
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
 #include "chrome/browser/new_tab_page/modules/test_support.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -20,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/interaction/interactive_test.h"
 
 namespace {
 
@@ -30,6 +34,9 @@ const DeepQuery kModulesV2Container = {"ntp-app", "ntp-modules", "#container"};
 const DeepQuery kModulesV2Wrapper = {"ntp-app", "ntp-modules", "#container",
                                      "ntp-module-wrapper"};
 const DeepQuery kMicrosoftAuthIframe = {"ntp-app", "#microsoftAuth"};
+const DeepQuery kTabGroupsModule = {"ntp-app", "ntp-modules", "ntp-tab-groups"};
+const DeepQuery kCreateNewTabGroup = {
+    "ntp-app", "ntp-modules", "ntp-tab-groups", ".create-new-tab-group"};
 
 struct ModuleLink {
   const DeepQuery query;
@@ -403,4 +410,82 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveMicrosoftAuthUiTest,
       LoadNewTabPage(),
       // 2. Wait for iframe to load.
       WaitForElementToLoad(kMicrosoftAuthIframe));
+}
+
+class NewTabPageModulesInteractiveTabGroupsUiTest
+    : public NewTabPageModulesInteractiveUiBaseTest {
+ public:
+  NewTabPageModulesInteractiveTabGroupsUiTest() = default;
+  ~NewTabPageModulesInteractiveTabGroupsUiTest() override = default;
+  NewTabPageModulesInteractiveTabGroupsUiTest(
+      const NewTabPageModulesInteractiveTabGroupsUiTest&) = delete;
+  void operator=(const NewTabPageModulesInteractiveTabGroupsUiTest&) = delete;
+
+  void SetUp() override {
+    features.InitWithFeatures(
+        /*enabled_features=*/{ntp_features::kNtpTabGroupsModule},
+        /*disabled_features=*/{});
+    InteractiveBrowserTest::SetUp();
+  }
+
+  InteractiveTestApi::MultiStep ClickElement(
+      const ui::ElementIdentifier& contents_id,
+      const DeepQuery& element) {
+    return Steps(EnsurePresent(contents_id, element),
+                 ScrollIntoView(contents_id, element),
+                 ExecuteJsAt(contents_id, element, "el => el.click()"));
+  }
+
+  size_t GetTabGroupCount() {
+    return browser()->tab_strip_model()->group_model()->ListTabGroups().size();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
+                       CreateNewTabGroup) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+
+  RunTestSequence(
+      // Arrange.
+      // 1. Create tabs to work with.
+      AddInstrumentedTab(kSecondTab, GURL(url::kAboutBlankURL)),
+      // 2. Create 2 tab groups using the existing tabs.
+      Do([&]() {
+        browser()->tab_strip_model()->AddToNewGroup({0});
+        browser()->tab_strip_model()->AddToNewGroup({1});
+      }),
+      // 3. Verify the initial tab group count is 2.
+      CheckResult([&]() { return GetTabGroupCount(); }, 2),
+
+      // Act.
+      // 4. Wait for new tab page to load.
+      LoadNewTabPage(),
+      // 5. Wait for the module to render.
+      WaitForElementToRender(kTabGroupsModule),
+      // 6. Click the create new tab group link.
+      ClickElement(kNewTabPageElementId, kCreateNewTabGroup),
+
+      // Assert.
+      // 7. Verify a new tab group has been created.
+      CheckResult([&]() { return GetTabGroupCount(); }, 3));
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
+                       CreateNewTabGroup_ZeroState) {
+  RunTestSequence(
+      // Arrange.
+      // 1. Verify the initial tab group count is 0.
+      CheckResult([&]() { return GetTabGroupCount(); }, 0),
+
+      // Act.
+      // 2. Wait for new tab page to load.
+      LoadNewTabPage(),
+      // 3. Wait for the module to render.
+      WaitForElementToRender(kTabGroupsModule),
+      // 4. Click the create new tab group link.
+      ClickElement(kNewTabPageElementId, kCreateNewTabGroup),
+
+      // Assert.
+      // 5. Verify a new tab group has been created.
+      CheckResult([&]() { return GetTabGroupCount(); }, 1));
 }

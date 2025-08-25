@@ -275,7 +275,7 @@ a:focus-visible {
   align-self: stretch;
 }
 
-#createNewTabGroup {
+#createNewTabGroupLink {
   display: flex;
   flex-direction: row;
   height: 28px;

@@ -362,4 +362,50 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Assert.
     assertEquals(1, handler.getCallCount('restoreModule'));
   });
+
+  test('create new tab group from the footer link', async () => {
+    // Arrange.
+    const module = await createModule([{
+      title: 'Group',
+      updateTime: 'Recently used',
+      deviceName: null,
+      faviconUrls: [{url: 'https://www.google.com'}],
+      totalTabCount: 1,
+    }]);
+    assertTrue(!!module);
+
+    const createNewTabGroupLink =
+        module.shadowRoot.querySelector<HTMLAnchorElement>(
+            '#createNewTabGroupLink');
+    assertTrue(!!createNewTabGroupLink);
+    assertTrue(isVisible(createNewTabGroupLink));
+
+    // Act.
+    handler.setResultFor('createNewTabGroup', Promise.resolve());
+    createNewTabGroupLink.click();
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(1, handler.getCallCount('createNewTabGroup'));
+  });
+
+  test('create new tab group from the zero state card', async () => {
+    // Arrange.
+    const module = await createModule([]);
+    assertTrue(!!module);
+
+    const createNewTabGroupButton =
+        module.shadowRoot.querySelector<HTMLButtonElement>(
+            '#createNewTabGroupButton');
+    assertTrue(!!createNewTabGroupButton);
+    assertTrue(isVisible(createNewTabGroupButton));
+
+    // Act.
+    handler.setResultFor('createNewTabGroup', Promise.resolve());
+    createNewTabGroupButton.click();
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(1, handler.getCallCount('createNewTabGroup'));
+  });
 });

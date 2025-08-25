@@ -36,6 +36,7 @@ class TabGroupsPageHandler : public ntp::tab_groups::mojom::PageHandler {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // ntp::tab_groups::mojom::PageHandler:
+  void CreateNewTabGroup() override;
   void GetTabGroups(GetTabGroupsCallback callback) override;
   void DismissModule() override;
   void RestoreModule() override;
@@ -47,6 +48,7 @@ class TabGroupsPageHandler : public ntp::tab_groups::mojom::PageHandler {
   void GetLastInteractedTimeForGroup(
       const std::optional<tab_groups::TabGroupId> group_id);
 
+  raw_ptr<content::WebContents> web_contents_;
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_service_;

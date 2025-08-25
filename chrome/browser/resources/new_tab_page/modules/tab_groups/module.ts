@@ -129,6 +129,10 @@ export class ModuleElement extends ModuleElementBase {
   protected onInfoDialogClose_() {
     this.showInfoDialog = false;
   }
+
+  protected onCreateNewTabGroupClick_() {
+    this.handler_.createNewTabGroup();
+  }
 }
 
 customElements.define(ModuleElement.is, ModuleElement);
