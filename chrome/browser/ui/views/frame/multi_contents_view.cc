@@ -90,24 +90,26 @@ MultiContentsView::~MultiContentsView() {
   RemoveAllChildViews();
 }
 
-ContentsWebView* MultiContentsView::GetActiveContentsView() {
+ContentsWebView* MultiContentsView::GetActiveContentsView() const {
   return GetActiveContentsContainerView()->contents_view();
 }
 
-ContentsWebView* MultiContentsView::GetInactiveContentsView() {
+ContentsWebView* MultiContentsView::GetInactiveContentsView() const {
   return GetInactiveContentsContainerView()->contents_view();
 }
 
-ContentsContainerView* MultiContentsView::GetActiveContentsContainerView() {
+ContentsContainerView* MultiContentsView::GetActiveContentsContainerView()
+    const {
   return contents_container_views_[active_index_];
 }
 
-ContentsContainerView* MultiContentsView::GetInactiveContentsContainerView() {
+ContentsContainerView* MultiContentsView::GetInactiveContentsContainerView()
+    const {
   return contents_container_views_[GetInactiveIndex()];
 }
 
 ContentsContainerView* MultiContentsView::GetContentsContainerViewFor(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents) const {
   for (auto* container_view : contents_container_views_) {
     if (container_view->contents_view()->web_contents() == web_contents) {
       return container_view;
@@ -292,7 +294,7 @@ void MultiContentsView::OnThemeChanged() {
   UpdateContentsBorderAndOverlay();
 }
 
-int MultiContentsView::GetInactiveIndex() {
+int MultiContentsView::GetInactiveIndex() const {
   return active_index_ == 0 ? 1 : 0;
 }
 

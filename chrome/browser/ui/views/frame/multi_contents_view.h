@@ -62,16 +62,16 @@ class MultiContentsView : public views::View,
   MultiContentsView& operator=(const MultiContentsView&) = delete;
   ~MultiContentsView() override;
 
-  ContentsContainerView* GetActiveContentsContainerView();
-  ContentsContainerView* GetInactiveContentsContainerView();
+  ContentsContainerView* GetActiveContentsContainerView() const;
+  ContentsContainerView* GetInactiveContentsContainerView() const;
   ContentsContainerView* GetContentsContainerViewFor(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents) const;
 
   // Returns the currently active ContentsWebView.
-  ContentsWebView* GetActiveContentsView();
+  ContentsWebView* GetActiveContentsView() const;
 
   // Returns the currently inactive ContentsWebView.
-  ContentsWebView* GetInactiveContentsView();
+  ContentsWebView* GetInactiveContentsView() const;
 
   // Returns true if more than one WebContents is displayed.
   bool IsInSplitView() const;
@@ -170,7 +170,7 @@ class MultiContentsView : public views::View,
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
-  int GetInactiveIndex();
+  int GetInactiveIndex() const;
 
   void OnWebContentsFocused(views::WebView*);
   void OnNtpFooterFocused(views::WebView*);

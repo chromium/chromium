@@ -183,6 +183,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"splitViewEmptyTitle", IDS_SPLIT_VIEW_NTP_EMPTY_TITLE},
       {"splitViewTabTitle", IDS_SPLIT_VIEW_NTP_TAB_TITLE},
       {"splitViewTitle", IDS_SPLIT_VIEW_NTP_TITLE},
+      {"splitViewCloseButtonAriaLabel",
+       IDS_SPLIT_VIEW_NTP_CLOSE_BUTTON_ARIA_LABEL},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);

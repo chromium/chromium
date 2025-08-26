@@ -8,6 +8,7 @@
 #include <concepts>
 
 #include "base/test/bind.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -30,7 +31,8 @@ class SplitViewInteractiveTestMixin : public SplitViewBrowserTestMixin<T> {
   explicit SplitViewInteractiveTestMixin(Args&&... args)
       : SplitViewBrowserTestMixin<T>(std::forward<Args>(args)...) {}
 
-  auto EnterSplitView(int active_tab, int other_tab) {
+  auto EnterSplitView(int active_tab,
+                      std::optional<int> other_tab = std::nullopt) {
     // MultiContentsView overrides Layout, causing an edge case where the
     // resize area gets set to visible but doesn't gain nonzero size until the
     // next layout pass. Use PollView and WaitForState to wait for a nonzero
@@ -43,11 +45,17 @@ class SplitViewInteractiveTestMixin : public SplitViewBrowserTestMixin<T> {
     auto result = SplitViewBrowserTestMixin<T>::Steps(
         SplitViewBrowserTestMixin<T>::SelectTab(kTabStripElementId, active_tab),
         SplitViewBrowserTestMixin<T>::Do([&, other_tab]() {
-          SplitViewBrowserTestMixin<T>::browser()
-              ->tab_strip_model()
-              ->AddToNewSplit(
-                  {other_tab}, split_tabs::SplitTabVisualData(),
-                  split_tabs::SplitTabCreatedSource::kToolbarButton);
+          if (other_tab.has_value()) {
+            SplitViewBrowserTestMixin<T>::browser()
+                ->tab_strip_model()
+                ->AddToNewSplit(
+                    {other_tab.value()}, split_tabs::SplitTabVisualData(),
+                    split_tabs::SplitTabCreatedSource::kToolbarButton);
+          } else {
+            chrome::NewSplitTab(
+                SplitViewBrowserTestMixin<T>::browser(),
+                split_tabs::SplitTabCreatedSource::kToolbarButton);
+          }
         }),
         SplitViewBrowserTestMixin<T>::PollView(
             kResizeLoadObserver,

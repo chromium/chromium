@@ -297,6 +297,7 @@ source_set("interactive_ui_tests") {
       "settings/settings_focus_test.cc",
       "side_panel/bookmarks/sp_bookmarks_interactive_test.cc",
       "support_tool/support_tool_focus_test.cc",
+      "tab_search/split_new_tab_page_interactive_uitest.cc",
       "tab_search/tab_search_focus_test.cc",
     ]
   }
