@@ -4137,8 +4137,8 @@ Called by update_autofill_enums.py.-->
 <!-- LINT.IfChange(SaveAndFillFormEvent) -->
 
 <enum name="SaveAndFillFormEvent">
-  <int value="0" label="The Save and Fill suggestion was shown."/>
-  <int value="1" label="The Save and Fill suggestion was accepted."/>
+  <int value="0" label="The Save and Fill suggestion was shown"/>
+  <int value="1" label="The Save and Fill suggestion was accepted"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillFormEvent) -->
@@ -4147,10 +4147,10 @@ Called by update_autofill_enums.py.-->
 
 <enum name="SaveAndFillSuggestionNotShownReason">
   <int value="0"
-      label="The user has at least one credit card saved in their profile."/>
-  <int value="1" label="The user has reached the maximum number of strikes."/>
-  <int value="2" label="The user is in incognito mode."/>
-  <int value="3" label="The credit card form is not complete."/>
+      label="The user has at least one credit card saved in their profile"/>
+  <int value="1" label="The user has reached the maximum number of strikes"/>
+  <int value="2" label="The user is in incognito mode"/>
+  <int value="3" label="The credit card form is not complete"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillSuggestionNotShownReason) -->
