@@ -478,8 +478,6 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
         << "Implied by IsSupervisedExtensionApprovalFlowRequired";
     supervised_user_extensions_delegate->RequestToEnableExtensionOrShowError(
         *target_extension, GetSenderWebContents(),
-        SupervisedUserExtensionParentApprovalEntryPoint::
-            kOnExtensionManagementSetEnabledOperation,
         std::move(approval_callback));
     return RespondLater();
   }

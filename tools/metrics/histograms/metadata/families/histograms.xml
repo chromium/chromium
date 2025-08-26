@@ -986,17 +986,6 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
-<histogram name="SupervisedUsers.ExtensionParentApprovalEntryPoint"
-    enum="SupervisedUserExtensionParentApprovalEntryPoint"
-    expires_after="2025-08-24">
-  <owner>anthie@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    Records the different flows that lead to displaying the Extensions parent
-    approval dialog on Windows/Linux/Mac platrforms.
-  </summary>
-</histogram>
-
 <histogram name="SupervisedUsers.Extensions2" enum="SupervisedUserExtension2"
     expires_after="2025-11-01">
   <owner>zhangwenyu@google.com</owner>
@@ -1006,31 +995,6 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   <summary>
     Records the progress of supervised users as they try to install Chrome
     extensions. See the descriptions in the individual enum buckets.
-  </summary>
-</histogram>
-
-<histogram name="SupervisedUsers.ImplicitParentApprovalGrantEntryPoint"
-    enum="SupervisedUserImplicitParentApprovalGrantEntryPoint"
-    expires_after="2025-08-24">
-  <owner>anthie@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    Records the different flows that lead to granting an automatic parent
-    approval on an extension (without having to explicitely request the
-    approval).
-  </summary>
-</histogram>
-
-<histogram
-    name="SupervisedUsers.InitialLocallyApprovedExtensionsCountOnWinLinuxMac"
-    units="Extensions" expires_after="2025-08-24">
-  <owner>anthie@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    Records the number of extensions that will be granted local parental
-    approval at the release time the feature that introduces the Skip Parent
-    Approval mode for extension installations. Applies to Win/Linux/Mac only, so
-    on ChromeOS it is always zero.
   </summary>
 </histogram>
 

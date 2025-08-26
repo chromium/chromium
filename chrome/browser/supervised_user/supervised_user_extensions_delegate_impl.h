@@ -52,14 +52,10 @@ class SupervisedUserExtensionsDelegateImpl
       const Extension& extension,
       content::WebContents* web_contents,
       const gfx::ImageSkia& icon,
-      SupervisedUserExtensionParentApprovalEntryPoint
-          extension_approval_entry_point,
       ExtensionApprovalDoneCallback extension_approval_callback) override;
   void RequestToEnableExtensionOrShowError(
       const Extension& extension,
       content::WebContents* web_contents,
-      SupervisedUserExtensionParentApprovalEntryPoint
-          extension_approval_entry_point,
       ExtensionApprovalDoneCallback extension_approval_callback) override;
   void UpdateManagementPolicyRegistration() override;
   bool CanInstallExtensions() const override;
@@ -82,9 +78,7 @@ class SupervisedUserExtensionsDelegateImpl
   void ShowParentPermissionDialogForExtension(
       const Extension& extension,
       content::WebContents* contents,
-      const gfx::ImageSkia& icon,
-      SupervisedUserExtensionParentApprovalEntryPoint
-          extension_approval_entry_point);
+      const gfx::ImageSkia& icon);
 
   // Shows ParentPermissionDialog indicating that |extension| has been blocked
   // and call |done_callback| when it completes. Depending on the blocked_action
@@ -107,8 +101,6 @@ class SupervisedUserExtensionsDelegateImpl
   void RequestExtensionApproval(
       const Extension& extension,
       std::optional<base::WeakPtr<content::WebContents>> contents,
-      SupervisedUserExtensionParentApprovalEntryPoint
-          extension_approval_entry_point,
       const gfx::ImageSkia& icon);
 
   // The ParentPermissionDialog pointer is only destroyed when a new dialog is

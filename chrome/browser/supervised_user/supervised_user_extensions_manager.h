@@ -25,9 +25,6 @@ class ExtensionSystem;
 class ExtensionRegistry;
 
 // UMA metrics for auto-approved extensions.
-inline constexpr char
-    kInitialLocallyApprovedExtensionCountWinLinuxMacHistogramName[] =
-        "SupervisedUsers.InitialLocallyApprovedExtensionsCountOnWinLinuxMac";
 inline constexpr char kExtensionApprovalsCountOnExtensionToggleHistogramName[] =
     "SupervisedUsers.ExtensionApprovalsCountOnExtensionToggle";
 

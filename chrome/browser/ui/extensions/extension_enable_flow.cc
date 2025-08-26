@@ -106,10 +106,7 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
         base::BindOnce(&ExtensionEnableFlow::OnExtensionApprovalDone,
                        weak_ptr_factory_.GetWeakPtr());
     supervised_user_extensions_delegate->RequestToEnableExtensionOrShowError(
-        *extension, parent_contents_,
-        SupervisedUserExtensionParentApprovalEntryPoint::
-            kOnTerminatedExtensionEnableFlowOperation,
-        std::move(extension_approval_callback));
+        *extension, parent_contents_, std::move(extension_approval_callback));
     return;
   }
 

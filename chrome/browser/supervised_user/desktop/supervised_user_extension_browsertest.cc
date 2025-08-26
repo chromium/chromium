@@ -108,11 +108,10 @@ IN_PROC_BROWSER_TEST_P(SupervisionRemovalExtensionTest,
       extension_registry()->GetInstalledExtension(kGoodCrxId);
   EXPECT_TRUE(extension);
 
-    // This extension is a supervised user initiated install and should remain
-    // disabled.
-    EXPECT_TRUE(
-        extension_registry()->disabled_extensions().Contains(kGoodCrxId));
-    EXPECT_TRUE(IsDisabledForCustodianApproval(kGoodCrxId));
+  // This extension is a supervised user initiated install and should remain
+  // disabled.
+  EXPECT_TRUE(extension_registry()->disabled_extensions().Contains(kGoodCrxId));
+  EXPECT_TRUE(IsDisabledForCustodianApproval(kGoodCrxId));
 }
 
 IN_PROC_BROWSER_TEST_P(SupervisionRemovalExtensionTest,
@@ -314,9 +313,7 @@ IN_PROC_BROWSER_TEST_P(ParentApprovalRequestTest,
 
   supervised_user_extensions_delegate->RequestToAddExtensionOrShowError(
       *extension.get(), browser()->tab_strip_model()->GetActiveWebContents(),
-      gfx::ImageSkia::CreateFrom1xBitmap(icon),
-      SupervisedUserExtensionParentApprovalEntryPoint::kOnWebstoreInstallation,
-      base::DoNothing());
+      gfx::ImageSkia::CreateFrom1xBitmap(icon), base::DoNothing());
 
   // The dialog should not have appeared.
   EXPECT_FALSE(parent_permission_dialog_appeared_);
@@ -372,9 +369,7 @@ IN_PROC_BROWSER_TEST_P(ParentApprovalRequestTest,
   SkBitmap icon;
   supervised_user_extensions_delegate->RequestToAddExtensionOrShowError(
       *extension.get(), browser()->tab_strip_model()->GetActiveWebContents(),
-      gfx::ImageSkia::CreateFrom1xBitmap(icon),
-      SupervisedUserExtensionParentApprovalEntryPoint::kOnWebstoreInstallation,
-      base::DoNothing());
+      gfx::ImageSkia::CreateFrom1xBitmap(icon), base::DoNothing());
 
   // Confirm that the parent approval dialog for extensions for each OS is
   // created.

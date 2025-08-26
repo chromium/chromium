@@ -102,8 +102,6 @@ class ParentPermissionDialog {
       gfx::NativeWindow window,
       const gfx::ImageSkia& icon,
       const extensions::Extension* extension,
-      SupervisedUserExtensionParentApprovalEntryPoint
-          extension_approval_entry_point,
       ParentPermissionDialog::DoneCallback done_callback);
 };
 

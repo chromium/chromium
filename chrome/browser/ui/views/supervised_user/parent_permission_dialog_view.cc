@@ -347,10 +347,6 @@ struct ParentPermissionDialogView::Params {
   // The message to show. Ignored if extension is set.
   std::u16string message;
 
-  // Entry point leading to the creation of the dialog.
-  SupervisedUserExtensionParentApprovalEntryPoint
-      extension_approval_entry_point;
-
   // An optional extension whose permissions should be displayed
   raw_ptr<const extensions::Extension, AcrossTasksDanglingUntriaged> extension =
       nullptr;
@@ -620,10 +616,6 @@ void ParentPermissionDialogView::ShowDialog() {
           kOpened);
   if (params_->extension) {
     InitializeExtensionData(params_->extension.get());
-
-    SupervisedUserExtensionsMetricsRecorder::
-        RecordExtensionParentApprovalDialogEntryPointUmaMetrics(
-            params_->extension_approval_entry_point);
   } else {
     ShowDialogInternal();
   }
@@ -937,12 +929,9 @@ ParentPermissionDialog::CreateParentPermissionDialogForExtension(
     gfx::NativeWindow window,
     const gfx::ImageSkia& icon,
     const extensions::Extension* extension,
-    SupervisedUserExtensionParentApprovalEntryPoint
-        extension_approval_entry_point,
     ParentPermissionDialog::DoneCallback done_callback) {
   auto params = std::make_unique<ParentPermissionDialogView::Params>();
   params->extension = extension;
-  params->extension_approval_entry_point = extension_approval_entry_point;
   params->icon = icon;
   params->profile = profile;
   params->window = window;

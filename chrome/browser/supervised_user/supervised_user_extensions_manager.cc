@@ -238,11 +238,6 @@ void SupervisedUserExtensionsManager::OnExtensionInstalled(
     CHECK(extension);
     if (!base::Contains(approved_extensions_set_, extension->id())) {
       AddExtensionApproval(*extension);
-      SupervisedUserExtensionsMetricsRecorder::
-          RecordImplicitParentApprovalGrantEntryPointEntryPointUmaMetrics(
-              SupervisedUserExtensionsMetricsRecorder::
-                  ImplicitExtensionApprovalEntryPoint::
-                      OnExtensionInstallationWithExtensionsSwitchEnabled);
     }
   }
 
@@ -496,9 +491,6 @@ void SupervisedUserExtensionsManager::DoExtensionsMigrationToParentApproved() {
         SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
             kLocalApprovalGranted);
   }
-  base::UmaHistogramCounts1000(
-      kInitialLocallyApprovedExtensionCountWinLinuxMacHistogramName,
-      approved_extensions_dict.size());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -543,11 +535,6 @@ void SupervisedUserExtensionsManager::
           (state == ExtensionState::ALLOWED &&
            IsLocallyParentApprovedExtension(extension->id()))) {
         AddExtensionApproval(*extension);
-        SupervisedUserExtensionsMetricsRecorder::
-            RecordImplicitParentApprovalGrantEntryPointEntryPointUmaMetrics(
-                SupervisedUserExtensionsMetricsRecorder::
-                    ImplicitExtensionApprovalEntryPoint::
-                        kOnExtensionsSwitchFlippedToEnabled);
         installed_extensions_approvals_count += 1;
       }
       // If the extension id from the preferences has not been installed yet,

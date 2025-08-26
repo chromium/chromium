@@ -565,7 +565,6 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseFailure(
   Release();
 }
 
-
 void WebstorePrivateBeginInstallWithManifest3Function::RequestExtensionApproval(
     content::WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -581,7 +580,6 @@ void WebstorePrivateBeginInstallWithManifest3Function::RequestExtensionApproval(
   supervised_user_extensions_delegate->RequestToAddExtensionOrShowError(
       *dummy_extension_, web_contents,
       gfx::ImageSkia::CreateFrom1xBitmap(icon_),
-      SupervisedUserExtensionParentApprovalEntryPoint::kOnWebstoreInstallation,
       std::move(extension_approval_callback));
 #else
   // TODO(crbug.com/410616937): Support supervised user install controls on
@@ -682,7 +680,6 @@ bool WebstorePrivateBeginInstallWithManifest3Function::
 
   return true;
 }
-
 
 void WebstorePrivateBeginInstallWithManifest3Function::OnFrictionPromptDone(
     bool result) {
@@ -929,9 +926,9 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
     // to configure the install prompt to indicate that this is a child
     // asking a parent for installation permission.
     prompt->set_requires_parent_permission(requires_parent_permission);
-    // Record metrics for supervised users that are in "Skip parent approval"-mode
-    // and use the Extension install dialog (that is used by non-supervised
-    // users).
+    // Record metrics for supervised users that are in "Skip parent
+    // approval"-mode and use the Extension install dialog (that is used by
+    // non-supervised users).
     if (supervised_user::AreExtensionsPermissionsEnabled(profile_)) {
       prompt->AddObserver(&supervised_user_extensions_metrics_recorder_);
     }
@@ -1236,9 +1233,10 @@ WebstorePrivateGetReferrerChainFunction::Run() {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
-          profile->GetPrefs(), g_browser_process->safe_browsing_service()))
+          profile->GetPrefs(), g_browser_process->safe_browsing_service())) {
     return RespondNow(ArgumentList(
         api::webstore_private::GetReferrerChain::Results::Create("")));
+  }
 
   content::RenderFrameHost* outermost_render_frame_host =
       render_frame_host() ? render_frame_host()->GetOutermostMainFrame()

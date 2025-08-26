@@ -236,9 +236,6 @@ TEST_F(SupervisedUserExtensionsManagerTest,
       SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
           kLocalApprovalGranted,
       approved_extensions_count);
-  histogram_tester.ExpectTotalCount(
-      extensions::kInitialLocallyApprovedExtensionCountWinLinuxMacHistogramName,
-      approved_extensions_count);
 }
 
 // Tests that extensions missing parent approval are granted parent approval
@@ -294,14 +291,6 @@ TEST_F(SupervisedUserExtensionsManagerTest,
       SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
           kApprovalGrantedByDefault,
       approved_extensions_count);
-  // The entry point of the implicit approval is recorded.
-  histogram_tester.ExpectBucketCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kImplicitParentApprovalGrantEntryPointHistogramName,
-      SupervisedUserExtensionsMetricsRecorder::
-          ImplicitExtensionApprovalEntryPoint::
-              kOnExtensionsSwitchFlippedToEnabled,
-      approved_extensions_count);
   // The number of auto-approved extensions is recorded.
   histogram_tester.ExpectTotalCount(
       extensions::kExtensionApprovalsCountOnExtensionToggleHistogramName,
@@ -333,21 +322,6 @@ TEST_F(SupervisedUserExtensionsManagerTest,
       SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
           kLocalApprovalGranted,
       0);
-  histogram_tester.ExpectTotalCount(
-      extensions::kInitialLocallyApprovedExtensionCountWinLinuxMacHistogramName,
-      0);
-  // The entry point of the implicit approval is recorded.
-  histogram_tester.ExpectBucketCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kImplicitParentApprovalGrantEntryPointHistogramName,
-      SupervisedUserExtensionsMetricsRecorder::
-          ImplicitExtensionApprovalEntryPoint::
-              OnExtensionInstallationWithExtensionsSwitchEnabled,
-      1);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kImplicitParentApprovalGrantEntryPointHistogramName,
-      approved_extensions_count + 1);
 }
 
 // Tests that extensions missing parent approval are granted parent approval

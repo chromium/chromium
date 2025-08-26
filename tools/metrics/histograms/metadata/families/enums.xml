@@ -456,31 +456,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h:ExtensionInstallDialogState) -->
 
-<!-- LINT.IfChange(SupervisedUserExtensionParentApprovalEntryPoint) -->
-
-<enum name="SupervisedUserExtensionParentApprovalEntryPoint">
-  <summary>
-    Tracks the different user flows that lead to displaying the Extension parent
-    approval dialog.
-  </summary>
-  <int value="0" label="Installed from Webstore">
-    The approval dialog is shown during a new extension installation from the
-    Webstore.
-  </int>
-  <int value="1" label="Enabled from extensions management page">
-    The approval dialog is shown when the user tries to enable an extension from
-    the extesnion management page.
-  </int>
-  <int value="2"
-      label="Enabled a disabled or terminated extension via the extension
-             enable flow">
-    The approval dialog is shown when the user tries to enable an disabled or
-    terminated via the extension enable flow.
-  </int>
-</enum>
-
-<!-- LINT.ThenChange(//extensions/browser/supervised_user_extensions_delegate.h:SupervisedUserExtensionParentApprovalEntryPoint) -->
-
 <enum name="SupervisedUserFaviconAvailability">
   <int value="0" label="Favicon Available"/>
   <int value="1" label="Favicon Unavailable"/>
@@ -508,28 +483,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:top_level_filtering_result) -->
-
-<!-- LINT.IfChange(SupervisedUserImplicitParentApprovalGrantEntryPoint) -->
-
-<enum name="SupervisedUserImplicitParentApprovalGrantEntryPoint">
-  <summary>
-    Tracks the different user flows that lead to granting an automatic parent
-    approval to an extension for a supervised user.
-  </summary>
-  <int value="0"
-      label="Parent configuration Extensions switch is flipped to enabled">
-    Recorded when an extension that did not have parent approval is granted it,
-    when the Family Link &quot;Extensions&quot; toggle is flipped to On. In this
-    mode no explicit parental approval is required.
-  </int>
-  <int value="1" label="New extension is installed">
-    Recorded when an extension is granted parent approval at the time of its
-    installation, when it is installed under the &quot;Extensions&quot; toggle
-    set to On. In this mode no explicit parental approval is required.
-  </int>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h:ImplicitExtensionApprovalEntryPoint) -->
 
 <!-- LINT.IfChange(SupervisedUserLogSegment) -->
 

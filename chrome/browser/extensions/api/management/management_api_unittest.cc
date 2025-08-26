@@ -147,17 +147,20 @@ bool ManagementApiUnitTest::RunSetEnabledFunction(
                     : ScopedTestDialogAutoConfirm::CANCEL);
   std::optional<ExtensionFunction::ScopedUserGestureForTests> gesture =
       std::nullopt;
-  if (use_user_gesture)
+  if (use_user_gesture) {
     gesture.emplace();
+  }
   auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
-  if (web_contents)
+  if (web_contents) {
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  }
   base::Value::List args;
   args.Append(extension_id);
   args.Append(enabled);
   bool result = RunFunction(function, args);
-  if (error)
+  if (error) {
     *error = function->GetError();
+  }
   return result;
 }
 
@@ -1130,8 +1133,6 @@ class TestSupervisedUserExtensionsDelegate
       const extensions::Extension& extension,
       content::WebContents* contents,
       const gfx::ImageSkia& icon,
-      SupervisedUserExtensionParentApprovalEntryPoint
-          extension_approval_entry_point,
       ExtensionApprovalDoneCallback extension_approval_callback) override {
     // Preconditions.
     DCHECK(IsChild());
@@ -1153,8 +1154,6 @@ class TestSupervisedUserExtensionsDelegate
   void RequestToEnableExtensionOrShowError(
       const extensions::Extension& extension,
       content::WebContents* contents,
-      SupervisedUserExtensionParentApprovalEntryPoint
-          extension_approval_entry_point,
       ExtensionApprovalDoneCallback extension_approval_callback) override {
     // Preconditions.
     DCHECK(IsChild());
@@ -1284,13 +1283,13 @@ TEST_F(ManagementApiSupervisedUserTest,
 
   bool is_locally_parent_approved = false;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    // Simulate a local approval grant for this extension.
-    base::Value::Dict locally_approved;
-    locally_approved.Set(extension_id, true);
-    profile()->GetPrefs()->SetDict(
-        prefs::kSupervisedUserLocallyParentApprovedExtensions,
-        std::move(locally_approved));
-    is_locally_parent_approved = true;
+  // Simulate a local approval grant for this extension.
+  base::Value::Dict locally_approved;
+  locally_approved.Set(extension_id, true);
+  profile()->GetPrefs()->SetDict(
+      prefs::kSupervisedUserLocallyParentApprovedExtensions,
+      std::move(locally_approved));
+  is_locally_parent_approved = true;
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
