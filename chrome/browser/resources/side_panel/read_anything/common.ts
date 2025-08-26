@@ -5,7 +5,7 @@
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {TextSegmenter} from './text_segmenter.js';
+import {TextSegmenter} from './read_aloud/text_segmenter.js';
 
 // Determined by experimentation - can be adjusted to fine tune for different
 // platforms.

@@ -25,11 +25,11 @@ import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
 import type {SpeechListener} from './read_aloud/speech_controller.js';
+import {TextSegmenter} from './read_aloud/text_segmenter.js';
 import {VoiceLanguageController} from './read_aloud/voice_language_controller.js';
 import type {VoiceLanguageListener} from './read_aloud/voice_language_controller.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {TextSegmenter} from './text_segmenter.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
 
 const AppElementBase = WebUiListenerMixinLit(CrLitElement);
