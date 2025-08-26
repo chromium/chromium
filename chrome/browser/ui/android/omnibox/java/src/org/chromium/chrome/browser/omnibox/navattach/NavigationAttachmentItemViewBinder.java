@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.navattach;
 
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
@@ -20,16 +19,20 @@ class NavigationAttachmentItemViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
-    public static void bind(PropertyModel model, ConstraintLayout view, PropertyKey propertyKey) {
+    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == NavigationAttachmentItemProperties.THUMBNAIL) {
             ImageView imageView = view.findViewById(R.id.attachment_thumbnail);
             imageView.setImageDrawable(model.get(NavigationAttachmentItemProperties.THUMBNAIL));
         } else if (propertyKey == NavigationAttachmentItemProperties.TITLE) {
             TextView textView = view.findViewById(R.id.attachment_title);
-            textView.setText(model.get(NavigationAttachmentItemProperties.TITLE));
+            if (textView != null) {
+                textView.setText(model.get(NavigationAttachmentItemProperties.TITLE));
+            }
         } else if (propertyKey == NavigationAttachmentItemProperties.DESCRIPTION) {
             TextView textView = view.findViewById(R.id.attachment_description);
-            textView.setText(model.get(NavigationAttachmentItemProperties.DESCRIPTION));
+            if (textView != null) {
+                textView.setText(model.get(NavigationAttachmentItemProperties.DESCRIPTION));
+            }
         }
     }
 }

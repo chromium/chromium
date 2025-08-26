@@ -106,12 +106,7 @@ class NavigationAttachmentsMediator {
 
                     var bitmap = (Bitmap) data.getExtras().get("data");
                     if (bitmap == null) return;
-                    addAttachment(
-                            new BitmapDrawable(mContext.getResources(), bitmap),
-                            // TODO(crbug.com/436888404): use dedicated tile for pictures and remove
-                            // these  strings.
-                            "Camera Shot",
-                            "Image");
+                    addAttachment(new BitmapDrawable(mContext.getResources(), bitmap), null, null);
                 },
                 R.string.low_memory_error);
     }
@@ -181,8 +176,17 @@ class NavigationAttachmentsMediator {
     }
 
     /* package */ void addAttachment(
-            @Nullable Drawable thumbnail, String title, String description) {
+            @Nullable Drawable thumbnail, @Nullable String title, @Nullable String description) {
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
+
+        @NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType
+        int itemType =
+                (title == null || description == null)
+                        ? NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType
+                                .ATTACHMENT_IMAGE
+                        : NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType
+                                .ATTACHMENT_ITEM;
+
         PropertyModel model =
                 new PropertyModel.Builder(NavigationAttachmentItemProperties.ALL_KEYS)
                         .with(
@@ -191,11 +195,7 @@ class NavigationAttachmentsMediator {
                         .with(NavigationAttachmentItemProperties.TITLE, title)
                         .with(NavigationAttachmentItemProperties.DESCRIPTION, description)
                         .build();
-        mModelList.add(
-                new SimpleRecyclerViewAdapter.ListItem(
-                        NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType
-                                .ATTACHMENT_ITEM,
-                        model));
+        mModelList.add(new SimpleRecyclerViewAdapter.ListItem(itemType, model));
     }
 
     // Parse GET_CONTENT response, extracting single- or multiple image selections.

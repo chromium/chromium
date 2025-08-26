@@ -7,16 +7,21 @@ found in the LICENSE file.
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="180dp"
-    android:layout_height="wrap_content"
-    android:background="@drawable/hairline_border_rounded"
-    android:padding="8dp">
+    android:background="@drawable/navattach_item_background"
+    android:clipToOutline="true"
+    android:layout_width="wrap_content"
+    android:layout_height="48dp"
+    android:paddingStart="6dp"
+    android:paddingEnd="16dp"
+    android:paddingVertical="4dp">
 
     <ImageView
         android:id="@+id/attachment_thumbnail"
         android:layout_width="@dimen/omnibox_suggestion_36dp_icon_size"
         android:layout_height="@dimen/omnibox_suggestion_36dp_icon_size"
-        android:scaleType="fitCenter"
+        android:background="@drawable/navattach_item_thumbnail_background"
+        android:clipToOutline="true"
+        android:scaleType="centerCrop"
         android:importantForAccessibility="no"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,28 +29,26 @@ found in the LICENSE file.
 
     <TextView
         android:id="@+id/attachment_title"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Bold"
         app:layout_constraintBottom_toTopOf="@+id/attachment_description"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/attachment_thumbnail"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"/>
 
     <TextView
         android:id="@+id/attachment_description"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/attachment_thumbnail"
         app:layout_constraintTop_toBottomOf="@id/attachment_title"/>
 
