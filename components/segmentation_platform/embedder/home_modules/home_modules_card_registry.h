@@ -19,7 +19,7 @@
 namespace segmentation_platform::home_modules {
 
 #if BUILDFLAG(IS_ANDROID)
-// Immpression counter for each card.
+// Impression counter for each card.
 extern const char kDefaultBrowserPromoImpressionCounterPref[];
 extern const char kTabGroupPromoImpressionCounterPref[];
 extern const char kTabGroupSyncPromoImpressionCounterPref[];

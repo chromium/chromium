@@ -28,6 +28,8 @@ static_library("home_modules") {
     sources += [
       "address_bar_position_ephemeral_module.cc",
       "address_bar_position_ephemeral_module.h",
+      "app_bundle_promo_ephemeral_module.cc",
+      "app_bundle_promo_ephemeral_module.h",
       "autofill_passwords_ephemeral_module.cc",
       "autofill_passwords_ephemeral_module.h",
       "enhanced_safe_browsing_ephemeral_module.cc",

@@ -291,4 +291,12 @@ BASE_FEATURE(kAppBundlePromoEphemeralCard,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+constexpr base::FeatureParam<int> kMaxAppBundlePromoImpressions{
+    &kAppBundlePromoEphemeralCard, "max_app_bundle_promo_impressions",
+    /*default_value=*/3};
+
+constexpr base::FeatureParam<int> kMaxAppBundleAppsInstalled{
+    &kAppBundlePromoEphemeralCard, "max_app_bundle_apps_installed",
+    /*default_value=*/4};
+
 }  // namespace segmentation_platform::features

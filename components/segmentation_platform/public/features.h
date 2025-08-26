@@ -199,6 +199,12 @@ BASE_DECLARE_FEATURE(kDefaultBrowserPromoPropensityModel);
 // Feature flag for enabling the App Bundle Promo Ephemeral card in the Magic
 // Stack.
 BASE_DECLARE_FEATURE(kAppBundlePromoEphemeralCard);
+// The maximum number of impressions for the `AppBundlePromoEphemeralModule`
+// Magic Stack card before the card should be hidden.
+extern const base::FeatureParam<int> kMaxAppBundlePromoImpressions;
+// The maximum number of app bundle apps that a user can have installed on their
+// device to have the card be shown.
+extern const base::FeatureParam<int> kMaxAppBundleAppsInstalled;
 
 }  // namespace segmentation_platform::features
 

@@ -831,11 +831,11 @@ const FeatureEntry::FeatureParam kSendTabPromoForceHideArm[] = {
 // App Bundle Promo
 const FeatureEntry::FeatureParam kAppBundlePromoForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::kAppBundlePromo},
+     segmentation_platform::kAppBundlePromoEphemeralModule},
 };
 const FeatureEntry::FeatureParam kAppBundlePromoForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::kAppBundlePromo},
+     segmentation_platform::kAppBundlePromoEphemeralModule},
 };
 
 // ShopCard experiment arms
