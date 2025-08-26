@@ -42,6 +42,7 @@ source_set("exclusive_access") {
     "//url",
   ]
   deps = [
+    "//chrome/browser/app_mode",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/common:constants",

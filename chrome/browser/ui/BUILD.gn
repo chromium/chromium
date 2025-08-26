@@ -1361,6 +1361,7 @@ static_library("ui") {
       "//chrome/browser/actor",
       "//chrome/browser/actor:impl",
       "//chrome/browser/actor/ui",
+      "//chrome/browser/app_mode",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/app_service/app_icon:util",

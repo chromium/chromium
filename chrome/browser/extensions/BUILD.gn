@@ -518,6 +518,7 @@ source_set("extensions") {
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:shell_integration",
+    "//chrome/browser/app_mode",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/content_settings:content_settings_factory",
@@ -1708,6 +1709,7 @@ source_set("chrome_extensions_browser_client") {
   ]
 
   deps = [
+    "//chrome/browser/app_mode",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/extensions",
     "//chrome/browser/media/webrtc",

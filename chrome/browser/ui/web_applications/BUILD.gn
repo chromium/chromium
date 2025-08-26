@@ -167,6 +167,7 @@ source_set("impl") {
     deps += [
       ":launch_utils",
       "//chrome/browser:browser_process",
+      "//chrome/browser/app_mode",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:constants",

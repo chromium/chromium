@@ -234,6 +234,7 @@ static_library("screens") {
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
+    "//chrome/browser/app_mode",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",

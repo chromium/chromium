@@ -70,11 +70,11 @@ source_set("permissions") {
   deps = [
     ":permissions_proto",
     "//chrome/browser:browser_process",
+    "//chrome/browser/app_mode",
     "//chrome/browser/content_extraction",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/favicon",
     "//chrome/browser/optimization_guide",
-    "//chrome/browser/profiles",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",

@@ -32,6 +32,7 @@ source_set("impl") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:primitives",
     "//chrome/browser:shell_integration",
+    "//chrome/browser/app_mode",
     "//chrome/browser/apps/platform_apps",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
