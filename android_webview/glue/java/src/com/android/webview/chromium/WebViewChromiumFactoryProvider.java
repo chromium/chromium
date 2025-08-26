@@ -17,6 +17,9 @@ import android.os.Process;
 import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.os.flagging.AconfigPackage;
+import android.provider.DeviceConfig;
+import android.provider.DeviceConfig.Properties;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.PacProcessor;
@@ -78,6 +81,8 @@ import org.chromium.components.embedder_support.application.ClassLoaderContextWr
 import org.chromium.support_lib_boundary.ProcessGlobalConfigConstants;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -128,6 +133,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private static final String ASSET_PATH_WORKAROUND_HISTOGRAM_NAME =
             "Android.WebView.AssetPathWorkaroundUsed.FactoryInit";
+
+    private static final String REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME =
+            "Android.WebView.RegisterResourcePathsAvailable2";
+
+    private static final String REGISTER_RESOURCE_PATHS_TIMES_HISTOGRAM_NAME =
+            "Android.WebView.RegisterResourcePathsTimeTaken";
 
     @GuardedBy("mAwInit.getLazyInitLock()")
     private TracingController mTracingController;
@@ -944,7 +955,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
         // Don't enable on V+.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            return false;
+            return !isRegisterResourcePathsAvailable();
         }
 
         // Allow the developer to opt in or opt out of the experiment.
@@ -954,6 +965,67 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             return valueFromManifest;
         }
 
+        return true;
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({ResourcePathsApi.DISABLED, ResourcePathsApi.ENABLED, ResourcePathsApi.ERROR})
+    private @interface ResourcePathsApi {
+        int DISABLED = 0;
+        int ENABLED = 1;
+        int ERROR = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    /** Returns whether the registerResourcePaths API is available to use. */
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    private boolean isRegisterResourcePathsAvailable() {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            try {
+                long before = SystemClock.uptimeMillis();
+                Properties properties = DeviceConfig.getProperties("resource_manager");
+                boolean isEnabled =
+                        properties.getBoolean("android.content.res.register_resource_paths", false);
+                long after = SystemClock.uptimeMillis();
+                RecordHistogram.recordEnumeratedHistogram(
+                        REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME,
+                        isEnabled ? ResourcePathsApi.ENABLED : ResourcePathsApi.DISABLED,
+                        ResourcePathsApi.NUM_ENTRIES);
+                RecordHistogram.recordTimesHistogram(
+                        REGISTER_RESOURCE_PATHS_TIMES_HISTOGRAM_NAME, after - before);
+                return isEnabled;
+            } catch (Exception e) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME,
+                        ResourcePathsApi.ERROR,
+                        ResourcePathsApi.NUM_ENTRIES);
+                // Default to pre-V workaround if we error checking the flag value.
+                return false;
+            }
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.BAKLAVA) {
+            try {
+                long before = SystemClock.uptimeMillis();
+                boolean isEnabled =
+                        AconfigPackage.load("android.content.res")
+                                .getBooleanFlagValue("register_resource_paths", false);
+                long after = SystemClock.uptimeMillis();
+                RecordHistogram.recordEnumeratedHistogram(
+                        REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME,
+                        isEnabled ? ResourcePathsApi.ENABLED : ResourcePathsApi.DISABLED,
+                        ResourcePathsApi.NUM_ENTRIES);
+                RecordHistogram.recordTimesHistogram(
+                        REGISTER_RESOURCE_PATHS_TIMES_HISTOGRAM_NAME, after - before);
+                return isEnabled;
+            } catch (Exception e) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME,
+                        ResourcePathsApi.ERROR,
+                        ResourcePathsApi.NUM_ENTRIES);
+                // Default to pre-V workaround if we error checking the flag value.
+                return false;
+            }
+        }
+        // On newer OS versions, registerResourcePaths will always be available.
         return true;
     }
 

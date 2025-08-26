@@ -13,10 +13,7 @@ import android.os.Build;
 import android.os.Looper;
 import android.os.Process;
 import android.os.SystemClock;
-import android.os.flagging.AconfigPackage;
 import android.os.storage.StorageManager;
-import android.provider.DeviceConfig;
-import android.provider.DeviceConfig.Properties;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
@@ -77,8 +74,6 @@ import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ResourceBundle;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
 import java.util.Locale;
 import java.util.Set;
@@ -99,9 +94,6 @@ public class WebViewChromiumAwInit {
 
     private static final String ASSET_PATH_WORKAROUND_HISTOGRAM_NAME =
             "Android.WebView.AssetPathWorkaroundUsed.StartChromiumLocked";
-
-    private static final String REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME =
-            "Android.WebView.RegisterResourcePathsAvailable2";
 
     public static class WebViewStartUpDiagnostics {
         private final Object mLock = new Object();
@@ -523,10 +515,6 @@ public class WebViewChromiumAwInit {
                                 () -> {
                                     LibraryPrefetcher.prefetchNativeLibraryForWebView();
                                 });
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                        PostTask.postTask(
-                                TaskTraits.BEST_EFFORT, this::logRegisterResourcePathsAvailability);
                     }
 
                     if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_RECORD_APP_CACHE_HISTOGRAMS)) {
@@ -1086,50 +1074,6 @@ public class WebViewChromiumAwInit {
                     callback.onSuccess(mWebViewStartUpDiagnostics);
                 });
         postChromiumStartupIfNeeded(CallSite.ASYNC_WEBVIEW_STARTUP);
-    }
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ResourcePathsApi.DISABLED, ResourcePathsApi.ENABLED, ResourcePathsApi.ERROR})
-    private @interface ResourcePathsApi {
-        int DISABLED = 0;
-        int ENABLED = 1;
-        int ERROR = 2;
-        int NUM_ENTRIES = 3;
-    }
-
-    /** Logs whether the registerResourcePaths API is available to use. */
-    private void logRegisterResourcePathsAvailability() {
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            try {
-                Properties properties = DeviceConfig.getProperties("resource_manager");
-                RecordHistogram.recordEnumeratedHistogram(
-                        REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME,
-                        properties.getBoolean("android.content.res.register_resource_paths", false)
-                                ? ResourcePathsApi.ENABLED
-                                : ResourcePathsApi.DISABLED,
-                        ResourcePathsApi.NUM_ENTRIES);
-            } catch (Exception e) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME,
-                        ResourcePathsApi.ERROR,
-                        ResourcePathsApi.NUM_ENTRIES);
-            }
-        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.BAKLAVA) {
-            try {
-                RecordHistogram.recordEnumeratedHistogram(
-                        REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME,
-                        AconfigPackage.load("android.content.res")
-                                        .getBooleanFlagValue("register_resource_paths", false)
-                                ? ResourcePathsApi.ENABLED
-                                : ResourcePathsApi.DISABLED,
-                        ResourcePathsApi.NUM_ENTRIES);
-            } catch (Exception e) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        REGISTER_RESOURCE_PATHS_HISTOGRAM_NAME,
-                        ResourcePathsApi.ERROR,
-                        ResourcePathsApi.NUM_ENTRIES);
-            }
-        }
     }
 
     private boolean anyStartupTaskExperimentIsEnabled() {
