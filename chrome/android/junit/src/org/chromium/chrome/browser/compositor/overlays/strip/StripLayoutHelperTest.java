@@ -4641,6 +4641,91 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @Feature("Pinned Tabs")
+    public void testGetTabIndexForTabDrop_DropPinnedTabOverUnpinnedTab() {
+        // Setup with 3 tabs.
+        initializeTest(false, false, 1, 3);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH_LANDSCAPE,
+                SCREEN_HEIGHT,
+                false,
+                TIMESTAMP,
+                PADDING_LEFT,
+                PADDING_RIGHT,
+                0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // First half of second tab:
+        // tabWidth(265) - overlapWidth(28) + inset(16) to +halfTabWidth(132.5) = 253 to 385.5
+        int expectedIndex = 0;
+        float dropX = 300.f;
+        assertEquals(
+                "Should prepare to drop at index 0.",
+                expectedIndex,
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ true));
+    }
+
+    @Test
+    @Feature("Pinned Tabs")
+    public void testGetTabIndexForTabDrop_DropUnpinnedTabOverPinnedTab() {
+        // Setup with 3 tabs.
+        initializeTest(false, false, 1, 3);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH_LANDSCAPE,
+                SCREEN_HEIGHT,
+                false,
+                TIMESTAMP,
+                PADDING_LEFT,
+                PADDING_RIGHT,
+                0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Pin first two tabs
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        tabs[0].setIsPinned(true);
+        tabs[1].setIsPinned(true);
+
+        // First half of second tab:
+        // tabWidth(265) - overlapWidth(28) + inset(16) to +halfTabWidth(132.5) = 253 to 385.5
+        int expectedIndex = 2;
+        float dropX = 300.f;
+        assertEquals(
+                "Should prepare to drop at index 2.",
+                expectedIndex,
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
+    }
+
+    @Test
+    @Feature("Pinned Tabs")
+    public void testGetTabIndexForTabDrop_DropPinnedTabOverPinnedTab() {
+        // Setup with 3 tabs.
+        initializeTest(false, false, 1, 3);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH_LANDSCAPE,
+                SCREEN_HEIGHT,
+                false,
+                TIMESTAMP,
+                PADDING_LEFT,
+                PADDING_RIGHT,
+                0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Pin first two tabs
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        tabs[0].setIsPinned(true);
+        tabs[1].setIsPinned(true);
+
+        // First half of second tab:
+        // tabWidth(265) - overlapWidth(28) + inset(16) to +halfTabWidth(132.5) = 253 to 385.5
+        int expectedIndex = 1;
+        float dropX = 300.f;
+        assertEquals(
+                "Should prepare to drop at index 1.",
+                expectedIndex,
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ true));
+    }
+
+    @Test
     public void testGetTabIndexForTabDrop_FirstHalfOfTab() {
         // Setup with 3 tabs.
         initializeTest(false, false, 1, 3);
@@ -4661,7 +4746,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should prepare to drop at index 1.",
                 expectedIndex,
-                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
     }
 
     @Test
@@ -4685,7 +4770,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should prepare to drop at index 2.",
                 expectedIndex,
-                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
     }
 
     @Test
@@ -4725,7 +4810,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should prepare to drop at index 1.",
                 expectedIndex,
-                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
     }
 
     @Test
@@ -4764,7 +4849,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should prepare to drop at index 2.",
                 expectedIndex,
-                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
     }
 
     @Test
@@ -4794,7 +4879,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should prepare to drop at index 0.",
                 expectedIndex,
-                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
     }
 
     @Test
@@ -4818,7 +4903,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should prepare to drop at index 3.",
                 expectedIndex,
-                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX, /* isPinned= */ false));
     }
 
     @Test

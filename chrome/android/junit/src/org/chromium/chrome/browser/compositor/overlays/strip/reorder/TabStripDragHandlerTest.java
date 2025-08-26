@@ -1340,7 +1340,8 @@ public class TabStripDragHandlerTest {
         }
         HistogramWatcher histogramExpectation = builder.build();
 
-        when(mDestStripLayoutHelper.getTabIndexForTabDrop(anyFloat())).thenReturn(TAB_INDEX);
+        when(mDestStripLayoutHelper.getTabIndexForTabDrop(anyFloat(), anyBoolean()))
+                .thenReturn(TAB_INDEX);
 
         // Invoke drop.
         invokeDropInDestinationStrip(
@@ -1370,7 +1371,8 @@ public class TabStripDragHandlerTest {
     }
 
     private void doTestDropInStripDestinationForMultiTab() {
-        when(mDestStripLayoutHelper.getTabIndexForTabDrop(anyFloat())).thenReturn(TAB_INDEX);
+        when(mDestStripLayoutHelper.getTabIndexForTabDrop(anyFloat(), anyBoolean()))
+                .thenReturn(TAB_INDEX);
 
         // Invoke drop.
         new DragEventInvoker(DragType.MULTI_TAB, /* isGroupShared= */ false)

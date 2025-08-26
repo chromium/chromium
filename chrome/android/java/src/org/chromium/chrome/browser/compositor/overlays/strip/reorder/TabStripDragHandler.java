@@ -441,7 +441,9 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             showDroppedDifferentModelToast(getActivity());
         } else {
             // Reparent tab at drop index and merge to group on destination if needed.
-            int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
+            int tabIndex =
+                    helper.getTabIndexForTabDrop(
+                            dropEvent.getX() * mPxToDp, tabBeingDragged.getIsPinned());
             mMultiInstanceManager.moveTabsToWindow(
                     getActivity(), Collections.singletonList(tabBeingDragged), tabIndex);
             helper.maybeMergeToGroupOnDrop(
@@ -457,6 +459,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         return true;
     }
 
+    // TODO(crbug.com/437417213): Handle pinned tab.
     private boolean handleMultiTabDrop(DragEvent dropEvent, StripLayoutHelper helper) {
         List<Tab> tabsBeingDragged =
                 ChromeDragDropUtils.getTabsFromGlobalState(getDragDropGlobalState(dropEvent));
@@ -476,7 +479,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             showDroppedDifferentModelToast(getActivity());
         } else {
             // Reparent tabs at drop index.
-            int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
+            int tabIndex =
+                    helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp, /* isPinned= */ false);
             mMultiInstanceManager.moveTabsToWindow(getActivity(), tabsBeingDragged, tabIndex);
             List<Integer> tabsBeingDraggedIds = new ArrayList<>();
             for (Tab tab : tabsBeingDragged) {
@@ -516,7 +520,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             showDroppedDifferentModelToast(getActivity());
         } else {
             // Reparent tab group at drop index.
-            int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
+            int tabIndex =
+                    helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp, /* isPinned= */ false);
             mMultiInstanceManager.moveTabGroupToWindow(getActivity(), tabGroupMetadata, tabIndex);
         }
         DragDropMetricUtils.recordDragDropType(
@@ -590,7 +595,14 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         @Nullable Tab tab =
                 ChromeDragDropUtils.getTabFromGlobalState(
                         getDragDropGlobalState(/* dragEvent= */ null));
-        return tab != null;
+        return tab != null && !tab.getIsPinned();
+    }
+
+    public static boolean isDraggedTabPinned() {
+        @Nullable Tab tab =
+                ChromeDragDropUtils.getTabFromGlobalState(
+                        getDragDropGlobalState(/* dragEvent= */ null));
+        return tab != null && tab.getIsPinned();
     }
 
     /**

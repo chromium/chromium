@@ -907,7 +907,14 @@ public class StripLayoutHelper
 
     /** Returns The total effective width of pinned tabs. */
     protected float getTotalPinnedTabsWidth() {
-        return getEffectiveTabWidth(/* isPinned= */ true) * getNumLivePinnedTabs();
+        float width = 0.f;
+        for (StripLayoutTab tab : mStripTabs) {
+            if (!tab.getIsPinned()) break;
+            if (isLiveTab(tab)) {
+                width += getEffectiveTabWidth(/* isPinned= */ true) + tab.getTrailingMargin();
+            }
+        }
+        return width;
     }
 
     /** Returns The visual offset to be applied to the new tab button. */
@@ -5419,8 +5426,7 @@ public class StripLayoutHelper
         }
     }
 
-    // TODO(crbug.com/437417213): Prevent reordering and droppping between regular and pinned tabs.
-    public int getTabIndexForTabDrop(float x) {
+    public int getTabIndexForTabDrop(float x, boolean isPinned) {
         for (int i = 0; i < mStripViews.length; i++) {
             final StripLayoutView stripView = mStripViews[i];
             final float leftEdge;
@@ -5435,7 +5441,8 @@ public class StripLayoutHelper
                 boolean hasReachedThreshold =
                         rtl ? x > rightEdge - halfTabWidth : x < leftEdge + halfTabWidth;
                 if (hasReachedThreshold) {
-                    return StripLayoutUtils.findIndexForTab(mStripTabs, tab.getTabId());
+                    int tabIndex = StripLayoutUtils.findIndexForTab(mStripTabs, tab.getTabId());
+                    return isPinned == tab.getIsPinned() ? tabIndex : getNumLivePinnedTabs();
                 }
             } else {
                 final StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) stripView;
@@ -5448,12 +5455,14 @@ public class StripLayoutHelper
                                 ? x > rightEdge - halfGroupTitleWidth
                                 : x < leftEdge + halfGroupTitleWidth;
                 if (hasReachedThreshold) {
-                    return StripLayoutUtils.findIndexForTab(
-                            mStripTabs, ((StripLayoutTab) mStripViews[i + 1]).getTabId());
+                    int tabIndex =
+                            StripLayoutUtils.findIndexForTab(
+                                    mStripTabs, ((StripLayoutTab) mStripViews[i + 1]).getTabId());
+                    return isPinned ? getNumLivePinnedTabs() : tabIndex;
                 }
             }
         }
-        return mStripTabs.length;
+        return isPinned ? getNumLivePinnedTabs() : mStripTabs.length;
     }
 
     public @MediaState int getMediaIndicatorState(StripLayoutTab stripLayoutTab) {

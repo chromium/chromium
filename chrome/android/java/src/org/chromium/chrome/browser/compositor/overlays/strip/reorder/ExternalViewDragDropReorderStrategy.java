@@ -244,9 +244,14 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
                 animationList);
     }
 
+    //TODO:(crbug.com/438523986) Add trailing margin if an unpinned tab hovered on last hovered tab.
     private boolean shouldHaveTrailingMargin(
             StripLayoutView interactingView, boolean isInteracting) {
         if (!isInteracting) return false;
+
+        boolean isHoveredViewPinned =
+                (interactingView instanceof StripLayoutTab tab) && tab.getIsPinned();
+        if (TabStripDragHandler.isDraggedTabPinned() != isHoveredViewPinned) return false;
 
         if (TabStripDragHandler.canMergeIntoGroupOnDrop()) return true;
 
