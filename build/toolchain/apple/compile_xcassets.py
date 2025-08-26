@@ -254,6 +254,15 @@ def CompileAssetCatalog(output, target_os, target_environment, product_type,
                 else:
                     command.extend(['--app-icon', asset_name])
 
+            if asset_type == ".icon":
+                inputs.remove(relative_path)
+                dir = os.path.dirname(relative_path)
+                path_with_dir = os.path.join(dir, asset_name + asset_type)
+                path_without_dir = os.path.join(relative_path,
+                                                asset_name + asset_type)
+                shutil.copytree(path_without_dir, path_with_dir)
+                inputs.append(path_with_dir)
+                command.extend(["--app-icon", asset_name])
             if asset_type not in ACTOOL_FLAG_FOR_ASSET_TYPE:
                 continue
 
