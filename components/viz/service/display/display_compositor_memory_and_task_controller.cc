@@ -11,6 +11,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 
 namespace viz {
 

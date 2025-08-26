@@ -5,8 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_DAWN_CONTEXT_PROVIDER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_DAWN_CONTEXT_PROVIDER_H_
 
-#include <dawn/platform/DawnPlatform.h>
-
 #include <memory>
 #include <optional>
 

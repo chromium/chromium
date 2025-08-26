@@ -18,7 +18,6 @@
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shader_translator_cache.h"
-#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
@@ -32,6 +31,7 @@ namespace gpu {
 class SharedImageManager;
 class SyncPointManager;
 class SingleTaskSequence;
+class SharedContextState;
 
 namespace gles2 {
 class Outputter;

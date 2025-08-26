@@ -5,8 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_TESTS_WEBGPU_TEST_H_
 #define GPU_COMMAND_BUFFER_TESTS_WEBGPU_TEST_H_
 
-#include <dawn/webgpu_cpp.h>
-#include <dawn/webgpu_cpp_print.h>
+#include <dawn/wire/client/webgpu_cpp.h>
+#include <dawn/wire/client/webgpu_cpp_print.h>
 
 #include <memory>
 

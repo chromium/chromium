@@ -7,8 +7,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include <dawn/native/DawnNative.h>
-
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -16,7 +14,6 @@
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/command_buffer/tests/webgpu_test.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -25,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -84,6 +82,21 @@ uint32_t BytesPerTexel(viz::SharedImageFormat format) {
   }
 
   NOTREACHED();
+}
+
+wgpu::TextureFormat VizToWGPUFormat(const viz::SharedImageFormat& format) {
+  // This function provides the inverse mapping of `WGPUFormatToViz` (located in
+  // webgpu_swap_buffer_provider.cc).
+  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return wgpu::TextureFormat::BGRA8Unorm;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+    return wgpu::TextureFormat::RGBA8Unorm;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return wgpu::TextureFormat::RGBA16Float;
+  }
+  NOTREACHED() << "Unsupported format: " << format.ToString();
 }
 
 }  // namespace
@@ -1208,7 +1221,7 @@ TEST_P(WebGPUMailboxTextureTest, ErrorWhenUsingTextureAfterDissociate) {
   DCHECK(GetParam().format == viz::SinglePlaneFormat::kRGBA_8888 ||
          GetParam().format == viz::SinglePlaneFormat::kBGRA_8888 ||
          GetParam().format == viz::SinglePlaneFormat::kRGBA_F16);
-  dst_desc.format = ToDawnFormat(GetParam().format);
+  dst_desc.format = VizToWGPUFormat(GetParam().format);
 
   wgpu::TexelCopyTextureInfo src_image = {};
   src_image.texture = texture;
@@ -1421,7 +1434,7 @@ TEST_P(WebGPUMailboxTextureTest, ReflectionOfDescriptor) {
 TEST_P(WebGPUMailboxTextureTest, AssociateInvalidViewFormats) {
   wgpu::TextureDescriptor desc = {};
   desc.size = {1, 1, 1};
-  desc.format = ToDawnFormat(GetParam().format);
+  desc.format = VizToWGPUFormat(GetParam().format);
   desc.usage = wgpu::TextureUsage::RenderAttachment;
   desc.dimension = wgpu::TextureDimension::e2D;
   desc.sampleCount = 1;
