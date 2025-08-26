@@ -100,6 +100,10 @@ module sys_stage1 [system] [extern_c] {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/flock64.h"
     export *
   }
+  module sysroot_bits_getopt_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/getopt.h"
+    export *
+  }
   module sysroot_bits_mbstate_t_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/mbstate_t.h"
     export *
@@ -122,6 +126,10 @@ module sys_stage1 [system] [extern_c] {
   }
   module sysroot_features_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/features.h"
+    export *
+  }
+  module sysroot_getopt_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/getopt.h"
     export *
   }
   module sysroot_linux_compiler_h {

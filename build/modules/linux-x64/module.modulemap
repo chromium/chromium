@@ -36,6 +36,10 @@ module sys_stage1 [system] [extern_c] {
     header "../../linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/cdefs.h"
     export *
   }
+  module sysroot_getopt_h {
+    header "../../linux/debian_bullseye_amd64-sysroot/usr/include/getopt.h"
+    export *
+  }
   module sysroot_gnu_stubs_64_h {
     header "../../linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/gnu/stubs-64.h"
     export *

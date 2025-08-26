@@ -37,6 +37,7 @@ SYSROOT_DIRS = {
 # want to precompile.
 SYSROOT_PRECOMPILED_HEADERS = [
     'fcntl.h',
+    'getopt.h',
 ]
 
 
