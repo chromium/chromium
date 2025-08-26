@@ -163,7 +163,7 @@ SegmentationPlatformServiceFactory::BuildServiceInstanceForBrowserContext(
       session_sync_service, profile);
   auto home_modules_card_registry =
       std::make_unique<home_modules::HomeModulesCardRegistry>(
-          profile->GetPrefs());
+          profile->GetPrefs(), g_browser_process->local_state());
 
   InitializeUkmDatabaseIfNeeded(profile);
 

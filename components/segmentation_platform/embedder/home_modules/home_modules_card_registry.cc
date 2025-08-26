@@ -151,20 +151,29 @@ void AddCardForTip(TipIdentifier tip,
 
 }  // namespace
 
-HomeModulesCardRegistry::HomeModulesCardRegistry(PrefService* profile_prefs)
-    : profile_prefs_(profile_prefs) {
+HomeModulesCardRegistry::HomeModulesCardRegistry(PrefService* profile_prefs,
+                                                 PrefService* local_state_prefs)
+    : profile_prefs_(profile_prefs), local_state_prefs_(local_state_prefs) {
   CreateAllCards();
 }
 
 HomeModulesCardRegistry::HomeModulesCardRegistry(
     PrefService* profile_prefs,
+    PrefService* local_state_prefs,
     std::vector<std::unique_ptr<CardSelectionInfo>> cards)
-    : profile_prefs_(profile_prefs) {
+    : profile_prefs_(profile_prefs), local_state_prefs_(local_state_prefs) {
   all_cards_by_priority_.swap(cards);
   InitializeAfterAddingCards();
 }
 
 HomeModulesCardRegistry::~HomeModulesCardRegistry() = default;
+
+// static
+void HomeModulesCardRegistry::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  // TODO(crbug.com/440043694): Add App Bundle promo card and register local
+  // state pref to track its impression count.
+}
 
 //  static
 void HomeModulesCardRegistry::RegisterProfilePrefs(

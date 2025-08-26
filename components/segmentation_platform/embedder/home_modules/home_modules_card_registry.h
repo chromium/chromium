@@ -39,10 +39,12 @@ extern const char kHistorySyncPromoInteractedPref[];
 // Registry that manages all ephemeral cards in mobile home modules.
 class HomeModulesCardRegistry : public base::SupportsUserData::Data {
  public:
-  explicit HomeModulesCardRegistry(PrefService* profile_prefs);
+  explicit HomeModulesCardRegistry(PrefService* profile_prefs,
+                                   PrefService* local_state_prefs);
   // For testing.
   HomeModulesCardRegistry(
       PrefService* profile_prefs,
+      PrefService* local_state_prefs,
       std::vector<std::unique_ptr<CardSelectionInfo>> cards);
   ~HomeModulesCardRegistry() override;
 
@@ -51,6 +53,9 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
 
   // Registers all the profile prefs needed for the ephemeral cards system.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Registers all the local state prefs needed for the ephemeral cards system.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Returns `true` if the given `label` corresponds to any of the Tips
   // ephemeral module classes.
@@ -103,6 +108,9 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
   RankFetcherHelper rank_fecther_helper_;
 
   const raw_ptr<PrefService> profile_prefs_;
+
+  // `PrefService` for the local state.
+  const raw_ptr<PrefService> local_state_prefs_;
 
   // Maps a card label to its output index order.
   std::map<std::string, size_t> label_to_output_index_;
