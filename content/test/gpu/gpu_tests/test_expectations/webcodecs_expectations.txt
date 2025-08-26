@@ -322,6 +322,12 @@ crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_v
 crbug.com/40275246 [ win11 nvidia ] WebCodecs_D3D12_SVC_av01.0.04M.08_layers_2 [ Failure ]
 crbug.com/40275246 [ win11 nvidia ] WebCodecs_D3D12_SVC_avc1.42001E_layers_2 [ Failure ]
 
+crbug.com/441011637 [ win11 nvidia ] WebCodecs_FrameSizeChange_avc1.42001E_offscreen [ Failure ]
+crbug.com/441011637 [ win11 nvidia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_offscreen [ Failure ]
+crbug.com/441011637 [ win11 nvidia ] WebCodecs_SVC_avc1.42001E_prefer-hardware_layers_2 [ Failure ]
+crbug.com/441011637 [ win11 nvidia ] WebCodecs_SVC_avc1.42001E_prefer-hardware_layers_3 [ Failure ]
+crbug.com/441011637 [ win11 nvidia ] WebCodecs_SVC_hvc1.1.6.L123.00_prefer-hardware_layers_2 [ Failure ]
+
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
