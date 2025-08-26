@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
-#include "chrome/browser/ui/views/test/split_tabs_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -80,18 +80,16 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
 }  // namespace
 
 class MultiContentsViewUiTest
-    : public SplitTabsInteractiveTestMixin<
+    : public SplitViewInteractiveTestMixin<
           TabStripInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
   void SetUpOnMainThread() override {
-    SplitTabsInteractiveTestMixin::SetUpOnMainThread();
+    SplitViewInteractiveTestMixin::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
  protected:
-  TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
-
   GURL GetTestUrl() { return embedded_test_server()->GetURL("/title1.html"); }
 
   auto CreateTabsAndEnterSplitView() {

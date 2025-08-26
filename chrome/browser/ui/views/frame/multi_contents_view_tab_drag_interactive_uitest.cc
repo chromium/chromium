@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
-#include "chrome/browser/ui/views/test/split_tabs_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -144,7 +144,7 @@ class QuitTabDraggingObserver {
 };
 
 class MultiContentsViewTabDragEntrypointsUiTest
-    : public SplitTabsInteractiveTestMixin<
+    : public SplitViewInteractiveTestMixin<
           TabStripInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
   using DragStep = base::OnceCallback<void(base::OnceClosure)>;

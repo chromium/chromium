@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
+#include "chrome/browser/ui/views/test/split_view_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/drop_data.h"
@@ -43,23 +44,16 @@ class MockTabDragController : public TabDragDelegate::DragController {
 };
 
 class MultiContentsViewDropTargetControllerBrowserTest
-    : public InProcessBrowserTest {
+    : public SplitViewBrowserTestMixin<InProcessBrowserTest> {
  protected:
-  MultiContentsViewDropTargetControllerBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSideBySide,
-          {{features::kSideBySideDropTargetHideForOSWidth.name, "50"}}}},
-        {});
-  }
-
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    SplitViewBrowserTestMixin::SetUpOnMainThread();
     if (ShouldSkipTests()) {
       return;
     }
     delegate_ = std::make_unique<MultiContentsViewDelegateImpl>(*browser());
     controller_ = std::make_unique<MultiContentsViewDropTargetController>(
-        drop_target_view(), *delegate_.get());
+        *drop_target_view(), *delegate_.get());
   }
 
   void TearDownOnMainThread() override {
@@ -67,24 +61,14 @@ class MultiContentsViewDropTargetControllerBrowserTest
     delegate_.reset();
   }
 
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {{features::kSideBySide,
+             {{features::kSideBySideDropTargetHideForOSWidth.name, "50"}}}};
+  }
+
   MultiContentsViewDropTargetController& controller() { return *controller_; }
   TabStrip* tabstrip() { return browser()->GetBrowserView().tabstrip(); }
-
-  // TODO(crbug.com/440564277): Make a split view mixin for this shared logic.
-  MultiContentsDropTargetView& drop_target_view() {
-    MultiContentsDropTargetView* view =
-        views::ElementTrackerViews::GetInstance()
-            ->GetFirstMatchingViewAs<MultiContentsDropTargetView>(
-                MultiContentsDropTargetView::kMultiContentsDropTargetElementId,
-                views::ElementTrackerViews::GetContextForWidget(
-                    multi_contents_view().GetWidget()));
-
-    return *view;
-  }
-  MultiContentsView& multi_contents_view() {
-    return CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser())
-                           ->multi_contents_view());
-  }
 
   int GetViewWidth() { return browser()->GetBrowserView().width(); }
 
@@ -110,7 +94,7 @@ class MultiContentsViewDropTargetControllerBrowserTest
     // Return whether the drop timer is running which indicates if the drop
     // target will show.
     const gfx::Point point_in_screen = views::View::ConvertPointToScreen(
-        drop_target_view().parent(), point_in_view);
+        drop_target_view()->parent(), point_in_view);
     controller().OnTabDragUpdated(mock_tab_drag_controller, point_in_screen);
   }
 

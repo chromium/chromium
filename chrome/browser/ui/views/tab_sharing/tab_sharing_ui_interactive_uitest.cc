@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_ui_views.h"
-#include "chrome/browser/ui/views/test/split_tabs_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/render_process_host.h"
@@ -26,10 +26,10 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 }  // namespace
 
 class TabSharingMultiContentsViewTest
-    : public SplitTabsInteractiveTestMixin<InteractiveBrowserTest> {
+    : public SplitViewInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   void SetUpOnMainThread() override {
-    SplitTabsInteractiveTestMixin::SetUpOnMainThread();
+    SplitViewInteractiveTestMixin::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }

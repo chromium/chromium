@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
-#include "chrome/browser/ui/views/test/split_tabs_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/test/split_view_browser_test_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -64,32 +64,8 @@ class MockDragController : public TabDragDelegate::DragController {
 
 }  // namespace
 
-class MultiContentsViewBrowserTest : public InProcessBrowserTest {
- protected:
-  MultiContentsViewBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSideBySide);
-  }
-
-  MultiContentsDropTargetView& drop_target_view() {
-    MultiContentsDropTargetView* view =
-        views::ElementTrackerViews::GetInstance()
-            ->GetFirstMatchingViewAs<MultiContentsDropTargetView>(
-                MultiContentsDropTargetView::kMultiContentsDropTargetElementId,
-                views::ElementTrackerViews::GetContextForWidget(
-                    multi_contents_view().GetWidget()));
-
-    CHECK(view);
-    return *view;
-  }
-
-  MultiContentsView& multi_contents_view() {
-    return CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser())
-                           ->multi_contents_view());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+class MultiContentsViewBrowserTest
+    : public SplitViewBrowserTestMixin<InProcessBrowserTest> {};
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleDropTargetViewLinkDrop_IsSupported) {
@@ -102,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   }
 #endif
 
-  EXPECT_TRUE(multi_contents_view().IsDragAndDropEnabled());
+  EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
 
   Browser::CreateParams app_browser_params =
       Browser::CreateParams::CreateForApp("AppName", true, gfx::Rect(),
@@ -131,16 +107,16 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   gfx::PointF point = {10, 10};
   ui::DropTargetEvent event(data, point, point, ui::DragDropTypes::DRAG_LINK);
 
-  drop_target_view().Show(MultiContentsDropTargetView::DropSide::END,
-                          MultiContentsDropTargetView::DropTargetState::kFull);
-  auto drop_cb = drop_target_view().GetDropCallback(event);
-  EXPECT_FALSE(multi_contents_view().IsInSplitView());
+  drop_target_view()->Show(MultiContentsDropTargetView::DropSide::END,
+                           MultiContentsDropTargetView::DropTargetState::kFull);
+  auto drop_cb = drop_target_view()->GetDropCallback(event);
+  EXPECT_FALSE(multi_contents_view()->IsInSplitView());
 
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   std::move(drop_cb).Run(event, output_drag_op,
                          /*drag_image_layer_owner=*/nullptr);
 
-  EXPECT_TRUE(multi_contents_view().IsInSplitView());
+  EXPECT_TRUE(multi_contents_view()->IsInSplitView());
 
   // After the drop, a new tab should be created in the split view.
   // The original tab is at index 0, the new tab from the drop is at index 1.
@@ -167,16 +143,16 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   gfx::PointF point = {10, 10};
   ui::DropTargetEvent event(data, point, point, ui::DragDropTypes::DRAG_LINK);
 
-  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
-                          MultiContentsDropTargetView::DropTargetState::kFull);
-  auto drop_cb = drop_target_view().GetDropCallback(event);
-  EXPECT_FALSE(multi_contents_view().IsInSplitView());
+  drop_target_view()->Show(MultiContentsDropTargetView::DropSide::START,
+                           MultiContentsDropTargetView::DropTargetState::kFull);
+  auto drop_cb = drop_target_view()->GetDropCallback(event);
+  EXPECT_FALSE(multi_contents_view()->IsInSplitView());
 
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   std::move(drop_cb).Run(event, output_drag_op,
                          /*drag_image_layer_owner=*/nullptr);
 
-  EXPECT_TRUE(multi_contents_view().IsInSplitView());
+  EXPECT_TRUE(multi_contents_view()->IsInSplitView());
 
   // After the drop, a new tab should be created in the split view.
   // The original tab is at index 0, the new tab from the drop is at index 1.
@@ -203,16 +179,16 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   gfx::PointF point = {10, 10};
   ui::DropTargetEvent event(data, point, point, ui::DragDropTypes::DRAG_LINK);
 
-  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
-                          MultiContentsDropTargetView::DropTargetState::kFull);
-  auto drop_cb = drop_target_view().GetDropCallback(event);
-  EXPECT_FALSE(multi_contents_view().IsInSplitView());
+  drop_target_view()->Show(MultiContentsDropTargetView::DropSide::START,
+                           MultiContentsDropTargetView::DropTargetState::kFull);
+  auto drop_cb = drop_target_view()->GetDropCallback(event);
+  EXPECT_FALSE(multi_contents_view()->IsInSplitView());
 
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   std::move(drop_cb).Run(event, output_drag_op,
                          /*drag_image_layer_owner=*/nullptr);
 
-  EXPECT_TRUE(multi_contents_view().IsInSplitView());
+  EXPECT_TRUE(multi_contents_view()->IsInSplitView());
 
   // After the drop, a new tab should be created in the split view.
   // The original tab is at index 0, the new tab from the drop is at index 1.
@@ -236,11 +212,11 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_EQ(1, tab_strip_model->count());
-  EXPECT_FALSE(multi_contents_view().IsInSplitView());
+  EXPECT_FALSE(multi_contents_view()->IsInSplitView());
 
   // Show the drop target on the end side.
-  drop_target_view().Show(MultiContentsDropTargetView::DropSide::END,
-                          MultiContentsDropTargetView::DropTargetState::kFull);
+  drop_target_view()->Show(MultiContentsDropTargetView::DropSide::END,
+                           MultiContentsDropTargetView::DropTargetState::kFull);
 
   // Create a second browser with a tab to be dragged.
   Browser* browser2 = CreateBrowser(browser()->profile());
@@ -257,10 +233,10 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
           Return(browser2->GetTabStripModel()->DetachTabAtForInsertion(0)));
 
   // Handle the tab drop.
-  multi_contents_view().drop_target_controller().HandleTabDrop(controller);
+  multi_contents_view()->drop_target_controller().HandleTabDrop(controller);
 
   // Verify the state after the drop.
-  EXPECT_TRUE(multi_contents_view().IsInSplitView());
+  EXPECT_TRUE(multi_contents_view()->IsInSplitView());
   ASSERT_EQ(2, tab_strip_model->count());
   EXPECT_EQ(contents_to_drop, tab_strip_model->GetWebContentsAt(1));
   EXPECT_EQ(1, tab_strip_model->active_index());
@@ -281,11 +257,11 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   content::WebContents* original_contents =
       tab_strip_model->GetActiveWebContents();
   ASSERT_EQ(1, tab_strip_model->count());
-  EXPECT_FALSE(multi_contents_view().IsInSplitView());
+  EXPECT_FALSE(multi_contents_view()->IsInSplitView());
 
   // Show the drop target on the start side.
-  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
-                          MultiContentsDropTargetView::DropTargetState::kFull);
+  drop_target_view()->Show(MultiContentsDropTargetView::DropSide::START,
+                           MultiContentsDropTargetView::DropTargetState::kFull);
 
   // Create a second browser with a tab to be dragged.
   Browser* browser2 = CreateBrowser(browser()->profile());
@@ -302,10 +278,10 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
           Return(browser2->GetTabStripModel()->DetachTabAtForInsertion(0)));
 
   // Handle the tab drop.
-  multi_contents_view().drop_target_controller().HandleTabDrop(controller);
+  multi_contents_view()->drop_target_controller().HandleTabDrop(controller);
 
   // Verify the state after the drop.
-  EXPECT_TRUE(multi_contents_view().IsInSplitView());
+  EXPECT_TRUE(multi_contents_view()->IsInSplitView());
   ASSERT_EQ(2, tab_strip_model->count());
   EXPECT_EQ(contents_to_drop, tab_strip_model->GetWebContentsAt(0));
   EXPECT_EQ(original_contents, tab_strip_model->GetWebContentsAt(1));
@@ -323,26 +299,23 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DragAndDropEnabledPref) {
 #endif
 
   // Drag and drop should be enabled by default.
-  EXPECT_TRUE(multi_contents_view().IsDragAndDropEnabled());
+  EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
 
   // Disable drag and drop.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSplitViewDragAndDropEnabled, false);
-  EXPECT_FALSE(multi_contents_view().IsDragAndDropEnabled());
+  EXPECT_FALSE(multi_contents_view()->IsDragAndDropEnabled());
 
   // Enable drag and drop.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSplitViewDragAndDropEnabled, true);
-  EXPECT_TRUE(multi_contents_view().IsDragAndDropEnabled());
+  EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
 }
 
 // Test class for WebContents ReLayout.
 class MultiContentsViewWebContentsReLayoutBrowserTest
-    : public InProcessBrowserTest {
+    : public SplitViewBrowserTestMixin<InProcessBrowserTest> {
  protected:
-  MultiContentsViewWebContentsReLayoutBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSideBySide);
-  }
 
   static constexpr char kReLayoutTestURL[] = "/re_layout_test.html";
 
@@ -399,14 +372,6 @@ class MultiContentsViewWebContentsReLayoutBrowserTest
       EXPECT_TRUE(content::WaitForLoadStop(tab->GetContents()));
     }
   }
-
-  MultiContentsView& multi_contents_view() {
-    return CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser())
-                           ->multi_contents_view());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(https://crbug.com/430525043): Flaky on Linux.
@@ -472,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(
   CreateSplitView();
 
   // Change the size.
-  multi_contents_view().OnResize(multi_contents_view().width() * 0.3, true);
+  multi_contents_view()->OnResize(multi_contents_view()->width() * 0.3, true);
   RunScheduledLayouts();
 
   // Load the test page in the active tab and split tab.
@@ -517,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(
   CreateSplitView();
 
   // Change the size.
-  multi_contents_view().OnResize(multi_contents_view().width() * 0.3, true);
+  multi_contents_view()->OnResize(multi_contents_view()->width() * 0.3, true);
   RunScheduledLayouts();
 
   // Load the test page in the active tab and split tab.

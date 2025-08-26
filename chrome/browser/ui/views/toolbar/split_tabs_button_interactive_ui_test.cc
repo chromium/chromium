@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/test/split_tabs_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/toolbar/split_tabs_button.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -71,10 +71,10 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ActiveTabObserver, kActiveTabChanged);
 }  // namespace
 
 class SplitTabButtonInteractiveTest
-    : public SplitTabsInteractiveTestMixin<InteractiveBrowserTest> {
+    : public SplitViewInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   void SetUpOnMainThread() override {
-    SplitTabsInteractiveTestMixin::SetUpOnMainThread();
+    SplitViewInteractiveTestMixin::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
