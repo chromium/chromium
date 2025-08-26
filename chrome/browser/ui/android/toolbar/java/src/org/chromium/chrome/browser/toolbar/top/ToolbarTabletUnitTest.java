@@ -21,6 +21,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.ADAPTIVE_BUTTON;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.BACK;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.FORWARD;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.HOME;
@@ -864,7 +865,12 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(5 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-        assertToolbarComponentsReceivedWidth(Set.of(HOME, BACK, FORWARD, RELOAD));
+        assertToolbarComponentsReceivedWidth(Set.of(HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON));
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(6 * buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of(HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON));
     }
 
     @SuppressLint("WrongCall")
@@ -879,9 +885,14 @@ public final class ToolbarTabletUnitTest {
                         .getDimensionPixelSize(R.dimen.toolbar_button_width);
 
         mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(6 * buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of(HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON));
+
+        mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(5 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-        assertToolbarComponentsReceivedWidth(Set.of(HOME, BACK, FORWARD, RELOAD));
+        assertToolbarComponentsReceivedWidth(Set.of(HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(4 * buttonWidth + widthForStaticComponents, EXACTLY),

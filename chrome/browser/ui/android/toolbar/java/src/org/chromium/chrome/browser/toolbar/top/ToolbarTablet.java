@@ -91,6 +91,8 @@ public class ToolbarTablet extends ToolbarLayout {
     private BackButtonCoordinator mBackButtonCoordinator;
     private IncognitoIndicatorCoordinator mIncognitoIndicatorCoordinator;
     private ForwardButtonCoordinator mForwardButtonCoordinator;
+    private final OptionalButtonToolbarWidthConsumer mOptionalButtonToolbarWidthConsumer =
+            new OptionalButtonToolbarWidthConsumer();
 
     private final int mStartPaddingWithButtons;
     private final int mStartPaddingWithoutButtons;
@@ -398,6 +400,8 @@ public class ToolbarTablet extends ToolbarLayout {
         mToolbarWidthConsumers[ToolbarComponentId.BACK] = mBackButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.FORWARD] = mForwardButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.RELOAD] = mReloadButtonCoordinator;
+        mToolbarWidthConsumers[ToolbarComponentId.ADAPTIVE_BUTTON] =
+                mOptionalButtonToolbarWidthConsumer;
     }
 
     @Override
@@ -447,9 +451,6 @@ public class ToolbarTablet extends ToolbarLayout {
         int width = 0;
         int buttonWidth =
                 getContext().getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-        if (mOptionalButton != null && mOptionalButton.getVisibility() == VISIBLE) {
-            width += buttonWidth;
-        }
         if (getMenuButtonCoordinator().isVisible()) {
             width += buttonWidth;
         }
@@ -474,9 +475,9 @@ public class ToolbarTablet extends ToolbarLayout {
             allocateAvailableToolbarWidth(
                     mToolbarWidthConsumers, width - getWidthForStaticComponents());
             this.setPaddingRelative(
-                    mStartPaddingWithoutButtons,
+                    mStartPaddingWithButtons,
                     getPaddingTop(),
-                    mStartPaddingWithoutButtons,
+                    mStartPaddingWithButtons,
                     getPaddingBottom());
         } else {
             // Hide or show toolbar buttons if needed. With the introduction of multi-window on
@@ -565,17 +566,40 @@ public class ToolbarTablet extends ToolbarLayout {
                 mOptionalButton.getPaddingBottom());
 
         mOptionalButton.setContentDescription(buttonSpec.getContentDescription());
-        mOptionalButton.setVisibility(View.VISIBLE);
+        setOptionalButtonVisibility(/* isVisible= */ true);
         mOptionalButton.setEnabled(buttonData.isEnabled());
     }
 
     @Override
     protected void hideOptionalButton() {
-        if (mOptionalButton == null || mOptionalButton.getVisibility() == View.GONE) {
-            return;
+        setOptionalButtonVisibility(/* isVisible= */ false);
+    }
+
+    private void setOptionalButtonVisibility(boolean isVisible) {
+        if (mOptionalButton == null) return;
+        mOptionalButton.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    private class OptionalButtonToolbarWidthConsumer implements ToolbarWidthConsumer {
+        @Override
+        public int updateVisibility(int availableWidth) {
+            assert isToolbarTabletResizeRefactorEnabled();
+
+            int width = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+            if (availableWidth >= width) {
+                setOptionalButtonVisibility(true);
+                return width;
+            } else {
+                setOptionalButtonVisibility(false);
+                return 0;
+            }
         }
 
-        mOptionalButton.setVisibility(View.GONE);
+        @Override
+        public int updateVisibilityWithAnimation(
+                int availableWidth, Collection<Animator> animators) {
+            return updateVisibility(availableWidth);
+        }
     }
 
     @Override
