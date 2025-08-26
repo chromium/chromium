@@ -4,6 +4,7 @@
 #include "components/autofill/core/browser/payments/save_and_fill_manager_impl.h"
 
 #include "base/check_deref.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -351,8 +352,17 @@ void SaveAndFillManagerImpl::OnDidCreateCard(
         /*new_local_card_added=*/payments_autofill_client()
             ->GetPaymentsDataManager()
             .SaveCardLocallyIfNew(upload_details_.card));
+  } else {
+    int64_t parsed_instrument_id;
+    if (payments_autofill_client()
+            ->GetPaymentsDataManager()
+            .IsPaymentCvcStorageEnabled() &&
+        !upload_details_.card.cvc().empty() &&
+        base::StringToInt64(instrument_id, &parsed_instrument_id)) {
+      payments_autofill_client()->GetPaymentsDataManager().AddServerCvc(
+          parsed_instrument_id, upload_details_.card.cvc());
+    }
   }
-
   payments_autofill_client()->HideCreditCardSaveAndFillDialog();
   // Invoke feedback bubble. No callback needed (virtual card enrollment is not
   // eligible for card saved via the Save and Fill flow).

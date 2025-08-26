@@ -282,6 +282,14 @@ PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails::
     UserProvidedCardSaveAndFillDetails() = default;
 
 PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails::
+    UserProvidedCardSaveAndFillDetails(
+        const UserProvidedCardSaveAndFillDetails&) = default;
+
+PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails&
+PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails::operator=(
+    const UserProvidedCardSaveAndFillDetails&) = default;
+
+PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails::
     ~UserProvidedCardSaveAndFillDetails() = default;
 
 void PaymentsAutofillClient::ShowCreditCardLocalSaveAndFillDialog(
