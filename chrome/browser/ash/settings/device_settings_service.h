@@ -71,7 +71,8 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // Status codes for Load() and Store().
   // These values are logged to UMA. Entries should not be renumbered and
   // numeric values should never be reused. Please keep in sync with
-  // "DeviceSettingsStatus" in src/tools/metrics/histograms/enums.xml.
+  // "DeviceSettingsStatus2" in
+  // tools/metrics/histograms/metadata/enterprise/enums.xml.
   enum Status {
     STORE_SUCCESS,
     STORE_KEY_UNAVAILABLE,   // Owner key not yet configured.
@@ -79,7 +80,11 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
     STORE_NO_POLICY,         // No settings blob present.
     STORE_INVALID_POLICY,    // Invalid settings blob (proto parse failed).
     STORE_VALIDATION_ERROR,  // Policy validation failure.
-    kMaxValue = STORE_VALIDATION_ERROR,
+    STORE_KEY_UNAVAILABLE_NOT_INITIALIZED,  // Early in boot process.
+    STORE_KEY_UNAVAILABLE_NOT_LOCKED,       // Owner key not present, ownership
+                                            // not taken. Not an error.
+    STORE_KEY_UNAVAILABLE_MANAGED,  // Owner key not present for managed device.
+    kMaxValue = STORE_KEY_UNAVAILABLE_MANAGED,
   };
 
   // Observer interface.

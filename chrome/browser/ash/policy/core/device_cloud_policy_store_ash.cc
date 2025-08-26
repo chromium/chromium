@@ -268,6 +268,11 @@ void DeviceCloudPolicyStoreAsh::UpdateStatusFromService() {
     case ash::DeviceSettingsService::STORE_VALIDATION_ERROR:
       status_ = STATUS_LOAD_ERROR;
       return;
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_INITIALIZED:
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_LOCKED:
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE_MANAGED:
+      status_ = STATUS_BAD_STATE;
+      return;
   }
   NOTREACHED();
 }
@@ -281,6 +286,9 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
     case ash::DeviceSettingsService::STORE_NO_POLICY:
     case ash::DeviceSettingsService::STORE_INVALID_POLICY:
     case ash::DeviceSettingsService::STORE_VALIDATION_ERROR:
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_INITIALIZED:
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_LOCKED:
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE_MANAGED:
       // Continue with the check below.
       break;
     case ash::DeviceSettingsService::STORE_OPERATION_FAILED:

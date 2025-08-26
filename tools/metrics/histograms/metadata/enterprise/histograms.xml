@@ -858,14 +858,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus"
-    enum="DeviceSettingsStatus" expires_after="2026-02-01">
+    enum="DeviceSettingsStatus" expires_after="M141">
+  <owner>rbock@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    Deprecated. Use Enterprise.DeviceSettings.UpdatedStatus2 instead. Recorded
+    every time as DeviceSettingsProvider updates its current state. Used to
+    compare rate of Enterprise.DeviceSettings.MissingPolicyMitigated event.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceSettings.UpdatedStatus2"
+    enum="DeviceSettingsStatus2" expires_after="2026-02-01">
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Recorded every time as DeviceSettingsProvider updates its current state.
-    Used to compare rate of Enterprise.DeviceSettings.MissingPolicyMitigated
-    event.
+    Compared to Enterprise.DeviceSettings.UpdatedStatus contains the information
+    about missing key on managed devices. Used to compare rate of
+    Enterprise.DeviceSettings.MissingPolicyMitigated event.
   </summary>
 </histogram>
 

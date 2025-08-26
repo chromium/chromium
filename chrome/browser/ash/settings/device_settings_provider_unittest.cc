@@ -625,7 +625,7 @@ TEST_F(DeviceSettingsProviderTest, PolicyRetrievalFailedBadSignature) {
             provider_->PrepareTrustedValues(&closure));
   EXPECT_TRUE(closure);  // Ownership of |closure| was not taken.
   histogram_tester.ExpectUniqueSample(
-      "Enterprise.DeviceSettings.UpdatedStatus",
+      "Enterprise.DeviceSettings.UpdatedStatus2",
       DeviceSettingsService::STORE_VALIDATION_ERROR, /*amount=*/1);
   histogram_tester.ExpectTotalCount(
       "Enterprise.DeviceSettings.MissingPolicyMitigated", 0);
@@ -644,9 +644,10 @@ TEST_F(DeviceSettingsProviderTest, PolicyRetrievalNoPolicy) {
   EXPECT_EQ(CrosSettingsProvider::PERMANENTLY_UNTRUSTED,
             provider_->PrepareTrustedValues(&closure));
   EXPECT_TRUE(closure);  // Ownership of |closure| was not taken.
-  histogram_tester.ExpectUniqueSample("Enterprise.DeviceSettings.UpdatedStatus",
-                                      DeviceSettingsService::STORE_NO_POLICY,
-                                      /*amount=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceSettings.UpdatedStatus2",
+      DeviceSettingsService::STORE_NO_POLICY,
+      /*amount=*/1);
   histogram_tester.ExpectTotalCount(
       "Enterprise.DeviceSettings.MissingPolicyMitigated", 0);
 }
@@ -667,9 +668,10 @@ TEST_F(DeviceSettingsProviderTest, PolicyRetrievalNoPolicyMitigated) {
   EXPECT_EQ(CrosSettingsProvider::TRUSTED,
             provider_->PrepareTrustedValues(&closure));
   EXPECT_TRUE(closure);  // Ownership of |closure| was not taken.
-  histogram_tester.ExpectUniqueSample("Enterprise.DeviceSettings.UpdatedStatus",
-                                      DeviceSettingsService::STORE_NO_POLICY,
-                                      /*amount=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceSettings.UpdatedStatus2",
+      DeviceSettingsService::STORE_NO_POLICY,
+      /*amount=*/1);
   histogram_tester.ExpectTotalCount(
       "Enterprise.DeviceSettings.MissingPolicyMitigated", 1);
 }
@@ -693,9 +695,10 @@ TEST_F(DeviceSettingsProviderTest, PolicyFailedPermanentlyNotification) {
   EXPECT_EQ(CrosSettingsProvider::PERMANENTLY_UNTRUSTED,
             provider_->PrepareTrustedValues(&closure));
   EXPECT_TRUE(closure);  // Ownership of |closure| was not taken.
-  histogram_tester.ExpectUniqueSample("Enterprise.DeviceSettings.UpdatedStatus",
-                                      DeviceSettingsService::STORE_NO_POLICY,
-                                      /*amount=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceSettings.UpdatedStatus2",
+      DeviceSettingsService::STORE_NO_POLICY,
+      /*amount=*/1);
   histogram_tester.ExpectTotalCount(
       "Enterprise.DeviceSettings.MissingPolicyMitigated", 0);
 }
@@ -712,9 +715,10 @@ TEST_F(DeviceSettingsProviderTest, PolicyLoadNotification) {
 
   ReloadDeviceSettings();
   Mock::VerifyAndClearExpectations(this);
-  histogram_tester.ExpectUniqueSample("Enterprise.DeviceSettings.UpdatedStatus",
-                                      DeviceSettingsService::STORE_SUCCESS,
-                                      /*amount=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceSettings.UpdatedStatus2",
+      DeviceSettingsService::STORE_SUCCESS,
+      /*amount=*/1);
   histogram_tester.ExpectTotalCount(
       "Enterprise.DeviceSettings.MissingPolicyMitigated", 0);
 }

@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/dbus/session_manager/policy_descriptor.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -128,7 +129,17 @@ void SessionManagerOperation::StorePublicKey(base::OnceClosure callback,
   public_key_ = new_key;
 
   if (!public_key_ || public_key_->is_empty()) {
-    ReportResult(DeviceSettingsService::STORE_KEY_UNAVAILABLE);
+    if (!InstallAttributes::IsInitialized()) {
+      // Too early in boot process. Unexpected.
+      ReportResult(DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_INITIALIZED);
+    } else if (!InstallAttributes::Get()->IsDeviceLocked()) {
+      // Device ownership not taken yet.
+      ReportResult(DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_LOCKED);
+    } else if (InstallAttributes::Get()->IsEnterpriseManaged()) {
+      ReportResult(DeviceSettingsService::STORE_KEY_UNAVAILABLE_MANAGED);
+    } else {
+      ReportResult(DeviceSettingsService::STORE_KEY_UNAVAILABLE);
+    }
     return;
   }
 

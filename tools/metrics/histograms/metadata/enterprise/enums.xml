@@ -93,6 +93,18 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="STORE_VALIDATION_ERROR"/>
 </enum>
 
+<enum name="DeviceSettingsStatus2">
+  <int value="0" label="STORE_SUCCESS"/>
+  <int value="1" label="STORE_KEY_UNAVAILABLE"/>
+  <int value="2" label="STORE_OPERATION_FAILED"/>
+  <int value="3" label="STORE_NO_POLICY"/>
+  <int value="4" label="STORE_INVALID_POLICY"/>
+  <int value="5" label="STORE_VALIDATION_ERROR"/>
+  <int value="6" label="STORE_KEY_UNAVAILABLE_NOT_INITIALIZED"/>
+  <int value="7" label="STORE_KEY_UNAVAILABLE_NOT_LOCKED"/>
+  <int value="8" label="STORE_KEY_UNAVAILABLE_MANAGED"/>
+</enum>
+
 <enum name="DeviceSignalsParsingError">
   <int value="0" label="Hit max data size"/>
   <int value="1" label="Data malformed"/>

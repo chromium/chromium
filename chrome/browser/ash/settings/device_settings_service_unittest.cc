@@ -118,6 +118,41 @@ TEST_F(DeviceSettingsServiceTest, LoadNoKey) {
   EXPECT_FALSE(device_settings_service_->device_settings());
 }
 
+TEST_F(DeviceSettingsServiceTest, LoadManagedDeviceNoKey) {
+  owner_key_util_->Clear();
+  GetInstallAttributes()->SetCloudManaged("example.com", "fake_device_id");
+  ReloadDeviceSettings();
+
+  EXPECT_EQ(DeviceSettingsService::STORE_KEY_UNAVAILABLE_MANAGED,
+            device_settings_service_->status());
+  EXPECT_FALSE(device_settings_service_->policy_data());
+  EXPECT_FALSE(device_settings_service_->device_settings());
+}
+
+TEST_F(DeviceSettingsServiceTest, LoadNoKeyAttrsNotLocked) {
+  owner_key_util_->Clear();
+  GetInstallAttributes()->set_device_locked(false);
+  ReloadDeviceSettings();
+
+  EXPECT_EQ(DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_LOCKED,
+            device_settings_service_->status());
+  EXPECT_FALSE(device_settings_service_->policy_data());
+  EXPECT_FALSE(device_settings_service_->device_settings());
+}
+
+TEST_F(DeviceSettingsServiceTest, LoadNoKeyAttrsNotInitialized) {
+  owner_key_util_->Clear();
+  InstallAttributes* test_instance = InstallAttributes::Get();
+  InstallAttributes::ShutdownForTesting();
+  ReloadDeviceSettings();
+
+  EXPECT_EQ(DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_INITIALIZED,
+            device_settings_service_->status());
+  EXPECT_FALSE(device_settings_service_->policy_data());
+  EXPECT_FALSE(device_settings_service_->device_settings());
+  InstallAttributes::SetForTesting(test_instance);
+}
+
 TEST_F(DeviceSettingsServiceTest, LoadNoPolicy) {
   session_manager_client_.set_device_policy(std::string());
   ReloadDeviceSettings();

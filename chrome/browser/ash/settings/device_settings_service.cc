@@ -145,6 +145,12 @@ const char* DeviceSettingsService::StatusToString(Status status) {
       return "INVALID_POLICY";
     case STORE_VALIDATION_ERROR:
       return "VALIDATION_ERROR";
+    case STORE_KEY_UNAVAILABLE_NOT_INITIALIZED:
+      return "KEY_UNAVAILABLE_NOT_INITIALIZED";
+    case STORE_KEY_UNAVAILABLE_NOT_LOCKED:
+      return "KEY_UNAVAILABLE_NOT_LOCKED";
+    case STORE_KEY_UNAVAILABLE_MANAGED:
+      return "KEY_UNAVAILABLE_MANAGED";
   }
   return "UNKNOWN";
 }
