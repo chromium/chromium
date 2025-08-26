@@ -109,7 +109,7 @@ struct BuildResult {
 
 // Helper struct to create faked mojom result of inference.
 struct ComputeResult {
-  WTF::HashMap<WTF::String, WTF::Vector<uint8_t>> output;
+  HashMap<String, Vector<uint8_t>> output;
 };
 
 template <typename T>
@@ -386,9 +386,8 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
  private:
   // Just return for testing the validation of inputs and outputs.
   void Dispatch(
-      const HashMap<WTF::String, blink::WebNNTensorToken>& named_inputs,
-      const HashMap<WTF::String, blink::WebNNTensorToken>& named_outputs)
-      override {}
+      const HashMap<String, blink::WebNNTensorToken>& named_inputs,
+      const HashMap<String, blink::WebNNTensorToken>& named_outputs) override {}
 
   // TODO(crbug.com/354741414): Fix this dangling pointer.
   const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
@@ -405,8 +404,8 @@ class FakeWebNNTensor : public blink_mojom::WebNNTensor {
         receiver_(this, std::move(receiver)),
         handle_(tensor_handle) {
     buffer_ = mojo_base::BigBuffer(tensor_info->descriptor.PackedByteLength());
-    receiver_.set_disconnect_handler(WTF::BindOnce(
-        &FakeWebNNTensor::OnConnectionError, WTF::Unretained(this)));
+    receiver_.set_disconnect_handler(
+        BindOnce(&FakeWebNNTensor::OnConnectionError, Unretained(this)));
   }
 
   ~FakeWebNNTensor() override = default;
@@ -471,7 +470,7 @@ class FakeWebNNGraphBuilder : public blink_mojom::WebNNGraphBuilder {
         blink_remote.InitWithNewEndpointAndPassReceiver());
 
     auto success = blink_mojom::CreateGraphSuccess::New(
-        std::move(blink_remote), WTF::Vector<blink_mojom::Device>());
+        std::move(blink_remote), Vector<blink_mojom::Device>());
     std::move(callback).Run(std::move(success));
   }
 
@@ -550,8 +549,8 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
     DCHECK(!receiver_.is_bound());
     receiver_.Bind(mojo::PendingReceiver<blink_mojom::WebNNContextProvider>(
         std::move(handle)));
-    receiver_.set_disconnect_handler(WTF::BindOnce(
-        &FakeWebNNContextProvider::OnConnectionError, WTF::Unretained(this)));
+    receiver_.set_disconnect_handler(BindOnce(
+        &FakeWebNNContextProvider::OnConnectionError, Unretained(this)));
   }
 
   bool IsBound() const { return receiver_.is_bound(); }
@@ -774,9 +773,8 @@ class ScopedWebNNServiceBinder {
             scope.GetExecutionContext()->GetBrowserInterfaceBroker()) {
     interface_broker_->SetBinderForTesting(
         blink_mojom::WebNNContextProvider::Name_,
-        WTF::BindRepeating(
-            &FakeWebNNContextProvider::BindRequest,
-            WTF::Unretained(fake_webnn_context_provider_.get())));
+        BindRepeating(&FakeWebNNContextProvider::BindRequest,
+                      Unretained(fake_webnn_context_provider_.get())));
   }
 
   ~ScopedWebNNServiceBinder() {

@@ -137,7 +137,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     }
   };
 
-  using OnEncodedVideoCB = WTF::CrossThreadFunction<void(
+  using OnEncodedVideoCB = CrossThreadFunction<void(
       const media::Muxer::VideoParameters& params,
       scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::VideoEncoder::CodecDescription> codec_description,
@@ -192,12 +192,12 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
         scoped_refptr<media::VideoFrame> video_frame,
         base::TimeTicks capture_timestamp);
 
-    using OnEncodedVideoInternalCB = WTF::CrossThreadFunction<void(
-        const media::Muxer::VideoParameters& params,
-        std::string encoded_data,
-        std::string encoded_alpha,
-        base::TimeTicks capture_timestamp,
-        bool is_key_frame)>;
+    using OnEncodedVideoInternalCB =
+        CrossThreadFunction<void(const media::Muxer::VideoParameters& params,
+                                 std::string encoded_data,
+                                 std::string encoded_alpha,
+                                 base::TimeTicks capture_timestamp,
+                                 bool is_key_frame)>;
 
     void SetPaused(bool paused);
     virtual bool CanEncodeAlphaChannel() const;
@@ -392,7 +392,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   const size_t frame_buffer_pool_limit_;
   bool should_pause_encoder_on_initialization_
       GUARDED_BY_CONTEXT(main_sequence_checker_) = false;
-  WTF::Vector<MediaStreamFrame> incoming_frame_queue_
+  Vector<MediaStreamFrame> incoming_frame_queue_
       GUARDED_BY_CONTEXT(main_sequence_checker_);
   bool encoder_support_known_ GUARDED_BY_CONTEXT(main_sequence_checker_) =
       false;

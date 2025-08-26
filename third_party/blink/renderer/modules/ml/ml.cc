@@ -87,7 +87,7 @@ ScriptPromise<MLContext> ML::createContext(ScriptState* script_state,
       webnn::mojom::blink::CreateContextOptions::New(
           ConvertBlinkDeviceTypeToMojo(options->deviceType()),
           ConvertBlinkPowerPreferenceToMojo(options->powerPreference())),
-      WTF::BindOnce(
+      BindOnce(
           [](ML* ml, ScriptPromiseResolver<MLContext>* resolver,
              MLContextOptions* options, webnn::ScopedTrace scoped_trace,
              webnn::mojom::blink::CreateContextResultPtr result) {
@@ -155,7 +155,7 @@ ScriptPromise<MLContext> ML::createContext(ScriptState* script_state,
               V8MLDeviceType(V8MLDeviceType::Enum::kGpu)),
           ConvertBlinkPowerPreferenceToMojo(
               V8MLPowerPreference(V8MLPowerPreference::Enum::kDefault))),
-      WTF::BindOnce(
+      BindOnce(
           [](ML* ml, ScriptPromiseResolver<MLContext>* resolver,
              webnn::ScopedTrace scoped_trace, GPUDevice* gpu_device,
              webnn::mojom::blink::CreateContextResultPtr result) {
@@ -190,8 +190,8 @@ void ML::EnsureWebNNServiceConnection() {
   // Bind should always succeed because ml.idl is gated on the same feature flag
   // as `WebNNContextProvider`.
   CHECK(webnn_context_provider_.is_bound());
-  webnn_context_provider_.set_disconnect_handler(WTF::BindOnce(
-      &ML::OnWebNNServiceConnectionError, WrapWeakPersistent(this)));
+  webnn_context_provider_.set_disconnect_handler(
+      BindOnce(&ML::OnWebNNServiceConnectionError, WrapWeakPersistent(this)));
 }
 
 }  // namespace blink

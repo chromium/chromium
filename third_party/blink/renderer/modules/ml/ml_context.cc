@@ -203,7 +203,7 @@ MLContext::MLContext(
       std::move(create_context_success->context_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
   context_remote_.set_disconnect_with_reason_handler(
-      WTF::BindOnce(&MLContext::OnLost, WrapWeakPersistent(this)));
+      BindOnce(&MLContext::OnLost, WrapWeakPersistent(this)));
 }
 
 MLContext::MLContext(
@@ -221,7 +221,7 @@ MLContext::MLContext(
       std::move(create_context_success->context_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
   context_remote_.set_disconnect_with_reason_handler(
-      WTF::BindOnce(&MLContext::OnLost, WrapWeakPersistent(this)));
+      BindOnce(&MLContext::OnLost, WrapWeakPersistent(this)));
 }
 
 MLContext::~MLContext() = default;
@@ -1294,10 +1294,10 @@ ScriptPromise<MLTensor> MLContext::createConstantTensor(
   // Use `WebNNContext` to create `WebNNTensor` message pipe.
   context_remote_->CreateTensor(
       std::move(tensor_info), bytes,
-      WTF::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
-                    std::move(scoped_trace), WrapPersistent(resolver),
-                    std::move(validated_descriptor), usage,
-                    /*shared_image=*/nullptr));
+      blink::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
+                      std::move(scoped_trace), WrapPersistent(resolver),
+                      std::move(validated_descriptor), usage,
+                      /*shared_image=*/nullptr));
 
   return resolver->Promise();
 }

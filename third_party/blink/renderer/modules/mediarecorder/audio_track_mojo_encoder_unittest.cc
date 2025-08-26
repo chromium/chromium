@@ -173,8 +173,8 @@ class AudioTrackMojoEncoderTest : public testing::Test {
   AudioTrackMojoEncoderTest() {
     CHECK(Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
         media::mojom::InterfaceFactory::Name_,
-        WTF::BindRepeating(&TestInterfaceFactory::BindRequest,
-                           base::Unretained(&interface_factory_))));
+        BindRepeating(&TestInterfaceFactory::BindRequest,
+                      Unretained(&interface_factory_))));
 
     audio_track_encoder_.OnSetFormat(media::TestAudioParameters::Normal());
     // Progress until TestAudioEncoder receives the Initialize() call.

@@ -546,9 +546,8 @@ void MediaRecorder::ScheduleDispatchEvent(Event* event) {
       // MediaStream recording should use DOM manipulation task source.
       // https://www.w3.org/TR/mediastream-recording/
       context->GetTaskRunner(TaskType::kDOMManipulation)
-          ->PostTask(FROM_HERE,
-                     WTF::BindOnce(&MediaRecorder::DispatchScheduledEvent,
-                                   WrapPersistent(this)));
+          ->PostTask(FROM_HERE, BindOnce(&MediaRecorder::DispatchScheduledEvent,
+                                         WrapPersistent(this)));
     }
   }
 }

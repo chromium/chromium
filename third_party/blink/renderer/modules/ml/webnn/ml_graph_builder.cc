@@ -1621,8 +1621,8 @@ MLGraphBuilder::MLGraphBuilder(
 
   remote_.Bind(std::move(pending_remote),
                execution_context->GetTaskRunner(TaskType::kMachineLearning));
-  remote_.set_disconnect_handler(WTF::BindOnce(
-      &MLGraphBuilder::OnConnectionError, WrapWeakPersistent(this)));
+  remote_.set_disconnect_handler(
+      BindOnce(&MLGraphBuilder::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 MLGraphBuilder::~MLGraphBuilder() = default;
@@ -3354,11 +3354,11 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(ScriptState* script_state,
       script_state, exception_state.GetContext());
 
   scoped_trace.AddStep("post mojo message: CreateGraph");
-  remote_->CreateGraph(
-      std::move(graph_info),
-      WTF::BindOnce(&MLGraphBuilder::DidCreateWebNNGraph, WrapPersistent(this),
-                    WrapPersistent(pending_resolver_.Get()),
-                    *std::move(graph_constraints)));
+  remote_->CreateGraph(std::move(graph_info),
+                       blink::BindOnce(&MLGraphBuilder::DidCreateWebNNGraph,
+                                       WrapPersistent(this),
+                                       WrapPersistent(pending_resolver_.Get()),
+                                       *std::move(graph_constraints)));
   return pending_resolver_->Promise();
 }
 

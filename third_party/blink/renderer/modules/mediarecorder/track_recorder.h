@@ -53,7 +53,7 @@ enum class MediaTrackContainerType {
 };
 
 MODULES_EXPORT MediaTrackContainerType
-GetMediaContainerTypeFromString(const WTF::String& type);
+GetMediaContainerTypeFromString(const String& type);
 
 }  // namespace blink
 

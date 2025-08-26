@@ -117,8 +117,8 @@ void MediaRecorderEncoderWrapper::Reconfigure(const gfx::Size& frame_size,
   CHECK_NE(state_, State::kInError);
   state_ = State::kInitializing;
   encoder_->Flush(
-      WTF::BindOnce(&MediaRecorderEncoderWrapper::CreateAndInitialize,
-                    weak_factory_.GetWeakPtr(), frame_size, encode_alpha));
+      blink::BindOnce(&MediaRecorderEncoderWrapper::CreateAndInitialize,
+                      weak_factory_.GetWeakPtr(), frame_size, encode_alpha));
 }
 
 void MediaRecorderEncoderWrapper::CreateAndInitialize(
@@ -162,12 +162,12 @@ void MediaRecorderEncoderWrapper::CreateAndInitialize(
                                 is_hardware_encoder_);
   encoder_->Initialize(
       profile_, options_,
-      WTF::BindRepeating(&MediaRecorderEncoderWrapper::OnVideoEncoderInfo,
-                         weak_factory_.GetWeakPtr()),
-      WTF::BindRepeating(&MediaRecorderEncoderWrapper::OutputEncodeData,
-                         weak_factory_.GetWeakPtr()),
-      WTF::BindOnce(&MediaRecorderEncoderWrapper::InitializeDone,
-                    weak_factory_.GetWeakPtr()));
+      blink::BindRepeating(&MediaRecorderEncoderWrapper::OnVideoEncoderInfo,
+                           weak_factory_.GetWeakPtr()),
+      blink::BindRepeating(&MediaRecorderEncoderWrapper::OutputEncodeData,
+                           weak_factory_.GetWeakPtr()),
+      blink::BindOnce(&MediaRecorderEncoderWrapper::InitializeDone,
+                      weak_factory_.GetWeakPtr()));
 }
 
 void MediaRecorderEncoderWrapper::InitializeDone(media::EncoderStatus status) {
@@ -236,8 +236,8 @@ void MediaRecorderEncoderWrapper::EncodePendingTasks() {
     // |pending_encode_tasks_| must be changed before calling Encode().
     encoder_->Encode(std::move(frame),
                      media::VideoEncoder::EncodeOptions(request_keyframe),
-                     WTF::BindOnce(&MediaRecorderEncoderWrapper::EncodeDone,
-                                   weak_factory_.GetWeakPtr()));
+                     blink::BindOnce(&MediaRecorderEncoderWrapper::EncodeDone,
+                                     weak_factory_.GetWeakPtr()));
   }
 }
 

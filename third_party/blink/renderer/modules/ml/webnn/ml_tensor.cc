@@ -46,7 +46,7 @@ MLTensor::MLTensor(
       std::move(create_tensor_success->tensor_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
   remote_tensor_.set_disconnect_handler(
-      WTF::BindOnce(&MLTensor::OnConnectionError, WrapWeakPersistent(this)));
+      BindOnce(&MLTensor::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 MLTensor::~MLTensor() = default;
@@ -128,7 +128,7 @@ ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
   pending_resolvers_.insert(resolver);
 
   base::ElapsedTimer read_tensor_timer;
-  remote_tensor_->ReadTensor(WTF::BindOnce(
+  remote_tensor_->ReadTensor(blink::BindOnce(
       &MLTensor::OnDidReadTensor, WrapPersistent(this), std::move(scoped_trace),
       WrapPersistent(resolver), std::move(read_tensor_timer)));
 
@@ -160,9 +160,9 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
 
   base::ElapsedTimer read_tensor_timer;
   remote_tensor_->ReadTensor(
-      WTF::BindOnce(&MLTensor::OnDidReadTensorByob, WrapPersistent(this),
-                    std::move(scoped_trace), WrapPersistent(resolver),
-                    WrapPersistent(dst_data), std::move(read_tensor_timer)));
+      blink::BindOnce(&MLTensor::OnDidReadTensorByob, WrapPersistent(this),
+                      std::move(scoped_trace), WrapPersistent(resolver),
+                      WrapPersistent(dst_data), std::move(read_tensor_timer)));
   return resolver->Promise();
 }
 

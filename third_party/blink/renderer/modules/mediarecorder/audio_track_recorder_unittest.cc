@@ -115,8 +115,8 @@ class TestInterfaceFactory : public media::mojom::InterfaceFactory {
 
     // Each `AudioTrackMojoEncoder` instance will try to open a connection to
     // this factory, so we must clean up after each one is destroyed.
-    receiver_.set_disconnect_handler(WTF::BindOnce(
-        &TestInterfaceFactory::OnConnectionError, base::Unretained(this)));
+    receiver_.set_disconnect_handler(BindOnce(
+        &TestInterfaceFactory::OnConnectionError, blink::Unretained(this)));
   }
 
   void OnConnectionError() { receiver_.reset(); }
@@ -427,7 +427,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
                     ->GetBrowserInterfaceBroker()
                     ->SetBinderForTesting(
                         media::mojom::InterfaceFactory::Name_,
-                        WTF::BindRepeating(
+                        BindRepeating(
                             &TestInterfaceFactory::BindRequest,
                             base::Owned(std::move(interface_factory))));
             CHECK(result);
@@ -727,7 +727,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     // `DecodeOutputCb`, so we can be sure that these will run and the decoded
     // output is validated.
     media::AudioDecoder::DecodeCB decode_cb =
-        WTF::BindOnce(&AudioTrackRecorderTest::OnDecode, WTF::Unretained(this));
+        BindOnce(&AudioTrackRecorderTest::OnDecode, Unretained(this));
     aac_decoder_->Decode(encoded_data, std::move(decode_cb));
   }
 
@@ -755,9 +755,9 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
                                      media::EncryptionScheme::kUnencrypted);
     EXPECT_CALL(*this, InitCb);
     media::AudioDecoder::InitCB init_cb =
-        WTF::BindOnce(&AudioTrackRecorderTest::OnInit, WTF::Unretained(this));
-    media::AudioDecoder::OutputCB output_cb = WTF::BindRepeating(
-        &AudioTrackRecorderTest::OnDecodeOutput, WTF::Unretained(this));
+        BindOnce(&AudioTrackRecorderTest::OnInit, Unretained(this));
+    media::AudioDecoder::OutputCB output_cb = blink::BindRepeating(
+        &AudioTrackRecorderTest::OnDecodeOutput, Unretained(this));
     aac_decoder_->Initialize(config, /*cdm_context=*/nullptr,
                              std::move(init_cb), std::move(output_cb),
                              /*waiting_cb=*/base::DoNothing());

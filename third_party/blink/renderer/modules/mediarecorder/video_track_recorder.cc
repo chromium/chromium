@@ -372,7 +372,7 @@ GetCreateHardwareVideoEncoderCallback(
                 base::SequencedTaskRunner::GetCurrentDefault(),
                 required_encoder_type));
       },
-      required_encoder_type, WTF::CrossThreadUnretained(gpu_factories));
+      required_encoder_type, CrossThreadUnretained(gpu_factories));
 }
 
 MediaRecorderEncoderWrapper::CreateEncoderCB
@@ -419,8 +419,8 @@ VideoTrackRecorder::VideoTrackRecorder(
     WeakCell<CallbackInterface>* callback_interface)
     : TrackRecorder(base::BindPostTask(
           main_thread_task_runner,
-          WTF::BindOnce(&CallbackInterface::OnSourceReadyStateChanged,
-                        WrapPersistent(callback_interface)))),
+          BindOnce(&CallbackInterface::OnSourceReadyStateChanged,
+                   WrapPersistent(callback_interface)))),
       main_thread_task_runner_(std::move(main_thread_task_runner)),
       callback_interface_(callback_interface) {
   CHECK(main_thread_task_runner_);
@@ -532,8 +532,8 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   }
   frame->AddDestructionObserver(base::BindPostTask(
       encoding_task_runner_,
-      WTF::BindOnce(&VideoTrackRecorderImpl::Counter::DecreaseCount,
-                    num_frames_in_encode_->GetWeakPtr())));
+      blink::BindOnce(&VideoTrackRecorderImpl::Counter::DecreaseCount,
+                      num_frames_in_encode_->GetWeakPtr())));
   num_frames_in_encode_->IncreaseCount();
   EncodeFrame(std::move(frame), timestamp,
               request_key_frame_for_testing_ || force_key_frame);
@@ -843,15 +843,15 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
 
   // Start querying for encoder support known.
   NotifyEncoderSupportKnown(
-      WTF::BindOnce(&VideoTrackRecorderImpl::OnEncoderSupportKnown,
-                    weak_factory_.GetWeakPtr()));
+      blink::BindOnce(&VideoTrackRecorderImpl::OnEncoderSupportKnown,
+                      weak_factory_.GetWeakPtr()));
 
   // OnVideoFrame() will be called on Render Main thread.
   ConnectToTrack(base::BindPostTask(
       main_thread_task_runner_,
-      WTF::BindRepeating(&VideoTrackRecorderImpl::OnVideoFrame,
-                         weak_factory_.GetWeakPtr(),
-                         /*allow_vea_encoder=*/true)));
+      blink::BindRepeating(&VideoTrackRecorderImpl::OnVideoFrame,
+                           weak_factory_.GetWeakPtr(),
+                           /*allow_vea_encoder=*/true)));
 }
 
 VideoTrackRecorderImpl::~VideoTrackRecorderImpl() {
@@ -1063,9 +1063,9 @@ void VideoTrackRecorderImpl::OnHardwareEncoderError(
   encoder_.Reset();
   ConnectToTrack(base::BindPostTask(
       main_thread_task_runner_,
-      WTF::BindRepeating(&VideoTrackRecorderImpl::OnVideoFrame,
-                         weak_factory_.GetWeakPtr(),
-                         /*allow_vea_encoder=*/false)));
+      blink::BindRepeating(&VideoTrackRecorderImpl::OnVideoFrame,
+                           weak_factory_.GetWeakPtr(),
+                           /*allow_vea_encoder=*/false)));
 }
 
 void VideoTrackRecorderImpl::ConnectToTrack(
@@ -1098,10 +1098,10 @@ VideoTrackRecorderPassthrough::VideoTrackRecorderPassthrough(
       WebMediaStreamTrack(track_),
       base::BindPostTask(
           main_thread_task_runner_,
-          WTF::BindRepeating(
+          blink::BindRepeating(
               &VideoTrackRecorderPassthrough::HandleEncodedVideoFrame,
               weak_factory_.GetWeakPtr(),
-              WTF::BindRepeating(base::TimeTicks::Now))));
+              blink::BindRepeating(base::TimeTicks::Now))));
 }
 
 VideoTrackRecorderPassthrough::~VideoTrackRecorderPassthrough() {
@@ -1125,7 +1125,7 @@ void VideoTrackRecorderPassthrough::OnEncodedVideoFrameForTesting(
     scoped_refptr<EncodedVideoFrame> frame,
     base::TimeTicks capture_time) {
   HandleEncodedVideoFrame(
-      WTF::BindRepeating([](base::TimeTicks now) { return now; }, now), frame,
+      blink::BindRepeating([](base::TimeTicks now) { return now; }, now), frame,
       capture_time);
 }
 

@@ -131,7 +131,7 @@ MLGraph::MLGraph(ExecutionContext* execution_context,
       std::move(pending_graph_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
   remote_graph_.set_disconnect_handler(
-      WTF::BindOnce(&MLGraph::OnConnectionError, WrapWeakPersistent(this)));
+      BindOnce(&MLGraph::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 MLGraph::~MLGraph() = default;

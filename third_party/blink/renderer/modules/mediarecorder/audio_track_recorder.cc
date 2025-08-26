@@ -74,8 +74,8 @@ AudioTrackRecorder::AudioTrackRecorder(
     scoped_refptr<base::SequencedTaskRunner> encoder_task_runner)
     : TrackRecorder(base::BindPostTask(
           main_thread_task_runner,
-          WTF::BindOnce(&CallbackInterface::OnSourceReadyStateChanged,
-                        WrapPersistent(callback_interface)))),
+          BindOnce(&CallbackInterface::OnSourceReadyStateChanged,
+                   WrapPersistent(callback_interface)))),
       track_(track),
       encoder_task_runner_(std::move(encoder_task_runner)),
       encoder_(CreateAudioEncoder(
