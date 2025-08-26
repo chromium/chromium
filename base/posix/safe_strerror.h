@@ -29,6 +29,8 @@ namespace base {
 // result is always null-terminated. The value of errno is never changed.
 //
 // Use this instead of strerror_r().
+// TODO(crbug.com/40284755): implement spanified version.
+// void safe_strerror_r(int err, base::span<char> buf);
 BASE_EXPORT void safe_strerror_r(int err, char* buf, size_t len);
 
 // Calls safe_strerror_r with a buffer of suitable size and returns the result

@@ -37,6 +37,10 @@ class BASE_EXPORT UnixDomainSocket {
 
   // Use sendmsg to write the given msg and include a vector of file
   // descriptors. Returns true if successful.
+  // TODO(crbug.com/40284755): implement spanified version.
+  // static bool SendMsg(int fd,
+  //                     base::span<const uint8_t> msg,
+  //                     base::span<const int> fds);
   static bool SendMsg(int fd,
                       const void* msg,
                       size_t length,
@@ -44,6 +48,10 @@ class BASE_EXPORT UnixDomainSocket {
 
   // Use recvmsg to read a message and an array of file descriptors. Returns
   // -1 on failure. Note: will read, at most, |kMaxFileDescriptors| descriptors.
+  // TODO(crbug.com/40284755): implement spanified version.
+  // static ssize_t RecvMsg(int fd,
+  //                        base::span<uint8_t> msg,
+  //                        std::vector<ScopedFD>* fds);
   static ssize_t RecvMsg(int fd,
                          void* msg,
                          size_t length,
@@ -53,6 +61,11 @@ class BASE_EXPORT UnixDomainSocket {
   // from the caller's namespace).  However, before using this function to
   // receive process IDs, EnableReceiveProcessId() should be called on the
   // receiving socket.
+  // TODO(crbug.com/40284755): implement spanified version.
+  // static ssize_t RecvMsgWithPid(int fd,
+  //                               base::span<uint8_t> msg,
+  //                               std::vector<ScopedFD>* fds,
+  //                               ProcessId* pid);
   static ssize_t RecvMsgWithPid(int fd,
                                 void* msg,
                                 size_t length,
