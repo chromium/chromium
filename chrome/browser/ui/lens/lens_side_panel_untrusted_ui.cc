@@ -62,7 +62,7 @@ static constexpr webui::LocalizedString kStrings[] = {
     {"composeboxFileUploadFailed", IDS_NTP_COMPOSE_FILE_UPLOAD_FAILED},
     {"composeboxFileUploadExpired", IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED},
 };
-}
+}  // namespace
 
 namespace lens {
 
@@ -182,6 +182,8 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddInteger("composeboxFileMaxCount", 0);
   // Disable ZPS.
   html_source->AddBoolean("composeboxShowZps", false);
+  // Disable typed suggest.
+  html_source->AddBoolean("composeboxShowTypedSuggest", false);
   // Send event when escape is pressed.
   html_source->AddBoolean("composeboxCloseByEscape", true);
 

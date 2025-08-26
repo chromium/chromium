@@ -119,6 +119,7 @@ export class ComposeboxElement extends I18nMixinLit
         type: String,
         reflect: true,
       },
+      showDropdown_: {type: Boolean},
     };
   }
 
@@ -136,6 +137,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor expanded_: boolean;
   protected accessor input_: string = '';
   protected accessor inputsDisabled_: boolean = false;
+  protected accessor showDropdown_: boolean =
+      loadTimeData.getBoolean('composeboxShowZps');
   // When enabled, the file input buttons will not be rendered.
   protected accessor hideFileInputs_: boolean = false;
   protected accessor submitEnabled_: boolean = false;
@@ -145,6 +148,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor result_: AutocompleteResult|null = null;
   protected accessor inputPlaceholder_: string =
       loadTimeData.getString('searchboxComposePlaceholder');
+  private showTypedSuggest_: boolean =
+      loadTimeData.getBoolean('composeboxShowTypedSuggest');
   private maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private maxFileSize_: number =
@@ -265,6 +270,11 @@ export class ComposeboxElement extends I18nMixinLit
     if (changedPrivateProperties.has('files_')) {
       this.inputsDisabled_ = this.files_.size >= this.maxFileCount_;
       this.submitEnabled_ = this.submitEnabled_ || this.files_.size > 0;
+    }
+
+    if (changedPrivateProperties.has('input_')) {
+      this.showDropdown_ = (this.showTypedSuggest_ && !!this.input_.trim()) ||
+          (this.showZps && !this.input_);
     }
   }
 

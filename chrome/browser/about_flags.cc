@@ -1650,6 +1650,10 @@ const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
 const FeatureEntry::FeatureParam kComposeboxShowZps[] = {
     {"ShowComposeboxZps", "true"},
 };
+const FeatureEntry::FeatureParam kComposeboxShowTypedSuggestAndZps[] = {
+    {"ShowComposeboxZps", "true"},
+    {"ShowComposeboxTypedSuggest", "true"},
+};
 const FeatureEntry::FeatureParam kComposeboxNoClickOutsideClosure[] = {
     {"ConfigParam", "EgIQAA=="},
 };
@@ -1659,6 +1663,8 @@ const FeatureEntry::FeatureParam kComposeboxNoEscClosure[] = {
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show ZPS", kComposeboxShowZps, std::size(kComposeboxShowZps), nullptr},
+    {"- Show Typed Suggest and ZPS", kComposeboxShowTypedSuggestAndZps,
+     std::size(kComposeboxShowTypedSuggestAndZps), nullptr},
     {"- Disable Click Outside Closure", kComposeboxNoClickOutsideClosure,
      std::size(kComposeboxNoClickOutsideClosure), nullptr},
     {"- Disable Escape Closure", kComposeboxNoEscClosure,

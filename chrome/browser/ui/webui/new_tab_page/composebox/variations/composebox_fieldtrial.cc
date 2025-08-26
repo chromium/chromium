@@ -160,6 +160,11 @@ const base::FeatureParam<bool> kShowComposeboxZps(&kNtpComposebox,
                                                   "ShowComposeboxZps",
                                                   false);
 
+const base::FeatureParam<bool> kShowComposeboxTypedSuggest(
+    &kNtpComposebox,
+    "ShowComposeboxTypedSuggest",
+    false);
+
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
 FeatureConfig::FeatureConfig(const FeatureConfig&) = default;

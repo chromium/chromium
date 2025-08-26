@@ -587,4 +587,44 @@ suite('NewTabPageComposeboxTest', () => {
     // Restore.
     loadTimeData.overrideValues({composeboxShowZps: false});
   });
+
+  test('dropdown shows when suggestions enabled', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Add zps input.
+    composeboxElement.$.input.value = '';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+
+    // Composebox dropdown should show in zps.
+    let composeboxDropdown =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
+    assertTrue(!!composeboxDropdown);
+
+    // Add input with space.
+    composeboxElement.$.input.value = ' ';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    // Composebox dropdown shouldn't show if input is only spaces.
+    composeboxDropdown =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
+    assertFalse(!!composeboxDropdown);
+
+    // Add text input.
+    composeboxElement.$.input.value = ' hello';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    // Composebox dropdown should show with input if typed suggest is enabled.
+    composeboxDropdown =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
+    assertTrue(!!composeboxDropdown);
+
+    // Restore.
+    loadTimeData.overrideValues(
+        {composeboxShowZps: false, composeboxShowTypedSuggest: false});
+  });
 });
