@@ -7,9 +7,12 @@
 
 #include <jni.h>
 
+#include <memory>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/android/render_widget_host_connector.h"
+#include "content/public/browser/android/selection_popup_delegate.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/touch_selection/selection_event_type.h"
@@ -18,10 +21,15 @@ namespace gfx {
 class PointF;
 }
 
+namespace ui {
+class MenuModel;
+}
+
 namespace content {
 
 class RenderWidgetHostViewAndroid;
 struct ContextMenuParams;
+class SelectionPopupDelegate;
 
 class SelectionPopupController : public RenderWidgetHostConnector {
  public:
@@ -37,6 +45,11 @@ class SelectionPopupController : public RenderWidgetHostConnector {
 
   base::android::ScopedJavaLocalRef<jobjectArray> GetTouchHandleRects(
       JNIEnv* env);
+
+  void SetDelegate(
+      std::unique_ptr<SelectionPopupDelegate> selection_popup_delegate) {
+    selection_popup_delegate_ = std::move(selection_popup_delegate);
+  }
 
   // RendetWidgetHostConnector implementation.
   void UpdateRenderProcessConnection(
@@ -71,6 +84,9 @@ class SelectionPopupController : public RenderWidgetHostConnector {
   ~SelectionPopupController() override;
   base::android::ScopedJavaLocalRef<jobject> GetContext() const;
   raw_ptr<RenderWidgetHostViewAndroid> rwhva_ = nullptr;
+  std::unique_ptr<SelectionPopupDelegate> selection_popup_delegate_;
+  // Retained to keep the model in scope until the menu is dismissed.
+  std::unique_ptr<ui::MenuModel> extra_items_menu_model_;
 
   JavaObjectWeakGlobalRef java_obj_;
 };

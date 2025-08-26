@@ -67,6 +67,7 @@ import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelega
 import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.ui.touch_selection.SelectionEventType;
 import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
@@ -80,6 +81,7 @@ import java.util.SortedSet;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SelectionPopupControllerTest {
+    private final MenuModelBridge mMenuModelBridge = new MenuModelBridge();
     private SelectionPopupControllerImpl mController;
     private Context mContext;
     private WeakReference<Context> mWeakContext;
@@ -961,7 +963,8 @@ public class SelectionPopupControllerTest {
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
                 sourceType,
-                mRenderFrameHost);
+                mRenderFrameHost,
+                mMenuModelBridge);
     }
 
     private void setDropdownMenuFeatureEnabled(boolean enabled) {

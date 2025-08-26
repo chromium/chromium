@@ -76,6 +76,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate.ContainerViewObserver;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.ui.touch_selection.SelectionEventType;
@@ -520,11 +521,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             boolean canRichlyEdit,
             boolean shouldSuggest,
             int sourceType,
-            RenderFrameHost renderFrameHost) {
+            RenderFrameHost renderFrameHost,
+            MenuModelBridge menuModelBridge) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.ShowSelectionMenuSourceType",
-                sourceType,
-                MenuSourceType.MAX_VALUE);
+                "Android.ShowSelectionMenuSourceType", sourceType, MenuSourceType.MAX_VALUE);
 
         int offsetBottom = bottom;
         offsetBottom += handleHeight;

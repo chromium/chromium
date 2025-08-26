@@ -661,6 +661,8 @@ source_set("browser_sources") {
       "android/message_payload_type.h",
       "android/message_port_helper.h",
       "android/motion_event_action.h",
+      "android/selection_popup_delegate.cc",
+      "android/selection_popup_delegate.h",
       "android/synchronous_compositor.cc",
       "android/synchronous_compositor.h",
       "android/synchronous_compositor_client.h",

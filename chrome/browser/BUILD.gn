@@ -2938,6 +2938,8 @@ static_library("browser") {
       "android/search_permissions/search_permissions_service.h",
       "android/seccomp_support_detector.cc",
       "android/seccomp_support_detector.h",
+      "android/selection/chrome_selection_dropdown_menu_delegate.cc",
+      "android/selection/chrome_selection_dropdown_menu_delegate.h",
       "android/send_tab_to_self/android_notification_handler.cc",
       "android/send_tab_to_self/android_notification_handler.h",
       "android/send_tab_to_self/metrics_recorder.cc",

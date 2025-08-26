@@ -238,10 +238,12 @@
 #include "base/check.h"
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/android/nfc_host.h"
+#include "content/browser/android/selection/selection_popup_controller.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 #include "content/browser/web_contents/web_contents_android.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/public/browser/android/child_process_importance.h"
+#include "content/public/browser/android/selection_popup_delegate.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/android/event_forwarder.h"
@@ -10532,6 +10534,12 @@ service_manager::InterfaceProvider* WebContentsImpl::GetJavaInterfaces() {
     java_interfaces_->Bind(std::move(provider));
   }
   return java_interfaces_.get();
+}
+
+void WebContentsImpl::SetSelectionPopupDelegate(
+    std::unique_ptr<SelectionPopupDelegate> delegate) {
+  SelectionPopupController::FromWebContents(*this)->SetDelegate(
+      std::move(delegate));
 }
 
 #endif

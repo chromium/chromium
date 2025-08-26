@@ -76,8 +76,9 @@ public interface SelectionDropdownMenuDelegate {
     ListItem getDivider();
 
     /**
-     * Returns a menu item. Pass 0 for attributes that aren't
-     * applicable to the menu item (e.g. if there is no icon or text).
+     * Returns a menu item. Pass 0 for attributes that aren't applicable to the menu item (e.g. if
+     * there is no icon or text).
+     *
      * @param title The text on the menu item.
      * @param contentDescription The content description of the menu item.
      * @param groupId The group id of the menu item.
@@ -101,4 +102,9 @@ public interface SelectionDropdownMenuDelegate {
             boolean enabled,
             View.@Nullable OnClickListener clickListener,
             @Nullable Intent intent);
+
+    /** Returns a pointer to a native SelectionPopupDelegate. */
+    default long getNativeDelegate() {
+        return 0L;
+    }
 }

@@ -175,6 +175,7 @@ class CreateNewWindowParams;
 
 #if BUILDFLAG(IS_ANDROID)
 class WebContentsAndroid;
+class SelectionPopupDelegate;
 #endif
 
 // CreatedWindow holds the WebContentsImpl and target url between IPC calls to
@@ -631,6 +632,8 @@ class CONTENT_EXPORT WebContentsImpl
   void SetPrimaryPageImportance(
       ChildProcessImportance main_frame_importance,
       ChildProcessImportance subframe_importance) override;
+  void SetSelectionPopupDelegate(
+      std::unique_ptr<SelectionPopupDelegate> delegate) override;
 #endif
   bool HasRecentInteraction() override;
   [[nodiscard]] ScopedIgnoreInputEvents IgnoreInputEvents(
