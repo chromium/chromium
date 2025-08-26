@@ -344,6 +344,7 @@ def libfuzzer_linux_builder(
         # Allow overriding despite the name for ChromeOS and Android builder.
         target_platform = builder_config.target_platform.LINUX,
         gn_extra_configs = [],
+        swarming_mixins = [],
         **kwargs):
     gn_configs = [
         "chromeos_codecs",
@@ -352,7 +353,7 @@ def libfuzzer_linux_builder(
     ] + gn_extra_configs
 
     return libfuzzer_builder(
-        swarming_mixins = ["linux-jammy"],
+        swarming_mixins = ["linux-jammy"] + swarming_mixins,
         target_platform = target_platform,
         gn_extra_configs = gn_configs,
         **kwargs
@@ -915,6 +916,7 @@ libfuzzer_linux_builder(
     max_concurrent_invocations = 3,
     sanitizer = "asan",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+    swarming_mixins = ["x86-64"],  # Avoid running on ARM bots.
     test_builder_name = "chromeos-x64-libfuzzer-asan-rel-tests",
 )
 
