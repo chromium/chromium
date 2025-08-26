@@ -18,7 +18,7 @@ message NTPComposeboxConfig {
     optional int32 num_page_load_animations = 1;
   }
   optional EntryPoint entry_point = 1;
-  // Next ID: 7
+  // Next ID: 8
   message Composebox {
     optional bool close_by_escape = 1;
     optional bool close_by_click_outside = 2;
@@ -48,6 +48,8 @@ message NTPComposeboxConfig {
     // and should not be set on a config that applies
     // outside of en-*.
     optional string input_placeholder_text = 6;
+    // A kill switch for pdf eligibility in the composebox.
+    optional bool is_pdf_upload_enabled = 7;
   }
   optional Composebox composebox = 2;
 }

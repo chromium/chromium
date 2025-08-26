@@ -116,8 +116,12 @@ export class ComposeboxElement extends I18nMixinLit
         type: String,
       },
       inputPlaceholder_: {
-        type: String,
         reflect: true,
+        type: String,
+      },
+      composeboxShowPdfUpload_: {
+        reflect: true,
+        type: Boolean,
       },
       showDropdown_: {type: Boolean},
     };
@@ -148,6 +152,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor result_: AutocompleteResult|null = null;
   protected accessor inputPlaceholder_: string =
       loadTimeData.getString('searchboxComposePlaceholder');
+  protected accessor composeboxShowPdfUpload_: boolean =
+      loadTimeData.getBoolean('composeboxShowPdfUpload');
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
   private maxFileCount_: number =

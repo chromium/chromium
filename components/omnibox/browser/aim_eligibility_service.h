@@ -73,6 +73,10 @@ class AimEligibilityService : public KeyedService,
   // Virtual for testing purposes.
   virtual bool IsAimEligible() const;
 
+  // Checks if user is eligible for Pdf Upload in AIM features.
+  // Virtual for testing purposes.
+  virtual bool IsPdfUploadEligible() const;
+
  protected:
   // Virtual methods for platform-specific country and locale access.
   virtual std::string GetCountryCode() const = 0;

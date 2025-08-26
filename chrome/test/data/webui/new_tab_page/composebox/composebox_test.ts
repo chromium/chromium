@@ -418,6 +418,7 @@ suite('NewTabPageComposeboxTest', () => {
   });
 
   test('file upload button clicks file input', async () => {
+    loadTimeData.overrideValues({'composeboxShowPdfUpload': true});
     const fileUploadClickEventPromise =
         eventToPromise('click', composeboxElement.$.fileInput);
     composeboxElement.$.fileUploadButton.click();
@@ -426,8 +427,19 @@ suite('NewTabPageComposeboxTest', () => {
     await fileUploadClickEventPromise;
   });
 
+  test('disabling file upload does not show fileUploadButton', async () => {
+    loadTimeData.overrideValues({'composeboxShowPdfUpload': false});
+    createComposeboxElement();
+    await composeboxElement.updateComplete;
+
+    // Assert
+    assertFalse(
+        !!composeboxElement.shadowRoot.querySelector('#fileUploadButton'));
+  });
+
   test('file upload buttons disabled when max files uploaded', async () => {
     loadTimeData.overrideValues({'composeboxFileMaxCount': 1});
+    loadTimeData.overrideValues({'composeboxShowPdfUpload': true});
     createComposeboxElement();
     handler.setResultFor(
         'addFile', Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));

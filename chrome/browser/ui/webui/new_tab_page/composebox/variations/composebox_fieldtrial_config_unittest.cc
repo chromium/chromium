@@ -78,6 +78,7 @@ TEST_F(NtpComposeboxFieldTrialConfigTest,
   EXPECT_EQ(composebox.max_num_files(), 1);
   EXPECT_EQ(composebox.input_placeholder_text(),
             l10n_util::GetStringUTF8(IDS_NTP_COMPOSE_PLACEHOLDER_TEXT));
+  EXPECT_EQ(composebox.is_pdf_upload_enabled(), true);
 
   histogram_tester.ExpectTotalCount(kConfigParamParseSuccessHistogram, 0);
 }

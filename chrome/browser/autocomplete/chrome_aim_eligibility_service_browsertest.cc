@@ -127,7 +127,7 @@ class AimEligibilityServiceFriend {
 class ChromeAimEligibilityServiceBrowserTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<
-          std::tuple<std::string, std::string, bool, bool, bool, bool>> {
+          std::tuple<std::string, std::string, bool, bool, bool, bool, bool>> {
  public:
   ChromeAimEligibilityServiceBrowserTest() = default;
   ~ChromeAimEligibilityServiceBrowserTest() override = default;
@@ -143,7 +143,8 @@ class ChromeAimEligibilityServiceBrowserTest
  protected:
   void SetUp() override {
     auto [locale, country, server_eligibility_enabled, allowed_by_policy,
-          is_google_dse, is_server_eligible] = GetParam();
+          is_google_dse, is_server_eligible, is_pdf_upload_eligible] =
+        GetParam();
 
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
@@ -161,7 +162,8 @@ class ChromeAimEligibilityServiceBrowserTest
 
   void SetUpOnMainThread() override {
     auto [locale, country, server_eligibility_enabled, allowed_by_policy,
-          is_google_dse, is_server_eligible] = GetParam();
+          is_google_dse, is_server_eligible, is_pdf_upload_eligible] =
+        GetParam();
 
     // Set up locale and country.
     scoped_browser_locale_ = std::make_unique<ScopedBrowserLocale>(locale);
@@ -248,15 +250,18 @@ INSTANTIATE_TEST_SUITE_P(,
                              // Values for Google DSE.
                              ::testing::Values(true, false),
                              // Values for server response eligibility.
+                             ::testing::Values(true, false),
+                             // Values for Pdf eligibility.
                              ::testing::Values(true, false)));
 
 IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
                        ComprehensiveEligibilityTest) {
   auto [locale, country, server_eligibility_enabled, allowed_by_policy,
-        is_google_dse, is_server_eligible] = GetParam();
+        is_google_dse, is_server_eligible, is_pdf_upload_eligible] = GetParam();
 
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(is_server_eligible);
+  response.set_is_pdf_upload_eligible(is_pdf_upload_eligible);
   content::URLLoaderInterceptor url_loader_interceptor(
       base::BindRepeating(&OnRequest, response));
 
@@ -307,11 +312,17 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
   EXPECT_EQ(service->IsAimLocallyEligible(), expected_local_eligibility);
 
   // Test IsAimEligible.
-  bool expected_enabled = expected_local_eligibility &&
-                          (!server_eligibility_enabled || is_server_eligible);
-  EXPECT_EQ(service->IsAimEligible(), expected_enabled);
+  bool expected_eligible = expected_local_eligibility &&
+                           (!server_eligibility_enabled || is_server_eligible);
+  EXPECT_EQ(service->IsAimEligible(), expected_eligible);
 
   service_observer_helper.Clear();
+
+  // Test IsPdfUploadEligible.
+  bool expected_pdf_upload_eligible =
+      expected_eligible &&
+      (!server_eligibility_enabled || is_pdf_upload_eligible);
+  EXPECT_EQ(service->IsPdfUploadEligible(), expected_pdf_upload_eligible);
 
   // Test changes to the accounts in the cookie jar.
   auto* identity_manager = identity_test_env()->identity_manager();

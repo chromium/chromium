@@ -213,6 +213,18 @@ bool AimEligibilityService::IsAimEligible() const {
   return true;
 }
 
+bool AimEligibilityService::IsPdfUploadEligible() const {
+  if (!IsAimEligible()) {
+    return false;
+  }
+
+  if (IsServerEligibilityEnabled()) {
+    return most_recent_response_.is_pdf_upload_eligible();
+  }
+
+  return true;
+}
+
 // Private methods -------------------------------------------------------------
 
 void AimEligibilityService::Initialize() {
