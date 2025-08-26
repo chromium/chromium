@@ -366,23 +366,22 @@ TEST_F(ScopedAlsaMixerEventTest, RealCallback) {
 
   EXPECT_CALL(alsa_, MixerPollDescriptorsCount(mixer_)).WillOnce(Return(1));
   EXPECT_CALL(alsa_, MixerPollDescriptors(mixer_, _, 1))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [this](snd_mixer_t* mixer_, struct pollfd* pfds, unsigned int space) {
             for (unsigned int i = 0; i < space; ++i) {
               pfds[i].fd = pipe_fds_[0];
             }
             return space;
-          }));
+          });
 
   EXPECT_EQ(alsa_mixer_->element, element_);
   alsa_mixer_->WatchForEvents(&MixerEventCallback, cb_private_data_);
 
-  EXPECT_CALL(alsa_, MixerHandleEvents(mixer_))
-      .WillOnce(testing::Invoke([this, &run_loop]() {
-        ReadByte();
-        run_loop.Quit();
-        return 0;
-      }));
+  EXPECT_CALL(alsa_, MixerHandleEvents(mixer_)).WillOnce([this, &run_loop]() {
+    ReadByte();
+    run_loop.Quit();
+    return 0;
+  });
   WriteByte();
 
   run_loop.Run();

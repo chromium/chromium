@@ -20,7 +20,6 @@ namespace chromecast {
 namespace media {
 
 using ::testing::_;
-using ::testing::Invoke;
 
 namespace {
 

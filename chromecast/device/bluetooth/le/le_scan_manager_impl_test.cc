@@ -20,7 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace chromecast {
@@ -294,8 +293,7 @@ TEST_F(LeScanManagerTest, TestGetScanResultsSortedByRssi) {
 TEST_F(LeScanManagerTest, TestOnNewScanResult) {
   LeScanResult result;
   ON_CALL(mock_observer_, OnNewScanResult(_))
-      .WillByDefault(
-          Invoke([&result](LeScanResult result_in) { result = result_in; }));
+      .WillByDefault([&result](LeScanResult result_in) { result = result_in; });
 
   // Add a scan result with service 0x4444.
   bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result(
