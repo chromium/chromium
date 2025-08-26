@@ -74,6 +74,11 @@ class FormDataImporter : public AddressDataManager::Observer,
     // retrieval process). This field is optional and is set when an Autofill
     // credit card Downstream has happened.
     std::optional<bool> card_was_fetched_from_cache;
+
+    // Whether Save and Fill suggestion was clicked on for the last fetched
+    // card. If so, no other payments post-checkout flow should be offered
+    // again.
+    bool card_submitted_through_save_and_fill = false;
   };
 
   // The parameters should outlive the FormDataImporter.
@@ -132,9 +137,8 @@ class FormDataImporter : public AddressDataManager::Observer,
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
-  void set_fetched_payments_data_context(
-      const FetchedPaymentsDataContext& context) {
-    fetched_payments_data_context_ = context;
+  FetchedPaymentsDataContext& fetched_payments_data_context() {
+    return fetched_payments_data_context_;
   }
 
   // See `FormAssociator::GetFormAssociations()`.

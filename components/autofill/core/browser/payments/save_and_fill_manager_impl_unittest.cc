@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
@@ -209,6 +210,16 @@ TEST_F(SaveAndFillManagerImplTest, OfferLocalSaveAndFill_ShowsLocalDialog) {
 
   save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
       fill_card_callback_.Get());
+}
+
+TEST_F(SaveAndFillManagerImplTest,
+       OnDidAcceptCreditCardSaveAndFillSuggestion_NotifyFormDataImporter) {
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
+
+  EXPECT_TRUE(autofill_client_->GetFormDataImporter()
+                  ->fetched_payments_data_context()
+                  .card_submitted_through_save_and_fill);
 }
 
 TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Accepted) {

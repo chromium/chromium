@@ -2455,6 +2455,29 @@ TEST_F(FormDataImporterTest,
   EXPECT_THAT(*results[0], ComparesEqual(credit_card));
 }
 
+// Tests that if Save and Fill suggestion was clicked on before the form
+// extraction, no payments post-checkout flows are offered. But we should still
+// log the "submitted card state" metrics correctly.
+TEST_F(FormDataImporterTest, ExtractCreditCard_SaveAndFillOccurred) {
+  FormData form = CreateFullCreditCardForm("Jim Johansen", "4111111111111111",
+                                           "02", "2999");
+  form_data_importer()
+      .fetched_payments_data_context()
+      .card_submitted_through_save_and_fill = true;
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+  base::HistogramTester histogram_tester;
+
+  std::optional<CreditCard> extracted_credit_card =
+      ExtractCreditCard(*form_structure);
+
+  EXPECT_FALSE(extracted_credit_card);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SubmittedCardState",
+      AutofillMetrics::HAS_CARD_NUMBER_AND_EXPIRATION_DATE, 1);
+  ASSERT_EQ(0U, payments_data_manager().GetCreditCards().size());
+}
+
 // Ensures that
 // `FormDataImporterTest::credit_card_import_type_` is set and
 // reset correctly.
@@ -3652,9 +3675,9 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
   test_api(form_data_importer())
       .set_credit_card_import_type(
           FormDataImporter::CreditCardImportType::kServerCard);
-  FormDataImporter::FetchedPaymentsDataContext context;
-  context.fetched_card_instrument_id = 2222;
-  form_data_importer().set_fetched_payments_data_context(context);
+  form_data_importer()
+      .fetched_payments_data_context()
+      .fetched_card_instrument_id = 2222;
 
   EXPECT_CALL(virtual_card_enrollment_manager(),
               InitVirtualCardEnroll(_, VirtualCardEnrollmentSource::kDownstream,
@@ -3667,8 +3690,9 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
                                       /*is_credit_card_upstream_enabled=*/true,
                                       ukm_source_id()));
 
-  context.fetched_card_instrument_id = 1111;
-  form_data_importer().set_fetched_payments_data_context(context);
+  form_data_importer()
+      .fetched_payments_data_context()
+      .fetched_card_instrument_id = 1111;
   EXPECT_CALL(virtual_card_enrollment_manager(),
               InitVirtualCardEnroll(_, VirtualCardEnrollmentSource::kDownstream,
                                     _, _, _, _));

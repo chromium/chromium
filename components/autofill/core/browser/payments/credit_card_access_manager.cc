@@ -323,7 +323,8 @@ void CreditCardAccessManager::FetchCreditCard(
     OnCreditCardFetchedCallback on_credit_card_fetched) {
   auto* form_data_importer = autofill_client().GetFormDataImporter();
   CHECK(form_data_importer);
-  form_data_importer->set_fetched_payments_data_context({});
+  form_data_importer->fetched_payments_data_context() =
+      FormDataImporter::FetchedPaymentsDataContext();
   // Reset the variable in FormDataImporter that denotes if non-interactive
   // authentication happened. This variable will be set to a value if a
   // payments autofill non-interactive flow successfully completes.
@@ -1772,9 +1773,9 @@ void CreditCardAccessManager::OnCreditCardFetched(
     bool card_was_fetched_from_cache) {
   auto* form_data_importer = autofill_client().GetFormDataImporter();
   CHECK(form_data_importer);
-  form_data_importer->set_fetched_payments_data_context(
-      {.fetched_card_instrument_id = card.instrument_id(),
-       .card_was_fetched_from_cache = card_was_fetched_from_cache});
+  auto context = form_data_importer->fetched_payments_data_context();
+  context.fetched_card_instrument_id = card.instrument_id();
+  context.card_was_fetched_from_cache = card_was_fetched_from_cache;
   std::move(on_credit_card_fetched_callback_).Run(card);
 }
 

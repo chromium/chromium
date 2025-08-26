@@ -904,6 +904,13 @@ std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
     return std::nullopt;
   }
 
+  // If Save and Fill suggestion was clicked (regardless of whether the card was
+  // saved or not eventually) before the form extraction, don't offer other
+  // payments post-checkout flows.
+  if (fetched_payments_data_context_.card_submitted_through_save_and_fill) {
+    return std::nullopt;
+  }
+
   // If the extracted card is a known virtual card, return the extracted card.
   if (fetched_virtual_cards_.contains(candidate.LastFourDigits())) {
     credit_card_import_type_ = CreditCardImportType::kVirtualCard;

@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
@@ -39,6 +40,11 @@ void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion(
     FillCardCallback fill_card_callback) {
   save_and_fill_suggestion_selected_ = true;
   fill_card_callback_ = std::move(fill_card_callback);
+
+  auto* form_data_importer = autofill_client_->GetFormDataImporter();
+  CHECK(form_data_importer);
+  form_data_importer->fetched_payments_data_context()
+      .card_submitted_through_save_and_fill = true;
 
   if (IsCreditCardUploadEnabled()) {
     payments_autofill_client()->ShowCreditCardSaveAndFillPendingDialog();

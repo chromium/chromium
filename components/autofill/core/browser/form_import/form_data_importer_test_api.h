@@ -109,10 +109,6 @@ class FormDataImporterTestApi {
         is_credit_card_upstream_enabled, ukm_source_id);
   }
 
-  std::optional<int64_t> fetched_card_instrument_id() {
-    return fdi_->fetched_payments_data_context_.fetched_card_instrument_id;
-  }
-
   void ImportAndProcessFormData(const FormStructure& submitted_form,
                                 bool profile_autofill_enabled,
                                 bool payment_methods_autofill_enabled,
