@@ -138,7 +138,6 @@ void DeriveCommandLine(const GURL& start_url,
       ::switches::kTouchDevices,
       ::switches::kTouchEventFeatureDetection,
       ::switches::kTopChromeTouchUi,
-      ::switches::kTraceToConsole,
       ::switches::kUIDisablePartialSwap,
 #if BUILDFLAG(USE_CRAS)
       ::switches::kUseCras,

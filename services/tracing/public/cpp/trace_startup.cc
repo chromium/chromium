@@ -10,7 +10,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
-#include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"

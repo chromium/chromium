@@ -3544,7 +3544,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kTargetDeviceScaleForTesting,
       switches::kTestType,
       switches::kTouchEventFeatureDetection,
-      switches::kTraceToConsole,
       switches::kUseCmdDecoder,
       switches::kUseFakeCodecForPeerConnection,
       switches::kUseFakeUIForMediaStream,

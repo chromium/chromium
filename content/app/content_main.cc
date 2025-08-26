@@ -34,8 +34,6 @@
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "components/embedder_support/switches.h"
-#include "components/tracing/common/trace_to_console.h"
-#include "components/tracing/common/tracing_switches.h"
 #include "content/app/content_main_runner_impl.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/common/content_switches.h"
@@ -341,13 +339,6 @@ NO_STACK_PROTECTOR int RunContentProcess(
 
     base::trace_event::TraceLog::GetInstance()->AddOwnedEnabledStateObserver(
         base::WrapUnique(new TracingEnabledStateObserver));
-
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            ::switches::kTraceToConsole)) {
-      base::trace_event::TraceConfig trace_config =
-          tracing::GetConfigForTraceToConsole();
-      base::trace_event::TraceLog::GetInstance()->SetEnabled(trace_config);
-    }
   }
 
   if (IsSubprocess())

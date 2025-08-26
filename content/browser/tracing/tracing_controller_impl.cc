@@ -36,7 +36,6 @@
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
-#include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/variations/active_field_trials.h"
 #include "content/browser/gpu/compositor_util.h"
