@@ -68,17 +68,57 @@ password_manager::PasswordFormManager* GetExistingChangePasswordForm(
 
 }  // namespace
 
+ChangePasswordFormWaiter::Builder::Builder(
+    content::WebContents* web_contents,
+    password_manager::PasswordManagerClient* client,
+    PasswordFormFoundCallback callback) {
+  CHECK(web_contents);
+  CHECK(client);
+  CHECK(callback);
+  form_waiter_ = absl::WrapUnique(
+      new ChangePasswordFormWaiter(web_contents, client, std::move(callback)));
+}
+
+ChangePasswordFormWaiter::Builder::~Builder() = default;
+
+ChangePasswordFormWaiter::Builder&
+ChangePasswordFormWaiter::Builder::SetTimeoutCallback(
+    base::OnceClosure timeout_callback) {
+  form_waiter_->timeout_ =
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout;
+  form_waiter_->timeout_callback_ = std::move(timeout_callback);
+  return *this;
+}
+
+ChangePasswordFormWaiter::Builder&
+ChangePasswordFormWaiter::Builder::SetFieldsToIgnore(
+    const std::vector<autofill::FieldRendererId>& fields_to_ignore) {
+  form_waiter_->fields_to_ignore_ = fields_to_ignore;
+  return *this;
+}
+
+std::unique_ptr<ChangePasswordFormWaiter>
+ChangePasswordFormWaiter::Builder::Build() {
+  form_waiter_->Init();
+  return std::move(form_waiter_);
+}
+
 ChangePasswordFormWaiter::ChangePasswordFormWaiter(
     content::WebContents* web_contents,
     password_manager::PasswordManagerClient* client,
-    PasswordFormFoundCallback callback,
-    base::TimeDelta timeout,
-    const std::vector<autofill::FieldRendererId>& fields_to_ignore)
+    PasswordFormFoundCallback callback)
     : content::WebContentsObserver(web_contents),
-      timeout_(timeout),
       client_(client),
-      callback_(std::move(callback)),
-      fields_to_ignore_(fields_to_ignore) {
+      callback_(std::move(callback)) {}
+
+ChangePasswordFormWaiter::~ChangePasswordFormWaiter() {
+  CHECK(client_);
+  if (auto* cache = GetFormCache(client_)) {
+    cache->RemoveObserver(this);
+  }
+}
+
+void ChangePasswordFormWaiter::Init() {
   if (PasswordFormCache* cache = GetFormCache(client_)) {
     if (auto* manager =
             GetExistingChangePasswordForm(cache, fields_to_ignore_)) {
@@ -90,15 +130,8 @@ ChangePasswordFormWaiter::ChangePasswordFormWaiter(
     }
     cache->AddObserver(this);
   }
-  if (web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+  if (web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     DidStopLoading();
-  }
-}
-
-ChangePasswordFormWaiter::~ChangePasswordFormWaiter() {
-  CHECK(client_);
-  if (auto* cache = GetFormCache(client_)) {
-    cache->RemoveObserver(this);
   }
 }
 
@@ -132,6 +165,7 @@ void ChangePasswordFormWaiter::DidStopLoading() {
 }
 
 void ChangePasswordFormWaiter::OnTimeout() {
-  CHECK(callback_);
-  std::move(callback_).Run(nullptr);
+  if (timeout_callback_) {
+    std::move(timeout_callback_).Run();
+  }
 }

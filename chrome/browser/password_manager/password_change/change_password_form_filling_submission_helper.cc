@@ -234,13 +234,18 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
   if (!submitted_form) {
     // Change password form disappeared, some websites practice updating form
     // dynamically which resets the form. Try to find a new change-pwd form.
-    form_waiter_ = std::make_unique<ChangePasswordFormWaiter>(
-        web_contents_, client_,
-        base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::
-                           OnChangePasswordFormFound,
-                       weak_ptr_factory_.GetWeakPtr()),
-        ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout,
-        observed_fields_);
+    form_waiter_ =
+        ChangePasswordFormWaiter::Builder(
+            web_contents_, client_,
+            base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::
+                               OnChangePasswordFormFound,
+                           weak_ptr_factory_.GetWeakPtr()))
+            .SetTimeoutCallback(
+                base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::
+                                   OnSubmissionOutcomeChecked,
+                               weak_ptr_factory_.GetWeakPtr(), false))
+            .SetFieldsToIgnore(observed_fields_)
+            .Build();
     return;
   }
 
@@ -403,11 +408,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnSubmissionOutcomeChecked(
 void ChangePasswordFormFillingSubmissionHelper::OnChangePasswordFormFound(
     password_manager::PasswordFormManager* form_manager) {
   form_waiter_.reset();
-
-  if (!form_manager) {
-    std::move(callback_).Run(false);
-    return;
-  }
+  CHECK(form_manager);
 
   CHECK(form_manager->GetParsedObservedForm());
   CHECK(form_manager->GetDriver());

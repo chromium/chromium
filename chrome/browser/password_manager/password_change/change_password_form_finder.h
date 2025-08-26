@@ -58,7 +58,8 @@ class ChangePasswordFormFinder {
 #endif
 
  private:
-  void OnInitialFormWaitingResult(
+  void OnFormNotFoundInitially();
+  void OnFormFoundInitially(
       password_manager::PasswordFormManager* form_manager);
 
   void OnPageContentReceived(
@@ -76,7 +77,7 @@ class ChangePasswordFormFinder {
 
   void OnButtonClicked(bool result);
 
-  void OnSubsequentFormWaitingResult(
+  void OnChangePasswordFormFoundAfterClick(
       password_manager::PasswordFormManager* form_manager);
   void OnFormNotFound();
   void OnButtonClickedAndSubsequentFormFound();

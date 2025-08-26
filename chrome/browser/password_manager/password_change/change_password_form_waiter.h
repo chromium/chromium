@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_CHANGE_PASSWORD_FORM_WAITER_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_CHANGE_PASSWORD_FORM_WAITER_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
@@ -30,19 +31,38 @@ class ChangePasswordFormWaiter
   // Timeout for change password form await time after the page is loaded.
   static constexpr base::TimeDelta kChangePasswordFormWaitingTimeout =
       base::Seconds(2);
+
   using PasswordFormFoundCallback =
       base::OnceCallback<void(password_manager::PasswordFormManager*)>;
 
-  ChangePasswordFormWaiter(
-      content::WebContents* web_contents,
-      password_manager::PasswordManagerClient* client,
-      PasswordFormFoundCallback callback,
-      base::TimeDelta timeout = kChangePasswordFormWaitingTimeout,
-      const std::vector<autofill::FieldRendererId>& fields_to_ignore = {});
+  class Builder final {
+   public:
+    Builder(content::WebContents* web_contents,
+            password_manager::PasswordManagerClient* client,
+            PasswordFormFoundCallback callback);
+    ~Builder();
+
+    Builder& SetTimeoutCallback(base::OnceClosure timeout_callback);
+    Builder& SetFieldsToIgnore(
+        const std::vector<autofill::FieldRendererId>& fields_to_ignore);
+
+    std::unique_ptr<ChangePasswordFormWaiter> Build();
+
+   private:
+    std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
+  };
 
   ~ChangePasswordFormWaiter() override;
 
  private:
+  friend class Builder;
+
+  ChangePasswordFormWaiter(content::WebContents* web_contents,
+                           password_manager::PasswordManagerClient* client,
+                           PasswordFormFoundCallback callback);
+
+  void Init();
+
   // password_manager::PasswordFormManagerObserver Impl
   void OnPasswordFormParsed(
       password_manager::PasswordFormManager* form_manager) override;
@@ -53,10 +73,12 @@ class ChangePasswordFormWaiter
 
   void OnTimeout();
 
-  const base::TimeDelta timeout_;
-  base::OneShotTimer timeout_timer_;
   const raw_ptr<password_manager::PasswordManagerClient> client_;
   PasswordFormFoundCallback callback_;
+
+  base::TimeDelta timeout_ = base::TimeDelta::Max();
+  base::OneShotTimer timeout_timer_;
+  base::OnceClosure timeout_callback_;
 
   // new_password_element_renderer_ids which ChangePasswordFormWaiter should
   // ignore. This helps avoid detecting the same change password form over and
