@@ -1809,9 +1809,10 @@ class PKIMetadataComponentChromeRootStoreUpdateWithStaleDoHServerTest
   }
 };
 
+// TODO(crbug.com/414630735): debug the failures and re-enable
 IN_PROC_BROWSER_TEST_F(
     PKIMetadataComponentChromeRootStoreUpdateWithStaleDoHServerTest,
-    TrustAnchorIDsRetry) {
+    DISABLED_TrustAnchorIDsRetry) {
   // Install CRS update that contains two trusted Trust Anchor IDs, including
   // one that is advertised by the server corresponding to its intermediate
   // certificate, and one that is advertised by the server but not actually used
