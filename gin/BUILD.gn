@@ -31,6 +31,7 @@ component("gin") {
     "gin_export.h",
     "gin_features.cc",
     "gin_features.h",
+    "handle.h",
     "interceptor.cc",
     "interceptor.h",
     "isolate_holder.cc",
@@ -76,6 +77,7 @@ component("gin") {
     "v8_shared_memory_dump_provider.h",
     "wrappable.cc",
     "wrappable.h",
+    "wrapper_info.cc",
   ]
 
   if (use_partition_alloc) {

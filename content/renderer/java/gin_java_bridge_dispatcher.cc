@@ -29,9 +29,8 @@ GinJavaBridgeDispatcher::~GinJavaBridgeDispatcher() = default;
 void GinJavaBridgeDispatcher::DidClearWindowObject() {
   // Accessing window object when adding properties to it may trigger
   // a nested call to DidClearWindowObject.
-  if (inside_did_clear_window_object_) {
+  if (inside_did_clear_window_object_)
     return;
-  }
   base::AutoReset<bool> flag_entry(&inside_did_clear_window_object_, true);
   if (!named_objects_.empty()) {
     // Ensure we have a `remote_` if we have named objects.
@@ -45,8 +44,8 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
     // deleted after its wrapper will be collected.
     // On the browser side, we ignore wrapper deletion events for named objects,
     // as they are only removed upon embedder's request (RemoveNamedObject).
-    if (base::Contains(objects_, iter->second.object_id)) {
-      objects_.erase(iter->second.object_id);
+    if (objects_.Lookup(iter->second.object_id)) {
+      objects_.Remove(iter->second.object_id);
     }
 
     // We will always receive an allowlist of origins. Only inject
@@ -60,7 +59,7 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
           render_frame()->GetWebFrame(), weak_ptr_factory_.GetWeakPtr(),
           iter->first, iter->second.object_id);
       if (object) {
-        objects_.emplace(iter->second.object_id, object);
+        objects_.AddWithID(object, iter->second.object_id);
       } else {
         GetRemoteObjectHost()->ObjectWrapperDeleted(iter->second.object_id);
       }
@@ -94,28 +93,23 @@ void GinJavaBridgeDispatcher::SetHost(
 }
 
 GinJavaBridgeObject* GinJavaBridgeDispatcher::GetObject(ObjectID object_id) {
-  auto it = objects_.find(object_id);
-  if (it != objects_.end()) {
-    return it->second.Get();
+  GinJavaBridgeObject* result = objects_.Lookup(object_id);
+  if (!result) {
+    result = GinJavaBridgeObject::InjectAnonymous(
+        render_frame()->GetWebFrame(), weak_ptr_factory_.GetWeakPtr(),
+        object_id);
+    if (result)
+      objects_.AddWithID(result, object_id);
   }
-
-  GinJavaBridgeObject* object = GinJavaBridgeObject::InjectAnonymous(
-      render_frame()->GetWebFrame(), weak_ptr_factory_.GetWeakPtr(), object_id);
-  if (object) {
-    objects_.emplace(object_id, object);
-  }
-  return object;
+  return result;
 }
 
 void GinJavaBridgeDispatcher::OnGinJavaBridgeObjectDeleted(
     GinJavaBridgeObject* object) {
   int object_id = object->object_id();
   // Ignore cleaning up of old object wrappers.
-  auto it = objects_.find(object_id);
-  if (it == objects_.end() || it->second.Get() != object) {
-    return;
-  }
-  objects_.erase(it);
+  if (objects_.Lookup(object_id) != object) return;
+  objects_.Remove(object_id);
 
   GetRemoteObjectHost()->ObjectWrapperDeleted(object_id);
 }

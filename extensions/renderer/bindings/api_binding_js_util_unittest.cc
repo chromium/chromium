@@ -12,6 +12,7 @@
 #include "extensions/renderer/bindings/api_bindings_system_unittest.h"
 #include "extensions/renderer/bindings/api_invocation_errors.h"
 #include "gin/arguments.h"
+#include "gin/handle.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-cppgc.h"
 #include "testing/gmock/include/gmock/gmock.h"

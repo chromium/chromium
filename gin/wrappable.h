@@ -56,10 +56,18 @@ class NamedPropertyInterceptor;
 // would share a single object template. This will lead to hard to debug crashes
 // that look like use-after-free errors.
 
+namespace internal {
+
 static_assert(sizeof(v8::CppHeapPointerTag) == sizeof(WrappablePointerTag),
               "WrappablePointerTag defines a subrange of v8::CppHeapPointerTag "
               "which is used for subclasses of gin::Wrappable. They should "
               "therefore have the same underlying type.");
+
+GIN_EXPORT void* FromV8Impl(v8::Isolate* isolate,
+                            v8::Local<v8::Value> val,
+                            DeprecatedWrapperInfo* info);
+
+}  // namespace internal
 
 class ObjectTemplateBuilder;
 
@@ -77,13 +85,11 @@ class GIN_EXPORT WrappableBase : public v8::Object::Wrappable {
   // the static object with the WrapperInfo from the virtual dispatch.
   virtual const WrapperInfo* wrapper_info() const = 0;
 
-  virtual NamedPropertyInterceptor* GetNamedPropertyInterceptor();
-
   v8::MaybeLocal<v8::Object> GetWrapper(v8::Isolate* isolate);
   void SetWrapper(v8::Isolate* isolate, v8::Local<v8::Object> wrapper);
 
  protected:
-  WrappableBase() = default;
+  explicit WrappableBase() = default;
 
   // Overrides of this method should be declared final and not overridden again.
   virtual ObjectTemplateBuilder GetObjectTemplateBuilder(v8::Isolate* isolate);
@@ -145,6 +151,76 @@ struct Converter<T*> {
     return *out != nullptr;
   }
 };
+
+// Non-template base class to share code between templates instances.
+class GIN_EXPORT DeprecatedWrappableBase {
+ public:
+  DeprecatedWrappableBase(const DeprecatedWrappableBase&) = delete;
+  DeprecatedWrappableBase& operator=(const DeprecatedWrappableBase&) = delete;
+
+  virtual NamedPropertyInterceptor* GetNamedPropertyInterceptor();
+
+ protected:
+  DeprecatedWrappableBase();
+  virtual ~DeprecatedWrappableBase();
+
+  // Overrides of this method should be declared final and not overridden again.
+  virtual ObjectTemplateBuilder GetObjectTemplateBuilder(v8::Isolate* isolate);
+
+  // Returns a readable type name that will be used in surfacing errors. The
+  // default implementation returns nullptr, which results in a generic error.
+  virtual const char* GetTypeName();
+
+  v8::MaybeLocal<v8::Object> GetWrapperImpl(
+      v8::Isolate* isolate,
+      DeprecatedWrapperInfo* wrapper_info);
+
+ private:
+  static void FirstWeakCallback(
+      const v8::WeakCallbackInfo<DeprecatedWrappableBase>& data);
+  static void SecondWeakCallback(
+      const v8::WeakCallbackInfo<DeprecatedWrappableBase>& data);
+
+  bool dead_ = false;
+  v8::Global<v8::Object> wrapper_;  // Weak
+};
+
+template <typename T>
+class DeprecatedWrappable : public DeprecatedWrappableBase {
+ public:
+  DeprecatedWrappable(const DeprecatedWrappable&) = delete;
+  DeprecatedWrappable& operator=(const DeprecatedWrappable&) = delete;
+
+  // Retrieve (or create) the v8 wrapper object corresponding to this object.
+  v8::MaybeLocal<v8::Object> GetWrapper(v8::Isolate* isolate) {
+    return GetWrapperImpl(isolate, &T::kWrapperInfo);
+  }
+
+ protected:
+  DeprecatedWrappable() = default;
+  ~DeprecatedWrappable() override = default;
+};
+
+// This converter handles any subclass of DeprecatedWrappable.
+template <typename T>
+  requires(std::is_convertible_v<T*, DeprecatedWrappableBase*>)
+struct Converter<T*> {
+  static v8::MaybeLocal<v8::Value> ToV8(v8::Isolate* isolate, T* val) {
+    if (val == nullptr)
+      return v8::Null(isolate);
+    v8::Local<v8::Object> wrapper;
+    if (!val->GetWrapper(isolate).ToLocal(&wrapper))
+      return v8::MaybeLocal<v8::Value>();
+    return v8::MaybeLocal<v8::Value>(wrapper);
+  }
+
+  static bool FromV8(v8::Isolate* isolate, v8::Local<v8::Value> val, T** out) {
+    *out = static_cast<T*>(static_cast<DeprecatedWrappableBase*>(
+        internal::FromV8Impl(isolate, val, &T::kWrapperInfo)));
+    return *out != NULL;
+  }
+};
+
 }  // namespace gin
 
 #endif  // GIN_WRAPPABLE_H_

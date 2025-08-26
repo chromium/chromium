@@ -38,16 +38,17 @@ class GIN_EXPORT NamedPropertyInterceptor {
 // Base class for gin::Wrappable-derived classes that want to implement a
 // property interceptor.
 template <typename T>
-class GIN_EXPORT WrappableWithNamedPropertyInterceptor
-    : public Wrappable<T>,
+class GIN_EXPORT DeprecatedWrappableWithNamedPropertyInterceptor
+    : public DeprecatedWrappable<T>,
       public NamedPropertyInterceptor {
  public:
-  WrappableWithNamedPropertyInterceptor() = default;
-  WrappableWithNamedPropertyInterceptor(
-      const WrappableWithNamedPropertyInterceptor&) = delete;
-  WrappableWithNamedPropertyInterceptor& operator=(
-      const WrappableWithNamedPropertyInterceptor&) = delete;
-  ~WrappableWithNamedPropertyInterceptor() override = default;
+  DeprecatedWrappableWithNamedPropertyInterceptor() = default;
+  DeprecatedWrappableWithNamedPropertyInterceptor(
+      const DeprecatedWrappableWithNamedPropertyInterceptor&) = delete;
+  DeprecatedWrappableWithNamedPropertyInterceptor& operator=(
+      const DeprecatedWrappableWithNamedPropertyInterceptor&) = delete;
+  ~DeprecatedWrappableWithNamedPropertyInterceptor() override = default;
+
   NamedPropertyInterceptor* GetNamedPropertyInterceptor() override {
     return static_cast<NamedPropertyInterceptor*>(this);
   }

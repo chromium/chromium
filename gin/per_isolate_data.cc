@@ -68,10 +68,30 @@ PerIsolateData* PerIsolateData::From(Isolate* isolate) {
   return static_cast<PerIsolateData*>(isolate->GetData(kEmbedderNativeGin));
 }
 
+void PerIsolateData::DeprecatedSetObjectTemplate(DeprecatedWrapperInfo* info,
+                                                 Local<ObjectTemplate> templ) {
+  deprecated_object_templates_[info] = Eternal<ObjectTemplate>(isolate_, templ);
+}
+
 void PerIsolateData::SetObjectTemplate(
     const WrapperInfo* info,
     Local<ObjectTemplate> templ) {
   object_templates_[info] = Eternal<ObjectTemplate>(isolate_, templ);
+}
+
+void PerIsolateData::SetFunctionTemplate(DeprecatedWrapperInfo* info,
+                                         Local<FunctionTemplate> templ) {
+  function_templates_[info] = Eternal<FunctionTemplate>(isolate_, templ);
+}
+
+v8::Local<v8::ObjectTemplate> PerIsolateData::DeprecatedGetObjectTemplate(
+    DeprecatedWrapperInfo* info) {
+  DeprecatedObjectTemplateMap::iterator it =
+      deprecated_object_templates_.find(info);
+  if (it == deprecated_object_templates_.end()) {
+    return v8::Local<v8::ObjectTemplate>();
+  }
+  return it->second.Get(isolate_);
 }
 
 v8::Local<v8::ObjectTemplate> PerIsolateData::GetObjectTemplate(
@@ -80,6 +100,14 @@ v8::Local<v8::ObjectTemplate> PerIsolateData::GetObjectTemplate(
   if (it == object_templates_.end()) {
     return v8::Local<v8::ObjectTemplate>();
   }
+  return it->second.Get(isolate_);
+}
+
+v8::Local<v8::FunctionTemplate> PerIsolateData::GetFunctionTemplate(
+    DeprecatedWrapperInfo* info) {
+  FunctionTemplateMap::iterator it = function_templates_.find(info);
+  if (it == function_templates_.end())
+    return v8::Local<v8::FunctionTemplate>();
   return it->second.Get(isolate_);
 }
 

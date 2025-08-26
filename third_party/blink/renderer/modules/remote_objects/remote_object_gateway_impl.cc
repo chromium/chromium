@@ -33,21 +33,22 @@ void RemoteObjectGatewayImpl::InjectNamed(const WTF::String& object_name,
       isolate, ToMicrotaskQueue(script_state),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Context> context = script_state->GetContext();
-  if (context.IsEmpty()) {
+  if (context.IsEmpty())
     return;
-  }
 
   remote_objects_.erase(object_id);
   RemoteObject* object = GetRemoteObject(isolate, object_id);
 
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Object> global = context->Global();
-  v8::Local<v8::Value> controller;
-  if (!gin::ConvertToV8(isolate, object).ToLocal(&controller)) {
-    return;
-  }
+  gin::Handle<RemoteObject> controller = gin::CreateHandle(isolate, object);
 
-  global->Set(context, V8AtomicString(isolate, object_name), controller)
+  // WrappableBase instance deletes itself in case of a wrapper
+  // creation failure, thus there is no need to delete |object|.
+  if (controller.IsEmpty())
+    return;
+
+  global->Set(context, V8AtomicString(isolate, object_name), controller.ToV8())
       .Check();
   object_host_->AcquireObject(object_id);
 }
@@ -57,9 +58,8 @@ void RemoteObjectGatewayImpl::BindMojoReceiver(
     LocalFrame* frame,
     mojo::PendingRemote<mojom::blink::RemoteObjectHost> host,
     mojo::PendingReceiver<mojom::blink::RemoteObjectGateway> receiver) {
-  if (!frame || !frame->IsAttached()) {
+  if (!frame || !frame->IsAttached())
     return;
-  }
 
   DCHECK(!RemoteObjectGatewayImpl::From(*frame));
 
@@ -85,15 +85,13 @@ RemoteObjectGatewayImpl::RemoteObjectGatewayImpl(
 }
 
 void RemoteObjectGatewayImpl::OnClearWindowObjectInMainWorld() {
-  for (const auto& pair : named_objects_) {
+  for (const auto& pair : named_objects_)
     InjectNamed(pair.key, pair.value);
-  }
 }
 
 void RemoteObjectGatewayImpl::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(object_host_);
-  visitor->Trace(remote_objects_);
   Supplement<LocalFrame>::Trace(visitor);
 }
 
@@ -121,11 +119,9 @@ void RemoteObjectGatewayImpl::BindRemoteObjectReceiver(
 void RemoteObjectGatewayImpl::ReleaseObject(int32_t object_id,
                                             RemoteObject* remote_object) {
   auto iter = remote_objects_.find(object_id);
-  // The object may have been released by DidClearWindowObject if a new document
-  // was loaded.
-  if (iter != remote_objects_.end() && iter->value.Get() == remote_object) {
+  CHECK(iter != remote_objects_.end());
+  if (iter->value == remote_object)
     remote_objects_.erase(iter);
-  }
   object_host_->ReleaseObject(object_id);
 }
 
@@ -133,16 +129,13 @@ RemoteObject* RemoteObjectGatewayImpl::GetRemoteObject(v8::Isolate* isolate,
                                                        int32_t object_id) {
   auto iter = remote_objects_.find(object_id);
   if (iter != remote_objects_.end()) {
-    RemoteObject* object = iter->value.Get();
-    CHECK(object);
-    // Decrease a reference count in the browser side when we reuse
-    // RemoteObject getting from the map.
+    // Decrease a reference count in the browser side when we reuse RemoteObject
+    // getting from the map.
     object_host_->ReleaseObject(object_id);
-    return object;
+    return iter->value;
   }
 
-  auto* remote_object = cppgc::MakeGarbageCollected<RemoteObject>(
-      isolate->GetCppHeap()->GetAllocationHandle(), this, object_id);
+  auto* remote_object = new RemoteObject(this, object_id);
   remote_objects_.insert(object_id, remote_object);
   return remote_object;
 }

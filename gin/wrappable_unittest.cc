@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "gin/arguments.h"
+#include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/per_isolate_data.h"
 #include "gin/public/isolate_holder.h"

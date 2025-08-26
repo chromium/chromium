@@ -34,7 +34,6 @@ enum WrappablePointerTag : uint16_t {
   kEventSenderBindings,              // content::EventSenderBindings
   kGamepadControllerBindings,        // content::GameControllerBindings
   kGCController,                     // content::GCController
-  kGinJavaBridgeObject,              // content::GinJavaBridgeObject
   kGinPort,                          // extensions::GinPort
   kGpuBenchmarking,                  // content::GpuBenchmarking
   kJsBinding,                        // js_injection::JsBinding
@@ -45,16 +44,12 @@ enum WrappablePointerTag : uint16_t {
   kMojo,                             // ax::Mojo
   kMojoHandle,                       // ax::MojoHandle
   kMojoWatcher,                      // ax::MojoWatcher
-  kMyInterceptor,                    // gin::MyInterceptor
   kNetErrorPageController,           // NetErrorPageController
   kNewTabPageBindings,               // NewTabPageBindings
   kPDFPluginPlaceholder,             // PDFPluginPlaceholder
   kPluginPlaceholder,                // plugins::PluginPlaceholder
-  kPostMessageReceiver,              // chrome_pdf::PostMessageReceiver
-  kPostMessageScriptableObject,  // extensions::(anonymous)::ScriptableObject
-  kReadAnythingAppController,    // ReadAnythingAppController
-  kRemoteObject,                 // blink::RemoteObject
-  kSearchBoxBindings,            // SearchBoxBindings
+  kReadAnythingAppController,        // ReadAnythingAppController
+  kSearchBoxBindings,                // SearchBoxBindings
   kSecurityInterstitialPageController,  // SecurityInterstitialPageController
   kSessionStorageArea,                  // extensions::SessionStorageArea
   kSharedStorageMethod,                 // auction_worklet::SharedStorageMethod
@@ -65,13 +60,12 @@ enum WrappablePointerTag : uint16_t {
   kTestGinWrappable,                    // GinWrappable
   kTestObject,                          // gin::TestGinObject
   kTestObject2,                         // gin::MyObject2
-  kTestPluginScriptableObject,   // content::(anonymous)::ScriptableObject
-  kTestRunnerBindings,           // content::TestRunnerBindings
-  kTextDecoder,                  // ax::TextDecoder
-  kTextEncoder,                  // ax::TextEncoder
-  kTextInputControllerBindings,  // content::TextInputControllerBindings
-  kWebAXObjectProxy,             // content::WebAXObjectProxy
-  kWrappedExceptionHandler,      // extensions::WrappedExceptionHandler
+  kTestRunnerBindings,                  // content::TestRunnerBindings
+  kTextDecoder,                         // ax::TextDecoder
+  kTextEncoder,                         // ax::TextEncoder
+  kTextInputControllerBindings,         // content::TextInputControllerBindings
+  kWebAXObjectProxy,                    // content::WebAXObjectProxy
+  kWrappedExceptionHandler,             // extensions::WrappedExceptionHandler
   kLastPointerTag = kWrappedExceptionHandler,
 };
 
