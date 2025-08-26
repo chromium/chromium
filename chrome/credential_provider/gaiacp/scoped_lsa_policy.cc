@@ -37,8 +37,7 @@ std::unique_ptr<ScopedLsaPolicy> ScopedLsaPolicy::Create(ACCESS_MASK mask) {
 }
 
 ScopedLsaPolicy::ScopedLsaPolicy(ACCESS_MASK mask) {
-  LSA_OBJECT_ATTRIBUTES oa;
-  UNSAFE_TODO(memset(&oa, 0, sizeof(oa)));
+  LSA_OBJECT_ATTRIBUTES oa = {};
   NTSTATUS sts = ::LsaOpenPolicy(nullptr, &oa, mask, &handle_);
   if (sts != STATUS_SUCCESS) {
     HRESULT hr = HRESULT_FROM_NT(sts);

@@ -82,7 +82,6 @@ class MockUserspaceSwapPolicy : public UserspaceSwapPolicy {
     // Create a simple starting config that can be modified as needed for tests.
     // NOTE: We only initialize the configuration options which are used by the
     // policy.
-    UNSAFE_TODO(memset(&test_config_, 0, sizeof(test_config_)));
 
     test_config_.enabled = true;
     test_config_.graph_walk_frequency = base::Seconds(10);

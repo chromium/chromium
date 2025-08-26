@@ -151,8 +151,7 @@ int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
 
   // We need to accept SIGCHLD, even though our handler is a no-op because
   // otherwise we cannot wait on children. (According to POSIX 2001.)
-  struct sigaction action;
-  UNSAFE_TODO(memset(&action, 0, sizeof(action)));
+  struct sigaction action = {};
   action.sa_handler = SIGCHLDHandler;
   CHECK_EQ(0, sigaction(SIGCHLD, &action, nullptr));
 

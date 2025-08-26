@@ -84,8 +84,6 @@ class WebRtcRtpDumpWriter::FileWorker {
  public:
   explicit FileWorker(const base::FilePath& dump_path) : dump_path_(dump_path) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
-
-    UNSAFE_TODO(memset(&stream_, 0, sizeof(stream_)));
     int result = deflateInit2(&stream_,
                               Z_DEFAULT_COMPRESSION,
                               Z_DEFLATED,
@@ -215,7 +213,7 @@ class WebRtcRtpDumpWriter::FileWorker {
 
     output_buffer.resize(output_buffer.size() - stream_.avail_out);
 
-    UNSAFE_TODO(memset(&stream_, 0, sizeof(z_stream)));
+    stream_ = {};
 
     DCHECK(!output_buffer.empty());
     return base::AppendToFile(dump_path_, output_buffer);
@@ -223,7 +221,7 @@ class WebRtcRtpDumpWriter::FileWorker {
 
   const base::FilePath dump_path_;
 
-  z_stream stream_;
+  z_stream stream_ = {};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -184,7 +184,7 @@ SECStatus NSSDecryptor::PK11SDR_DecryptWithSlot(
   SECStatus rv = SECSuccess;
   PK11SymKey* key = nullptr;
   CK_MECHANISM_TYPE type;
-  SDRResult sdrResult;
+  SDRResult sdrResult = {};
   SECItem* params = nullptr;
   SECItem possibleResult = {siBuffer, nullptr, 0};
   PLArenaPool* arena = nullptr;
@@ -193,7 +193,6 @@ SECStatus NSSDecryptor::PK11SDR_DecryptWithSlot(
   if (!arena) { rv = SECFailure; goto loser; }
 
   /* Decode the incoming data */
-  UNSAFE_TODO(memset(&sdrResult, 0, sizeof sdrResult));
   rv = SEC_QuickDERDecodeItem(arena, &sdrResult, g_template, data);
   if (rv != SECSuccess) goto loser;  /* Invalid format */
 

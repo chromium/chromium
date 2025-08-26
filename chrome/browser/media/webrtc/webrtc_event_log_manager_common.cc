@@ -523,7 +523,7 @@ class GzipLogCompressor : public LogCompressor {
   State state_;
   Budget budget_;
   std::unique_ptr<CompressedSizeEstimator> compressed_size_estimator_;
-  z_stream stream_;
+  z_stream stream_ = {};
 };
 
 GzipLogCompressor::GzipLogCompressor(
@@ -532,7 +532,6 @@ GzipLogCompressor::GzipLogCompressor(
     : state_(State::PRE_HEADER),
       budget_(SizeAfterOverheadReservation(max_size_bytes)),
       compressed_size_estimator_(std::move(compressed_size_estimator)) {
-  UNSAFE_TODO(memset(&stream_, 0, sizeof(z_stream)));
   // Using (MAX_WBITS + 16) triggers the creation of a GZIP header.
   const int result =
       deflateInit2(&stream_, Z_DEFAULT_COMPRESSION, Z_DEFLATED, MAX_WBITS + 16,

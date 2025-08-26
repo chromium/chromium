@@ -47,8 +47,7 @@ bool IsMatch(const std::string& system_host, const std::string& hostname) {
 }
 
 void GetCanonicalHostName(std::vector<std::string>* canonical_host_names) {
-  struct addrinfo hints, *info = nullptr, *p;
-  UNSAFE_TODO(memset(&hints, 0, sizeof(hints)));
+  struct addrinfo hints = {}, *info = nullptr, *p;
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_CANONNAME;
