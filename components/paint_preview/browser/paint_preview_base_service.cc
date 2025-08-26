@@ -112,4 +112,17 @@ void PaintPreviewBaseService::OnCaptured(
   std::move(callback).Run(CaptureStatus::kOk, std::move(result));
 }
 
+std::string ToString(PaintPreviewBaseService::CaptureStatus status) {
+  switch (status) {
+    case PaintPreviewBaseService::CaptureStatus::kOk:
+      return "CaptureStatus::kOk";
+    case PaintPreviewBaseService::CaptureStatus::kContentUnsupported:
+      return "CaptureStatus::kContentUnsupported";
+    case PaintPreviewBaseService::CaptureStatus::kClientCreationFailed:
+      return "CaptureStatus::kClientCreationFailed";
+    case PaintPreviewBaseService::CaptureStatus::kCaptureFailed:
+      return "CaptureStatus::kCaptureFailed";
+  }
+}
+
 }  // namespace paint_preview

@@ -182,8 +182,10 @@ void ActorKeyedService::RequestTabObservation(
             bool has_screenshot = fetch_result.screenshot_result.has_value();
             if (!has_apc || !has_screenshot) {
               std::move(callback).Run(base::unexpected(absl::StrFormat(
-                  "Failed Observation: hasAPC[%g] hasScreenshot[%g]", has_apc,
-                  has_screenshot)));
+                  "Failed Observation: APC[%g] screenshot[%s]", has_apc,
+                  fetch_result.screenshot_result.has_value()
+                      ? std::string("OK")
+                      : fetch_result.screenshot_result.error())));
               return;
             }
 
