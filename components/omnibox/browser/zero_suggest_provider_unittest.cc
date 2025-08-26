@@ -1147,7 +1147,13 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_FALSE(provider_did_notify_);
 }
 
-TEST_F(ZeroSuggestProviderTest, SyncMatchesOnly) {
+// Disabled on iOS due to crbug.com/441269008.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_SyncMatchesOnly DISABLED_SyncMatchesOnly
+#else
+#define MAYBE_SyncMatchesOnly SyncMatchesOnly
+#endif
+TEST_F(ZeroSuggestProviderTest, MAYBE_SyncMatchesOnly) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
