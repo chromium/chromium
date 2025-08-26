@@ -16,9 +16,9 @@
 #include "base/time/time.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
-#include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/mappers.h"
+#include "content/browser/webid/request_service.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/sha2.h"
@@ -39,7 +39,7 @@ std::vector<uint8_t> Sha256(std::string_view data) {
 FederatedSdJwtHandler::FederatedSdJwtHandler(
     const blink::mojom::IdentityProviderRequestOptionsPtr& provider,
     RenderFrameHost& render_frame_host,
-    FederatedAuthRequestImpl* federated_auth_request_impl)
+    webid::RequestService* federated_auth_request_impl)
     : fields_(provider->fields),
       nonce_(provider->nonce),
       config_url_(provider->config->config_url),

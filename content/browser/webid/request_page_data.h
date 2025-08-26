@@ -12,7 +12,10 @@
 #include "url/gurl.h"
 
 namespace content {
-class FederatedAuthRequestImpl;
+
+namespace webid {
+class RequestService;
+}
 
 namespace webid {
 
@@ -22,10 +25,10 @@ class CONTENT_EXPORT RequestPageData : public PageUserData<RequestPageData> {
 
   // The currently pending web identity request, if any.
   // Used to ensure that we do not allow two separate calls on the same page.
-  FederatedAuthRequestImpl* PendingWebIdentityRequest();
+  webid::RequestService* PendingWebIdentityRequest();
   // Sets the pending web identity request, or nullptr when a pending request
   // has finished.
-  void SetPendingWebIdentityRequest(FederatedAuthRequestImpl* request);
+  void SetPendingWebIdentityRequest(webid::RequestService* request);
   // Sets the accounts response time from the User Info API.
   void SetUserInfoAccountsResponseTime(const GURL& idp_url,
                                        const base::TimeTicks& time);
@@ -47,7 +50,7 @@ class CONTENT_EXPORT RequestPageData : public PageUserData<RequestPageData> {
   // Non-null when there is some Web Identity API request currently pending.
   // Used to ensure that we do not allow two separate calls on the same page
   // and to access the currently pending request.
-  raw_ptr<FederatedAuthRequestImpl> pending_web_identity_request_ = nullptr;
+  raw_ptr<webid::RequestService> pending_web_identity_request_ = nullptr;
 
   // Time when the browser receives valid accounts from the IdP via the UserInfo
   // API.

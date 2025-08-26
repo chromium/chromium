@@ -220,7 +220,7 @@ void FederatedAuthDisconnectRequest::OnDisconnectResponse(
     const std::string& account_id) {
   CHECK(callback_);
   // Matches the GrantSharingPermission() call in
-  // FederatedAuthRequestImpl::CompleteTokenRequest(). Note that the IDP origin
+  // RequestService::CompleteTokenRequest(). Note that the IDP origin
   // cannot be an arbitrary origin, but rather needs to be a potentially
   // trustworthy one.
   url::Origin idp_origin = url::Origin::Create(options_->config->config_url);

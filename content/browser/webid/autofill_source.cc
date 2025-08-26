@@ -6,8 +6,8 @@
 
 #include <optional>
 
-#include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/request_page_data.h"
+#include "content/browser/webid/request_service.h"
 
 namespace content::webid {
 
@@ -17,7 +17,7 @@ AutofillSource* AutofillSource::FromPage(content::Page& page) {
                       ->PendingWebIdentityRequest();
 
   if (!request || request->GetMediationRequirement() !=
-                      MediationRequirement::kConditional) {
+                      webid::MediationRequirement::kConditional) {
     return nullptr;
   }
 

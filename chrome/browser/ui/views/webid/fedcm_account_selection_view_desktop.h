@@ -36,7 +36,7 @@ class AccountSelectionViewBase;
 //  * tabs::TabInterface, which represents the tab in which the UI is shown.
 // If either goes away, then this class should be destroyed. This class is owned
 // as a unique_ptr by IdentityDialogController which ensures that the lifetime
-// is scoped to that of FederatedAuthRequestImpl. However, the lifetime must be
+// is scoped to that of RequestService. However, the lifetime must be
 // manually scoped to the tabs::TabInterface. This is done by:
 //  * Registering callbacks on tabs::TabInterface for relevant changes.
 //  * If the tab goes away, Close() is called.

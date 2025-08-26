@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDERATED_AUTH_REQUEST_IMPL_H_
-#define CONTENT_BROWSER_WEBID_FEDERATED_AUTH_REQUEST_IMPL_H_
+#ifndef CONTENT_BROWSER_WEBID_REQUEST_SERVICE_H_
+#define CONTENT_BROWSER_WEBID_REQUEST_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -38,35 +38,35 @@
 
 namespace content {
 
-namespace webid {
-class UserInfoRequest;
-}
-
 class FederatedAuthDisconnectRequest;
 class FederatedIdentityAutoReauthnPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
 
+namespace webid {
+
+class UserInfoRequest;
+
 using blink::mojom::IdentityProviderGetParametersPtr;
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
-using IdentityProviderGetInfo = webid::AccountsFetcher::IdentityProviderGetInfo;
+using IdentityProviderGetInfo = AccountsFetcher::IdentityProviderGetInfo;
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 using RpMode = blink::mojom::RpMode;
 using TokenError = IdentityCredentialTokenError;
 
-// FederatedAuthRequestImpl handles mojo connections from the renderer to
+// RequestService handles mojo connections from the renderer to
 // fulfill WebID-related requests.
 //
 // In practice, it is owned and managed by a RenderFrameHost. It accomplishes
 // that via subclassing DocumentService, which observes the lifecycle of a
 // RenderFrameHost and manages its own memory.
-// Create() creates a self-managed instance of FederatedAuthRequestImpl and
+// Create() creates a self-managed instance of RequestService and
 // binds it to the receiver.
-class CONTENT_EXPORT FederatedAuthRequestImpl
+class CONTENT_EXPORT RequestService
     : public DocumentService<blink::mojom::FederatedAuthRequest>,
-      public FederatedIdentityPermissionContextDelegate::
+      public content::FederatedIdentityPermissionContextDelegate::
           IdpSigninStatusObserver,
       public IdentityRegistryDelegate,
       public webid::AutofillSource {
@@ -75,7 +75,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
-  static FederatedAuthRequestImpl& CreateForTesting(
+  static RequestService& CreateForTesting(
       RenderFrameHost&,
       FederatedIdentityApiPermissionContextDelegate*,
       FederatedIdentityAutoReauthnPermissionContextDelegate*,
@@ -83,10 +83,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       IdentityRegistry*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
-  FederatedAuthRequestImpl(const FederatedAuthRequestImpl&) = delete;
-  FederatedAuthRequestImpl& operator=(const FederatedAuthRequestImpl&) = delete;
+  RequestService(const RequestService&) = delete;
+  RequestService& operator=(const RequestService&) = delete;
 
-  ~FederatedAuthRequestImpl() override;
+  ~RequestService() override;
 
   // blink::mojom::FederatedAuthRequest:
   void RequestToken(std::vector<blink::mojom::IdentityProviderGetParametersPtr>
@@ -218,7 +218,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     return idps_user_tried_to_signin_to_.contains(idp_config_url);
   }
 
-  webid::UseOtherAccountResult ComputeUseOtherAccountResult(
+  UseOtherAccountResult ComputeUseOtherAccountResult(
       blink::mojom::FederatedAuthRequestResult result,
       const std::optional<GURL>& selected_idp_config_url);
 
@@ -230,11 +230,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Called when there is an error in fetching information to show the prompt
   // for a given IDP - `idp_info`, but we do not need to show failure UI for the
   // IDP.
-  void OnFetchDataForIdpFailed(
-      std::unique_ptr<IdentityProviderInfo> idp_info,
-      blink::mojom::FederatedAuthRequestResult result,
-      std::optional<webid::RequestIdTokenStatus> token_status,
-      bool should_delay_callback);
+  void OnFetchDataForIdpFailed(std::unique_ptr<IdentityProviderInfo> idp_info,
+                               blink::mojom::FederatedAuthRequestResult result,
+                               std::optional<RequestIdTokenStatus> token_status,
+                               bool should_delay_callback);
 
   // Called when all of the data needed to display the FedCM prompt has been
   // fetched for `idp_info`. Accounts should be moved instead of copied to this
@@ -266,7 +265,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Return the FedCmMetrics for use by FedCmAccountsFetcher.
   // TODO(crbug.com/417784830): Remove this once code has been refactored and
   // FedCmAccountsFetcher can hold a raw pointer to FedCmMetrics.
-  webid::Metrics* fedcm_metrics() { return fedcm_metrics_.get(); }
+  Metrics* fedcm_metrics() { return fedcm_metrics_.get(); }
 
   // Called when there is an error fetching information to show the prompt for a
   // given IDP, and because of the mismatch this IDP must be present in the
@@ -275,20 +274,20 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void CompleteRequestWithError(
       blink::mojom::FederatedAuthRequestResult result,
-      std::optional<webid::RequestIdTokenStatus> token_status,
+      std::optional<RequestIdTokenStatus> token_status,
       bool should_delay_callback);
 
   // Completes request. Displays a dialog if there is an error and the error is
   // during a fetch triggered by an IdP sign-in status change.
   void CompleteRequest(blink::mojom::FederatedAuthRequestResult result,
-                       std::optional<webid::RequestIdTokenStatus> token_status,
+                       std::optional<RequestIdTokenStatus> token_status,
                        std::optional<TokenError> token_error,
                        const std::optional<GURL>& selected_idp_config_url,
                        const std::string& token,
                        bool should_delay_callback);
 
  private:
-  friend class FederatedAuthRequestImplTest;
+  friend class RequestServiceTest;
 
   struct FetchData {
     FetchData();
@@ -301,13 +300,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     bool did_succeed_for_at_least_one_idp{false};
   };
 
-  FederatedAuthRequestImpl(
-      RenderFrameHost&,
-      FederatedIdentityApiPermissionContextDelegate*,
-      FederatedIdentityAutoReauthnPermissionContextDelegate*,
-      FederatedIdentityPermissionContextDelegate*,
-      IdentityRegistry*,
-      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
+  RequestService(RenderFrameHost&,
+                 FederatedIdentityApiPermissionContextDelegate*,
+                 FederatedIdentityAutoReauthnPermissionContextDelegate*,
+                 FederatedIdentityPermissionContextDelegate*,
+                 IdentityRegistry*,
+                 mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   bool HasPendingRequest() const;
 
@@ -370,7 +368,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                           const std::string& account_id);
 
   void CompleteUserInfoRequest(
-      webid::UserInfoRequest* request,
+      UserInfoRequest* request,
       RequestUserInfoCallback callback,
       blink::mojom::RequestUserInfoStatus status,
       std::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info);
@@ -441,11 +439,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnIdpRegistrationConfigFetched(
       RegisterIdPCallback callback,
       const GURL& idp,
-      std::vector<webid::ConfigFetcher::FetchResult> fetch_results);
+      std::vector<ConfigFetcher::FetchResult> fetch_results);
   void OnRegisterIdPPermissionResponse(RegisterIdPCallback callback,
                                        const GURL& idp,
                                        bool accepted);
-  std::unique_ptr<webid::Metrics> CreateFedCmMetrics();
+  std::unique_ptr<Metrics> CreateFedCmMetrics();
 
   bool IsNewlyLoggedIn(const IdentityRequestAccount& account);
 
@@ -462,7 +460,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Helper that records FedCM UMA and UKM metrics. Initialized in the
   // RequestToken() method, so all metrics must be recorded after that.
-  std::unique_ptr<webid::Metrics> fedcm_metrics_;
+  std::unique_ptr<Metrics> fedcm_metrics_;
 
   // Populated by OnFetchDataForIdpSucceeded() and OnIdpMismatch().
   base::flat_map<GURL, std::unique_ptr<IdentityProviderInfo>> idp_infos_;
@@ -486,7 +484,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Maps the login URL to the info that may be added as query parameters to
   // that URL. Populated by OnAllConfigAndWellKnownFetched().
-  base::flat_map<GURL, webid::IdentityProviderLoginUrlInfo> idp_login_infos_;
+  base::flat_map<GURL, IdentityProviderLoginUrlInfo> idp_login_infos_;
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;
@@ -528,15 +526,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   OnFederatedTokenReceivedCallback token_received_callback_for_autofill_;
 
-  std::unique_ptr<webid::AccountsFetcher> fedcm_accounts_fetcher_;
+  std::unique_ptr<AccountsFetcher> fedcm_accounts_fetcher_;
 
   std::unique_ptr<FederatedSdJwtHandler> federated_sdjwt_handler_;
 
-  std::unique_ptr<webid::IdpRegistrationHandler>
-      fedcm_idp_registration_handler_;
+  std::unique_ptr<IdpRegistrationHandler> fedcm_idp_registration_handler_;
 
   // Set of pending user info requests.
-  base::flat_set<std::unique_ptr<webid::UserInfoRequest>> user_info_requests_;
+  base::flat_set<std::unique_ptr<UserInfoRequest>> user_info_requests_;
 
   // Pending disconnect request.
   std::unique_ptr<FederatedAuthDisconnectRequest> disconnect_request_;
@@ -604,20 +601,21 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Keeps track of the state of the use other account flow. Is std::nullopt
   // when the flow is not active.
-  std::optional<webid::UseOtherAccountResult> use_other_account_account_result_;
+  std::optional<UseOtherAccountResult> use_other_account_account_result_;
 
   // Whether a token request has been sent.
   bool has_sent_token_request_{false};
 
   // Keeps track of the state of the verifying dialog. Is std::nullopt when the
   // verifying dialog has not been shown.
-  std::optional<webid::VerifyingDialogResult> verifying_dialog_result_;
+  std::optional<VerifyingDialogResult> verifying_dialog_result_;
 
   perfetto::NamedTrack perfetto_track_;
 
-  base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<RequestService> weak_ptr_factory_{this};
 };
 
+}  // namespace webid
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_FEDERATED_AUTH_REQUEST_IMPL_H_
+#endif  // CONTENT_BROWSER_WEBID_REQUEST_SERVICE_H_

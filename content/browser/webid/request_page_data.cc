@@ -13,12 +13,11 @@ RequestPageData::~RequestPageData() = default;
 
 PAGE_USER_DATA_KEY_IMPL(RequestPageData);
 
-FederatedAuthRequestImpl* RequestPageData::PendingWebIdentityRequest() {
+RequestService* RequestPageData::PendingWebIdentityRequest() {
   return pending_web_identity_request_;
 }
 
-void RequestPageData::SetPendingWebIdentityRequest(
-    FederatedAuthRequestImpl* request) {
+void RequestPageData::SetPendingWebIdentityRequest(RequestService* request) {
   pending_web_identity_request_ = request;
 }
 

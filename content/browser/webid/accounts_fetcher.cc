@@ -8,9 +8,9 @@
 
 #include "base/containers/contains.h"
 #include "content/browser/webid/config_fetcher.h"
-#include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/mappers.h"
+#include "content/browser/webid/request_service.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
@@ -74,7 +74,7 @@ AccountsFetcher::AccountsFetcher(
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     FedCmFetchingParams params,
-    FederatedAuthRequestImpl* federated_auth_request_impl)
+    RequestService* federated_auth_request_impl)
     : render_frame_host_(render_frame_host),
       network_manager_(network_manager),
       api_permission_delegate_(api_permission_delegate),
@@ -491,7 +491,7 @@ void AccountsFetcher::FilterAccountsWithDomainHint(
     if (account->is_filtered_out) {
       continue;
     }
-    if (domain_hint == FederatedAuthRequestImpl::kWildcardDomainHint) {
+    if (domain_hint == RequestService::kWildcardDomainHint) {
       if (account->domain_hints.empty()) {
         account->is_filtered_out = true;
         continue;

@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/webid/federated_auth_request_impl.h"
+#include "content/browser/webid/request_service.h"
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_auto_reauthn_permission_delegate.h"
@@ -40,7 +40,7 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::StrictMock;
 
-namespace content {
+namespace content::webid {
 
 namespace {
 
@@ -88,11 +88,10 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
 }  // namespace
 
-class FederatedAuthRequestImplRegistryTest
-    : public RenderViewHostImplTestHarness {
+class RequestServiceRegistryTest : public RenderViewHostImplTestHarness {
  protected:
-  FederatedAuthRequestImplRegistryTest() = default;
-  ~FederatedAuthRequestImplRegistryTest() override = default;
+  RequestServiceRegistryTest() = default;
+  ~RequestServiceRegistryTest() override = default;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -109,7 +108,7 @@ class FederatedAuthRequestImplRegistryTest
     mock_identity_registry_ = std::make_unique<NiceMock<MockIdentityRegistry>>(
         web_contents(), /*delegate=*/nullptr, GURL(kIdpUrl));
 
-    federated_auth_request_impl_ = &FederatedAuthRequestImpl::CreateForTesting(
+    federated_auth_request_impl_ = &RequestService::CreateForTesting(
         *main_test_rfh(), test_api_permission_delegate_.get(),
         mock_auto_reauthn_permission_delegate_.get(),
         mock_permission_delegate_.get(), mock_identity_registry_.get(),
@@ -133,7 +132,7 @@ class FederatedAuthRequestImplRegistryTest
   base::test::ScopedFeatureList feature_list_;
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
-  raw_ptr<FederatedAuthRequestImpl> federated_auth_request_impl_;
+  raw_ptr<RequestService> federated_auth_request_impl_;
 
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
   std::unique_ptr<StrictMock<MockPermissionDelegate>> mock_permission_delegate_;
@@ -143,7 +142,7 @@ class FederatedAuthRequestImplRegistryTest
 };
 
 // Test Registering an IdP successfully.
-TEST_F(FederatedAuthRequestImplRegistryTest, RegistersIdPSuccessfully) {
+TEST_F(RequestServiceRegistryTest, RegistersIdPSuccessfully) {
   GURL configURL = GURL(kIdpUrl);
 
   static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
@@ -175,8 +174,7 @@ TEST_F(FederatedAuthRequestImplRegistryTest, RegistersIdPSuccessfully) {
 }
 
 // Test Registering denied without user activation.
-TEST_F(FederatedAuthRequestImplRegistryTest,
-       RegistersIdPDeniedWithoutUserActivation) {
+TEST_F(RequestServiceRegistryTest, RegistersIdPDeniedWithoutUserActivation) {
   GURL configURL = GURL(kIdpUrl);
 
   auto controller =
@@ -198,7 +196,7 @@ TEST_F(FederatedAuthRequestImplRegistryTest,
 }
 
 // Test Registering an IdP without the feature enabled.
-TEST_F(FederatedAuthRequestImplRegistryTest, RegistersWithoutFeature) {
+TEST_F(RequestServiceRegistryTest, RegistersWithoutFeature) {
   GURL configURL = GURL(kIdpUrl);
 
   static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
@@ -214,7 +212,7 @@ TEST_F(FederatedAuthRequestImplRegistryTest, RegistersWithoutFeature) {
 }
 
 // Test Registering a configURL of a different origin.
-TEST_F(FederatedAuthRequestImplRegistryTest, RegistersCrossOriginNotAllowed) {
+TEST_F(RequestServiceRegistryTest, RegistersCrossOriginNotAllowed) {
   GURL configURL = GURL("https://another.example");
 
   static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
@@ -232,7 +230,7 @@ TEST_F(FederatedAuthRequestImplRegistryTest, RegistersCrossOriginNotAllowed) {
 }
 
 // Test Unregistering an IdP without the feature enabled.
-TEST_F(FederatedAuthRequestImplRegistryTest, UnregistersWithoutFeature) {
+TEST_F(RequestServiceRegistryTest, UnregistersWithoutFeature) {
   GURL configURL = GURL(kIdpUrl);
 
   // no call to the mock_permission_delegate_ (which is a strict)
@@ -249,7 +247,7 @@ TEST_F(FederatedAuthRequestImplRegistryTest, UnregistersWithoutFeature) {
 
 // Test Unregistering an IdP with the feature enabled but for a different
 // origin.
-TEST_F(FederatedAuthRequestImplRegistryTest, UnregisterAcrossOrigin) {
+TEST_F(RequestServiceRegistryTest, UnregisterAcrossOrigin) {
   GURL configURL = GURL("https://another.example");
 
   feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
@@ -266,7 +264,7 @@ TEST_F(FederatedAuthRequestImplRegistryTest, UnregisterAcrossOrigin) {
 }
 
 // Test Unregistering an IdP Successfully.
-TEST_F(FederatedAuthRequestImplRegistryTest, UnregistersIdP) {
+TEST_F(RequestServiceRegistryTest, UnregistersIdP) {
   GURL configURL = GURL(kIdpUrl);
 
   feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
@@ -282,4 +280,4 @@ TEST_F(FederatedAuthRequestImplRegistryTest, UnregistersIdP) {
   loop.Run();
 }
 
-}  // namespace content
+}  // namespace content::webid

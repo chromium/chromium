@@ -10,7 +10,10 @@
 
 namespace content {
 
-class FederatedAuthRequestImpl;
+namespace webid {
+class RequestService;
+}
+
 class RenderFrameHost;
 class RenderFrameHostImpl;
 
@@ -38,9 +41,9 @@ class WebTestFedCmManager
                               ClickFedCmDialogButtonCallback) override;
 
  private:
-  // Returns the active FederatedAuthRequestImpl for the current Page,
+  // Returns the active RequestService for the current Page,
   // or nullptr if there isn't one.
-  FederatedAuthRequestImpl* GetAuthRequestImpl();
+  webid::RequestService* GetAuthRequestService();
 
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
 };
