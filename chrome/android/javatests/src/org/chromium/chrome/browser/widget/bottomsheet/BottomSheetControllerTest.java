@@ -47,13 +47,13 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.edge_to_edge.TestEdgeToEdgeController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -68,7 +68,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -1102,49 +1101,5 @@ public class BottomSheetControllerTest {
                 .getBottomSheetBackPressHandler()
                 .getHandleBackPressChangedSupplier()
                 .get();
-    }
-
-    private static class TestEdgeToEdgeController implements EdgeToEdgeController {
-        public int bottomInset;
-
-        @Override
-        public void destroy() {}
-
-        @Override
-        public int getBottomInset() {
-            return bottomInset;
-        }
-
-        @Override
-        public int getBottomInsetPx() {
-            return bottomInset;
-        }
-
-        @Override
-        public int getSystemBottomInsetPx() {
-            return bottomInset;
-        }
-
-        @Override
-        public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {}
-
-        @Override
-        public void unregisterAdjuster(EdgeToEdgePadAdjuster adjuster) {}
-
-        @Override
-        public void registerObserver(ChangeObserver changeObserver) {}
-
-        @Override
-        public void unregisterObserver(ChangeObserver changeObserver) {}
-
-        @Override
-        public boolean isPageOptedIntoEdgeToEdge() {
-            return bottomInset != 0;
-        }
-
-        @Override
-        public boolean isDrawingToEdge() {
-            return bottomInset != 0;
-        }
     }
 }

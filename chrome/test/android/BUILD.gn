@@ -490,6 +490,7 @@ android_library("chrome_java_test_support_common") {
     "javatests/src/org/chromium/chrome/test/util/SadTabRule.java",
     "javatests/src/org/chromium/chrome/test/util/ToolbarUnitTestUtils.java",
     "javatests/src/org/chromium/chrome/test/util/browser/LocationSettingsTestUtil.java",
+    "javatests/src/org/chromium/chrome/test/util/browser/edge_to_edge/TestEdgeToEdgeController.java",
     "javatests/src/org/chromium/chrome/test/util/browser/offlinepages/FakeOfflinePageBridge.java",
     "javatests/src/org/chromium/chrome/test/util/browser/signin/AccountManagerTestRule.java",
     "javatests/src/org/chromium/chrome/test/util/browser/suggestions/SuggestionsDependenciesRule.java",
@@ -518,6 +519,7 @@ android_library("chrome_java_test_support_common") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/thumbnail/generator:java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/util:java",
@@ -556,6 +558,7 @@ android_library("chrome_java_test_support_common") {
     "//third_party/junit",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+    "//ui/edge_to_edge:java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
