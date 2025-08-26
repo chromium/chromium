@@ -154,9 +154,6 @@ bool TestWaylandServerThread::Start() {
     return false;
   if (!wp_pointer_gestures_.Initialize(display_.get()))
     return false;
-  if (!zcr_color_manager_v1_.Initialize(display_.get())) {
-    return false;
-  }
   if (!xdg_activation_v1_.Initialize(display_.get())) {
     return false;
   }

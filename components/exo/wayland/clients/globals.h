@@ -79,7 +79,6 @@ struct Globals {
   Object<zwp_fullscreen_shell_v1> fullscreen_shell;
   Object<zwp_input_timestamps_manager_v1> input_timestamps_manager;
   Object<zcr_vsync_feedback_v1> vsync_feedback;
-  Object<zcr_color_manager_v1> color_manager;
   Object<zcr_stylus_v2> stylus;
   Object<zcr_remote_shell_v1> cr_remote_shell_v1;
   Object<zcr_remote_shell_v2> cr_remote_shell_v2;

@@ -53,19 +53,6 @@ source_set("wayland_server_input_types") {
   deps = [ ":wayland_input_types_impl" ]
 }
 
-source_set("color_manager_util") {
-  sources = [
-    "color_manager_util.cc",
-    "color_manager_util.h",
-  ]
-  public_deps = [
-    "//base",
-    "//components/exo/wayland/protocol:chrome_color_management_protocol",
-    "//third_party/wayland:wayland_server",
-    "//ui/gfx:color_space",
-  ]
-}
-
 source_set("wayland_display_util") {
   sources = [
     "wayland_display_util.cc",

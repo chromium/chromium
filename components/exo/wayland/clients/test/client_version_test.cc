@@ -7,7 +7,6 @@
 #include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <aura-output-management-server-protocol.h>
 #include <aura-shell-server-protocol.h>
-#include <chrome-color-management-server-protocol.h>
 #include <content-type-v1-server-protocol.h>
 #include <cursor-shapes-unstable-v1-server-protocol.h>
 #include <extended-drag-unstable-v1-server-protocol.h>
@@ -85,7 +84,6 @@ struct Globals {
   std::unique_ptr<zcr_secure_output_v1> zcr_secure_output_v1;
   std::unique_ptr<zcr_alpha_compositing_v1> zcr_alpha_compositing_v1;
   std::unique_ptr<zcr_stylus_v2> zcr_stylus_v2;
-  std::unique_ptr<zcr_color_manager_v1> zcr_color_manager_v1;
   std::unique_ptr<zcr_cursor_shapes_v1> zcr_cursor_shapes_v1;
   std::unique_ptr<zcr_gaming_input_v2> zcr_gaming_input_v2;
   std::unique_ptr<zcr_text_input_extension_v1> zcr_text_input_extension_v1;
@@ -186,7 +184,6 @@ void RegistryHandler(void* data,
           REGISTRY_CALLBACK(zcr_secure_output_v1, zcr_secure_output_v1),
           REGISTRY_CALLBACK(zcr_alpha_compositing_v1, zcr_alpha_compositing_v1),
           REGISTRY_CALLBACK(zcr_stylus_v2, zcr_stylus_v2),
-          REGISTRY_CALLBACK(zcr_color_manager_v1, zcr_color_manager_v1),
           REGISTRY_CALLBACK(zcr_cursor_shapes_v1, zcr_cursor_shapes_v1),
           REGISTRY_CALLBACK(zcr_gaming_input_v2, zcr_gaming_input_v2),
           REGISTRY_CALLBACK(zcr_keyboard_configuration_v1,

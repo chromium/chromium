@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/gpu_fence_handle.h"
@@ -26,7 +27,6 @@
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_space.h"
 
 struct wp_content_type_v1;
 struct wp_fractional_scale_v1;
@@ -41,7 +41,6 @@ class WaylandOutput;
 class WaylandWindow;
 class WaylandBufferHandle;
 class WaylandWpColorManagementSurface;
-class WaylandZcrColorManagementSurface;
 
 // Wrapper of a wl_surface, owned by a WaylandWindow or a WlSubsurface.
 class WaylandSurface {
@@ -361,8 +360,6 @@ class WaylandSurface {
   wl::Object<overlay_prioritized_surface> overlay_priority_surface_;
   wl::Object<wp_content_type_v1> content_type_;
   wl::Object<wp_fractional_scale_v1> fractional_scale_;
-  std::unique_ptr<WaylandZcrColorManagementSurface>
-      zcr_color_management_surface_;
   std::unique_ptr<WaylandWpColorManagementSurface> wp_color_management_surface_;
   ExplicitReleaseCallback next_explicit_release_request_;
 
