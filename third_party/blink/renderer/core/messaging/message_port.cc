@@ -417,9 +417,8 @@ void MessagePort::DispatchMessageEvent(BlinkTransferableMessage message) {
       scheduler::TaskAttributionInfo* task_state =
           entangled_port->post_message_task_container_
               ->GetAndDecrementPostMessageTask(message.task_state_id);
-      task_attribution_scope = tracker->CreateTaskScope(
-          task_state,
-          scheduler::TaskAttributionTracker::TaskScopeType::kPostMessage);
+      task_attribution_scope = tracker->SetCurrentTaskStateIfTopLevel(
+          task_state, TaskScopeType::kPostMessage);
     }
   }
 

@@ -62,7 +62,7 @@ class V8IdleTask : public IdleTask {
         task_attribution_scope;
     if (auto* tracker =
             scheduler::TaskAttributionTracker::From(callback_->GetIsolate())) {
-      task_attribution_scope = tracker->CreateTaskScope(
+      task_attribution_scope = tracker->SetCurrentTaskState(
           web_scheduling_task_state_, TaskScopeType::kRequestIdleCallback);
     }
     callback_->InvokeAndReportException(nullptr, deadline);

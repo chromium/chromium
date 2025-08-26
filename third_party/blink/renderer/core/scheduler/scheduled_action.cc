@@ -51,6 +51,21 @@
 
 namespace blink {
 
+namespace {
+scheduler::TaskAttributionInfo* CaptureCurrentTaskState(
+    ScriptState* script_state) {
+  auto* tracker =
+      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
+  if (!tracker) {
+    return nullptr;
+  }
+  if (!script_state->World().IsMainWorld()) {
+    return nullptr;
+  }
+  return tracker->CurrentTaskState();
+}
+}  // namespace
+
 ScheduledAction::ScheduledAction(ScriptState* script_state,
                                  ExecutionContext& target,
                                  V8Function* handler,
@@ -63,11 +78,7 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
           To<LocalDOMWindow>(&target))) {
     function_ = handler;
     arguments_ = arguments;
-    auto* tracker =
-        scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-    if (tracker && script_state->World().IsMainWorld()) {
-      function_->SetTaskState(tracker->CurrentTaskState());
-    }
+    task_state_ = CaptureCurrentTaskState(script_state);
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
   }
@@ -83,11 +94,7 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
           EnteredDOMWindow(script_state->GetIsolate()),
           To<LocalDOMWindow>(&target))) {
     code_ = handler;
-    auto* tracker =
-        scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-    if (tracker && script_state->World().IsMainWorld()) {
-      code_task_state_ = tracker->CurrentTaskState();
-    }
+    task_state_ = CaptureCurrentTaskState(script_state);
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
   }
@@ -127,6 +134,12 @@ void ScheduledAction::Execute(ExecutionContext* context) {
   }
   ScriptState* script_state = script_state_->Get();
 
+  std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope =
+      task_state_
+          ? scheduler::TaskAttributionTracker::From(script_state->GetIsolate())
+                ->SetCurrentTaskStateIfTopLevel(task_state_,
+                                                TaskScopeType::kScheduledAction)
+          : std::nullopt;
   {
     // ExecutionContext::CanExecuteScripts() relies on the current context to
     // determine if it is allowed. Enter the scope here.
@@ -155,18 +168,6 @@ void ScheduledAction::Execute(ExecutionContext* context) {
     // evaluation below.
   }
 
-  // We create a TaskScope, to ensure code strings passed to ScheduledAction
-  // APIs properly track their ancestor as the registering task.
-  std::optional<scheduler::TaskAttributionTracker::TaskScope>
-      task_attribution_scope;
-  auto* tracker =
-      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-  if (tracker && script_state->World().IsMainWorld()) {
-    task_attribution_scope = tracker->CreateTaskScope(
-        code_task_state_,
-        scheduler::TaskAttributionTracker::TaskScopeType::kScheduledAction);
-  }
-
   // We use |SanitizeScriptErrors::kDoNotSanitize| because muted errors flag is
   // not set in https://html.spec.whatwg.org/C/#timer-initialisation-steps
   // TODO(crbug.com/1133238): Plumb base URL etc. from the initializing script.
@@ -182,7 +183,7 @@ void ScheduledAction::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(function_);
   visitor->Trace(arguments_);
-  visitor->Trace(code_task_state_);
+  visitor->Trace(task_state_);
 }
 
 CallbackFunctionBase* ScheduledAction::CallbackFunction() {

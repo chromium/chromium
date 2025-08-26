@@ -30,7 +30,6 @@
 namespace blink {
 
 using TaskScope = scheduler::TaskAttributionTracker::TaskScope;
-using TaskScopeType = scheduler::TaskAttributionTracker::TaskScopeType;
 
 class SoftNavigationHeuristicsTest : public testing::Test {
  protected:
@@ -138,8 +137,9 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
   // Simulate a descendant task.
   Persistent<scheduler::TaskAttributionInfo> descendant_task_state = nullptr;
   {
-    TaskScope task_scope =
-        tracker->CreateTaskScope(root_task_state, TaskScopeType::kCallback);
+    std::optional<TaskScope> task_scope =
+        tracker->SetCurrentTaskStateIfTopLevel(root_task_state,
+                                               TaskScopeType::kCallback);
     descendant_task_state = tracker->CurrentTaskState();
   }
   EXPECT_TRUE(descendant_task_state);
@@ -285,7 +285,8 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
   // Simulate another task for the same context, which does a second soft-nav
   {
     std::optional<TaskScope> task_scope =
-        tracker->MaybeCreateTaskScopeForCallback(task_state);
+        tracker->SetCurrentTaskStateIfTopLevel(task_state,
+                                               TaskScopeType::kCallback);
     EXPECT_EQ(tracker->CurrentTaskState()->GetSoftNavigationContext(), context);
     heuristics->SameDocumentNavigationCommitted("bar.html", context);
     heuristics->ModifiedDOM(node2);
@@ -335,7 +336,8 @@ TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigation) {
   std::optional<scheduler::TaskAttributionId> navigation_task_id;
   {
     std::optional<TaskScope> task_scope =
-        tracker->MaybeCreateTaskScopeForCallback(task_state);
+        tracker->SetCurrentTaskStateIfTopLevel(task_state,
+                                               TaskScopeType::kCallback);
     navigation_task_id = tracker->AsyncSameDocumentNavigationStarted();
   }
   ASSERT_TRUE(navigation_task_id);

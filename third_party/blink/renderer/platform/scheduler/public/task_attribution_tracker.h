@@ -97,23 +97,20 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
   virtual ~TaskAttributionTracker() = default;
 
-  // Creates a new `TaskScope` to propagate `task_state` to descendant tasks and
-  // continuations.
-  virtual TaskScope CreateTaskScope(TaskAttributionInfo* task_state,
-                                    TaskScopeType type) = 0;
-
-  // Create a new `TaskScope` to propagate the given `SoftNavigationContext`,
-  // initiating propagation for the context.
-  virtual TaskScope CreateTaskScope(SoftNavigationContext*) = 0;
-
-  // Returns a new `TaskScope` initiating propagation of `task_state`, making it
-  // the current task state as long as that scope is the topmost on the stack,
-  // if `task_state` is non-null and JavaScript is not currently executing.
-  // Returns std::nullopt otherwise.
+  // Sets `task_state` as the current task state if `task_state` is non-null and
+  // JavaScript is not currently executing. Returns a `TaskScope`  initiating
+  // propagation for `task_state` if the current task state was updated, making
+  // it the current task state as long as the `TaskScope` it returns is the
+  // topmost `TaskScope` on the stack. Otherwise returns std::nullopt.
+  //
+  // This method is used to propagate existing (unchanged) state through async
+  // APIs. This should be used in cases where the propagation might be overwrite
+  // existing state, e.g. synchronous event dispatch or synchronous <script>
+  // execution.
   //
   // Note: This returns std::nullopt if a v8::Context was entered before calling
   // this, so care must be taken about ordering.
-  virtual std::optional<TaskScope> CreateTaskScopeIfTopLevel(
+  virtual std::optional<TaskScope> SetCurrentTaskStateIfTopLevel(
       TaskAttributionInfo* task_state,
       TaskScopeType type) = 0;
 
@@ -124,17 +121,17 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // This should only be used for prioritized tasks associated with web
   // scheduling APIs (scheduler.postTask() and requestIdleCallback()), and this
   // is not allowed to be called with JavaScript on the stack.
-  //
-  // TODO(crbug.com/40265789): Remove this and use `CreateTaskScopeIfTopLevel()`
-  // everywhere.
-  virtual TaskScope CreateTaskScope(WebSchedulingTaskState*,
-                                    TaskScopeType type) = 0;
+  virtual TaskScope SetCurrentTaskState(WebSchedulingTaskState* task_state,
+                                        TaskScopeType type) = 0;
 
-  // Conditionally create a `TaskScope` for a generic v8 callback. A `TaskScope`
-  // is always created if `task_state` is non-null, and one is additionally
-  // created if there isn't an active `TaskScope`.
-  virtual std::optional<TaskScope> MaybeCreateTaskScopeForCallback(
-      TaskAttributionInfo* task_state) = 0;
+  // Initiates propagation of the given `SoftNavigationContext`, which will be
+  // propagated to (promise) continuations and through async APIs participating
+  // in task attribution while the returned `TaskScope` is the topmost on the
+  // stack.
+  //
+  // This is used to set an individual `TaskAttributionInfo` variable, forking
+  // the existing `CurrentTaskState()` if necessary.
+  virtual TaskScope SetTaskStateVariable(SoftNavigationContext*) = 0;
 
   // Get the `TaskAttributionInfo` for the currently running task.
   virtual TaskAttributionInfo* CurrentTaskState() const = 0;
@@ -145,11 +142,13 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // task state, if any.
   virtual std::optional<scheduler::TaskAttributionId>
   AsyncSameDocumentNavigationStarted() = 0;
+
   // Returns the task state for the `TaskAttributionId`, which is associated
   // with a same-document navigation. Clears the tracked task state associated
   // with this and any previous pending same-document navigations.
   virtual TaskAttributionInfo* CommitSameDocumentNavigation(
       TaskAttributionId) = 0;
+
   // Clears all tracked task state associated with same-document navigations.
   virtual void ResetSameDocumentNavigationTasks() = 0;
 

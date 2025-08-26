@@ -67,7 +67,7 @@ std::unique_ptr<TaskAttributionTracker> TaskAttributionTrackerImpl::Create(
 }
 
 TaskAttributionTrackerImpl::TaskAttributionTrackerImpl(v8::Isolate* isolate)
-    : next_task_id_(0), isolate_(isolate) {
+    : isolate_(isolate) {
   CHECK(isolate_);
 }
 
@@ -77,38 +77,46 @@ scheduler::TaskAttributionInfo* TaskAttributionTrackerImpl::CurrentTaskState()
           TaskAttributionTaskState::GetCurrent(isolate_)) {
     return task_state->GetTaskAttributionInfo();
   }
-  // There won't be a running task outside of a `TaskScope` or microtask
-  // checkpoint.
+  // There won't be any task state in CPED outside of a `TaskScope` or microtask
+  // checkpoint, or if there is nothing to propagate.
   return nullptr;
 }
 
-TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
+std::optional<TaskAttributionTracker::TaskScope>
+TaskAttributionTrackerImpl::SetCurrentTaskStateIfTopLevel(
     TaskAttributionInfo* task_state,
     TaskScopeType type) {
-  return CreateTaskScopeImpl(UnsafeTo<TaskAttributionInfoImpl>(task_state),
-                             type);
+  // Don't propagate `task_state` if JavaScript is running, e.g. if dispatching
+  // a synchronous event.
+  if (!task_state || isolate_->InContext()) {
+    return std::nullopt;
+  }
+  return SetCurrentTaskStateImpl(UnsafeTo<TaskAttributionInfoImpl>(task_state),
+                                 type);
 }
 
-TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
-    SoftNavigationContext* soft_navigation_context) {
-  next_task_id_ = next_task_id_.NextId();
-  auto* task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
-      next_task_id_, soft_navigation_context);
-  return CreateTaskScopeImpl(task_state, TaskScopeType::kSoftNavigation);
-}
-
-TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
+TaskAttributionTracker::TaskScope
+TaskAttributionTrackerImpl::SetCurrentTaskState(
     WebSchedulingTaskState* task_state,
     TaskScopeType type) {
   CHECK(task_state);
   // Web scheduling tasks are top-level entry points that should not run in
   // nested event loops, so there should be no current task state.
   DCHECK(!TaskAttributionTaskState::GetCurrent(isolate_));
-  return CreateTaskScopeImpl(task_state, type);
+  return SetCurrentTaskStateImpl(task_state, type);
 }
 
 TaskAttributionTracker::TaskScope
-TaskAttributionTrackerImpl::CreateTaskScopeImpl(
+TaskAttributionTrackerImpl::SetTaskStateVariable(
+    SoftNavigationContext* soft_navigation_context) {
+  auto* task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
+      next_task_id_, soft_navigation_context);
+  next_task_id_ = next_task_id_.NextId();
+  return SetCurrentTaskStateImpl(task_state, TaskScopeType::kSoftNavigation);
+}
+
+TaskAttributionTracker::TaskScope
+TaskAttributionTrackerImpl::SetCurrentTaskStateImpl(
     TaskAttributionTaskState* task_state,
     TaskScopeType type) {
   TaskAttributionTaskState* previous_task_state =
@@ -128,29 +136,6 @@ TaskAttributionTrackerImpl::CreateTaskScopeImpl(
       });
 
   return TaskScope(this, previous_task_state);
-}
-
-std::optional<TaskAttributionTracker::TaskScope>
-TaskAttributionTrackerImpl::MaybeCreateTaskScopeForCallback(
-    TaskAttributionInfo* task_state) {
-  // Always create a `TaskScope` if there's `task_state` to propagate.
-  if (task_state) {
-    return CreateTaskScope(task_state, TaskScopeType::kCallback);
-  }
-
-  return std::nullopt;
-}
-
-std::optional<TaskAttributionTracker::TaskScope>
-TaskAttributionTrackerImpl::CreateTaskScopeIfTopLevel(
-    TaskAttributionInfo* task_state,
-    TaskScopeType type) {
-  // Don't propagate `task_state` if JavaScript is running, e.g. if dispatching
-  // a synchronous event.
-  if (!task_state || isolate_->InContext()) {
-    return std::nullopt;
-  }
-  return CreateTaskScope(task_state, type);
 }
 
 void TaskAttributionTrackerImpl::OnTaskScopeDestroyed(

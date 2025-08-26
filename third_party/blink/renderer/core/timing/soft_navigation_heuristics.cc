@@ -670,8 +670,8 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
                                                 type, is_nested);
   }
   return SoftNavigationHeuristics::EventScope(
-      this, tracker->CreateTaskScope(active_interaction_context_.Get()), type,
-      is_nested);
+      this, tracker->SetTaskStateVariable(active_interaction_context_.Get()),
+      type, is_nested);
 }
 
 std::optional<SoftNavigationHeuristics::EventScope>

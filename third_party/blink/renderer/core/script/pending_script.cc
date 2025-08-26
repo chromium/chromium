@@ -167,7 +167,7 @@ void PendingScript::ExecuteScriptBlock() {
       task_attribution_scope;
   if (auto* tracker =
           scheduler::TaskAttributionTracker::From(context->GetIsolate())) {
-    task_attribution_scope = tracker->CreateTaskScopeIfTopLevel(
+    task_attribution_scope = tracker->SetCurrentTaskStateIfTopLevel(
         task_state_, TaskScopeType::kScriptExecution);
   }
 

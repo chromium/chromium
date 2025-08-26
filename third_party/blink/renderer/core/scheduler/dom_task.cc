@@ -175,7 +175,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   auto* tracker =
       scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
   if (tracker) {
-    task_attribution_scope = tracker->CreateTaskScope(
+    task_attribution_scope = tracker->SetCurrentTaskState(
         web_scheduling_task_state_, TaskScopeType::kSchedulerPostTask);
   } else {
     TaskAttributionTaskState::SetCurrent(script_state->GetIsolate(),

@@ -2090,8 +2090,8 @@ XMLHttpRequest::MaybeCreateTaskAttributionScope() {
   auto* tracker = scheduler::TaskAttributionTracker::From(
       GetExecutionContext()->GetIsolate());
   CHECK(tracker);
-  return tracker->CreateTaskScopeIfTopLevel(task_state_,
-                                            TaskScopeType::kXMLHttpRequest);
+  return tracker->SetCurrentTaskStateIfTopLevel(task_state_,
+                                                TaskScopeType::kXMLHttpRequest);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const XMLHttpRequest* xhr) {

@@ -182,23 +182,21 @@ bool IsRunningMicrotasks(ScriptState* script_state) {
   return v8::MicrotasksScope::IsRunningMicrotasks(script_state->GetIsolate());
 }
 
-void SetCurrentTaskAsCallbackParent(
-    CallbackFunctionWithTaskAttributionBase* callback) {
-  ScriptState* script_state = callback->CallbackRelevantScriptState();
-  auto* tracker =
-      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-  if (tracker && script_state->World().IsMainWorld()) {
-    callback->SetTaskState(tracker->CurrentTaskState());
-  }
-}
-
 int RequestAnimationFrame(Document* document,
                           V8FrameRequestCallback* callback,
                           bool legacy) {
   // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
   // impact is understood.
   SyncScrollAttemptHeuristic::DidRequestAnimationFrame();
-  SetCurrentTaskAsCallbackParent(callback);
+
+  ScriptState* script_state = callback->CallbackRelevantScriptState();
+  if (auto* tracker =
+          scheduler::TaskAttributionTracker::From(script_state->GetIsolate())) {
+    if (script_state->World().IsMainWorld()) {
+      callback->SetTaskState(tracker->CurrentTaskState());
+    }
+  }
+
   auto* frame_callback = MakeGarbageCollected<V8FrameCallback>(callback);
   frame_callback->SetUseLegacyTimeBase(legacy);
   return document->RequestAnimationFrame(frame_callback);
@@ -1016,9 +1014,8 @@ void LocalDOMWindow::DispatchPopstateEvent(
       task_attribution_scope;
   if (task_state) {
     if (auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate())) {
-      task_attribution_scope = tracker->CreateTaskScope(
-          task_state,
-          scheduler::TaskAttributionTracker::TaskScopeType::kPopState);
+      task_attribution_scope = tracker->SetCurrentTaskStateIfTopLevel(
+          task_state, TaskScopeType::kPopState);
     }
   }
   DispatchEvent(*PopStateEvent::Create(std::move(state_object), history(),
@@ -1317,9 +1314,8 @@ void LocalDOMWindow::DispatchPostMessage(
   if (task_state) {
     auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate());
     CHECK(tracker);
-    task_attribution_scope = tracker->CreateTaskScope(
-        task_state,
-        scheduler::TaskAttributionTracker::TaskScopeType::kPostMessage);
+    task_attribution_scope = tracker->SetCurrentTaskStateIfTopLevel(
+        task_state, TaskScopeType::kPostMessage);
   }
   DispatchMessageEventWithOriginCheck(intended_target_origin.get(), event,
                                       location, source_agent_cluster_id);

@@ -68,8 +68,8 @@ MaybeCreateTaskAttributionScope(ExecutionContext* context,
   auto* tracker =
       scheduler::TaskAttributionTracker::From(context->GetIsolate());
   CHECK(tracker);
-  return tracker->CreateTaskScopeIfTopLevel(task_state,
-                                            TaskScopeType::kMiscEvent);
+  return tracker->SetCurrentTaskStateIfTopLevel(task_state,
+                                                TaskScopeType::kMiscEvent);
 }
 
 }  // namespace
