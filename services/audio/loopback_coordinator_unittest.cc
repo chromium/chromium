@@ -7,6 +7,7 @@
 #include <set>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/unguessable_token.h"
 #include "services/audio/loopback_source.h"
@@ -104,7 +105,7 @@ TEST_F(LoopbackCoordinatorTest, RemovedObserverReceivesNoNotifications) {
   coordinator_.RemoveMember(&source);
 }
 
-TEST_F(LoopbackCoordinatorTest, ForEachMemberIteratesOverAllMembers) {
+TEST_F(LoopbackCoordinatorTest, ForEachSourceIteratesOverAllMembers) {
   MockLoopbackSource source1, source2, source3;
   coordinator_.AddMember(base::UnguessableToken::Create(), &source1);
   coordinator_.AddMember(base::UnguessableToken::Create(), &source2);
@@ -130,7 +131,7 @@ TEST_F(LoopbackCoordinatorTest, ForEachMemberIteratesOverAllMembers) {
   coordinator_.RemoveMember(&source3);
 }
 
-TEST_F(LoopbackCoordinatorTest, ForEachMemberOnEmptyCoordinatorIsNoOp) {
+TEST_F(LoopbackCoordinatorTest, ForEachSourceOnEmptyCoordinatorIsNoOp) {
   bool callback_was_run = false;
   coordinator_.ForEachMember(base::BindRepeating(
       [](bool* was_run, const LoopbackCoordinator::Member& member) {
@@ -141,10 +142,14 @@ TEST_F(LoopbackCoordinatorTest, ForEachMemberOnEmptyCoordinatorIsNoOp) {
   EXPECT_FALSE(callback_was_run);
 }
 
-class MockObserverCallbacks {
+// Mock listener for LoopbackGroupObserver events.
+class MockListener : public LoopbackGroupObserver::Listener {
  public:
-  MOCK_METHOD(void, OnSourceAdded, (LoopbackSource*));
-  MOCK_METHOD(void, OnSourceRemoved, (LoopbackSource*));
+  MockListener() = default;
+  ~MockListener() override = default;
+
+  MOCK_METHOD(void, OnSourceAdded, (LoopbackSource*), (override));
+  MOCK_METHOD(void, OnSourceRemoved, (LoopbackSource*), (override));
 };
 
 class LoopbackGroupObserverTest : public testing::Test {
@@ -153,74 +158,67 @@ class LoopbackGroupObserverTest : public testing::Test {
   ~LoopbackGroupObserverTest() override = default;
 
  protected:
-  // Helper function to create a LoopbackGroupObserver with mock callbacks.
-  std::unique_ptr<LoopbackGroupObserver> CreateObserver(
-      const base::UnguessableToken& group_id,
-      MockObserverCallbacks* callbacks) {
-    return std::make_unique<LoopbackGroupObserver>(
-        &coordinator_, group_id,
-        base::BindRepeating(&MockObserverCallbacks::OnSourceAdded,
-                            base::Unretained(callbacks)),
-        base::BindRepeating(&MockObserverCallbacks::OnSourceRemoved,
-                            base::Unretained(callbacks)));
-  }
-
   LoopbackCoordinator coordinator_;
 };
 
-// Test that the OnSourceAdded callback is invoked when a member of the
+// Test that the OnSourceAdded listener is invoked when a member of the
 // correct group is added.
-TEST_F(LoopbackGroupObserverTest, OnSourceAdded_MatchingGroupId) {
+TEST_F(LoopbackGroupObserverTest, MatchingObserver_OnSourceAdded) {
   const auto group_id = base::UnguessableToken::Create();
-  StrictMock<MockObserverCallbacks> callbacks;
-  auto observer = CreateObserver(group_id, &callbacks);
+  StrictMock<MockListener> listener;
+  auto observer = LoopbackGroupObserver::CreateMatchingGroupObserver(
+      &coordinator_, group_id);
   MockLoopbackSource source;
 
-  EXPECT_CALL(callbacks, OnSourceAdded(&source)).Times(1);
+  EXPECT_CALL(listener, OnSourceAdded(&source)).Times(1);
 
-  observer->StartObserving();
+  observer->StartObserving(&listener);
   coordinator_.AddMember(group_id, &source);
+
+  // Cleanup
   observer->StopObserving();
   coordinator_.RemoveMember(&source);
 }
 
-// Test that the OnSourceRemoved callback is invoked when a member of the
+// Test that the OnSourceRemoved listener is invoked when a member of the
 // correct group is removed.
-TEST_F(LoopbackGroupObserverTest, OnSourceRemoved_MatchingGroupId) {
+TEST_F(LoopbackGroupObserverTest, MatchingObserver_OnSourceRemoved) {
   const auto group_id = base::UnguessableToken::Create();
-  StrictMock<MockObserverCallbacks> callbacks;
-  auto observer = CreateObserver(group_id, &callbacks);
+  StrictMock<MockListener> listener;
+  auto observer = LoopbackGroupObserver::CreateMatchingGroupObserver(
+      &coordinator_, group_id);
   MockLoopbackSource source;
 
   coordinator_.AddMember(group_id, &source);
 
-  EXPECT_CALL(callbacks, OnSourceRemoved(&source)).Times(1);
+  EXPECT_CALL(listener, OnSourceRemoved(&source)).Times(1);
 
-  observer->StartObserving();
+  observer->StartObserving(&listener);
   coordinator_.RemoveMember(&source);
 }
 
-// Test that the OnSourceAdded/Rmoved callback is NOT invoked when a member of a
-// different group is added/removed.
-TEST_F(LoopbackGroupObserverTest, OnSourceAddedRemoved_NonMatchingGroupId) {
+// Test that the listener is NOT invoked when a member of a different group is
+// added/removed.
+TEST_F(LoopbackGroupObserverTest, MatchingObserver_NonMatchingGroupId) {
   const auto group_id1 = base::UnguessableToken::Create();
   const auto group_id2 = base::UnguessableToken::Create();
-  StrictMock<MockObserverCallbacks> callbacks;
-  auto observer = CreateObserver(group_id1, &callbacks);
+  StrictMock<MockListener> listener;
+  auto observer = LoopbackGroupObserver::CreateMatchingGroupObserver(
+      &coordinator_, group_id1);
   MockLoopbackSource source;
 
-  // StrictMock ensures norifications are not propagated.
-  observer->StartObserving();
+  // StrictMock ensures notifications are not propagated.
+  observer->StartObserving(&listener);
   coordinator_.AddMember(group_id2, &source);
   coordinator_.RemoveMember(&source);
 }
 
-// Test that ForEachMember iterates only over members of the observer's group.
-TEST_F(LoopbackGroupObserverTest, ForEachMember) {
+// Test that ForEachSource iterates only over members of the observer's group.
+TEST_F(LoopbackGroupObserverTest, MatchingObserver_ForEachSource) {
   const auto group_id1 = base::UnguessableToken::Create();
   const auto group_id2 = base::UnguessableToken::Create();
-  StrictMock<MockObserverCallbacks> callbacks;
-  auto observer = CreateObserver(group_id1, &callbacks);
+  auto observer = LoopbackGroupObserver::CreateMatchingGroupObserver(
+      &coordinator_, group_id1);
 
   MockLoopbackSource source1_1, source1_2, source2_1;
   coordinator_.AddMember(group_id1, &source1_1);
@@ -228,7 +226,7 @@ TEST_F(LoopbackGroupObserverTest, ForEachMember) {
   coordinator_.AddMember(group_id1, &source1_2);
 
   std::vector<LoopbackSource*> found_sources;
-  observer->ForEachMember(base::BindRepeating(
+  observer->ForEachSource(base::BindRepeating(
       [](std::vector<LoopbackSource*>* found_sources, LoopbackSource* source) {
         found_sources->push_back(source);
       },
@@ -237,19 +235,21 @@ TEST_F(LoopbackGroupObserverTest, ForEachMember) {
   EXPECT_THAT(found_sources,
               testing::UnorderedElementsAre(&source1_1, &source1_2));
 
+  // Cleanup.
   coordinator_.RemoveMember(&source1_1);
   coordinator_.RemoveMember(&source2_1);
   coordinator_.RemoveMember(&source1_2);
 }
 
 // Test that no notifications are received after StopObserving() is called.
-TEST_F(LoopbackGroupObserverTest, StopObserving) {
+TEST_F(LoopbackGroupObserverTest, MatchingObserver_StopObserving) {
   const auto group_id = base::UnguessableToken::Create();
-  StrictMock<MockObserverCallbacks> callbacks;
-  auto observer = CreateObserver(group_id, &callbacks);
+  StrictMock<MockListener> listener;
+  auto observer = LoopbackGroupObserver::CreateMatchingGroupObserver(
+      &coordinator_, group_id);
   MockLoopbackSource source;
 
-  observer->StartObserving();
+  observer->StartObserving(&listener);
   observer->StopObserving();
 
   // StrictMock ensures norifications are not propagated.
@@ -258,13 +258,14 @@ TEST_F(LoopbackGroupObserverTest, StopObserving) {
 }
 
 // Test that the observer correctly unregisters itself upon destruction.
-TEST_F(LoopbackGroupObserverTest, Destruction) {
+TEST_F(LoopbackGroupObserverTest, MatchingObserver_Destruction) {
   const auto group_id = base::UnguessableToken::Create();
-  StrictMock<MockObserverCallbacks> callbacks;
-  auto observer = CreateObserver(group_id, &callbacks);
+  StrictMock<MockListener> listener;
+  auto observer = LoopbackGroupObserver::CreateMatchingGroupObserver(
+      &coordinator_, group_id);
   MockLoopbackSource source;
 
-  observer->StartObserving();
+  observer->StartObserving(&listener);
   observer.reset();  // Destroy the observer.
 
   // No crash should occur here, and no mock methods should be called.
@@ -275,24 +276,26 @@ TEST_F(LoopbackGroupObserverTest, Destruction) {
 // Test that an observer handles members that existed before it started
 // observing. It should not receive add notifications for them, but should
 // be able to iterate over them.
-TEST_F(LoopbackGroupObserverTest, ObservesPreExistingMembers) {
+TEST_F(LoopbackGroupObserverTest, MatchingObserver_ObservesPreExistingMembers) {
   const auto group_id = base::UnguessableToken::Create();
-  StrictMock<MockObserverCallbacks> callbacks;
+  StrictMock<MockListener> listener;
+
   MockLoopbackSource source1, source2;
 
   // Add a member before the observer starts.
   coordinator_.AddMember(group_id, &source1);
 
-  auto observer = CreateObserver(group_id, &callbacks);
+  auto observer = LoopbackGroupObserver::CreateMatchingGroupObserver(
+      &coordinator_, group_id);
 
   // The observer should not be notified of pre-existing members.
-  EXPECT_CALL(callbacks, OnSourceAdded(_)).Times(0);
-  observer->StartObserving();
-  testing::Mock::VerifyAndClearExpectations(&callbacks);
+  EXPECT_CALL(listener, OnSourceAdded(_)).Times(0);
+  observer->StartObserving(&listener);
+  testing::Mock::VerifyAndClearExpectations(&listener);
 
   // But it should be able to iterate over them.
   std::vector<LoopbackSource*> found_sources;
-  observer->ForEachMember(base::BindRepeating(
+  observer->ForEachSource(base::BindRepeating(
       [](std::vector<LoopbackSource*>* found_sources, LoopbackSource* source) {
         found_sources->push_back(source);
       },
@@ -300,7 +303,7 @@ TEST_F(LoopbackGroupObserverTest, ObservesPreExistingMembers) {
   EXPECT_THAT(found_sources, testing::ElementsAre(&source1));
 
   // And it should be notified of new members.
-  EXPECT_CALL(callbacks, OnSourceAdded(&source2)).Times(1);
+  EXPECT_CALL(listener, OnSourceAdded(&source2)).Times(1);
   coordinator_.AddMember(group_id, &source2);
 
   observer->StopObserving();
@@ -311,50 +314,114 @@ TEST_F(LoopbackGroupObserverTest, ObservesPreExistingMembers) {
 // Test that multiple observers on the same group all receive notifications.
 TEST_F(LoopbackGroupObserverTest, MultipleObserversOnSameGroup) {
   const auto group_id = base::UnguessableToken::Create();
-  StrictMock<MockObserverCallbacks> callbacks1, callbacks2;
-  auto observer1 = CreateObserver(group_id, &callbacks1);
-  auto observer2 = CreateObserver(group_id, &callbacks2);
+  StrictMock<MockListener> listener1, listener2;
+  auto observer1 = LoopbackGroupObserver::CreateMatchingGroupObserver(
+      &coordinator_, group_id);
+  auto observer2 = LoopbackGroupObserver::CreateMatchingGroupObserver(
+      &coordinator_, group_id);
   MockLoopbackSource source;
 
-  observer1->StartObserving();
-  observer2->StartObserving();
+  observer1->StartObserving(&listener1);
+  observer2->StartObserving(&listener2);
 
-  EXPECT_CALL(callbacks1, OnSourceAdded(&source)).Times(1);
-  EXPECT_CALL(callbacks2, OnSourceAdded(&source)).Times(1);
+  EXPECT_CALL(listener1, OnSourceAdded(&source)).Times(1);
+  EXPECT_CALL(listener2, OnSourceAdded(&source)).Times(1);
   coordinator_.AddMember(group_id, &source);
-  testing::Mock::VerifyAndClearExpectations(&callbacks1);
-  testing::Mock::VerifyAndClearExpectations(&callbacks2);
+  testing::Mock::VerifyAndClearExpectations(&listener1);
+  testing::Mock::VerifyAndClearExpectations(&listener2);
 
-  EXPECT_CALL(callbacks1, OnSourceRemoved(&source)).Times(1);
-  EXPECT_CALL(callbacks2, OnSourceRemoved(&source)).Times(1);
+  EXPECT_CALL(listener1, OnSourceRemoved(&source)).Times(1);
+  EXPECT_CALL(listener2, OnSourceRemoved(&source)).Times(1);
   coordinator_.RemoveMember(&source);
 }
 
 // Test that calling StartObserving and StopObserving multiple times is safe.
 TEST_F(LoopbackGroupObserverTest, StartAndStopObservingIsRobust) {
   const auto group_id = base::UnguessableToken::Create();
-  StrictMock<MockObserverCallbacks> callbacks;
-  auto observer = CreateObserver(group_id, &callbacks);
+  StrictMock<MockListener> listener;
+  auto observer = LoopbackGroupObserver::CreateMatchingGroupObserver(
+      &coordinator_, group_id);
   MockLoopbackSource source1, source2;
 
   // Multiple starts should be fine.
-  observer->StartObserving();
-  observer->StartObserving();
+  observer->StartObserving(&listener);
+  observer->StartObserving(&listener);
 
-  EXPECT_CALL(callbacks, OnSourceAdded(&source1)).Times(1);
+  EXPECT_CALL(listener, OnSourceAdded(&source1)).Times(1);
   coordinator_.AddMember(group_id, &source1);
-  testing::Mock::VerifyAndClearExpectations(&callbacks);
+  testing::Mock::VerifyAndClearExpectations(&listener);
 
   // Multiple stops should be fine.
   observer->StopObserving();
   observer->StopObserving();
 
   // No notifications should be received after stopping.
-  EXPECT_CALL(callbacks, OnSourceAdded(_)).Times(0);
-  EXPECT_CALL(callbacks, OnSourceRemoved(_)).Times(0);
+  EXPECT_CALL(listener, OnSourceAdded(_)).Times(0);
+  EXPECT_CALL(listener, OnSourceRemoved(_)).Times(0);
   coordinator_.AddMember(group_id, &source2);
   coordinator_.RemoveMember(&source1);
   coordinator_.RemoveMember(&source2);
+}
+
+// Test that listener is NOT invoked for the excluded group.
+TEST_F(LoopbackGroupObserverTest, ExcludingObserver_OnSourceAdded_Excluded) {
+  const auto group_id_to_exclude = base::UnguessableToken::Create();
+  StrictMock<MockListener> listener;
+  auto observer = LoopbackGroupObserver::CreateExcludingGroupObserver(
+      &coordinator_, group_id_to_exclude);
+  MockLoopbackSource source;
+
+  // StrictMock will ensure OnSourceAdded is not called.
+  observer->StartObserving(&listener);
+  coordinator_.AddMember(group_id_to_exclude, &source);
+
+  // Cleanup
+  coordinator_.RemoveMember(&source);
+}
+
+// Test that listener is invoked for a non-excluded group.
+TEST_F(LoopbackGroupObserverTest, ExcludingObserver_OnSourceAdded_NotExcluded) {
+  const auto group_id_to_exclude = base::UnguessableToken::Create();
+  const auto other_group_id = base::UnguessableToken::Create();
+  StrictMock<MockListener> listener;
+  auto observer = LoopbackGroupObserver::CreateExcludingGroupObserver(
+      &coordinator_, group_id_to_exclude);
+  MockLoopbackSource source;
+
+  EXPECT_CALL(listener, OnSourceAdded(&source)).Times(1);
+  EXPECT_CALL(listener, OnSourceRemoved(&source)).Times(1);
+
+  observer->StartObserving(&listener);
+  coordinator_.AddMember(other_group_id, &source);
+  coordinator_.RemoveMember(&source);
+}
+
+// Test that ForEachSource iterates over all non-excluded members.
+TEST_F(LoopbackGroupObserverTest, ExcludingObserver_ForEachSource) {
+  const auto group_id_to_exclude = base::UnguessableToken::Create();
+  const auto other_group_id = base::UnguessableToken::Create();
+  StrictMock<MockListener> listener;
+  auto observer = LoopbackGroupObserver::CreateExcludingGroupObserver(
+      &coordinator_, group_id_to_exclude);
+
+  MockLoopbackSource source1, source2, excluded_source;
+  coordinator_.AddMember(other_group_id, &source1);
+  coordinator_.AddMember(other_group_id, &source2);
+  coordinator_.AddMember(group_id_to_exclude, &excluded_source);
+
+  std::vector<LoopbackSource*> found_sources;
+  observer->ForEachSource(base::BindRepeating(
+      [](std::vector<LoopbackSource*>* found_sources, LoopbackSource* source) {
+        found_sources->push_back(source);
+      },
+      &found_sources));
+
+  EXPECT_THAT(found_sources, testing::UnorderedElementsAre(&source1, &source2));
+
+  // Cleanup.
+  coordinator_.RemoveMember(&source1);
+  coordinator_.RemoveMember(&source2);
+  coordinator_.RemoveMember(&excluded_source);
 }
 
 }  // namespace audio

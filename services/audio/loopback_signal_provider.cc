@@ -26,18 +26,9 @@ constexpr base::TimeDelta kInitialCaptureDelay = base::Milliseconds(20);
 
 LoopbackSignalProvider::LoopbackSignalProvider(
     const media::AudioParameters& output_params,
-    LoopbackCoordinator* coordinator,
-    const base::UnguessableToken& group_id)
+    std::unique_ptr<LoopbackGroupObserver> loopback_group_observer)
     : output_params_(output_params),
-      loopback_group_observer_(
-          coordinator,
-          group_id,
-          /*on_source_added=*/
-          base::BindRepeating(&LoopbackSignalProvider::AddLoopbackSource,
-                              base::Unretained(this)),
-          /*on_source_removed=*/
-          base::BindRepeating(&LoopbackSignalProvider::RemoveLoopbackSource,
-                              base::Unretained(this))),
+      loopback_group_observer_(std::move(loopback_group_observer)),
       capture_delay_(kInitialCaptureDelay),
       transfer_bus_(media::AudioBus::Create(output_params)) {}
 
@@ -45,9 +36,9 @@ LoopbackSignalProvider::~LoopbackSignalProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "LoopbackSignalProvider::~LoopbackSignalProvider");
 
-  loopback_group_observer_.StopObserving();
+  loopback_group_observer_->StopObserving();
   while (!snoopers_.empty()) {
-    RemoveLoopbackSource(snoopers_.begin()->first);
+    OnSourceRemoved(snoopers_.begin()->first);
   }
 }
 
@@ -55,9 +46,9 @@ void LoopbackSignalProvider::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "LoopbackSignalProvider::Start");
 
-  loopback_group_observer_.ForEachMember(
-      loopback_group_observer_.on_source_added());
-  loopback_group_observer_.StartObserving();
+  loopback_group_observer_->ForEachSource(base::BindRepeating(
+      &LoopbackSignalProvider::OnSourceAdded, base::Unretained(this)));
+  loopback_group_observer_->StartObserving(this);
 }
 
 base::TimeTicks LoopbackSignalProvider::PullLoopbackData(
@@ -113,7 +104,7 @@ base::TimeTicks LoopbackSignalProvider::PullLoopbackData(
   return delayed_capture_time;
 }
 
-void LoopbackSignalProvider::AddLoopbackSource(LoopbackSource* source) {
+void LoopbackSignalProvider::OnSourceAdded(LoopbackSource* source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!base::TimeTicks::IsHighResolution()) {
@@ -143,7 +134,7 @@ void LoopbackSignalProvider::AddLoopbackSource(LoopbackSource* source) {
   source->StartSnooping(emplace_result.first->second.get());
 }
 
-void LoopbackSignalProvider::RemoveLoopbackSource(LoopbackSource* source) {
+void LoopbackSignalProvider::OnSourceRemoved(LoopbackSource* source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT1("audio", "LoopbackSignalProvider::RemoveLoopbackSource",
                "source", static_cast<void*>(source));

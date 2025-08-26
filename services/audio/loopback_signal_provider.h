@@ -23,19 +23,18 @@ class AudioBus;
 
 namespace audio {
 
-class LoopbackCoordinator;
 class LoopbackSource;
 
-class LoopbackSignalProvider {
+class LoopbackSignalProvider final : public LoopbackGroupObserver::Listener {
  public:
-  LoopbackSignalProvider(const media::AudioParameters& output_params,
-                         LoopbackCoordinator* coordinator,
-                         const base::UnguessableToken& group_id);
+  LoopbackSignalProvider(
+      const media::AudioParameters& output_params,
+      std::unique_ptr<LoopbackGroupObserver> loopback_group_observer);
 
   LoopbackSignalProvider(const LoopbackSignalProvider&) = delete;
   LoopbackSignalProvider& operator=(const LoopbackSignalProvider&) = delete;
 
-  ~LoopbackSignalProvider();
+  ~LoopbackSignalProvider() final;
 
   // Starts observing the sources.
   void Start();
@@ -48,15 +47,16 @@ class LoopbackSignalProvider {
                                    base::TimeTicks capture_time,
                                    double volume);
 
- private:
-  void AddLoopbackSource(LoopbackSource* source);
-  void RemoveLoopbackSource(LoopbackSource* source);
+  // LoopbackGroupObserver::Listener.
+  void OnSourceAdded(LoopbackSource* source) final;
+  void OnSourceRemoved(LoopbackSource* source) final;
 
+ private:
   // The audio parameters of the output.
   const media::AudioParameters output_params_;
 
   // Observer for the group whose combined loopback signal should be captured.
-  LoopbackGroupObserver loopback_group_observer_;
+  const std::unique_ptr<LoopbackGroupObserver> loopback_group_observer_;
 
   // Lock preventing simultaneous access to `snoopers_`, which is accessed both
   // on the main thread and the audio thread.

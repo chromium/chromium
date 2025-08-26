@@ -5,9 +5,46 @@
 #include "services/audio/loopback_coordinator.h"
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 
 namespace audio {
+
+namespace {
+
+// Matcher implementation that matches a specific group ID.
+class MatchingGroupIdMatcher : public LoopbackGroupObserver::Matcher {
+ public:
+  explicit MatchingGroupIdMatcher(
+      const base::UnguessableToken& group_id_to_match)
+      : group_id_to_match_(group_id_to_match) {}
+  ~MatchingGroupIdMatcher() override = default;
+
+  bool Match(const LoopbackCoordinator::Member& member) const override {
+    return member.group_id == group_id_to_match_;
+  }
+
+ private:
+  const base::UnguessableToken group_id_to_match_;
+};
+
+// Matcher implementation that excludes a specific group ID.
+class ExcludingGroupIdMatcher : public LoopbackGroupObserver::Matcher {
+ public:
+  explicit ExcludingGroupIdMatcher(
+      const base::UnguessableToken& group_id_to_exclude)
+      : group_id_to_exclude_(group_id_to_exclude) {}
+  ~ExcludingGroupIdMatcher() override = default;
+
+  bool Match(const LoopbackCoordinator::Member& member) const override {
+    return member.group_id != group_id_to_exclude_;
+  }
+
+ private:
+  const base::UnguessableToken group_id_to_exclude_;
+};
+
+}  // namespace
 
 LoopbackCoordinator::LoopbackCoordinator() {
   // The sequence checker is automatically bound to the sequence of creation.
@@ -79,51 +116,75 @@ void LoopbackCoordinator::ForEachMember(
   }
 }
 
-LoopbackGroupObserver::LoopbackGroupObserver(
+// static
+std::unique_ptr<LoopbackGroupObserver>
+LoopbackGroupObserver::CreateMatchingGroupObserver(
     LoopbackCoordinator* coordinator,
-    const base::UnguessableToken& group_id,
-    SourceCallback on_source_added,
-    SourceCallback on_source_removed)
-    : coordinator_(coordinator),
-      group_id_(group_id),
-      on_source_added_(std::move(on_source_added)),
-      on_source_removed_(std::move(on_source_removed)) {}
+    const base::UnguessableToken& group_id) {
+  return std::make_unique<LoopbackGroupObserver>(
+      coordinator, std::make_unique<MatchingGroupIdMatcher>(group_id));
+}
+
+// static
+std::unique_ptr<LoopbackGroupObserver>
+LoopbackGroupObserver::CreateExcludingGroupObserver(
+    LoopbackCoordinator* coordinator,
+    const base::UnguessableToken& group_id) {
+  return std::make_unique<LoopbackGroupObserver>(
+      coordinator, std::make_unique<ExcludingGroupIdMatcher>(group_id));
+}
+
+LoopbackGroupObserver::LoopbackGroupObserver(LoopbackCoordinator* coordinator,
+                                             std::unique_ptr<Matcher> matcher)
+    : coordinator_(coordinator), matcher_(std::move(matcher)) {
+  CHECK(matcher_);
+}
 
 LoopbackGroupObserver::~LoopbackGroupObserver() {
   StopObserving();
 }
 
-void LoopbackGroupObserver::StartObserving() {
+void LoopbackGroupObserver::StartObserving(Listener* listener) {
+  if (listener_) {
+    return;
+  }
+  listener_ = listener;
   coordinator_->AddObserver(this);
 }
 
 void LoopbackGroupObserver::StopObserving() {
+  if (!listener_) {
+    return;
+  }
   coordinator_->RemoveObserver(this);
+  listener_ = nullptr;
 }
 
-void LoopbackGroupObserver::ForEachMember(SourceCallback callback) const {
+void LoopbackGroupObserver::ForEachSource(SourceCallback callback) const {
   coordinator_->ForEachMember(base::BindRepeating(
-      [](const base::UnguessableToken& group_id,
-         const SourceCallback& inner_callback,
+      [](const Matcher* matcher, const SourceCallback& inner_callback,
          const LoopbackCoordinator::Member& member) {
-        if (member.group_id == group_id) {
+        if (matcher->Match(member)) {
           inner_callback.Run(member.loopback_source);
         }
       },
-      group_id_, callback));
+      matcher_.get(), callback));
 }
 
 void LoopbackGroupObserver::OnMemberAdded(
     const LoopbackCoordinator::Member& member) {
-  if (member.group_id == group_id_) {
-    on_source_added_.Run(member.loopback_source);
+  CHECK(listener_);
+  if (matcher_->Match(member)) {
+    listener_->OnSourceAdded(member.loopback_source);
   }
 }
 
 void LoopbackGroupObserver::OnMemberRemoved(
     const LoopbackCoordinator::Member& member) {
-  if (member.group_id == group_id_) {
-    on_source_removed_.Run(member.loopback_source);
+  CHECK(listener_);
+  if (matcher_->Match(member)) {
+    listener_->OnSourceRemoved(member.loopback_source);
   }
 }
+
 }  // namespace audio

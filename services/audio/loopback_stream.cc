@@ -40,7 +40,10 @@ LoopbackStream::LoopbackStream(
       receiver_(this, std::move(receiver)),
       client_(std::move(client)),
       observer_(std::move(observer)),
-      loopback_signal_provider_(params, coordinator, group_id),
+      loopback_signal_provider_(
+          params,
+          LoopbackGroupObserver::CreateMatchingGroupObserver(coordinator,
+                                                             group_id)),
       loopback_signal_forwarder_(
           nullptr,
           base::OnTaskRunnerDeleter(loopback_task_runner)) {

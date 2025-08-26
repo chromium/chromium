@@ -95,7 +95,8 @@ class LoopbackSignalProviderTest : public testing::Test {
   void CreateSignalProvider() {
     CHECK(!provider_);
     provider_ = std::make_unique<LoopbackSignalProvider>(
-        output_params_, &coordinator_, group_id_);
+        output_params_, LoopbackGroupObserver::CreateMatchingGroupObserver(
+                            &coordinator_, group_id_));
   }
 
   // Main test loop: Simulates audio sources playing and the signal provider

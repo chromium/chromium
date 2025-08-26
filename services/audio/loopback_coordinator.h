@@ -5,6 +5,7 @@
 #ifndef SERVICES_AUDIO_LOOPBACK_COORDINATOR_H_
 #define SERVICES_AUDIO_LOOPBACK_COORDINATOR_H_
 
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -91,40 +92,56 @@ class LoopbackCoordinator {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-// An observer that filters member events based on a base::UnguessableToken and
-// triggers specific callbacks for add/remove events.
+// An observer that filters sources based on a matcher.
 class LoopbackGroupObserver : public LoopbackCoordinator::Observer {
  public:
+  // Interface for receiving events about sources being added/removed from the
+  // group.
+  class Listener {
+   public:
+    virtual void OnSourceAdded(LoopbackSource* source) = 0;
+    virtual void OnSourceRemoved(LoopbackSource* source) = 0;
+
+   protected:
+    virtual ~Listener() = default;
+  };
+
+  // Base class for matching logic.
+  class Matcher {
+   public:
+    virtual ~Matcher() = default;
+    virtual bool Match(const LoopbackCoordinator::Member& member) const = 0;
+  };
+
   using SourceCallback = base::RepeatingCallback<void(LoopbackSource*)>;
 
-  static SourceCallback do_nothing() {
-    return base::DoNothingAs<void(LoopbackSource*)>();
-  }
+  // Creates an observer that notifies its listener about sources belonging to
+  // a specific group.
+  static std::unique_ptr<LoopbackGroupObserver> CreateMatchingGroupObserver(
+      LoopbackCoordinator* coordinator,
+      const base::UnguessableToken& group_id);
 
-  // Creates an observer that filters for `group_id` and runs the provided
-  // callbacks when sources are added or removed.
+  // Creates an observer that notifies its listener about all sources EXCEPT
+  // those belonging to a specific group.
+  static std::unique_ptr<LoopbackGroupObserver> CreateExcludingGroupObserver(
+      LoopbackCoordinator* coordinator,
+      const base::UnguessableToken& group_id);
+
   LoopbackGroupObserver(LoopbackCoordinator* coordinator,
-                        const base::UnguessableToken& group_id,
-                        SourceCallback on_source_added,
-                        SourceCallback on_source_removed);
+                        std::unique_ptr<Matcher> matcher);
   ~LoopbackGroupObserver() override;
 
   LoopbackGroupObserver(const LoopbackGroupObserver&) = delete;
   LoopbackGroupObserver& operator=(const LoopbackGroupObserver&) = delete;
 
   // Registers this observer with the coordinator to start receiving events.
-  void StartObserving();
+  void StartObserving(Listener* listener);
 
   // Unregisters this observer from the coordinator to stop receiving events.
   void StopObserving();
 
-  // Iterates over members of this specific group and runs the callback.
-  void ForEachMember(SourceCallback callback) const;
-
-  const SourceCallback& on_source_added() const { return on_source_added_; }
-  const SourceCallback& on_source_removed() const { return on_source_removed_; }
-
-  const base::UnguessableToken& group_id() const { return group_id_; }
+  // Iterates over the observed sources and runs the callback.
+  void ForEachSource(SourceCallback callback) const;
 
  protected:
   // LoopbackCoordinator::Observer implementation:
@@ -133,9 +150,8 @@ class LoopbackGroupObserver : public LoopbackCoordinator::Observer {
 
  private:
   const raw_ptr<LoopbackCoordinator> coordinator_;
-  const base::UnguessableToken group_id_;
-  const SourceCallback on_source_added_;
-  const SourceCallback on_source_removed_;
+  std::unique_ptr<Matcher> matcher_;
+  raw_ptr<Listener> listener_ = nullptr;
 };
 
 }  // namespace audio
