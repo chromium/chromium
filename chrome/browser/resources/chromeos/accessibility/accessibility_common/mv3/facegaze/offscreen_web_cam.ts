@@ -28,7 +28,7 @@ const VIDEO_FRAME_DIMENSIONS = 192;
 
 /** The wasm loader JS is checked in under this path. */
 const WASM_LOADER_PATH =
-    'accessibility_common/third_party/mediapipe_task_vision/' +
+    'accessibility_common/mv3/third_party/mediapipe_task_vision/' +
     'vision_wasm_internal.js';
 
 /** A helper class to support test. */
