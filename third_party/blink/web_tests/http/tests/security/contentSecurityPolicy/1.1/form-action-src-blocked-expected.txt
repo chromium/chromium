@@ -1,5 +1,5 @@
 CONSOLE MESSAGE: submit event fired.
-CONSOLE ERROR: Refused to send form data to 'http://127.0.0.1:8000/navigation/resources/form-target.pl' because it violates the following Content Security Policy directive: "form-action 'none'".
+CONSOLE ERROR: Sending form data to 'http://127.0.0.1:8000/navigation/resources/form-target.pl' violates the following Content Security Policy directive: "form-action 'none'". The request has been blocked.
 
 CONSOLE MESSAGE: securitypolicyviolation event fired.
 CONSOLE MESSAGE: securitypolicyviolation_event.documentURI=http://127.0.0.1:8000/security/contentSecurityPolicy/1.1/form-action-src-blocked.html

@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CSPFrameAncestorsCanBlockEmbedding) {
   WebContents* web_contents = GetActiveWebContents();
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern(
-      "*because an ancestor violates the following Content Security Policy "
+      "*violates the following Content Security Policy "
       "directive: \"frame-ancestors 'none'*");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

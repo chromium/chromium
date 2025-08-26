@@ -5359,9 +5359,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     std::string expected_console_message;
   } kTestCases[] = {
       {"/frame-ancestors-none.html", false,
-       "Refused to frame '" + reported_blocked_url.spec() +
-           "' because an ancestor violates the following Content Security "
-           "Policy directive: \"frame-ancestors 'none'\".\n"},
+       "Framing '" + reported_blocked_url.spec() +
+           "' violates the following Content Security "
+           "Policy directive: \"frame-ancestors 'none'\". The request has "
+           "been blocked.\n"},
       {"/x-frame-options-deny.html", true,
        "Refused to display '" + reported_blocked_url.spec() +
            "' in a frame because it set 'X-Frame-Options' to 'deny'."},
@@ -5374,7 +5375,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
 
     WebContentsConsoleObserver console_observer(shell()->web_contents());
-    console_observer.SetPattern("Refused to*");
+    console_observer.SetPattern("*'" + reported_blocked_url.spec() + "'*");
 
     // Navigate the subframe to a blocked URL.
     TestNavigationObserver load_observer(shell()->web_contents());

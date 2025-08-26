@@ -215,8 +215,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, FrameAncestors) {
   ASSERT_TRUE(extension);
 
   content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
-  console_observer.SetPattern(
-      "Refused to frame * because an ancestor violates *");
+  console_observer.SetPattern("Framing '*' violates the following*");
 
   GURL popup_url = extension->GetResourceURL("popup.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), popup_url));

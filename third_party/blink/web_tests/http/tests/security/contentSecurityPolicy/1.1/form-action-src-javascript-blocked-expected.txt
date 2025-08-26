@@ -1,5 +1,4 @@
-CONSOLE ERROR: Refused to send form data to 'javascript:alert("FAIL!")' because it violates the following Content Security Policy directive: "form-action 'none'".
-
+CONSOLE ERROR: Sending form data to 'javascript:alert("FAIL!")' violates the following Content Security Policy directive: "form-action 'none'". The action has been blocked.
  
 
 Tests that blocking form actions works correctly. If this test passes, you will see a console error, and will not see a JavaScript alert.

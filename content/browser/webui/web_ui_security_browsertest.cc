@@ -746,10 +746,10 @@ IN_PROC_BROWSER_TEST_F(
     ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(console_observer.GetMessageAt(0),
               base::StringPrintf(
-                  "Refused to connect to '%s' because it violates the "
-                  "following Content Security Policy directive: \"default-src "
-                  "'self'\". Note that 'connect-src' was not explicitly set, "
-                  "so 'default-src' is used as a fallback.\n",
+                  "Connecting to '%s' violates the following Content Security "
+                  "Policy directive: \"default-src 'self'\". Note that "
+                  "'connect-src' was not explicitly set, so 'default-src' is "
+                  "used as a fallback. The action has been blocked.",
                   untrusted_url2.spec().c_str()));
   }
 
@@ -760,10 +760,10 @@ IN_PROC_BROWSER_TEST_F(
     ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(console_observer.GetMessageAt(0),
               base::StringPrintf(
-                  "Refused to connect to '%s' because it violates the "
-                  "following Content Security Policy directive: \"default-src "
-                  "'self'\". Note that 'connect-src' was not explicitly set, "
-                  "so 'default-src' is used as a fallback.\n",
+                  "Connecting to '%s' violates the following Content Security "
+                  "Policy directive: \"default-src 'self'\". Note that "
+                  "'connect-src' was not explicitly set, so 'default-src' is "
+                  "used as a fallback. The action has been blocked.",
                   untrusted_url2.spec().c_str()));
   }
 }
@@ -901,10 +901,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(console_observer.GetMessageAt(0),
             base::StringPrintf(
-                "Refused to connect to '%s' because it violates the "
-                "following Content Security Policy directive: \"default-src "
-                "'self'\". Note that 'connect-src' was not explicitly set, "
-                "so 'default-src' is used as a fallback.\n",
+                "Connecting to '%s' violates the following Content Security "
+                "Policy directive: \"default-src 'self'\". Note that "
+                "'connect-src' was not explicitly set, so 'default-src' is "
+                "used as a fallback. The action has been blocked.",
                 untrusted_url2.spec().c_str()));
 }
 
