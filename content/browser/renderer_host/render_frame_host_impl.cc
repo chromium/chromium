@@ -10752,7 +10752,7 @@ void RenderFrameHostImpl::CalculateUntrustedNetworkStatus() {
       frame_tree()->NodesIncludingInnerTreeNodes();
   std::vector<FrameTreeNode*> subframe_nodes(std::next(node_range.begin()),
                                              node_range.end());
-  std::reverse(subframe_nodes.begin(), subframe_nodes.end());
+  std::ranges::reverse(subframe_nodes);
   std::set<FrameTreeNodeId> nodes_not_eligible_for_network_cutoff;
   // This loop traverses up the frame tree, determining if each fenced frame
   // root node meets the criteria for network cutoff. We look at the most deeply

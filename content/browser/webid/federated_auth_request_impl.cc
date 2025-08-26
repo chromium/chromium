@@ -247,7 +247,7 @@ FederatedAuthRequestImpl::MaybeAddRegisteredProviders(
   // first IdPs to be registered goes first. It is not clear
   // yet what's the right order, but this seems like a reasonable
   // starting point.
-  std::reverse(registered_config_urls.begin(), registered_config_urls.end());
+  std::ranges::reverse(registered_config_urls);
 
   for (auto& provider : providers) {
     if (!provider->config->from_idp_registration_api) {

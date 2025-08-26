@@ -4989,8 +4989,9 @@ NavigationControllerImpl::PopulateSingleNavigationApiHistoryEntryVector(
   // If |entries| was constructed by iterating backwards from
   // |entry_index|, it's latest-at-the-front, but the renderer will want it
   // earliest-at-the-front. Reverse it.
-  if (direction == Direction::kBack)
-    std::reverse(entries.begin(), entries.end());
+  if (direction == Direction::kBack) {
+    std::ranges::reverse(entries);
+  }
   return entries;
 }
 
