@@ -981,7 +981,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.AllSerializedCertPolicyCachesSize"
-    units="KB" expires_after="2025-10-08">
+    units="KB" expires_after="2026-08-25">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -1089,7 +1089,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.SerializedCertPolicyCacheSize" units="KB"
-    expires_after="2025-10-08">
+    expires_after="2026-08-25">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
