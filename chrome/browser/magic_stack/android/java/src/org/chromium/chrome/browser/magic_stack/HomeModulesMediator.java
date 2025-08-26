@@ -20,7 +20,6 @@ import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,7 +59,7 @@ public class HomeModulesMediator {
      * An array of cached responses (data) from modules. The size of the array is the number of
      * modules to show.
      */
-    private SimpleRecyclerViewAdapter.@Nullable ListItem @Nullable [] mModuleFetchResultsCache;
+    private MVCListAdapter.@Nullable ListItem @Nullable [] mModuleFetchResultsCache;
 
     /**
      * An array of cached responses from modules to indicate whether they have data to show. There
@@ -195,7 +194,7 @@ public class HomeModulesMediator {
         cacheRanking(mModuleListToShow);
 
         mModuleResultsWaitingIndex = 0;
-        mModuleFetchResultsCache = new SimpleRecyclerViewAdapter.ListItem[mModuleListToShow.size()];
+        mModuleFetchResultsCache = new MVCListAdapter.ListItem[mModuleListToShow.size()];
         mModuleFetchResultsIndicator = new Boolean[mModuleListToShow.size()];
         mShowModuleStartTimeMs = new long[mModuleListToShow.size()];
         boolean hasModuleBuilt = false;
@@ -303,7 +302,7 @@ public class HomeModulesMediator {
             if (propertyModel != null) {
                 // This module is the highest ranking one that we are waiting for, adds its data to
                 // the RecyclerView.
-                append(new SimpleRecyclerViewAdapter.ListItem(moduleType, propertyModel));
+                append(new MVCListAdapter.ListItem(moduleType, propertyModel));
             }
             // Stores the responses based on whether the module has data or not and increases the
             // waiting index for the next highest ranking module.
@@ -317,7 +316,7 @@ public class HomeModulesMediator {
             mModuleFetchResultsIndicator[index] = propertyModel != null;
             mModuleFetchResultsCache[index] =
                     propertyModel != null
-                            ? new SimpleRecyclerViewAdapter.ListItem(moduleType, propertyModel)
+                            ? new MVCListAdapter.ListItem(moduleType, propertyModel)
                             : null;
         }
 
@@ -341,7 +340,7 @@ public class HomeModulesMediator {
             return;
         }
 
-        mModel.update(position, new SimpleRecyclerViewAdapter.ListItem(moduleType, propertyModel));
+        mModel.update(position, new MVCListAdapter.ListItem(moduleType, propertyModel));
     }
 
     /**
@@ -426,7 +425,7 @@ public class HomeModulesMediator {
      * @param item The item to add.
      */
     @VisibleForTesting
-    void append(SimpleRecyclerViewAdapter.ListItem item) {
+    void append(MVCListAdapter.ListItem item) {
         mModel.add(item);
 
         HomeModulesMetricsUtils.recordModuleBuiltPosition(
@@ -691,8 +690,7 @@ public class HomeModulesMediator {
         return mModuleTypeToRankingIndexMap;
     }
 
-    SimpleRecyclerViewAdapter.@Nullable ListItem @Nullable []
-            getModuleFetchResultsCacheForTesting() {
+    MVCListAdapter.@Nullable ListItem @Nullable [] getModuleFetchResultsCacheForTesting() {
         return mModuleFetchResultsCache;
     }
 

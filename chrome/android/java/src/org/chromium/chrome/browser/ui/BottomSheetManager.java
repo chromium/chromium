@@ -10,6 +10,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
@@ -42,7 +43,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     private final Callback<Boolean> mOmniboxFocusObserver;
 
     /** A listener for browser controls offset changes. */
-    private final BrowserControlsVisibilityManager.Observer mBrowserControlsObserver;
+    private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
 
     /** A tab observer that is only attached to the active tab. */
     private final TabObserver mTabObserver;
@@ -138,7 +139,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         setActivityTab(mTabProvider.get());
 
         mBrowserControlsObserver =
-                new BrowserControlsVisibilityManager.Observer() {
+                new BrowserControlsStateProvider.Observer() {
                     @Override
                     public void onControlsOffsetChanged(
                             int topOffset,

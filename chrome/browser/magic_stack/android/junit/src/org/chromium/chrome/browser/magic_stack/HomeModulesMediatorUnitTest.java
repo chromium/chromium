@@ -50,7 +50,6 @@ import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.HashSet;
 import java.util.List;
@@ -187,8 +186,7 @@ public class HomeModulesMediatorUnitTest {
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mOnHomeModulesChangedCallback);
         Boolean[] moduleFetchResultsIndicator =
                 mMediator.getModuleFetchResultsIndicatorForTesting();
-        SimpleRecyclerViewAdapter.ListItem[] moduleFetchResultsCache =
-                mMediator.getModuleFetchResultsCacheForTesting();
+        ListItem[] moduleFetchResultsCache = mMediator.getModuleFetchResultsCacheForTesting();
         verify(mModel, never()).add(any());
 
         // Verifies that the response of a low ranking module is cached.
@@ -232,8 +230,7 @@ public class HomeModulesMediatorUnitTest {
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mOnHomeModulesChangedCallback);
         Boolean[] moduleFetchResultsIndicator =
                 mMediator.getModuleFetchResultsIndicatorForTesting();
-        SimpleRecyclerViewAdapter.ListItem[] moduleFetchResultsCache =
-                mMediator.getModuleFetchResultsCacheForTesting();
+        ListItem[] moduleFetchResultsCache = mMediator.getModuleFetchResultsCacheForTesting();
         verify(mModel, never()).add(any());
 
         // Calls onModuleBuilt() to add ModuleProviders to the map.
@@ -480,8 +477,7 @@ public class HomeModulesMediatorUnitTest {
         }
         Boolean[] moduleFetchResultsIndicator =
                 mMediator.getModuleFetchResultsIndicatorForTesting();
-        SimpleRecyclerViewAdapter.ListItem[] moduleFetchResultsCache =
-                mMediator.getModuleFetchResultsCacheForTesting();
+        ListItem[] moduleFetchResultsCache = mMediator.getModuleFetchResultsCacheForTesting();
         verify(mModel, never()).add(any());
         // The magic stack is waiting for modules to be load.
         assertTrue(mMediator.getIsFetchingModulesForTesting());

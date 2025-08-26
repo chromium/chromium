@@ -15,6 +15,7 @@ import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler;
+import org.chromium.chrome.browser.base.SplitCompatGcmTaskService;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.MinimalBrowserStartupUtils;
 
@@ -23,7 +24,7 @@ import org.chromium.chrome.browser.init.MinimalBrowserStartupUtils;
  * browser needs to be launched for scheduled tasks, or in response to changing network or power
  * conditions.
  */
-public class ChromeBackgroundServiceImpl extends ChromeBackgroundService.Impl {
+public class ChromeBackgroundServiceImpl extends SplitCompatGcmTaskService.Impl {
     private static final String TAG = "BackgroundService";
 
     @Override

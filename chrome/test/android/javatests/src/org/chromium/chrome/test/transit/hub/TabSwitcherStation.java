@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
+import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.util.TabBinningUtil;
@@ -113,7 +114,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
      * @return Builder of the {@link CtaPageStation} for the tab that was selected.
      */
     public <T extends CtaPageStation> T selectTabAtIndex(
-            int index, CtaPageStation.Builder<T> destinationBuilder) {
+            int index, BasePageStation.Builder<T> destinationBuilder) {
         recheckActiveConditions();
 
         return selectTabAtCardIndexTo(index)
@@ -194,7 +195,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
      * @return the {@link CtaPageStation} that Hub returned to.
      */
     public <T extends CtaPageStation> T leaveHubToPreviousTabViaBack(
-            CtaPageStation.Builder<T> destinationBuilder) {
+            BasePageStation.Builder<T> destinationBuilder) {
         T destination =
                 destinationBuilder.initSelectingExistingTab().withIncognito(mIsIncognito).build();
         return pressBackTo().withRetry().arriveAt(destination);

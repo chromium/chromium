@@ -38,6 +38,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.base.SplitCompatRemoteViewsService;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
@@ -76,7 +77,7 @@ import java.util.concurrent.CountDownLatch;
  * either {@link UiThread} or {@link BinderThread}.
  */
 @NullMarked
-public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
+public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Impl {
     private static final String TAG = "BookmarkWidget";
     private static final String ACTION_CHANGE_FOLDER_SUFFIX = ".CHANGE_FOLDER";
     private static final String PREF_CURRENT_FOLDER = "bookmarkswidget.current_folder";

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -85,7 +86,7 @@ public class AppMenuItemViewBinderRenderTest {
     static final String TITLE_4 = "Menu Item Four";
     static final String TITLE_5 = "Menu Item Five";
 
-    private ModelListAdapter.ModelList mMenuList;
+    private MVCListAdapter.ModelList mMenuList;
     private ModelListAdapter mModelListAdapter;
     private final boolean mMenuItemEnabled;
 
@@ -107,7 +108,7 @@ public class AppMenuItemViewBinderRenderTest {
                     sActivity
                             .getTheme()
                             .applyStyle(R.style.AppMenuTopRowIconButtonsStyleOverlay, true);
-                    mMenuList = new ModelListAdapter.ModelList();
+                    mMenuList = new MVCListAdapter.ModelList();
                     mModelListAdapter = new ModelListAdapter(mMenuList);
 
                     sActivity.setContentView(R.layout.app_menu_layout);
@@ -143,7 +144,7 @@ public class AppMenuItemViewBinderRenderTest {
         if (icon != null) {
             model.set(AppMenuItemProperties.ICON, icon);
         }
-        mMenuList.add(new ModelListAdapter.ListItem(AppMenuItemType.STANDARD, model));
+        mMenuList.add(new MVCListAdapter.ListItem(AppMenuItemType.STANDARD, model));
 
         return model;
     }
@@ -178,11 +179,11 @@ public class AppMenuItemViewBinderRenderTest {
                         .with(AppMenuItemProperties.ICON, buttonIcon)
                         .build();
 
-        ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
-        subList.add(new ModelListAdapter.ListItem(0, buttonModel));
+        MVCListAdapter.ModelList subList = new MVCListAdapter.ModelList();
+        subList.add(new MVCListAdapter.ListItem(0, buttonModel));
         titleModel.set(AppMenuItemProperties.ADDITIONAL_ICONS, subList);
 
-        mMenuList.add(new ModelListAdapter.ListItem(AppMenuItemType.TITLE_BUTTON, titleModel));
+        mMenuList.add(new MVCListAdapter.ListItem(AppMenuItemType.TITLE_BUTTON, titleModel));
 
         return titleModel;
     }
@@ -210,7 +211,7 @@ public class AppMenuItemViewBinderRenderTest {
                         .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
                         .build();
 
-        ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
+        MVCListAdapter.ModelList subList = new MVCListAdapter.ModelList();
         int menutype = AppMenuItemType.BUTTON_ROW;
         createIconMenuItem(subList, subId1, titleCondensed1, icon1, enabled);
         createIconMenuItem(subList, subId2, titleCondensed2, icon2, enabled);
@@ -223,13 +224,13 @@ public class AppMenuItemViewBinderRenderTest {
         }
 
         model.set(AppMenuItemProperties.ADDITIONAL_ICONS, subList);
-        mMenuList.add(new ModelListAdapter.ListItem(menutype, model));
+        mMenuList.add(new MVCListAdapter.ListItem(menutype, model));
 
         return model;
     }
 
     private void createIconMenuItem(
-            ModelListAdapter.ModelList list,
+            MVCListAdapter.ModelList list,
             int id,
             String titleCondensed,
             Drawable icon,
@@ -241,7 +242,7 @@ public class AppMenuItemViewBinderRenderTest {
                         .with(AppMenuItemProperties.ICON, icon)
                         .with(AppMenuItemProperties.ENABLED, enabled)
                         .build();
-        list.add(new ModelListAdapter.ListItem(0, model));
+        list.add(new MVCListAdapter.ListItem(0, model));
     }
 
     private void waitListViewToBeDrawn() {

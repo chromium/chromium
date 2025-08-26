@@ -25,6 +25,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
@@ -37,7 +38,7 @@ import java.util.Set;
 
 /** Service that handles the action of clicking on the incognito notification. */
 @NullMarked
-public class IncognitoNotificationServiceImpl extends IncognitoNotificationService.Impl {
+public class IncognitoNotificationServiceImpl extends SplitCompatIntentService.Impl {
     private static final String ACTION_CLOSE_ALL_INCOGNITO =
             "com.google.android.apps.chrome.incognito.CLOSE_ALL_INCOGNITO";
 

@@ -25,6 +25,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
@@ -39,7 +40,7 @@ import java.util.UUID;
  * notifications displayed in the notification tray.
  */
 @NullMarked
-public class NotificationServiceImpl extends NotificationService.Impl {
+public class NotificationServiceImpl extends SplitCompatIntentService.Impl {
     private static final String TAG = NotificationServiceImpl.class.getSimpleName();
 
     /**

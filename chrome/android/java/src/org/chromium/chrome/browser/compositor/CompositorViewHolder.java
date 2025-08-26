@@ -80,7 +80,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.components.content_capture.OnscreenContentProvider;
@@ -101,6 +100,7 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.url.GURL;
 
@@ -121,7 +121,7 @@ public class CompositorViewHolder extends FrameLayout
                 LayoutRenderHost,
                 TouchEventProvider,
                 BrowserControlsStateProvider.Observer,
-                ChromeAccessibilityUtil.Observer,
+                AccessibilityUtil.Observer,
                 TabObscuringHandler.Observer,
                 ViewGroup.OnHierarchyChangeListener {
     private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 500;

@@ -25,6 +25,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -85,7 +86,7 @@ public class NotificationIntentInterceptor {
         }
     }
 
-    public static final class ServiceImpl extends NotificationIntentInterceptorService.Impl {
+    public static final class ServiceImpl extends SplitCompatIntentService.Impl {
         @Override
         protected void onHandleIntent(@Nullable Intent intent) {
             processIntent(assertNonNull(intent));

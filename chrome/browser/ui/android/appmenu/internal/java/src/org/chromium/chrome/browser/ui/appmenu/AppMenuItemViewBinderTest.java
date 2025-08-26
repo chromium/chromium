@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -97,7 +98,7 @@ public class AppMenuItemViewBinderTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
-    private ModelListAdapter.ModelList mMenuList;
+    private MVCListAdapter.ModelList mMenuList;
     private ModelListAdapter mModelListAdapter;
 
     private TestClickHandler mClickHandler;
@@ -114,7 +115,7 @@ public class AppMenuItemViewBinderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity = sActivityTestRule.getActivity();
-                    mMenuList = new ModelListAdapter.ModelList();
+                    mMenuList = new MVCListAdapter.ModelList();
                     mModelListAdapter = new ModelListAdapter(mMenuList);
 
                     AppMenuHandlerImpl.registerDefaultViewBinders(mModelListAdapter, true);
@@ -127,7 +128,7 @@ public class AppMenuItemViewBinderTest {
                         .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
                         .with(AppMenuItemProperties.TITLE, title)
                         .build();
-        mMenuList.add(new ModelListAdapter.ListItem(AppMenuItemType.STANDARD, model));
+        mMenuList.add(new MVCListAdapter.ListItem(AppMenuItemType.STANDARD, model));
 
         return model;
     }
@@ -155,11 +156,11 @@ public class AppMenuItemViewBinderTest {
                         .with(AppMenuItemProperties.CHECKED, checked)
                         .build();
 
-        ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
-        subList.add(new ModelListAdapter.ListItem(0, buttonModel));
+        MVCListAdapter.ModelList subList = new MVCListAdapter.ModelList();
+        subList.add(new MVCListAdapter.ListItem(0, buttonModel));
 
         titleModel.set(AppMenuItemProperties.ADDITIONAL_ICONS, subList);
-        mMenuList.add(new ModelListAdapter.ListItem(AppMenuItemType.TITLE_BUTTON, titleModel));
+        mMenuList.add(new MVCListAdapter.ListItem(AppMenuItemType.TITLE_BUTTON, titleModel));
 
         return titleModel;
     }
@@ -186,7 +187,7 @@ public class AppMenuItemViewBinderTest {
                         .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
                         .build();
 
-        ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
+        MVCListAdapter.ModelList subList = new MVCListAdapter.ModelList();
         int menutype = AppMenuItemType.BUTTON_ROW;
         createIconMenuItem(subList, subId1, titleCondensed1, icon1);
         createIconMenuItem(subList, subId2, titleCondensed2, icon2);
@@ -199,20 +200,20 @@ public class AppMenuItemViewBinderTest {
         }
 
         model.set(AppMenuItemProperties.ADDITIONAL_ICONS, subList);
-        mMenuList.add(new ModelListAdapter.ListItem(menutype, model));
+        mMenuList.add(new MVCListAdapter.ListItem(menutype, model));
 
         return model;
     }
 
     private void createIconMenuItem(
-            ModelListAdapter.ModelList list, int id, String titleCondensed, Drawable icon) {
+            MVCListAdapter.ModelList list, int id, String titleCondensed, Drawable icon) {
         PropertyModel model =
                 new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
                         .with(AppMenuItemProperties.MENU_ITEM_ID, id)
                         .with(AppMenuItemProperties.TITLE_CONDENSED, titleCondensed)
                         .with(AppMenuItemProperties.ICON, icon)
                         .build();
-        list.add(new ModelListAdapter.ListItem(0, model));
+        list.add(new MVCListAdapter.ListItem(0, model));
     }
 
     @Test

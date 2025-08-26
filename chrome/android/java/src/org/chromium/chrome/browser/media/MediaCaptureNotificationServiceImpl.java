@@ -29,6 +29,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -59,7 +60,7 @@ import java.util.TreeMap;
 
 /** Service that creates/destroys the WebRTC notification when media capture starts/stops. */
 @NullMarked
-public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificationService.Impl {
+public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl {
     private static final String TAG = "MediaCapture";
     private static final String ACTION_MEDIA_CAPTURE_UPDATE =
             "org.chromium.chrome.browser.media.SCREEN_CAPTURE_UPDATE";

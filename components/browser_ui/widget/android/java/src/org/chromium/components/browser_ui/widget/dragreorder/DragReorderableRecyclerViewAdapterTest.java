@@ -33,7 +33,6 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecy
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.MVCListAdapter.ViewBuilder;
-import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -164,7 +163,7 @@ public class DragReorderableRecyclerViewAdapterTest {
     }
 
     private ListItem buildListItem(String title, @Type int type) {
-        return new ModelListAdapter.ListItem(type, createPropertyModel(title, type));
+        return new ListItem(type, createPropertyModel(title, type));
     }
 
     @Test

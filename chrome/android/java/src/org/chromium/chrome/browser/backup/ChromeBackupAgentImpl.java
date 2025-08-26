@@ -32,6 +32,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
+import org.chromium.chrome.browser.base.SplitCompatBackupAgent;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -72,7 +73,7 @@ import java.util.function.Predicate;
 /** Backup agent for Chrome, using Android key/value backup. */
 @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
 @NullMarked
-public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
+public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
     private static final String ANDROID_DEFAULT_PREFIX = "AndroidDefault.";
 
     private static final String TAG = "ChromeBackupAgent";

@@ -11,16 +11,14 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.chrome.browser.usb.UsbNotificationManagerDelegate;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 
-/**
- * Service that manages the WebUSB notification when a website is connected
- * to a USB device.
- */
+/** Service that manages the WebUSB notification when a website is connected to a USB device. */
 @NullMarked
-public class UsbNotificationServiceImpl extends UsbNotificationService.Impl {
+public class UsbNotificationServiceImpl extends SplitCompatService.Impl {
     private final UsbNotificationManagerDelegate mManagerDelegate =
             new UsbNotificationManagerDelegate() {
                 @Override

@@ -31,6 +31,7 @@ import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.net.test.util.WebServer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -279,7 +280,7 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
             final String html = getCrossOriginAccessTestPageHtml(frameUrl);
             final String baseUrl = "http://www.google.com/"; // Treat the iframe as 3P.
             loadDataWithBaseUrlSync(html, "text/html", false, baseUrl, null);
-            TestWebServer.HTTPRequest request =
+            WebServer.HTTPRequest request =
                     webServer.getLastRequest("/" + CommonResources.ABOUT_FILENAME);
             Assert.assertEquals("Should send 3P cookies", cookie, request.headerValue("Cookie"));
         } finally {

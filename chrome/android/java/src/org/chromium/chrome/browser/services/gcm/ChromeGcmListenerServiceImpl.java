@@ -13,6 +13,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.base.SplitCompatGcmListenerService;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
@@ -26,7 +27,7 @@ import org.chromium.components.gcm_driver.LazySubscriptionsManager;
 import org.chromium.components.gcm_driver.SubscriptionFlagManager;
 
 /** Receives Downstream messages and status of upstream messages from GCM. */
-public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl {
+public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.Impl {
     private static final String TAG = "ChromeGcmListener";
 
     @Override

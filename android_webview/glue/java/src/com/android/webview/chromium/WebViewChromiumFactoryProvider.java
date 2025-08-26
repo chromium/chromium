@@ -758,7 +758,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         synchronized (mAwInit.getLazyInitLock()) {
             if (mStaticsAdapter == null) {
                 mStaticsAdapter =
-                        new WebViewChromiumFactoryProvider.Statics() {
+                        new Statics() {
                             @Override
                             public String findAddress(String addr) {
                                 return sharedStatics.findAddress(addr);

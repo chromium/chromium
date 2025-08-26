@@ -13,13 +13,14 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 
 /** Service that handles the actions on tracing notifications. */
 @NullMarked
-public class TracingNotificationServiceImpl extends TracingNotificationService.Impl {
+public class TracingNotificationServiceImpl extends SplitCompatIntentService.Impl {
     private static final String ACTION_STOP_RECORDING =
             "org.chromium.chrome.browser.tracing.STOP_RECORDING";
 

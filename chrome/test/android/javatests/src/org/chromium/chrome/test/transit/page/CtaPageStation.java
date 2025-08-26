@@ -187,19 +187,17 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     }
 
     /** Move to next tab by swiping the toolbar left. */
-    public <T extends CtaPageStation> T swipeToolbarToNextTab(
-            CtaPageStation.Builder<T> destinationBuilder) {
+    public <T extends CtaPageStation> T swipeToolbarToNextTab(Builder<T> destinationBuilder) {
         return swipeToolbar(destinationBuilder, /* directionRight= */ false);
     }
 
     /** Move to previous tab by swiping the toolbar right. */
-    public <T extends CtaPageStation> T swipeToolbarToPreviousTab(
-            CtaPageStation.Builder<T> destinationBuilder) {
+    public <T extends CtaPageStation> T swipeToolbarToPreviousTab(Builder<T> destinationBuilder) {
         return swipeToolbar(destinationBuilder, /* directionRight= */ true);
     }
 
     public <T extends CtaPageStation> T swipeToolbar(
-            CtaPageStation.Builder<T> destinationBuilder, boolean directionRight) {
+            Builder<T> destinationBuilder, boolean directionRight) {
         ToolbarSwipeCoordinates coords =
                 new ToolbarSwipeCoordinates(toolbarElement.value(), directionRight);
 

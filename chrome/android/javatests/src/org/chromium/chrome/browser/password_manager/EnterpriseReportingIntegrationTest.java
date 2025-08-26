@@ -36,6 +36,7 @@ import org.chromium.components.enterprise.connectors.EnterpriseReportingEventTyp
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.net.test.util.WebServer;
 
 import java.util.concurrent.TimeoutException;
 
@@ -120,7 +121,7 @@ public class EnterpriseReportingIntegrationTest {
 
     /** Parse the last security event report received, if any. */
     private JSONObject parseLastReport() throws JSONException {
-        TestWebServer.HTTPRequest request = mReportingServer.getLastRequest(REPORTING_ENDPOINT);
+        WebServer.HTTPRequest request = mReportingServer.getLastRequest(REPORTING_ENDPOINT);
         if (request == null) {
             return null;
         }

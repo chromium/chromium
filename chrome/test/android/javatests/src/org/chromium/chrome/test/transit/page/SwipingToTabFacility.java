@@ -24,7 +24,7 @@ public class SwipingToTabFacility extends Facility<CtaPageStation> {
     }
 
     /** Finish the swipe to land at a {@link CtaPageStation}. */
-    public <T extends CtaPageStation> T finishSwipe(CtaPageStation.Builder<T> destinationBuilder) {
+    public <T extends CtaPageStation> T finishSwipe(BasePageStation.Builder<T> destinationBuilder) {
         return runTo(mFinishDragTrigger)
                 .arriveAt(
                         destinationBuilder

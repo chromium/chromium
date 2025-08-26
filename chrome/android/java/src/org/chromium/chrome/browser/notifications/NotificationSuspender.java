@@ -24,7 +24,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -196,7 +195,7 @@ public class NotificationSuspender {
 
         mNotificationManager.getActiveNotifications(
                 (activeNotifications) -> {
-                    for (NotificationManagerProxy.StatusBarNotificationProxy notification :
+                    for (BaseNotificationManagerProxy.StatusBarNotificationProxy notification :
                             activeNotifications) {
                         if (notification.getId() != NotificationPlatformBridge.PLATFORM_ID) {
                             continue;

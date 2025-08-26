@@ -25,6 +25,7 @@ import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
+import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabThumbnailCondition;
@@ -57,7 +58,7 @@ public class Journeys {
             int numRegularTabs,
             int numIncognitoTabs,
             String url,
-            Supplier<CtaPageStation.Builder<T>> pageStationFactory) {
+            Supplier<BasePageStation.Builder<T>> pageStationFactory) {
         List<String> regularTabs = getListOfIdenticalUrls(numRegularTabs, url);
         List<String> incognitoTabs = getListOfIdenticalUrls(numIncognitoTabs, url);
 
@@ -78,7 +79,7 @@ public class Journeys {
             int numRegularTabs,
             int numIncognitoTabs,
             String url,
-            Supplier<CtaPageStation.Builder<T>> pageStationFactory) {
+            Supplier<BasePageStation.Builder<T>> pageStationFactory) {
         List<String> regularTabs = getListOfIdenticalUrls(numRegularTabs, url);
         List<String> incognitoTabs = getListOfIdenticalUrls(numIncognitoTabs, url);
 
@@ -121,7 +122,7 @@ public class Journeys {
             final CtaPageStation startingPage,
             List<String> urls,
             boolean isIncognito,
-            Supplier<CtaPageStation.Builder<T>> pageStationFactory) {
+            Supplier<BasePageStation.Builder<T>> pageStationFactory) {
         return doCreateTabs(
                 startingPage,
                 urls,
@@ -136,7 +137,7 @@ public class Journeys {
             int numTabs,
             String url,
             boolean isIncognito,
-            Supplier<CtaPageStation.Builder<T>> pageStationFactory) {
+            Supplier<BasePageStation.Builder<T>> pageStationFactory) {
         List<String> urls = getListOfIdenticalUrls(numTabs, url);
         return doCreateTabs(
                 startingPage, urls, isIncognito, pageStationFactory, /* captureThumbnails= */ true);
@@ -169,7 +170,7 @@ public class Journeys {
             CtaPageStation startingStation,
             List<String> urlsForRegularTabs,
             List<String> urlsForIncognitoTabs,
-            Supplier<CtaPageStation.Builder<T>> pageStationFactory,
+            Supplier<BasePageStation.Builder<T>> pageStationFactory,
             boolean captureThumbnails) {
         assert urlsForRegularTabs.size() >= 1;
         TabModelSelector tabModelSelector = startingStation.getTabModelSelector();
@@ -210,7 +211,7 @@ public class Journeys {
             final CtaPageStation startingPage,
             List<String> urls,
             boolean isIncognito,
-            Supplier<CtaPageStation.Builder<T>> pageStationFactory,
+            Supplier<BasePageStation.Builder<T>> pageStationFactory,
             boolean captureThumbnails) {
         assert !urls.isEmpty();
 

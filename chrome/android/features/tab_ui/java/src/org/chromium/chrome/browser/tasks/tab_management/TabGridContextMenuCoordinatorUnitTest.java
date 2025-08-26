@@ -170,7 +170,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_shareTab() {
-        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+        TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
@@ -189,7 +189,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_addToTabGroup() {
-        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+        TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
@@ -208,7 +208,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_addToNewTabGroup() {
-        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+        TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
@@ -227,7 +227,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_addToBookmarks() {
-        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+        TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
@@ -246,7 +246,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_editBookmark() {
-        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+        TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
@@ -265,7 +265,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_selectTabs() {
-        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+        TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
@@ -284,7 +284,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_pinTab() {
-        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+        TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
@@ -303,7 +303,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_unpinTab() {
-        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+        TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
@@ -355,7 +355,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     private void testGetMenuItemClickedCallback_closeTab(
             @Nullable ListViewTouchTracker listViewTouchTracker, boolean shouldAllowUndo) {
         // Setup
-        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+        TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
@@ -377,7 +377,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_invalidTabId() {
-        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+        TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
                         mTabGroupModelFilter,
@@ -397,7 +397,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     @Test
     public void testGetMenuItemClickedCallback_tabNotFound() {
         when(mTabModel.getTabById(anyInt())).thenReturn(null);
-        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+        TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
                         mTabGroupModelFilter,

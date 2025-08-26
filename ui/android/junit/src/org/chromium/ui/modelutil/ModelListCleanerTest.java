@@ -29,7 +29,7 @@ public class ModelListCleanerTest {
 
     @Before
     public void setUp() {
-        mModelList = new ModelListAdapter.ModelList();
+        mModelList = new MVCListAdapter.ModelList();
     }
 
     @Test
@@ -41,9 +41,9 @@ public class ModelListCleanerTest {
         builder.with(DESTROYABLE_0, destroyable);
         PropertyModel model = builder.build();
 
-        mModelList.add(new ModelListAdapter.ListItem(VIEW_TYPE, model));
-        mModelList.add(new ModelListAdapter.ListItem(VIEW_TYPE, model));
-        mModelList.add(new ModelListAdapter.ListItem(VIEW_TYPE, model));
+        mModelList.add(new MVCListAdapter.ListItem(VIEW_TYPE, model));
+        mModelList.add(new MVCListAdapter.ListItem(VIEW_TYPE, model));
+        mModelList.add(new MVCListAdapter.ListItem(VIEW_TYPE, model));
 
         destroyAndClearAllRows(mModelList, DESTROYABLE_0);
         assertEquals(3, totalRuns.get());
@@ -58,9 +58,9 @@ public class ModelListCleanerTest {
         builder.with(DESTROYABLE_0, destroyable);
         PropertyModel model = builder.build();
 
-        mModelList.add(new ModelListAdapter.ListItem(VIEW_TYPE, model));
-        mModelList.add(new ModelListAdapter.ListItem(VIEW_TYPE, model));
-        mModelList.add(new ModelListAdapter.ListItem(VIEW_TYPE, new PropertyModel()));
+        mModelList.add(new MVCListAdapter.ListItem(VIEW_TYPE, model));
+        mModelList.add(new MVCListAdapter.ListItem(VIEW_TYPE, model));
+        mModelList.add(new MVCListAdapter.ListItem(VIEW_TYPE, new PropertyModel()));
 
         destroyAndClearAllRows(mModelList, DESTROYABLE_0);
         assertEquals(2, totalRuns.get());
@@ -79,10 +79,10 @@ public class ModelListCleanerTest {
         builder.with(DESTROYABLE_1, destroyable);
         PropertyModel model1 = builder.build();
 
-        mModelList.add(new ModelListAdapter.ListItem(VIEW_TYPE, model));
-        mModelList.add(new ModelListAdapter.ListItem(VIEW_TYPE, model1));
-        mModelList.add(new ModelListAdapter.ListItem(VIEW_TYPE, new PropertyModel()));
-        mModelList.add(new ModelListAdapter.ListItem(VIEW_TYPE, new PropertyModel()));
+        mModelList.add(new MVCListAdapter.ListItem(VIEW_TYPE, model));
+        mModelList.add(new MVCListAdapter.ListItem(VIEW_TYPE, model1));
+        mModelList.add(new MVCListAdapter.ListItem(VIEW_TYPE, new PropertyModel()));
+        mModelList.add(new MVCListAdapter.ListItem(VIEW_TYPE, new PropertyModel()));
 
         destroyAndClearAllRows(mModelList, DESTROYABLE_0, DESTROYABLE_1);
         assertEquals(2, totalRuns.get());

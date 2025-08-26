@@ -142,7 +142,7 @@ public class TargetSelectorCoordinator {
             if ((UiUtils.isInstanceSwitcherV2Enabled() && info.type != InstanceInfo.Type.CURRENT)
                     || !UiUtils.isInstanceSwitcherV2Enabled()) {
                 PropertyModel itemModel = generateListItem(info);
-                mModelList.add(new ModelListAdapter.ListItem(0, itemModel));
+                mModelList.add(new ListItem(0, itemModel));
             }
         }
         ModalDialogProperties.Controller controller =

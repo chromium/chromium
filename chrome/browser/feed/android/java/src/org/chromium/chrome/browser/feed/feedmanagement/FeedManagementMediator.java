@@ -22,8 +22,8 @@ import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -53,7 +53,7 @@ public class FeedManagementMediator {
                         R.string.feed_manage_activity_description,
                         this::handleActivityClick);
         mModelList.add(
-                new ModelListAdapter.ListItem(
+                new MVCListAdapter.ListItem(
                         FeedManagementItemProperties.DEFAULT_ITEM_TYPE, activityModel));
         PropertyModel followingModel =
                 generateListItem(
@@ -61,7 +61,7 @@ public class FeedManagementMediator {
                         R.string.feed_manage_following_description,
                         this::handleFollowingClick);
         mModelList.add(
-                new ModelListAdapter.ListItem(
+                new MVCListAdapter.ListItem(
                         FeedManagementItemProperties.DEFAULT_ITEM_TYPE, followingModel));
         PropertyModel hiddenModel =
                 generateListItem(
@@ -69,7 +69,7 @@ public class FeedManagementMediator {
                         R.string.feed_manage_hidden_description,
                         this::handleHiddenClick);
         mModelList.add(
-                new ModelListAdapter.ListItem(
+                new MVCListAdapter.ListItem(
                         FeedManagementItemProperties.DEFAULT_ITEM_TYPE, hiddenModel));
     }
 

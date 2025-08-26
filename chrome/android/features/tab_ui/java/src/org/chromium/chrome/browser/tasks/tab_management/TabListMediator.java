@@ -132,7 +132,6 @@ import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
@@ -318,7 +317,7 @@ class TabListMediator implements TabListNotificationHandler {
 
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
-    private final TabListGroupMenuCoordinator.OnItemClickedCallback<Token>
+    private final TabOverflowMenuCoordinator.OnItemClickedCallback<Token>
             mOnMenuItemClickedCallback = this::onMenuItemClicked;
     private final Activity mActivity;
     private final TabListModel mModelList;
@@ -2182,9 +2181,9 @@ class TabListMediator implements TabListNotificationHandler {
         int tabUiType =
                 mMode == TabListMode.STRIP ? TabProperties.UiType.STRIP : TabProperties.UiType.TAB;
         if (index >= mModelList.size()) {
-            mModelList.add(new SimpleRecyclerViewAdapter.ListItem(tabUiType, tabInfo));
+            mModelList.add(new ListItem(tabUiType, tabInfo));
         } else {
-            mModelList.add(index, new SimpleRecyclerViewAdapter.ListItem(tabUiType, tabInfo));
+            mModelList.add(index, new ListItem(tabUiType, tabInfo));
         }
 
         setupPersistedTabDataFetcherForTab(tab, index);
@@ -2243,10 +2242,7 @@ class TabListMediator implements TabListNotificationHandler {
 
         bindTabGroupActionStateProperties(savedTabGroup, tabGroupInfo);
 
-        mModelList.add(
-                index,
-                new SimpleRecyclerViewAdapter.ListItem(
-                        TabProperties.UiType.TAB_GROUP, tabGroupInfo));
+        mModelList.add(index, new ListItem(TabProperties.UiType.TAB_GROUP, tabGroupInfo));
 
         String syncId = savedTabGroup.syncId;
         assumeNonNull(syncId);
@@ -2553,7 +2549,7 @@ class TabListMediator implements TabListNotificationHandler {
      * @param model The model that will be bound to a view.
      */
     void addSpecialItemToModel(int index, @UiType int uiType, PropertyModel model) {
-        mModelList.add(index, new SimpleRecyclerViewAdapter.ListItem(uiType, model));
+        mModelList.add(index, new ListItem(uiType, model));
     }
 
     /**

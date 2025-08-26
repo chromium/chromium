@@ -83,6 +83,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
+import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -109,7 +110,7 @@ public class ContextualSearchManager
         implements ContextualSearchManagementDelegate,
                 ContextualSearchNetworkCommunicator,
                 ContextualSearchSelectionHandler,
-                ChromeAccessibilityUtil.Observer {
+                AccessibilityUtil.Observer {
     // TODO(donnd): provide an inner class that implements some of these interfaces rather than
     // having the manager itself implement the interface because that exposes all the public methods
     // of that interface at the manager level.

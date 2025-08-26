@@ -108,7 +108,7 @@ public class TabSwitcherActionMenuFacility extends Facility<CtaPageStation> {
      * <p>This happens when there are other tabs in the same TabModel.
      */
     public <T extends CtaPageStation> T selectCloseTabAndDisplayAnotherTab(
-            CtaPageStation.Builder<T> pageStationBuilder) {
+            BasePageStation.Builder<T> pageStationBuilder) {
         return selectCloseTabTo()
                 .arriveAt(pageStationBuilder.initFrom(mHostStation).withIsSelectingTabs(1).build());
     }
@@ -120,7 +120,7 @@ public class TabSwitcherActionMenuFacility extends Facility<CtaPageStation> {
      * <p>This happens when the last incognito tab is closed but there are other regular tabs.
      */
     public <T extends CtaPageStation> T selectCloseTabAndDisplayRegularTab(
-            CtaPageStation.Builder<T> pageStationBuilder) {
+            BasePageStation.Builder<T> pageStationBuilder) {
         return selectCloseTabTo()
                 .arriveAt(
                         pageStationBuilder.withIncognito(false).initSelectingExistingTab().build());
@@ -152,7 +152,7 @@ public class TabSwitcherActionMenuFacility extends Facility<CtaPageStation> {
 
     /** Switches out of incognito tab model to regular tab model */
     public <T extends CtaPageStation> T selectSwitchOutOfIncognito(
-            CtaPageStation.Builder<T> destinationBuilder) {
+            BasePageStation.Builder<T> destinationBuilder) {
         assertTrue(mHostStation.isIncognito());
         return switchOutOfIncognitoMenuItemElement
                 .clickTo()
@@ -162,7 +162,7 @@ public class TabSwitcherActionMenuFacility extends Facility<CtaPageStation> {
 
     /** Switches to incognito tab model from regular tab model */
     public <T extends CtaPageStation> T selectSwitchToIncognito(
-            CtaPageStation.Builder<T> destinationBuilder) {
+            BasePageStation.Builder<T> destinationBuilder) {
         assertFalse(mHostStation.isIncognito());
         return switchToIncognitoMenuItemElement
                 .clickTo()

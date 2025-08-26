@@ -32,6 +32,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -81,7 +82,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
 
     private class TabItemState {
         private final Tab mTab;
-        private final ModelListAdapter.ListItem mItem;
+        private final MVCListAdapter.ListItem mItem;
         private final PropertyModel mModel;
 
         TabItemState(Tab tab) {
@@ -92,7 +93,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                             .with(MediaCapturePickerItemProperties.TAB_NAME, tab.getTitle())
                             .with(MediaCapturePickerItemProperties.SELECTED, false)
                             .build();
-            mItem = new ModelListAdapter.ListItem(EntryType.DEFAULT, mModel);
+            mItem = new MVCListAdapter.ListItem(EntryType.DEFAULT, mModel);
             mModelList.add(mItem);
         }
 

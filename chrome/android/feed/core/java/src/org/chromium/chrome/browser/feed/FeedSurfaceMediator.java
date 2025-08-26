@@ -31,6 +31,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.feedmanagement.FeedManagementActivity;
 import org.chromium.chrome.browser.feed.FeedSurfaceProvider.RestoringState;
 import org.chromium.chrome.browser.feed.Stream.ContentChangedListener;
+import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feed.sections.OnSectionHeaderSelectedListener;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderProperties;
@@ -364,7 +365,7 @@ public class FeedSurfaceMediator
             Context context,
             @Nullable SnapScrollHelper snapScrollHelper,
             @Nullable PropertyModel headerModel,
-            @FeedSurfaceCoordinator.StreamTabId int openingTabId,
+            @SurfaceCoordinator.StreamTabId int openingTabId,
             FeedActionDelegate actionDelegate,
             FeedOptionsCoordinator optionsCoordinator,
             @Nullable UiConfig uiConfig,

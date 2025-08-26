@@ -10,8 +10,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.android.whats_new.WhatsNewProperties.ViewState;
 import org.chromium.chrome.browser.ui.android.whats_new.features.WhatsNewFeature;
 import org.chromium.chrome.browser.ui.android.whats_new.features.WhatsNewFeatureProvider;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @NullMarked
@@ -39,7 +39,7 @@ public class WhatsNewMediator {
                     WhatsNewListItemProperties.buildModelForFeature(
                             mContext, feature, this::onFeatureItemClicked);
             mItemList.add(
-                    new ModelListAdapter.ListItem(
+                    new MVCListAdapter.ListItem(
                             WhatsNewListItemProperties.DEFAULT_ITEM_TYPE, model));
         }
     }

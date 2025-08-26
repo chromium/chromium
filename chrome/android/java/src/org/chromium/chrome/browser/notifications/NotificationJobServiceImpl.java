@@ -14,13 +14,14 @@ import android.os.SystemClock;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.base.SplitCompatJobService;
 
 /**
  * Processes jobs scheduled when user actions are issued on web notifications. We use this instead
  * of starting the NotificationService on N+.
  */
 @NullMarked
-public class NotificationJobServiceImpl extends NotificationJobService.Impl {
+public class NotificationJobServiceImpl extends SplitCompatJobService.Impl {
     static PersistableBundle getJobExtrasFromIntent(Intent intent) {
         PersistableBundle bundle = new PersistableBundle();
         bundle.putString(

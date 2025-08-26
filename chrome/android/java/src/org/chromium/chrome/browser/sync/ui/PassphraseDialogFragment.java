@@ -128,7 +128,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
                         .setView(v)
                         .setPositiveButton(
                                 R.string.submit,
-                                new Dialog.OnClickListener() {
+                                new OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface d, int which) {
                                         // We override the onclick. This is a hack to not dismiss

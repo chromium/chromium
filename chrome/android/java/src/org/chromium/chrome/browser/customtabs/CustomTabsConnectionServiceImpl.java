@@ -16,6 +16,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
 import androidx.browser.customtabs.PrefetchOptions;
 
+import org.chromium.chrome.browser.base.SplitCompatCustomTabsService;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.components.embedder_support.util.Origin;
@@ -23,7 +24,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import java.util.List;
 
 /** Custom tabs connection service, used by the embedded Chrome activities. */
-public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService.Impl {
+public class CustomTabsConnectionServiceImpl extends SplitCompatCustomTabsService.Impl {
     private CustomTabsConnection mConnection;
     private Intent mBindIntent;
 

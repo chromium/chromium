@@ -11,6 +11,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManagerDelegate;
 
@@ -19,7 +20,7 @@ import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManagerDelegat
  * Bluetooth device or scanning for nearby Bluetooth devices.
  */
 @NullMarked
-public class BluetoothNotificationServiceImpl extends BluetoothNotificationService.Impl {
+public class BluetoothNotificationServiceImpl extends SplitCompatService.Impl {
     private final BluetoothNotificationManagerDelegate mManagerDelegate =
             new BluetoothNotificationManagerDelegate() {
                 @Override

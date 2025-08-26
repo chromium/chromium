@@ -750,7 +750,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             mAnimator.addUpdateListener(new UpdateListener());
 
             mAnimator.addListener(
-                    new ValueAnimator.AnimatorListener() {
+                    new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animation) {
                             mPager.beginFakeDrag();

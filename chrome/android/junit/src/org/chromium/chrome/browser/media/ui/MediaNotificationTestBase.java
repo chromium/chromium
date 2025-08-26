@@ -161,7 +161,7 @@ public class MediaNotificationTestBase {
                 .when(mMockContext)
                 .startService(any(Intent.class));
 
-        MockMediaNotificationController.PendingIntentInitializer mockPendingIntentInitializer =
+        MediaNotificationController.PendingIntentInitializer mockPendingIntentInitializer =
                 mock(MockMediaNotificationController.PendingIntentInitializer.class);
         doNothing().when(mockPendingIntentInitializer).schedulePendingIntentConstructionIfNeeded();
         doNothing().when(mockPendingIntentInitializer).scheduleIdleTask();

@@ -11,6 +11,7 @@ import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.components.gcm_driver.GCMMessage;
 
 /**
@@ -18,7 +19,7 @@ import org.chromium.components.gcm_driver.GCMMessage;
  * if we received a high priority push message, as that should allow us to start a background
  * service even if Chrome is not running.
  */
-public class GCMBackgroundServiceImpl extends GCMBackgroundService.Impl {
+public class GCMBackgroundServiceImpl extends SplitCompatIntentService.Impl {
     private static final String TAG = "GCMBackgroundService";
 
     @Override

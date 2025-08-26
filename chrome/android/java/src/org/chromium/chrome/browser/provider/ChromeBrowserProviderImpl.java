@@ -19,13 +19,14 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.base.SplitCompatContentProvider;
 
 /**
  * This class provides access to user data stored in Chrome, such as bookmarks, most visited pages,
  * etc. It is used to support android.provider.Browser.
  */
 @NullMarked
-public class ChromeBrowserProviderImpl extends ChromeBrowserProvider.Impl {
+public class ChromeBrowserProviderImpl extends SplitCompatContentProvider.Impl {
     private static final String TAG = "ChromeBrowserProvider";
 
     /**

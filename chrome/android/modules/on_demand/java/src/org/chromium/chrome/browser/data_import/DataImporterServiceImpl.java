@@ -30,6 +30,7 @@ import org.chromium.base.Log;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.io.IOException;
@@ -37,7 +38,7 @@ import java.io.IOException;
 // A service for importing user data coming from other browsers. It implements
 // a gRPC API, called the "OS migration system app API".
 @NullMarked
-public class DataImporterServiceImpl extends DataImporterService.Impl {
+public class DataImporterServiceImpl extends SplitCompatService.Impl {
     private static final String TAG = "DataImporterService";
 
     private @Nullable IBinderReceiver mBinderReceiver;

@@ -44,7 +44,7 @@ class PlayerMediator implements InteractionHandler {
     private static final long SEEK_BACK_NANOS = -10 * 1_000_000_000L;
     private static final long SEEK_FORWARD_NANOS = 10 * 1_000_000_000L;
     private final PlayerCoordinator mCoordinator;
-    private final PlayerCoordinator.Delegate mDelegate;
+    private final Delegate mDelegate;
     private final PropertyModel mModel;
     private final BottomControlsStacker mBottomControlsStacker;
 

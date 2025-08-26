@@ -58,7 +58,7 @@ public class PlayerCoordinatorUnitTest {
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private Playback mPlayback;
-    @Mock private PlayerCoordinator.Observer mObserver;
+    @Mock private Player.Observer mObserver;
     @Mock private PlayerMediator mMediator;
     @Mock private MiniPlayerCoordinator mMiniPlayer;
     private MockPrefServiceHelper mMockPrefServiceHelper;

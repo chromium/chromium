@@ -344,7 +344,7 @@ public class WebappRegistry {
      */
     public List<String> findWebApksWithPendingUpdate() {
         List<String> webApkIdsWithPendingUpdate = new ArrayList<>();
-        for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
+        for (Map.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
             WebappDataStorage storage = entry.getValue();
             if (!TextUtils.isEmpty(storage.getPendingUpdateRequestPath())
                     && PackageUtils.isPackageInstalled(storage.getWebApkPackageName())) {
@@ -396,7 +396,7 @@ public class WebappRegistry {
     }
 
     void clearForTesting() {
-        Iterator<HashMap.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
+        Iterator<Map.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
         while (it.hasNext()) {
             it.next().getValue().delete();
             it.remove();
@@ -418,9 +418,9 @@ public class WebappRegistry {
             return;
         }
 
-        Iterator<HashMap.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
+        Iterator<Map.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
         while (it.hasNext()) {
-            HashMap.Entry<String, WebappDataStorage> entry = it.next();
+            Map.Entry<String, WebappDataStorage> entry = it.next();
             WebappDataStorage storage = entry.getValue();
             String webApkPackage = storage.getWebApkPackageName();
             if (webApkPackage != null) {
@@ -481,9 +481,9 @@ public class WebappRegistry {
      */
     @VisibleForTesting
     void unregisterWebappsForUrlsImpl(UrlFilter urlFilter) {
-        Iterator<HashMap.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
+        Iterator<Map.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
         while (it.hasNext()) {
-            HashMap.Entry<String, WebappDataStorage> entry = it.next();
+            Map.Entry<String, WebappDataStorage> entry = it.next();
             WebappDataStorage storage = entry.getValue();
             if (urlFilter.matchesUrl(storage.getUrl())) {
                 storage.delete();

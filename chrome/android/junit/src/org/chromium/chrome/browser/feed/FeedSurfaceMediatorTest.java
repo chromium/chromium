@@ -47,6 +47,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feed.sections.OnSectionHeaderSelectedListener;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderProperties;
@@ -1034,12 +1035,12 @@ public class FeedSurfaceMediatorTest {
     }
 
     private FeedSurfaceMediator createMediator(
-            @FeedSurfaceCoordinator.StreamTabId int tabId, PropertyModel sectionHeaderModel) {
+            @SurfaceCoordinator.StreamTabId int tabId, PropertyModel sectionHeaderModel) {
         return createMediator(tabId, sectionHeaderModel, /* uiConfig= */ null);
     }
 
     private FeedSurfaceMediator createMediator(
-            @FeedSurfaceCoordinator.StreamTabId int tabId,
+            @SurfaceCoordinator.StreamTabId int tabId,
             PropertyModel sectionHeaderModel,
             UiConfig uiConfig) {
         return new FeedSurfaceMediator(

@@ -66,6 +66,7 @@ import org.chromium.chrome.test.transit.hub.UndoSnackbarFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabThumbnailsCapturedCarryOn;
@@ -693,7 +694,7 @@ public class TabSwitcherLayoutPTTest {
 
     private <T extends CtaPageStation> T roundtripToHTSWithThumbnailChecks(
             T page,
-            Supplier<CtaPageStation.Builder<T>> destinationBuiderFactory,
+            Supplier<BasePageStation.Builder<T>> destinationBuiderFactory,
             Runnable resetHTSStateOnUiThread,
             boolean canGarbageCollectBitmaps) {
         RegularTabSwitcherStation tabSwitcher = enterRegularHtsWithThumbnailChecking(page);

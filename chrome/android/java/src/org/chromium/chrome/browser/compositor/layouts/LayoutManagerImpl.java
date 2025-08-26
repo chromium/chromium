@@ -897,8 +897,8 @@ public class LayoutManagerImpl
     /**
      * @return The {@link TabModelObserver} instance this class should be using.
      */
-    protected LayoutManagerChrome.LayoutManagerTabModelObserver createTabModelObserver() {
-        return new LayoutManagerChrome.LayoutManagerTabModelObserver();
+    protected LayoutManagerTabModelObserver createTabModelObserver() {
+        return new LayoutManagerTabModelObserver();
     }
 
     /**

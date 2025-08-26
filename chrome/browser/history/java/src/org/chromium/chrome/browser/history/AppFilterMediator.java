@@ -13,9 +13,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.chrome.browser.history.AppFilterCoordinator.CloseCallback;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ class AppFilterMediator {
         mCloseCallback = closeCallback;
         for (AppInfo info : appInfoList) {
             PropertyModel item = generateListItem(info);
-            mModelList.add(new SimpleRecyclerViewAdapter.ListItem(0, item));
+            mModelList.add(new MVCListAdapter.ListItem(0, item));
         }
     }
 
@@ -81,7 +81,7 @@ class AppFilterMediator {
     }
 
     private @Nullable PropertyModel getModelForAppId(String appId) {
-        for (SimpleRecyclerViewAdapter.ListItem item : mModelList) {
+        for (MVCListAdapter.ListItem item : mModelList) {
             if (appId.equals(item.model.get(AppFilterProperties.ID))) {
                 return item.model;
             }

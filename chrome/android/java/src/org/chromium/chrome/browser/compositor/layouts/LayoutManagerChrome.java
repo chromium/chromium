@@ -38,11 +38,11 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.ui.util.XrUtils;
 
 import java.util.List;
@@ -52,8 +52,7 @@ import java.util.List;
  * of {@link LayoutManagerImpl}.
  */
 @NullMarked
-public class LayoutManagerChrome extends LayoutManagerImpl
-        implements ChromeAccessibilityUtil.Observer {
+public class LayoutManagerChrome extends LayoutManagerImpl implements AccessibilityUtil.Observer {
     // Layouts
     /** A {@link Layout} that should be used when the user is swiping sideways on the toolbar. */
     protected ToolbarSwipeLayout mToolbarSwipeLayout;

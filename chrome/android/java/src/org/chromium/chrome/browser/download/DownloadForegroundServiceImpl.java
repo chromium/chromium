@@ -22,6 +22,7 @@ import androidx.core.app.ServiceCompat;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 
 import java.lang.annotation.Retention;
@@ -29,7 +30,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Keep-alive foreground service for downloads. */
 @NullMarked
-public class DownloadForegroundServiceImpl extends DownloadForegroundService.Impl {
+public class DownloadForegroundServiceImpl extends SplitCompatService.Impl {
     private static final String TAG = "DownloadFg";
     private final IBinder mBinder = new LocalBinder();
 
