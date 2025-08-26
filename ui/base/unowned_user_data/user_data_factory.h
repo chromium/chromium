@@ -6,6 +6,7 @@
 #define UI_BASE_UNOWNED_USER_DATA_USER_DATA_FACTORY_H_
 
 #include <concepts>
+#include <map>
 #include <memory>
 
 #include "base/functional/callback.h"

@@ -88,6 +88,7 @@ source_set("glic") {
     "//chrome/browser/actor:types",
     "//chrome/common",
     "//components/user_education/common",
+    "//ui/base/interaction",
   ]
 }
 
@@ -218,6 +219,7 @@ source_set("impl") {
     "//components/variations/service",
     "//extensions/browser",
     "//third_party/metrics_proto",
+    "//ui/base/interaction",
     "//ui/webui",
     "//url",
   ]

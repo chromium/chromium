@@ -23,7 +23,7 @@ component("unowned_user_data") {
 
   public_deps = [
     "//base",
-    "//ui/base",
+    "//ui/base/interaction",
   ]
 }
 

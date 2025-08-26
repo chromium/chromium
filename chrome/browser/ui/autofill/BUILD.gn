@@ -100,7 +100,7 @@ source_set("autofill") {
       "//components/renderer_context_menu",
       "//components/user_education/common",
       "//third_party/abseil-cpp:absl",
-      "//ui/base",
+      "//ui/base/interaction",
       "//ui/menus",
       "//ui/views",
     ]

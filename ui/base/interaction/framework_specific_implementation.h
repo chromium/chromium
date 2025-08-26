@@ -53,7 +53,7 @@ namespace ui {
 // not every intermediate class need be registered. Furthermore, inheritance is
 // not automatic; DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS() is required to
 // establish the association.
-class COMPONENT_EXPORT(UI_BASE) FrameworkSpecificImplementation {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) FrameworkSpecificImplementation {
  public:
   // Used by IsA() and AsA() methods to do runtime type-checking.
   using FrameworkIdentifier = ElementIdentifier;
@@ -143,11 +143,11 @@ class COMPONENT_EXPORT(UI_BASE) FrameworkSpecificImplementation {
            BaseClassName::CheckInstanceFrameworkHierarchy(id);                \
   }
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(const FrameworkSpecificImplementation& impl,
                     std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(std::ostream& os,
                                 const FrameworkSpecificImplementation& impl);
 

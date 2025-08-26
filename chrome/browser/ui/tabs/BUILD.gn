@@ -71,7 +71,7 @@ if (!is_android) {
 
     public_deps = [
       "//base",
-      "//ui/base",
+      "//ui/base/interaction",
       "//ui/menus",
     ]
   }

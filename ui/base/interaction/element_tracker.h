@@ -45,7 +45,7 @@ using CustomElementEventType = ElementIdentifier;
 // You should derive a class for each UI framework whose elements you wish to
 // track. See README.md for information on how to create your own framework
 // implementations.
-class COMPONENT_EXPORT(UI_BASE) TrackedElement
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) TrackedElement
     : public FrameworkSpecificImplementation {
  public:
   ~TrackedElement() override;
@@ -92,7 +92,7 @@ class COMPONENT_EXPORT(UI_BASE) TrackedElement
 // An element must be visible before events can be sent for that element;
 // NotifyElementHidden() must be called before the element is destroyed or
 // changes context or identifier.
-class COMPONENT_EXPORT(UI_BASE) ElementTrackerFrameworkDelegate {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementTrackerFrameworkDelegate {
  public:
   virtual void NotifyElementShown(TrackedElement* element) = 0;
   virtual void NotifyElementActivated(TrackedElement* element) = 0;
@@ -105,7 +105,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementTrackerFrameworkDelegate {
 // eventually become hidden. Tracks only visible elements.
 //
 // NOT THREAD SAFE. Should only be accessed from the main UI thread.
-class COMPONENT_EXPORT(UI_BASE) ElementTracker
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementTracker
     : ElementTrackerFrameworkDelegate {
  public:
   // Callback that subscribers receive when the specified event occurs.
@@ -271,7 +271,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
 
 // Holds an TrackedElement reference and nulls it out if the element goes
 // away. In other words, acts as a weak reference for TrackedElements.
-class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) SafeElementReference {
  public:
   SafeElementReference();
   explicit SafeElementReference(TrackedElement* element);

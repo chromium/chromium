@@ -24,7 +24,7 @@ static_library("bluetooth") {
     "//chromeos/strings",
     "//components/session_manager/core",
     "//content/public/browser",
-    "//ui/base",
+    "//ui/base/interaction",
     "//ui/web_dialogs",
     "//ui/webui",
     "//ui/wm",

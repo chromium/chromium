@@ -68,8 +68,8 @@ source_set("toolbar") {
       "//content/public/browser",
       "//extensions/browser",
       "//extensions/common",
-      "//ui/base",
       "//ui/base:types",
+      "//ui/base/interaction",
       "//ui/base/mojom:ui_base_types",
       "//ui/menus",
     ]
@@ -292,7 +292,6 @@ if (!is_android) {
       "//chrome/common",
       "//chrome/common:chrome_features",
       "//chrome/common:constants",
-      "//chrome/test:test_support",
       "//chrome/test:test_support",
       "//components/crx_file",
       "//components/history/core/browser",

@@ -25,6 +25,7 @@ source_set("signin") {
     "//chrome/common",
     "//components/signin/public/base",
     "//components/sync/base",
+    "//ui/base/interaction",
     "//url",
   ]
 
@@ -89,7 +90,7 @@ source_set("impl") {
     "//components/sync/service",
     "//content/public/browser",
     "//google_apis",
-    "//ui/base",
+    "//ui/base/interaction",
     "//url",
   ]
 

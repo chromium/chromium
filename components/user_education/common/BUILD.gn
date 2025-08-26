@@ -107,7 +107,7 @@ source_set("common") {
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//ui/accessibility",
-    "//ui/base",
+    "//ui/base/interaction",
     "//ui/menus",
   ]
 }
@@ -122,7 +122,10 @@ component("events") {
     "user_education_events.h",
   ]
 
-  deps = [ "//ui/base" ]
+  deps = [
+    "//base",
+    "//ui/base/interaction",
+  ]
 }
 
 source_set("unit_tests") {
@@ -166,8 +169,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
     "//ui/accessibility",
-    "//ui/base",
-    "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

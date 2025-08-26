@@ -38,7 +38,7 @@ source_set("location_bar") {
       "//extensions/browser",
       "//services/device/public/cpp/geolocation",
       "//skia:skia_core_public_headers",
-      "//ui/base",
+      "//ui/base/interaction",
       "//ui/base/metadata",
       "//ui/gfx/geometry",
       "//ui/views",

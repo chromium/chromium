@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/check.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ref.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -35,7 +36,7 @@ class ScopedTypedData;
 // collection.
 //
 // See usage documentation in typed_data.h for more information.
-class COMPONENT_EXPORT(UI_BASE) OwnedTypedDataCollection final {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
  public:
   OwnedTypedDataCollection();
   OwnedTypedDataCollection(OwnedTypedDataCollection&&) noexcept;
@@ -170,7 +171,7 @@ class COMPONENT_EXPORT(UI_BASE) OwnedTypedDataCollection final {
 // `test::ScopedTypedData`.
 //
 // See usage documentation in typed_data.h for more information.
-class COMPONENT_EXPORT(UI_BASE) UnownedTypedDataCollection {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) UnownedTypedDataCollection {
  public:
   UnownedTypedDataCollection();
   UnownedTypedDataCollection(UnownedTypedDataCollection&&) noexcept;

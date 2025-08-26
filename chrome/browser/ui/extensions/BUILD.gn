@@ -37,6 +37,7 @@ source_set("extensions") {
       "//base",
       "//extensions/common",
       "//ui/base:types",
+      "//ui/base/interaction",
       "//ui/base/mojom:ui_base_types",
     ]
   }

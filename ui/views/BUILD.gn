@@ -580,6 +580,7 @@ component("views") {
     "//ui/base/clipboard",
     "//ui/base/dragdrop/mojom",
     "//ui/base/emoji",
+    "//ui/base/interaction",
     "//ui/color",
     "//ui/color:mixers",
     "//ui/compositor_extra",

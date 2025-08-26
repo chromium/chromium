@@ -34,7 +34,7 @@ source_set("sync") {
     ]
     if (!is_chromeos) {
       sources += [ "sync_passphrase_dialog.h" ]
-      public_deps += [ "//ui/base" ]
+      public_deps += [ "//ui/base/interaction" ]
     }
   }
 }

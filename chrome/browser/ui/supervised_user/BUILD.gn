@@ -10,7 +10,7 @@ if (enable_extensions) {
     public_deps = [
       "//base",
       "//chrome/browser/supervised_user",
-      "//ui/base",
+      "//ui/base/interaction",
       "//ui/gfx",
     ]
   }

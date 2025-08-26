@@ -62,6 +62,7 @@ static_library("accessibility") {
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/common:mojom",
     "//services/accessibility:buildflags",
+    "//ui/base/interaction",
     "//ui/content_accelerators",
     "//ui/events/ash",
     "//ui/views/controls/webview",

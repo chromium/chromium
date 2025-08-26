@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"

@@ -15,7 +15,7 @@ source_set("plus_addresses") {
   public_deps = [
     "//components/plus_addresses/core/browser:types",
     "//content/public/browser",
-    "//ui/base",
+    "//ui/base/interaction",
     "//url",
   ]
 

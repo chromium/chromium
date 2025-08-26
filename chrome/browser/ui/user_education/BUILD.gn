@@ -21,6 +21,7 @@ source_set("user_education") {
     "//base",
     "//chrome/browser/user_education",
     "//components/user_education/common",
+    "//ui/base:types",
     "//ui/base/idle",
     "//ui/base/unowned_user_data",
     "//url",

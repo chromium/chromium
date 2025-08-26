@@ -12,6 +12,7 @@ source_set("tracked_element") {
 
   public_deps = [
     "//content/public/browser",
+    "//ui/base/interaction",
     "//ui/webui/resources/js/tracked_element:mojo_bindings",
   ]
 
@@ -33,7 +34,6 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/base",
     "//ui/base:test_support",
     "//ui/views:test_support",
     "//ui/views/controls/webview",

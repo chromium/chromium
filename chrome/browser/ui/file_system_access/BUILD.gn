@@ -32,6 +32,7 @@ source_set("impl") {
   deps = [
     ":file_system_access",
     "//chrome/browser/ui:url_identity",
+    "//ui/base/interaction",
   ]
 
   if (safe_browsing_mode != 0) {

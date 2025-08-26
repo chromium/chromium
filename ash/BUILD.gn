@@ -3574,6 +3574,7 @@ component("ash") {
     "//ui/base",
     "//ui/base/ime/ash",
     "//ui/base/ime/init",
+    "//ui/base/interaction",
     "//ui/chromeos",
     "//ui/chromeos/resources",
     "//ui/chromeos/styles:cros_styles_views",

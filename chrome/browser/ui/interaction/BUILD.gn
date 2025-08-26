@@ -11,7 +11,7 @@ source_set("interaction") {
   ]
   public_deps = [
     "//chrome/browser/ui/browser_window",
-    "//ui/base",
+    "//ui/base/interaction",
     "//ui/base/unowned_user_data",
   ]
 }

@@ -269,6 +269,6 @@ source_set("interactive_ui_tests") {
     "//chrome/common",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
-    "//ui/base",
+    "//ui/base/interaction",
   ]
 }

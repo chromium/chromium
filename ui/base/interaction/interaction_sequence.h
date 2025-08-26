@@ -60,7 +60,7 @@ namespace ui {
 // For more detailed instructions on using the ui/base/interaction library, see
 // README.md in this folder.
 //
-class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
  public:
   // The type of event that is expected to happen next in the sequence.
   enum class StepType {
@@ -224,7 +224,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   using StepEndCallback = base::OnceCallback<void(TrackedElement* element)>;
 
   // Information passed when a sequence fails or is aborted.
-  struct COMPONENT_EXPORT(UI_BASE) AbortedData {
+  struct COMPONENT_EXPORT(UI_BASE_INTERACTION) AbortedData {
     AbortedData();
     ~AbortedData();
     AbortedData(const AbortedData& other);
@@ -277,7 +277,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   class StepBuilder;
   struct SubsequenceData;
 
-  struct COMPONENT_EXPORT(UI_BASE) Step {
+  struct COMPONENT_EXPORT(UI_BASE_INTERACTION) Step {
     Step();
     Step(const Step& other) = delete;
     void operator=(const Step& other) = delete;
@@ -323,7 +323,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   };
 
   // Use a Builder to specify parameters when creating an InteractionSequence.
-  class COMPONENT_EXPORT(UI_BASE) Builder {
+  class COMPONENT_EXPORT(UI_BASE_INTERACTION) Builder {
    public:
     Builder();
     Builder(Builder&& other);
@@ -378,7 +378,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   //
   // Methods intended to be used in Kombucha test bodies have rvalue versions
   // to reduce the need for std::move().
-  class COMPONENT_EXPORT(UI_BASE) StepBuilder {
+  class COMPONENT_EXPORT(UI_BASE_INTERACTION) StepBuilder {
    public:
     StepBuilder();
     ~StepBuilder();
@@ -659,41 +659,41 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   base::WeakPtrFactory<InteractionSequence> weak_factory_{this};
 };
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(InteractionSequence::StepType step_type, std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(InteractionSequence::AbortedReason reason,
                     std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(InteractionSequence::SubsequenceMode mode,
                     std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(InteractionSequence::StepStartMode mode, std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(const InteractionSequence::AbortedData& aborted_data,
                     std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(std::ostream& os,
                                 InteractionSequence::StepType step_type);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(std::ostream& os,
                                 InteractionSequence::AbortedReason reason);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(std::ostream& os,
                                 InteractionSequence::StepStartMode mode);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(std::ostream& os,
                                 InteractionSequence::SubsequenceMode mode);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(
     std::ostream& os,
     const InteractionSequence::AbortedData& aborted_data);

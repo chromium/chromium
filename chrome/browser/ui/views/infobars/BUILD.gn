@@ -12,6 +12,7 @@ source_set("infobars") {
 
   public_deps = [
     "//components/infobars/core",
+    "//ui/base/interaction",
     "//ui/views",
   ]
 }

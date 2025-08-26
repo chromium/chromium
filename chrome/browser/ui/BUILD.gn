@@ -639,6 +639,7 @@ static_library("ui") {
     "//ui/base/accelerators/global_accelerator_listener",
     "//ui/base/clipboard",
     "//ui/base/ime",
+    "//ui/base/interaction",
     "//ui/base/unowned_user_data",
     "//ui/compositor",
     "//ui/content_accelerators",
@@ -5641,6 +5642,7 @@ static_library("browser_element_identifiers") {
     "browser_element_identifiers.h",
   ]
   deps = [ "//ui/base" ]
+  public_deps = [ "//ui/base/interaction" ]
 }
 
 if (is_android) {

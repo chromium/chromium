@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/pass_key.h"
-#include "ui/base/class_property.h"
 
 namespace views {
 class ElementTrackerViews;
@@ -98,6 +97,9 @@ class HelpBubbleHandler;
 
 namespace ui {
 
+template <typename T>
+class ClassPropertyCaster;
+
 namespace internal {
 
 // Defines the underlying value that an ElementIdentifier holds (namely, the
@@ -124,7 +126,7 @@ class ElementTracker;
 // default-constructed instances have false value and all other values evaluate
 // as true. It can also be used as the key in std::set, std::map, and similar
 // collections.
-class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementIdentifier final {
  public:
   // Creates a null identifier.
   constexpr ElementIdentifier() = default;
@@ -169,7 +171,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
   friend class ElementTracker;
   friend class ElementIdentifierTest;
   friend class ElementTrackerIdentifierTest;
-  friend COMPONENT_EXPORT(UI_BASE) void PrintTo(
+  friend COMPONENT_EXPORT(UI_BASE_INTERACTION) void PrintTo(
       ElementIdentifier element_identifier,
       std::ostream* os);
 
@@ -210,7 +212,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
 // ElementContext objects are assignable, have boolean value based on whether
 // the underlying value is null, and support operator < for use in maps and
 // sets.
-class COMPONENT_EXPORT(UI_BASE) ElementContext {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementContext {
  public:
   ElementContext() = default;
 
@@ -252,17 +254,17 @@ class COMPONENT_EXPORT(UI_BASE) ElementContext {
   uintptr_t value_ = 0;
 };
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(ElementIdentifier element_identifier, std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(ElementContext element_context, std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(std::ostream& os,
                                 ElementIdentifier element_identifier);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(std::ostream& os,
                                 ElementContext element_context);
 
