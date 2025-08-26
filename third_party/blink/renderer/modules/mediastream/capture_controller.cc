@@ -337,10 +337,9 @@ ScriptPromise<IDLUndefined> CaptureController::forwardWheel(
   }
 
   GetMediaStreamDispatcherHost()->RequestCapturedSurfaceControlPermission(
-      *session_id,
-      WTF::BindOnce(&CaptureController::OnForwardWheelPermissionResult,
-                    WrapWeakPersistent(this), WrapPersistent(resolver),
-                    WrapWeakPersistent(element)));
+      *session_id, BindOnce(&CaptureController::OnForwardWheelPermissionResult,
+                            WrapWeakPersistent(this), WrapPersistent(resolver),
+                            WrapWeakPersistent(element)));
   return promise;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
@@ -561,7 +560,7 @@ ScriptPromise<IDLUndefined> CaptureController::UpdateZoomLevel(
 
   GetMediaStreamDispatcherHost()->UpdateZoomLevel(
       session_id.value(), action,
-      WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
+      BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
   return promise;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }

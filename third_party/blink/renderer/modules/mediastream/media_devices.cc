@@ -375,7 +375,7 @@ bool EqualDeviceForDeviceChange(const WebMediaDeviceInfo& lhs,
          lhs.group_id == rhs.group_id && lhs.IsAvailable() == rhs.IsAvailable();
 }
 
-base::Token SubCaptureTargetIdToToken(const WTF::String& id) {
+base::Token SubCaptureTargetIdToToken(const String& id) {
   if (id.empty()) {
     return base::Token();
   }
@@ -452,8 +452,8 @@ ScriptPromise<IDLSequence<MediaDeviceInfo>> MediaDevices::enumerateDevices(
       /*request_video_input_capabilities=*/true,
       /*request_audio_input_capabilities=*/
       base::FeatureList::IsEnabled(kEnumerateDevicesRequestAudioCapabilities),
-      WTF::BindOnce(&MediaDevices::DevicesEnumerated, WrapPersistent(this),
-                    WrapPersistent(result_tracker), std::move(tracer)));
+      BindOnce(&MediaDevices::DevicesEnumerated, WrapPersistent(this),
+               WrapPersistent(result_tracker), std::move(tracer)));
   return promise;
 }
 
@@ -535,15 +535,15 @@ ScriptPromise<IDLResolvedType> MediaDevices::SendUserMediaRequest(
   if (media_type == UserMediaRequestType::kDisplayMedia ||
       IsExtensionScreenSharingFunctionCall(options, exception_state)) {
     if (options->hasController()) {
-      on_success_follow_up = WTF::BindOnce(
+      on_success_follow_up = BindOnce(
           &MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
           WrapWeakPersistent(this));
     } else {
       // TODO(crbug.com/1381949): Don't wait until the IPC round-trip and have
       // the browser process focus-switch upon starting the capture.
       on_success_follow_up =
-          WTF::BindOnce(&MediaDevices::CloseFocusWindowOfOpportunity,
-                        WrapWeakPersistent(this));
+          BindOnce(&MediaDevices::CloseFocusWindowOfOpportunity,
+                   WrapWeakPersistent(this));
     }
   }
 
@@ -761,8 +761,8 @@ ScriptPromise<MediaDeviceInfo> MediaDevices::selectAudioOutput(
   GetDispatcherHost(window->GetFrame())
       .SelectAudioOutput(
           options->hasDeviceId() ? options->deviceId() : String(),
-          WTF::BindOnce(&MediaDevices::OnSelectAudioOutputResult,
-                        WrapPersistent(this), WrapPersistent(resolver)));
+          BindOnce(&MediaDevices::OnSelectAudioOutputResult,
+                   WrapPersistent(this), WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -901,9 +901,9 @@ ScriptPromise<IDLUndefined> MediaDevices::setPreferredSinkId(
 
   LocalFrame* frame = LocalDOMWindow::From(script_state)->GetFrame();
   GetDispatcherHost(frame).SetPreferredSinkId(
-      sink_id, WTF::BindOnce(&MediaDevices::SetPreferredSinkIdResultReceived,
-                             WrapWeakPersistent(this), sink_id,
-                             WrapPersistent(resolver)));
+      sink_id,
+      BindOnce(&MediaDevices::SetPreferredSinkIdResultReceived,
+               WrapWeakPersistent(this), sink_id, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -958,7 +958,7 @@ ScriptPromise<CropTarget> MediaDevices::ProduceCropTarget(
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<CropTarget>>(
         script_state, exception_state.GetContext());
     const ScriptPromise<CropTarget> promise = resolver->Promise();
-    const WTF::String token_str(blink::TokenToGUID(token).AsLowercaseString());
+    const String token_str(blink::TokenToGUID(token).AsLowercaseString());
     resolver->Resolve(MakeGarbageCollected<CropTarget>(token_str));
     RecordUma(
         SubCaptureTarget::Type::kCropTarget,
@@ -989,8 +989,8 @@ ScriptPromise<CropTarget> MediaDevices::ProduceCropTarget(
   CHECK(window);  // Guaranteed by MayProduceSubCaptureTarget() earlier.
 
   base::OnceCallback callback =
-      WTF::BindOnce(&MediaDevices::ResolveCropTargetPromise,
-                    WrapPersistent(this), WrapPersistent(element));
+      BindOnce(&MediaDevices::ResolveCropTargetPromise, WrapPersistent(this),
+               WrapPersistent(element));
   GetDispatcherHost(window->GetFrame())
       .ProduceSubCaptureTargetId(SubCaptureTarget::Type::kCropTarget,
                                  std::move(callback));
@@ -1017,7 +1017,7 @@ ScriptPromise<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
         MakeGarbageCollected<ScriptPromiseResolver<RestrictionTarget>>(
             script_state, exception_state.GetContext());
     const ScriptPromise<RestrictionTarget> promise = resolver->Promise();
-    const WTF::String token_str(blink::TokenToGUID(token).AsLowercaseString());
+    const String token_str(blink::TokenToGUID(token).AsLowercaseString());
     resolver->Resolve(MakeGarbageCollected<RestrictionTarget>(token_str));
     RecordUma(
         SubCaptureTarget::Type::kRestrictionTarget,
@@ -1049,8 +1049,8 @@ ScriptPromise<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
   CHECK(window);  // Guaranteed by MayProduceSubCaptureTarget() earlier.
 
   base::OnceCallback callback =
-      WTF::BindOnce(&MediaDevices::ResolveRestrictionTargetPromise,
-                    WrapPersistent(this), WrapPersistent(element));
+      BindOnce(&MediaDevices::ResolveRestrictionTargetPromise,
+               WrapPersistent(this), WrapPersistent(element));
   GetDispatcherHost(window->GetFrame())
       .ProduceSubCaptureTargetId(SubCaptureTarget::Type::kRestrictionTarget,
                                  std::move(callback));
@@ -1134,8 +1134,8 @@ void MediaDevices::OnDevicesChanged(
                   DomWindow()->GetLocalFrameToken()))) {
     media_permission->HasPermission(
         ToMediaPermissionType(type),
-        WTF::BindOnce(&MediaDevices::MaybeFireDeviceChangeEvent,
-                      WrapWeakPersistent(this)));
+        BindOnce(&MediaDevices::MaybeFireDeviceChangeEvent,
+                 WrapWeakPersistent(this)));
   }
 }
 
@@ -1160,8 +1160,7 @@ void MediaDevices::ScheduleDispatchEvent(Event* event) {
   DCHECK(context);
   dispatch_scheduled_events_task_handle_ = PostCancellableTask(
       *context->GetTaskRunner(TaskType::kMediaElementEvent), FROM_HERE,
-      WTF::BindOnce(&MediaDevices::DispatchScheduledEvents,
-                    WrapPersistent(this)));
+      BindOnce(&MediaDevices::DispatchScheduledEvents, WrapPersistent(this)));
 }
 
 void MediaDevices::DispatchScheduledEvents() {
@@ -1196,8 +1195,8 @@ void MediaDevices::StartObserving() {
                         /*request_audio_output=*/true,
                         /*request_video_input_capabilities=*/false,
                         /*request_audio_input_capabilities=*/false,
-                        WTF::BindOnce(&MediaDevices::FinalizeStartObserving,
-                                      WrapPersistent(this)));
+                        BindOnce(&MediaDevices::FinalizeStartObserving,
+                                 WrapPersistent(this)));
 }
 
 void MediaDevices::FinalizeStartObserving(
@@ -1368,8 +1367,8 @@ mojom::blink::MediaDevicesDispatcherHost& MediaDevices::GetDispatcherHost(
         dispatcher_host_.BindNewPipeAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kMediaElementEvent)));
     dispatcher_host_.set_disconnect_handler(
-        WTF::BindOnce(&MediaDevices::OnDispatcherHostConnectionError,
-                      WrapWeakPersistent(this)));
+        BindOnce(&MediaDevices::OnDispatcherHostConnectionError,
+                 WrapWeakPersistent(this)));
   }
 
   DCHECK(dispatcher_host_.get());
@@ -1387,8 +1386,8 @@ void MediaDevices::SetDispatcherHostForTesting(
       std::move(dispatcher_host),
       execution_context->GetTaskRunner(TaskType::kMediaElementEvent));
   dispatcher_host_.set_disconnect_handler(
-      WTF::BindOnce(&MediaDevices::OnDispatcherHostConnectionError,
-                    WrapWeakPersistent(this)));
+      BindOnce(&MediaDevices::OnDispatcherHostConnectionError,
+               WrapWeakPersistent(this)));
 }
 
 void MediaDevices::Trace(Visitor* visitor) const {
@@ -1415,7 +1414,7 @@ void MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity(
     return;
   }
 
-  context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+  context->GetAgent()->event_loop()->EnqueueMicrotask(BindOnce(
       &MediaDevices::CloseFocusWindowOfOpportunity, WrapWeakPersistent(this),
       id, WrapWeakPersistent(capture_controller)));
 }
@@ -1443,7 +1442,7 @@ void MediaDevices::CloseFocusWindowOfOpportunity(
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void MediaDevices::ResolveRestrictionTargetPromise(Element* element,
-                                                   const WTF::String& id) {
+                                                   const String& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(element);  // Persistent.
 
@@ -1509,7 +1508,7 @@ bool MediaDevices::MayProduceSubCaptureTarget(ScriptState* script_state,
 }
 
 void MediaDevices::ResolveCropTargetPromise(Element* element,
-                                            const WTF::String& id) {
+                                            const String& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(element);  // Persistent.
 

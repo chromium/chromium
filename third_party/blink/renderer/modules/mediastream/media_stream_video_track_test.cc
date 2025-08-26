@@ -272,9 +272,9 @@ TEST_F(MediaStreamVideoTrackTest, ResetCallbackOnThread) {
   base::RunLoop run_loop;
   bool correct = false;
   sink.ConnectToTrackWithCallback(
-      track, WTF::BindRepeating(&CheckThreadVideoFrameReceiver,
-                                base::Owned(new CheckThreadHelper(
-                                    run_loop.QuitClosure(), &correct))));
+      track, blink::BindRepeating(&CheckThreadVideoFrameReceiver,
+                                  base::Owned(new CheckThreadHelper(
+                                      run_loop.QuitClosure(), &correct))));
   sink.DisconnectFromTrack();
   run_loop.Run();
   EXPECT_TRUE(correct) << "Not called on correct thread.";

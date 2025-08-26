@@ -43,7 +43,7 @@ class URLMediaSource {
   STATIC_ONLY(URLMediaSource);
 
  public:
-  static WTF::String createObjectURL(ScriptState*, MediaSource*);
+  static String createObjectURL(ScriptState*, MediaSource*);
 };
 
 }  // namespace blink

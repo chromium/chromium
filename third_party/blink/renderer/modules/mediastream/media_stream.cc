@@ -153,8 +153,8 @@ MediaStream::MediaStream(ExecutionContext* context,
   for (uint32_t i = 0; i < number_of_video_tracks; i++) {
     MediaStreamTrack* const new_track = MediaStreamTrackImpl::Create(
         context, descriptor_->VideoComponent(i),
-        WTF::BindOnce(&MediaStream::OnMediaStreamTrackInitialized,
-                      WrapPersistent(this)));
+        BindOnce(&MediaStream::OnMediaStreamTrackInitialized,
+                 WrapPersistent(this)));
     new_track->RegisterMediaStream(this);
     video_tracks_.push_back(new_track);
     if (transferred_track) {
@@ -169,9 +169,9 @@ MediaStream::MediaStream(ExecutionContext* context,
 
   if (number_of_video_tracks == 0) {
     context->GetTaskRunner(TaskType::kInternalMedia)
-        ->PostTask(FROM_HERE,
-                   WTF::BindOnce(std::move(media_stream_initialized_callback_),
-                                 WrapPersistent(this)));
+        ->PostTask(FROM_HERE, blink::BindOnce(
+                                  std::move(media_stream_initialized_callback_),
+                                  WrapPersistent(this)));
   }
 }
 

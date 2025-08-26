@@ -160,8 +160,9 @@ const gfx::Size WebMediaPlayerMS::kUseGpuMemoryBufferVideoFramesMinResolution =
 // should be destructed on the video task runner.
 class WebMediaPlayerMS::FrameDeliverer {
  public:
-  using RepaintCB = WTF::CrossThreadRepeatingFunction<
-      void(scoped_refptr<media::VideoFrame> frame, bool is_copy)>;
+  using RepaintCB =
+      CrossThreadRepeatingFunction<void(scoped_refptr<media::VideoFrame> frame,
+                                        bool is_copy)>;
   FrameDeliverer(const base::WeakPtr<WebMediaPlayerMS>& player,
                  RepaintCB enqueue_frame_cb,
                  scoped_refptr<base::SequencedTaskRunner> media_task_runner,
@@ -254,8 +255,7 @@ class WebMediaPlayerMS::FrameDeliverer {
     }
   }
 
-  WTF::CrossThreadRepeatingFunction<
-      void(scoped_refptr<media::VideoFrame> frame)>
+  CrossThreadRepeatingFunction<void(scoped_refptr<media::VideoFrame> frame)>
   GetRepaintCallback() {
     return CrossThreadBindRepeating(&FrameDeliverer::OnVideoFrame,
                                     weak_factory_.GetWeakPtr());
@@ -526,8 +526,8 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
   audio_renderer_ = renderer_factory_->GetAudioRenderer(
       web_stream_, internal_frame_->web_frame(),
       initial_audio_output_device_id_,
-      WTF::BindRepeating(&WebMediaPlayerMS::OnAudioRenderErrorCallback,
-                         weak_factory_.GetWeakPtr()));
+      blink::BindRepeating(&WebMediaPlayerMS::OnAudioRenderErrorCallback,
+                           weak_factory_.GetWeakPtr()));
 
   if (!video_frame_provider_ && !audio_renderer_) {
     SetNetworkState(WebMediaPlayer::kNetworkStateNetworkError);
@@ -792,8 +792,8 @@ void WebMediaPlayerMS::ReloadAudio() {
       audio_renderer_ = renderer_factory_->GetAudioRenderer(
           web_stream_, internal_frame_->web_frame(),
           initial_audio_output_device_id_,
-          WTF::BindRepeating(&WebMediaPlayerMS::OnAudioRenderErrorCallback,
-                             weak_factory_.GetWeakPtr()));
+          blink::BindRepeating(&WebMediaPlayerMS::OnAudioRenderErrorCallback,
+                               weak_factory_.GetWeakPtr()));
 
       // |audio_renderer_| can be null in tests.
       if (!audio_renderer_)
@@ -880,7 +880,7 @@ void WebMediaPlayerMS::Pause(PauseReason pause_reason) {
       *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
           [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-             WTF::CrossThreadOnceClosure copy_cb) {
+             CrossThreadOnceClosure copy_cb) {
             PostCrossThreadTask(*task_runner, FROM_HERE, std::move(copy_cb));
           },
           main_render_task_runner_,
@@ -1453,7 +1453,7 @@ void WebMediaPlayerMS::OnNewFramePresentedCallback() {
   client_->OnRequestVideoFrameCallback();
 }
 
-void WebMediaPlayerMS::SendLogMessage(const WTF::String& message) const {
+void WebMediaPlayerMS::SendLogMessage(const String& message) const {
   WebRtcLogMessage("WMPMS::" + message.Utf8() +
                    String::Format(" [delegate_id=%d]", delegate_id_).Utf8());
 }
@@ -1527,7 +1527,7 @@ void WebMediaPlayerMS::MaybeCreateWatchTimeReporter() {
                                      *media_stream_type);
 
   // Create the watch time reporter and synchronize its initial state.
-  // WTF::Unretained() is safe because WebMediaPlayerMS owns the
+  // Unretained() is safe because WebMediaPlayerMS owns the
   // |watch_time_reporter_|, and therefore outlives it.
   watch_time_reporter_ = std::make_unique<WatchTimeReporter>(
       media::mojom::blink::PlaybackProperties::New(
@@ -1536,10 +1536,9 @@ void WebMediaPlayerMS::MaybeCreateWatchTimeReporter() {
           false /*is_embedded_media_experience*/, *media_stream_type,
           media::RendererType::kRendererImpl),
       NaturalSize(),
-      WTF::BindRepeating(&WebMediaPlayerMS::GetCurrentTimeInterval,
-                         WTF::Unretained(this)),
-      WTF::BindRepeating(&WebMediaPlayerMS::GetPipelineStatistics,
-                         WTF::Unretained(this)),
+      blink::BindRepeating(&WebMediaPlayerMS::GetCurrentTimeInterval,
+                           Unretained(this)),
+      BindRepeating(&WebMediaPlayerMS::GetPipelineStatistics, Unretained(this)),
       media_metrics_provider.get(),
       internal_frame_->web_frame()->GetTaskRunner(
           blink::TaskType::kInternalMedia));

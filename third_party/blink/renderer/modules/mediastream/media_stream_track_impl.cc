@@ -310,9 +310,8 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
 
   if (video_track && GetDisplayCaptureType(component_)) {
     video_track->RegisterCaptureSurfaceResolutionChangeCallback(
-        WTF::BindRepeating(
-            &MediaStreamTrackImpl::MaybeDispatchConfigurationChange,
-            WrapWeakPersistent(this)));
+        BindRepeating(&MediaStreamTrackImpl::MaybeDispatchConfigurationChange,
+                      WrapWeakPersistent(this)));
   }
 }
 
@@ -698,7 +697,7 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
     settings->setLogicalSurface(*platform_settings.logical_surface);
   }
   if (platform_settings.cursor) {
-    WTF::String value;
+    String value;
     switch (*platform_settings.cursor) {
       case media::mojom::CursorCaptureType::NEVER:
         value = "never";
@@ -978,8 +977,8 @@ void MediaStreamTrackImpl::SourceChangedCaptureConfiguration() {
   // configurationchange event if they differ from the old ones.
   if (image_capture_) {
     image_capture_->UpdateAndCheckMediaTrackSettingsAndCapabilities(
-        WTF::BindOnce(&MediaStreamTrackImpl::MaybeDispatchConfigurationChange,
-                      WrapWeakPersistent(this)));
+        BindOnce(&MediaStreamTrackImpl::MaybeDispatchConfigurationChange,
+                 WrapWeakPersistent(this)));
   }
 }
 
@@ -1097,7 +1096,7 @@ void MediaStreamTrackImpl::BeingTransferred(
   if (user_media_client) {
     user_media_client->KeepDeviceAliveForTransfer(
         device()->serializable_session_id().value(), transfer_id,
-        WTF::BindOnce(
+        BindOnce(
             [](MediaStreamTrack* cloned_track,
                ExecutionContext* execution_context, bool device_found) {
               if (!device_found) {
@@ -1232,7 +1231,7 @@ void MediaStreamTrackImpl::AddObserver(MediaStreamTrack::Observer* observer) {
   observers_.insert(observer);
 }
 
-void MediaStreamTrackImpl::SendLogMessage(const WTF::String& message) {
+void MediaStreamTrackImpl::SendLogMessage(const String& message) {
   WebRtcLogMessage(
       String::Format(
           "MST::%s [kind: %s, id: %s, label: %s, enabled: %s, muted: %s, "

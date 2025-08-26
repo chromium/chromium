@@ -231,11 +231,10 @@ SourceBuffer* MediaSource::addSourceBuffer(const String& type,
   SourceBuffer* source_buffer = nullptr;
 
   // Note, here we must be open, therefore we must have an attachment.
-  if (!RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &MediaSource::AddSourceBuffer_Locked, WrapPersistent(this), type,
           nullptr /* audio_config */, nullptr /* video_config */,
-          WTF::Unretained(&exception_state),
-          WTF::Unretained(&source_buffer)))) {
+          Unretained(&exception_state), Unretained(&source_buffer)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     LogAndThrowDOMException(exception_state,
@@ -353,11 +352,10 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
   String null_type;
 
   // Note, here we must be open, therefore we must have an attachment.
-  if (!RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &MediaSource::AddSourceBuffer_Locked, WrapPersistent(this), null_type,
           std::move(audio_config), std::move(video_config),
-          WTF::Unretained(&exception_state),
-          WTF::Unretained(&source_buffer)))) {
+          Unretained(&exception_state), Unretained(&source_buffer)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     LogAndThrowDOMException(exception_state,
@@ -447,8 +445,8 @@ void MediaSource::removeSourceBuffer(SourceBuffer* buffer,
   // case). Note, we must not be closed (since closing clears our SourceBuffer
   // collections), therefore we must have an attachment.
   if (!RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&MediaSource::RemoveSourceBuffer_Locked,
-                        WrapPersistent(this), WrapPersistent(buffer)))) {
+          blink::BindOnce(&MediaSource::RemoveSourceBuffer_Locked,
+                          WrapPersistent(this), WrapPersistent(buffer)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     LogAndThrowDOMException(exception_state,
@@ -974,9 +972,9 @@ void MediaSource::setDuration(double duration,
   // Do remainder of steps only if attachment is usable and underlying demuxer
   // is protected from destruction (applicable especially for MSE-in-Worker
   // case). Note, we must be open, therefore we must have an attachment.
-  if (!RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &MediaSource::DurationChangeAlgorithm, WrapPersistent(this), duration,
-          WTF::Unretained(&exception_state)))) {
+          Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     LogAndThrowDOMException(exception_state,
@@ -991,12 +989,12 @@ double MediaSource::duration() {
     return duration_result;
 
   // Note, here we must be open or ended, therefore we must have an attachment.
-  if (!RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!RunUnlessElementGoneOrClosingUs(BindOnce(
           [](MediaSource* self, double* result,
              MediaSourceAttachmentSupplement::ExclusiveKey pass_key) {
             *result = self->GetDuration_Locked(pass_key);
           },
-          WrapPersistent(this), WTF::Unretained(&duration_result)))) {
+          WrapPersistent(this), Unretained(&duration_result)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, result should be in this case. It seems reasonable
     // to behave is if we are in "closed" readyState and report NaN to the app
@@ -1143,7 +1141,7 @@ void MediaSource::endOfStream(std::optional<V8EndOfStreamError> error,
   // Do remainder of steps only if attachment is usable and underlying demuxer
   // is protected from destruction (applicable especially for MSE-in-Worker
   // case). Note, we must be open, therefore we must have an attachment.
-  if (!RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &MediaSource::EndOfStreamAlgorithm, WrapPersistent(this), status))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
@@ -1183,8 +1181,8 @@ void MediaSource::setLiveSeekableRange(double start,
 
   // Note, here we must be open, therefore we must have an attachment.
   if (!RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&MediaSource::SetLiveSeekableRange_Locked,
-                        WrapPersistent(this), start, end))) {
+          blink::BindOnce(&MediaSource::SetLiveSeekableRange_Locked,
+                          WrapPersistent(this), start, end))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     LogAndThrowDOMException(exception_state,
@@ -1224,7 +1222,7 @@ void MediaSource::clearLiveSeekableRange(ExceptionState& exception_state) {
     return;
 
   // Note, here we must be open, therefore we must have an attachment.
-  if (!RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &MediaSource::ClearLiveSeekableRange_Locked, WrapPersistent(this)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
@@ -1542,17 +1540,17 @@ void MediaSource::ContextDestroyed() {
   // doing this detachment.
   bool cb_ran = attachment->RunExclusively(
       true /* abort if unsafe to use underlying demuxer */,
-      WTF::BindOnce(&MediaSource::DetachWorkerOnContextDestruction_Locked,
-                    WrapPersistent(this),
-                    true /* safe to notify underlying demuxer */));
+      blink::BindOnce(&MediaSource::DetachWorkerOnContextDestruction_Locked,
+                      WrapPersistent(this),
+                      true /* safe to notify underlying demuxer */));
 
   if (!cb_ran) {
     // Main-thread is already detaching or destructing the underlying demuxer.
     CHECK(attachment->RunExclusively(
         false /* do not abort */,
-        WTF::BindOnce(&MediaSource::DetachWorkerOnContextDestruction_Locked,
-                      WrapPersistent(this),
-                      false /* do not notify underlying demuxer */)));
+        blink::BindOnce(&MediaSource::DetachWorkerOnContextDestruction_Locked,
+                        WrapPersistent(this),
+                        false /* do not notify underlying demuxer */)));
   }
 }
 

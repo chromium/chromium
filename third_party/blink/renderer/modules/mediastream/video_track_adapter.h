@@ -131,24 +131,22 @@ class MODULES_EXPORT VideoTrackAdapter
   // These aliases mimic the definition of VideoCaptureDeliverFrameCB,
   // VideoTrackSettingsCallback and VideoTrackFormatCallback respectively.
   using VideoCaptureDeliverFrameInternalCallback =
-      WTF::CrossThreadFunction<void(
-          scoped_refptr<media::VideoFrame> video_frame,
-          base::TimeTicks estimated_capture_time)>;
+      CrossThreadFunction<void(scoped_refptr<media::VideoFrame> video_frame,
+                               base::TimeTicks estimated_capture_time)>;
   using VideoCaptureNotifyFrameDroppedInternalCallback =
-      WTF::CrossThreadFunction<void(media::VideoCaptureFrameDropReason)>;
+      CrossThreadFunction<void(media::VideoCaptureFrameDropReason)>;
   using DeliverEncodedVideoFrameInternalCallback =
-      WTF::CrossThreadFunction<void(
-          scoped_refptr<EncodedVideoFrame> video_frame,
-          base::TimeTicks estimated_capture_time)>;
+      CrossThreadFunction<void(scoped_refptr<EncodedVideoFrame> video_frame,
+                               base::TimeTicks estimated_capture_time)>;
   using VideoCaptureSubCaptureTargetVersionInternalCallback =
-      WTF::CrossThreadFunction<void(uint32_t)>;
-  using VideoTrackSettingsInternalCallback = WTF::CrossThreadFunction<void(
-      gfx::Size frame_size,
-      double frame_rate,
-      std::optional<gfx::Size> metadata_source_size,
-      std::optional<float> device_scale_factor)>;
+      CrossThreadFunction<void(uint32_t)>;
+  using VideoTrackSettingsInternalCallback =
+      CrossThreadFunction<void(gfx::Size frame_size,
+                               double frame_rate,
+                               std::optional<gfx::Size> metadata_source_size,
+                               std::optional<float> device_scale_factor)>;
   using VideoTrackFormatInternalCallback =
-      WTF::CrossThreadFunction<void(const media::VideoCaptureFormat&)>;
+      CrossThreadFunction<void(const media::VideoCaptureFormat&)>;
   void AddTrackOnVideoTaskRunner(
       const MediaStreamVideoTrack* track,
       VideoCaptureDeliverFrameInternalCallback frame_callback,
@@ -166,8 +164,7 @@ class MODULES_EXPORT VideoTrackAdapter
       const MediaStreamVideoTrack* track,
       const VideoTrackAdapterSettings& settings);
 
-  using OnMutedInternalCallback =
-      WTF::CrossThreadFunction<void(bool mute_state)>;
+  using OnMutedInternalCallback = CrossThreadFunction<void(bool mute_state)>;
   void StartFrameMonitoringOnVideoTaskRunner(
       OnMutedInternalCallback on_muted_state_callback,
       double source_frame_rate);
@@ -191,7 +188,7 @@ class MODULES_EXPORT VideoTrackAdapter
   // runner. It does the resolution adaptation and delivers frames to all
   // registered tracks.
   class VideoFrameResolutionAdapter;
-  using FrameAdapters = WTF::Vector<scoped_refptr<VideoFrameResolutionAdapter>>;
+  using FrameAdapters = Vector<scoped_refptr<VideoFrameResolutionAdapter>>;
   FrameAdapters adapters_;
 
   // Is non-null while frame monitoring. It is only accessed on the video task

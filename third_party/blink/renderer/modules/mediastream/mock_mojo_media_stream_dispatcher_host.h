@@ -39,19 +39,19 @@ class MockMojoMediaStreamDispatcherHost
       GenerateStreamsCallback callback) override;
   void CancelRequest(int32_t request_id) override;
   void StopStreamDevice(
-      const WTF::String& device_id,
+      const String& device_id,
       const std::optional<base::UnguessableToken>& session_id) override;
   void OpenDevice(int32_t request_id,
-                  const WTF::String& device_id,
+                  const String& device_id,
                   mojom::blink::MediaStreamType type,
                   OpenDeviceCallback callback) override;
 
-  MOCK_METHOD1(CloseDevice, void(const WTF::String&));
+  MOCK_METHOD1(CloseDevice, void(const String&));
   MOCK_METHOD3(SetCapturingLinkSecured,
                void(const std::optional<base::UnguessableToken>&,
                     mojom::blink::MediaStreamType,
                     bool));
-  MOCK_METHOD1(OnStreamStarted, void(const WTF::String&));
+  MOCK_METHOD1(OnStreamStarted, void(const String&));
   MOCK_METHOD3(KeepDeviceAliveForTransfer,
                void(const base::UnguessableToken&,
                     const base::UnguessableToken&,
@@ -67,7 +67,7 @@ class MockMojoMediaStreamDispatcherHost
   MOCK_METHOD2(RequestCapturedSurfaceControlPermission,
                void(const base::UnguessableToken&,
                     RequestCapturedSurfaceControlPermissionCallback));
-  MOCK_METHOD2(FocusCapturedSurface, void(const WTF::String&, bool));
+  MOCK_METHOD2(FocusCapturedSurface, void(const String&, bool));
 #endif
 
   MOCK_METHOD5(ApplySubCaptureTarget,

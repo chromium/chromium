@@ -975,9 +975,9 @@ void WebMediaPlayerMSCompositor::SetAlgorithmEnabledForTesting(
 
   if (!rendering_frame_buffer_) {
     rendering_frame_buffer_ = std::make_unique<VideoRendererAlgorithmWrapper>(
-        WTF::BindRepeating(
+        blink::BindRepeating(
             &WebMediaPlayerMSCompositor::MapTimestampsToRenderTimeTicks,
-            WTF::Unretained(this)),
+            Unretained(this)),
         &media_log_);
   }
 }

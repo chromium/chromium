@@ -226,7 +226,7 @@ class StringContainer {
       std::string default_setting) const {
     DCHECK(!IsEmpty());
     if (constraint.HasIdeal()) {
-      for (const WTF::String& ideal_candidate : constraint.Ideal()) {
+      for (const String& ideal_candidate : constraint.Ideal()) {
         std::string candidate = ideal_candidate.Utf8();
         if (allowed_values_.Contains(candidate))
           return std::make_tuple(1.0, candidate);

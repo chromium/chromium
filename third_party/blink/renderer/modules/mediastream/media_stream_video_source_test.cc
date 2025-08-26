@@ -78,8 +78,8 @@ class MediaStreamVideoSourceTest : public testing::Test {
     bool enabled = true;
     return MediaStreamVideoTrack::CreateVideoTrack(
         mock_stream_video_source_,
-        WTF::BindOnce(&MediaStreamVideoSourceTest::OnConstraintsApplied,
-                      base::Unretained(this)),
+        BindOnce(&MediaStreamVideoSourceTest::OnConstraintsApplied,
+                 base::Unretained(this)),
         enabled);
   }
 
@@ -93,8 +93,8 @@ class MediaStreamVideoSourceTest : public testing::Test {
     return MediaStreamVideoTrack::CreateVideoTrack(
         mock_stream_video_source_, adapter_settings, noise_reduction,
         is_screencast, min_frame_rate, nullptr, false,
-        WTF::BindOnce(&MediaStreamVideoSourceTest::OnConstraintsApplied,
-                      base::Unretained(this)),
+        BindOnce(&MediaStreamVideoSourceTest::OnConstraintsApplied,
+                 base::Unretained(this)),
         enabled);
   }
 
@@ -690,7 +690,7 @@ TEST_F(MediaStreamVideoSourceTest, FailedRestart) {
 
   // The source does not support Restart/StopForRestart.
   mock_source()->StopForRestart(
-      WTF::BindOnce([](MediaStreamVideoSource::RestartResult result) {
+      BindOnce([](MediaStreamVideoSource::RestartResult result) {
         EXPECT_EQ(result, MediaStreamVideoSource::RestartResult::IS_RUNNING);
       }));
   base::RunLoop().RunUntilIdle();
@@ -701,7 +701,7 @@ TEST_F(MediaStreamVideoSourceTest, FailedRestart) {
   // successful StopForRestart().
   mock_source()->Restart(
       media::VideoCaptureFormat(),
-      WTF::BindOnce([](MediaStreamVideoSource::RestartResult result) {
+      BindOnce([](MediaStreamVideoSource::RestartResult result) {
         EXPECT_EQ(result, MediaStreamVideoSource::RestartResult::INVALID_STATE);
       }));
   base::RunLoop().RunUntilIdle();
@@ -712,7 +712,7 @@ TEST_F(MediaStreamVideoSourceTest, FailedRestart) {
   // Verify that StopForRestart() fails with INVALID_STATE when called when the
   // source is not running.
   mock_source()->StopForRestart(
-      WTF::BindOnce([](MediaStreamVideoSource::RestartResult result) {
+      BindOnce([](MediaStreamVideoSource::RestartResult result) {
         EXPECT_EQ(result, MediaStreamVideoSource::RestartResult::INVALID_STATE);
       }));
 }
@@ -728,7 +728,7 @@ TEST_F(MediaStreamVideoSourceTest, SuccessfulRestart) {
             WebMediaStreamSource::kReadyStateLive);
 
   mock_source()->StopForRestart(
-      WTF::BindOnce([](MediaStreamVideoSource::RestartResult result) {
+      BindOnce([](MediaStreamVideoSource::RestartResult result) {
         EXPECT_EQ(result, MediaStreamVideoSource::RestartResult::IS_STOPPED);
       }));
   base::RunLoop().RunUntilIdle();
@@ -738,7 +738,7 @@ TEST_F(MediaStreamVideoSourceTest, SuccessfulRestart) {
   // Verify that StopForRestart() fails with INVALID_STATE called after the
   // source is already stopped.
   mock_source()->StopForRestart(
-      WTF::BindOnce([](MediaStreamVideoSource::RestartResult result) {
+      BindOnce([](MediaStreamVideoSource::RestartResult result) {
         EXPECT_EQ(result, MediaStreamVideoSource::RestartResult::INVALID_STATE);
       }));
   base::RunLoop().RunUntilIdle();
@@ -747,7 +747,7 @@ TEST_F(MediaStreamVideoSourceTest, SuccessfulRestart) {
 
   mock_source()->Restart(
       media::VideoCaptureFormat(),
-      WTF::BindOnce([](MediaStreamVideoSource::RestartResult result) {
+      BindOnce([](MediaStreamVideoSource::RestartResult result) {
         EXPECT_EQ(result, MediaStreamVideoSource::RestartResult::IS_RUNNING);
       }));
   base::RunLoop().RunUntilIdle();
@@ -758,7 +758,7 @@ TEST_F(MediaStreamVideoSourceTest, SuccessfulRestart) {
   // started.
   mock_source()->Restart(
       media::VideoCaptureFormat(),
-      WTF::BindOnce([](MediaStreamVideoSource::RestartResult result) {
+      BindOnce([](MediaStreamVideoSource::RestartResult result) {
         EXPECT_EQ(result, MediaStreamVideoSource::RestartResult::INVALID_STATE);
       }));
   base::RunLoop().RunUntilIdle();
@@ -782,7 +782,7 @@ TEST_F(MediaStreamVideoSourceTest, FailedRestartAfterStopForRestart) {
             WebMediaStreamSource::kReadyStateLive);
 
   mock_source()->StopForRestart(
-      WTF::BindOnce([](MediaStreamVideoSource::RestartResult result) {
+      BindOnce([](MediaStreamVideoSource::RestartResult result) {
         EXPECT_EQ(result, MediaStreamVideoSource::RestartResult::IS_STOPPED);
       }));
   base::RunLoop().RunUntilIdle();
@@ -791,7 +791,7 @@ TEST_F(MediaStreamVideoSourceTest, FailedRestartAfterStopForRestart) {
 
   mock_source()->Restart(
       media::VideoCaptureFormat(),
-      WTF::BindOnce([](MediaStreamVideoSource::RestartResult result) {
+      BindOnce([](MediaStreamVideoSource::RestartResult result) {
         EXPECT_EQ(result, MediaStreamVideoSource::RestartResult::IS_STOPPED);
       }));
   base::RunLoop().RunUntilIdle();
@@ -802,7 +802,7 @@ TEST_F(MediaStreamVideoSourceTest, FailedRestartAfterStopForRestart) {
   // state.
   mock_source()->Restart(
       media::VideoCaptureFormat(),
-      WTF::BindOnce([](MediaStreamVideoSource::RestartResult result) {
+      BindOnce([](MediaStreamVideoSource::RestartResult result) {
         EXPECT_EQ(result, MediaStreamVideoSource::RestartResult::IS_STOPPED);
       }));
   base::RunLoop().RunUntilIdle();
@@ -826,8 +826,8 @@ TEST_F(MediaStreamVideoSourceTest, StartStopAndNotifyRestartSupported) {
   EXPECT_CALL(*this, MockNotification());
   MediaStreamTrackPlatform* track =
       MediaStreamTrackPlatform::GetTrack(web_track);
-  track->StopAndNotify(WTF::BindOnce(
-      &MediaStreamVideoSourceTest::MockNotification, base::Unretained(this)));
+  track->StopAndNotify(BindOnce(&MediaStreamVideoSourceTest::MockNotification,
+                                base::Unretained(this)));
   EXPECT_EQ(web_track.Source().GetReadyState(),
             WebMediaStreamSource::kReadyStateEnded);
   base::RunLoop().RunUntilIdle();
@@ -844,8 +844,8 @@ TEST_F(MediaStreamVideoSourceTest, StartStopAndNotifyRestartNotSupported) {
   EXPECT_CALL(*this, MockNotification());
   MediaStreamTrackPlatform* track =
       MediaStreamTrackPlatform::GetTrack(web_track);
-  track->StopAndNotify(WTF::BindOnce(
-      &MediaStreamVideoSourceTest::MockNotification, base::Unretained(this)));
+  track->StopAndNotify(BindOnce(&MediaStreamVideoSourceTest::MockNotification,
+                                base::Unretained(this)));
   EXPECT_EQ(web_track.Source().GetReadyState(),
             WebMediaStreamSource::kReadyStateEnded);
   base::RunLoop().RunUntilIdle();
@@ -878,8 +878,8 @@ TEST_F(MediaStreamVideoSourceTest, AddTrackAfterStoppingSource) {
   MediaStreamVideoTrack* track1 = MediaStreamVideoTrack::From(web_track1);
   EXPECT_CALL(*this, MockNotification());
   // This is equivalent to track.stop() in JavaScript.
-  track1->StopAndNotify(WTF::BindOnce(
-      &MediaStreamVideoSourceTest::MockNotification, base::Unretained(this)));
+  track1->StopAndNotify(BindOnce(&MediaStreamVideoSourceTest::MockNotification,
+                                 base::Unretained(this)));
 
   WebMediaStreamTrack track2 = CreateTrack("456");
   base::RunLoop().RunUntilIdle();

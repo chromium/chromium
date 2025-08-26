@@ -108,7 +108,7 @@ static bool ThrowExceptionIfRemovedOrUpdating(bool is_removed,
   return false;
 }
 
-WTF::String WebTimeRangesToString(const WebTimeRanges& ranges) {
+String WebTimeRangesToString(const WebTimeRanges& ranges) {
   StringBuilder string_builder;
   string_builder.Append('{');
   for (auto& r : ranges) {
@@ -278,9 +278,9 @@ void SourceBuffer::setMode(const V8AppendMode& new_mode,
   // is protected from destruction (applicable especially for MSE-in-Worker
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
-          &SourceBuffer::SetMode_Locked, WrapPersistent(this),
-          new_mode.AsEnum(), WTF::Unretained(&exception_state)))) {
+  if (!source_->RunUnlessElementGoneOrClosingUs(
+          blink::BindOnce(&SourceBuffer::SetMode_Locked, WrapPersistent(this),
+                          new_mode.AsEnum(), Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -354,8 +354,8 @@ TimeRanges* SourceBuffer::buffered(ExceptionState& exception_state) const {
   // an attachment because !IsRemoved().
   WebTimeRanges ranges;
   if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::GetBuffered_Locked, WrapPersistent(this),
-                        WTF::Unretained(&ranges)))) {
+          blink::BindOnce(&SourceBuffer::GetBuffered_Locked,
+                          WrapPersistent(this), Unretained(&ranges)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -404,9 +404,9 @@ void SourceBuffer::setTimestampOffset(double offset,
   // demuxer is protected from destruction (applicable especially for
   // MSE-in-Worker case). Note, we must have |source_| and |source_| must have
   // an attachment because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::SetTimestampOffset_Locked, WrapPersistent(this),
-          offset, WTF::Unretained(&exception_state)))) {
+          offset, Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -501,8 +501,8 @@ void SourceBuffer::setAppendWindowStart(double start,
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::SetAppendWindowStart_Locked,
-                        WrapPersistent(this), start))) {
+          blink::BindOnce(&SourceBuffer::SetAppendWindowStart_Locked,
+                          WrapPersistent(this), start))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -563,8 +563,8 @@ void SourceBuffer::setAppendWindowEnd(double end,
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::SetAppendWindowEnd_Locked,
-                        WrapPersistent(this), end))) {
+          blink::BindOnce(&SourceBuffer::SetAppendWindowEnd_Locked,
+                          WrapPersistent(this), end))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -701,9 +701,9 @@ ScriptPromise<IDLUndefined> SourceBuffer::appendEncodedChunks(
   // only if attachment is usable and underlying demuxer is protected from
   // destruction (applicable especially for MSE-in-Worker case). Note, we must
   // have |source_| and |source_| must have an attachment because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::AppendEncodedChunks_Locked, WrapPersistent(this),
-          std::move(buffer_queue), size, WTF::Unretained(&exception_state)))) {
+          std::move(buffer_queue), size, Unretained(&exception_state)))) {
     // TODO(crbug.com/878133): Determine in specification what the specific,
     // app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -752,8 +752,8 @@ void SourceBuffer::AppendEncodedChunks_Locked(
   append_encoded_chunks_async_task_handle_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent),
       FROM_HERE,
-      WTF::BindOnce(&SourceBuffer::AppendEncodedChunksAsyncPart,
-                    WrapPersistent(this)));
+      BindOnce(&SourceBuffer::AppendEncodedChunksAsyncPart,
+               WrapPersistent(this)));
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "delay", TRACE_ID_LOCAL(this),
                                     "type", "initialDelay");
@@ -809,7 +809,7 @@ void SourceBuffer::abort(ExceptionState& exception_state) {
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::Abort_Locked, WrapPersistent(this)))) {
+          blink::BindOnce(&SourceBuffer::Abort_Locked, WrapPersistent(this)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -862,8 +862,8 @@ void SourceBuffer::remove(double start,
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::Remove_Locked, WrapPersistent(this),
-                        start, end, WTF::Unretained(&exception_state)))) {
+          blink::BindOnce(&SourceBuffer::Remove_Locked, WrapPersistent(this),
+                          start, end, Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -933,7 +933,7 @@ void SourceBuffer::Remove_Locked(
   remove_async_task_handle_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent),
       FROM_HERE,
-      WTF::BindOnce(&SourceBuffer::RemoveAsyncPart, WrapPersistent(this)));
+      BindOnce(&SourceBuffer::RemoveAsyncPart, WrapPersistent(this)));
 }
 
 void SourceBuffer::changeType(const String& type,
@@ -964,9 +964,9 @@ void SourceBuffer::changeType(const String& type,
   // is protected from destruction (applicable especially for MSE-in-Worker
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::ChangeType_Locked, WrapPersistent(this),
-                        type, WTF::Unretained(&exception_state)))) {
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
+          &SourceBuffer::ChangeType_Locked, WrapPersistent(this), type,
+          Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -1957,9 +1957,9 @@ void SourceBuffer::AppendBufferInternal(base::span<const unsigned char> data,
   // attachment is usable and underlying demuxer is protected from destruction
   // (applicable especially for MSE-in-Worker case). Note, we must have
   // |source_| and |source_| must have an attachment because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::AppendBufferInternal_Locked, WrapPersistent(this),
-          data, WTF::Unretained(&exception_state)))) {
+          data, Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -2009,8 +2009,7 @@ void SourceBuffer::AppendBufferInternal_Locked(
   append_buffer_async_task_handle_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent),
       FROM_HERE,
-      WTF::BindOnce(&SourceBuffer::AppendBufferAsyncPart,
-                    WrapPersistent(this)));
+      BindOnce(&SourceBuffer::AppendBufferAsyncPart, WrapPersistent(this)));
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("media", "prepareAsyncAppend",
                                   TRACE_ID_LOCAL(this));
@@ -2024,8 +2023,8 @@ void SourceBuffer::AppendEncodedChunksAsyncPart() {
   // MSE-in-Worker case).
   DCHECK(!IsRemoved());  // So must have |source_| and it must have attachment.
   if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::AppendEncodedChunksAsyncPart_Locked,
-                        WrapPersistent(this)))) {
+          blink::BindOnce(&SourceBuffer::AppendEncodedChunksAsyncPart_Locked,
+                          WrapPersistent(this)))) {
     // TODO(crbug.com/878133): Determine in specification what the specific,
     // app-visible, behavior should be for this case. In this implementation,
     // the safest thing to do is nothing here now. See more verbose reason in
@@ -2040,7 +2039,7 @@ void SourceBuffer::AppendBufferAsyncPart() {
   // demuxer is protected from destruction (applicable especially for
   // MSE-in-Worker case).
   DCHECK(!IsRemoved());  // So must have |source_| and it must have attachment.
-  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::AppendBufferAsyncPart_Locked, WrapPersistent(this)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, behavior should be for this case. In this
@@ -2141,8 +2140,7 @@ void SourceBuffer::AppendBufferAsyncPart_Locked(
       append_buffer_async_task_handle_ = PostCancellableTask(
           *GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent),
           FROM_HERE,
-          WTF::BindOnce(&SourceBuffer::AppendBufferAsyncPart,
-                        WrapPersistent(this)));
+          BindOnce(&SourceBuffer::AppendBufferAsyncPart, WrapPersistent(this)));
       TRACE_EVENT_NESTABLE_ASYNC_END0("media", "appending",
                                       TRACE_ID_LOCAL(this));
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "delay", TRACE_ID_LOCAL(this),
@@ -2179,7 +2177,7 @@ void SourceBuffer::RemoveAsyncPart() {
   // demuxer is protected from destruction (applicable especially for
   // MSE-in-Worker case).
   DCHECK(!IsRemoved());  // So must have |source_| and it must have attachment.
-  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::RemoveAsyncPart_Locked, WrapPersistent(this)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, behavior should be for this case. This

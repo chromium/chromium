@@ -852,10 +852,10 @@ void UserMediaRequest::Succeed(
   if (!GetExecutionContext())
     return;
 
-  MediaStreamSet::Create(
-      GetExecutionContext(), streams_descriptors, media_type_,
-      WTF::BindOnce(&UserMediaRequest::OnMediaStreamsInitialized,
-                    WrapPersistent(this)));
+  MediaStreamSet::Create(GetExecutionContext(), streams_descriptors,
+                         media_type_,
+                         BindOnce(&UserMediaRequest::OnMediaStreamsInitialized,
+                                  WrapPersistent(this)));
 }
 
 void UserMediaRequest::OnMediaStreamInitialized(MediaStream* stream) {
@@ -1047,8 +1047,8 @@ void UserMediaRequest::FinalizeTransferredTrackInitialization(
 
   MediaStream::Create(GetExecutionContext(), streams_descriptors[0],
                       transferred_track_,
-                      WTF::BindOnce(&UserMediaRequest::OnMediaStreamInitialized,
-                                    WrapPersistent(this)));
+                      BindOnce(&UserMediaRequest::OnMediaStreamInitialized,
+                               WrapPersistent(this)));
 }
 
 void UserMediaRequest::Trace(Visitor* visitor) const {

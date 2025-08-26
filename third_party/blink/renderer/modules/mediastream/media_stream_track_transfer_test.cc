@@ -65,8 +65,8 @@ class MockUserMediaProcessor : public UserMediaProcessor {
     source->SetDevice(device);
     // RunUntilIdle is required for this task to complete.
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
-        FROM_HERE, WTF::BindOnce(&SignalSourceReady, std::move(source_ready),
-                                 WTF::Unretained(source.get())));
+        FROM_HERE, blink::BindOnce(&SignalSourceReady, std::move(source_ready),
+                                   Unretained(source.get())));
     return source;
   }
 };

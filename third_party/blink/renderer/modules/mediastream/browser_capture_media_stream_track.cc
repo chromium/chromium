@@ -49,7 +49,7 @@ void RaiseApplySubCaptureTargetException(
     ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult, IDLUndefined>*
         resolver,
     DOMExceptionCode exception_code,
-    const WTF::String& exception_text,
+    const String& exception_text,
     ApplySubCaptureTargetResult result) {
   resolver->Reject<DOMException>(
       MakeGarbageCollected<DOMException>(exception_code, exception_text),
@@ -252,14 +252,14 @@ BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
   // to the new crop-target is observed.
   native_track->AddSubCaptureTargetVersionCallback(
       sub_capture_target_version,
-      WTF::BindOnce(
+      BindOnce(
           &BrowserCaptureMediaStreamTrack::OnSubCaptureTargetVersionObserved,
           WrapWeakPersistent(this), sub_capture_target_version));
 
   native_source->ApplySubCaptureTarget(
       type, token.value(), sub_capture_target_version,
-      WTF::BindOnce(&BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess,
-                    WrapWeakPersistent(this), sub_capture_target_version));
+      BindOnce(&BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess,
+               WrapWeakPersistent(this), sub_capture_target_version));
 
   return promise;
 }

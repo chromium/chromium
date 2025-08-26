@@ -865,8 +865,8 @@ TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
       MakeGarbageCollected<StrictMock<MockDeviceChangeEventListener>>();
   AddDeviceChangeListener(event_listener);
   EXPECT_TRUE(dispatcher_host().listener());
-  dispatcher_host().listener().set_disconnect_handler(WTF::BindOnce(
-      &MediaDevicesTest::OnListenerConnectionError, WTF::Unretained(this)));
+  dispatcher_host().listener().set_disconnect_handler(
+      BindOnce(&MediaDevicesTest::OnListenerConnectionError, Unretained(this)));
 
   // Send a device change notification from the dispatcher host. The event is
   // not fired because devices did not actually change.
@@ -1290,11 +1290,10 @@ TEST_F(MediaDevicesTest, DistinctIdsForDistinctTypes) {
   EXPECT_TRUE(second_tester.IsFulfilled());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  const WTF::String first_result =
-      ToSubCaptureTarget(first_tester.Value())->GetId();
+  const String first_result = ToSubCaptureTarget(first_tester.Value())->GetId();
   ASSERT_FALSE(first_result.empty());
 
-  const WTF::String second_result =
+  const String second_result =
       ToSubCaptureTarget(second_tester.Value())->GetId();
   ASSERT_FALSE(second_result.empty());
 
@@ -1431,11 +1430,11 @@ TEST_P(ProduceSubCaptureTargetTest, DuplicateId) {
   EXPECT_TRUE(second_tester->IsFulfilled());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  const WTF::String first_result =
+  const String first_result =
       ToSubCaptureTarget(first_tester->Value())->GetId();
   ASSERT_FALSE(first_result.empty());
 
-  const WTF::String second_result =
+  const String second_result =
       ToSubCaptureTarget(second_tester->Value())->GetId();
   ASSERT_FALSE(second_result.empty());
 
@@ -1493,7 +1492,7 @@ TEST_P(ProduceSubCaptureTargetTest, IdStringFormat) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
   const SubCaptureTarget* const target = ToSubCaptureTarget(tester->Value());
-  const WTF::String& id = target->GetId();
+  const String& id = target->GetId();
   EXPECT_TRUE(id.ContainsOnlyASCIIOrEmpty());
   EXPECT_TRUE(base::Uuid::ParseLowercase(id.Ascii()).is_valid());
 }

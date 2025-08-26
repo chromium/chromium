@@ -671,7 +671,7 @@ void VideoTrackAdapter::AddTrack(
       *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &VideoTrackAdapter::AddTrackOnVideoTaskRunner,
-          WTF::CrossThreadUnretained(this), WTF::CrossThreadUnretained(track),
+          CrossThreadUnretained(this), CrossThreadUnretained(track),
           CrossThreadBindRepeating(
               std::move(video_stream_fallbacks.deliver_frame_cb)),
           CrossThreadBindRepeating(

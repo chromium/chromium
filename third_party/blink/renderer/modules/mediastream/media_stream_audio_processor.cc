@@ -52,7 +52,7 @@ MediaStreamAudioProcessor::MediaStreamAudioProcessor(
     : audio_processor_(media::AudioProcessor::Create(
           std::move(deliver_processed_audio_callback),
           /*log_callback=*/
-          WTF::BindRepeating(&WebRtcLogStringPiece),
+          BindRepeating(&WebRtcLogStringPiece),
           settings,
           capture_data_source_params,
           media::AudioProcessor::GetDefaultOutputFormat(

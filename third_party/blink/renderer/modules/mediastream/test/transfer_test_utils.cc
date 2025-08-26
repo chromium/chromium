@@ -24,9 +24,9 @@ void SetFromTransferredStateImplForTesting(
 ScopedMockMediaStreamTrackFromTransferredState::
     ScopedMockMediaStreamTrackFromTransferredState() {
   SetFromTransferredStateImplForTesting(
-      WTF::BindRepeating(&ScopedMockMediaStreamTrackFromTransferredState::Impl,
-                         // The destructor removes this callback.
-                         WTF::Unretained(this)));
+      BindRepeating(&ScopedMockMediaStreamTrackFromTransferredState::Impl,
+                    // The destructor removes this callback.
+                    Unretained(this)));
 }
 ScopedMockMediaStreamTrackFromTransferredState::
     ~ScopedMockMediaStreamTrackFromTransferredState() {

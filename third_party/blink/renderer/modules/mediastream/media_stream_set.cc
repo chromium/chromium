@@ -71,8 +71,8 @@ MediaStreamSet::MediaStreamSet(
     // itself is fully initialized.
     context->GetTaskRunner(TaskType::kInternalMedia)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&MediaStreamSet::OnMediaStreamSetInitialized,
-                                 WrapPersistent(this)));
+                   BindOnce(&MediaStreamSet::OnMediaStreamSetInitialized,
+                            WrapPersistent(this)));
     return;
   }
 
@@ -83,8 +83,8 @@ MediaStreamSet::MediaStreamSet(
        ++stream_index) {
     MediaStream::Create(context, stream_descriptors[stream_index],
                         /*track=*/nullptr,
-                        WTF::BindOnce(&MediaStreamSet::OnMediaStreamInitialized,
-                                      WrapPersistent(this)));
+                        BindOnce(&MediaStreamSet::OnMediaStreamInitialized,
+                                 WrapPersistent(this)));
   }
 }
 
@@ -128,8 +128,8 @@ void MediaStreamSet::InitializeGetAllScreensMediaStreams(
   }
   context->GetTaskRunner(TaskType::kInternalMedia)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&MediaStreamSet::OnMediaStreamSetInitialized,
-                               WrapPersistent(this)));
+                 BindOnce(&MediaStreamSet::OnMediaStreamSetInitialized,
+                          WrapPersistent(this)));
 }
 
 void MediaStreamSet::OnMediaStreamSetInitialized() {

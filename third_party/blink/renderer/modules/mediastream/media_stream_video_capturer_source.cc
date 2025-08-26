@@ -125,8 +125,8 @@ void MediaStreamVideoCapturerSource::StartSourceImpl(
       std::move(media_stream_callbacks.state_update_cb);
   source_->StartCapture(
       capture_params_, std::move(video_capture_callbacks),
-      WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
-                         weak_factory_.GetWeakPtr(), capture_params_));
+      blink::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
+                           weak_factory_.GetWeakPtr(), capture_params_));
 }
 
 media::VideoCaptureFeedbackCB
@@ -169,8 +169,8 @@ void MediaStreamVideoCapturerSource::RestartSourceImpl(
 
   source_->StartCapture(
       new_capture_params, std::move(video_capture_callbacks),
-      WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
-                         weak_factory_.GetWeakPtr(), new_capture_params));
+      blink::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
+                           weak_factory_.GetWeakPtr(), new_capture_params));
 }
 
 std::optional<media::VideoCaptureFormat>
@@ -205,8 +205,8 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
   video_capture_callbacks.frame_dropped_cb = frame_dropped_callback_;
   source_->StartCapture(
       capture_params_, std::move(video_capture_callbacks),
-      WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
-                         weak_factory_.GetWeakPtr(), capture_params_));
+      blink::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
+                           weak_factory_.GetWeakPtr(), capture_params_));
 }
 
 void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(

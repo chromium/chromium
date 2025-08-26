@@ -188,7 +188,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
 
   void PropagateTrackEnabled(bool enabled);
 
-  void SendLogMessage(const WTF::String& message);
+  void SendLogMessage(const String& message);
 
   // Ensures that |feature_handle_for_scheduler_| is initialized.
   void EnsureFeatureHandleForScheduler();

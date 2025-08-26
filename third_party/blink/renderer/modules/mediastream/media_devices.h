@@ -206,7 +206,7 @@ class MODULES_EXPORT MediaDevices final
   void CloseFocusWindowOfOpportunity(const String&, CaptureController*);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-  void ResolveRestrictionTargetPromise(Element* element, const WTF::String& id);
+  void ResolveRestrictionTargetPromise(Element* element, const String& id);
 
   bool MayProduceSubCaptureTarget(ScriptState* script_state,
                                   Element* element,
@@ -216,7 +216,7 @@ class MODULES_EXPORT MediaDevices final
   // Callbacks for receiving a message from the browser process with
   // the base::Token which is backing a SubCaptureTarget (either CropTarget
   // or RestrictionTarget).
-  void ResolveCropTargetPromise(Element* element, const WTF::String& id);
+  void ResolveCropTargetPromise(Element* element, const String& id);
 
   SEQUENCE_CHECKER(sequence_checker_);
   // True if the associated execution context is alive and valid, reset
