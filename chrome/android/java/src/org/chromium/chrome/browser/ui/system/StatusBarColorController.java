@@ -176,8 +176,7 @@ public class StatusBarColorController
         mIncognitoDefaultThemeColor =
                 SurfaceColorUpdateUtils.getDefaultThemeColor(context, /* isIncognito= */ true);
         var ntpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
-        mBackgroundColorForNtp =
-                ntpCustomizationConfigManager.getBackgroundColor(mWindow.getContext());
+        mBackgroundColorForNtp = ntpCustomizationConfigManager.getBackgroundColor(context);
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
 
         // TODO(b/41494931): Share code with LocationBarCoordinator's constructor.

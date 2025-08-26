@@ -301,7 +301,7 @@ public class NtpCustomizationUtils {
     }
 
     /** Gets the NTP's background color from the SharedPreference. */
-    static @ColorInt int getBackgroundColor(@ColorInt int defaultColor) {
+    static @ColorInt int getBackgroundColorFromSharedPreference(@ColorInt int defaultColor) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         return prefsManager.readInt(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR, defaultColor);

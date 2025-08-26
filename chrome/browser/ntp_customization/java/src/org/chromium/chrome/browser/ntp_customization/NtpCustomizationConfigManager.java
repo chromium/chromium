@@ -39,7 +39,6 @@ public class NtpCustomizationConfigManager {
     private boolean mIsInitialized;
     private @NtpBackgroundImageType int mBackgroundImageType;
     private @Nullable BitmapDrawable mBackgroundImageDrawable;
-    private @ColorInt int mNtpDefaultBackgroundColor;
     private @ColorInt int mBackgroundColor;
     private boolean mIsMvtToggleOn;
 
@@ -99,7 +98,6 @@ public class NtpCustomizationConfigManager {
         mHomepageStateListeners = new ObserverList<>();
         // Don't use the application's context to initialize these colors since only the Activity's
         // context is themed. Otherwise a wrong color is provided.
-        mNtpDefaultBackgroundColor = COLOR_NOT_SET;
         mBackgroundColor = COLOR_NOT_SET;
         maybeInitialize();
     }
@@ -123,7 +121,8 @@ public class NtpCustomizationConfigManager {
                     },
                     EXECUTOR);
         } else if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
-            mBackgroundColor = NtpCustomizationUtils.getBackgroundColor(mNtpDefaultBackgroundColor);
+            mBackgroundColor =
+                    NtpCustomizationUtils.getBackgroundColorFromSharedPreference(mBackgroundColor);
             // Skips notifying the observers if the default background color isn't initialized. Any
             // observer can initialize the default color when calling #getBackgroundColor(Context).
             if (mBackgroundColor != COLOR_NOT_SET) {
@@ -276,7 +275,7 @@ public class NtpCustomizationConfigManager {
      * @param context The current Activity context. It is themed and can provide the correct color.
      */
     public @ColorInt int getBackgroundColor(Context context) {
-        if (mBackgroundColor == COLOR_NOT_SET) {
+        if (mBackgroundImageType == NtpBackgroundImageType.DEFAULT) {
             mBackgroundColor = getDefaultBackgroundColor(context);
         }
         return mBackgroundColor;
@@ -291,11 +290,7 @@ public class NtpCustomizationConfigManager {
     @VisibleForTesting
     @ColorInt
     int getDefaultBackgroundColor(Context context) {
-        if (mNtpDefaultBackgroundColor == COLOR_NOT_SET) {
-            mNtpDefaultBackgroundColor =
-                    ContextCompat.getColor(context, R.color.home_surface_background_color);
-        }
-        return mNtpDefaultBackgroundColor;
+        return ContextCompat.getColor(context, R.color.home_surface_background_color);
     }
 
     /**

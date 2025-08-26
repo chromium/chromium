@@ -171,13 +171,17 @@ public class NtpCustomizationConfigManagerUnitTest {
                         R.drawable.chrome_color_theme_icon_blue);
         @ColorInt int color = ContextCompat.getColor(mContext, colorResId);
         @ColorInt
-        int defaultColor = mNtpCustomizationConfigManager.getDefaultBackgroundColor(mContext);
+        int defaultColor = ContextCompat.getColor(mContext, R.color.home_surface_background_color);
+
+        assertEquals(
+                defaultColor, mNtpCustomizationConfigManager.getDefaultBackgroundColor(mContext));
 
         // Test case for choosing a new customized color.
         mNtpCustomizationConfigManager.onBackgroundColorChanged(
                 mContext, colorInfo, NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR);
         assertEquals(color, mNtpCustomizationConfigManager.getBackgroundColor(mContext));
-        assertEquals(color, NtpCustomizationUtils.getBackgroundColor(defaultColor));
+        assertEquals(
+                color, NtpCustomizationUtils.getBackgroundColorFromSharedPreference(defaultColor));
         verify(mListener).onBackgroundColorChanged(eq(color), eq(false));
 
         clearInvocations(mListener);
