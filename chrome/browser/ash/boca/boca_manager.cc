@@ -193,9 +193,7 @@ BocaManager::BocaManager(Profile* profile,
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver();
   invalidation_service_impl_ = std::make_unique<boca::InvalidationServiceImpl>(
-      gcm_driver, instance_id_driver, user->GetAccountId(),
-      boca_session_manager_.get(), session_client_impl_.get(),
-      boca::BocaAppClient::Get()->GetSchoolToolsServerBaseUrl());
+      gcm_driver, instance_id_driver, boca_session_manager_.get());
   AddObservers(user);
 }
 
