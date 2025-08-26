@@ -97,7 +97,7 @@ void RecordFREConsentAction(IOSGeminiFREAction action) {
 }
 
 void RecordBWGSessionTime(base::TimeDelta session_duration) {
-  base::UmaHistogramTimes(kBWGSessionTimeHistogram, session_duration);
+  base::UmaHistogramLongTimes100(kBWGSessionTimeHistogram, session_duration);
 }
 
 void RecordBWGSessionLengthByType(base::TimeDelta session_duration,
@@ -106,12 +106,12 @@ void RecordBWGSessionLengthByType(base::TimeDelta session_duration,
   if (is_first_run) {
     switch (session_type) {
       case IOSGeminiSessionType::kWithPrompt:
-        base::UmaHistogramTimes(kBWGSessionLengthFREWithPromptHistogram,
-                                session_duration);
+        base::UmaHistogramLongTimes100(kBWGSessionLengthFREWithPromptHistogram,
+                                       session_duration);
         break;
       case IOSGeminiSessionType::kAbandoned:
-        base::UmaHistogramTimes(kBWGSessionLengthFREAbandonedHistogram,
-                                session_duration);
+        base::UmaHistogramLongTimes100(kBWGSessionLengthFREAbandonedHistogram,
+                                       session_duration);
         break;
       case IOSGeminiSessionType::kUnknown:
         break;
@@ -119,12 +119,12 @@ void RecordBWGSessionLengthByType(base::TimeDelta session_duration,
   } else {
     switch (session_type) {
       case IOSGeminiSessionType::kWithPrompt:
-        base::UmaHistogramTimes(kBWGSessionLengthWithPromptHistogram,
-                                session_duration);
+        base::UmaHistogramLongTimes100(kBWGSessionLengthWithPromptHistogram,
+                                       session_duration);
         break;
       case IOSGeminiSessionType::kAbandoned:
-        base::UmaHistogramTimes(kBWGSessionLengthAbandonedHistogram,
-                                session_duration);
+        base::UmaHistogramLongTimes100(kBWGSessionLengthAbandonedHistogram,
+                                       session_duration);
         break;
       case IOSGeminiSessionType::kUnknown:
         break;
