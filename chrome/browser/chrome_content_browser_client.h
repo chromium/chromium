@@ -983,7 +983,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   CreateDigitalIdentityProvider() override;
 
 #if !BUILDFLAG(IS_ANDROID)
-  base::TimeDelta GetKeepaliveTimerTimeout(content::BrowserContext* context);
+  static base::TimeDelta GetKeepaliveTimerTimeout(
+      content::BrowserContext* context);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   bool SuppressDifferentOriginSubframeJSDialogs(

@@ -20,6 +20,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
@@ -4120,84 +4121,68 @@ bool ShouldDisableForcedColorsForWebContent(content::WebContents* contents,
   return false;
 }
 
-bool UpdateForcedColorsForWebContent(WebPreferences* web_prefs,
-                                     WebContents* web_contents,
-                                     const ui::NativeTheme* native_theme) {
-  auto old_in_forced_colors = web_prefs->in_forced_colors;
-  auto old_forced_colors_disabled = web_prefs->is_forced_colors_disabled;
-  bool in_forced_colors = native_theme->InForcedColorsMode();
-  bool should_disable_forced_colors =
+blink::mojom::PreferredContrast GetPreferredContrast(
+    const ui::NativeTheme* native_theme) {
+  using NC = ui::NativeTheme::PreferredContrast;
+  using BC = blink::mojom::PreferredContrast;
+  static constexpr auto kContrastMap =
+      base::MakeFixedFlatMap<NC, BC>({{NC::kNoPreference, BC::kNoPreference},
+                                      {NC::kMore, BC::kMore},
+                                      {NC::kLess, BC::kLess},
+                                      {NC::kCustom, BC::kCustom}});
+  return kContrastMap.at(native_theme->GetPreferredContrast());
+}
+
+std::tuple<bool, bool> GetForcedColorsForWebContent(
+    WebContents* web_contents,
+    const ui::NativeTheme* native_theme) {
+  const bool in_forced_colors = native_theme->InForcedColorsMode();
+  const bool is_forced_colors_disabled =
       ShouldDisableForcedColorsForWebContent(web_contents, in_forced_colors);
-
-  web_prefs->in_forced_colors =
-      in_forced_colors && !should_disable_forced_colors;
-  web_prefs->is_forced_colors_disabled = should_disable_forced_colors;
-
-  return old_in_forced_colors != web_prefs->in_forced_colors ||
-         old_forced_colors_disabled != web_prefs->is_forced_colors_disabled;
+  return {in_forced_colors && !is_forced_colors_disabled,
+          is_forced_colors_disabled};
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 blink::mojom::PreferredColorScheme ToBlinkPreferredColorScheme(
     ui::NativeTheme::PreferredColorScheme native_theme_scheme) {
-  switch (native_theme_scheme) {
-    case ui::NativeTheme::PreferredColorScheme::kDark:
-      return blink::mojom::PreferredColorScheme::kDark;
-    case ui::NativeTheme::PreferredColorScheme::kLight:
-      return blink::mojom::PreferredColorScheme::kLight;
-  }
+  return (native_theme_scheme == ui::NativeTheme::PreferredColorScheme::kDark)
+             ? blink::mojom::PreferredColorScheme::kDark
+             : blink::mojom::PreferredColorScheme::kLight;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Returns true if preferred color scheme is modified based on at least one of
-// the following -
-// |url| - Last committed url.
-// |web_contents| - For Android based on IsNightModeEnabled().
-// |native_theme| - For other platforms based on native theme scheme.
-bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
-                                const GURL& url,
-                                WebContents* web_contents,
-                                const ui::NativeTheme* native_theme) {
-  auto old_preferred_color_scheme = web_prefs->preferred_color_scheme;
-
+std::tuple<blink::mojom::PreferredColorScheme,
+           blink::mojom::PreferredColorScheme>
+GetPreferredColorScheme(const WebPreferences& web_prefs,
+                        const GURL& url,
+                        WebContents* web_contents,
+                        const ui::NativeTheme* native_theme) {
 #if BUILDFLAG(IS_ANDROID)
-  auto* delegate = TabAndroid::FromWebContents(web_contents)
-                       ? static_cast<android::TabWebContentsDelegateAndroid*>(
-                             web_contents->GetDelegate())
-                       : nullptr;
-  if (delegate) {
-    web_prefs->preferred_color_scheme =
-        delegate->IsNightModeEnabled()
-            ? blink::mojom::PreferredColorScheme::kDark
-            : blink::mojom::PreferredColorScheme::kLight;
-    web_prefs->preferred_root_scrollbar_color_scheme =
-        web_prefs->preferred_color_scheme;
+  if (TabAndroid::FromWebContents(web_contents)) {
+    if (auto* delegate = static_cast<android::TabWebContentsDelegateAndroid*>(
+            web_contents->GetDelegate())) {
+      const auto preferred_color_scheme =
+          delegate->IsNightModeEnabled()
+              ? blink::mojom::PreferredColorScheme::kDark
+              : blink::mojom::PreferredColorScheme::kLight;
+      return {preferred_color_scheme, preferred_color_scheme};
+    }
   }
+  return {web_prefs.preferred_color_scheme,
+          web_prefs.preferred_root_scrollbar_color_scheme};
 #else
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  CHECK(profile);
-
-  // Update the preferred root scrollbar color based on the lightness level of
-  // the toolbar's color.
-  web_prefs->preferred_root_scrollbar_color_scheme =
-      color_utils::IsDark(
-          web_contents->GetColorProvider().GetColor(kColorToolbar))
-          ? blink::mojom::PreferredColorScheme::kDark
-          : blink::mojom::PreferredColorScheme::kLight;
-
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Incognito contents follow the device color mode.
-  if (profile->IsIncognitoProfile() && !content::HasWebUIScheme(url)) {
-    web_prefs->preferred_color_scheme =
+  blink::mojom::PreferredColorScheme preferred_color_scheme;
+  if (Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          ->IsIncognitoProfile() &&
+      !content::HasWebUIScheme(url)) {
+    // Incognito contents follow the device color mode.
+    preferred_color_scheme =
         ToBlinkPreferredColorScheme(native_theme->GetPreferredColorScheme());
   } else {
     // WebUI and regular pages follow the browser theme color mode, provided by
     // the color provider.
-    web_prefs->preferred_color_scheme =
+    preferred_color_scheme =
         web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kLight
             ? blink::mojom::PreferredColorScheme::kLight
             : blink::mojom::PreferredColorScheme::kDark;
@@ -4209,45 +4194,49 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
   // If the top-level WebContents is the same as the guest, then
   // `web_contents` is *not* a guest.
   if (owner_contents != web_contents) {
-    web_prefs->preferred_color_scheme =
+    preferred_color_scheme =
         owner_contents->GetOrCreateWebPreferences().preferred_color_scheme;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-  return old_preferred_color_scheme != web_prefs->preferred_color_scheme;
+  // Update the preferred root scrollbar color based on the lightness level of
+  // the toolbar's color.
+  const auto preferred_root_scrollbar_color_scheme =
+      color_utils::IsDark(
+          web_contents->GetColorProvider().GetColor(kColorToolbar))
+          ? blink::mojom::PreferredColorScheme::kDark
+          : blink::mojom::PreferredColorScheme::kLight;
+
+  return {preferred_color_scheme, preferred_root_scrollbar_color_scheme};
+#endif
 }
 
+std::optional<SkColor> GetRootScrollbarThemeColor(WebContents* web_contents) {
+  bool root_scrollbar_follows_browser_theme = false;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-// Sets the `root_scrollbar_theme_color` web pref if the user has enabled a
-// custom colored frame for the UI.
-void UpdateRootScrollbarThemeColor(Profile* profile,
-                                   const WebContents* web_contents,
-                                   WebPreferences* web_prefs) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kRootScrollbarFollowsBrowserTheme)) {
-    return;
+  root_scrollbar_follows_browser_theme = base::FeatureList::IsEnabled(
+      blink::features::kRootScrollbarFollowsBrowserTheme);
+#endif
+  if (!root_scrollbar_follows_browser_theme) {
+    return std::nullopt;
   }
-  if (ThemeService* theme_service =
-          ThemeServiceFactory::GetForProfile(profile)) {
-    if (!theme_service->UsingDefaultTheme() ||
-        theme_service->GetUserColor().has_value() ||
-        theme_service->UsingDeviceTheme()) {
-      color_utils::HSL hsl;
-      color_utils::SkColorToHSL(
-          web_contents->GetColorProvider().GetColor(kColorToolbar), &hsl);
-      // Clamp the lightness of theme colors that are too light or dark and
-      // have no contrast against the background. We don't use color_utils
-      // contrast functions because they lose saturation.
-      static constexpr double kTopLightnessThreshold = 0.8;
-      static constexpr double kBottomLightnessThreshold = 0.3;
-      hsl.l =
-          std::clamp(hsl.l, kBottomLightnessThreshold, kTopLightnessThreshold);
-      web_prefs->root_scrollbar_theme_color =
-          color_utils::HSLToSkColor(hsl, SK_AlphaOPAQUE);
-    }
+
+  if (ThemeService* theme_service = ThemeServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+      !theme_service || (theme_service->UsingDefaultTheme() &&
+                         !theme_service->GetUserColor().has_value() &&
+                         !theme_service->UsingDeviceTheme())) {
+    return std::nullopt;
   }
+
+  color_utils::HSL hsl;
+  color_utils::SkColorToHSL(
+      web_contents->GetColorProvider().GetColor(kColorToolbar), &hsl);
+  // Clamp the lightness of theme colors that are too light or dark and have no
+  // contrast against the background. We don't use color_utils contrast
+  // functions because they lose saturation.
+  hsl.l = std::clamp(hsl.l, 0.3, 0.8);
+  return color_utils::HSLToSkColor(hsl, SK_AlphaOPAQUE);
 }
-#endif  //  BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 // Returns whether the user can be prompted to select a client certificate after
 // no certificate got auto-selected.
@@ -4840,29 +4829,18 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       SubAppsAPIsRequireUserGestureAndAuthorization(web_contents);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  switch (GetWebTheme()->GetPreferredContrast()) {
-    case ui::NativeTheme::PreferredContrast::kNoPreference:
-      web_prefs->preferred_contrast =
-          blink::mojom::PreferredContrast::kNoPreference;
-      break;
-    case ui::NativeTheme::PreferredContrast::kMore:
-      web_prefs->preferred_contrast = blink::mojom::PreferredContrast::kMore;
-      break;
-    case ui::NativeTheme::PreferredContrast::kLess:
-      web_prefs->preferred_contrast = blink::mojom::PreferredContrast::kLess;
-      break;
-    case ui::NativeTheme::PreferredContrast::kCustom:
-      web_prefs->preferred_contrast = blink::mojom::PreferredContrast::kCustom;
-      break;
-  }
+  web_prefs->preferred_contrast = GetPreferredContrast(GetWebTheme());
 
-  UpdateForcedColorsForWebContent(web_prefs, web_contents, GetWebTheme());
+  std::tie(web_prefs->in_forced_colors, web_prefs->is_forced_colors_disabled) =
+      GetForcedColorsForWebContent(web_contents, GetWebTheme());
 
-  UpdatePreferredColorScheme(web_prefs, main_frame_site.GetSiteURL(),
-                             web_contents, GetWebTheme());
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  UpdateRootScrollbarThemeColor(profile, web_contents, web_prefs);
-#endif  //  BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  std::tie(web_prefs->preferred_color_scheme,
+           web_prefs->preferred_root_scrollbar_color_scheme) =
+      GetPreferredColorScheme(*web_prefs, main_frame_site.GetSiteURL(),
+                              web_contents, GetWebTheme());
+
+  web_prefs->root_scrollbar_theme_color =
+      GetRootScrollbarThemeColor(web_contents);
 
   web_prefs->translate_service_available = TranslateService::IsAvailable(prefs);
 
@@ -4960,12 +4938,26 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
         web_contents, main_frame_site, web_prefs);
   }
 
+  const auto old_in_forced_colors = web_prefs->in_forced_colors;
+  const auto old_is_forced_colors_disabled =
+      web_prefs->is_forced_colors_disabled;
+  std::tie(web_prefs->in_forced_colors, web_prefs->is_forced_colors_disabled) =
+      GetForcedColorsForWebContent(web_contents, GetWebTheme());
   prefs_changed |=
-      UpdateForcedColorsForWebContent(web_prefs, web_contents, GetWebTheme());
+      web_prefs->in_forced_colors != old_in_forced_colors ||
+      web_prefs->is_forced_colors_disabled != old_is_forced_colors_disabled;
 
+  const auto old_preferred_color_scheme = web_prefs->preferred_color_scheme;
+  const auto old_preferred_root_scrollbar_color_scheme =
+      web_prefs->preferred_root_scrollbar_color_scheme;
+  const GURL& url = web_contents->GetLastCommittedURL();
+  std::tie(web_prefs->preferred_color_scheme,
+           web_prefs->preferred_root_scrollbar_color_scheme) =
+      GetPreferredColorScheme(*web_prefs, url, web_contents, GetWebTheme());
   prefs_changed |=
-      UpdatePreferredColorScheme(web_prefs, web_contents->GetLastCommittedURL(),
-                                 web_contents, GetWebTheme());
+      web_prefs->preferred_color_scheme != old_preferred_color_scheme ||
+      web_prefs->preferred_root_scrollbar_color_scheme !=
+          old_preferred_root_scrollbar_color_scheme;
 
 #if BUILDFLAG(IS_ANDROID)
   auto* delegate = TabAndroid::FromWebContents(web_contents)
@@ -8039,6 +8031,7 @@ void ChromeContentBrowserClient::OnWebContentsCreated(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+// static
 base::TimeDelta ChromeContentBrowserClient::GetKeepaliveTimerTimeout(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
