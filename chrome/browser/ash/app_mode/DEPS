@@ -85,9 +85,11 @@ specific_include_rules = {
   "kiosk_cryptohome_remover\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
-  "kiosk_app_update_service\\.cc": [
+
+  # Allow ProfileKeyedServiceFactory to depend on browser_process for now.
+  "kiosk_app_update_service_factory\\.cc": [
     "+chrome/browser/browser_process.h",
-    "+chrome/browser/browser_process_platform_part_ash.h",
+    "+chrome/browser/browser_process_platform_part.h",
   ],
 
   ".*(fake|test|mixin)(_.*)?\\.(cc|h)": [

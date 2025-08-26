@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_vpn_provider_manager_factory.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
 #include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_service_factory.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_update_service_factory.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/apps/apk_web_app_service_factory.h"

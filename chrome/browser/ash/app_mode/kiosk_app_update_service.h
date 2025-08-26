@@ -13,7 +13,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager_observer.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/update_observer.h"
 
@@ -81,28 +80,6 @@ class KioskAppUpdateService : public KeyedService,
   base::ScopedObservation<extensions::ExtensionUpdater,
                           extensions::UpdateObserver>
       update_observation_{this};
-};
-
-// Singleton that owns all KioskAppUpdateServices and associates them with
-// profiles.
-class KioskAppUpdateServiceFactory : public ProfileKeyedServiceFactory {
- public:
-  // Returns the KioskAppUpdateService for `profile`, creating it if it is not
-  // yet created.
-  static KioskAppUpdateService* GetForProfile(Profile* profile);
-
-  // Returns the KioskAppUpdateServiceFactory instance.
-  static KioskAppUpdateServiceFactory* GetInstance();
-
- private:
-  friend struct base::DefaultSingletonTraits<KioskAppUpdateServiceFactory>;
-
-  KioskAppUpdateServiceFactory();
-  ~KioskAppUpdateServiceFactory() override;
-
-  // BrowserContextKeyedServiceFactory overrides:
-  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
-      content::BrowserContext* profile) const override;
 };
 
 }  // namespace ash
