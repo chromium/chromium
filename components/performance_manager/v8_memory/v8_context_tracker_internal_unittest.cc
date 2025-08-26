@@ -385,9 +385,11 @@ class V8ContextTrackerInternalTearDownOrderTest
     EXPECT_EQ(2u, data_store()->GetV8ContextDataCount());
   }
 
+  void ClearExecutionContextData() { ec_data_ = nullptr; }
+
   raw_ptr<ProcessData> process_data_ = nullptr;
   raw_ptr<ProcessData> other_process_data_ = nullptr;
-  raw_ptr<ExecutionContextData, DanglingUntriaged> ec_data_ = nullptr;
+  raw_ptr<ExecutionContextData> ec_data_ = nullptr;
 };
 
 }  // namespace
@@ -399,6 +401,7 @@ TEST_F(V8ContextTrackerInternalTearDownOrderTest, RemoteBeforeLocal) {
   EXPECT_EQ(0u, data_store()->GetRemoteFrameDataCount());
   EXPECT_EQ(2u, data_store()->GetV8ContextDataCount());
   EXPECT_FALSE(ec_data_->remote_frame_data());
+  ClearExecutionContextData();
 
   // Now tear down the main |process|.
   process_data_->TearDown();
@@ -409,6 +412,7 @@ TEST_F(V8ContextTrackerInternalTearDownOrderTest, RemoteBeforeLocal) {
 
 TEST_F(V8ContextTrackerInternalTearDownOrderTest, LocalBeforeRemote) {
   // Tear down the main |process|. This should tear down everything.
+  ClearExecutionContextData();
   process_data_->TearDown();
   EXPECT_EQ(0u, data_store()->GetExecutionContextDataCount());
   EXPECT_EQ(0u, data_store()->GetRemoteFrameDataCount());
