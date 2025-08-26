@@ -293,8 +293,13 @@ export class NetworkStorage {
     );
 
     if (params.disown && params.collector !== undefined) {
-      this.#requestCollectors.delete(params.request);
-      this.disposeRequest(request.id);
+      // Disown the data for this collector. If no other collectors are tracking this
+      // request, dispose the request.
+      requestCollectors.delete(params.collector);
+      if (requestCollectors.size === 0) {
+        this.#requestCollectors.delete(params.request);
+        this.disposeRequest(request.id);
+      }
     }
 
     return {
