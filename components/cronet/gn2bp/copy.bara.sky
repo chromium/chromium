@@ -343,9 +343,10 @@ per_channel_workflow(
       url = "https://googleplex-android.googlesource.com/platform/external/cronet",
       fetch = "main",
       push_to_refs_for = "main",
-      # TODO(crbug.com/372534509): Replace reviewer with team-based Gerrit
-      # account once it is set up.
-      labels = ["Presubmit-Ready+1"]
+      labels = [
+        "Presubmit-Ready+1",
+        "Autosubmit+1",
+      ]
   ),
   mode = "SQUASH",
 )
