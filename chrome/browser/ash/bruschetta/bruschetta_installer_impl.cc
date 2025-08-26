@@ -284,10 +284,10 @@ void BruschettaInstallerImpl::OnBootDiskDownloaded(base::FilePath path,
     Error(BruschettaInstallResult::kDownloadError);
     return;
   }
-  const std::string* expected = config_.FindDict(prefs::kPolicyImageKey)
-                                    ->FindString(prefs::kPolicyHashKey);
+  const std::string expected = *(config_.FindDict(prefs::kPolicyImageKey)
+                                     ->FindString(prefs::kPolicyHashKey));
 
-  if (!base::EqualsCaseInsensitiveASCII(hash, *expected)) {
+  if (!base::EqualsCaseInsensitiveASCII(hash, expected)) {
     install_running_ = false;
     Error(BruschettaInstallResult::kInvalidBootDisk);
     LOG(ERROR) << "Downloaded boot disk has incorrect hash";
