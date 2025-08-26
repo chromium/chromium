@@ -27,7 +27,7 @@ RenderThread* RenderThread::Get() {
 }
 
 bool RenderThread::IsMainThread() {
-  // TODO(avi): Eventually move to be based on WTF::IsMainThread().
+  // TODO(avi): Eventually move to be based on blink::IsMainThread().
   return GetThreadChecker().CalledOnValidThread();
 }
 
