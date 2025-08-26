@@ -240,9 +240,10 @@ void WebRtcTestBase::GetUserMediaReturnsFalseIfWaitIsTooLong(
           permissions::PermissionRequestManager::ACCEPT_ALL);
   permissions::PermissionRequestObserver observer(tab_contents);
   // Request user media: this will launch the media stream info bar or bubble.
-  EXPECT_EQ(
-      content::EvalJs(tab_contents, "doGetUserMedia(" + constraints + ");"),
-      "request-timedout");
+  constexpr char kTimeoutSeconds[] = "8";
+  EXPECT_EQ(content::EvalJs(tab_contents, "doGetUserMedia(" + constraints +
+                                              ", " + kTimeoutSeconds + ");"),
+            "request-timedout");
 }
 
 content::WebContents* WebRtcTestBase::OpenPageAndGetUserMediaInNewTab(

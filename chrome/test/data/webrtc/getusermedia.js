@@ -48,14 +48,24 @@ $ = function(id) {
  * @param {!object} constraints Defines what to be requested, with mandatory
  *     and optional constraints defined. The contents of this parameter depends
  *     on the WebRTC version.
+ * @param {integer} optionalTimeoutSeconds when provided, specifies the
+ *     maximum time to wait for the get user media request to complete. Resolves
+ *     the returned promise with 'request-timedout' when the timeout occurs.
  */
-function doGetUserMedia(constraints) {
+function doGetUserMedia(constraints, optionalTimeoutSeconds) {
   if (!navigator.getUserMedia) {
     return logAndReturn('Browser does not support WebRTC.');
   }
+
+  let timeoutDebugMessage = '';
+  if (optionalTimeoutSeconds) {
+    timeoutDebugMessage = ` with ${optionalTimeoutSeconds} second timeout`;
+  }
   debug(
       'Requesting doGetUserMedia: constraints: ' +
-      JSON.stringify(constraints, null, 0).replace(/[\r\n]/g, ''));
+      JSON.stringify(constraints, null, 0).replace(/[\r\n]/g, '') +
+      timeoutDebugMessage);
+
   var gumPromise = new Promise(function(resolve) {
     navigator.mediaDevices.getUserMedia(constraints)
         .then(function(stream) {
@@ -68,10 +78,18 @@ function doGetUserMedia(constraints) {
           resolve('request-callback-denied');
         });
   });
-  var timeoutPromise = new Promise(function(resolve) {
-    setTimeout(() => resolve('request-timedout'), 12000);
-  });
-  return Promise.race([gumPromise, timeoutPromise]).then(function(value) {
+
+  let promises = [gumPromise];
+
+  if (optionalTimeoutSeconds) {
+    let timeoutPromise = new Promise(function(resolve) {
+      setTimeout(
+          () => resolve('request-timedout'), optionalTimeoutSeconds * 1000);
+    });
+    promises.push(timeoutPromise);
+  }
+
+  return Promise.race(promises).then(function(value) {
     return logAndReturn(value);
   });
 }
