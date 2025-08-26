@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
@@ -90,6 +91,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   base::SingleThreadTaskRunner* GetEncoderTaskRunnerForTesting() const;
   size_t GetInputFramesQueueSizeForTesting() const;
   size_t GetBitstreamBuffersSizeForTesting() const;
+  size_t GetSharedHandleCacheSizeForTesting() const;
 
  private:
   void InitializeTask(const Config& config);
@@ -201,6 +203,11 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
 
   base::queue<BitstreamBuffer> bitstream_buffers_
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);
+
+  // Cache for shared handle to D3D12Resource mapping when caching is enabled.
+  // LRU cache that maps DXGIHandleToken to the corresponding ID3D12Resource.
+  base::LRUCache<gfx::DXGIHandleToken, Microsoft::WRL::ComPtr<ID3D12Resource>>
+      shared_handle_cache_ GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // WeakPtr of this, bound to |child_task_runner_|.
   base::WeakPtr<D3D12VideoEncodeAccelerator> child_weak_this_;

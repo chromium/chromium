@@ -1486,6 +1486,10 @@ BASE_FEATURE(D3D12VideoDecoder, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(D3D12VideoEncodeAccelerator, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(D3D12VideoEncodeAcceleratorL1T3,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether to cache shared handles for D3D12 video encode accelerator.
+BASE_FEATURE(D3D12VideoEncodeAcceleratorSharedHandleCaching,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)

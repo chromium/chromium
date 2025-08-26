@@ -296,7 +296,11 @@ D3D12VideoEncodeAccelerator::D3D12VideoEncodeAccelerator(
       encoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       encoder_factory_(
-          std::make_unique<VideoEncodeDelegateFactory>(gpu_workarounds)) {
+          std::make_unique<VideoEncodeDelegateFactory>(gpu_workarounds)),
+      // VCM on Windows allocates 10 slots for GMB frames. Typically 3 of
+      // them are being actively used. Set cache size to 5 to leave some room
+      // for frames in the rendering and encoding pipelines.
+      shared_handle_cache_(/*max_size=*/5) {
   DVLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
   DETACH_FROM_SEQUENCE(encoder_sequence_checker_);
@@ -491,6 +495,11 @@ size_t D3D12VideoEncodeAccelerator::GetBitstreamBuffersSizeForTesting() const {
   return bitstream_buffers_.size();
 }
 
+size_t D3D12VideoEncodeAccelerator::GetSharedHandleCacheSizeForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  return shared_handle_cache_.size();
+}
+
 void D3D12VideoEncodeAccelerator::InitializeTask(const Config& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
@@ -569,7 +578,27 @@ D3D12VideoEncodeAccelerator::CreateResourceForGpuMemoryBufferVideoFrame(
 
   gfx::GpuMemoryBufferHandle handle = frame.GetGpuMemoryBufferHandle();
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
-  // TODO(40275246): cache the result
+
+  static const bool caching_enabled = base::FeatureList::IsEnabled(
+      kD3D12VideoEncodeAcceleratorSharedHandleCaching);
+
+  const gfx::DXGIHandleToken& token = handle.dxgi_handle().token();
+  if (caching_enabled) {
+    // The Video Capture Module (VCM) reuses a small, circular pool of
+    // GpuMemoryBuffers. This means the same buffer handle will reappear
+    // periodically, but each time it does, it will have been overwritten with a
+    // new frame's content by the producer. When the encoder sees a handle it
+    // has seen before, it retrieves the cached ID3D12Resource from the map.
+    // This resource object is still a valid view into the same underlying GPU
+    // resource allocation. When the GPU is instructed to use this resource for
+    // encoding, it reads the current content of that memory, which is the new
+    // frame's data.
+    auto cache_it = shared_handle_cache_.Get(token);
+    if (cache_it != shared_handle_cache_.end()) {
+      return cache_it->second;
+    }
+  }
+
   HRESULT hr = device_->OpenSharedHandle(handle.dxgi_handle().buffer_handle(),
                                          IID_PPV_ARGS(&input_texture));
   if (FAILED(hr)) {
@@ -578,6 +607,9 @@ D3D12VideoEncodeAccelerator::CreateResourceForGpuMemoryBufferVideoFrame(
     return nullptr;
   }
 
+  if (caching_enabled) {
+    shared_handle_cache_.Put(token, input_texture);
+  }
   return input_texture;
 }
 
