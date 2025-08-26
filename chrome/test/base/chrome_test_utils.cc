@@ -11,6 +11,7 @@
 #include "content/public/test/test_navigation_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
@@ -30,6 +31,19 @@ content::WebContents* GetActiveWebContents(
   NOTREACHED() << "No active TabModel??";
 #else
   return browser_test->browser()->tab_strip_model()->GetActiveWebContents();
+#endif
+}
+
+tabs::TabInterface* GetActiveTab(const PlatformBrowserTest* browser_test) {
+#if BUILDFLAG(IS_ANDROID)
+  for (TabModel* model : TabModelList::models()) {
+    if (model->IsActiveModel()) {
+      return model->GetActiveTab();
+    }
+  }
+  NOTREACHED() << "No active TabModel??";
+#else
+  return browser_test->browser()->tab_strip_model()->GetActiveTab();
 #endif
 }
 

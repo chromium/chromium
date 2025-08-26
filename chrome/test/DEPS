@@ -111,6 +111,7 @@ include_rules = [
   "+components/supervised_user/test_support",
   "+components/sync/test",
   "+components/sync_preferences",
+  "+components/tabs/public",
   "+components/unified_consent",
   "+components/update_client",
   "+components/user_education",

@@ -7,6 +7,8 @@
 
 #include "build/build_config.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 
 namespace content {
 class WebContents;
@@ -22,10 +24,19 @@ namespace chrome_test_utils {
 // Takes a const PlatformBrowserTest so it can be called from other const
 // methods:
 // void MyConstMemberFunction() const {
-//   auto* tab = chrome_test_utils::GetActiveWebContents(this);
+//   auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
 //   ...
 content::WebContents* GetActiveWebContents(
     const PlatformBrowserTest* browser_test);
+
+// Returns the active Tab. On desktop this is in the first browser
+// window created by tests, more specific behaviour requires other means.
+// Takes a const PlatformBrowserTest so it can be called from other const
+// methods:
+// void MyConstMemberFunction() const {
+//   auto* tab = chrome_test_utils::GetActiveTab(this);
+//   ...
+tabs::TabInterface* GetActiveTab(const PlatformBrowserTest* browser_test);
 
 // Returns the WebContents at the specific index. On Android, this is the
 // specific content from active model.
