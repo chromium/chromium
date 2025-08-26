@@ -1602,8 +1602,9 @@ void VideoFrame::UpdateAcquireSyncToken(gpu::SyncToken token) {
 }
 
 std::string VideoFrame::AsHumanReadableString() const {
-  if (metadata().end_of_stream)
+  if (metadata().end_of_stream) {
     return "end of stream";
+  }
 
   std::ostringstream s;
   s << ConfigToString(format(), storage_type_, coded_size(), visible_rect_,
@@ -1612,7 +1613,10 @@ std::string VideoFrame::AsHumanReadableString() const {
     << " color_space: " << ColorSpace().ToString() << " hdr_metadata: "
     << (hdr_metadata_ ? hdr_metadata_->ToString() : "unset");
   if (HasSharedImage()) {
-    s << " shared_image: true";
+    s << " shared_image: {"
+      << " format: " << shared_image()->format().ToString()
+      << " usage: " << shared_image()->usage().ToString()
+      << " label: " << shared_image()->debug_label() << " }";
   }
   return s.str();
 }
