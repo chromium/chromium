@@ -565,6 +565,7 @@ third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/portable
 third_party/mediapipe/src/third_party/com_google_audio_tools/external
 third_party/metrics_proto
 third_party/microsoft_webauthn
+third_party/oak/chromium/proto
 third_party/ocmock/OCMock
 third_party/opus/src/celt/x86
 third_party/opus/src/doc
