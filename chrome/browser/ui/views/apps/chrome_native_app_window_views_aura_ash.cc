@@ -483,7 +483,7 @@ bool ChromeNativeAppWindowViewsAuraAsh::IsFullscreen() const {
 void ChromeNativeAppWindowViewsAuraAsh::EnterFullscreen(
     const url::Origin& origin,
     ExclusiveAccessBubbleType bubble_type,
-    const int64_t display_id) {
+    FullscreenTabParams fullscreen_tab_params) {
   // This codepath is never hit for Chrome Apps.
   NOTREACHED();
 }

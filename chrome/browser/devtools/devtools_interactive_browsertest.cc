@@ -178,8 +178,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest, ExitFullscreenWindow) {
   ui::test::ScopedFakeNSWindowFullscreen faker;
 #endif
   browser()->window()->GetExclusiveAccessContext()->EnterFullscreen(
-      url::Origin(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
-      display::kInvalidDisplayId);
+      url::Origin(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE, FullscreenTabParams());
   CheckIsFullscreen(true);
   SendCommand("normal");
   CheckIsFullscreen(false);

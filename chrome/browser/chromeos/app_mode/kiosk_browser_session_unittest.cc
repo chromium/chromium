@@ -170,7 +170,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   bool IsFullscreen() const override { return fullscreen_; }
   void EnterFullscreen(const url::Origin& origin,
                        ExclusiveAccessBubbleType type,
-                       int64_t display_id) override {
+                       FullscreenTabParams fullscreen_tab_params) override {
     fullscreen_ = true;
   }
   void ExitFullscreen() override { fullscreen_ = false; }

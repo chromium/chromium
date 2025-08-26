@@ -2598,7 +2598,8 @@ void Browser::EnterFullscreenModeForTab(
   browser_window_features()
       ->exclusive_access_manager()
       ->fullscreen_controller()
-      ->EnterFullscreenModeForTab(requesting_frame, options.display_id);
+      ->EnterFullscreenModeForTab(requesting_frame,
+                                  FullscreenTabParams{options.display_id});
 }
 
 void Browser::ExitFullscreenModeForTab(WebContents* web_contents) {

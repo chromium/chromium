@@ -39,7 +39,7 @@ bool ExclusiveAccessContextAndroid::IsFullscreen() const {
 void ExclusiveAccessContextAndroid::EnterFullscreen(
     const url::Origin& origin,
     ExclusiveAccessBubbleType bubble_type,
-    const int64_t display_id) {
+    FullscreenTabParams fullscreen_tab_params) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_ExclusiveAccessContext_enterFullscreenModeForTab(env, java_context_);
 }

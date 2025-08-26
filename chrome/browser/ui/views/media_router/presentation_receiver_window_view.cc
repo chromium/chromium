@@ -296,7 +296,7 @@ bool PresentationReceiverWindowView::IsFullscreen() const {
 void PresentationReceiverWindowView::EnterFullscreen(
     const url::Origin& origin,
     ExclusiveAccessBubbleType bubble_type,
-    const int64_t display_id) {
+    FullscreenTabParams fullscreen_tab_params) {
   frame_->SetFullscreen(true);
 #if !BUILDFLAG(IS_CHROMEOS)
   OnFullscreenChanged();

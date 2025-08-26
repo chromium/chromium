@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_controller_base.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_tab_params.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/fullscreen_types.h"
 #include "ui/display/types/display_constants.h"
@@ -121,12 +122,13 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   // to also fullscreen the browser window. See 'FullscreenWithinTab Note'.
   // `requesting_frame` is the specific content frame requesting fullscreen.
   // Sites with the Window Management permission may request fullscreen on a
-  // particular display. In that case, `display_id` is the display's id;
-  // otherwise, display::kInvalidDisplayId indicates no display is specified.
+  // particular display. In that case, `fullscreen_tab_params.display_id` is the
+  // display's id; otherwise, display::kInvalidDisplayId indicates no display is
+  // specified.
   // `CanEnterFullscreenModeForTab()` must return true on entry.
   void EnterFullscreenModeForTab(
       content::RenderFrameHost* requesting_frame,
-      const int64_t display_id = display::kInvalidDisplayId);
+      FullscreenTabParams fullscreen_tab_params = FullscreenTabParams());
 
   // Leave a tab-initiated fullscreen mode.
   // |web_contents| represents the tab that requests to no longer be fullscreen.
@@ -194,7 +196,7 @@ class FullscreenController : public ExclusiveAccessControllerBase {
                                     bool user_initiated);
   void EnterFullscreenModeInternal(FullscreenInternalOption option,
                                    content::RenderFrameHost* requesting_frame,
-                                   int64_t display_id);
+                                   FullscreenTabParams fullscreen_tab_params);
   void ExitFullscreenModeInternal();
 
   // Returns true if |web_contents| was toggled into/out of fullscreen mode as a

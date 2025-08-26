@@ -2086,7 +2086,8 @@ void BrowserView::Restore() {
 
 void BrowserView::EnterFullscreen(const url::Origin& origin,
                                   ExclusiveAccessBubbleType bubble_type,
-                                  const int64_t display_id) {
+                                  FullscreenTabParams fullscreen_tab_params) {
+  int64_t display_id = fullscreen_tab_params.display_id;
   if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
     RequestFullscreen(true, display_id);
   } else {

@@ -31,7 +31,7 @@ class ExclusiveAccessContextAndroid : public ExclusiveAccessContext {
   // Enters fullscreen and updates the exclusive access bubble.
   void EnterFullscreen(const url::Origin& origin,
                        ExclusiveAccessBubbleType bubble_type,
-                       const int64_t display_id) override;
+                       FullscreenTabParams fullscreen_tab_params) override;
 
   // Exits fullscreen and updates the exclusive access bubble.
   void ExitFullscreen() override;

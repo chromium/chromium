@@ -91,7 +91,7 @@ class PresentationReceiverWindowView final
   bool IsFullscreen() const final;
   void EnterFullscreen(const url::Origin& origin,
                        ExclusiveAccessBubbleType bubble_type,
-                       const int64_t display_id) final;
+                       FullscreenTabParams fullscreen_tab_params) final;
   void ExitFullscreen() final;
   void UpdateExclusiveAccessBubble(
       const ExclusiveAccessBubbleParams& params,

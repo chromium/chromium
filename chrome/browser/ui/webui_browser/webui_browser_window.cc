@@ -934,9 +934,10 @@ Profile* WebUIBrowserWindow::GetProfile() {
   return browser_->profile();
 }
 
-void WebUIBrowserWindow::EnterFullscreen(const url::Origin& origin,
-                                         ExclusiveAccessBubbleType bubble_type,
-                                         const int64_t display_id) {
+void WebUIBrowserWindow::EnterFullscreen(
+    const url::Origin& origin,
+    ExclusiveAccessBubbleType bubble_type,
+    FullscreenTabParams fullscreen_tab_params) {
   // TODO(webium): Implement this.
   NOTIMPLEMENTED();
 }

@@ -33,8 +33,11 @@ void ExclusiveAccessManagerAndroid::EnterFullscreenModeForTab(
     jlong requesting_frame,
     bool prefersNavigationBar,
     bool prefersStatusBar) {
+  FullscreenTabParams fullscreen_tab_params{
+      display::kInvalidDisplayId, prefersNavigationBar, prefersStatusBar};
   eam_.fullscreen_controller()->EnterFullscreenModeForTab(
-      reinterpret_cast<content::RenderFrameHost*>(requesting_frame));
+      reinterpret_cast<content::RenderFrameHost*>(requesting_frame),
+      fullscreen_tab_params);
 }
 
 void ExclusiveAccessManagerAndroid::ExitFullscreenModeForTab(

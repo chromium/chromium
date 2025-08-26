@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_tab_params.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_within_tab_helper.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -178,7 +179,7 @@ bool FullscreenController::CanEnterFullscreenModeForTab(
 
 void FullscreenController::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
-    const int64_t display_id) {
+    FullscreenTabParams fullscreen_tab_params) {
   DCHECK(requesting_frame);
   // This function should never fail. Any possible failures must be checked in
   // |CanEnterFullscreenModeForTab()| instead. Silently dropping the request
@@ -206,7 +207,7 @@ void FullscreenController::EnterFullscreenModeForTab(
   // Keep the current state. |SetTabWithExclusiveAccess| may change the return
   // value of |IsWindowFullscreenForTabOrPending|.
   const bool requesting_another_screen =
-      IsAnotherScreen(*web_contents, display_id);
+      IsAnotherScreen(*web_contents, fullscreen_tab_params.display_id);
   const bool was_window_fullscreen_for_tab_or_pending =
       !requesting_another_screen && IsWindowFullscreenForTabOrPending();
 
@@ -240,7 +241,7 @@ void FullscreenController::EnterFullscreenModeForTab(
 
     if (!exclusive_access_context->IsFullscreen() ||
         requesting_another_screen) {
-      EnterFullscreenModeInternal(TAB, requesting_frame, display_id);
+      EnterFullscreenModeInternal(TAB, requesting_frame, fullscreen_tab_params);
       return;
     }
 
@@ -299,8 +300,9 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
   if (was_browser_fullscreen && web_contents &&
       display_id_prior_to_tab_fullscreen_ != display::kInvalidDisplayId &&
       display_id_prior_to_tab_fullscreen_ != GetDisplayId(*web_contents)) {
-    EnterFullscreenModeInternal(BROWSER, nullptr,
-                                display_id_prior_to_tab_fullscreen_);
+    EnterFullscreenModeInternal(
+        BROWSER, nullptr,
+        FullscreenTabParams{display_id_prior_to_tab_fullscreen_});
     return;
   }
 
@@ -523,7 +525,8 @@ void FullscreenController::ToggleFullscreenModeInternal(
 
   if (enter_fullscreen &&
       (exclusive_access_context->CanUserEnterFullscreen() || !user_initiated)) {
-    EnterFullscreenModeInternal(option, requesting_frame, display_id);
+    EnterFullscreenModeInternal(option, requesting_frame,
+                                FullscreenTabParams{display_id});
   }
 
   if (!enter_fullscreen &&
@@ -535,7 +538,7 @@ void FullscreenController::ToggleFullscreenModeInternal(
 void FullscreenController::EnterFullscreenModeInternal(
     FullscreenInternalOption option,
     content::RenderFrameHost* requesting_frame,
-    int64_t display_id) {
+    FullscreenTabParams fullscreen_tab_params) {
 #if !BUILDFLAG(IS_MAC)
   // Do not enter fullscreen mode if disallowed by pref. This prevents the user
   // from manually entering fullscreen mode and also disables kiosk mode on
@@ -563,6 +566,7 @@ void FullscreenController::EnterFullscreenModeInternal(
     if (!web_contents) {
       return;
     }
+    int64_t display_id = fullscreen_tab_params.display_id;
     int64_t current_display = GetDisplayId(*web_contents);
     if (display_id != display::kInvalidDisplayId) {
       // Check, but do not prompt, for permission to request a specific screen.
@@ -598,7 +602,7 @@ void FullscreenController::EnterFullscreenModeInternal(
 
   exclusive_access_manager()->context()->EnterFullscreen(
       origin, exclusive_access_manager()->GetExclusiveAccessExitBubbleType(),
-      display_id);
+      fullscreen_tab_params);
 
   // WindowFullscreenStateChanged() is called once the window is fullscreen.
 }

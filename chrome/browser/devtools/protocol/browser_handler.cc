@@ -152,7 +152,7 @@ Response BrowserHandler::SetWindowBounds(
     }
     window->GetExclusiveAccessContext()->EnterFullscreen(
         url::Origin(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
-        display::kInvalidDisplayId);
+        FullscreenTabParams());
   } else if (window_state == "maximized") {
     if (window->IsMinimized() || window->IsFullscreen()) {
       return Response::ServerError(

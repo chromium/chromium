@@ -2704,7 +2704,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_ChangeDisplayMode) {
       ->EnterFullscreen(
           url::Origin(),
           EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
-          display::kInvalidDisplayId);
+          FullscreenTabParams());
 
   // Sync navigation just to make sure IPC has passed (updated
   // display mode is delivered to RP).
