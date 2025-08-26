@@ -4237,5 +4237,113 @@ TEST_F(AIPageContentAgentTest, TabIndex) {
                   mojom::blink::AIPageContentClickabilityReason::kTabIndex));
 }
 
+TEST_F(AIPageContentAgentTest, ClipPathCircle) {
+  // The <div> element is clipped to a small circle.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"(
+      <body>
+        <style>
+          div {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            background: red;
+            clip-path: circle(20%);
+          }
+        </style>
+        <div onclick=console.log(1)></div>
+      </body>)",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+
+  CheckGeometry(div_node, gfx::Rect(30, 30, 40, 40), gfx::Rect(30, 30, 40, 40));
+}
+
+TEST_F(AIPageContentAgentTest, ClipPathEllipse) {
+  // The <div> element is clipped to an ellipse.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"(
+      <body>
+        <style>
+          div {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            background: red;
+            clip-path: ellipse(20px 50px);
+          }
+        </style>
+        <div onclick=console.log(1)></div>
+      </body>)",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+
+  CheckGeometry(div_node, gfx::Rect(30, 0, 40, 100), gfx::Rect(30, 0, 40, 100));
+}
+
+TEST_F(AIPageContentAgentTest, ClipPathCircleHalf) {
+  // Only the bottom half of the circle is within the viewport.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"(
+      <body>
+        <style>
+          div {
+            position: absolute;
+            top: -50px;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            background: red;
+            clip-path: circle(20%);
+          }
+        </style>
+        <div onclick=console.log(1)></div>
+      </body>)",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+
+  CheckGeometry(div_node, gfx::Rect(30, -20, 40, 40), gfx::Rect(30, 0, 40, 20));
+}
+
+TEST_F(AIPageContentAgentTest, ClipPathEmpty) {
+  // The entire <div> element is clipped.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"(
+      <body>
+        <style>
+          div {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            background: red;
+            clip-path: circle(0%);
+          }
+        </style>
+        <div onclick=console.log(1)></div>
+      </body>)",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+
+  CheckGeometry(div_node, gfx::Rect(), gfx::Rect());
+}
+
 }  // namespace
 }  // namespace blink

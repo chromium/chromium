@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
+#include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/script_tools/automation_delegate_supplement.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
@@ -82,13 +83,27 @@ ListBasedHitTestBehavior CollectHitTestNodes(std::vector<DOMNodeId>& hit_nodes,
 
 gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
   gfx::RectF visible_bounding_box =
-      object.LocalBoundingBoxRectForAccessibility();
+      ClipPathClipper::LocalClipPathBoundingBox(object).value_or(
+          object.LocalBoundingBoxRectForAccessibility());
 
   // TODO(khushalsagar): It might be more optimal to derive this from output of
   // paint.
   object.MapToVisualRectInAncestorSpace(nullptr, visible_bounding_box,
                                         kVisualRectFlags);
   return ToEnclosingRect(visible_bounding_box);
+}
+
+gfx::Rect ComputeOuterBoundingBox(const LayoutObject& object) {
+  const std::optional<gfx::RectF> clip_path_box =
+      ClipPathClipper::LocalClipPathBoundingBox(object);
+
+  if (clip_path_box.has_value()) {
+    gfx::QuadF absolute_quad = object.LocalToAbsoluteQuad(
+        gfx::QuadF(clip_path_box.value()), kMapCoordinatesFlags);
+    return gfx::ToEnclosingRect(absolute_quad.BoundingBox());
+  }
+
+  return object.AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
 }
 
 void ComputeScrollerInfo(
@@ -1317,8 +1332,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
   attributes.geometry = mojom::blink::AIPageContentGeometry::New();
   mojom::blink::AIPageContentGeometry& geometry = *attributes.geometry;
 
-  geometry.outer_bounding_box =
-      object.AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
+  geometry.outer_bounding_box = ComputeOuterBoundingBox(object);
   geometry.visible_bounding_box = ComputeVisibleBoundingBox(object);
 
   geometry.is_fixed_or_sticky_position =
