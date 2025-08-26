@@ -1304,7 +1304,7 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
             << "ProfileManager. The keepalive was not removed.";
     // DumpWithoutCrashing turned off for a couple milestones until we fix the
     // root cause, due to the high volume of reports. See crbug.com/368360956.
-    if (version_info::GetMajorVersionNumberAsInt() >= 141) {
+    if (version_info::GetMajorVersionNumberAsInt() >= 144) {
       // TODO(crbug.com/368360956): Not incrementing the refcount will cause
       // `profile` to get destroyed too early. Remove or convert to a CHECK()
       // once the root cause is fixed.
