@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -69,6 +70,7 @@ class BringAndroidTabsPromptMediatorTest : public PlatformTest {
   // Mediator dependencies.
   std::unique_ptr<TestProfileIOS> profile_;
   BringAndroidTabsPromptMediator* mediator_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 };
 
 // Tests that when the prompt is displayed, the mediator logs histogram and

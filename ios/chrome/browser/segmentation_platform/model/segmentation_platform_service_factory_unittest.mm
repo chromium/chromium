@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/ukm_data_manager_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -313,6 +314,7 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
 
   std::unique_ptr<UkmDataManagerTestUtils> test_utils_;
   std::unique_ptr<ProfileData> profile_data_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 };
 
 TEST_F(SegmentationPlatformServiceFactoryTest, Test) {
