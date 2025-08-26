@@ -591,6 +591,7 @@ enum HistogramValue {
   PASSWORDS_PRIVATE_ON_SHOULD_SHOW_ACCOUNT_STORAGE_SETTING_TOGGLE_CHANGED = 567,
   PDF_VIEWER_PRIVATE_ON_SAVE_TO_DRIVE_PROGRESS = 568,
   SIDE_PANEL_ON_OPENED = 569,
+  SIDE_PANEL_ON_CLOSED = 570,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

@@ -775,6 +775,7 @@ Called by update_extension_histograms.py.-->
       label="PASSWORDS_PRIVATE_ON_SHOULD_SHOW_ACCOUNT_STORAGE_SETTING_TOGGLE_CHANGED"/>
   <int value="568" label="PDF_VIEWER_PRIVATE_ON_SAVE_TO_DRIVE_PROGRESS"/>
   <int value="569" label="SIDE_PANEL_ON_OPENED"/>
+  <int value="570" label="SIDE_PANEL_ON_CLOSED"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_event_histogram_value.h:HistogramValue) -->
