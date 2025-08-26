@@ -1315,9 +1315,9 @@ ci.builder(
             "win10",
         ],
     ),
-    builderless = False,
     cores = "32",
     os = os.WINDOWS_DEFAULT,
+    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
         short_name = "dbg",
@@ -1556,9 +1556,9 @@ ci.builder(
             "win10",
         ],
     ),
-    builderless = False,
     cores = "32",
     os = os.WINDOWS_DEFAULT,
+    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
         short_name = "fuz",
