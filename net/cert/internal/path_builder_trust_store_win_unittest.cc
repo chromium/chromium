@@ -26,7 +26,6 @@
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "third_party/boringssl/src/pki/path_builder.h"
-#include "third_party/boringssl/src/pki/pem.h"
 #include "third_party/boringssl/src/pki/simple_path_builder_delegate.h"
 #include "third_party/boringssl/src/pki/trust_store_collection.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
@@ -117,33 +116,14 @@ class AsyncCertIssuerSourceStatic : public bssl::CertIssuerSource {
   base::RepeatingClosure async_get_callback_;
 };
 
-::testing::AssertionResult ReadTestPem(const std::string& file_name,
-                                       const std::string& block_name,
-                                       std::string* result) {
-  const PemBlockMapping mappings[] = {
-      {block_name.c_str(), result},
-  };
-
-  return ReadTestDataFromPemFile(file_name, mappings);
-}
-
 ::testing::AssertionResult ReadTestCert(
     const std::string& file_name,
     std::shared_ptr<const bssl::ParsedCertificate>* result) {
-  std::string der;
-  ::testing::AssertionResult r = ReadTestPem(
-      "net/data/ssl/certificates/" + file_name, "CERTIFICATE", &der);
-  if (!r)
-    return r;
-  bssl::CertErrors errors;
-  *result = bssl::ParsedCertificate::Create(
-      bssl::UniquePtr<CRYPTO_BUFFER>(CRYPTO_BUFFER_new(
-          reinterpret_cast<const uint8_t*>(der.data()), der.size(), nullptr)),
-      {}, &errors);
+  const std::string path = "net/data/ssl/certificates/" + file_name;
+  *result = ReadCertFromFile(path);
   if (!*result) {
     return ::testing::AssertionFailure()
-           << "bssl::ParseCertificate::Create() failed:\n"
-           << errors.ToDebugString();
+           << "ReadCertFromFile(" << path << ") failed";
   }
   return ::testing::AssertionSuccess();
 }

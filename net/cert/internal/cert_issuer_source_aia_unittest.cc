@@ -14,7 +14,6 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "url/gurl.h"
 
@@ -28,32 +27,15 @@ using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::_;
 
-::testing::AssertionResult ReadTestPem(const std::string& file_name,
-                                       const std::string& block_name,
-                                       std::string* result) {
-  const PemBlockMapping mappings[] = {
-      {block_name.c_str(), result},
-  };
-
-  return ReadTestDataFromPemFile(file_name, mappings);
-}
-
 ::testing::AssertionResult ReadTestCert(
     const std::string& file_name,
     std::shared_ptr<const bssl::ParsedCertificate>* result) {
-  std::string der;
-  ::testing::AssertionResult r =
-      ReadTestPem("net/data/cert_issuer_source_aia_unittest/" + file_name,
-                  "CERTIFICATE", &der);
-  if (!r)
-    return r;
-  bssl::CertErrors errors;
-  *result = bssl::ParsedCertificate::Create(x509_util::CreateCryptoBuffer(der),
-                                            {}, &errors);
+  const std::string path =
+      "net/data/cert_issuer_source_aia_unittest/" + file_name;
+  *result = ReadCertFromFile(path);
   if (!*result) {
     return ::testing::AssertionFailure()
-           << "bssl::ParsedCertificate::Create() failed:\n"
-           << errors.ToDebugString();
+           << "ReadCertFromFile(" << path << ") failed";
   }
   return ::testing::AssertionSuccess();
 }

@@ -15,53 +15,6 @@
 #include "third_party/boringssl/src/pki/pem.h"
 
 namespace net {
-
-::testing::AssertionResult ReadTestDataFromPemFile(
-    const std::string& file_path_ascii,
-    base::span<const PemBlockMapping> mappings) {
-  std::string file_data = ReadTestFileToString(file_path_ascii);
-
-  // mappings_copy is used to keep track of which mappings have already been
-  // satisfied (by nulling the |value| field). This is used to track when
-  // blocks are multiply defined.
-  std::vector<PemBlockMapping> mappings_copy = base::ToVector(mappings);
-
-  // Build the |pem_headers| vector needed for PEMTokenzier.
-  std::vector<std::string> pem_headers;
-  for (const auto& mapping : mappings_copy) {
-    pem_headers.push_back(mapping.block_name);
-  }
-
-  bssl::PEMTokenizer pem_tokenizer(file_data, pem_headers);
-  while (pem_tokenizer.GetNext()) {
-    for (auto& mapping : mappings_copy) {
-      // Find the mapping for this block type.
-      if (pem_tokenizer.block_type() == mapping.block_name) {
-        if (!mapping.value) {
-          return ::testing::AssertionFailure()
-                 << "PEM block defined multiple times: " << mapping.block_name;
-        }
-
-        // Copy the data to the result.
-        mapping.value->assign(pem_tokenizer.data());
-
-        // Mark the mapping as having been satisfied.
-        mapping.value = nullptr;
-      }
-    }
-  }
-
-  // Ensure that all specified blocks were found.
-  for (const auto& mapping : mappings_copy) {
-    if (mapping.value && !mapping.optional) {
-      return ::testing::AssertionFailure()
-             << "PEM block missing: " << mapping.block_name;
-    }
-  }
-
-  return ::testing::AssertionSuccess();
-}
-
 bool ReadCertChainFromFile(const std::string& file_path_ascii,
                            bssl::ParsedCertificateList* chain) {
   // Reset all the out parameters to their defaults.
