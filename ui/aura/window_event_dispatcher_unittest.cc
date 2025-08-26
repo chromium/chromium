@@ -2752,7 +2752,7 @@ TEST_F(WindowEventDispatcherTest, DestroyWindowOnCaptureChanged) {
   EXPECT_TRUE(delegate.has_window());
 
   std::unique_ptr<aura::Window> window_second(
-      test::CreateTestWindowWithId(2, root_window()));
+      test::CreateTestWindow({.window_id = 2}, root_window()));
   window_second->Show();
 
   client::CaptureDelegate* capture_delegate = host()->dispatcher();

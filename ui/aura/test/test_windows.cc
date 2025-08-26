@@ -11,12 +11,20 @@
 #include "base/strings/string_number_conversions.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
+#include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace aura {
-namespace test {
+namespace aura::test {
+
+std::unique_ptr<Window> CreateTestWindow(WindowBuilderParams params,
+                                         Window* parent) {
+  return TestWindowBuilder(params)
+      .SetParent(parent)
+      .AllowAllWindowStates()
+      .Build();
+}
 
 Window* CreateTestWindowWithId(int id, Window* parent) {
   return CreateTestWindowWithDelegate(NULL, id, gfx::Rect(), parent);
@@ -48,19 +56,13 @@ Window* CreateTestWindowWithDelegateAndType(WindowDelegate* delegate,
                                             const gfx::Rect& bounds,
                                             Window* parent,
                                             bool show_on_creation) {
-  Window* window = new Window(delegate, type);
-  window->SetId(id);
-  window->Init(ui::LAYER_TEXTURED);
-  window->SetProperty(client::kResizeBehaviorKey,
-                      client::kResizeBehaviorCanResize |
-                          client::kResizeBehaviorCanMaximize |
-                          client::kResizeBehaviorCanFullscreen);
-  window->SetBounds(bounds);
-  if (show_on_creation)
-    window->Show();
-  if (parent)
-    parent->AddChild(window);
-  return window;
+  return CreateTestWindow({.delegate = delegate,
+                           .bounds = bounds,
+                           .window_type = type,
+                           .window_id = id,
+                           .show = show_on_creation},
+                          parent)
+      .release();
 }
 
 template <typename T>
@@ -92,5 +94,4 @@ std::string ChildWindowIDsAsString(aura::Window* parent) {
   return result;
 }
 
-}  // namespace test
-}  // namespace aura
+}  // namespace aura::test

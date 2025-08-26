@@ -4,6 +4,7 @@
 
 #include "ui/wm/core/visibility_controller.h"
 
+#include "base/test/run_until.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -34,18 +35,26 @@ TEST_F(VisibilityControllerTest, AnimateTransparencyToZeroAndHideHides) {
   aura::test::TestWindowDelegate d;
   std::unique_ptr<aura::Window> window(aura::test::CreateTestWindowWithDelegate(
       &d, -2, gfx::Rect(0, 0, 50, 50), root_window()));
-  ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
-  settings.SetTransitionDuration(base::Milliseconds(5));
-
   EXPECT_TRUE(window->layer()->visible());
   EXPECT_TRUE(window->IsVisible());
+  EXPECT_EQ(1.0, window->layer()->GetTargetOpacity());
+  EXPECT_TRUE(window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::OPACITY));
+  {
+    ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
+    settings.SetTransitionDuration(base::Milliseconds(5));
+    settings.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
-  window->layer()->SetOpacity(0.0);
+    EXPECT_TRUE(window->layer()->visible());
+    EXPECT_TRUE(window->IsVisible());
+    window->layer()->SetOpacity(0.0);
+  }
+  EXPECT_EQ(0.0f, window->layer()->GetTargetOpacity());
   EXPECT_TRUE(window->layer()->visible());
   EXPECT_TRUE(window->IsVisible());
   EXPECT_TRUE(window->layer()->GetAnimator()->
       IsAnimatingProperty(ui::LayerAnimationElement::OPACITY));
-  EXPECT_EQ(0.0f, window->layer()->GetTargetOpacity());
 
   // Check that the visibility is correct after the hide animation has finished.
   window->Hide();
