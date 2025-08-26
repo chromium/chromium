@@ -87,7 +87,7 @@
 <translation id="3295886253693811851">התקשרות באמצעות</translation>
 <translation id="3306688585798492231">מסך מובנה</translation>
 <translation id="335581015389089642">דיבור</translation>
-<translation id="3372635229069101468">לוחצים על <ph name="BEGIN_BOLD" />פרטים<ph name="END_BOLD" /></translation>
+<translation id="3372635229069101468">ללחוץ על <ph name="BEGIN_BOLD" />פרטים<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">הטקסט ארוך מדי</translation>
 <translation id="3406306243914553062">‏תוכן HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{נותר יום אחד}one{נותרו # ימים}two{נותרו יומיים}other{נותרו # ימים}}</translation>

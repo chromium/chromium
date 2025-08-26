@@ -73,7 +73,7 @@
 <translation id="4277736576214464567">رمز الدخول غير صالح، يُرجى إعادة المحاولة.</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
 <translation id="4405930547258349619">المكتبة الأساسية</translation>
-<translation id="443560535555262820">فتح إعدادات "أدوات تمكين الوصول" المفضّلة</translation>
+<translation id="443560535555262820">فتح إعدادات "أدوات تسهيل الاستخدام" المفضّلة</translation>
 <translation id="4450893287417543264">عدم الإظهار مرة أخرى</translation>
 <translation id="4513946894732546136">ملاحظات</translation>
 <translation id="4563926062592110512">تم إلغاء ربط العميل: <ph name="CLIENT_USERNAME" />.</translation>
@@ -108,7 +108,7 @@
 <translation id="5708869785009007625">تتم مشاركة سطح المكتب حاليًا مع <ph name="USER" />.</translation>
 <translation id="579702532610384533">إعادة الاتصال</translation>
 <translation id="5810269635982033450">تعمل الشاشة كلوحة تتبع</translation>
-<translation id="5823554426827907568">طلب <ph name="CLIENT_USERNAME" /> إذنًا بالوصول إلى جهاز الكمبيوتر الخاص بك للاطّلاع على شاشة جهازك والتحكّم بلوحة المفاتيح والماوس. انقر على "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" إذا لم تكن تتوقّع هذا الطلب. ويمكنك النقر على "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" للسماح بهذا الاتصال في حال كنت مستعدًا.</translation>
+<translation id="5823554426827907568">طلب "<ph name="CLIENT_USERNAME" />" إذنًا بالوصول إلى جهاز الكمبيوتر الخاص بك للاطّلاع على شاشة جهازك والتحكّم بلوحة المفاتيح والماوس. يُرجى النقر على "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" إذا لم يكن هذا الطلب متوقَّعًا. ويمكنك النقر على "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" للسماح بهذا الاتصال في حال كنت على استعداد.</translation>
 <translation id="5823658491130719298">‏على جهاز الكمبيوتر الذي تريد الدخول إليه عن بُعد، افتح Chrome وانتقل إلى <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">خيارات العرض</translation>
 <translation id="6033507038939587647">خيارات لوحة المفاتيح</translation>
@@ -166,9 +166,9 @@
 <translation id="8073845705237259513">‏لاستخدام سطح المكتب البعيد من Chrome، يجب إضافة حساب في Google إلى جهازك.</translation>
 <translation id="809687642899217504">أجهزة الكمبيوتر الخاصة بي</translation>
 <translation id="8116630183974937060">حدث خطأ في الشبكة. يُرجى التحقق من اتصال جهازك بالإنترنت وإعادة المحاولة.</translation>
-<translation id="8295077433896346116">‏لاستخدام <ph name="PRODUCT_NAME" />، عليك منح إذن "أدوات تمكين الوصول" لكي يصل الطلب من الجهاز البعيد إلى جهاز Mac هذا.
+<translation id="8295077433896346116">‏لاستخدام <ph name="PRODUCT_NAME" />، عليك منح إذن "أدوات تسهيل الاستخدام" لكي يصل الطلب من الجهاز البعيد إلى جهاز Mac هذا.
 
-لمنح هذا الإذن، يُرجى النقر على "<ph name="BUTTON_NAME" />" أدناه لفتح لوحة إعدادات "أدوات تمكين الوصول" المفضّلة ثم وضع علامة في المربّع بجانب "<ph name="SERVICE_SCRIPT_NAME" />".
+لمنح هذا الإذن، يُرجى النقر على "<ph name="BUTTON_NAME" />" أدناه لفتح لوحة إعدادات "أدوات تسهيل الاستخدام" المفضّلة ثم وضع علامة في المربّع بجانب "<ph name="SERVICE_SCRIPT_NAME" />".
 
 في حال سبق ووضعت علامة في المربّع بجانب "<ph name="SERVICE_SCRIPT_NAME" />"، عليك إزالة العلامة ثم وضعها مرة أخرى.</translation>
 <translation id="8305209735512572429">عملية مصادقة الويب عن بُعد</translation>

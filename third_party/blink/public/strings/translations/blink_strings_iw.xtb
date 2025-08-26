@@ -37,7 +37,7 @@
 <translation id="3822383571486410024">צריך להאריך את הטקסט הזה ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (כרגע הוא באורך <ph name="CURRENT_LENGTH" /> תווים).</translation>
 <translation id="383465348367842624">חלק ולאחריו '<ph name="ATSIGN" />' לא אמור לכלול את הסמל '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">יציאה ממסך מלא</translation>
-<translation id="4360991593054037559">יש להזין ערך חוקי. שני הערכים החוקיים הקרובים ביותר הם <ph name="VALID_VALUE_LOW" /> ו-<ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4360991593054037559">צריך להזין ערך תקין. שני הערכים התקינים הקרובים ביותר הם <ph name="VALID_VALUE_LOW" /> ו-<ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">פרטים</translation>
 <translation id="4664250907885839816">חלק ולאחריו '<ph name="ATSIGN" />' לא אמור לכלול את הסמל '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4703271465972936359">טראקים של אודיו</translation>

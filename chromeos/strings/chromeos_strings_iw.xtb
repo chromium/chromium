@@ -450,7 +450,7 @@
 <translation id="2888298276507578975">אפשר להזין הנחיה כמו "אני רוצה לכתוב מכתב תודה"</translation>
 <translation id="2890557891229184386">אי טרופי</translation>
 <translation id="2895772081848316509">כהה</translation>
-<translation id="2915996080311180594">הפעלה מחדש מאוחר יותר</translation>
+<translation id="2915996080311180594">הפעלה מחדש אחר כך</translation>
 <translation id="2926057806159140518">‏צריך להזין את שם המשתמש והסיסמה או לסרוק את קוד ה-QR</translation>
 <translation id="2927007463545347013">שביל אנימה שמשקיף על האוקיינוס עם עלי פריחת הדובדבן נושרים</translation>
 <translation id="2940811910881150316">לא ניתן לבדוק את המכשיר. צריך לפתוח את המכסה כדי לבצע את הבדיקה.</translation>
@@ -558,7 +558,7 @@
 <translation id="346423161771747987">זרם</translation>
 <translation id="346539236881580388">צילום חוזר</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
-<translation id="3484914941826596830">במהלך עדכון הקושחה אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. העדכון הזה עשוי לקחת כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל במהלכו.</translation>
+<translation id="3484914941826596830">במהלך עדכון הקושחה אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. העדכון הזה עשוי לקחת כמה דקות ויכול להיות שהמכשיר החיצוני שלך לא יפעל במהלכו.</translation>
 <translation id="3486220673238053218">הגדרה</translation>
 <translation id="3487866404496702283">‏משוב על תכונת Mahi</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
@@ -630,7 +630,7 @@
 <translation id="382043424867370667">טפט השקיעה</translation>
 <translation id="3824259034819781947">צירוף קבצים</translation>
 <translation id="3838338534323494292">סיסמה חדשה</translation>
-<translation id="3845880861638660475">‏כדי לסגור את תיבת הדו-שיח, מקישים על <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> +‏ <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
+<translation id="3845880861638660475">‏כדי לסגור את תיבת הדו-שיח, לוחצים על <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> +‏ <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">מקלדת כהה</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3852931845120288955">שמות לפי סדר אלפביתי</translation>
@@ -1330,7 +1330,7 @@
 <translation id="6899460405678814458">הצגת הסיכום</translation>
 <translation id="6900701049656042631">אין תמונות באלבום הזה. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
 <translation id="6902359863093437070">‏יצירת רקע באמצעות AI</translation>
-<translation id="6905163627763043954">נסה זאת</translation>
+<translation id="6905163627763043954">רוצה לנסות</translation>
 <translation id="6905275015682612674">‏תמונה בחשיפה ארוכה של חוף עם אוֹרוּת ביולוגית עם שקיעה וכוכבים בשמיים, צבעי פסטל יפים, 4K</translation>
 <translation id="6905724422583748843">חזרה אל <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">המכסה של הסורק פתוח. יש לסגור אותו ולנסות שוב.</translation>
@@ -1774,7 +1774,7 @@
 <translation id="885704831271383379">איך להכהות את המקלדת</translation>
 <translation id="8863170912498892583">הפעלת העיצוב הכהה</translation>
 <translation id="8863888432376731307">לקבלת ה<ph name="INTENT" /> עבור "<ph name="QUERY" />" ועוד</translation>
-<translation id="8864415976656252616">אין הצעות לתוכן. להצגת תוכן עזרה מוביל.</translation>
+<translation id="8864415976656252616">אין תוכן מומלץ. עיון בתוכן עזרה מוביל.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">המכשיר הוא טאבלט.</translation>
 <translation id="8881098542468797602">הבדיקה הושלמה בהצלחה</translation>
