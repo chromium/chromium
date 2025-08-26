@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -16,6 +18,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -25,6 +29,7 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorUiAction
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 
+@NullMarked
 public class IdentityErrorCardPreference extends Preference
         implements SyncService.SyncStateChangedListener {
     public interface Listener {
@@ -34,7 +39,7 @@ public class IdentityErrorCardPreference extends Preference
 
     private @Nullable Profile mProfile;
     private @Nullable SyncService mSyncService;
-    private @Nullable Listener mListener;
+    private Listener mListener;
 
     private @UserActionableError int mIdentityError;
 
@@ -48,6 +53,7 @@ public class IdentityErrorCardPreference extends Preference
     /**
      * Initialize the dependencies for the IdentityErrorCardPreference and update the error card.
      */
+    @Initializer
     public void initialize(Profile profile, Listener listener) {
         assert getParent() != null : "Not attached to any parent.";
 
@@ -112,7 +118,7 @@ public class IdentityErrorCardPreference extends Preference
         Button button = card.findViewById(R.id.signin_settings_card_button);
 
         ErrorCardDetails error_card_details =
-                SyncSettingsUtils.getIdentityErrorErrorCardDetails(mIdentityError);
+                assumeNonNull(SyncSettingsUtils.getIdentityErrorErrorCardDetails(mIdentityError));
         error.setText(context.getString(error_card_details.message));
         button.setText(context.getString(error_card_details.buttonLabel));
 

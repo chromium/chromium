@@ -85,11 +85,14 @@ public class AccountManagementFragmentTest {
 
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
+    private FakeSyncServiceImpl mFakeSyncService;
+
     @Before
     public void setUp() {
         // Prevent "GmsCore outdated" error from being exposed in bots with old version.
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired()).thenReturn(false);
+        mFakeSyncService = overrideSyncService();
     }
 
     @Test
@@ -230,8 +233,7 @@ public class AccountManagementFragmentTest {
     @Test
     @SmallTest
     public void testSignOutShowsUnsavedDataDialog() {
-        FakeSyncServiceImpl fakeSyncService = overrideSyncService();
-        fakeSyncService.setTypesWithUnsyncedData(Set.of(DataType.BOOKMARKS));
+        mFakeSyncService.setTypesWithUnsyncedData(Set.of(DataType.BOOKMARKS));
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
@@ -247,7 +249,7 @@ public class AccountManagementFragmentTest {
     @SmallTest
     public void testIdentityErrorCardNotShown() {
         // Fake an identity error.
-        overrideSyncService().setRequiresClientUpgrade(true);
+        mFakeSyncService.setRequiresClientUpgrade(true);
 
         // Expect no records.
         HistogramWatcher watchIdentityErrorCardShownHistogram =

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +18,7 @@ import androidx.preference.PreferenceGroup;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -49,6 +52,7 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
  * Settings fragment controlling a number of features communicating with Google services, such as
  * search autocomplete and the automatic upload of crash reports.
  */
+@NullMarked
 public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         implements Preference.OnPreferenceChangeListener {
     // No longer used. Do not delete. Do not reuse these same strings.
@@ -191,7 +195,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
             assert !getProfile().isChild() : "A supervised account must not update allow sign-in.";
 
             IdentityManager identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(getProfile());
+                    assumeNonNull(IdentityServicesProvider.get().getIdentityManager(getProfile()));
             boolean shouldSignUserOut =
                     identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN) && !((boolean) newValue);
             if (!shouldSignUserOut) {
@@ -204,7 +208,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                     getProfile(),
                     getActivity().getSupportFragmentManager(),
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                    mSnackbarManagerSupplier.get(),
+                    assumeNonNull(mSnackbarManagerSupplier).get(),
                     SignoutReason.USER_DISABLED_ALLOW_CHROME_SIGN_IN,
                     /* showConfirmDialog= */ true,
                     () -> {

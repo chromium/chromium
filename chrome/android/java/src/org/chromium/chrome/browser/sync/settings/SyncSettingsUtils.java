@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.sync.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -26,6 +28,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
@@ -49,6 +52,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Helper methods for sync settings. */
+@NullMarked
 public class SyncSettingsUtils {
     private static final String MY_ACCOUNT_URL = "https://myaccount.google.com/smartlink/home";
     private static final String TAG = "SyncSettingsUtils";
@@ -414,7 +418,7 @@ public class SyncSettingsUtils {
                             "Error opening trusted vault dialog for code ",
                             requestCode,
                             ": ",
-                            exception);
+                            assumeNonNull(exception));
                 });
     }
 

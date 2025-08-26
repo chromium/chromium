@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.AttributeSet;
@@ -15,6 +17,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -48,6 +52,7 @@ import org.chromium.ui.base.ViewUtils;
  * A preference that displays "Sign in to Chrome" when the user is not sign in, and displays the
  * user's name, email, profile image and sync error icon if necessary when the user is signed in.
  */
+@NullMarked
 public class SignInPreference extends Preference
         implements SignInStateObserver,
                 ProfileDataCache.Observer,
@@ -64,7 +69,7 @@ public class SignInPreference extends Preference
     private AccountManagerFacade mAccountManagerFacade;
     private @Nullable SyncService mSyncService;
     private SigninManager mSigninManager;
-    private @Nullable IdentityManager mIdentityManager;
+    private IdentityManager mIdentityManager;
 
     public ProfileDataCache getProfileDataCache() {
         return mProfileDataCache;
@@ -84,6 +89,7 @@ public class SignInPreference extends Preference
      * <p>Must be called before the preference is attached, which is called from the containing
      * settings screen's onViewCreated method.
      */
+    @Initializer
     public void initialize(
             Profile profile,
             ProfileDataCache profileDataCache,
@@ -93,8 +99,9 @@ public class SignInPreference extends Preference
         mAccountManagerFacade = accountManagerFacade;
         mPrefService = UserPrefs.get(mProfile);
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
+        mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
+        mIdentityManager =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
     }
 
     @Override
@@ -223,7 +230,7 @@ public class SignInPreference extends Preference
         setTitle(
                 SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                         profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
-        if (!mSyncService.hasSyncConsent()) {
+        if (!assumeNonNull(mSyncService).hasSyncConsent()) {
             setFragment(ManageSyncSettings.class.getName());
         } else {
             setFragment(AccountManagementFragment.class.getName());

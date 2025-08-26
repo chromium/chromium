@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -13,6 +15,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -27,6 +31,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 
+@NullMarked
 public class SyncErrorCardPreference extends Preference
         implements SyncService.SyncStateChangedListener, ProfileDataCache.Observer {
     /** Listener for the buttons in the error card. */
@@ -50,7 +55,7 @@ public class SyncErrorCardPreference extends Preference
     private ProfileDataCache mProfileDataCache;
     private @Nullable Profile mProfile;
     private @Nullable SyncService mSyncService;
-    private @Nullable IdentityManager mIdentityManager;
+    private IdentityManager mIdentityManager;
     private SyncErrorCardPreferenceListener mListener;
     private @UserActionableError int mSyncError;
 
@@ -68,6 +73,7 @@ public class SyncErrorCardPreference extends Preference
      * <p>Must be called before the preference is attached, which is called from the containing
      * settings screen's onViewCreated method.
      */
+    @Initializer
     public void initialize(
             ProfileDataCache profileDataCache,
             Profile profile,
@@ -75,7 +81,8 @@ public class SyncErrorCardPreference extends Preference
         mProfileDataCache = profileDataCache;
         mProfile = profile;
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
-        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
+        mIdentityManager =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
         mListener = listener;
     }
 

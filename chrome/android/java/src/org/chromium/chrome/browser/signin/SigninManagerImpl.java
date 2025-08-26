@@ -493,7 +493,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     @Override
     public void revokeSyncConsent(
             @SignoutReason int signoutSource,
-            SignOutCallback signOutCallback,
+            @Nullable SignOutCallback signOutCallback,
             boolean forceWipeUserData) {
         // Only one signOut at a time!
         assert mSignOutState == null;
