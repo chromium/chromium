@@ -16,6 +16,10 @@
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 
+namespace base {
+class File;
+}
+
 namespace crypto::hash {
 
 inline constexpr size_t kSha1Size = 20;
@@ -98,6 +102,15 @@ class CRYPTO_EXPORT Hasher {
  private:
   bssl::ScopedEVP_MD_CTX ctx_;
 };
+
+// A utility function for a common use-case (hashing the entire body of a
+// base::File). The digest span must be of the correct size for the specified
+// HashKind. If file IO fails while reading the file, or the passed-in file is
+// not valid, the output span is filled with zeroes and this function returns
+// false.
+[[nodiscard]] CRYPTO_EXPORT bool HashFile(HashKind kind,
+                                          base::File* file,
+                                          base::span<uint8_t> digest);
 
 }  // namespace crypto::hash
 

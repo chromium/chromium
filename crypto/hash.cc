@@ -8,6 +8,9 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/files/file.h"
+#include "base/memory/page_size.h"
 #include "base/notreached.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -124,6 +127,31 @@ void Hasher::Finish(base::span<uint8_t> digest) {
   CHECK(EVP_MD_CTX_md(ctx_.get())) << "Hasher::Finish() called multiple times";
   CHECK_EQ(digest.size(), EVP_MD_CTX_size(ctx_.get()));
   CHECK(EVP_DigestFinal(ctx_.get(), digest.data(), nullptr));
+}
+
+bool HashFile(HashKind kind, base::File* file, base::span<uint8_t> digest) {
+  if (!file->IsValid()) {
+    // Zero the out digest so that callers that fail to check the return value
+    // won't read uninitialized values.
+    std::ranges::fill(digest, 0);
+    return false;
+  }
+
+  Hasher hasher(kind);
+
+  while (true) {
+    std::array<uint8_t, 4096> buffer;
+    std::optional<size_t> bytes_read = file->ReadAtCurrentPos(buffer);
+    if (!bytes_read.has_value()) {
+      std::ranges::fill(digest, 0);
+      return false;
+    }
+    if (bytes_read.value() == 0) {
+      hasher.Finish(digest);
+      return true;
+    }
+    hasher.Update(base::span(buffer).first(*bytes_read));
+  }
 }
 
 }  // namespace crypto::hash

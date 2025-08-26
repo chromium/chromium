@@ -1,0 +1,1 @@
+This file is used as a test input for hash and signature functions.
