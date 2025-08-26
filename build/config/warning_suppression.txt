@@ -50,7 +50,7 @@ src:*{/,\\}v8{/,\\}*
 src:*{/,\\}third_party{/,\\}angle{/,\\}*
 src:*{/,\\}third_party{/,\\}crashpad{/,\\}crashpad{/,\\}third_party{/,\\}cpp-httplib{/,\\}*
 src:*{/,\\}third_party{/,\\}crc32c{/,\\}src{/,\\}src{/,\\}*
-src:*{/,\\}third_party{/,\\}dawn{/,\\}src{/,\\}dawn{/,\\}*
+src:*{/,\\}third_party{/,\\}dawn{/,\\}*
 src:*{/,\\}third_party{/,\\}fuzztest{/,\\}src{/,\\}*
 src:*{/,\\}third_party{/,\\}gemmlowp{/,\\}*
 src:*{/,\\}third_party{/,\\}googletest{/,\\}src{/,\\}googlemock{/,\\}src{/,\\}*
