@@ -2487,6 +2487,12 @@ void Widget::UpdateAccessibleURLForRootView(const GURL& url) {
   }
 }
 
+void Widget::SaveWindowPlacementIfNeeded() {
+  if (native_widget_initialized_ && save_window_placement_allowed_) {
+    SaveWindowPlacement();
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, protected:
 
@@ -2526,12 +2532,6 @@ const ui::NativeTheme* Widget::GetNativeTheme() const {
 #endif
 
   return ui::NativeTheme::GetInstanceForNativeUi();
-}
-
-void Widget::SaveWindowPlacementIfNeeded() {
-  if (native_widget_initialized_ && save_window_placement_allowed_) {
-    SaveWindowPlacement();
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

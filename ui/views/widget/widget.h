@@ -1471,6 +1471,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   WidgetAXManager* ax_manager() { return ax_manager_.get(); }
 
+  // Invokes SaveWindowPlacement() if the native widget has been initialized.
+  // This is called at times when the native widget may not have been
+  // initialized.
+  void SaveWindowPlacementIfNeeded();
+
  protected:
   // Creates the RootView to be used within this Widget. Subclasses may override
   // to create custom RootViews that do specialized event processing.
@@ -1490,11 +1495,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Set the native theme from which this widget gets color from.
   void SetNativeTheme(ui::NativeTheme* native_theme);
-
-  // Invokes SaveWindowPlacement() if the native widget has been initialized.
-  // This is called at times when the native widget may not have been
-  // initialized.
-  void SaveWindowPlacementIfNeeded();
 
   // The following methods are used by the property access system described in
   // the comments on views::View. They follow the required naming convention in
