@@ -13,8 +13,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
+#include "extensions/renderer/bindings/get_per_context_data.h"
 #include "v8/include/v8-forward.h"
 
 namespace gin {
@@ -66,6 +68,10 @@ struct PortId;
 // This concludes the one-time message flow.
 class OneTimeMessageHandler {
  public:
+  // A unique identifier for a message response callback
+  // (`OneTimeMessageCallback`).
+  using CallbackID = base::UnguessableToken;
+
   explicit OneTimeMessageHandler(
       NativeExtensionBindingsSystem* bindings_system);
 
@@ -163,21 +169,22 @@ class OneTimeMessageHandler {
 
   // Helper method for creating delayed callbacks that can be called as a result
   // of message listener behavior.
+  // `cleanup_on_collection` true means that, if `context` is still valid when
+  // the v8::Function that is created to call `callback` is garbage collected by
+  // v8, we'll remove `callback` from
+  // `GetPerContextData<OneTimeMessageContextData>::pending_callbacks` and close
+  // the message port.
   v8::Local<v8::Function> CreateDelayedOneTimeMessageCallback(
       v8::Isolate* isolate,
       v8::Local<v8::Context> context,
       const PortId& port_id,
-      OneTimeMessageCallback* callback,
-      ScriptContext* script_context);
-
-  // Identifier for a `OneTimeMessageCallback` to scope the lifetime for
-  // references. `CallbackID` is derived from `OneTimeMessageCallback*`, used in
-  // comparison only, and are never dereferenced.
-  using CallbackID = std::uintptr_t;
+      std::unique_ptr<OneTimeMessageCallback> callback,
+      ScriptContext* script_context,
+      bool close_port_on_collection);
 
   // Triggered when the callback for replying is garbage collected. Used to
   // clean up data that was stored for the callback and for closing the
-  // associated message port. `raw_callback` is a raw pointer to the associated
+  // associated message port. `callback_id` is the ID of the associated
   // OneTimeMessageCallback, needed for finding and erasing it from the
   // OneTimeMessageContextData.
   void OnDelayedOneTimeMessageCallbackCollected(ScriptContext* script_context,

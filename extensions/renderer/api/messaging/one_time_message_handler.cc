@@ -6,12 +6,14 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/supports_user_data.h"
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/api/messaging/message.h"
@@ -63,7 +65,7 @@ struct OneTimeOpener {
 struct OneTimeReceiver {
   std::string event_name;
   v8::Global<v8::Object> sender;
-  v8::Global<v8::Function> response_function;
+  v8::Global<v8::Function> message_response_function;
 };
 
 using OneTimeMessageCallback =
@@ -74,7 +76,9 @@ struct OneTimeMessageContextData : public base::SupportsUserData::Data {
 
   std::map<PortId, OneTimeOpener> openers;
   std::map<PortId, OneTimeReceiver> receivers;
-  std::vector<std::unique_ptr<OneTimeMessageCallback>> pending_callbacks;
+  std::map<OneTimeMessageHandler::CallbackID,
+           std::unique_ptr<OneTimeMessageCallback>>
+      pending_callbacks;
 };
 
 constexpr char OneTimeMessageContextData::kPerContextDataKey[];
@@ -86,7 +90,7 @@ bool OnMessagePromisesSupported() {
 
 void DelayedOneTimeMessageCallbackHelper(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CHECK(info.Data()->IsExternal());
+  CHECK(info.Data()->IsString());
 
   gin::Arguments arguments(info);
   v8::Isolate* isolate = arguments.isolate();
@@ -99,14 +103,34 @@ void DelayedOneTimeMessageCallbackHelper(
   if (!data)
     return;
 
-  v8::Local<v8::External> external = info.Data().As<v8::External>();
-  auto* raw_callback = static_cast<OneTimeMessageCallback*>(external->Value());
-  auto iter = std::ranges::find(data->pending_callbacks, raw_callback,
-                                &std::unique_ptr<OneTimeMessageCallback>::get);
-  if (iter == data->pending_callbacks.end())
+  // Retrieve the CallbackID from v8 that we set when we created the callback.
+  v8::Local<v8::String> callback_id_v8_string = info.Data().As<v8::String>();
+  std::string callback_id_string;
+  if (!gin::Converter<std::string>::FromV8(isolate, callback_id_v8_string,
+                                           &callback_id_string)) {
     return;
+  }
+  std::optional<OneTimeMessageHandler::CallbackID> callback_id =
+      OneTimeMessageHandler::CallbackID::DeserializeFromString(
+          callback_id_string);
+  if (!callback_id) {
+    // Something must've changed this value unexpectedly. In any case we don't
+    // know which callback to run so don't run any callbacks. If this was
+    // intended for a pending callback that is still in
+    // `data->pending_callbacks`, it will be garbage collected later in
+    // `OnDelayedOneTimeMessageCallbackCollected()`.
+    return;
+  }
 
-  std::unique_ptr<OneTimeMessageCallback> callback = std::move(*iter);
+  auto iter = data->pending_callbacks.find(*callback_id);
+  if (iter == data->pending_callbacks.end()) {
+    // An extension may attempt to respond to a message multiple times despite
+    // us only allowing the first response to be sent back to the sender. If
+    // that happens, just return early to enforce this.
+    return;
+  }
+
+  std::unique_ptr<OneTimeMessageCallback> callback = std::move(iter->second);
   data->pending_callbacks.erase(iter);
   std::move(*callback).Run(&arguments);
 }
@@ -407,16 +431,18 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
   // listener indicate if they intend to respond asynchronously; otherwise we
   // close the port.
 
-  auto callback = std::make_unique<OneTimeMessageCallback>(
+  auto message_response_callback = std::make_unique<OneTimeMessageCallback>(
       base::BindOnce(&OneTimeMessageHandler::OnOneTimeMessageResponse,
                      weak_factory_.GetWeakPtr(), target_port_id));
-  v8::Local<v8::Function> response_function =
+  v8::Local<v8::Function> message_response_function =
       CreateDelayedOneTimeMessageCallback(isolate, context, target_port_id,
-                                          callback.get(), script_context);
+                                          std::move(message_response_callback),
+                                          script_context,
+                                          /*close_port_on_collection=*/true);
 
   if (OnMessagePromisesSupported()) {
-    port.response_function =
-        v8::Global<v8::Function>(isolate, response_function);
+    port.message_response_function =
+        v8::Global<v8::Function>(isolate, message_response_function);
   }
 
   v8::HandleScope handle_scope(isolate);
@@ -432,33 +458,24 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
 
   if (error.empty()) {
     v8::Local<v8::Object> v8_sender = port.sender.Get(isolate);
-    v8::LocalVector<v8::Value> args(isolate,
-                                    {v8_message, v8_sender, response_function});
+    v8::LocalVector<v8::Value> args(
+        isolate, {v8_message, v8_sender, message_response_function});
 
-    v8::Local<v8::Function> dispatch_callback_function;
+    v8::Local<v8::Function> message_dispatched_function;
     // For runtime.onMessage, we require that the listener indicate if they
     // intend to respond asynchronously. Check the results of the listeners.
     if (port.event_name == messaging_util::kOnMessageEvent) {
-      auto dispatch_callback = std::make_unique<OneTimeMessageCallback>(
-          base::BindOnce(&OneTimeMessageHandler::OnEventFired,
-                         weak_factory_.GetWeakPtr(), target_port_id));
-      v8::Local<v8::External> dispatch_external =
-          v8::External::New(isolate, dispatch_callback.get());
-
-      // TODO(crbug.com/40753031): Pull out the functionality of
-      // OneTimeMessageResponseHelper wrapping the callback into a helper class
-      // so it's clearer to understand this mechanism.
-      if (!v8::Function::New(context, &DelayedOneTimeMessageCallbackHelper,
-                             dispatch_external)
-               .ToLocal(&dispatch_callback_function)) {
-        NOTREACHED();
-      }
-      data->pending_callbacks.push_back(std::move(dispatch_callback));
+      auto message_dispatched_callback =
+          std::make_unique<OneTimeMessageCallback>(
+              base::BindOnce(&OneTimeMessageHandler::OnEventFired,
+                             weak_factory_.GetWeakPtr(), target_port_id));
+      message_dispatched_function = CreateDelayedOneTimeMessageCallback(
+          isolate, context, target_port_id,
+          std::move(message_dispatched_callback), script_context,
+          /*close_port_on_collection=*/false);
     }
-
-    data->pending_callbacks.push_back(std::move(callback));
     bindings_system_->api_system()->event_handler()->FireEventInContext(
-        port.event_name, context, &args, nullptr, dispatch_callback_function);
+        port.event_name, context, &args, nullptr, message_dispatched_function);
   } else {
     console::AddMessage(script_context,
                         blink::mojom::ConsoleMessageLevel::kError, error);
@@ -650,30 +667,53 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
   }
 }
 
+// TODO(crbug.com/40753031): Pull out the functionality of wrapping delayed C++
+// callbacks in v8::Functions out into a helper class so it's clearer to
+// understand this mechanism now that it's used for more than one type of
+// callback.
 v8::Local<v8::Function>
 OneTimeMessageHandler::CreateDelayedOneTimeMessageCallback(
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
     const PortId& port_id,
-    OneTimeMessageCallback* callback,
-    ScriptContext* script_context) {
+    std::unique_ptr<OneTimeMessageCallback> callback,
+    ScriptContext* script_context,
+    bool close_port_on_collection) {
   CHECK(callback);
-  v8::Local<v8::External> external = v8::External::New(isolate, callback);
-  v8::Local<v8::Function> function;
 
+  // We shouldn't need to check and get `data` like this if a listener has
+  // already responded, but it's much simpler to re-get it here than pass
+  // OneTimeMessageContextData into this method.
+  OneTimeMessageContextData* data =
+      GetPerContextData<OneTimeMessageContextData>(
+          context, CreatePerContextData::kDontCreateIfMissing);
+  // We will store `callback` in the per context data for later retrieval so it
+  // must exist for us to proceed.
+  CHECK(data);
+
+  CallbackID callback_id = CallbackID::Create();
+  // We convert to a v8::String here because we want to validate the string is
+  // still a valid `CallbackID` when we retrieve it from v8 when `function` is
+  // called.
+  v8::Local<v8::String> callback_id_v8_string =
+      gin::StringToV8(isolate, callback_id.ToString());
+  v8::Local<v8::Function> function;
   if (!v8::Function::New(context, &DelayedOneTimeMessageCallbackHelper,
-                         external)
+                         callback_id_v8_string)
            .ToLocal(&function)) {
     NOTREACHED();
   }
 
-  new GCCallback(
-      script_context, function,
-      base::BindOnce(
-          &OneTimeMessageHandler::OnDelayedOneTimeMessageCallbackCollected,
-          weak_factory_.GetWeakPtr(), script_context, port_id,
-          reinterpret_cast<CallbackID>(callback)),
-      base::OnceClosure());
+  data->pending_callbacks[callback_id] = std::move(callback);
+
+  if (close_port_on_collection) {
+    new GCCallback(
+        script_context, function,
+        base::BindOnce(
+            &OneTimeMessageHandler::OnDelayedOneTimeMessageCallbackCollected,
+            weak_factory_.GetWeakPtr(), script_context, port_id, callback_id),
+        base::OnceClosure());
+  }
 
   return function;
 }
@@ -681,7 +721,7 @@ OneTimeMessageHandler::CreateDelayedOneTimeMessageCallback(
 void OneTimeMessageHandler::OnDelayedOneTimeMessageCallbackCollected(
     ScriptContext* script_context,
     const PortId& port_id,
-    CallbackID raw_callback) {
+    CallbackID callback_id) {
   // Note: we know |script_context| is still valid because the GC callback won't
   // be called after context invalidation.
   v8::HandleScope handle_scope(script_context->isolate());
@@ -695,20 +735,20 @@ void OneTimeMessageHandler::OnDelayedOneTimeMessageCallbackCollected(
     return;
 
   // Since there is no way to call the callback anymore, we can remove it from
-  // the pending callbacks. Note: this should occur before erasing the receivers
-  // and returning early because multiple pending callbacks can be created for
-  // each message.
-  std::erase_if(
-      data->pending_callbacks,
-      [raw_callback](const std::unique_ptr<OneTimeMessageCallback>& callback) {
-        return reinterpret_cast<CallbackID>(callback.get()) == raw_callback;
-      });
+  // the pending callbacks. Note: this should occur before returning early
+  // because multiple pending callbacks can be created for each message.
+  data->pending_callbacks.erase(callback_id);
 
   // TODO(crbug.com/40753031): When the promise support feature is on this needs
   // to take into account if there are any other pending_callbacks that could be
   // run and not close the port if that is true. Otherwise, as-is, the
-  // collection logic can close the port too early and prevent the message
-  // response from being sent back to the sender.
+  // collection logic can close the port too early and prevent a response (or
+  // error) from being sent back to the sender. For example if the message
+  // response callback was never used and we get to this point, but the listener
+  // returned a promise that hasn't settled yet, then the message response
+  // callback here will delete the receiver which will then prevent the promise
+  // callback from running since it will think the message port has already
+  // closed.
 
   auto iter = data->receivers.find(port_id);
   // The channel may already be closed (if the receiver replied before the reply
@@ -736,23 +776,12 @@ v8::Local<v8::Function> OneTimeMessageHandler::CreatePromiseRejectedFunction(
           base::BindOnce(&OneTimeMessageHandler::PromiseRejectedResponse,
                          weak_factory_.GetWeakPtr(), port_id));
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
+  // Store the callback so we can call it when/if the promise rejects.
   v8::Local<v8::Function> promise_rejected_function =
       CreateDelayedOneTimeMessageCallback(
-          isolate, context, port_id, promise_rejected_response_callback.get(),
-          script_context);
-
-  // Store the callback so we can call it when/if the promise rejects. We
-  // shouldn't need to check and get `data` like this if a listener has already
-  // responded, but it's much simpler to re-get it here than pass
-  // OneTimeMessageContextData into this method.
-  OneTimeMessageContextData* data =
-      GetPerContextData<OneTimeMessageContextData>(context,
-                                                   kDontCreateIfMissing);
-  CHECK(data);
-  auto iter = data->receivers.find(port_id);
-  CHECK(iter != data->receivers.end());
-  data->pending_callbacks.push_back(
-      std::move(promise_rejected_response_callback));
+          isolate, context, port_id,
+          std::move(promise_rejected_response_callback), script_context,
+          /*close_port_on_collection=*/true);
 
   return promise_rejected_function;
 }
@@ -852,7 +881,7 @@ void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
   v8::Local<v8::Function> promise_resolved_function;
   v8::Local<v8::Function> promise_rejected_function;
   if (OnMessagePromisesSupported()) {
-    promise_resolved_function = port.response_function.Get(isolate);
+    promise_resolved_function = port.message_response_function.Get(isolate);
     promise_rejected_function =
         CreatePromiseRejectedFunction(isolate, context, port_id);
   }
@@ -862,7 +891,7 @@ void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
                                        promise_rejected_function)) {
     if (OnMessagePromisesSupported()) {
       // Ensure the global function doesn't outlive port closing.
-      port.response_function.SetWeak();
+      port.message_response_function.SetWeak();
     }
     // Inform the browser that one of the listeners said they would be replying
     // later and leave the channel open.
