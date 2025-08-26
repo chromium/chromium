@@ -31,10 +31,14 @@ ThreadPriorityForTest NiceValueToThreadPriorityForTest(int nice_value) {
 }
 
 int GetCurrentThreadNiceValue() {
+  return GetThreadNiceValue(PlatformThreadId{0});
+}
+
+int GetThreadNiceValue(PlatformThreadId id) {
   // Need to clear errno before calling getpriority():
   // http://man7.org/linux/man-pages/man2/getpriority.2.html
   errno = 0;
-  int nice_value = getpriority(PRIO_PROCESS, 0);
+  int nice_value = getpriority(PRIO_PROCESS, static_cast<id_t>(id.raw()));
   if (errno != 0) {
     DVPLOG(1) << "Failed to get nice value of thread ("
               << PlatformThread::CurrentId() << ")";

@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/threading/platform_thread_internal_posix.h"
+#include "base/threading/platform_thread_metrics.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_restrictions.h"
@@ -103,6 +104,9 @@ void* ThreadFunc(void* params) {
   ThreadIdNameManager::GetInstance()->RemoveName(
       PlatformThread::CurrentHandle().platform_handle(),
       PlatformThread::CurrentId());
+#if BUILDFLAG(IS_ANDROID)
+  PlatformThreadPriorityMonitor::Get().UnregisterCurrentThread();
+#endif
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   partition_alloc::internal::StackTopRegistry::Get().NotifyThreadDestroyed();

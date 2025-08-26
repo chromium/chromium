@@ -58,6 +58,7 @@ std::optional<ThreadPriorityForTest>
 GetCurrentThreadPriorityForPlatformForTest();
 
 int GetCurrentThreadNiceValue();
+int GetThreadNiceValue(PlatformThreadId id);
 
 }  // namespace internal
 
