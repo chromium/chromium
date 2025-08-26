@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/aura/window.h"
@@ -103,9 +105,13 @@ void LockedQuizSessionManager::OnBocaSWALaunched(
       window_id, LockedNavigationOptions::DOMAIN_NAVIGATION);
 
   auto* const browser = GetBrowserWindowWithID(window_id);
-  if (!browser) {
-    LOG(WARNING) << "Successfully configured Boca SWA window but could not "
-                 << "find its Browser instance for window_id: " << window_id;
+  LOG_IF(WARNING, !browser)
+      << "Successfully configured Boca SWA window but could not "
+      << "find its Browser instance for window_id: " << window_id;
+
+  // Activate SWA window to ensure it remains the active/focused window.
+  if (browser) {
+    browser->window()->Activate();
   }
   std::move(callback).Run(browser);
 }

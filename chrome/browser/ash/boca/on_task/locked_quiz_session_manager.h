@@ -17,6 +17,7 @@
 #include "url/gurl.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace ash::boca {
@@ -24,9 +25,8 @@ namespace ash::boca {
 // Manages the lifecycle of a locked quiz session within the Boca SWA.
 class ASH_EXPORT LockedQuizSessionManager : public KeyedService {
  public:
-  // TODO(crbug.com/438559838): Use `BrowserWindowInterface` instead of
-  // `Browser`.
-  using CreateWindowCompletionCallback = base::OnceCallback<void(Browser*)>;
+  using CreateWindowCompletionCallback =
+      base::OnceCallback<void(BrowserWindowInterface*)>;
 
   explicit LockedQuizSessionManager(content::BrowserContext* context);
   LockedQuizSessionManager(const LockedQuizSessionManager&) = delete;
