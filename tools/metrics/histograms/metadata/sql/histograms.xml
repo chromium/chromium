@@ -39,6 +39,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DataSharingGroupStorage" summary="DataSharingGroupStorage"/>
   <variant name="DBSCSessions" summary="DBSCSessions"/>
   <variant name="DIPS" summary="DIPS"/>
+  <variant name="DownloadRecord" summary="DownloadRecord"/>
   <variant name="FileIndexService" summary="FileIndexService"/>
   <variant name="FirefoxImporter" summary="FirefoxImporter"/>
   <variant name="FirstPartySets" summary="FirstPartySets"/>

@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/download/model/download_record.h"
 
-#import "base/files/file_path.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/time/time.h"
 #import "url/gurl.h"
 
 DownloadRecord::DownloadRecord() = default;
@@ -15,15 +13,25 @@ DownloadRecord::DownloadRecord(web::DownloadTask* task) {
   DCHECK(task);
 
   download_id = base::SysNSStringToUTF8(task->GetIdentifier());
-  url = task->GetOriginalUrl().spec();
+  original_url = task->GetOriginalUrl().spec();
+  redirected_url = task->GetRedirectedUrl().spec();
   file_name = task->GenerateFileName().value();
+  // Only get response path if download is completed to avoid DCHECK crash.
+  if (task->IsDone()) {
+    response_path = task->GetResponsePath();
+  }
+  original_mime_type = task->GetOriginalMimeType();
   mime_type = task->GetMimeType();
-  created_time = base::Time::Now();
-  file_size = task->GetTotalBytes();
+  content_disposition = task->GetContentDisposition();
+  originating_host = base::SysNSStringToUTF8(task->GetOriginatingHost());
+  http_method = base::SysNSStringToUTF8(task->GetHttpMethod());
+  http_code = task->GetHttpCode();
+  error_code = task->GetErrorCode();
   received_bytes = task->GetReceivedBytes();
   total_bytes = task->GetTotalBytes();
   progress_percent = task->GetPercentComplete();
   state = task->GetState();
+  has_performed_background_download = task->HasPerformedBackgroundDownload();
 }
 
 DownloadRecord::DownloadRecord(const DownloadRecord& other) = default;

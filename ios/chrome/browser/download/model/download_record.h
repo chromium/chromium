@@ -5,8 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_RECORD_H_
 #define IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_RECORD_H_
 
+#import <cstdint>
 #import <string>
 
+#import "base/files/file_path.h"
 #import "base/time/time.h"
 #import "ios/web/public/download/download_task.h"
 
@@ -23,18 +25,34 @@ struct DownloadRecord {
 
   // Unique identifier for this download.
   std::string download_id;
-  // Download URL.
-  std::string url;
+  // Original download URL.
+  std::string original_url;
+  // Redirected URL (empty if no redirection).
+  std::string redirected_url;
   // File name including extension.
   std::string file_name;
-  // MIME type (e.g., "application/pdf").
+  // File path where the download is stored (final location).
+  base::FilePath file_path;
+  // Response path from DownloadTask.
+  base::FilePath response_path;
+  // Original MIME type from server.
+  std::string original_mime_type;
+  // Current MIME type (may be different from original).
   std::string mime_type;
+  // Content-Disposition header from server.
+  std::string content_disposition;
+  // Originating host that initiated the download.
+  std::string originating_host;
+  // HTTP method used for the download.
+  std::string http_method;
+  // HTTP status code.
+  int http_code = -1;
+  // Error code if download failed.
+  int error_code = 0;
   // Download start time.
   base::Time created_time;
   // Download completion time.
   base::Time completed_time;
-  // File size in bytes.
-  int64_t file_size = 0;
   // Bytes downloaded so far.
   int64_t received_bytes = 0;
   // Total bytes to download.
@@ -43,6 +61,8 @@ struct DownloadRecord {
   int progress_percent = -1;
   // Current download state.
   web::DownloadTask::State state = web::DownloadTask::State::kNotStarted;
+  // Whether this download has performed background download.
+  bool has_performed_background_download = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_RECORD_H_

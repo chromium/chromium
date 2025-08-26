@@ -29,6 +29,8 @@ source_set("model") {
     "download_manager_tab_helper_delegate.h",
     "download_record.h",
     "download_record.mm",
+    "download_record_database.h",
+    "download_record_database.mm",
     "download_record_observer.h",
     "download_record_observer_bridge.h",
     "download_record_observer_bridge.mm",
@@ -89,6 +91,7 @@ source_set("model") {
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/download",
+    "//sql",
     "//ui/base",
   ]
 

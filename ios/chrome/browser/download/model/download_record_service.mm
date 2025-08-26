@@ -89,10 +89,6 @@ void DownloadRecordService::OnDownloadUpdated(web::DownloadTask* task) {
     record->completed_time = base::Time::Now();
   }
 
-  if (task->GetTotalBytes() > 0) {
-    record->file_size = task->GetTotalBytes();
-  }
-
   NotifyDownloadUpdated(record->download_id, record->state);
 }
 
