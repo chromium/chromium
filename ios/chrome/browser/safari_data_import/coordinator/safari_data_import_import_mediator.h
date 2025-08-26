@@ -27,6 +27,7 @@ class SyncService;
 }  // namespace syncer
 @class PasswordImportItem;
 class ReadingListModel;
+class PrefService;
 @protocol SafariDataImportImportStageTransitionHandler;
 @protocol SafariDataItemConsumer;
 
@@ -59,6 +60,7 @@ class ReadingListModel;
                       bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                    readingListModel:(ReadingListModel*)readingListModel
                         syncService:(syncer::SyncService*)syncService
+                        prefService:(PrefService*)prefService
                       faviconLoader:(FaviconLoader*)faviconLoader
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

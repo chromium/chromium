@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/threading/sequence_bound.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
 #include "components/user_data_importer/utility/importer_metrics_recorder.h"
 #include "components/user_data_importer/utility/parsing_ffi/lib.rs.h"
@@ -64,6 +65,7 @@ class SafariDataImporter {
                      bookmarks::BookmarkModel* bookmark_model,
                      ReadingListModel* reading_list_model,
                      syncer::SyncService* sync_service,
+                     PrefService* pref_service,
                      std::unique_ptr<BookmarkParser> bookmark_parser,
                      std::string app_locale);
   ~SafariDataImporter();
@@ -265,6 +267,10 @@ class SafariDataImporter {
 
   // Stores pointer to `SyncService` instance.
   raw_ptr<syncer::SyncService> sync_service_;
+
+  // The PrefService that this instance uses to read and write preferences.
+  // Must outlive this instance.
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // Internal state
 

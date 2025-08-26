@@ -33,7 +33,9 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/services/csv_password/fake_password_parser_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
@@ -116,6 +118,7 @@ class SafariDataImporterTest : public testing::Test {
   SafariDataImporterTest& operator=(const SafariDataImporterTest&) = delete;
 
   syncer::TestSyncService sync_service_;
+  TestingPrefServiceSimple pref_service_;
 
  protected:
 #if BUILDFLAG(IS_IOS)
@@ -148,6 +151,9 @@ class SafariDataImporterTest : public testing::Test {
 
     storage_ptr->TriggerLoadCompletion();
 
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kCredentialsEnableService, true);
+
 #if BUILDFLAG(IS_IOS)
     auto parser = MakeBookmarkParser();
 #else
@@ -160,7 +166,8 @@ class SafariDataImporterTest : public testing::Test {
         &client_, &presenter_,
         &autofill_client_.GetPersonalDataManager().payments_data_manager(),
         history_service_.get(), bookmark_model_.get(),
-        reading_list_model_.get(), &sync_service_, std::move(parser), "en-US");
+        reading_list_model_.get(), &sync_service_, &pref_service_,
+        std::move(parser), "en-US");
 
     mojo::PendingRemote<password_manager::mojom::CSVPasswordParser>
         pending_remote{receiver_.BindNewPipeAndPassRemote()};
@@ -1156,6 +1163,70 @@ TEST_F(SafariDataImporterTest, ImportToBothStoresSequentially) {
   account_store()->Clear();
 
   PasswordsImportToProfileStore();
+}
+
+// Tests that password import is blocked when disabled by enterprise policy.
+TEST_F(SafariDataImporterTest, ImportPasswordsBlockedByPolicy) {
+  pref_service_.SetManagedPref(
+      password_manager::prefs::kCredentialsEnableService,
+      std::make_unique<base::Value>(false));
+
+  constexpr char kTestCSVInput[] =
+      "Url,Username,Password,Note\n"
+      "https://account.example.com,user1,pass1,note1\n";
+
+  EXPECT_CALL(client_, OnPasswordsReady(
+                           AllOf(Field(&ImportResults::number_imported, 0u),
+                                 Field(&ImportResults::number_to_import, 0u))));
+  PreparePasswords(kTestCSVInput);
+
+  EXPECT_CALL(client_, OnPasswordsImported(
+                           AllOf(Field(&ImportResults::number_imported, 0u),
+                                 Field(&ImportResults::number_to_import, 0u))));
+  EXPECT_CALL(client_, OnBookmarksImported(0));
+  EXPECT_CALL(client_, OnHistoryImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+
+  CompleteImport({});
+
+  EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
+  EXPECT_THAT(account_store()->stored_passwords(), IsEmpty());
+}
+
+// Tests that password import is directed to the local store when password sync
+// is disabled by the SyncTypesListDisabled policy.
+TEST_F(SafariDataImporterTest,
+       PasswordsImportLocallyWithSyncTypesListDisabled) {
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  ASSERT_TRUE(
+      password_manager::features_util::IsAccountStorageEnabled(&sync_service_));
+
+  syncer::UserSelectableTypeSet types =
+      sync_service_.GetUserSettings()->GetRegisteredSelectableTypes();
+  types.Remove(syncer::UserSelectableType::kPasswords);
+  sync_service_.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                                    types);
+
+  constexpr char kTestCSVInput[] =
+      "Url,Username,Password,Note\n"
+      "https://local.example.com,user1,pass1,note1\n";
+
+  EXPECT_CALL(client_, OnPasswordsReady(
+                           AllOf(Field(&ImportResults::number_imported, 0u),
+                                 Field(&ImportResults::number_to_import, 1u))));
+  PreparePasswords(kTestCSVInput);
+
+  EXPECT_CALL(client_, OnPasswordsImported(
+                           AllOf(Field(&ImportResults::number_imported, 1u),
+                                 Field(&ImportResults::number_to_import, 0u))));
+  EXPECT_CALL(client_, OnBookmarksImported(0));
+  EXPECT_CALL(client_, OnHistoryImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+
+  CompleteImport({});
+
+  EXPECT_THAT(profile_store()->stored_passwords(), SizeIs(1));
+  EXPECT_THAT(account_store()->stored_passwords(), IsEmpty());
 }
 
 }  // namespace user_data_importer

@@ -11,6 +11,7 @@ include_rules = [
   "+components/password_manager/core/browser",
   "+components/password_manager/core/common",
   "+components/password_manager/services/csv_password",
+  "+components/prefs",
   "+components/reading_list/core",
   "+components/strings/grit",
   "+components/sync/test",

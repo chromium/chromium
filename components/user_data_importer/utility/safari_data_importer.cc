@@ -23,6 +23,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_data_importer/utility/bookmark_util.h"
@@ -200,6 +201,14 @@ TranslatePasswordStatusToError(password_manager::ImportResults::Status status) {
       return user_data_importer::PasswordsImportError::kOther;
   }
 }
+
+// Returns false if importing passwords is disabled by enterprise policy.
+bool IsPasswordImportAllowedByPolicy(const PrefService* pref_service) {
+  return !pref_service->IsManagedPreference(
+             password_manager::prefs::kCredentialsEnableService) ||
+         pref_service->GetBoolean(
+             password_manager::prefs::kCredentialsEnableService);
+}
 }  // namespace
 
 namespace user_data_importer {
@@ -249,6 +258,7 @@ SafariDataImporter::SafariDataImporter(
     bookmarks::BookmarkModel* bookmark_model,
     ReadingListModel* reading_list_model,
     syncer::SyncService* sync_service,
+    PrefService* pref_service,
     std::unique_ptr<BookmarkParser> bookmark_parser,
     std::string app_locale)
     : blocking_queue_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -263,6 +273,7 @@ SafariDataImporter::SafariDataImporter(
       bookmark_model_(CHECK_DEREF(bookmark_model)),
       reading_list_model_(CHECK_DEREF(reading_list_model)),
       sync_service_(sync_service),
+      pref_service_(pref_service),
       metrics_recorder_(ImporterMetricsRecorder::Source::kSafari),
       app_locale_(std::move(app_locale)) {}
 
@@ -326,6 +337,8 @@ void SafariDataImporter::CompleteImport(
   if (password_importer_ &&
       password_importer_->IsState(
           password_manager::PasswordImporter::kUserInteractionRequired)) {
+    CHECK(IsPasswordImportAllowedByPolicy(pref_service_));
+
     metrics_recorder_.password_metrics().OnImportStarted();
 
     password_importer_->ContinueImport(
@@ -527,6 +540,13 @@ void SafariDataImporter::PreparePasswords(std::string csv_data) {
         DataTypeMetrics::ImportOutcome::kNotPresent);
 
     // Empty results object, indicating no work could be done.
+    client_->OnPasswordsReady({});
+    return;
+  }
+
+  if (!IsPasswordImportAllowedByPolicy(pref_service_)) {
+    // TODO(crbug.com/407587751): Signal to UI that passwords import is blocked
+    // by policy.
     client_->OnPasswordsReady({});
     return;
   }
