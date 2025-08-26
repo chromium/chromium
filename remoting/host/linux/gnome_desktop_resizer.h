@@ -44,6 +44,11 @@ class GnomeDesktopResizer : public DesktopResizer {
   void SetVideoLayout(const protocol::VideoLayout& layout) override;
 
  private:
+  // TODO: yuweih - There is an open feature request in mutter for changing
+  // virtual monitor scales and offsets via PipeWire, which will significantly
+  // simplify things. Use that when the feature is ready.
+  // See: https://gitlab.gnome.org/GNOME/mutter/-/issues/4275
+
   struct PreferredMonitorConfig {
     webrtc::DesktopSize expected_resolution;
     webrtc::DesktopVector position;

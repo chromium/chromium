@@ -30,6 +30,40 @@ namespace remoting {
 
 namespace {
 
+inline double InverseIfLessThanOne(double v) {
+  return v < 1.0 ? 1.0 / v : v;
+}
+
+// Pick the scale that is proportionally closest to `preferred_scale`. For
+// example, the best scale for 1.5 with supported_scales=[1, 2] is 2, since
+// 2 / 1.5 = 1.33, which is smaller than 1.5 / 1 = 1.5.
+inline double FindBestScale(double preferred_scale,
+                            const std::vector<double>& supported_scales,
+                            bool ignore_fractional_scales) {
+  DCHECK_GT(preferred_scale, 0.0);
+  auto it = std::ranges::min_element(
+      supported_scales,
+      [preferred_scale, ignore_fractional_scales](double s1, double s2) {
+        DCHECK_GT(s1, 0.0);
+        DCHECK_GT(s2, 0.0);
+        if (ignore_fractional_scales && trunc(s1) == s1 && trunc(s2) != s2) {
+          // Make non-fractional scales better than fractional scales.
+          return true;
+        }
+        return InverseIfLessThanOne(preferred_scale / s1) <
+               InverseIfLessThanOne(preferred_scale / s2);
+      });
+  if (it == supported_scales.end()) {
+    LOG(ERROR) << "Cannot find best scale for " << preferred_scale;
+    return 1.0;
+  }
+  if (ignore_fractional_scales && trunc(*it) != *it) {
+    LOG(ERROR) << "Cannot find non-fractional scales";
+    return 1.0;
+  }
+  return *it;
+}
+
 inline bool IsSameScale(double s1, double s2) {
   return std::abs(s1 - s2) < 0.01;
 }
@@ -222,6 +256,11 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
   // desired scales and positions, in which case we don't want to apply the
   // display config, since it would show a confirmation dialog.
   GnomeDisplayConfig new_config = current_display_config_;
+  // There is a bug in mutter such that fractional scales may be reported as
+  // supported but will fail to be applied when there are multiple virtual
+  // monitors, so we ignore fractional scales in that case.
+  // See: https://gitlab.gnome.org/GNOME/mutter/-/issues/4277
+  bool ignore_fractional_scales = new_config.monitors.size() > 1;
   bool all_resolution_changes_reflected = true;
   bool config_changed = false;
   for (auto preferred_monitor_config_it = preferred_monitors_config_.begin();
@@ -251,23 +290,18 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
         monitor.y = preferred_config.position.y();
         config_changed = true;
       }
-      // Ideally we want to set the monitor scale to a supported scale that is
-      // closest to the preferred scale, but we can't do it until
-      // https://gitlab.gnome.org/GNOME/mutter/-/issues/4275 is fixed, since the
-      // monitor scale will be changed back to 1x whenever the monitor
-      // resolution is changed via pipewire, and changing it back to the desired
-      // scale would trigger the confirmation dialog, which is very spammy.
-      // Instead, we just set the text scale to the preferred scale divided by
-      // the current monitor scale, which is suboptimal since not all
-      // applications support non-1 text scales well, but would allow the user
-      // to get a better experience by manually changing the monitor scale to
-      // the desired scale. Also, the text scale is global as opposed to per
-      // monitor. In case of a mixed DPI setup, we can only make the combined
-      // scale correct for one monitor, so we do it only for the primary
-      // monitor.
-      // TODO: crbug.com/431816005 - once the mutter bug is fixed (or patched in
-      // gLinux), set the monitor scale to a supported scale that is closest to
-      // the preferred scale, then apply the text scale correction.
+      double best_monitor_scale = FindBestScale(
+          preferred_config.scale, monitor.GetCurrentMode()->supported_scales,
+          ignore_fractional_scales);
+      if (monitor.scale != best_monitor_scale) {
+        monitor.scale = best_monitor_scale;
+        config_changed = true;
+      }
+      // For the primary monitor, we correct the effective scale by applying
+      // a text scale. We can't do this for all monitors, since the text scale
+      // is globally applied, so we only do this for the primary monitor.
+      // Note: an integer scale is usually supported, so this is usually only
+      // applied when the client requests a fractional scale for a monitor.
       if (monitor.is_primary &&
           !IsSameScale(monitor.scale * GetTextScalingFactor(),
                        preferred_config.scale)) {
@@ -280,10 +314,20 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
     preferred_monitor_config_it++;
   }
 
-  if (all_resolution_changes_reflected) {
-    if (config_changed) {
-      display_config_client_->ApplyMonitorsConfig(new_config);
-    }
+  if (all_resolution_changes_reflected && config_changed) {
+    // Setting `method` to `kPersistent` would trigger a confirmation dialog
+    // that would revert the change if the user hasn't clicked "Keep Changes"
+    // within 15 seconds.
+    // See:
+    // https://gitlab.gnome.org/GNOME/mutter/-/blob/1c6532ee18fd72ad324f8f53ccc03bfdf31e90e2/src/backends/meta-monitor-manager.c#L3180
+    // The difference between kTemporary and kPersistent is that the former will
+    // not write the current display config to the disk, such that, e.g. the
+    // display config will get reverted after device reboots. For CRD, all the
+    // virtual displays are ephemeral, and we track the current display config
+    // and make changes whenever necessary, so kTemporary suffices and there is
+    // no benefit using kPersistent.
+    new_config.method = GnomeDisplayConfig::Method::kTemporary;
+    display_config_client_->ApplyMonitorsConfig(new_config);
   }
 }
 
