@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_view.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -70,9 +71,9 @@ WebUIContentsContainer::~WebUIContentsContainer() {
 bool WebUIContentsContainer::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  GlicView* glic_view = glic_window_controller_->GetGlicView();
-  return glic_view && unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-                          event, glic_view->GetFocusManager());
+  GlicWidget* glic_widget = glic_window_controller_->GetGlicWidget();
+  return glic_widget && unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+                            event, glic_widget->GetFocusManager());
 }
 
 void WebUIContentsContainer::RequestMediaAccessPermission(

@@ -57,11 +57,37 @@ gfx::Outsets GetTargetOutsets(const gfx::Rect& bounds) {
   return outsets;
 }
 
+class ClientView : public views::ClientView {
+ public:
+  explicit ClientView(std::unique_ptr<GlicView> glic_view)
+      : views::ClientView(/*widget=*/nullptr,
+                          /*contents_view=*/glic_view.get()),
+        glic_view_(std::move(glic_view)) {}
+  ~ClientView() override = default;
+
+  GlicView* glic_view() { return glic_view_.get(); }
+
+ private:
+  std::unique_ptr<GlicView> glic_view_;
+};
+
+bool UseClientView() {
+  return base::FeatureList::IsEnabled(features::kGlicWindowDragRegions);
+}
+
+views::Widget::InitParams::Type GetWidgetType() {
+  return UseClientView() ? views::Widget::InitParams::TYPE_WINDOW
+                         : views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+}
+
 }  // namespace
 
 class GlicWidgetDelegate : public views::WidgetDelegate {
  public:
-  GlicWidgetDelegate() {
+  explicit GlicWidgetDelegate(std::unique_ptr<GlicView> glic_view)
+      : client_view_(glic_view
+                         ? std::make_unique<ClientView>(std::move(glic_view))
+                         : nullptr) {
     SetFocusTraversesOut(true);
     RegisterDeleteDelegateCallback(
         RegisterDeleteCallbackPassKey(),
@@ -73,8 +99,15 @@ class GlicWidgetDelegate : public views::WidgetDelegate {
 
   ~GlicWidgetDelegate() override = default;
 
+  views::ClientView* CreateClientView(views::Widget* widget) override {
+    return client_view_ ? client_view_.get()
+                        : views::WidgetDelegate::CreateClientView(widget);
+  }
+
  private:
   void Destroy() { delete this; }
+
+  std::unique_ptr<ClientView> client_view_;
 };
 
 void* kGlicWidgetIdentifier = &kGlicWidgetIdentifier;
@@ -100,8 +133,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
     base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate,
     bool user_resizable) {
   views::Widget::InitParams params(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET, GetWidgetType());
   params.bounds = initial_bounds;
 #if BUILDFLAG(IS_OZONE)
   // Some platforms don't allow accelerated widgets to be positioned from
@@ -139,16 +171,28 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   params.rounded_corners = gfx::RoundedCornersF(kGlicWidgetCornerRadius);
 #if BUILDFLAG(IS_MAC)
   params.animation_enabled = true;
+  if (UseClientView()) {
+    params.remove_standard_frame = true;
+  }
 #endif
-  auto delegate = std::make_unique<GlicWidgetDelegate>();
+  auto glic_view = std::make_unique<GlicView>(profile, initial_bounds.size(),
+                                              accelerator_delegate);
+  std::unique_ptr<GlicWidgetDelegate> delegate;
+  if (UseClientView()) {
+    delegate = std::make_unique<GlicWidgetDelegate>(std::move(glic_view));
+  } else {
+    delegate = std::make_unique<GlicWidgetDelegate>(nullptr);
+  }
   delegate->SetCanResize(user_resizable);
   params.delegate = delegate.release();
 
   auto widget = base::WrapUnique(new GlicWidget(
       ThemeServiceFactory::GetForProfile(profile), std::move(params)));
   widget->SetMinimumSize(GetInitialSize());
-  widget->SetContentsView(std::make_unique<GlicView>(
-      profile, initial_bounds.size(), accelerator_delegate));
+
+  if (!UseClientView()) {
+    widget->SetContentsView(std::move(glic_view));
+  }
 
   // Mac fullscreen uses this identifier to find this widget and reparent it to
   // the overlay widget.
@@ -204,6 +248,14 @@ gfx::Rect GlicWidget::WidgetToVisibleBounds(gfx::Rect widget_bounds) {
 
 base::WeakPtr<GlicWidget> GlicWidget::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+GlicView* GlicWidget::GetGlicView() {
+  if (UseClientView()) {
+    return static_cast<::glic::ClientView*>(client_view())->glic_view();
+  } else {
+    return static_cast<GlicView*>(GetContentsView());
+  }
 }
 
 ui::ColorProviderKey GlicWidget::GetColorProviderKey() const {

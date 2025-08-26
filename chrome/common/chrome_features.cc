@@ -655,8 +655,9 @@ BASE_FEATURE(GlicFaviconDataUrls, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(GlicExtensions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(GlicMultitabUnderlines, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
+BASE_FEATURE(GlicWindowDragRegions, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_GLIC)
 // Force Privacy Guide to be available even if it would be unavailable
 // otherwise. This is meant for development and test purposes only.
 BASE_FEATURE(PrivacyGuideForceAvailable, base::FEATURE_DISABLED_BY_DEFAULT);

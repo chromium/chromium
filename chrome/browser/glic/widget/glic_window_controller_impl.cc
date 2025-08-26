@@ -907,7 +907,7 @@ GlicView* GlicWindowControllerImpl::GetGlicView() const {
     return glic_view_;
   }
   if (IsDetached()) {
-    return static_cast<GlicView*>(GetGlicWidget()->GetContentsView());
+    return GetGlicWidget()->GetGlicView();
   }
   return nullptr;
 }

@@ -19,10 +19,6 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
-namespace views {
-class WebView;
-}  // namespace views
-
 class Profile;
 
 namespace glic {

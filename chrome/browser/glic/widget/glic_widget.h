@@ -20,13 +20,15 @@
 
 namespace glic {
 
+class GlicView;
+
 extern void* kGlicWidgetIdentifier;
 
 // Glic panel widget.
 class GlicWidget : public views::Widget, public ThemeServiceObserver {
  public:
-  explicit GlicWidget(const Widget&) = delete;
-  GlicWidget& operator=(const Widget&) = delete;
+  GlicWidget(const GlicWidget&) = delete;
+  GlicWidget& operator=(const GlicWidget&) = delete;
   ~GlicWidget() override;
 
   static gfx::Size GetInitialSize();
@@ -55,6 +57,7 @@ class GlicWidget : public views::Widget, public ThemeServiceObserver {
   gfx::Rect WidgetToVisibleBounds(gfx::Rect widget_bounds);
 
   base::WeakPtr<GlicWidget> GetWeakPtr();
+  GlicView* GetGlicView();
 
  private:
   GlicWidget(ThemeService* theme_service, InitParams params);
