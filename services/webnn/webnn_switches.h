@@ -57,6 +57,13 @@ inline constexpr char kWebNNOrtEpLibraryPathForTesting[] =
 // Other levels could be "BASIC", "EXTENDED" and "ALL".
 inline constexpr char kWebNNOrtGraphOptimizationLevel[] =
     "webnn-ort-graph-optimization-level";
+
+// This switch allows us to collect ORT profile data for performance analysis.
+// The profile data file is generated in Chrome's folder with a fixed naming
+// format "prefix_date_time.json". The prefix can be provided by user or use
+// "WebNNOrtProfile" as default.
+// Usage: --no-sandbox --webnn-ort-enable-profiling="WebNNOrtOvCpuProfile"
+inline constexpr char kWebNNOrtEnableProfiling[] = "webnn-ort-enable-profiling";
 #endif  // BUILDFLAG(IS_WIN)
 
 extern base::span<const char* const> GetWebNNSwitchesCopiedFromGpuProcessHost();

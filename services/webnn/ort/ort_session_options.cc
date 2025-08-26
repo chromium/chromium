@@ -86,6 +86,19 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
                                                     dump_path.value().c_str()));
   }
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtEnableProfiling)) {
+    std::wstring profile_prefix =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
+            switches::kWebNNOrtEnableProfiling);
+    if (profile_prefix.empty()) {
+      profile_prefix = L"WebNNOrtProfile";
+    }
+
+    CHECK_STATUS(ort_api->EnableProfiling(session_options.get(),
+                                          profile_prefix.c_str()));
+  }
+
   // Enable strict shape type inference check. All inconsistencies encountered
   // will expose errors during session creation. For example, if the graph
   // output shape set by WebNN is different from ONNX shape inference result,
