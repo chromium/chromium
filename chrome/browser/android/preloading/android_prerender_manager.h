@@ -21,7 +21,7 @@ class AndroidPrerenderManager {
 
   virtual ~AndroidPrerenderManager();
 
-  bool StartPrerendering(
+  void StartPrerendering(
       JNIEnv* env,
       const GURL& prerender_url,
       const base::android::JavaParamRef<jobject>& j_web_contents);

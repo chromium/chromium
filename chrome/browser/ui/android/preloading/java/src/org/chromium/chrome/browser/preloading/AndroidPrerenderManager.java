@@ -87,11 +87,10 @@ public class AndroidPrerenderManager {
      * AndroidPrerenderManager is properly initialized.
      *
      * @param prerenderUrl The url to be prerendered.
-     * @return Whether prerendering has been started successfully.
      */
-    public boolean startPrerendering(GURL prerenderUrl) {
-        if (mNativeAndroidPrerenderManager == 0 || mWebContents == null) return false;
-        return AndroidPrerenderManagerJni.get()
+    public void startPrerendering(GURL prerenderUrl) {
+        if (mNativeAndroidPrerenderManager == 0 || mWebContents == null) return;
+        AndroidPrerenderManagerJni.get()
                 .startPrerendering(mNativeAndroidPrerenderManager, prerenderUrl, mWebContents);
     }
 
@@ -109,7 +108,7 @@ public class AndroidPrerenderManager {
     public interface Natives {
         long init();
 
-        boolean startPrerendering(
+        void startPrerendering(
                 long nativeAndroidPrerenderManager,
                 @JniType("GURL") GURL prerenderUrl,
                 WebContents webContents);

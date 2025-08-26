@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -104,7 +103,6 @@ public class TileInteractionDelegateTest {
     public void setUp() {
         when(mTile.getUrl()).thenReturn(new GURL("https://example.com"));
         when(mTile.getData()).thenReturn(mData);
-        when(mAndroidPrerenderManager.startPrerendering(any())).thenReturn(true);
         AndroidPrerenderManagerJni.setInstanceForTesting(mNativeMock);
     }
 

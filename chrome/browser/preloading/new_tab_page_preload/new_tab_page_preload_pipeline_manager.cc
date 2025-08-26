@@ -35,7 +35,7 @@ NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
   return new_tab_page_preload_manager;
 }
 
-bool NewTabPagePreloadPipelineManager::StartPrerender(
+void NewTabPagePreloadPipelineManager::StartPrerender(
     const GURL& url,
     content::PreloadingPredictor predictor) {
   if (pipeline_) {
@@ -44,15 +44,13 @@ bool NewTabPagePreloadPipelineManager::StartPrerender(
     // Prerender is expected to be reset when mouseExit happens or every primary
     // page changed, so if a pipeline is present, this is going to be a
     // duplicate attempt.
-    return true;
+    return;
   }
 
   pipeline_ = std::make_unique<NewTabPagePreloadPipeline>(url);
   if (!pipeline_->StartPrerender(*web_contents(), predictor)) {
     pipeline_.reset();
   }
-
-  return pipeline_ != nullptr;
 }
 
 void NewTabPagePreloadPipelineManager::DidFinishNavigation(

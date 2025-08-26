@@ -23,8 +23,6 @@ import org.chromium.chrome.browser.suggestions.tile.TileDragDelegate.ReorderFlow
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
-import java.util.Objects;
-
 /**
  * TileView's UI interaction handler, including tile usage via touch and tile modification via
  * context menu.
@@ -46,7 +44,7 @@ class TileInteractionDelegateImpl
 
     private @Nullable Runnable mOnClickRunnable;
     private @Nullable Runnable mOnRemoveRunnable;
-    private @Nullable GURL mPrerenderedUrl;
+    private boolean mPrerenderTriggered;
 
     public TileInteractionDelegateImpl(
             ContextMenuManager contextMenuManager,
@@ -70,6 +68,7 @@ class TileInteractionDelegateImpl
         mAndroidPrerenderManager = AndroidPrerenderManager.getAndroidPrerenderManager();
 
         mTileGroupDelegate.initAndroidPrerenderManager(mAndroidPrerenderManager);
+        mPrerenderTriggered = false;
     }
 
     // TileGroup.TileInteractionDelegate => OnClickListener implementation.
@@ -79,25 +78,6 @@ class TileInteractionDelegateImpl
         mTileDragDelegate.reset();
         if (mOnClickRunnable != null) mOnClickRunnable.run();
         mTileGroupDelegate.openMostVisitedItem(WindowOpenDisposition.CURRENT_TAB, mTile);
-    }
-
-    private void maybePrerender(GURL url) {
-        // If the URL has been already prerendered, it should be skipped.
-        if (Objects.equals(mPrerenderedUrl, url)) {
-            return;
-        }
-
-        if (mAndroidPrerenderManager.startPrerendering(url)) {
-            mPrerenderedUrl = url;
-        }
-    }
-
-    private void cancelPrerender() {
-        if (mPrerenderedUrl != null) {
-            mAndroidPrerenderManager.stopPrerendering();
-        }
-
-        mPrerenderedUrl = null;
     }
 
     // TileGroup.TileInteractionDelegate => View.OnKeyListener implementation.
@@ -138,9 +118,11 @@ class TileInteractionDelegateImpl
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouch(View view, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            maybePrerender(mTile.getUrl());
-        } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-            cancelPrerender();
+            mAndroidPrerenderManager.startPrerendering(mTile.getUrl());
+            mPrerenderTriggered = true;
+        } else if (event.getAction() == MotionEvent.ACTION_CANCEL && mPrerenderTriggered) {
+            mAndroidPrerenderManager.stopPrerendering();
+            mPrerenderTriggered = false;
         }
 
         // Handle tile drag-and-drop separately.

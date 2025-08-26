@@ -47,9 +47,7 @@ class NewTabPagePreloadPipelineManager
     return weak_factory_.GetWeakPtr();
   }
 
-  // Returns true if prerender is started successfully or is present, false
-  // otherwise.
-  bool StartPrerender(const GURL& url, content::PreloadingPredictor predictor);
+  void StartPrerender(const GURL& url, content::PreloadingPredictor predictor);
 
   void ResetPrerender();
 

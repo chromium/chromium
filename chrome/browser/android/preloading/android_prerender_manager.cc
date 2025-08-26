@@ -31,14 +31,13 @@ jlong JNI_AndroidPrerenderManager_Init(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(new AndroidPrerenderManager(env));
 }
 
-bool AndroidPrerenderManager::StartPrerendering(
+void AndroidPrerenderManager::StartPrerendering(
     JNIEnv* env,
     const GURL& prerender_url,
     const base::android::JavaParamRef<jobject>& j_web_contents) {
   content::WebContents* const web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
-  return NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
-             web_contents)
+  NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(web_contents)
       ->StartPrerender(prerender_url,
                        chrome_preloading_predictor::kTouchOnNewTabPage);
 }
