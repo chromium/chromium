@@ -145,7 +145,7 @@ void AudioRendererSinkCache::DeleteLater(
           &AudioRendererSinkCache::DeleteSink,
           // Unretained is safe here since this is a process-wide
           // singleton and tests will ensure lifetime.
-          CrossThreadUnretained(this), WTF::RetainedRef(std::move(sink))),
+          CrossThreadUnretained(this), blink::RetainedRef(std::move(sink))),
       delete_timeout_);
 }
 
@@ -220,7 +220,7 @@ void AudioRendererSinkCache::MaybeCacheSink(
 void AudioRendererSinkCache::DropSinksForFrame(
     const LocalFrameToken& source_frame_token) {
   base::AutoLock auto_lock(cache_lock_);
-  WTF::EraseIf(cache_, [source_frame_token](const CacheEntry& val) {
+  EraseIf(cache_, [source_frame_token](const CacheEntry& val) {
     if (val.source_frame_token == source_frame_token) {
       val.sink->Stop();
       return true;

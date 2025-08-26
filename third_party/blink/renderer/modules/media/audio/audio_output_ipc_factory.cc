@@ -27,9 +27,9 @@ namespace blink {
 
 class AudioOutputIPCFactory::Impl {
  public:
-  using StreamFactoryMap = WTF::HashMap<
-      uint64_t,
-      mojo::Remote<mojom::blink::RendererAudioOutputStreamFactory>>;
+  using StreamFactoryMap =
+      HashMap<uint64_t,
+              mojo::Remote<mojom::blink::RendererAudioOutputStreamFactory>>;
 
   explicit Impl(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
       : io_task_runner_(std::move(io_task_runner)) {}
@@ -138,9 +138,9 @@ void AudioOutputIPCFactory::Impl::RegisterRemoteFactoryOnIOThread(
 
   // Unretained is safe because |this| owns the remote, so a connection error
   // cannot trigger after destruction.
-  emplaced_factory.set_disconnect_handler(WTF::BindOnce(
+  emplaced_factory.set_disconnect_handler(blink::BindOnce(
       &AudioOutputIPCFactory::Impl::MaybeDeregisterRemoteFactoryOnIOThread,
-      WTF::Unretained(this), frame_token));
+      Unretained(this), frame_token));
 }
 
 void AudioOutputIPCFactory::Impl::MaybeDeregisterRemoteFactoryOnIOThread(

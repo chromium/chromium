@@ -74,7 +74,7 @@ ManifestManager::ManifestManager(LocalDOMWindow& window)
   if (window.GetFrame()->IsMainFrame()) {
     manifest_change_notifier_ =
         MakeGarbageCollected<ManifestChangeNotifier>(window);
-    window.GetFrame()->GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+    window.GetFrame()->GetInterfaceRegistry()->AddInterface(BindRepeating(
         &ManifestManager::BindReceiver, WrapWeakPersistent(this)));
   }
 }
@@ -82,7 +82,7 @@ ManifestManager::ManifestManager(LocalDOMWindow& window)
 ManifestManager::~ManifestManager() = default;
 
 void ManifestManager::RequestManifest(RequestManifestCallback callback) {
-  RequestManifestImpl(WTF::BindOnce(
+  RequestManifestImpl(blink::BindOnce(
       [](RequestManifestCallback callback, const Result& result) {
         std::move(callback).Run(result.result(), result.manifest_url(),
                                 result.manifest().Clone());
@@ -92,7 +92,7 @@ void ManifestManager::RequestManifest(RequestManifestCallback callback) {
 
 void ManifestManager::RequestManifestDebugInfo(
     RequestManifestDebugInfoCallback callback) {
-  RequestManifestImpl(WTF::BindOnce(
+  RequestManifestImpl(blink::BindOnce(
       [](RequestManifestDebugInfoCallback callback, const Result& result) {
         std::move(callback).Run(result.manifest_url(),
                                 result.manifest().Clone(),
@@ -120,7 +120,7 @@ void ManifestManager::ParseManifestFromString(
 
 void ManifestManager::RequestManifestForTesting(
     WebManifestManager::Callback callback) {
-  RequestManifestImpl(WTF::BindOnce(
+  RequestManifestImpl(blink::BindOnce(
       [](WebManifestManager::Callback callback, const Result& result) {
         std::move(callback).Run(result.manifest_url());
       },
@@ -182,8 +182,8 @@ void ManifestManager::FetchManifest() {
   ResourceFetcher* document_fetcher = window.document()->Fetcher();
   fetcher_ = MakeGarbageCollected<ManifestFetcher>(manifest_url);
   fetcher_->Start(window, ManifestUseCredentials(), document_fetcher,
-                  WTF::BindOnce(&ManifestManager::OnManifestFetchComplete,
-                                WrapWeakPersistent(this), window.Url()));
+                  BindOnce(&ManifestManager::OnManifestFetchComplete,
+                           WrapWeakPersistent(this), window.Url()));
 }
 
 void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
@@ -207,10 +207,10 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
   if (response.HttpStatusCode() >= 200 && response.HttpStatusCode() < 400) {
     ParseManifestFromPage(document_url, response.CurrentRequestUrl(), data);
   } else {
-    const String message = WTF::String::Format(
-        "Manifest fetch from %s failed, code %d",
-        response.CurrentRequestUrl().GetString().Utf8().c_str(),
-        response.HttpStatusCode());
+    const String message =
+        String::Format("Manifest fetch from %s failed, code %d",
+                       response.CurrentRequestUrl().GetString().Utf8().c_str(),
+                       response.HttpStatusCode());
 
     GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,

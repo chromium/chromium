@@ -58,10 +58,10 @@ void CreateMojoAudioInputStream(
     bool automatic_gain_control,
     uint32_t total_segments) {
   main_task_runner->PostTask(
-      FROM_HERE, WTF::BindOnce(&CreateMojoAudioInputStreamOnMainThread,
-                               frame_token, source_params, std::move(client),
-                               std::move(controls_receiver), params,
-                               automatic_gain_control, total_segments));
+      FROM_HERE, blink::BindOnce(&CreateMojoAudioInputStreamOnMainThread,
+                                 frame_token, source_params, std::move(client),
+                                 std::move(controls_receiver), params,
+                                 automatic_gain_control, total_segments));
 }
 
 void AssociateInputAndOutputForAec(
@@ -69,7 +69,7 @@ void AssociateInputAndOutputForAec(
     const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& input_stream_id,
     const std::string& output_device_id) {
-  auto task = WTF::BindOnce(
+  auto task = blink::BindOnce(
       [](const blink::LocalFrameToken& frame_token,
          const base::UnguessableToken& input_stream_id,
          const std::string& output_device_id) {

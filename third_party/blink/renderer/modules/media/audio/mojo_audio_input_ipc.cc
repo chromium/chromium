@@ -45,7 +45,7 @@ void MojoAudioInputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
       client;
   factory_client_receiver_.Bind(client.InitWithNewPipeAndPassReceiver());
   factory_client_receiver_.set_disconnect_with_reason_handler(
-      WTF::BindOnce(&MojoAudioInputIPC::OnDisconnect, WTF::Unretained(this)));
+      BindOnce(&MojoAudioInputIPC::OnDisconnect, Unretained(this)));
 
   mojo::PendingReceiver<media::mojom::blink::AudioProcessorControls>
       controls_receiver;

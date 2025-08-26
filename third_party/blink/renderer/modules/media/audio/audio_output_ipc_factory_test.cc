@@ -65,7 +65,7 @@ class FakeRemoteFactory
         static_cast<media::mojom::blink::OutputDeviceStatus>(
             media::OutputDeviceStatus::
                 OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED),
-        media::AudioParameters::UnavailableDeviceParams(), WTF::g_empty_string);
+        media::AudioParameters::UnavailableDeviceParams(), g_empty_string);
     EXPECT_FALSE(on_called_.is_null());
     std::move(on_called_).Run();
   }

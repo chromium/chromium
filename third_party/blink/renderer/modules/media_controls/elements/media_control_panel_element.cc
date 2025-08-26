@@ -94,9 +94,8 @@ void MediaControlPanelElement::EnsureTransitionEventListener() {
   if (!event_listener_) {
     event_listener_ = MakeGarbageCollected<
         MediaControlsSharedHelpers::TransitionEventListener>(
-        this,
-        WTF::BindRepeating(&MediaControlPanelElement::HandleTransitionEndEvent,
-                           WrapWeakPersistent(this)));
+        this, BindRepeating(&MediaControlPanelElement::HandleTransitionEndEvent,
+                            WrapWeakPersistent(this)));
   }
 
   // Attach the event listener if we are not attached.

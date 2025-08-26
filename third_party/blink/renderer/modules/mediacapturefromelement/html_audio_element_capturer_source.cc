@@ -51,8 +51,8 @@ bool HtmlAudioElementCapturerSource::EnsureSourceIsStarted() {
   if (audio_source_ && !is_started_) {
     GetTaskRunner()->PostTask(
         FROM_HERE,
-        WTF::BindOnce(&HtmlAudioElementCapturerSource::SetAudioCallback,
-                      weak_factory_.GetWeakPtr()));
+        blink::BindOnce(&HtmlAudioElementCapturerSource::SetAudioCallback,
+                        weak_factory_.GetWeakPtr()));
     is_started_ = true;
   }
   return is_started_;
@@ -61,7 +61,7 @@ bool HtmlAudioElementCapturerSource::EnsureSourceIsStarted() {
 void HtmlAudioElementCapturerSource::SetAudioCallback() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (audio_source_ && is_started_) {
-    // WTF::Unretained() is safe here since EnsureSourceIsStopped() guarantees
+    // Unretained() is safe here since EnsureSourceIsStopped() guarantees
     // no more calls to OnAudioBus().
     audio_source_->SetCopyAudioCallback(ConvertToBaseRepeatingCallback(
         CrossThreadBindRepeating(&HtmlAudioElementCapturerSource::OnAudioBus,

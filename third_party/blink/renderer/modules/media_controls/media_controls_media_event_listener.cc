@@ -116,9 +116,9 @@ void MediaControlsMediaEventListener::Attach() {
     remote_playback_availability_callback_id_ =
         std::make_optional(remote.WatchAvailabilityInternal(
             MakeGarbageCollected<AvailabilityCallbackWrapper>(
-                WTF::BindRepeating(&MediaControlsMediaEventListener::
-                                       OnRemotePlaybackAvailabilityChanged,
-                                   WrapWeakPersistent(this)))));
+                BindRepeating(&MediaControlsMediaEventListener::
+                                  OnRemotePlaybackAvailabilityChanged,
+                              WrapWeakPersistent(this)))));
   }
 }
 

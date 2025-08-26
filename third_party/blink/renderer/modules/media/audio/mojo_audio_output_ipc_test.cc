@@ -45,7 +45,7 @@ media::AudioParameters Params() {
 }
 
 MojoAudioOutputIPC::FactoryAccessorCB NullAccessor() {
-  return WTF::BindRepeating(
+  return BindRepeating(
       []() -> blink::mojom::blink::RendererAudioOutputStreamFactory* {
         return nullptr;
       });
@@ -172,7 +172,7 @@ class TestRemoteFactory
   }
 
   MojoAudioOutputIPC::FactoryAccessorCB GetAccessor() {
-    return WTF::BindRepeating(&TestRemoteFactory::get, WTF::Unretained(this));
+    return BindRepeating(&TestRemoteFactory::get, Unretained(this));
   }
 
  private:

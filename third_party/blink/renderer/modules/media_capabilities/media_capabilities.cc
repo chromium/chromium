@@ -862,9 +862,9 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
 
       handler->DecodingInfo(
           sdp_audio_format, sdp_video_format, spatial_scalability,
-          WTF::BindOnce(&MediaCapabilities::OnWebrtcSupportInfo,
-                        WrapPersistent(this), callback_id, std::move(features),
-                        frames_per_second, OperationType::kDecoding));
+          BindOnce(&MediaCapabilities::OnWebrtcSupportInfo,
+                   WrapPersistent(this), callback_id, std::move(features),
+                   frames_per_second, OperationType::kDecoding));
 
       return promise;
     }
@@ -1094,9 +1094,9 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
 
       handler->EncodingInfo(
           sdp_audio_format, sdp_video_format, scalability_mode,
-          WTF::BindOnce(&MediaCapabilities::OnWebrtcSupportInfo,
-                        WrapPersistent(this), callback_id, std::move(features),
-                        frames_per_second, OperationType::kEncoding));
+          BindOnce(&MediaCapabilities::OnWebrtcSupportInfo,
+                   WrapPersistent(this), callback_id, std::move(features),
+                   frames_per_second, OperationType::kEncoding));
 
       return promise;
     }
@@ -1118,11 +1118,11 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
   if (auto* handler = MakeGarbageCollected<MediaRecorderHandler>(
           task_runner, KeyFrameRequestProcessor::Configuration())) {
     task_runner->PostTask(
-        FROM_HERE,
-        WTF::BindOnce(&MediaRecorderHandler::EncodingInfo, WrapPersistent(handler),
-                      ToWebMediaConfiguration(config),
-                      WTF::BindOnce(&OnMediaCapabilitiesEncodingInfo,
-                                    WrapPersistent(resolver))));
+        FROM_HERE, blink::BindOnce(&MediaRecorderHandler::EncodingInfo,
+                                   WrapPersistent(handler),
+                                   ToWebMediaConfiguration(config),
+                                   BindOnce(&OnMediaCapabilitiesEncodingInfo,
+                                            WrapPersistent(resolver))));
 
     return promise;
   }
@@ -1296,9 +1296,9 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::GetEmeSupport(
       MakeGarbageCollected<MediaCapabilitiesKeySystemAccessInitializer>(
           execution_context, resolver, key_system_config->keySystem(),
           config_vector,
-          WTF::BindOnce(&MediaCapabilities::GetPerfInfo, WrapPersistent(this),
-                        video_codec, video_profile, video_color_space,
-                        WrapPersistent(configuration), request_time));
+          blink::BindOnce(&MediaCapabilities::GetPerfInfo, WrapPersistent(this),
+                          video_codec, video_profile, video_color_space,
+                          WrapPersistent(configuration), request_time));
 
   // IMPORTANT: Acquire the promise before potentially synchronously resolving
   // it in the code that follows. Otherwise the promise returned to JS will be
@@ -1369,8 +1369,8 @@ void MediaCapabilities::GetPerfInfo(
           video_config->framerate(), key_system, use_hw_secure_codecs);
 
   decode_history_service_->GetPerfInfo(
-      std::move(features), WTF::BindOnce(&MediaCapabilities::OnPerfHistoryInfo,
-                                         WrapPersistent(this), callback_id));
+      std::move(features), BindOnce(&MediaCapabilities::OnPerfHistoryInfo,
+                                    WrapPersistent(this), callback_id));
 
   if (UseGpuFactoriesForPowerEfficient(execution_context, access)) {
     GetGpuFactoriesSupport(callback_id, video_codec, video_profile,
@@ -1415,10 +1415,10 @@ void MediaCapabilities::GetGpuFactoriesSupport(
   }
 
   if (!gpu_factories->IsDecoderSupportKnown()) {
-    gpu_factories->NotifyDecoderSupportKnown(WTF::BindOnce(
-        &MediaCapabilities::GetGpuFactoriesSupport, WrapPersistent(this),
-        callback_id, video_codec, video_profile, video_color_space,
-        WrapPersistent(decoding_config)));
+    gpu_factories->NotifyDecoderSupportKnown(
+        BindOnce(&MediaCapabilities::GetGpuFactoriesSupport,
+                 WrapPersistent(this), callback_id, video_codec, video_profile,
+                 video_color_space, WrapPersistent(decoding_config)));
     return;
   }
 
@@ -1590,8 +1590,8 @@ void MediaCapabilities::OnWebrtcSupportInfo(
 
   webrtc_history_service_->GetPerfInfo(
       std::move(features), frames_per_second,
-      WTF::BindOnce(&MediaCapabilities::OnWebrtcPerfHistoryInfo,
-                    WrapPersistent(this), callback_id, type));
+      BindOnce(&MediaCapabilities::OnWebrtcPerfHistoryInfo,
+               WrapPersistent(this), callback_id, type));
 }
 
 void MediaCapabilities::OnWebrtcPerfHistoryInfo(int callback_id,
@@ -1633,7 +1633,7 @@ void MediaCapabilities::OnWebrtcPerfHistoryInfo(int callback_id,
 
 int MediaCapabilities::CreateCallbackId() {
   // Search for the next available callback ID. 0 and -1 are reserved by
-  // wtf::HashMap (meaning "empty" and "deleted").
+  // HashMap (meaning "empty" and "deleted").
   do {
     ++last_callback_id_;
   } while (last_callback_id_ == 0 || last_callback_id_ == -1 ||
