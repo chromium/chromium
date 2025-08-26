@@ -862,7 +862,6 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
   void CacheOnlineWallpaper(std::string path) {
     // Set an Online Wallpaper from Data, so syncing in doesn't need to download
     // an Online Wallpaper.
-    SimulateUserLogin(kAccountId1);
     ClearWallpaperCount();
     controller_->SetOnlineWallpaper(
         OnlineWallpaperParams(
@@ -4762,6 +4761,7 @@ TEST_P(WallpaperControllerTest,
 
 TEST_P(WallpaperControllerTest,
        ActiveUserPrefServiceChangedSyncedInfoHandledLocally) {
+  SimulateUserLogin(kAccountId1);
   CacheOnlineWallpaper(kDummyUrl);
 
   WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
@@ -4785,6 +4785,7 @@ TEST_P(WallpaperControllerTest,
 }
 
 TEST_P(WallpaperControllerTest, ActiveUserPrefServiceChanged_SyncDisabled) {
+  SimulateUserLogin(kAccountId1);
   CacheOnlineWallpaper(kDummyUrl);
   WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
                                WallpaperType::kOnline, base::Time::Now()};
@@ -4808,6 +4809,7 @@ TEST_P(WallpaperControllerTest, ActiveUserPrefServiceChanged_SyncDisabled) {
 }
 
 TEST_P(WallpaperControllerTest, HandleWallpaperInfoSyncedLocalIsPolicy) {
+  SimulateUserLogin(kAccountId1);
   CacheOnlineWallpaper(kDummyUrl);
   ClearLogin();
 
@@ -4827,6 +4829,7 @@ TEST_P(WallpaperControllerTest, HandleWallpaperInfoSyncedLocalIsPolicy) {
 
 TEST_P(WallpaperControllerTest,
        HandleWallpaperInfoSyncedLocalIsCustomizedAndOlder) {
+  SimulateUserLogin(kAccountId1);
   CacheOnlineWallpaper(kDummyUrl);
   ClearLogin();
 
@@ -4849,13 +4852,14 @@ TEST_P(WallpaperControllerTest,
 
 TEST_P(WallpaperControllerTest,
        HandleWallpaperInfoSyncedLocalIsCustomizedAndNewer) {
+  SimulateUserLogin(kAccountId1);
   CacheOnlineWallpaper(kDummyUrl);
   pref_manager_->SetLocalWallpaperInfo(
       kAccountId1, InfoWithType(WallpaperType::kCustomized));
-
   WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
                                WallpaperType::kOnline, DayBeforeYesterdayish()};
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
+  ClearLogin();
   SimulateUserLogin(kAccountId1);
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
   RunAllTasksUntilIdle();
@@ -4866,6 +4870,7 @@ TEST_P(WallpaperControllerTest,
 }
 
 TEST_P(WallpaperControllerTest, HandleWallpaperInfoSyncedOnline) {
+  SimulateUserLogin(kAccountId1);
   CacheOnlineWallpaper(kDummyUrl);
 
   // Attempt to set an online wallpaper without providing the image data. Verify
@@ -4887,6 +4892,7 @@ TEST_P(WallpaperControllerTest, HandleWallpaperInfoSyncedOnline) {
 }
 
 TEST_P(WallpaperControllerTest, HandleWallpaperInfoSyncedInactiveUser) {
+  SimulateUserLogin(kAccountId1);
   CacheOnlineWallpaper(kDummyUrl);
 
   // Make kAccountId1 the inactive user.
