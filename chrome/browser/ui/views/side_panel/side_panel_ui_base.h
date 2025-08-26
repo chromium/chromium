@@ -55,6 +55,7 @@ class CHROME_VIEWS_EXPORT SidePanelUIBase : public SidePanelUI,
   // necessary to export this class in order to have it available across
   // component boundaries, but on the other, we need to prevent the methods from
   // being both locally defined and imported in some tests for component builds.
+  using SidePanelUI::Close;
   using SidePanelUI::Show;
   NOINLINE void Show(
       SidePanelEntry::Id entry_id,
@@ -82,6 +83,8 @@ class CHROME_VIEWS_EXPORT SidePanelUIBase : public SidePanelUI,
  protected:
   friend class SidePanelEntryWaiter;
 
+  virtual void Close(bool suppress_animations) = 0;
+
   // This method does not show the side panel. Instead, it queues the side panel
   // to be shown once the contents have been loaded. This process may be either
   // synchronous or asynchronous.
@@ -101,6 +104,12 @@ class CHROME_VIEWS_EXPORT SidePanelUIBase : public SidePanelUI,
       SidePanelEntry* entry,
       std::optional<std::unique_ptr<views::View>> content_view) = 0;
 
+  // Shows an entry in the following fallback order: new contextual registry's
+  // active entry > active global entry > none (close the side panel).
+  virtual void MaybeShowEntryOnTabStripModelChanged(
+      SidePanelRegistry* old_contextual_registry,
+      SidePanelRegistry* new_contextual_registry) = 0;
+
   void set_current_key(std::optional<UniqueKey> new_key) {
     current_key_ = new_key;
   }
@@ -119,6 +128,12 @@ class CHROME_VIEWS_EXPORT SidePanelUIBase : public SidePanelUI,
 
   SidePanelEntry* GetActiveContextualEntryForKey(
       const SidePanelEntry::Key& entry_key) const;
+
+  // Returns the new entry key to be shown after the active tab has changed, or
+  // nullopt if no suitable entry is found. Called from
+  // `OnTabStripModelChanged()` when there's an active entry being shown in the
+  // side panel.
+  std::optional<UniqueKey> GetNewActiveKeyOnTabChanged();
 
   const raw_ptr<Browser> browser_;
 

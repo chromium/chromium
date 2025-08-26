@@ -102,11 +102,10 @@ class SidePanelCoordinator final : public SidePanelUIBase,
 
   SidePanelEntry* GetLoadingEntryForTesting() const;
 
-  void Close(bool suppress_animations);
-
   // SidePanelUIBase:
   using SidePanelUIBase::IsSidePanelEntryShowing;
   using SidePanelUIBase::Show;
+  void Close(bool suppress_animations) override;
   void Show(const UniqueKey& entry,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
             bool suppress_animations) override;
@@ -138,6 +137,9 @@ class SidePanelCoordinator final : public SidePanelUIBase,
       std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
       SidePanelEntry* entry,
       std::optional<std::unique_ptr<views::View>> content_view) override;
+  void MaybeShowEntryOnTabStripModelChanged(
+      SidePanelRegistry* old_contextual_registry,
+      SidePanelRegistry* new_contextual_registry) override;
 
   // Clear cached views for registry entries for global and contextual
   // registries.
@@ -162,12 +164,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
 
   std::unique_ptr<views::View> CreateHeader();
 
-  // Returns the new entry key to be shown after the active tab has changed, or
-  // nullopt if no suitable entry is found. Called from
-  // `OnTabStripModelChanged()` when there's an active entry being shown in the
-  // side panel.
-  std::optional<UniqueKey> GetNewActiveKeyOnTabChanged();
-
   void NotifyPinnedContainerOfActiveStateChange(SidePanelEntryKey key,
                                                 bool is_active);
 
@@ -178,12 +174,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   // Opens the more info menu. This is called by the header button, when it's
   // visible.
   void OpenMoreInfoMenu();
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
 
   // ToolbarActionsModel::Observer
   void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override {}

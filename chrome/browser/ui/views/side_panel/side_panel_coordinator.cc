@@ -662,45 +662,6 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   return header;
 }
 
-std::optional<SidePanelCoordinator::UniqueKey>
-SidePanelCoordinator::GetNewActiveKeyOnTabChanged() {
-  // This function should only be called when the side panel view is shown.
-  DCHECK(IsSidePanelShowing());
-
-  // Attempt to return an entry in the following fallback order:
-  //  - the new tab's registry's active entry
-  //  - if the active entry's key is registered in the global registry:
-  //    - the new tab's registry's entry with the same key
-  //    - the global registry's entry with the same key (note that
-  //      GetEntryForKey will return this fallback order)
-  //  - if there is an active entry in the global registry:
-  //    - the new tab's registry's entry with the same key
-  //    - the global registry's active entry (note that GetEntryForKey will
-  //      return this fallback order)
-  //  - no entry (this closes the side panel)
-  // Note: GetActiveContextualRegistry() returns the registry for the new tab in
-  // this function.
-  // Note: If Show() is called with an entry returned by this function, then
-  // that entry will be active in its owning registry.
-  auto* active_contextual_registry = GetActiveContextualRegistry();
-  if (active_contextual_registry &&
-      active_contextual_registry->active_entry()) {
-    return UniqueKey{
-        browser_view_->browser()->GetActiveTabInterface()->GetHandle(),
-        (*active_contextual_registry->active_entry())->key()};
-  }
-
-  if (current_key() && window_registry_->GetEntryForKey(current_key()->key)) {
-    return GetUniqueKeyForKey(current_key()->key);
-  }
-
-  if (window_registry_->active_entry()) {
-    return GetUniqueKeyForKey((*window_registry_->active_entry())->key());
-  }
-
-  return std::nullopt;
-}
-
 void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
     SidePanelEntryKey key,
     bool is_active) {
@@ -787,45 +748,9 @@ void SidePanelCoordinator::MaybeEndPinPromo(bool pinned) {
   pending_pin_promo_ = nullptr;
 }
 
-void SidePanelCoordinator::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  // If the browser window is closing, do nothing.
-  if (tab_strip_model->closing_all()) {
-    return;
-  }
-
-  if (!selection.active_tab_changed()) {
-    return;
-  }
-
-  // Only background tabs can be discarded. In this case, nothing needs to
-  // happen.
-  if (change.type() == TabStripModelChange::kReplaced) {
-    return;
-  }
-
-  // Handle removing the previous tab's contextual registry if one exists. In
-  // the event that the tab was removed for deletion, registry removal is
-  // already handled by SidePanelCoordinator::OnRegistryDestroying
-  bool tab_removed_for_deletion =
-      (change.type() == TabStripModelChange::kRemoved) &&
-      (change.GetRemove()->contents[0].tab_detach_reason ==
-       tabs::TabInterface::DetachReason::kDelete);
-  SidePanelRegistry* old_contextual_registry = nullptr;
-  if (!tab_removed_for_deletion && selection.old_contents) {
-    old_contextual_registry =
-        SidePanelRegistry::GetDeprecated(selection.old_contents);
-  }
-
-  // Add the current tab's contextual registry.
-  SidePanelRegistry* new_contextual_registry = nullptr;
-  if (selection.new_contents) {
-    new_contextual_registry =
-        SidePanelRegistry::GetDeprecated(selection.new_contents);
-  }
-
+void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
+    SidePanelRegistry* old_contextual_registry,
+    SidePanelRegistry* new_contextual_registry) {
   // Show an entry in the following fallback order: new contextual registry's
   // active entry > active global entry > none (close the side panel).
   if (IsSidePanelShowing() &&
