@@ -83,7 +83,7 @@ def generate_cpp_functions(schema):
   yield ''
   yield '}  // namespace'
   yield ''
-  yield 'std::optional<EntityType> StringToEntityType(base::PassKey<EntityTable>, std::string_view entity_type_name) {'
+  yield 'std::optional<EntityType> StringToEntityType(std::string_view entity_type_name) {'
   yield '  static constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, EntityType>({'
   yield ',\n'.join('    ' + f'{{EntityTypeNameToString({name}), EntityType({name})}}'
                    for name in (entity_name(entity['name']) for entity in schema))
@@ -92,7 +92,7 @@ def generate_cpp_functions(schema):
   yield '  return it != kMap.end() ? std::optional(it->second) : std::nullopt;'
   yield '}'
   yield ''
-  yield 'std::optional<AttributeType> StringToAttributeType(base::PassKey<EntityTable>, EntityType entity_type, std::string_view attribute_type_name) {'
+  yield 'std::optional<AttributeType> StringToAttributeType(EntityType entity_type, std::string_view attribute_type_name) {'
   yield '  switch (entity_type.name()) {'
   for entity in schema:
     yield f'    case {entity_name(entity["name"])}: {{'

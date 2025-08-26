@@ -279,7 +279,7 @@ bool EntityTable::AddAttribute(const EntityInstance& entity,
     s.BindString(1, attribute.type().name_as_string());
     s.BindInt(2, type);
     if (std::string encrypted_value; encryptor()->EncryptString16(
-            attribute.GetRawInfo(/*pass_key=*/{}, type), &encrypted_value)) {
+            attribute.GetRawInfo(type), &encrypted_value)) {
       base::UmaHistogramBoolean("Autofill.Ai.EntityTable.EncryptStatus", true);
       s.BindString(3, encrypted_value);
     } else {
@@ -504,8 +504,7 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
       !FieldTypeSet(DenseSet<AttributeType>::all(), &AttributeType::field_type)
            .contains(UNKNOWN_TYPE));
 
-  std::optional<EntityType> entity_type =
-      StringToEntityType(/*pass_key=*/{}, type_name);
+  std::optional<EntityType> entity_type = StringToEntityType(type_name);
   std::optional<EntityInstance::RecordType> record_type =
       ToSafeRecordType(underlying_record_type);
   if (!entity_type || guid->empty() || !record_type) {
@@ -515,8 +514,8 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
   std::vector<AttributeInstance> attributes;
 
   for (const auto& [attribute_type_name, records] : attribute_records) {
-    if (std::optional<AttributeType> attribute_type = StringToAttributeType(
-            /*pass_key=*/{}, *entity_type, attribute_type_name)) {
+    if (std::optional<AttributeType> attribute_type =
+            StringToAttributeType(*entity_type, attribute_type_name)) {
       AttributeInstance& attribute = attributes.emplace_back(*attribute_type);
       for (const auto& [underlying_field_type, value,
                         underlying_verification_status] : records) {

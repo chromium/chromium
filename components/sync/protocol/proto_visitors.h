@@ -2023,10 +2023,16 @@ VISIT_PROTO_FIELDS(
   VISIT(is_collapsed);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::Any& proto) {
+  VISIT_REP(type_url);
+  VISIT_REP(value);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableSpecifics& proto) {
   VISIT(id);
   VISIT(loyalty_card);
   VISIT(vehicle_registration);
+  VISIT(serialized_chrome_valuables_metadata);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::LoyaltyCard& proto) {

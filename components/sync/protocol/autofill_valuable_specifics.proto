@@ -14,6 +14,16 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// This is a copy of google.protobuf.Any.
+message Any {
+  // A URL/resource name that uniquely identifies the type of the serialized
+  // protocol buffer message.
+  optional string type_url = 1;
+
+  // Must be a valid serialized protocol buffer of the above specified type.
+  required bytes value = 2;
+}
+
 // Represents a loyalty card from Google Wallet.
 message LoyaltyCard {
   // The merchant name e.g. "Deutsche Bahn".
@@ -71,4 +81,8 @@ message AutofillValuableSpecifics {
     VehicleRegistration vehicle_registration = 3;
     // add other valuable types here.
   }
+
+  // Contains information that is used by Chrome and needs to be persisted
+  // across clients.
+  optional Any serialized_chrome_valuables_metadata = 4;
 }

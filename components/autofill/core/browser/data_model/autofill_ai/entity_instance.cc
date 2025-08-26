@@ -10,7 +10,6 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
@@ -97,21 +96,15 @@ std::u16string AttributeInstance::GetInfo(
                        return date.GetDate(format_string ? *format_string
                                                          : u"YYYY-MM-DD");
                      },
-                     [&](const NameInfo&) {
-                       return GetRawInfo(/*pass_key=*/{}, field_type);
-                     },
-                     [&](const StateInfo&) {
-                       return GetRawInfo(/*pass_key=*/{}, field_type);
-                     },
+                     [&](const NameInfo&) { return GetRawInfo(field_type); },
+                     [&](const StateInfo&) { return GetRawInfo(field_type); },
                      [&](const std::u16string&) {
-                       return Format(GetRawInfo(/*pass_key=*/{}, field_type),
-                                     format_string);
+                       return Format(GetRawInfo(field_type), format_string);
                      }},
       info_);
 }
 
-std::u16string AttributeInstance::GetRawInfo(GetRawInfoPassKey,
-                                             FieldType field_type) const {
+std::u16string AttributeInstance::GetRawInfo(FieldType field_type) const {
   field_type = GetNormalizedFieldType(field_type);
   return std::visit(
       absl::Overload{
@@ -310,7 +303,7 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
 
   auto normalized_value = [](const AttributeInstance& attribute) {
     return normalization::NormalizeForComparison(
-        attribute.GetRawInfo(/*pass_key=*/{}, attribute.type().field_type()));
+        attribute.GetRawInfo(attribute.type().field_type()));
   };
 
   // If a certain set of mergeable constraints for both entities have the same

@@ -74,6 +74,14 @@ class AttributeInstance final {
     return GetInfo(type_.field_type(), app_locale, std::nullopt);
   }
 
+  // Returns a string that contains the raw information stored in this attribute
+  // instance.
+  //
+  // For more control over the return value, see GetRawInfo().
+  std::u16string GetCompleteRawInfo() const {
+    return GetRawInfo(type_.field_type());
+  }
+
   // Returns the value stored in this attribute instance.
   //
   // The `field_type` may be any of `type().field_subtypes()`; otherwise we fall
@@ -88,19 +96,11 @@ class AttributeInstance final {
       const std::string& app_locale,
       base::optional_ref<const std::u16string> format_string) const;
 
-  class GetRawInfoPassKey {
-    constexpr GetRawInfoPassKey() = default;
-    friend class AttributeInstance;
-    friend class EntityInstance;
-    friend class EntityTable;
-  };
-
   // Same as `GetInfo` but returns the value as stored with no formatting
   // whatsoever.
   //
   // See GetInfo() for the meaning of `field_type`.
-  std::u16string GetRawInfo(GetRawInfoPassKey pass_key,
-                            FieldType field_type) const;
+  std::u16string GetRawInfo(FieldType field_type) const;
 
   // Returns the verification status of a value stored in this attribute
   // instance for a specific `type`.

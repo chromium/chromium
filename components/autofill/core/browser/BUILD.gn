@@ -766,6 +766,8 @@ static_library("browser") {
     "webdata/autocomplete/autocomplete_table.h",
     "webdata/autocomplete/autocomplete_table_label_sensitive.cc",
     "webdata/autocomplete/autocomplete_table_label_sensitive.h",
+    "webdata/autofill_ai/entity_sync_util.cc",
+    "webdata/autofill_ai/entity_sync_util.h",
     "webdata/autofill_ai/entity_table.cc",
     "webdata/autofill_ai/entity_table.h",
     "webdata/autofill_change.cc",
