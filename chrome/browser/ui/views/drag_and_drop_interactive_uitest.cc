@@ -2566,7 +2566,9 @@ class DragAndDropBrowserTestNoParam : public InProcessBrowserTest {
 };
 
 // https://crbug.com/1312505
-IN_PROC_BROWSER_TEST_F(DragAndDropBrowserTestNoParam, CloseTabDuringDrag) {
+// TODO(crbug.com/441134573): Fix and reenable the test.
+IN_PROC_BROWSER_TEST_F(DragAndDropBrowserTestNoParam,
+                       DISABLED_CloseTabDuringDrag) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
 
