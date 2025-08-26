@@ -1142,9 +1142,19 @@ int HttpCache::Transaction::DoInitEntry() {
     // then for some reason the result was unusable. Record the time lost as a
     // result. See the histogram "HttpCache.NoVarySearch.UseResult" for
     // information about what went wrong.
-    base::UmaHistogramTimes(
-        "HttpCache.NoVarySearch.NotUsableLostTime2",
-        base::TimeTicks::Now() - first_nvs_cache_lookup_end_time_);
+    const base::TimeDelta elapsed =
+        base::TimeTicks::Now() - first_nvs_cache_lookup_end_time_;
+
+    base::UmaHistogramTimes("HttpCache.NoVarySearch.NotUsableLostTime2",
+                            elapsed);
+    if (no_vary_search_use_result_ == NoVarySearchUseResult::kNotSuitable) {
+      // In this case, we detected that the entry was unusable using in-memory
+      // hints, so we should have returned to this point extremely quickly. This
+      // histogram verifies that we did.
+      base::UmaHistogramCustomMicrosecondsTimes(
+          "HttpCache.NoVarySearch.NotUsableLostTime2.NotSuitable", elapsed,
+          base::Microseconds(1), base::Seconds(1), 50);
+    }
     first_nvs_cache_lookup_end_time_ = base::TimeTicks();
   }
 
@@ -4135,11 +4145,25 @@ bool HttpCache::Transaction::IsUsingURLFromNoVarySearchCache() const {
 
 HttpCache::Transaction::NoVarySearchUseResult
 HttpCache::Transaction::LookupRequestInNoVarySearchCache() {
+  // In order to conditionally log HttpCache.NoVarySearch.LookupTime.{Hit,Miss},
+  // this doesn't use the SCOPED_UMA_HISTOGRAM_TIMER_MICROS macro, but the
+  // bucket definitions are identical.
+  const auto start_time = base::Time::Now();
   std::optional<NoVarySearchCache::LookupResult> maybe_result =
       cache_->no_vary_search_cache_->Lookup(*request_);
+  const auto elapsed = base::Time::Now() - start_time;
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("HttpCache.NoVarySearch.LookupTime",
+                                          elapsed, base::Microseconds(1),
+                                          base::Seconds(1), 50);
   if (!maybe_result) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "HttpCache.NoVarySearch.LookupTime.Miss", elapsed,
+        base::Microseconds(1), base::Seconds(1), 50);
     return NoVarySearchUseResult::kNoMatch;
   }
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "HttpCache.NoVarySearch.LookupTime.Hit", elapsed, base::Microseconds(1),
+      base::Seconds(1), 50);
   if (maybe_result->original_url == request_->url) {
     return NoVarySearchUseResult::kURLUnchanged;
   }

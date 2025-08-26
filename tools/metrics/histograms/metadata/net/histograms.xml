@@ -912,20 +912,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HttpCache.NoVarySearch.LookupTime" units="microseconds"
-    expires_after="2026-02-22">
+<histogram name="HttpCache.NoVarySearch.LookupTime{Variant}"
+    units="microseconds" expires_after="2026-02-02">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     The time spent executing net::NoVarySearchCache::Lookup(). This is recorded
-    once for every call to the function, so approximately once for every HTTP(S)
-    request.
+    once for every call to the function {Variant}.
 
     This will be used to evaluate the need for optimization.
 
     The histogram is not reported on Windows machines without high resolution
     clocks.
   </summary>
+  <token key="Variant">
+    <variant name="" summary="so approximately once for every HTTP(S) request"/>
+    <variant name=".Hit" summary="that finds a match"/>
+    <variant name=".Miss" summary="that doesn't find a match"/>
+  </token>
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.NotUsableLostTime2" units="ms"
@@ -944,7 +948,7 @@ chromium-metrics-reviews@google.com.
     time.
 
     This doesn't include the actual lookup time, but that is recorded in
-    HttpCache.NoVarySearch.LookupTime and is usually an order of magnitude
+    HttpCache.NoVarySearch.LookupTime.Hit and is usually an order of magnitude
     smaller.
 
     Recorded once for every cache transaction which is restarted due to getting
@@ -954,6 +958,40 @@ chromium-metrics-reviews@google.com.
 
     This histogram replaced HttpCache.NoVarySearch.NotUsableLostTime, which was
     logged too eagerly in some edge cases.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.NotUsableLostTime2.NotSuitable"
+    units="microseconds" expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time lost due to a successful lookup in the NoVarySearchCache that was
+    later found to not be usable by Simple Cache in-memory hints. This happens
+    when an entry is stale and cannot be revalidated, and the load flags do not
+    permit the use of stale entries.
+
+    In these cases the transaction is restarted with the original URL without
+    using the NoVarySearchCache, and so time has been lost compared to if we'd
+    never used the NoVarySearchCache at all. This histogram measures that lost
+    time.
+
+    This doesn't include the actual lookup time, but that is recorded in
+    HttpCache.NoVarySearch.LookupTime.Hit and is usually an order of magnitude
+    smaller.
+
+    Recorded once for every cache transaction which is restarted due to getting
+    a hit in the NoVarySearchCache that was then found to be unusable due to
+    Simple Cache in-memory hints. This corresponds to the NoVarySearchUseResult
+    case &quot;Not suitable&quot;.
+
+    This is a subset of the HttpCache.NoVarySearch.NotUsableLostTime2 histogram
+    that is expected to be fast due to not including any asynchronous
+    operations.
+
+    The histogram is not reported on Windows machines without high resolution
+    clocks.
   </summary>
 </histogram>
 
