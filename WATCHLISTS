@@ -1433,6 +1433,11 @@
                   'ios/chrome/common/ui|'\
                   'ios/chrome/credential_provider_extension',
     },
+    'ios_enterprise': {
+      'filepath': 'ios/chrome/browser/enterprise/|'\
+                  'ios/chrome/browser/policy/|'\
+                  'ios/chrome/browser/webui/ui_bundled/management/',
+    },
     'ios_flags': {
       'filepath': 'ios/chrome/browser/about_flags\.(h|mm)|'\
                   'ios/chrome/browser/experimental_flags\.(h|mm)|'\
@@ -3035,6 +3040,7 @@
     'ios_clean': ['ios-reviews+clean@chromium.org',
                   'marq+scrutinize@chromium.org'],
     'ios_credential_provider': ['rkgibson+watch@chromium.org'],
+    'ios_enterprise': ['eic+watch@google.com'],
     'ios_flags': ['noyau+watch@chromium.org'],
     'ios_ntp': ['thegreenfrog+watch@chromium.org'],
     'ios_payments_autofill': ['slobodan+watch@chromium.org'],
