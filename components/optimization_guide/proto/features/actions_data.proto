@@ -410,7 +410,7 @@ message TabObservation {
 
 // All relevant state in chrome after the actions are taken or an error has
 // occurred.
-// Next ID: 6
+// Next ID: 7
 message ActionsResult {
   // The result of the actions. See
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/actor.mojom
@@ -431,6 +431,60 @@ message ActionsResult {
 
   // The results of executing script tools.
   repeated ScriptToolResult script_tool_results = 5;
+
+  LatencyInformation latency_information = 6 [features = { field_presence: EXPLICIT }];
+
+  // Chrome reported information about the latency of steps while performing the
+  // actions.
+  // Next ID: 4
+  message LatencyInformation {
+    // All steps that Chrome reported latency for. These steps can overlap due
+    // to parallel execution.
+    repeated LatencyStep latency_steps = 1;
+
+    // Latency of a single step.
+    // Next ID: 7
+    message LatencyStep {
+      oneof step {
+        ActionLatency action = 3;
+
+        PageStabilizationLatency page_stabilization = 4;
+
+        AnnotatedPageContentLatency annotated_page_content = 5;
+
+        ScreenshotLatency screenshot = 6;
+      }
+
+      // The latency since the time that Chrome received the Actions request.
+      // Time from request to step start.
+      int32 latency_start_ms = 1 [features = { field_presence: EXPLICIT }];
+
+      // Time from request to step stop.
+      int32 latency_stop_ms = 2 [features = { field_presence: EXPLICIT }];
+
+      message ActionLatency {
+        // The index of the action that triggered the latency step.
+        int32 action_index = 1 [features = { field_presence: EXPLICIT }];
+      }
+
+      message PageStabilizationLatency {
+        // The index of the action that triggered the page stabilization.
+        int32 action_index = 1 [features = { field_presence: EXPLICIT }];
+      }
+
+      // The latency of the annotated page content step.
+      message AnnotatedPageContentLatency {
+        // The id of the tab that was observed.
+        int32 id = 1 [features = { field_presence: EXPLICIT }];
+      }
+
+      // The latency of the screenshot step.
+      message ScreenshotLatency {
+        // The id of the tab that was observed.
+        int32 id = 1 [features = { field_presence: EXPLICIT }];
+      }
+    }
+  }
 }
 
 // A request to start a task.
