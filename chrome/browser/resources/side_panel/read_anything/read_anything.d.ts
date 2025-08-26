@@ -73,6 +73,9 @@ declare namespace chrome {
     // Whether the Read Aloud feature flag is enabled.
     let isReadAloudEnabled: boolean;
 
+    // Whether the TS text segmentation feature flag is enabled.
+    let isTsTextSegmentationEnabled: boolean;
+
     // Whether the phrase highlighting feature flag is enabled.
     let isPhraseHighlightingEnabled: boolean;
 

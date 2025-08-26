@@ -1128,6 +1128,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isReadAloudEnabled",
                    &ReadAnythingAppController::IsReadAloudEnabled)
+      .SetProperty("isTsTextSegmentationEnabled",
+                   &ReadAnythingAppController::IsTsTextSegmentationEnabled)
       .SetProperty("isChromeOsAsh", &ReadAnythingAppController::IsChromeOsAsh)
       .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
@@ -1581,6 +1583,10 @@ bool ReadAnythingAppController::IsLeafNode(ui::AXNodeID ax_node_id) const {
 
 bool ReadAnythingAppController::IsReadAloudEnabled() const {
   return features::IsReadAnythingReadAloudEnabled();
+}
+
+bool ReadAnythingAppController::IsTsTextSegmentationEnabled() const {
+  return features::IsReadAnythingReadAloudTSTextSegmentationEnabled();
 }
 
 bool ReadAnythingAppController::IsChromeOsAsh() const {

@@ -105,8 +105,58 @@ class V8ModelImpl implements ReadAloudModelBrowserProxy {
   }
 }
 
+// Read aloud model implementation based in TS to be used when the
+// ReadAnythingReadAloudTSTextSegmentation flag is enabled.
+class TsReadModelImpl implements ReadAloudModelBrowserProxy {
+  // TODO: crbug.com/440400392- Implement all of the ReadAloudModelBrowserProxy
+  // methods.
+  getCurrentText(): ReadAloudNode[] {
+    return [];
+  }
+
+  getHighlightForCurrentSegmentIndex():
+      Array<{node: ReadAloudNode, start: number, length: number}> {
+    return [];
+  }
+
+  getCurrentTextStartIndex(): number {
+    return -1;
+  }
+
+  getCurrentTextEndIndex(): number {
+    return -1;
+  }
+
+  getAccessibleBoundary(): number {
+    return -1;
+  }
+
+  resetSpeechToBeginning(): void {
+    return;
+  }
+
+  moveSpeechForward(): void {
+    return;
+  }
+
+  moveSpeechBackwards() {
+    return;
+  }
+
+  isInitialized(): boolean {
+    return false;
+  }
+
+  init(): void {
+    return;
+  }
+}
+
 export function getReadAloudModel(): ReadAloudModelBrowserProxy {
-  return instance || (instance = new V8ModelImpl());
+  return instance ||
+      (chrome.readingMode.isTsTextSegmentationEnabled ?
+           instance = new TsReadModelImpl() :
+           instance = new V8ModelImpl());
 }
 
 export function setInstance(obj: ReadAloudModelBrowserProxy) {

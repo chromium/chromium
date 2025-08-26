@@ -250,6 +250,7 @@ class ReadAnythingAppController
   void OnCollapseSelection() const;
   bool IsGoogleDocs() const;
   bool IsReadAloudEnabled() const;
+  bool IsTsTextSegmentationEnabled() const;
   bool IsChromeOsAsh() const;
   bool IsPhraseHighlightingEnabled() const;
   void OnLetterSpacingChange(int value);
