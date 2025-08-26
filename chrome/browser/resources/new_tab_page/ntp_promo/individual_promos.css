@@ -21,7 +21,6 @@
   --ntp-promo-padding: 16px;
   --ntp-promo-text-width: 345px;
   --ntp-promo-spacing: 8px;
-  --ntp-promos-horizonal-padding: 40px;
 
   /* Display is set to block on promo loaded. */
   display: none;
@@ -35,8 +34,8 @@
   flex-wrap: wrap;
   gap: var(--ntp-promo-spacing);
   justify-content: center;
-  padding-left: var(--ntp-promos-horizonal-padding);
-  padding-right: var(--ntp-promos-horizonal-padding);
+  margin-block-start: 30px;
+  margin-inline: 40px;
 }
 
 #promo {
