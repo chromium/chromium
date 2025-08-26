@@ -6,7 +6,6 @@ package org.chromium.components.external_intents;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.app.Activity;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
@@ -768,30 +767,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                     new Runnable() {
                         @Override
                         public void run() {
-                            // Tab was destroyed before this task ran.
-                            if (mClient.getWebContents() == null) return;
-
-                            // If the launch was from an External app, Chrome came from the
-                            // background and acted as an intermediate link redirector between two
-                            // apps (crbug.com/487938).
-                            if (mClient.wasTabLaunchedFromExternalApp()) {
-                                Activity activity = assumeNonNull(mClient.getActivity());
-                                if (mClient.getOrCreateRedirectHandler()
-                                        .wasTaskStartedByExternalIntent()) {
-                                    // If Chrome was only launched to perform a redirect, don't keep
-                                    // its task in history.
-                                    activity.finishAndRemoveTask();
-                                } else {
-                                    // Takes Chrome out of the back stack.
-                                    activity.moveTaskToBack(false);
-                                }
-                            }
-                            // Closing tab must happen after we potentially call
-                            // finishAndRemoveTask, as closing tabs can lead to the Activity being
-                            // finished, which would cause Android to ignore the
-                            // finishAndRemoveTask call, leaving the task
-                            // around.
-                            mClient.closeTab();
+                            mClient.handleShouldCloseTab();
                         }
                     });
             return;

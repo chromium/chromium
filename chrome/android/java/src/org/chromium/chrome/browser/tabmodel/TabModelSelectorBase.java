@@ -18,7 +18,6 @@ import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -318,11 +317,8 @@ public abstract class TabModelSelectorBase
         }
 
         if (getModels().isEmpty()) {
-            if (ChromeFeatureList.sCctDestroyTabWhenModelIsEmpty.isEnabled()
-                    && tab.isCustomTab()
-                    && !tab.isDestroyed()) {
-                tab.destroy();
-            }
+            // Tab may be destroyed here via Tab#destroy(). It is skipped for now
+            // to examine its potential side effect on crbug.com/325558929.
             return true;
         } else {
             assert false

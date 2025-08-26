@@ -146,6 +146,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Test suite for verifying the behavior of various URL overriding actions. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY)
 public class UrlOverridingTest {
     @Rule
     public FreshCtaTransitTestRule mTabbedActivityTestRule =
@@ -2616,5 +2617,72 @@ public class UrlOverridingTest {
     @LargeTest
     public void testInitialIntentToApp_allowToLeave_prewarmed() throws Exception {
         doTestInitialIntentToApp(true, true);
+    }
+
+    @Test
+    @Feature("CustomTabFromChrome")
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY)
+    public void testInitialIntentToApp_CctFinishesAfterHandoff() throws Exception {
+        final String initialUrl = "https://example.com/path";
+        final CallbackHelper onHandedOffCallback = new CallbackHelper();
+
+        CustomTabActivity.setOnFinishCallbackForTesting(onHandedOffCallback::notifyCalled);
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        filter.addDataAuthority("example.com", null);
+        filter.addDataScheme("https");
+        mTestContext.setIntentFilterForHost("example.com", filter);
+
+        ActivityMonitor[] monitor = new ActivityMonitor[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ApplicationStatus.registerStateListenerForAllActivities(
+                            new ActivityStateListener() {
+                                @Override
+                                public void onActivityStateChange(Activity activity, int newState) {
+                                    if (activity instanceof CustomTabActivity
+                                            && newState == ActivityState.CREATED) {
+                                        monitor[0] =
+                                                InstrumentationRegistry.getInstrumentation()
+                                                        .addMonitor(
+                                                                filter,
+                                                                new Instrumentation.ActivityResult(
+                                                                        Activity.RESULT_OK, null),
+                                                                true);
+                                        ApplicationStatus.unregisterActivityStateListener(this);
+                                    }
+                                }
+                            });
+                });
+
+        Intent intent = getCustomTabFromChromeIntent(initialUrl, false);
+        intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_NAVIGATION_CAN_LEAVE_BROWSER, true);
+        Context context = ContextUtils.getApplicationContext();
+
+        CustomTabActivity activity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        CustomTabActivity.class,
+                        Stage.CREATED,
+                        () -> context.startActivity(intent));
+        mCustomTabActivityRule.setActivity(activity);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "ActivityMonitor was not set", monitor[0], Matchers.notNullValue());
+                    Criteria.checkThat(
+                            "External app was not launched", monitor[0].getHits(), Matchers.is(1));
+                },
+                10000L,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        ApplicationTestUtils.waitForActivityState(activity, Stage.DESTROYED);
+
+        Assert.assertEquals(
+                "onNavigationHandedOffToExternalApp was not called.",
+                1,
+                onHandedOffCallback.getCallCount());
     }
 }

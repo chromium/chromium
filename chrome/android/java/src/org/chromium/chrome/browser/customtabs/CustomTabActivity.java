@@ -34,6 +34,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -93,6 +94,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     private boolean mIsEnterAnimationCompleted;
     private @Nullable AuxiliarySearchController mAuxiliarySearchController;
     private CustomTabActivityTimeoutHandler mTimeoutHandler;
+    private static Runnable sOnFinishCallbackForTesting;
     private final CustomTabActivityTabProvider.Observer mTabChangeObserver =
             new CustomTabActivityTabProvider.Observer() {
                 @Override
@@ -417,6 +419,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     public void finish() {
+        if (sOnFinishCallbackForTesting != null) sOnFinishCallbackForTesting.run();
+
         RecordHistogram.recordLinearCountHistogram(
                 "CustomTabs.Omnibox.NumNavigationsPerSession",
                 mNumOmniboxNavigationEventsPerSession,
@@ -533,5 +537,11 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         super.onEnterAnimationComplete();
 
         mIsEnterAnimationCompleted = true;
+    }
+
+    @VisibleForTesting
+    public static void setOnFinishCallbackForTesting(Runnable callback) {
+        sOnFinishCallbackForTesting = callback;
+        ResettersForTesting.register(() -> sOnFinishCallbackForTesting = null);
     }
 }

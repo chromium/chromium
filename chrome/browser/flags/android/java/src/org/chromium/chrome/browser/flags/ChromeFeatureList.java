@@ -820,7 +820,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctContextualMenuItems =
             newCachedFlag(CCT_CONTEXTUAL_MENU_ITEMS, false);
     public static final CachedFlag sCctDestroyTabWhenModelIsEmpty =
-            newCachedFlag(CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY, false);
+            newCachedFlag(CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY, true);
     public static final CachedFlag sCctFixWarmup =
             newCachedFlag(
                     CCT_FIX_WARMUP, /* defaultValue= */ false, /* defaultValueInTests= */ true);
