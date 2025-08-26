@@ -14,6 +14,8 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
+#include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
@@ -97,6 +99,20 @@ void ShutdownUserPolicySigninService(Profile* profile) {
       user_policy_signin_service->Shutdown();
     }
   }
+}
+
+void UserPolicyOidcSigninService::ShutdownCloudPolicyManager() {
+  if (base::FeatureList::IsEnabled(
+          profile_management::features::kEnableOidcProfileRemoteCommands)) {
+    auto* remote_command_service =
+        enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
+            profile_);
+    if (remote_command_service) {
+      remote_command_service->Shutdown();
+    }
+  }
+
+  UserPolicySigninServiceBase::ShutdownCloudPolicyManager();
 }
 
 OidcProfileManagerObserverBridge::OidcProfileManagerObserverBridge(
@@ -316,7 +332,9 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
 void UserPolicyOidcSigninService::InitializeCloudPolicyManager(
     const AccountId& account_id,
     std::unique_ptr<CloudPolicyClient> client) {
-  if (!IsDasherlessProfile(profile_)) {
+  bool dasher_based = !IsDasherlessProfile(profile_);
+
+  if (dasher_based) {
     UserCloudPolicyManager* manager =
         static_cast<UserCloudPolicyManager*>(policy_manager());
     manager->SetSigninAccountId(account_id);
@@ -325,6 +343,18 @@ void UserPolicyOidcSigninService::InitializeCloudPolicyManager(
   }
   UserPolicySigninServiceBase::InitializeCloudPolicyManager(account_id,
                                                             std::move(client));
+  if (base::FeatureList::IsEnabled(
+          profile_management::features::kEnableOidcProfileRemoteCommands)) {
+    auto* remote_command_service =
+        enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
+            profile_);
+    if (!remote_command_service) {
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "Failed to start the remote commands service during OIDC Signin.";
+      return;
+    }
+    remote_command_service->Init();
+  }
 }
 
 std::string UserPolicyOidcSigninService::GetProfileId() {
