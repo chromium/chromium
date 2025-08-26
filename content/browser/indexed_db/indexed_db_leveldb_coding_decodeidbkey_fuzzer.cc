@@ -31,9 +31,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // New (sortable) encoding scheme.
   {
     std::string_view input(reinterpret_cast<const char*>(data), size);
-    std::string_view parsed_input(input);
-    blink::IndexedDBKey key =
-        content::indexed_db::DecodeSortableIDBKey(parsed_input);
+    blink::IndexedDBKey key = content::indexed_db::DecodeSortableIDBKey(input);
 
     // Unlike the older encoding, the input has to be exactly decodeable (rather
     // than just a prefix being decodeable).
