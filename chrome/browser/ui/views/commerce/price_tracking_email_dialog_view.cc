@@ -95,7 +95,7 @@ PriceTrackingEmailDialogView::PriceTrackingEmailDialogView(
 
   CoreAccountInfo account_info =
       IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSync);
+          signin::ConsentLevel::kSignin);
 
   auto email = base::UTF8ToUTF16(account_info.email);
 
