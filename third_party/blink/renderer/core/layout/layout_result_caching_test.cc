@@ -969,11 +969,10 @@ TEST_F(LayoutResultCachingTest, ChangeTableCellBlockSizeConstrainedness) {
   result = TestCachedLayoutResult(test3, src3, &cache_status);
   // The third child has overflow:auto and a percentage height, and its
   // intrinsic height is 0 (no children), so it matters whether the cell has a
-  // height or not. We're only going to need simplified layout, though, since no
-  // children will be affected by its height change.
-  EXPECT_EQ(cache_status, RuntimeEnabledFeatures::LayoutStretchCacheFixEnabled()
-                              ? LayoutCacheStatus::kNeedsLayout
-                              : LayoutCacheStatus::kNeedsSimplifiedLayout);
+  // height or not. We used to return simplified layout for this case because no
+  // children will be affected by the height change, but that cache logic was
+  // too fragile. See https://crrev.com/c/6629745 for details.
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
 }
 
 TEST_F(LayoutResultCachingTest, OptimisticFloatPlacementNoRelayout) {

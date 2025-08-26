@@ -280,39 +280,8 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       return LayoutCacheStatus::kNeedsLayout;
   }
 
-  const bool is_block_size_equal = block_size == fragment.BlockSize();
-
-  if (RuntimeEnabledFeatures::LayoutStretchCacheFixEnabled() &&
-      !is_block_size_equal) {
+  if (block_size != fragment.BlockSize()) {
     return LayoutCacheStatus::kNeedsLayout;
-  }
-
-  if (!is_block_size_equal) {
-    // Only block-flow supports changing the block-size for simplified layout.
-    if (!node.IsBlockFlow() || node.IsCustom()) {
-      return LayoutCacheStatus::kNeedsLayout;
-    }
-
-    // Fieldsets stretch their content to the final block-size, which might
-    // affect scrollbars.
-    if (node.IsFieldsetContainer())
-      return LayoutCacheStatus::kNeedsLayout;
-
-    if (node.IsBlockFlow() && style.AlignContentBlockCenter()) {
-      return LayoutCacheStatus::kNeedsLayout;
-    }
-
-    // If we are the document or body element in quirks mode, changing our size
-    // means that a scrollbar was added/removed. Require full layout.
-    if (node.IsQuirkyAndFillsViewport())
-      return LayoutCacheStatus::kNeedsLayout;
-
-    // If a block (within a formatting-context) changes to/from an empty-block,
-    // margins may collapse through this node, requiring full layout. We
-    // approximate this check by checking if the block-size is/was zero.
-    if (!physical_fragment.IsFormattingContextRoot() &&
-        !block_size != !fragment.BlockSize())
-      return LayoutCacheStatus::kNeedsLayout;
   }
 
   const bool has_descendant_that_depends_on_percentage_block_size =
@@ -337,19 +306,11 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   }
 
   if (has_descendant_that_depends_on_percentage_block_size) {
-    // If our initial block-size is definite, we know that if we change our
-    // block-size we'll affect any descendant that depends on the resulting
-    // percentage block-size.
-    if (!is_block_size_equal && !is_initial_block_size_indefinite)
-      return LayoutCacheStatus::kNeedsLayout;
-
-    DCHECK(is_block_size_equal || is_initial_block_size_indefinite);
-
     // At this point we know that either we have the same block-size for our
-    // fragment, or our initial block-size was indefinite.
+    // fragment.
     //
     // The |PhysicalFragment::DependsOnPercentageBlockSize| flag
-    // will returns true if we are in quirks mode, and have a descendant that
+    // will return true if we are in quirks mode, and have a descendant that
     // depends on a percentage block-size, however it will also return true if
     // the node itself depends on the %-block-size.
     //
@@ -365,73 +326,42 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     }
   }
 
-  // Table-cells with vertical alignment might shift their contents if the
-  // block-size changes.
+  // Determine if we need relayout for an alignment baseline change.
   if (new_space.IsTableCell()) {
     DCHECK(old_space.IsTableCell());
 
-    switch (ComputeContentAlignmentForTableCell(style)) {
-      case BlockContentAlignment::kStart:
-        // Do nothing special for 'top' vertical alignment.
-        break;
-      case BlockContentAlignment::kBaseline: {
-        auto new_alignment_baseline = new_space.TableCellAlignmentBaseline();
-        auto old_alignment_baseline = old_space.TableCellAlignmentBaseline();
+    if (ComputeContentAlignmentForTableCell(style) ==
+        BlockContentAlignment::kBaseline) {
+      auto new_alignment_baseline = new_space.TableCellAlignmentBaseline();
+      auto old_alignment_baseline = old_space.TableCellAlignmentBaseline();
 
-        // Do nothing if neither alignment baseline is set.
-        if (!new_alignment_baseline && !old_alignment_baseline)
-          break;
-
-        // If we only have an old alignment baseline set, we need layout, as we
-        // can't determine where the un-adjusted baseline is.
-        if (!new_alignment_baseline && old_alignment_baseline)
-          return LayoutCacheStatus::kNeedsLayout;
-
-        // We've been provided a new alignment baseline, just check that it
-        // matches the previously generated baseline.
-        if (!old_alignment_baseline) {
-          if (*new_alignment_baseline != physical_fragment.FirstBaseline())
-            return LayoutCacheStatus::kNeedsLayout;
-          break;
-        }
-
-        // If the alignment baselines differ at this stage, we need layout.
-        if (*new_alignment_baseline != *old_alignment_baseline)
-          return LayoutCacheStatus::kNeedsLayout;
-        break;
+      // Do nothing if neither alignment baseline is set.
+      if (!new_alignment_baseline && !old_alignment_baseline) {
+        return LayoutCacheStatus::kHit;
       }
-      case BlockContentAlignment::kUnsafeCenter:
-      case BlockContentAlignment::kSafeCenter:
-      case BlockContentAlignment::kUnsafeEnd:
-      case BlockContentAlignment::kSafeEnd:
-        // 'middle', and 'bottom' vertical alignment depend on the block-size.
-        if (!is_block_size_equal)
-          return LayoutCacheStatus::kNeedsLayout;
-        break;
-    }
-  } else {
-    switch (ComputeContentAlignmentForBlock(style)) {
-      case BlockContentAlignment::kStart:
-      case BlockContentAlignment::kBaseline:
-        // Do nothing special.
-        break;
-      case BlockContentAlignment::kUnsafeCenter:
-      case BlockContentAlignment::kSafeCenter:
-      case BlockContentAlignment::kUnsafeEnd:
-      case BlockContentAlignment::kSafeEnd:
-        if (!is_block_size_equal) {
-          return LayoutCacheStatus::kNeedsLayout;
-        }
-        break;
+
+      // If we only have an old alignment baseline set, we need layout, as we
+      // can't determine where the un-adjusted baseline is.
+      if (!new_alignment_baseline && old_alignment_baseline) {
+        return LayoutCacheStatus::kNeedsLayout;
+      }
+
+      // We've been provided a new alignment baseline, just check that it
+      // matches the previously generated baseline.
+      if (!old_alignment_baseline) {
+        return (*new_alignment_baseline == physical_fragment.FirstBaseline())
+                   ? LayoutCacheStatus::kHit
+                   : LayoutCacheStatus::kNeedsLayout;
+      }
+
+      // If the alignment baselines differ at this stage, we need layout.
+      if (*new_alignment_baseline != *old_alignment_baseline) {
+        return LayoutCacheStatus::kNeedsLayout;
+      }
     }
   }
 
-  // If we've reached here we know that we can potentially "stretch"/"shrink"
-  // ourselves without affecting any of our children.
-  // In that case we may be able to perform "simplified" layout.
-  DCHECK(!node.IsTable());
-  return is_block_size_equal ? LayoutCacheStatus::kHit
-                             : LayoutCacheStatus::kNeedsSimplifiedLayout;
+  return LayoutCacheStatus::kHit;
 }
 
 bool IntrinsicSizeWillChange(
