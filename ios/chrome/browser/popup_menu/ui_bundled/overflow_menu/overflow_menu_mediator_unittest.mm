@@ -87,6 +87,7 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
@@ -324,6 +325,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     if (!tab_helper) {
       ReaderModeTabHelper::CreateForWebState(
           web_state_, DistillerServiceFactory::GetForProfile(profile_.get()));
+      SnapshotSourceTabHelper::CreateForWebState(web_state_);
       tab_helper = ReaderModeTabHelper::FromWebState(web_state_);
     }
     if (active) {

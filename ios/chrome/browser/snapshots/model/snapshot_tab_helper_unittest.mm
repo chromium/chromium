@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_kind.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_util.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -98,6 +99,7 @@ class SnapshotTabHelperTest : public PlatformTest {
     // Create the SnapshotTabHelper with a fake delegate.
     delegate_ = [[TabHelperSnapshotGeneratorDelegate alloc] init];
     SnapshotTabHelper::CreateForWebState(&web_state_);
+    SnapshotSourceTabHelper::CreateForWebState(&web_state_);
     SnapshotTabHelper::FromWebState(&web_state_)->SetDelegate(delegate_);
 
     // Set custom snapshot storage.

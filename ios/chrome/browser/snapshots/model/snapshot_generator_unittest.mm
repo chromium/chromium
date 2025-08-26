@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_generator.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -49,6 +50,8 @@ class FakeWebStateWithSnapshot : public web::FakeWebState {
 class LegacySnapshotGeneratorTest : public PlatformTest {
  public:
   LegacySnapshotGeneratorTest() {
+    SnapshotSourceTabHelper::CreateForWebState(&web_state_);
+
     // Create the LegacySnapshotGenerator with a fake delegate.
     delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
     generator_ = [[LegacySnapshotGenerator alloc] initWithWebState:&web_state_];
@@ -125,6 +128,8 @@ TEST_F(LegacySnapshotGeneratorTest, GenerateWebViewSnapshotWithNTP) {
 class SnapshotGeneratorTest : public PlatformTest {
  public:
   SnapshotGeneratorTest() {
+    SnapshotSourceTabHelper::CreateForWebState(&web_state_);
+
     // Create the SnapshotGenerator with a fake delegate.
     delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
     generator_ = [[SnapshotGenerator alloc]
@@ -244,6 +249,8 @@ TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshotWithNTP) {
 class LegacySnapshotGeneratorWithOverlaysTest : public PlatformTest {
  public:
   LegacySnapshotGeneratorWithOverlaysTest() {
+    SnapshotSourceTabHelper::CreateForWebState(&web_state_);
+
     // Create the LegacySnapshotGenerator with a fake delegate. The fake
     // delegate returns an overlay.
     delegate_ = [[FakeOverlaysSnapshotGeneratorDelegate alloc] init];
@@ -300,6 +307,8 @@ TEST_F(LegacySnapshotGeneratorWithOverlaysTest, GenerateWebViewSnapshot) {
 class SnapshotGeneratorWithOverlaysTest : public PlatformTest {
  public:
   SnapshotGeneratorWithOverlaysTest() {
+    SnapshotSourceTabHelper::CreateForWebState(&web_state_);
+
     // Create the SnapshotGenerator with a fake delegate. The fake
     // delegate returns an overlay.
     delegate_ = [[FakeOverlaysSnapshotGeneratorDelegate alloc] init];

@@ -326,6 +326,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:snapshot_source",
     "//ios/chrome/browser/tab_switcher/ui_bundled",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_mode",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_toolbars_mutator",

@@ -7,6 +7,7 @@
 #import "base/task/thread_pool.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
@@ -22,6 +23,7 @@ class ChromeActivityItemThumbnailGeneratorTest : public PlatformTest {
     delegate_.view = [[UIView alloc] initWithFrame:frame];
     delegate_.view.backgroundColor = [UIColor redColor];
     SnapshotTabHelper::CreateForWebState(&fake_web_state_);
+    SnapshotSourceTabHelper::CreateForWebState(&fake_web_state_);
     SnapshotTabHelper::FromWebState(&fake_web_state_)->SetDelegate(delegate_);
   }
 

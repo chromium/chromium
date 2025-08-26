@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -29,6 +30,7 @@ class ReaderModeJavaScriptFeatureTest : public PlatformTest {
 
     ReaderModeTabHelper::CreateForWebState(
         web_state(), DistillerServiceFactory::GetForProfile(profile_.get()));
+    SnapshotSourceTabHelper::CreateForWebState(web_state());
     ukm::InitializeSourceUrlRecorderForWebState(web_state());
   }
 

@@ -28,10 +28,6 @@
   ReaderModeOptionsCoordinator* _optionsCoordinator;
 }
 
-- (UIView*)viewForSnapshot {
-  return _viewController.view;
-}
-
 #pragma mark - Public
 
 - (void)startAnimated:(BOOL)animated {

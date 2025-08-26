@@ -289,6 +289,7 @@
 #import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
 #import "ios/chrome/browser/spotlight_debugger/ui_bundled/spotlight_debugger_coordinator.h"
@@ -4064,6 +4065,15 @@ enum class ToolbarKind {
     return UIEdgeInsetsZero;
   }
 
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(webState);
+  if (readerModeTabHelper && readerModeTabHelper->GetReaderModeWebState()) {
+    // If Reader mode content is used in `webState` then no additional insets
+    // are necessary since the Reader mode view is already constrained to fit
+    // between toolbars.
+    return UIEdgeInsetsZero;
+  }
+
   LensOverlayTabHelper* lensOverlayTabHelper =
       LensOverlayTabHelper::FromWebState(webState);
   bool isLensOverlayAvailable =
@@ -4178,11 +4188,6 @@ enum class ToolbarKind {
     [overlays addObject:sadTabView];
   }
 
-  UIView* readerModeView = _readerModeCoordinator.viewForSnapshot;
-  if (readerModeView) {
-    [overlays addObject:readerModeView];
-  }
-
   BrowserContainerViewController* browserContainerViewController =
       self.browserContainerCoordinator.viewController;
   // The overlay container view controller is presenting something if it has
@@ -4236,7 +4241,9 @@ enum class ToolbarKind {
       return _NTPCoordinator.viewController.view;
     }
   }
-  return webState->GetView();
+  SnapshotSourceTabHelper* snapshotSource =
+      SnapshotSourceTabHelper::FromWebState(webState);
+  return snapshotSource->GetView();
 }
 
 #pragma mark - NewTabPageCommands

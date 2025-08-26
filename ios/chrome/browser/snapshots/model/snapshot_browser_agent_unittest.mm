@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -60,6 +61,7 @@ class SnapshotBrowserAgentTest : public PlatformTest {
   std::unique_ptr<web::WebState> CreateWebState() {
     auto web_state = std::make_unique<web::FakeWebState>();
     SnapshotTabHelper::CreateForWebState(web_state.get());
+    SnapshotSourceTabHelper::CreateForWebState(web_state.get());
     SnapshotTabHelper::FromWebState(web_state.get())->SetDelegate(delegate_);
     return web_state;
   }

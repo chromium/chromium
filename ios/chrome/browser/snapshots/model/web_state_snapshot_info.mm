@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
 
 #import "base/functional/bind.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 
 @implementation WebStateSnapshotInfo {
   base::WeakPtr<web::WebState> _webState;
@@ -22,11 +23,15 @@
 }
 
 - (void)takeSnapshot:(CGRect)rect callback:(void (^)(UIImage*))callback {
-  _webState->TakeSnapshot(rect, base::BindRepeating(callback));
+  SnapshotSourceTabHelper* snapshotSource =
+      SnapshotSourceTabHelper::FromWebState(_webState.get());
+  snapshotSource->TakeSnapshot(rect, base::BindRepeating(callback));
 }
 
 - (BOOL)canTakeSnapshot {
-  return _webState->CanTakeSnapshot();
+  SnapshotSourceTabHelper* snapshotSource =
+      SnapshotSourceTabHelper::FromWebState(_webState.get());
+  return snapshotSource->CanTakeSnapshot();
 }
 
 - (BOOL)isWebUsageEnabled {

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/ui/swift.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -36,6 +37,7 @@ std::unique_ptr<web::WebState> CreateWebState() {
   auto web_state =
       std::make_unique<web::FakeWebState>(web::WebStateID::NewUnique());
   SnapshotTabHelper::CreateForWebState(web_state.get());
+  SnapshotSourceTabHelper::CreateForWebState(web_state.get());
   return std::move(web_state);
 }
 

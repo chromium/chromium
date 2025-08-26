@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -50,6 +51,7 @@ class ShareToDataBuilderTest : public PlatformTest {
 
     // Attach SnapshotTabHelper to allow snapshot generation.
     SnapshotTabHelper::CreateForWebState(web_state_.get());
+    SnapshotSourceTabHelper::CreateForWebState(web_state_.get());
     delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
     SnapshotTabHelper::FromWebState(web_state_.get())->SetDelegate(delegate_);
     // Needed by the ShareToDataForWebState to get the tab title.

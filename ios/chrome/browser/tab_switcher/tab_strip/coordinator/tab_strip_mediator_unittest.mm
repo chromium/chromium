@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_last_tab_dragged_alert_command.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/fake_tab_strip_consumer.h"
@@ -78,6 +79,7 @@ class TabStripFakeWebStateListDelegate : public FakeWebStateListDelegate {
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override {
     SnapshotTabHelper::CreateForWebState(web_state);
+    SnapshotSourceTabHelper::CreateForWebState(web_state);
     favicon::WebFaviconDriver::CreateForWebState(
         web_state,
         ios::FaviconServiceFactory::GetForProfile(
@@ -1681,6 +1683,7 @@ TEST_F(TabStripMediatorTest, TabStripItemHasNotificationDot) {
 TEST_F(TabStripMediatorTest, FetchTabSnapshotAndFavicon) {
   auto web_state = CreateWebState();
   SnapshotTabHelper::CreateForWebState(web_state.get());
+  SnapshotSourceTabHelper::CreateForWebState(web_state.get());
   TabStripTabItem* item =
       [[TabStripTabItem alloc] initWithWebState:web_state.get()];
   __block int completion_block_called = 0;

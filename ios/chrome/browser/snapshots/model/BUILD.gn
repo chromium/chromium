@@ -29,6 +29,7 @@ source_set("model") {
     ":features",
     ":model_common",
     ":model_swift",
+    ":snapshot_source",
     "//base",
     "//build:blink_buildflags",
     "//ios/chrome/browser/sessions/model:session_constants",
@@ -64,10 +65,22 @@ source_set("model_common") {
     "web_state_snapshot_info.mm",
   ]
   deps = [
+    ":snapshot_source",
     "//base",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/web/public",
     "//ui/base",
+  ]
+}
+
+source_set("snapshot_source") {
+  sources = [
+    "snapshot_source_tab_helper.h",
+    "snapshot_source_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
   ]
 }
 
@@ -114,6 +127,7 @@ source_set("unit_tests") {
     "snapshot_generator_unittest.mm",
     "snapshot_id_wrapper_unittest.mm",
     "snapshot_lru_cache_unittest.mm",
+    "snapshot_source_tab_helper_unittest.mm",
     "snapshot_storage_unittest.mm",
     "snapshot_tab_helper_unittest.mm",
   ]
@@ -122,6 +136,7 @@ source_set("unit_tests") {
     ":model",
     ":model_common",
     ":model_swift",
+    ":snapshot_source",
     ":test_utils",
     "//base",
     "//base/test:test_support",

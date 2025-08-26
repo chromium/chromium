@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_scroll_anchor_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -56,6 +56,7 @@ std::unique_ptr<web::FakeWebState> ReaderModeTest::CreateWebState() {
   // Attach tab helpers
   ReaderModeTabHelper::CreateForWebState(
       web_state.get(), DistillerServiceFactory::GetForProfile(profile()));
+  SnapshotSourceTabHelper::CreateForWebState(web_state.get());
 
   return web_state;
 }

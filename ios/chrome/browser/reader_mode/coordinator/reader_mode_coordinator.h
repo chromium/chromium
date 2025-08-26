@@ -17,9 +17,6 @@
 @property(nonatomic, weak) id<OverscrollActionsControllerDelegate>
     overscrollDelegate;
 
-// UIView used for snapshot overlay.
-@property(nonatomic, readonly) UIView* viewForSnapshot;
-
 // Starts/stops the coordinator.
 // If `animated` is true then the UI is presented/dismissed with an animation.
 - (void)startAnimated:(BOOL)animated;

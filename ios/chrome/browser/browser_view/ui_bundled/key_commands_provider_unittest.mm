@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -1065,6 +1066,7 @@ TEST_F(KeyCommandsProviderTest, TestReadingMode) {
 
   ReaderModeTabHelper::CreateForWebState(
       web_state, DistillerServiceFactory::GetForProfile(profile_.get()));
+  SnapshotSourceTabHelper::CreateForWebState(web_state);
   ReaderModeTabHelper* tab_helper =
       ReaderModeTabHelper::FromWebState(web_state);
   EXPECT_TRUE(CanPerform(@"keyCommand_addToReadingList"));
