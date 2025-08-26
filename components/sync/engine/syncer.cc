@@ -127,16 +127,18 @@ void LogCommitResult(const SyncerError& error,
 
   base::UmaHistogramEnumeration(kCommitResponsePrefix,
                                 GetSyncerErrorValueForUma(error));
+
+  const bool success = error.type() == SyncerError::Type::kSuccess;
+  if (success) {
+    base::UmaHistogramMediumTimes(kCommitLatencyPrefix, latency);
+  }
+
   for (DataType type : request_types) {
     base::UmaHistogramEnumeration(
         base::StrCat(
             {kCommitResponsePrefix, ".", DataTypeToHistogramSuffix(type)}),
         GetSyncerErrorValueForUma(error));
-  }
-
-  if (error.type() == SyncerError::Type::kSuccess) {
-    base::UmaHistogramMediumTimes(kCommitLatencyPrefix, latency);
-    for (DataType type : request_types) {
+    if (success) {
       base::UmaHistogramMediumTimes(
           base::StrCat(
               {kCommitLatencyPrefix, ".", DataTypeToHistogramSuffix(type)}),
