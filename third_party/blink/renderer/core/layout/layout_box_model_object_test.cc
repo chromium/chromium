@@ -43,8 +43,6 @@ class LayoutBoxModelObjectTest : public RenderingTest,
 INSTANTIATE_PAINT_TEST_SUITE_P(LayoutBoxModelObjectTest);
 
 // This test doesn't need to be a parameterized test.
-// TODO(https://crbug.com/353713061): caret-shape property doesn't apply for
-// browsing only case.
 TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
@@ -64,15 +62,15 @@ TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
       writing-mode: vertical-lr;
     }
     </style>
-    <div id='target-rl' class="target"></div>
-    <div id='target-lr' class="target"></div>
+    <div contenteditable id='target-rl' class="target"></div>
+    <div contenteditable id='target-lr' class="target"></div>
 
-    <div style="writing-mode:vertical-rl;">
+    <div contenteditable style="writing-mode:vertical-rl;">
     <br>
     <span id="target-inline-rl" class="target"></span>
     </div>
 
-    <div style="writing-mode:vertical-lr;">
+    <div contenteditable style="writing-mode:vertical-lr;">
     <br>
     <span id="target-inline-lr" class="target"></span>
     </div>

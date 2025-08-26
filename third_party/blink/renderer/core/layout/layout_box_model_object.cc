@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 
 #include "cc/input/main_thread_scrolling_reason.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -858,6 +859,11 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
     height = LayoutUnit(font_data->GetFontMetrics().Height());
   LayoutUnit vertical_space = FirstLineHeight() - height;
   LayoutUnit block_start = border_padding.block_start + (vertical_space / 2);
+  // Care-shape applies to text or elements that accept text input.
+  const Node* node = GetNode();
+  if (!node || !IsEditable(*node)) {
+    caret_shape = CaretShape::kBar;
+  }
   if (caret_shape != CaretShape::kBar && font_data) [[unlikely]] {
     if (caret_shape == CaretShape::kBlock) {
       caret_width = LayoutUnit(font_data->AvgCharWidth());
