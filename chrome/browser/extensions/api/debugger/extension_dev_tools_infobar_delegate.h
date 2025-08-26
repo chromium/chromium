@@ -16,8 +16,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
-// TODO(crbug.com/405218860): Port infobars to desktop Android.
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GlobalConfirmInfoBar;
 
@@ -50,6 +49,8 @@ class ExtensionDevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetMessageText() const override;
   gfx::ElideBehavior GetMessageElideBehavior() const override;
   int GetButtons() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
+  bool Accept() override;
 
  private:
   ExtensionDevToolsInfoBarDelegate(ExtensionId extension_id,

@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
+#include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/profile_util.h"
@@ -62,7 +63,6 @@
 #include "pdf/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -404,7 +404,8 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/405218860): Port infobars to desktop Android.
+// TODO(crbug.com/405218860): Port this test to desktop Android when we have
+// better test control over windows and tabs.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   int tab_id =
       sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
@@ -528,8 +529,8 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       profile()));
   EXPECT_EQ(1u, manager1->infobars().size());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// TODO(crbug.com/405218860): Port infobars to desktop Android.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   int tab_id =
       sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
@@ -567,7 +568,6 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   EXPECT_EQ(0u, manager->infobars().size());
 }
 
-// TODO(crbug.com/405218860): Port infobars to desktop Android.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        InfoBarIsNotRemovedWhenAnotherDebuggerAttached) {
   const int tab_id1 =
@@ -649,6 +649,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   EXPECT_EQ(0u, manager->infobars().size());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 class CrossProfileDebuggerApiTest : public DebuggerApiTest {
  protected:
   Profile* other_profile() { return other_profile_; }
@@ -775,8 +776,8 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, Attach) {
         profile(), api_test_utils::FunctionMode::kIncognito));
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// TODO(crbug.com/405218860): Port infobars to desktop Android.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        InfoBarIsNotRemovedIfAttachAgainBeforeFiveSeconds) {
   int tab_id =
@@ -819,7 +820,6 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 
   EXPECT_EQ(1u, manager->infobars().size());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that policy blocked hosts supersede the `debugger`
 // permission. Regression test for crbug.com/1139156.

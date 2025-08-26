@@ -29,6 +29,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -67,8 +68,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
-#include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
-#include "chrome/browser/ui/browser.h"
 #endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -481,8 +480,6 @@ bool ExtensionDevToolsClientHost::Attach() {
     return false;
   }
 
-// TODO(crbug.com/405218860): Port infobars to desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // We allow policy-installed extensions to circumvent the normal
   // infobar warning. See crbug.com/693621.
   const bool suppress_infobar =
@@ -496,7 +493,6 @@ bool ExtensionDevToolsClientHost::Attach() {
         base::BindOnce(&ExtensionDevToolsClientHost::InfoBarDestroyed,
                        base::Unretained(this)));
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (extension_service_worker_id_) {
     ProcessManager* process_manager = ProcessManager::Get(profile_);

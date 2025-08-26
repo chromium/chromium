@@ -21,6 +21,7 @@
 #include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace extensions {
 
@@ -99,7 +100,23 @@ gfx::ElideBehavior ExtensionDevToolsInfoBarDelegate::GetMessageElideBehavior()
 }
 
 int ExtensionDevToolsInfoBarDelegate::GetButtons() const {
-  return BUTTON_CANCEL;
+  // Android does not allow infobars with a solitary "Cancel" button, because
+  // "Cancel" is considered a "secondary" button and cannot exist without a
+  // primary button. Since the primary action here is to cancel, use BUTTON_OK
+  // but label it as "Cancel" below and map Accept() to Cancel() below. This
+  // works across platforms and avoids assertion failures deep in the Android
+  // infobar code.
+  return BUTTON_OK;
+}
+
+std::u16string ExtensionDevToolsInfoBarDelegate::GetButtonLabel(
+    InfoBarButton button) const {
+  return l10n_util::GetStringUTF16(IDS_APP_CANCEL);
+}
+
+bool ExtensionDevToolsInfoBarDelegate::Accept() {
+  // See comment in GetButtons() above.
+  return Cancel();
 }
 
 ExtensionDevToolsInfoBarDelegate::ExtensionDevToolsInfoBarDelegate(
