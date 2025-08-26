@@ -225,6 +225,8 @@ blink_core_sources_layout = [
   "inline/caret_rect.h",
   "inline/empty_offset_mapping_builder.h",
   "inline/fit_text_scale.h",
+  "inline/fit_text_utils.cc",
+  "inline/fit_text_utils.h",
   "inline/fragment_item.cc",
   "inline/fragment_item.h",
   "inline/fragment_items.cc",
