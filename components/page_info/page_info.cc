@@ -1332,18 +1332,22 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid) &&
-      permission_info.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
-    // On Android, Auto-PiP does not have a prompt. Set the effective default
-    // setting based on the profile type and global default. Auto-PiP is blocked
-    // in Incognito for privacy, or if turned off globally. The global default
-    // is already in permission_info.default_setting. This logic should be
-    // removed when a prompt is implemented for parity with desktop.
-    ContentSetting default_setting =
+      permission_info.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE &&
+      delegate_->HasAutoPictureInPictureBeenRegistered()) {
+    // On Android, Auto-PiP does not have a prompt. For sites that have
+    // registered for Auto-PiP, set the effective default setting based on the
+    // profile type and global default. Auto-PiP is blocked in Incognito for
+    // privacy, or if turned off globally. The global default is already in
+    // permission_info.default_setting. This logic should be removed when a
+    // prompt is implemented for parity with desktop.
+    const ContentSetting global_default_setting =
         std::get<ContentSetting>(permission_info.default_setting);
-    permission_info.default_setting = (delegate_->IsIncognitoProfile() ||
-                                       default_setting == CONTENT_SETTING_BLOCK)
-                                          ? CONTENT_SETTING_BLOCK
-                                          : CONTENT_SETTING_ALLOW;
+    const ContentSetting effective_default_setting =
+        (delegate_->IsIncognitoProfile() ||
+         global_default_setting == CONTENT_SETTING_BLOCK)
+            ? CONTENT_SETTING_BLOCK
+            : CONTENT_SETTING_ALLOW;
+    permission_info.default_setting = effective_default_setting;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

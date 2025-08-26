@@ -269,10 +269,8 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     return page_info_.get();
   }
 
-  PageInfo* incognito_page_info() {
-    if (!incognito_page_info_.get()) {
-      // Build the incognito profile manually in order to override testing
-      // factories.
+  content::WebContents* incognito_web_contents() {
+    if (!incognito_web_contents_) {
       TestingProfile::Builder incognito_profile_builder;
       incognito_profile_builder.AddTestingFactories(GetTestingFactories());
       incognito_profile_builder.BuildIncognito(profile());
@@ -282,17 +280,22 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
               profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
               nullptr);
       CreateWebContentsUserData(incognito_web_contents_.get());
+    }
+    return incognito_web_contents_.get();
+  }
 
+  PageInfo* incognito_page_info() {
+    if (!incognito_page_info_.get()) {
       incognito_mock_ui_ = std::make_unique<NiceMock<MockPageInfoUI>>();
       incognito_mock_ui_->set_permission_info_callback_ = base::BindRepeating(
           &PageInfoTest::SetPermissionInfo, base::Unretained(this));
 
-      auto delegate = std::make_unique<ChromePageInfoDelegate>(
-          incognito_web_contents_.get());
+      auto delegate =
+          std::make_unique<ChromePageInfoDelegate>(incognito_web_contents());
       delegate->SetSecurityStateForTests(security_level_,
                                          visible_security_state_);
       incognito_page_info_ = std::make_unique<PageInfo>(
-          std::move(delegate), incognito_web_contents_.get(), url());
+          std::move(delegate), incognito_web_contents(), url());
       base::RunLoop run_loop;
       incognito_page_info_->InitializeUiState(incognito_mock_ui_.get(),
                                               run_loop.QuitClosure());
@@ -2024,9 +2027,57 @@ TEST_F(PageInfoTest, PermissionUsed30MinutesAgoStrings) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+TEST_F(PageInfoTest, AutoPictureInPicturePermissionNotShownIfNotRegistered) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kAutoPictureInPictureAndroid);
+  page_info()->PresentSitePermissionsForTesting();
+  const auto& permissions = last_permission_info_list();
+  auto it =
+      std::find_if(permissions.begin(), permissions.end(), [](const auto& p) {
+        return p.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE;
+      });
+  // If the site hasn't registered for auto-pip, and the setting is default,
+  // the permission should not be shown.
+  EXPECT_EQ(it, permissions.end());
+}
+
+TEST_F(PageInfoTest, AutoPictureInPicturePermissionShownIfPreviouslySet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kAutoPictureInPictureAndroid);
+
+  // The site is NOT registered for Auto-PiP, but the user has previously set
+  // the permission for this site.
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  content_settings->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+      CONTENT_SETTING_BLOCK);
+
+  page_info()->PresentSitePermissionsForTesting();
+  const auto& permissions = last_permission_info_list();
+  auto it =
+      std::find_if(permissions.begin(), permissions.end(), [](const auto& p) {
+        return p.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE;
+      });
+
+  // The permission should be shown because it has a non-default setting.
+  ASSERT_NE(it, permissions.end());
+  EXPECT_EQ(std::get<ContentSetting>(it->setting.value()),
+            CONTENT_SETTING_BLOCK);
+}
+
 TEST_F(PageInfoTest, AutoPictureInPicturePermissionInfoIncognito) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kAutoPictureInPictureAndroid);
+
+  AutoPictureInPictureTabHelper::CreateForWebContents(incognito_web_contents());
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(incognito_web_contents());
+  std::vector<media_session::mojom::MediaSessionAction> actions;
+  actions.push_back(
+      media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
+  tab_helper->MediaSessionActionsChanged(actions);
+
   incognito_page_info()->PresentSitePermissionsForTesting();
   const auto& permissions = last_permission_info_list();
   auto it =
@@ -2041,6 +2092,15 @@ TEST_F(PageInfoTest, AutoPictureInPicturePermissionInfoIncognito) {
 TEST_F(PageInfoTest, AutoPictureInPicturePermissionInfoRegular) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kAutoPictureInPictureAndroid);
+
+  AutoPictureInPictureTabHelper::CreateForWebContents(web_contents());
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents());
+  std::vector<media_session::mojom::MediaSessionAction> actions;
+  actions.push_back(
+      media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
+  tab_helper->MediaSessionActionsChanged(actions);
+
   page_info()->PresentSitePermissionsForTesting();
   const auto& permissions = last_permission_info_list();
   auto it =
