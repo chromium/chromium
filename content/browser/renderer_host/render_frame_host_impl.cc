@@ -240,6 +240,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/net_buildflags.h"
 #include "render_frame_host_impl.h"
@@ -11264,7 +11265,7 @@ void RenderFrameHostImpl::SubresourceResponseStarted(
                         "RenderFrameHostImpl::SubresourceResponseStarted",
                         "url", final_response_url.GetURL());
   frame_tree_->controller().ssl_manager()->DidStartResourceResponse(
-      final_response_url, cert_status);
+      final_response_url, net::IsCertStatusError(cert_status));
 }
 void RenderFrameHostImpl::ResourceLoadComplete(
     blink::mojom::ResourceLoadInfoPtr resource_load_info) {
