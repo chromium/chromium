@@ -478,7 +478,7 @@ crbug.com/420902568 [ win10 nvidia-0x2184 target-cpu-32 ] Pixel_MeetEffectsTruck
 
 # Flakily causes android pixel 6 genesh to crash.
 crbug.com/421412516 [ android android-chromium graphite-disabled passthrough angle-vulkan android-pixel-6 ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
-crbug.com/421871867 [ android android-chromium graphite-disabled passthrough angle-vulkan android-pixel-6 ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
+crbug.com/421871867 [ android-chromium android-pixel-6 android-t angle-vulkan graphite-disabled passthrough ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
 
 
 # Flaky on Mac Intel
@@ -501,7 +501,6 @@ crbug.com/415830130 [ android android-chromium ] Pixel_ViewTransitionsCapture_Tr
 crbug.com/415830130 [ android android-chromium ] Pixel_WebGLGreenTriangle_AA_Alpha_TreesInViz [ RetryOnFailure ]
 crbug.com/415830130 [ android android-chromium ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 crbug.com/415830130 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
-crbug.com/415830130 [ angle-vulkan arm fuchsia fuchsia-board-astro no-asan no-clang-coverage ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 crbug.com/415830130 [ angle-vulkan arm fuchsia fuchsia-board-sherlock no-asan no-clang-coverage ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 crbug.com/415830130 [ mac ] Pixel_RenderPasses_TreesInViz [ Failure ]
 crbug.com/415830130 [ linux ] Pixel_RenderPasses_TreesInViz [ Failure ]
