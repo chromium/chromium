@@ -8,6 +8,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +17,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/scoped_browser_locale.h"
@@ -28,6 +32,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
@@ -54,6 +59,65 @@ bool OnRequest(omnibox::AimEligibilityResponse response,
   return true;
 }
 
+// Helper class to observe IdentityManager.
+class IdentityManagerObserverHelper : public signin::IdentityManager::Observer {
+ public:
+  explicit IdentityManagerObserverHelper(
+      signin::IdentityManager* identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
+  }
+
+  // signin::IdentityManager::Observer:
+  void OnAccountsInCookieUpdated(
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const GoogleServiceAuthError& error) override {
+    if (!accounts_updated_future_.IsReady()) {
+      accounts_updated_future_.SetValue();
+    }
+  }
+
+  bool WaitForAccountsInCookieUpdated() {
+    return accounts_updated_future_.Wait();
+  }
+
+ private:
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+  base::test::TestFuture<void> accounts_updated_future_;
+};
+
+// Helper class to observe AimEligibilityService.
+class AimEligibilityServiceObserverHelper
+    : public AimEligibilityServiceObserver {
+ public:
+  explicit AimEligibilityServiceObserverHelper(AimEligibilityService* service) {
+    aim_eligibility_service_observation_.Observe(service);
+  }
+
+  ~AimEligibilityServiceObserverHelper() override = default;
+
+  // AimEligibilityServiceObserver:
+  void OnAimEligibilityChanged() override {
+    if (!eligibility_changed_future_.IsReady()) {
+      eligibility_changed_future_.SetValue();
+    }
+  }
+
+  bool WaitForEligibilityChanged() {
+    return eligibility_changed_future_.Wait();
+  }
+
+  bool IsReady() const { return eligibility_changed_future_.IsReady(); }
+
+  void Clear() { eligibility_changed_future_.Clear(); }
+
+ private:
+  base::ScopedObservation<AimEligibilityService, AimEligibilityServiceObserver>
+      aim_eligibility_service_observation_{this};
+  base::test::TestFuture<void> eligibility_changed_future_;
+};
+
 // Friend class to access private members of AimEligibilityService for testing.
 class AimEligibilityServiceFriend {
  public:
@@ -62,16 +126,18 @@ class AimEligibilityServiceFriend {
 
 class ChromeAimEligibilityServiceBrowserTest
     : public InProcessBrowserTest,
-      public AimEligibilityServiceObserver,
       public ::testing::WithParamInterface<
           std::tuple<std::string, std::string, bool, bool, bool, bool>> {
  public:
   ChromeAimEligibilityServiceBrowserTest() = default;
   ~ChromeAimEligibilityServiceBrowserTest() override = default;
 
-  // AimEligibilityServiceObserver:
-  void OnAimEligibilityChanged() override {
-    eligibility_changed_future_.SetValue();
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_adaptor_->identity_test_env();
+  }
+
+  network::TestURLLoaderFactory* test_url_loader_factory() {
+    return signin_client_with_url_loader_helper_.test_url_loader_factory();
   }
 
  protected:
@@ -125,6 +191,12 @@ class ChromeAimEligibilityServiceBrowserTest
     template_url_service->SetUserSelectedDefaultSearchProvider(
         template_url_ptr);
 
+    // Set the adaptor that supports signin::IdentityTestEnvironment.
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+
+    // Set the testing factory for AimEligibilityService.
     AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
         base::BindOnce(AimEligibilityServiceFactory::GetDefaultFactory()));
@@ -138,9 +210,28 @@ class ChromeAimEligibilityServiceBrowserTest
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    signin_client_with_url_loader_helper_.SetUp();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&ChromeAimEligibilityServiceBrowserTest::
+                                        OnWillCreateBrowserContextServices));
+  }
+
+  static void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {
+    // Set up IdentityTestEnvironment.
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ScopedBrowserLocale> scoped_browser_locale_;
-  base::test::TestFuture<void> eligibility_changed_future_;
+  ChromeSigninClientWithURLLoaderHelper signin_client_with_url_loader_helper_;
+  base::CallbackListSubscription create_services_subscription_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -173,11 +264,13 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
 
   auto* service =
       AimEligibilityServiceFactory::GetForProfile(browser()->profile());
-  service->AddObserver(this);
+  AimEligibilityServiceObserverHelper service_observer_helper(service);
 
+  // The service may make a network request on construction, if applicable.
   if (is_google_dse) {
     // Wait for the observer to be notified of potential eligibility changes.
-    EXPECT_TRUE(eligibility_changed_future_.Wait());
+    EXPECT_TRUE(service_observer_helper.WaitForEligibilityChanged());
+
     // Verify histograms were recorded.
     histogram_tester.ExpectTotalCount(
         "Omnibox.AimEligibility.ServerRequestStatus", 2);
@@ -193,6 +286,8 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
         "Omnibox.AimEligibility.ServerEligibility.is_eligible",
         is_server_eligible, 1);
   } else {
+    EXPECT_FALSE(service_observer_helper.IsReady());
+
     // Verify no histogram were recorded.
     histogram_tester.ExpectTotalCount(
         "Omnibox.AimEligibility.ServerRequestStatus", 0);
@@ -215,4 +310,24 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
   bool expected_enabled = expected_local_eligibility &&
                           (!server_eligibility_enabled || is_server_eligible);
   EXPECT_EQ(service->IsAimEligible(), expected_enabled);
+
+  service_observer_helper.Clear();
+
+  // Test changes to the accounts in the cookie jar.
+  auto* identity_manager = identity_test_env()->identity_manager();
+  IdentityManagerObserverHelper identity_observer(identity_manager);
+  signin::MakeAccountAvailable(
+      identity_manager,
+      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .Build("test@email.com"));
+  EXPECT_TRUE(identity_observer.WaitForAccountsInCookieUpdated());
+
+  if (is_google_dse) {
+    // Wait for the observer to be notified of potential eligibility changes.
+    EXPECT_TRUE(service_observer_helper.WaitForEligibilityChanged());
+  } else {
+    EXPECT_FALSE(service_observer_helper.IsReady());
+  }
 }

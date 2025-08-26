@@ -53,6 +53,7 @@ include_rules = [
   "+extensions/common/constants.h",
   "+extensions/common/extension_features.h",
   "+google_apis/gaia/gaia_constants.h",
+  "+google_apis/gaia/google_service_auth_error.h",
   "+net",
   "+services/data_decoder/public",
   "+services/metrics/public/cpp",
