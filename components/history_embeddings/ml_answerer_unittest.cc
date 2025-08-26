@@ -253,8 +253,16 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerMultipleUrls) {
   ml_answerer_->ComputeAnswer("query", context, result_future.GetCallback());
 
   AnswererResult answer_result = result_future.Take();
+
+  // session_2_.Score() returns a higher score, so we'll get the result
+  // from session_2_.ExecuteModel().
+  // model_executor_.StartSession() returns session_1_ the first time it's
+  // called, and session_2_ the second time. StartSession() is called once
+  // per item in url_passages_map, but url_passages_map has nondeterministic
+  // iteration order since it's an unordered_map. So the url could be either
+  // url_1 or url_2, depending on internal unordered_map state.
   EXPECT_EQ("Answer_2", answer_result.answer.text());
-  EXPECT_EQ("url_2", answer_result.url);
+  EXPECT_TRUE(answer_result.url == "url_1" || answer_result.url == "url_2");
 }
 
 TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerUnanswerable) {
