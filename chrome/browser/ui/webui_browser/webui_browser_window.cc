@@ -562,8 +562,7 @@ bool WebUIBrowserWindow::IsToolbarShowing() const {
 }
 
 bool WebUIBrowserWindow::IsLocationBarVisible() const {
-  NOTIMPLEMENTED();
-  return false;
+  return true;
 }
 
 SharingDialog* WebUIBrowserWindow::ShowSharingDialog(
