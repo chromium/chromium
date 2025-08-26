@@ -67,6 +67,7 @@ void SaveAndFillDialog::AddedToWidget() {
     title_view->SetMultiLine(true);
     GetBubbleFrameView()->SetTitleView(std::move(title_view));
   }
+  SetAccessibleTitle(GetWindowTitle());
 }
 
 void SaveAndFillDialog::RemovedFromWidget() {
