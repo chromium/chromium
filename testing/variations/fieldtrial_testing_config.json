@@ -22542,6 +22542,21 @@
             ]
         }
     ],
+    "ScriptBlockingDryRunIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableFingerprintingProtectionFilteriOSDryRun"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScriptBlockingIncognito": [
         {
             "platforms": [
