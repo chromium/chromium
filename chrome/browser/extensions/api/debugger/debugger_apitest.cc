@@ -649,7 +649,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   EXPECT_EQ(0u, manager->infobars().size());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
+// Android does not support multiple profiles in Chrome. User switching is
+// handled at the OS level.
 class CrossProfileDebuggerApiTest : public DebuggerApiTest {
  protected:
   Profile* other_profile() { return other_profile_; }
@@ -686,8 +688,6 @@ class CrossProfileDebuggerApiTest : public DebuggerApiTest {
   raw_ptr<Profile, DanglingUntriaged> otr_profile_ = nullptr;
 };
 
-// TODO(crbug.com/405218860): Enable on desktop Android when multiple profiles
-// are supported.
 IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
   auto wc1 = CreateTabWithProfileAndNavigate(
       other_profile(),
@@ -726,8 +726,6 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
   }
 }
 
-// TODO(crbug.com/405218860): Enable on desktop Android when multiple profiles
-// are supported.
 IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, Attach) {
   auto wc1 = CreateTabWithProfileAndNavigate(
       other_profile(),
@@ -776,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, Attach) {
         profile(), api_test_utils::FunctionMode::kIncognito));
   }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        InfoBarIsNotRemovedIfAttachAgainBeforeFiveSeconds) {
