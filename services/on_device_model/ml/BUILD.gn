@@ -79,6 +79,9 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
     if (use_blink) {
       deps += [ "//gpu/config" ]
     }
+    if (!is_fuchsia) {
+      deps += [ "//services/on_device_model/safety:bert_safety_model" ]
+    }
     public_deps = [
       ":api",
       ":ml_holder_no_internal",

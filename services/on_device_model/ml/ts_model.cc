@@ -25,6 +25,10 @@
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "services/on_device_model/safety/safety_util.h"
 
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "services/on_device_model/safety/bert_safety_model.h"
+#endif
+
 namespace ml {
 
 namespace mojom = ::on_device_model::mojom;
@@ -184,10 +188,28 @@ base::SequenceBound<TsHolder> TsHolder::Create(const ChromeML& chrome_ml) {
 void TsHolder::Reset(mojom::TextSafetyModelParamsPtr params,
                      mojo::PendingReceiver<mojom::TextSafetyModel> model) {
   model_.Clear();
+
+#if !BUILDFLAG(IS_FUCHSIA)
+  if (params->safety_assets->which() ==
+      mojom::SafetyModelAssets::Tag::kTsAssets) {
+    auto impl = TsModel::Create(*chrome_ml_, std::move(params));
+    if (impl) {
+      model_.Add(std::move(impl), std::move(model));
+    }
+  } else {
+    auto impl = on_device_model::BertSafetyModel::Create(std::move(params));
+    if (impl) {
+      model_.Add(std::move(impl), std::move(model));
+    }
+  }
+#else
+  CHECK(params->safety_assets->which() ==
+        mojom::SafetyModelAssets::Tag::kTsAssets);
   auto impl = TsModel::Create(*chrome_ml_, std::move(params));
   if (impl) {
     model_.Add(std::move(impl), std::move(model));
   }
+#endif
 }
 
 }  // namespace ml

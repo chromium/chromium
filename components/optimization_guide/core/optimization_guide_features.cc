@@ -615,6 +615,12 @@ bool ShouldUseTextSafetyClassifierModel() {
   return base::FeatureList::IsEnabled(kTextSafetyClassifier);
 }
 
+bool ShouldUseGeneralizedSafetyModel() {
+  static const base::FeatureParam<bool> kUseGeneralizedSafetyModel{
+      &kTextSafetyClassifier, "use_generalized_safety_model", false};
+  return kUseGeneralizedSafetyModel.Get();
+}
+
 double GetOnDeviceModelLanguageDetectionMinimumReliability() {
   static const base::FeatureParam<double>
       kOnDeviceModelLanguageDetectionMinimumReliability{

@@ -22,6 +22,7 @@ component("cpp") {
     ":types",
     "//base",
     "//components/optimization_guide/core:features",
+    "//components/optimization_guide/proto:optimization_guide_proto_gen",
     "//services/on_device_model/public/mojom",
   ]
   defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]

@@ -39,7 +39,13 @@ class ScopedTextSafetyModelMetadataValidityLogger {
       TextSafetyModelMetadataValidity::kUnknown;
 };
 
-bool HasRequiredSafetyFiles(const ModelInfo& model_info) {
+bool HasRequiredSafetyFiles(SafetyModelInfo::SafetyModelType model_type,
+                            const ModelInfo& model_info) {
+  if (model_type == SafetyModelInfo::SafetyModelType::kGeneralizedSafetyModel) {
+    // Generalized safety model does not require any additional file.
+    return true;
+  }
+
   return model_info.GetAdditionalFileWithBaseName(kTsDataFile) &&
          model_info.GetAdditionalFileWithBaseName(kTsSpModelFile);
 }
@@ -49,7 +55,8 @@ bool HasRequiredSafetyFiles(const ModelInfo& model_info) {
 std::unique_ptr<SafetyModelInfo> SafetyModelInfo::Load(
     SafetyModelType model_type,
     base::optional_ref<const ModelInfo> opt_model_info) {
-  if (!opt_model_info.has_value() || !HasRequiredSafetyFiles(*opt_model_info)) {
+  if (!opt_model_info.has_value() ||
+      !HasRequiredSafetyFiles(model_type, *opt_model_info)) {
     return nullptr;
   }
   const ModelInfo& model_info = *opt_model_info;
@@ -99,10 +106,17 @@ SafetyModelInfo::SafetyModelType SafetyModelInfo::GetModelType() const {
 }
 
 base::FilePath SafetyModelInfo::GetDataPath() const {
-  return *model_info_.GetAdditionalFileWithBaseName(kTsDataFile);
+  if (model_type_ == SafetyModelType::kTextSafetyModel) {
+    return *model_info_.GetAdditionalFileWithBaseName(kTsDataFile);
+  } else {
+    return model_info_.GetModelFilePath();
+  }
 }
 
 base::FilePath SafetyModelInfo::GetSpModelPath() const {
+  if (model_type_ == SafetyModelType::kGeneralizedSafetyModel) {
+    return base::FilePath();
+  }
   return *model_info_.GetAdditionalFileWithBaseName(kTsSpModelFile);
 }
 

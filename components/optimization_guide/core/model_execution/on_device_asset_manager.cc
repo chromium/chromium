@@ -9,6 +9,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
 
@@ -38,6 +39,19 @@ GetRequiredModelAdaptationLoaders(
                 on_device_model_service_controller, feature)));
   }
   return loaders;
+}
+proto::OptimizationTarget GetOptimizationTargetForSafetyModel() {
+  return features::ShouldUseGeneralizedSafetyModel()
+             ? proto::OptimizationTarget::OPTIMIZATION_TARGET_GENERALIZED_SAFETY
+             : proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY;
+}
+
+SafetyModelInfo::SafetyModelType GetSafetyModelTypeFromOptimizationTarget(
+    proto::OptimizationTarget target) {
+  return target == proto::OptimizationTarget::
+                       OPTIMIZATION_TARGET_GENERALIZED_SAFETY
+             ? SafetyModelInfo::SafetyModelType::kGeneralizedSafetyModel
+             : SafetyModelInfo::SafetyModelType::kTextSafetyModel;
 }
 
 }  // namespace
@@ -73,13 +87,14 @@ OnDeviceAssetManager::OnDeviceAssetManager(
     }
   }
 }
+
 OnDeviceAssetManager::~OnDeviceAssetManager() {
   if (on_device_component_state_manager_) {
     on_device_component_state_manager_->RemoveObserver(this);
   }
   if (did_register_for_supplementary_on_device_models_) {
     model_provider_->RemoveObserverForOptimizationTargetModel(
-        proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY, this);
+        GetOptimizationTargetForSafetyModel(), this);
     model_provider_->RemoveObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
         this);
@@ -95,7 +110,7 @@ void OnDeviceAssetManager::RegisterTextSafetyAndLanguageModels() {
   if (!did_register_for_supplementary_on_device_models_) {
     did_register_for_supplementary_on_device_models_ = true;
     model_provider_->AddObserverForOptimizationTargetModel(
-        proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
+        GetOptimizationTargetForSafetyModel(),
         /*model_metadata=*/std::nullopt, this);
     model_provider_->AddObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
@@ -107,11 +122,13 @@ void OnDeviceAssetManager::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
     base::optional_ref<const ModelInfo> model_info) {
   switch (optimization_target) {
+    case proto::OPTIMIZATION_TARGET_GENERALIZED_SAFETY:
     case proto::OPTIMIZATION_TARGET_TEXT_SAFETY:
       if (on_device_model_service_controller_) {
         std::unique_ptr<SafetyModelInfo> safety_model_info =
             SafetyModelInfo::Load(
-                SafetyModelInfo::SafetyModelType::kTextSafetyModel, model_info);
+                GetSafetyModelTypeFromOptimizationTarget(optimization_target),
+                model_info);
 
         if (safety_model_info) {
           on_device_model_service_controller_->MaybeUpdateSafetyModel(

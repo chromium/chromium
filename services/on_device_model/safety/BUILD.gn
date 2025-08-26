@@ -29,14 +29,14 @@ if (!is_fuchsia) {
       ":safety_util",
       "//base",
       "//components/translate/core/language_detection",
-      "//third_party/tflite",
-      "//third_party/tflite_support",
-      "//third_party/tflite_support:tflite_support_proto",
     ]
 
     public_deps = [
       "//mojo/public/cpp/bindings",
       "//services/on_device_model/public/mojom",
+      "//third_party/tflite",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
     ]
   }
 }
