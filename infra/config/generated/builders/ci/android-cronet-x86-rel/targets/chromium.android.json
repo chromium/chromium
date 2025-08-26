@@ -22,6 +22,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//components/cronet/android:cronet_sizes/",
+        "module_scheme": "single",
         "name": "cronet_sizes",
         "resultdb": {
           "enable": true,
@@ -46,6 +47,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//components/cronet/android:resource_sizes_cronet_sample_apk/",
+        "module_scheme": "single",
         "name": "resource_sizes_cronet_sample_apk",
         "resultdb": {
           "enable": true,

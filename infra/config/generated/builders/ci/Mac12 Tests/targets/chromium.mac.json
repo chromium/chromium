@@ -1574,6 +1574,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//content/shell:content_shell_crash_test/",
+        "module_scheme": "single",
         "name": "content_shell_crash_test",
         "resultdb": {
           "enable": true,
@@ -1595,6 +1596,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/flatbuffers:flatbuffers_unittests/",
+        "module_scheme": "single",
         "name": "flatbuffers_unittests",
         "resultdb": {
           "enable": true,

@@ -754,6 +754,7 @@ targets.binaries.script(
         enable = True,
         result_format = "single",
     ),
+    module_scheme = "single",
 )
 
 targets.binaries.console_test_launcher(
@@ -796,6 +797,7 @@ targets.binaries.generated_script(
         result_format = "single",
         result_file = "${ISOLATED_OUTDIR}/sizes/test_results.json",
     ),
+    module_scheme = "single",
 )
 
 targets.binaries.console_test_launcher(
@@ -1065,6 +1067,7 @@ targets.binaries.script(
         enable = True,
         result_format = "single",
     ),
+    module_scheme = "single",
 )
 
 targets.binaries.script(
@@ -1869,6 +1872,7 @@ targets.binaries.generated_script(
         enable = True,
         result_format = "single",
     ),
+    module_scheme = "single",
 )
 
 targets.binaries.console_test_launcher(
@@ -2292,6 +2296,7 @@ targets.binaries.generated_script(
         enable = True,
         result_format = "single",
     ),
+    module_scheme = "single",
 )
 
 targets.binaries.windowed_test_launcher(
