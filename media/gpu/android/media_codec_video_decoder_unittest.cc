@@ -169,9 +169,11 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
     ON_CALL(*video_frame_factory_, Initialize(ExpectedOverlayMode(), _))
         .WillByDefault(RunCallback<1>(texture_owner));
 
+    bool is_surface_control_enabled = false;
     auto* mcvd = new MediaCodecVideoDecoder(
-        gpu_preferences_, gpu_feature_info_, std::make_unique<NullMediaLog>(),
-        device_info_.get(), codec_allocator_.get(), std::move(surface_chooser),
+        gpu_preferences_, is_surface_control_enabled,
+        std::make_unique<NullMediaLog>(), device_info_.get(),
+        codec_allocator_.get(), std::move(surface_chooser),
         base::BindRepeating(&CreateAndroidOverlayCb),
         base::BindRepeating(&MediaCodecVideoDecoderTest::RequestOverlayInfoCb,
                             base::Unretained(this)),
@@ -319,7 +321,6 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   ProvideOverlayInfoCB provide_overlay_info_cb_;
   bool restart_for_transitions_;
   gpu::GpuPreferences gpu_preferences_;
-  gpu::GpuFeatureInfo gpu_feature_info_;
   scoped_refptr<VideoFrame> most_recent_frame_;
 
   // This is not an actual media crypto object.

@@ -738,6 +738,7 @@ void GLDisplayEGL::InitializeCommon(bool for_testing) {
   // reported. TODO(crbug.com/40132708): Once this is fixed at the
   // Android level, update the heuristic to trust the reported extension from
   // that version onward.
+  // LINT.IfChange(AndroidSurfaceControlCondition)
   egl_android_native_fence_sync_supported_ =
       ext->b_EGL_ANDROID_native_fence_sync;
 #if BUILDFLAG(IS_ANDROID)
@@ -756,6 +757,7 @@ void GLDisplayEGL::InitializeCommon(bool for_testing) {
           switches::kDisableAndroidNativeFenceSyncForTesting)) {
     egl_android_native_fence_sync_supported_ = false;
   }
+  // LINT.ThenChange(//gpu/config/gpu_finch_features.cc:AndroidSurfaceControlCondition)
 #endif  // BUILDFLAG(IS_ANDROID)
 
   if (!for_testing) {

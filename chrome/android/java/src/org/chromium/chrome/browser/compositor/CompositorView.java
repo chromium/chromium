@@ -314,6 +314,8 @@ public class CompositorView extends FrameLayout
         mNativeCompositorView =
                 CompositorViewJni.get().init(this, windowAndroid, tabContentManager);
 
+        mIsSurfaceControlEnabled = CompositorViewJni.get().isSurfaceControlEnabled();
+
         // Since SurfaceFlinger doesn't need the eOpaque flag to optimize out alpha blending during
         // composition if the buffer has no alpha channel, we can avoid using the extra background
         // surface (and the memory it requires) in the low memory case.  The output buffer will
@@ -407,7 +409,7 @@ public class CompositorView extends FrameLayout
     }
 
     private boolean canUseSurfaceControl() {
-        if (mSelectionHandlesActive || mPreferRgb565ForDisplay) {
+        if (mSelectionHandlesActive || mPreferRgb565ForDisplay || !mIsSurfaceControlEnabled) {
             return false;
         }
         boolean xrUsesSurfaceControl =
@@ -684,19 +686,6 @@ public class CompositorView extends FrameLayout
         updateNeedsDidSwapBuffersCallback();
     }
 
-    @CalledByNative
-    private void notifyWillUseSurfaceControl() {
-        mIsSurfaceControlEnabled = true;
-
-        // mIsSurfaceControlEnabled can change the output of `getSurfacePixelFormat`. Re-request
-        // the current surface format to keep it up-to-date.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UPDATE_COMPOSTIROR_FOR_SURFACE_CONTROL)
-                && mCompositorSurfaceManager != null
-                && mCompositorSurfaceManager.getFormatOfOwnedSurface() != getSurfacePixelFormat()) {
-            mCompositorSurfaceManager.requestSurface(getSurfacePixelFormat());
-        }
-    }
-
     /**
      * Converts the layout into compositor layers. This is to be called on every frame the layout is
      * changing.
@@ -796,6 +785,8 @@ public class CompositorView extends FrameLayout
                 CompositorView self,
                 WindowAndroid windowAndroid,
                 TabContentManager tabContentManager);
+
+        boolean isSurfaceControlEnabled();
 
         boolean preferRgb565ForDisplay();
 

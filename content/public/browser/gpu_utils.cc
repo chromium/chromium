@@ -48,14 +48,6 @@ bool GetUintFromSwitch(const base::CommandLine* command_line,
 
 namespace content {
 
-bool ShouldEnableAndroidSurfaceControl(const base::CommandLine& cmd_line) {
-#if !BUILDFLAG(IS_ANDROID)
-  return false;
-#else
-  return features::IsAndroidSurfaceControlEnabled();
-#endif
-}
-
 const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   DCHECK(base::CommandLine::InitializedForCurrentProcess());
   const base::CommandLine* command_line =
@@ -96,9 +88,6 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 
   gpu_preferences.enable_gpu_benchmarking_extension =
       command_line->HasSwitch(switches::kEnableGpuBenchmarking);
-
-  gpu_preferences.enable_android_surface_control =
-      ShouldEnableAndroidSurfaceControl(*command_line);
 
   gpu_preferences.enable_native_gpu_memory_buffers =
       command_line->HasSwitch(switches::kEnableNativeGpuMemoryBuffers);

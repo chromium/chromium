@@ -70,8 +70,10 @@ class GpuMojoMediaClientAndroid final : public GpuMojoMediaClient {
     auto frame_info_helper = FrameInfoHelper::Create(
         gpu_task_runner_, traits.get_command_buffer_stub_cb, ref_counted_lock);
 
+    bool is_surface_control_enabled =
+        features::IsAndroidSurfaceControlEnabled();
     return MediaCodecVideoDecoder::Create(
-        gpu_preferences_, gpu_feature_info_, traits.media_log->Clone(),
+        gpu_preferences_, is_surface_control_enabled, traits.media_log->Clone(),
         DeviceInfo::GetInstance(),
         CodecAllocator::GetInstance(gpu_task_runner_),
         std::make_unique<AndroidVideoSurfaceChooserImpl>(

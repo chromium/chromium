@@ -1332,8 +1332,10 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
   // non-WebGLImageChromium for OffscreenCanvas.
   // See detailed discussion in crbug.com/649668.
   DrawingBuffer::ChromiumImageUsage chromium_image_usage =
-      Host()->IsOffscreenCanvas() ? DrawingBuffer::kDisallowChromiumImage
-                                  : DrawingBuffer::kAllowChromiumImage;
+      SharedGpuContext::MaySupportImageChromium() &&
+              !Host()->IsOffscreenCanvas()
+          ? DrawingBuffer::kAllowChromiumImage
+          : DrawingBuffer::kDisallowChromiumImage;
 
   bool using_swap_chain = context_provider->SharedImageInterface()
                               ->GetCapabilities()
