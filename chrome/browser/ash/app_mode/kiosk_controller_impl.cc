@@ -231,7 +231,7 @@ void KioskControllerImpl::StartSession(const KioskAppId& app_id,
       std::make_unique<chromeos::KioskAppLevelLogsManagerWrapper>(app_id);
 
   launch_controller_ = std::make_unique<KioskLaunchController>(
-      host,
+      &local_state_.get(), host,
       /*app_launched_callback=*/
       base::BindOnce(&KioskControllerImpl::OnAppLaunched,
                      base::Unretained(this)),
@@ -257,8 +257,8 @@ void KioskControllerImpl::StartSessionAfterCrash(const KioskAppId& app,
   kiosk_log_manager_wrapper_ =
       std::make_unique<chromeos::KioskAppLevelLogsManagerWrapper>(profile, app);
 
-  crash_recovery_launcher_ =
-      std::make_unique<CrashRecoveryLauncher>(CHECK_DEREF(profile), app);
+  crash_recovery_launcher_ = std::make_unique<CrashRecoveryLauncher>(
+      &local_state_.get(), CHECK_DEREF(profile), app);
   crash_recovery_launcher_->Start(
       base::BindOnce(&KioskControllerImpl::OnLaunchCompleteAfterCrash,
                      // Safe since `this` owns the `crash_recovery_launcher_`.

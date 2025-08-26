@@ -7,6 +7,8 @@
 
 #include <string>
 
+class PrefService;
+
 namespace ash {
 
 extern const char kKioskLaunchErrorHistogram[];
@@ -51,7 +53,7 @@ class KioskAppLaunchError {
 
   // Saves a launch error. The error is used on the next Chrome run to report
   // metrics and display a message to the user.
-  static void Save(Error error);
+  static void Save(PrefService& local_state, Error error);
 
   // Saves a cryptohome auth error. The error is used for metrics report on the
   // next Chrome run.

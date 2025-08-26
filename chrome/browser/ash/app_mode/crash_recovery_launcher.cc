@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/notreached.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_launcher.h"
@@ -46,9 +47,12 @@ std::unique_ptr<KioskAppLauncher> CreateAppLauncher(
 }
 }  // namespace
 
-CrashRecoveryLauncher::CrashRecoveryLauncher(Profile& profile,
+CrashRecoveryLauncher::CrashRecoveryLauncher(PrefService* local_state,
+                                             Profile& profile,
                                              const KioskAppId& kiosk_app_id)
-    : kiosk_app_id_(kiosk_app_id), profile_(profile) {
+    : local_state_(CHECK_DEREF(local_state)),
+      kiosk_app_id_(kiosk_app_id),
+      profile_(profile) {
   app_launcher_ =
       CreateAppLauncher(profile, kiosk_app_id, /*network_delegate=*/this);
   observation_.Observe(app_launcher_.get());
@@ -96,7 +100,7 @@ void CrashRecoveryLauncher::OnAppWindowCreated(
 void CrashRecoveryLauncher::OnLaunchFailed(KioskAppLaunchError::Error error) {
   SYSLOG(WARNING) << "Crash recovery flow failed with error "
                   << static_cast<int>(error);
-  KioskAppLaunchError::Save(error);
+  KioskAppLaunchError::Save(local_state_.get(), error);
   InvokeDoneCallback(false, std::nullopt);
 }
 

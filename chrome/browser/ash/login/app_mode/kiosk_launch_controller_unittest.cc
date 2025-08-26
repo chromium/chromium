@@ -207,6 +207,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
         std::make_unique<FakeAcceleratorController>();
     accelerator_controller_ = fake_accelerator_controller.get();
     controller_ = std::make_unique<KioskLaunchController>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         /*host=*/nullptr, &screen_, FakeLoadProfileCallback(),
         /*app_launched_callback=*/app_launched_future_.GetCallback(),
         /*done_callback=*/launch_done_future_.GetCallback(),

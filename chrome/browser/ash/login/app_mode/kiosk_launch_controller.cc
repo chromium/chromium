@@ -52,6 +52,7 @@
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -330,11 +331,13 @@ class KioskLaunchController::ScopedAcceleratorDisabler {
 };
 
 KioskLaunchController::KioskLaunchController(
+    PrefService* local_state,
     LoginDisplayHost* host,
     AppLaunchedCallback app_launched_callback,
     AppLaunchSplashScreen* splash_screen,
     LaunchCompleteCallback done_callback)
     : KioskLaunchController(
+          local_state,
           host,
           splash_screen,
           /*profile_loader=*/base::BindOnce(&LoadProfile),
@@ -347,6 +350,7 @@ KioskLaunchController::KioskLaunchController(
           std::make_unique<DefaultAcceleratorController>()) {}
 
 KioskLaunchController::KioskLaunchController(
+    PrefService* local_state,
     LoginDisplayHost* host,
     AppLaunchSplashScreen* splash_screen,
     LoadProfileCallback profile_loader,
@@ -357,7 +361,8 @@ KioskLaunchController::KioskLaunchController(
     KioskAppLauncherFactory app_launcher_factory,
     std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor,
     std::unique_ptr<AcceleratorController> accelerator_controller)
-    : host_(host),
+    : local_state_(CHECK_DEREF(local_state)),
+      host_(host),
       splash_screen_(splash_screen),
       app_launcher_factory_(std::move(app_launcher_factory)),
       network_ui_controller_(std::make_unique<NetworkUiController>(
@@ -615,7 +620,7 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
               : AppLaunchSplashScreenView::AppLaunchState::
                     kIsolatedAppNotAllowed);
       splash_screen_->HideThrobber();
-      KioskAppLaunchError::Save(error);
+      KioskAppLaunchError::Save(local_state_.get(), error);
       return;
     case Error::kHasPendingLaunch:
     case Error::kUnableToMount:
@@ -638,7 +643,7 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
       }
 
       // Save the error to prevent re-launch and show the error-toast.
-      KioskAppLaunchError::Save(error);
+      KioskAppLaunchError::Save(local_state_.get(), error);
       std::move(attempt_logout_).Run();
       break;
   }

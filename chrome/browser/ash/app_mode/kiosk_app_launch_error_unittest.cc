@@ -98,7 +98,8 @@ TEST_F(KioskAppLaunchErrorTest, GetErrorMessage) {
 TEST_F(KioskAppLaunchErrorTest, SaveError) {
   // No launch error is stored before it is saved.
   EXPECT_FALSE(GetKioskDictionary().contains(kKeyLaunchError));
-  KioskAppLaunchError::Save(KioskAppLaunchError::Error::kUserCancel);
+  KioskAppLaunchError::Save(*TestingBrowserProcess::GetGlobal()->local_state(),
+                            KioskAppLaunchError::Error::kUserCancel);
 
   // The launch error can be retrieved.
   std::optional<int> out_error = GetKioskDictionary().FindInt(kKeyLaunchError);

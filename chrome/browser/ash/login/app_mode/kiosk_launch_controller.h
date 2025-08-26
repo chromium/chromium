@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -28,6 +29,8 @@
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
+
+class PrefService;
 
 namespace app_mode {
 class ForceInstallObserver;
@@ -115,11 +118,16 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   using LaunchCompleteCallback =
       base::OnceCallback<void(KioskAppLaunchError::Error error)>;
 
-  KioskLaunchController(LoginDisplayHost* host,
+  // `local_state` must be non-null, and must outlive `this`.
+  KioskLaunchController(PrefService* local_state,
+                        LoginDisplayHost* host,
                         AppLaunchedCallback app_launched_callback,
                         AppLaunchSplashScreen* splash_screen,
                         LaunchCompleteCallback done_callback);
+
+  // `local_state` must be non-null, and must outlive `this`.
   KioskLaunchController(
+      PrefService* local_state,
       LoginDisplayHost* host,
       AppLaunchSplashScreen* splash_screen,
       kiosk::LoadProfileCallback profile_loader,
@@ -229,6 +237,8 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
 
   const KioskApp& kiosk_app() const;
   const KioskAppId& kiosk_app_id() const;
+
+  const raw_ref<PrefService> local_state_;
 
   bool auto_launch_ = false;  // Whether current app is being auto-launched.
 
