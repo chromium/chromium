@@ -679,6 +679,11 @@ def main():
         '--build-crubit',
         action='store_true',
         help='After building rust, also build crubit using build_crubit.py')
+    parser.add_argument(
+        '--gnrt-stdlib',
+        action='store_true',
+        help='After building rust, also generate stdlib GN rules using '
+        'gnrt_stdlib.py')
     if sys.platform == 'win32':
         parser.add_argument('--sh', help='path to the sh.exe to use')
     args, rest = parser.parse_known_args()
@@ -890,6 +895,14 @@ def main():
             # depend on the OSS Crubit build staying green with latest Rust and
             # Clang.
             TeeCmd(build_cmd, log, fail_hard=False)
+
+        if args.gnrt_stdlib:
+            build_cmd = [
+                sys.executable,
+                os.path.join(THIS_DIR, 'gnrt_stdlib.py'), '--skip-prep'
+            ]
+            TeeCmd(build_cmd, log)
+
 
     return 0
 

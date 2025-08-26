@@ -4225,7 +4225,8 @@ hooks = [
                '--llvm-force-head-revision',
                '--build-bindgen',
                '--build-vet',
-               '--build-crubit'],
+               '--build-crubit',
+               '--gnrt-stdlib'],
   },
   {
     # Update LASTCHANGE.
