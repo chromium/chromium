@@ -68,9 +68,6 @@
           static_cast<TabResumptionItem*>(config);
       return [self tabResumptionViewForConfig:tabResumptionItem];
     }
-    case ContentSuggestionsModuleType::kParcelTracking:
-      // TODO(crbug.com/391002352): Remove kParcelTracking entirely.
-      NOTREACHED();
     case ContentSuggestionsModuleType::kSafetyCheck: {
       SafetyCheckState* safetyCheckConfig =
           static_cast<SafetyCheckState*>(config);

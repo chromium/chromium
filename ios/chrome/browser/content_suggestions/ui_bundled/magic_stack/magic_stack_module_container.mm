@@ -418,9 +418,6 @@ const CGFloat kSeparatorHeight = 0.5;
       return content_suggestions::SetUpListTitleString();
     case ContentSuggestionsModuleType::kSafetyCheck:
       return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE);
-    case ContentSuggestionsModuleType::kParcelTracking:
-      return l10n_util::GetNSString(
-          IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE);
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
     case ContentSuggestionsModuleType::kSendTabPromo:
       // Send Tab and Price Tracking Promo design do not use title.

@@ -35,7 +35,6 @@ BOOL AllowsLongPressForModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
-    case ContentSuggestionsModuleType::kParcelTracking:
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
     case ContentSuggestionsModuleType::kSendTabPromo:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
@@ -81,8 +80,6 @@ NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type,
     case ContentSuggestionsModuleType::kSetUpListNotifications:
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_TITLE);
-    case ContentSuggestionsModuleType::kParcelTracking:
-      return l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
     case ContentSuggestionsModuleType::kSendTabPromo:
 
@@ -137,11 +134,6 @@ NSString* GetContextMenuHideDescriptionForType(
           IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION,
           l10n_util::GetStringUTF16(
               content_suggestions::SetUpListTitleStringID()));
-    case ContentSuggestionsModuleType::kParcelTracking:
-      return l10n_util::GetNSStringF(
-          IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_DESCRIPTION,
-          base::SysNSStringToUTF16(l10n_util::GetNSString(
-              IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)));
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_HIDE_CARD);

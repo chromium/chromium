@@ -870,9 +870,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
           [magicStackOrder addObject:_shopCardMediator.shopCardItemToShow];
         }
         break;
-      case ContentSuggestionsModuleType::kParcelTracking:
-        // TODO(crbug.com/391002352): Remove kParcelTracking entirely.
-        break;
       default:
         // These module types should not have been added by the logic
         // receiving the order list from Segmentation.

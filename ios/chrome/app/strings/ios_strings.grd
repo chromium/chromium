@@ -1574,9 +1574,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_UNDELIVERABLE_STATUS" desc="The Parcel Tracking module package delivery undeliverable status description on the Home surface [Length: 10em]">
         Your package can't be delivered
       </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE" desc="The Parcel Tracking module title on the Home surface [Length: 10em]">
-        Package tracking
-      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW" desc="Label indicating user can allow price tracking notifications">
           Allow price tracking notifications…
       </message>
@@ -4260,12 +4257,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_PAGE_LOADED_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement when a page has loaded. [Length: unlimited] [iOS only]">
         Webpage loaded
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_DESCRIPTION" desc="Descripiton for the long-press context menu of the parcel tracking module.">
-        Hide "<ph name="Module_Name"><ex>Package Tracking</ex>$1</ph>"
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE" desc="Title for the long-press context menu of the parcel tracking module.">
-          This card helps you keep track of your packages and give you important delivery updates.
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_ALREADY_TRACKED_TITLE" desc="Text for the title string of the infobar that is displayed when a package is already being tracked.">
         Package already tracked

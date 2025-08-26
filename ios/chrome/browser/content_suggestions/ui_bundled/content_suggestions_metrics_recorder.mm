@@ -104,7 +104,6 @@ const float kMaxModuleEngagementIndex = 50;
           kMagicStackModuleEngagementShopCardIndexHistogram, index,
           kMaxModuleEngagementIndex);
       break;
-    case ContentSuggestionsModuleType::kParcelTracking:
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kInvalid:
       break;

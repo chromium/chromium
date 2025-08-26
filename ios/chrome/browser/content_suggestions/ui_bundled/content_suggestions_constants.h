@@ -27,7 +27,7 @@ enum class ContentSuggestionsModuleType {
   // Removed: kSafetyCheckMultiRow = 8,
   // Removed: kSafetyCheckMultiRowOverflow = 9,
   kTabResumption = 10,
-  kParcelTracking = 11,
+  // Removed: kParcelTracking = 11,
   // Removed: kParcelTrackingSeeMore = 12,
   kSetUpListNotifications = 13,
   kPlaceholder = 14,

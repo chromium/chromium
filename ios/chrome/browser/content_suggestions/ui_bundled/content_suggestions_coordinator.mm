@@ -792,9 +792,6 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       [self showSetUpListSeeMoreMenuExpanded:NO];
       break;
-    case ContentSuggestionsModuleType::kParcelTracking:
-      // TODO(crbug.com/391002352): Remove kParcelTracking entirely.
-      break;
     case ContentSuggestionsModuleType::kTabResumption:
       [self showMagicStackRecentTabs];
       break;
@@ -827,9 +824,6 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kSetUpListNotifications:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       [_setUpListMediator disableModule];
-      break;
-    case ContentSuggestionsModuleType::kParcelTracking:
-      // TODO(crbug.com/391002352): Remove kParcelTracking entirely.
       break;
     case ContentSuggestionsModuleType::kPriceTrackingPromo: {
       base::RecordAction(base::UserMetricsAction(

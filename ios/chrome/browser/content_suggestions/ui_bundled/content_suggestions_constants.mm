@@ -57,7 +57,6 @@ bool IsSetUpListModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kInvalid:
     case ContentSuggestionsModuleType::kTabResumption:
     case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kParcelTracking:
     case ContentSuggestionsModuleType::kMostVisited:
     case ContentSuggestionsModuleType::kShortcuts:
     case ContentSuggestionsModuleType::kPlaceholder:
@@ -84,7 +83,6 @@ bool IsTipsModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kInvalid:
     case ContentSuggestionsModuleType::kTabResumption:
     case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kParcelTracking:
     case ContentSuggestionsModuleType::kMostVisited:
     case ContentSuggestionsModuleType::kShortcuts:
     case ContentSuggestionsModuleType::kPlaceholder:
