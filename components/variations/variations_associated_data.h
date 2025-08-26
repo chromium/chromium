@@ -101,14 +101,13 @@ enum IDCollectionKey {
   ID_COLLECTION_COUNT,
 };
 
-// Associate a variations::VariationID value with a FieldTrial group for
-// collection |key|. If an id was previously set for |trial_name| and
-// |group_name|, it is overwritten. The group is denoted by |trial_name| and
-// |group_name|. This must be called whenever a FieldTrial is prepared (create
-// the trial and append groups) and needs to have a variations::VariationID
-// associated with it so Google servers can recognize the FieldTrial. The
-// transmission of the VariationID will be limited to the |time_window|.
-// Thread safe.
+// Associates a VariationID value with a FieldTrial group (denoted by
+// `trial_name` and `group_name`) for collection `key`. If an ID was previously
+// set for `trial_name` and `group_name`, it is overwritten. This must be called
+// whenever a FieldTrial is prepared (create the trial and append groups) and
+// needs to have a VariationID associated with it so that Google servers can
+// recognize the FieldTrial. The transmission of the VariationID will be limited
+// to the `time_window`. Thread safe.
 COMPONENT_EXPORT(VARIATIONS)
 void AssociateGoogleVariationID(IDCollectionKey key,
                                 std::string_view trial_name,
@@ -124,13 +123,12 @@ void AssociateGoogleVariationID(
     VariationID variation_id,
     TimeWindow time_window = TimeWindow());
 
-// Retrieve the variations::VariationID associated with a FieldTrial group for
-// collection |key|. The group is denoted by |trial_name| and |group_name|.
-// This will return variations::EMPTY_ID if there is currently no associated ID
-// for the named group. This API can be nicely combined with
-// FieldTrial::GetActiveFieldTrialGroups() to enumerate the variation IDs for
-// all active FieldTrial groups. If a |current_time| is provided, the
-// VariationID will be returned only if the current time is between the
+// Retrieves the VariationID associated with a FieldTrial group (denoted by
+// `trial_name` and `group_name`) for collection `key`. Returns EMPTY_ID if
+// there is currently no associated ID for the given group. This API can be
+// nicely combined with FieldTrial::GetActiveFieldTrialGroups() to enumerate the
+// VariationIDs for all active FieldTrial groups. If a `current_time` is
+// provided, the VariationID is returned only if the current time is between the
 // (inclusive) start and end timestamps of the TimeWindow for that VariationID.
 // Thread safe.
 COMPONENT_EXPORT(VARIATIONS)
@@ -140,8 +138,8 @@ VariationID GetGoogleVariationID(
     std::string_view group_name,
     std::optional<base::Time> current_time = std::nullopt);
 
-// Same as GetGoogleVariationID(), but takes in a hashed |active_group_id|
-// rather than the string trial and group name.
+// Same as GetGoogleVariationID(), but takes in a hashed `active_group_id`
+// rather than the string names.
 COMPONENT_EXPORT(VARIATIONS)
 VariationID GetGoogleVariationID(
     IDCollectionKey key,
@@ -163,9 +161,7 @@ COMPONENT_EXPORT(VARIATIONS) void ClearAllVariationIDs();
 // Clears all of the associated params. Deprecated, use ScopedFeatureList
 // instead as it does a lot of work for you automatically.
 COMPONENT_EXPORT(VARIATIONS) void ClearAllVariationParams();
-
 }  // namespace testing
-
 }  // namespace variations
 
 #endif  // COMPONENTS_VARIATIONS_VARIATIONS_ASSOCIATED_DATA_H_

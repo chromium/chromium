@@ -16,7 +16,6 @@
 #include "base/synchronization/lock.h"
 
 namespace variations {
-
 namespace {
 
 // The internal singleton accessor for the map, used to keep it thread-safe.
@@ -39,7 +38,7 @@ class GroupMapAccessor {
   GroupMapAccessor(const GroupMapAccessor&) = delete;
   GroupMapAccessor& operator=(const GroupMapAccessor&) = delete;
 
-  // Ensures that |group_identifier| is associated with only one non-trigger,
+  // Ensures that `group_identifier` is associated with only one non-trigger,
   // trigger, or signed-in key.
   void ValidateID(IDCollectionKey key,
                   ActiveGroupId group_identifier,
@@ -56,7 +55,7 @@ class GroupMapAccessor {
       VariationID other_id = GetID(other_key, group_identifier);
 
       // For a GOOGLE_APP key, validate that all other collections with this
-      // |group_identifier| have the same associated ID.
+      // `group_identifier` have the same associated ID.
       if (key == GOOGLE_APP) {
         DCHECK(other_id == EMPTY_ID || other_id == id);
         continue;
@@ -132,7 +131,7 @@ class GroupMapAccessor {
  private:
   friend struct base::DefaultSingletonTraits<GroupMapAccessor>;
 
-  // Retrieves the GroupToIDMap for |key|.
+  // Retrieves the GroupToIDMap for `key`.
   GroupToIDMap* GetGroupToIDMap(IDCollectionKey key) {
     return &group_to_id_maps_[key];
   }
@@ -194,7 +193,5 @@ void ClearAllVariationIDs() {
 void ClearAllVariationParams() {
   base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
 }
-
 }  // namespace testing
-
 }  // namespace variations
