@@ -339,6 +339,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
   void TearDown() override {
     [tab_events_mediator_ disconnect];
+    window_.rootViewController = nil;
     [[bvc_ view] removeFromSuperview];
     [bvc_ shutdown];
     [bookmarks_coordinator_ stop];
