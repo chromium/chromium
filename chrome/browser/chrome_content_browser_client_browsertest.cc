@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/chrome_content_browser_client.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -18,6 +19,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/accessibility/page_colors_controller.h"
+#include "chrome/browser/accessibility/page_colors_controller_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -148,13 +151,6 @@ std::vector<uint8_t> StringToVector(const std::string& str) {
 // first renderer process.
 class ChromeContentBrowserClientBrowserTest : public InProcessBrowserTest {
  public:
-  ChromeContentBrowserClientBrowserTest() = default;
-
-  ChromeContentBrowserClientBrowserTest(
-      const ChromeContentBrowserClientBrowserTest&) = delete;
-  ChromeContentBrowserClientBrowserTest& operator=(
-      const ChromeContentBrowserClientBrowserTest&) = delete;
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::IsolateAllSitesForTesting(command_line);
   }
@@ -184,12 +180,6 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest,
 class IsolatedOriginNTPBrowserTest : public InProcessBrowserTest,
                                      public InstantTestBase {
  public:
-  IsolatedOriginNTPBrowserTest() = default;
-
-  IsolatedOriginNTPBrowserTest(const IsolatedOriginNTPBrowserTest&) = delete;
-  IsolatedOriginNTPBrowserTest& operator=(const IsolatedOriginNTPBrowserTest&) =
-      delete;
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(https_test_server().InitializeAndListen());
 
@@ -263,12 +253,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
 class OpenWindowFromNTPBrowserTest : public InProcessBrowserTest,
                                      public InstantTestBase {
  public:
-  OpenWindowFromNTPBrowserTest() = default;
-
-  OpenWindowFromNTPBrowserTest(const OpenWindowFromNTPBrowserTest&) = delete;
-  OpenWindowFromNTPBrowserTest& operator=(const OpenWindowFromNTPBrowserTest&) =
-      delete;
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
@@ -336,6 +320,8 @@ class ForcedColorsTest : public testing::WithParamInterface<bool>,
     CHECK_EQ(&theme_client_, SetBrowserClientForTesting(original_client_));
   }
 
+  static bool ForcedColorsActive() { return GetParam(); }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "ForcedColors");
@@ -370,7 +356,7 @@ class ForcedColorsTest : public testing::WithParamInterface<bool>,
 };
 
 IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColors) {
-  test_theme_.set_forced_colors(GetParam());
+  test_theme_.set_forced_colors(ForcedColorsActive());
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
@@ -380,13 +366,13 @@ IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColors) {
                      base::FilePath(base::FilePath::kCurrentDirectory),
                      base::FilePath(FILE_PATH_LITERAL("forced-colors.html")))));
   std::u16string tab_title;
-  const char* expected = test_theme_.InForcedColorsMode() ? "active" : "none";
+  const char* expected = ForcedColorsActive() ? "active" : "none";
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(base::ASCIIToUTF16(expected), tab_title);
 }
 
 IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColorsWithBlockList) {
-  test_theme_.set_forced_colors(GetParam());
+  test_theme_.set_forced_colors(ForcedColorsActive());
 
   const char* url = "https://foo.com";
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
@@ -415,31 +401,26 @@ IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColorsWithBlockList) {
       ->GetActiveWebContents()
       ->OnWebPreferencesChanged();
 
-  // Forced colors should respect the NativeTheme when a site is removed from
-  // the block list.
-  const char* expected = test_theme_.InForcedColorsMode() ? "active" : "none";
+  // Forced colors should respect the OS when a site is removed from the block
+  // list.
+  const char* expected = ForcedColorsActive() ? "active" : "none";
   EXPECT_EQ(true, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                          base::StringPrintf(
                              "window.matchMedia('(forced-colors: %s)').matches",
                              expected)));
 }
 
-INSTANTIATE_TEST_SUITE_P(All, ForcedColorsTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ForcedColorsTest,
+    testing::Bool(),
+    [](const ::testing::TestParamInfo<ForcedColorsTest::ParamType>& info) {
+      return base::StrCat({"ForcedColors", info.param ? "Active" : "Inactive"});
+    });
 
 // Helper class to test the Page colors feature. Page colors is a feature that
 // simulates Forced colors mode via a browser setting.
-class PageColorsBrowserClientTest : public InProcessBrowserTest {
- public:
-  PageColorsBrowserClientTest() = default;
-
-  PageColorsBrowserClientTest(const PageColorsBrowserClientTest&) = delete;
-  PageColorsBrowserClientTest& operator=(const PageColorsBrowserClientTest&) =
-      delete;
-
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-  }
-};
+using PageColorsBrowserClientTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
                        PageColorsAffectsWebContents) {
@@ -499,47 +480,16 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
 class PrefersColorSchemeTest
     : public testing::WithParamInterface<std::tuple<bool, bool>>,
       public InProcessBrowserTest {
- protected:
-  PrefersColorSchemeTest()
-      : theme_client_(&test_theme_),
-        color_provider_source_(GetIsDarkColorProviderColorMode()) {
-    test_theme_.SetDarkMode(GetIsDarkNativeTheme());
-  }
+ public:
   ~PrefersColorSchemeTest() override {
     CHECK_EQ(&theme_client_, SetBrowserClientForTesting(original_client_));
   }
 
-  const char* ExpectedColorScheme() const {
-    const char* color_provider_color_mode =
-        GetIsDarkColorProviderColorMode() ? "dark" : "light";
-    const char* native_theme_color_mode =
-        GetIsDarkNativeTheme() ? "dark" : "light";
-
-    // WebUI's preferred color scheme should reflect the color mode of their
-    // associated ColorProvider, and not the preferred color scheme of the web
-    // NativeTheme.
-    const GURL& last_committed_url = browser()
-                                         ->tab_strip_model()
-                                         ->GetActiveWebContents()
-                                         ->GetLastCommittedURL();
-    if (content::HasWebUIScheme(last_committed_url)) {
-      return color_provider_color_mode;
-    }
-
-    // Pages in incognito profiles should follow the device theme.
-    if (browser()->profile()->IsIncognitoProfile()) {
-      return native_theme_color_mode;
-    }
-
-    // Pages in regular profiles should follow the browser theme, reflected by
-    // the color mode of the associated ColorProvider.
-    return color_provider_color_mode;
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+
     original_client_ = SetBrowserClientForTesting(&theme_client_);
-    test_theme_.SetDarkMode(GetIsDarkNativeTheme());
+    test_theme_.SetDarkMode(DarkOs());
 
 #if BUILDFLAG(ENABLE_GLIC)
     embedded_test_server()->ServeFilesFromDirectory(
@@ -557,10 +507,10 @@ class PrefersColorSchemeTest
             browser()->profile(), extensions::ExtensionsAPIClient::Get()
                                       ->CreateGuestViewManagerDelegate());
 
-    browser()
-        ->tab_strip_model()
-        ->GetActiveWebContents()
-        ->SetColorProviderSource(&color_provider_source_);
+    auto* const web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    web_contents->SetColorProviderSource(&color_provider_source_);
+    web_contents->OnWebPreferencesChanged();
   }
 
   void TearDownOnMainThread() override {
@@ -569,9 +519,16 @@ class PrefersColorSchemeTest
   }
 
  protected:
-  bool GetIsDarkNativeTheme() const { return std::get<0>(GetParam()); }
-  bool GetIsDarkColorProviderColorMode() const {
-    return std::get<1>(GetParam());
+  std::string_view ExpectedColorScheme() const {
+    // Most web content should follow the browser theme, with the exception of
+    // non-WebUI incognito pages, which follow the device theme directly.
+    const auto* const web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    const bool use_os_theme =
+        browser()->profile()->IsIncognitoProfile() &&
+        !web_contents->GetLastCommittedURL().SchemeIs(content::kChromeUIScheme);
+    const bool dark_mode = use_os_theme ? DarkOs() : DarkColorProvider();
+    return dark_mode ? "dark" : "light";
   }
 
   guest_view::TestGuestViewManager* guest_view_manager() const {
@@ -581,8 +538,6 @@ class PrefersColorSchemeTest
   ui::TestNativeTheme test_theme_;
 
  private:
-  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
-
   class ChromeContentBrowserClientWithWebTheme
       : public ChromeContentBrowserClient {
    public:
@@ -615,13 +570,11 @@ class PrefersColorSchemeTest
     ui::RendererColorMap GetRendererColorMap(
         ui::ColorProviderKey::ColorMode color_mode,
         ui::ColorProviderKey::ForcedColors forced_colors) const override {
-      auto key = GetColorProviderKey();
+      ui::ColorProviderKey key = GetColorProviderKey();
       key.color_mode = color_mode;
       key.forced_colors = forced_colors;
-      ui::ColorProvider* color_provider =
-          ui::ColorProviderManager::Get().GetColorProviderFor(key);
-      CHECK(color_provider);
-      return ui::CreateRendererColorMap(*color_provider);
+      return ui::CreateRendererColorMap(
+          *ui::ColorProviderManager::Get().GetColorProviderFor(key));
     }
 
     ui::ColorProviderKey GetColorProviderKey() const override { return key_; }
@@ -631,8 +584,12 @@ class PrefersColorSchemeTest
     ui::ColorProviderKey key_;
   };
 
-  ChromeContentBrowserClientWithWebTheme theme_client_;
-  MockColorProviderSource color_provider_source_;
+  static bool DarkOs() { return std::get<0>(GetParam()); }
+  static bool DarkColorProvider() { return std::get<1>(GetParam()); }
+
+  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
+  ChromeContentBrowserClientWithWebTheme theme_client_{&test_theme_};
+  MockColorProviderSource color_provider_source_{DarkColorProvider()};
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicTestEnvironment glic_test_environment_;
 #endif
@@ -714,20 +671,23 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesPdfUI) {
 }
 #endif
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrefersColorSchemeTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PrefersColorSchemeTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const ::testing::TestParamInfo<PrefersColorSchemeTest::ParamType>&
+           info) {
+      return base::StrCat({std::get<0>(info.param) ? "Dark" : "Light", "OS_",
+                           std::get<1>(info.param) ? "Dark" : "Light",
+                           "ColorProvider"});
+    });
 
 class PreferredRootScrollbarColorSchemeChromeClientTest
     : public testing::WithParamInterface<std::tuple<bool, bool>>,
       public InProcessBrowserTest {
- protected:
+ public:
   PreferredRootScrollbarColorSchemeChromeClientTest()
-      : dark_mode_(std::get<0>(GetParam())),
-        uses_custom_theme_(std::get<1>(GetParam())),
-        theme_client_(&test_theme_),
-        theme_color_(dark_mode_ ? SK_ColorDKGRAY : SK_ColorLTGRAY) {
-    test_theme_.SetDarkMode(dark_mode_);
+      : theme_color_(DarkMode() ? SK_ColorDKGRAY : SK_ColorLTGRAY) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     feature_list_.InitAndEnableFeature(
         blink::features::kRootScrollbarFollowsBrowserTheme);
@@ -737,11 +697,11 @@ class PreferredRootScrollbarColorSchemeChromeClientTest
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     original_client_ = SetBrowserClientForTesting(&theme_client_);
-    test_theme_.SetDarkMode(dark_mode_);
-    ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(dark_mode_);
-    ThemeService* theme_service =
+    test_theme_.SetDarkMode(DarkMode());
+    ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(DarkMode());
+    ThemeService* const theme_service =
         ThemeServiceFactory::GetForProfile(browser()->profile());
-    if (uses_custom_theme_) {
+    if (UsesCustomTheme()) {
       // Browser themes adapt their hue to match the used color scheme (light
       // or dark), however autogenerated themes don't take color schemes into
       // consideration. So we select which color to use based on the color
@@ -756,8 +716,9 @@ class PreferredRootScrollbarColorSchemeChromeClientTest
     CHECK_EQ(&theme_client_, SetBrowserClientForTesting(original_client_));
   }
 
+ protected:
   blink::mojom::PreferredColorScheme ExpectedColorScheme() const {
-    return dark_mode_ ? blink::mojom::PreferredColorScheme::kDark
+    return DarkMode() ? blink::mojom::PreferredColorScheme::kDark
                       : blink::mojom::PreferredColorScheme::kLight;
   }
 
@@ -770,7 +731,7 @@ class PreferredRootScrollbarColorSchemeChromeClientTest
             .root_scrollbar_theme_color;
     // If not using a custom theme, `root_scrollbar_theme_color` shouldn't be
     // set.
-    if (!uses_custom_theme_) {
+    if (!UsesCustomTheme()) {
       return !root_scrollbar_pref.has_value();
     }
     EXPECT_TRUE(root_scrollbar_pref.has_value());
@@ -808,11 +769,12 @@ class PreferredRootScrollbarColorSchemeChromeClientTest
     const raw_ptr<const ui::NativeTheme> theme_;
   };
 
-  const bool dark_mode_ = false;
-  const bool uses_custom_theme_ = false;
+  static bool DarkMode() { return std::get<0>(GetParam()); }
+  static bool UsesCustomTheme() { return std::get<1>(GetParam()); }
+
   raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
   ui::TestNativeTheme test_theme_;
-  ChromeContentBrowserClientWithWebTheme theme_client_;
+  ChromeContentBrowserClientWithWebTheme theme_client_{&test_theme_};
   const SkColor theme_color_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -822,10 +784,9 @@ class PreferredRootScrollbarColorSchemeChromeClientTest
 // a custom theme.
 IN_PROC_BROWSER_TEST_P(PreferredRootScrollbarColorSchemeChromeClientTest,
                        ScrollbarFollowsPreferredColorScheme) {
-  EXPECT_EQ(browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetOrCreateWebPreferences()
+  auto* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(web_contents->GetOrCreateWebPreferences()
                 .preferred_root_scrollbar_color_scheme,
             ExpectedColorScheme());
 }
@@ -839,31 +800,23 @@ IN_PROC_BROWSER_TEST_P(PreferredRootScrollbarColorSchemeChromeClientTest,
 }
 #endif  //  BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PreferredRootScrollbarColorSchemeChromeClientTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PreferredRootScrollbarColorSchemeChromeClientTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const ::testing::TestParamInfo<
+        PreferredRootScrollbarColorSchemeChromeClientTest::ParamType>& info) {
+      return base::StrCat({std::get<0>(info.param) ? "Dark" : "Light", "Mode_",
+                           std::get<1>(info.param) ? "Custom" : "Default",
+                           "Theme"});
+    });
 
 class PrefersContrastTest
     : public testing::WithParamInterface<ui::NativeTheme::PreferredContrast>,
       public InProcessBrowserTest {
- protected:
-  PrefersContrastTest() : theme_client_(&test_theme_) {}
-
+ public:
   ~PrefersContrastTest() override {
     CHECK_EQ(&theme_client_, SetBrowserClientForTesting(original_client_));
-  }
-
-  const char* ExpectedPrefersContrast() const {
-    switch (GetParam()) {
-      case ui::NativeTheme::PreferredContrast::kNoPreference:
-        return "no-preference";
-      case ui::NativeTheme::PreferredContrast::kMore:
-        return "more";
-      case ui::NativeTheme::PreferredContrast::kLess:
-        return "less";
-      case ui::NativeTheme::PreferredContrast::kCustom:
-        return "custom";
-    }
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -876,14 +829,30 @@ class PrefersContrastTest
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     original_client_ = SetBrowserClientForTesting(&theme_client_);
+    test_theme_.SetPreferredContrast(PreferredContrast());
+    browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->OnWebPreferencesChanged();
   }
 
  protected:
+  std::string_view ExpectedPrefersContrast() const {
+    switch (PreferredContrast()) {
+      case ui::NativeTheme::PreferredContrast::kNoPreference:
+        return "no-preference";
+      case ui::NativeTheme::PreferredContrast::kMore:
+        return "more";
+      case ui::NativeTheme::PreferredContrast::kLess:
+        return "less";
+      case ui::NativeTheme::PreferredContrast::kCustom:
+        return "custom";
+    }
+  }
+
   ui::TestNativeTheme test_theme_;
 
  private:
-  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
-
   class ChromeContentBrowserClientWithWebTheme
       : public ChromeContentBrowserClient {
    public:
@@ -898,15 +867,15 @@ class PrefersContrastTest
     const raw_ptr<const ui::NativeTheme> theme_;
   };
 
-  ChromeContentBrowserClientWithWebTheme theme_client_;
+  static ui::NativeTheme::PreferredContrast PreferredContrast() {
+    return GetParam();
+  }
+
+  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
+  ChromeContentBrowserClientWithWebTheme theme_client_{&test_theme_};
 };
 
 IN_PROC_BROWSER_TEST_P(PrefersContrastTest, PrefersContrast) {
-  test_theme_.SetPreferredContrast(GetParam());
-  browser()
-      ->tab_strip_model()
-      ->GetActiveWebContents()
-      ->OnWebPreferencesChanged();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       ui_test_utils::GetTestUrl(
@@ -923,15 +892,20 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(ui::NativeTheme::PreferredContrast::kNoPreference,
                     ui::NativeTheme::PreferredContrast::kMore,
                     ui::NativeTheme::PreferredContrast::kLess,
-                    ui::NativeTheme::PreferredContrast::kCustom));
+                    ui::NativeTheme::PreferredContrast::kCustom),
+    ([](const ::testing::TestParamInfo<PrefersContrastTest::ParamType>& info) {
+      using enum ui::NativeTheme::PreferredContrast;
+      static constexpr auto kContrastValues =
+          base::MakeFixedFlatMap<ui::NativeTheme::PreferredContrast,
+                                 std::string_view>({{kNoPreference, "Default"},
+                                                    {kMore, "More"},
+                                                    {kLess, "Less"},
+                                                    {kCustom, "Custom"}});
+      return base::StrCat({kContrastValues.at(info.param), "Contrast"});
+    }));
 
 class ProtocolHandlerTest : public InProcessBrowserTest {
  public:
-  ProtocolHandlerTest() = default;
-
-  ProtocolHandlerTest(const ProtocolHandlerTest&) = delete;
-  ProtocolHandlerTest& operator=(const ProtocolHandlerTest&) = delete;
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -1015,9 +989,10 @@ class FakeExternalProtocolHandlerWorker
         os_state_(os_state),
         program_name_(program_name) {}
 
- private:
+ protected:
   ~FakeExternalProtocolHandlerWorker() override = default;
 
+ private:
   shell_integration::DefaultWebClientState CheckIsDefaultImpl() override {
     return os_state_;
   }
@@ -1041,6 +1016,7 @@ class ScopedFakeExternalProtocolHandlerDelegate
   ~ScopedFakeExternalProtocolHandlerDelegate() override {
     ExternalProtocolHandler::SetDelegateForTesting(nullptr);
   }
+
   scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
       const GURL& url) override {
     return new FakeExternalProtocolHandlerWorker(
@@ -1079,13 +1055,13 @@ class ScopedFakeExternalProtocolHandlerDelegate
 
   void WaitExternalUrlLaunchCompleted() { launch_url_run_loop_.Run(); }
 
-  bool external_protocol_dialog_called() {
+  bool external_protocol_dialog_called() const {
     return external_protocol_dialog_called_;
   }
-  std::string launched_url_without_security_check() {
+  std::string_view launched_url_without_security_check() const {
     return launched_url_without_security_check_;
   }
-  std::string launched_url_with_security_check() {
+  std::string_view launched_url_with_security_check() const {
     return launched_url_with_security_check_;
   }
 
@@ -1172,35 +1148,40 @@ class KeepaliveDurationOnShutdownTest : public InProcessBrowserTest,
         content::SetBrowserClientForTesting(nullptr));
     content::SetBrowserClientForTesting(client_);
   }
+
   void TearDownOnMainThread() override {
     client_ = nullptr;
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
+ protected:
+  const ChromeContentBrowserClient* client() const { return client_; }
+
+ private:
   raw_ptr<ChromeContentBrowserClient> client_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DefaultValue) {
   Profile* profile = browser()->profile();
-  EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile), base::TimeDelta());
+  EXPECT_EQ(client()->GetKeepaliveTimerTimeout(profile), base::TimeDelta());
 }
 
 IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, PolicySettings) {
   Profile* profile = browser()->profile();
   profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 2);
 
-  EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile), base::Seconds(2));
+  EXPECT_EQ(client()->GetKeepaliveTimerTimeout(profile), base::Seconds(2));
 }
 
 IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DynamicUpdate) {
   Profile* profile = browser()->profile();
   profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 2);
 
-  EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile), base::Seconds(2));
+  EXPECT_EQ(client()->GetKeepaliveTimerTimeout(profile), base::Seconds(2));
 
   profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 3);
 
-  EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile), base::Seconds(3));
+  EXPECT_EQ(client()->GetKeepaliveTimerTimeout(profile), base::Seconds(3));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1210,20 +1191,6 @@ IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DynamicUpdate) {
 class ClipboardTestContentAnalysisDelegate
     : public enterprise_connectors::test::FakeContentAnalysisDelegate {
  public:
-  ClipboardTestContentAnalysisDelegate(base::RepeatingClosure delete_closure,
-                                       StatusCallback status_callback,
-                                       std::string dm_token,
-                                       content::WebContents* web_contents,
-                                       Data data,
-                                       CompletionCallback callback)
-      : enterprise_connectors::test::FakeContentAnalysisDelegate(
-            delete_closure,
-            std::move(status_callback),
-            std::move(dm_token),
-            web_contents,
-            std::move(data),
-            std::move(callback)) {}
-
   static std::unique_ptr<ContentAnalysisDelegate> Create(
       base::RepeatingClosure delete_closure,
       StatusCallback status_callback,
@@ -1247,7 +1214,9 @@ class ClipboardTestContentAnalysisDelegate
     return ret;
   }
 
- private:
+  using FakeContentAnalysisDelegate::FakeContentAnalysisDelegate;
+
+ protected:
   void FakeUploadFileForDeepScanning(
       safe_browsing::BinaryUploadService::Result result,
       const base::FilePath& path,
@@ -1318,7 +1287,7 @@ class IsClipboardPasteAllowedTest : public InProcessBrowserTest {
   }
 
  protected:
-  ChromeContentBrowserClient* client() const { return client_; }
+  ChromeContentBrowserClient* client() { return client_; }
 
   base::FilePath CreateTestFile(const base::FilePath::StringType& filename,
                                 const std::string& content) {
@@ -1909,11 +1878,6 @@ class AutomaticBeaconCredentialsBrowserTest : public InProcessBrowserTest,
             content_settings::features::kTrackingProtection3pcd});
   }
 
-  AutomaticBeaconCredentialsBrowserTest(
-      const AutomaticBeaconCredentialsBrowserTest&) = delete;
-  AutomaticBeaconCredentialsBrowserTest& operator=(
-      const AutomaticBeaconCredentialsBrowserTest&) = delete;
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
@@ -1923,11 +1887,11 @@ class AutomaticBeaconCredentialsBrowserTest : public InProcessBrowserTest,
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
+ protected:
   content::RenderFrameHost* primary_main_frame_host() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetPrimaryMainFrame();
+    auto* const web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    return web_contents->GetPrimaryMainFrame();
   }
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
@@ -1948,8 +1912,8 @@ IN_PROC_BROWSER_TEST_F(AutomaticBeaconCredentialsBrowserTest,
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAllPrivacySandboxAttestedForTesting(true);
 
-  constexpr char kReportingURL[] = "/_report_event_server.html";
-  constexpr char kBeaconMessage[] = "this is the message";
+  static constexpr char kReportingURL[] = "/_report_event_server.html";
+  static constexpr char kBeaconMessage[] = "this is the message";
 
   net::test_server::ControllableHttpResponse first_response(
       &https_test_server(), kReportingURL);
@@ -2217,8 +2181,8 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Bool(),
     [](const ::testing::TestParamInfo<
         BundledCodeCacheChromeContentBrowserClientTest::ParamType>& info) {
-      return info.param ? "BundledCodeCache_Enabled"
-                        : "BundledCodeCache_Disabled";
+      return base::StrCat(
+          {"BundledCodeCache", info.param ? "Enabled" : "Disabled"});
     });
 
 class DevToolsOverridesThirdPartyCookiesBrowserTest
