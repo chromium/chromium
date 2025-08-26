@@ -37,7 +37,7 @@ ContextImplOrt::ContextImplOrt(
           std::move(sequence),
           std::move(task_runner)),
       env_(std::move(env)),
-      session_options_(SessionOptions::Create(this->options().device)),
+      session_options_(SessionOptions::Create(this->options().device, env_)),
       is_external_data_supported_(!ep_workarounds.disable_external_data) {}
 
 ContextImplOrt::~ContextImplOrt() = default;

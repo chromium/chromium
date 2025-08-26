@@ -14,12 +14,15 @@
 
 namespace webnn::ort {
 
+class Environment;
+
 // `SessionOptions` is a wrapper of `OrtSessionOptions` and used to create
 // sessions on background threads.
 class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
  public:
   // The `device_type` would be used to configure ONNX Runtime EP.
-  static scoped_refptr<SessionOptions> Create(mojom::Device device_type);
+  static scoped_refptr<SessionOptions> Create(mojom::Device device_type,
+                                              scoped_refptr<Environment> env);
 
   SessionOptions(base::PassKey<SessionOptions>,
                  ScopedOrtSessionOptions session_options);

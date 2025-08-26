@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
+#include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
@@ -43,7 +44,8 @@ std::optional<GraphOptimizationLevel> StringToOrtGraphOptimizationLevel(
 
 // static
 scoped_refptr<SessionOptions> SessionOptions::Create(
-    mojom::Device device_type) {
+    mojom::Device device_type,
+    scoped_refptr<Environment> env) {
   ScopedTrace scoped_trace("SessionOptions::Create");
 
   scoped_trace.AddStep("Create session options");
@@ -105,6 +107,18 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
       CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
           session_options.get(), ort_graph_optimization_level.value()));
     }
+  }
+
+  // Apply EP-specific configuration entries for the given device type.
+  // TODO(crbug.com/439972928): Only apply configuration entries for EPs that
+  // will be selected.
+  std::vector<Environment::SessionConfigEntry> ep_config_entries =
+      env->GetEpConfigEntries(device_type);
+  for (const auto& config_entry : ep_config_entries) {
+    CHECK_STATUS(ort_api->AddSessionConfigEntry(
+        session_options.get(),
+        /*config_key=*/config_entry.key.c_str(),
+        /*config_value=*/config_entry.value.c_str()));
   }
 
   return base::MakeRefCounted<SessionOptions>(base::PassKey<SessionOptions>(),

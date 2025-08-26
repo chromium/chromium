@@ -59,6 +59,16 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
 
   const OrtEnv* get() const { return env_.get(); }
 
+  struct SessionConfigEntry {
+    base::cstring_view key;
+    base::cstring_view value;
+  };
+
+  // Get all EP-specific session configuration entries for the given device
+  // type.
+  std::vector<SessionConfigEntry> GetEpConfigEntries(
+      mojom::Device device_type) const;
+
  private:
   static base::expected<scoped_refptr<Environment>, std::string> Create(
       const gpu::GPUInfo& gpu_info);

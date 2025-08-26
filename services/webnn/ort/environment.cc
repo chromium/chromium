@@ -4,12 +4,14 @@
 
 #include "services/webnn/ort/environment.h"
 
+#include <set>
 #include <string_view>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/strings/cstring_view.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
@@ -27,6 +29,7 @@ struct EpInfo {
   // provider.
   uint32_t vendor_id;
   EpWorkarounds workarounds;
+  base::raw_span<const Environment::SessionConfigEntry> config_entries;
 };
 
 constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
@@ -49,6 +52,22 @@ constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
                     .disable_external_data = true,
                     .resample2d_limit_to_nchw = true,
                 },
+            // OpenVINO EP configuration. Keys and values must align with the
+            // ORT OpenVINO EP implementation. See:
+            // https://github.com/microsoft/onnxruntime/blob/f46113d7b11af3fa0b3918029e442c3a14265522/onnxruntime/core/providers/openvino/openvino_provider_factory.cc#L459
+            // and
+            // https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#summary-of-options.
+            //
+            // To get more accurate inference results, WebNN requires the
+            // accuracy execution mode on OpenVINO GPU to override the default
+            // FP16 precision configuration, maintain original model precision
+            // (f32→f32, f16→f16) and disable dynamic quantization. See:
+            // https://docs.openvino.ai/2025/openvino-workflow/running-inference/optimize-inference/precision-control.html.
+            .config_entries =
+                (const Environment::SessionConfigEntry[]){
+                    {.key = "ep.openvinoexecutionprovider.load_config",
+                     .value =
+                         R"({"GPU": {"EXECUTION_MODE_HINT": "ACCURACY"}})"}},
         },
     },
 });
@@ -312,5 +331,55 @@ base::Lock& Environment::GetLock() {
 }
 
 raw_ptr<Environment> Environment::instance_ = nullptr;
+
+std::vector<Environment::SessionConfigEntry> Environment::GetEpConfigEntries(
+    mojom::Device device_type) const {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  base::span<const OrtEpDevice* const> ep_devices =
+      GetRegisteredEpDevices(ort_api, this->get());
+  std::vector<SessionConfigEntry> ep_config_entries;
+  // Track processed EP names to avoid duplicates.
+  std::set<base::cstring_view> processed_ep_names;
+  OrtHardwareDeviceType requested_device_type =
+      GetOrtHardwareDeviceType(device_type);
+
+  for (const auto* ep_device : ep_devices) {
+    CHECK(ep_device);
+
+    // Only look for configuration when the requested device type matches
+    // the registered EP device type.
+    OrtHardwareDeviceType registered_device_type =
+        ort_api->HardwareDevice_Type(ort_api->EpDevice_Device(ep_device));
+    if (registered_device_type != requested_device_type) {
+      continue;
+    }
+
+    const char* ep_name = ort_api->EpDevice_EpName(ep_device);
+    if (!ep_name) {
+      continue;
+    }
+
+    // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
+    base::cstring_view ep_name_view =
+        UNSAFE_BUFFERS(base::cstring_view(ep_name));
+
+    // Skip if we've already processed this EP
+    if (processed_ep_names.contains(ep_name_view)) {
+      continue;
+    }
+    processed_ep_names.insert(ep_name_view);
+
+    const auto& ep_it = kKnownEPs.find(ep_name_view);
+    if (ep_it == kKnownEPs.end()) {
+      continue;
+    }
+
+    for (const auto& config_entry : ep_it->second.config_entries) {
+      ep_config_entries.push_back(config_entry);
+    }
+  }
+
+  return ep_config_entries;
+}
 
 }  // namespace webnn::ort
