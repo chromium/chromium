@@ -21,9 +21,15 @@ namespace {
 const CGFloat kIconPointSize = 18.0;
 
 // Constants for the new badge view.
-const CGFloat kNewFeatureBadgeSize = 18.0;
-const CGFloat kNewFeatureFontSize = 10;
-const CGFloat kNewBadgeOffsetFromButtonCenter = 14.0;
+const CGFloat kNewFeatureBadgeSize = 16.0;
+const CGFloat kNewFeatureFontSize = 9;
+const CGFloat kNewBadgeOffsetFromButtonCenterX = 14.0;
+const CGFloat kNewBadgeOffsetFromButtonCenterY = 12.0;
+
+// Constants for button shadow.
+const CGFloat kButtonShadowOpacity = 0.35;
+const CGFloat kButtonShadowRadius = 1.0;
+const CGFloat kButtonShadowVerticalOffset = 1.0;
 
 // The width of the extended button's tappable area.
 const CGFloat kMinimumWidth = 44;
@@ -31,8 +37,12 @@ const CGFloat kMinimumWidth = 44;
 // The width of the background view.
 const CGFloat kBackgroundWidth = 26;
 
-// Scale factor for highlight state.
+// Scale factors for button.
+const CGFloat kNormalScaling = 1.0;
 const CGFloat kHighlightScaling = 0.7;
+
+// Animation duration.
+NSTimeInterval kAnimationDuration = 0.3;
 
 }  // namespace
 
@@ -48,38 +58,22 @@ const CGFloat kHighlightScaling = 0.7;
 - (instancetype)initWithNewBadgeVisible:(BOOL)isNewBadgeVisible {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    _backgroundView = [[UIView alloc] init];
     self.accessibilityIdentifier = kAIHubEntrypointAccessibilityIdentifier;
     self.pointerInteractionEnabled = YES;
     self.minimumDiameter = kMinimumWidth;
     self.pointerStyleProvider = CreateDefaultEffectCirclePointerStyleProvider();
-    self.tintColor = [UIColor colorNamed:kToolbarButtonColor];
+    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
-    self.accessibilityLabel = l10n_util::GetNSString(
-        IDS_IOS_BWG_PAGE_ACTION_MENU_ENTRY_POINT_ACCESSIBILITY_LABEL);
-
-    UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
-        configurationWithPointSize:kIconPointSize
-                            weight:UIImageSymbolWeightRegular
-                             scale:UIImageSymbolScaleMedium];
-    [self setPreferredSymbolConfiguration:symbolConfig
-                          forImageInState:UIControlStateNormal];
     if (IsDirectBWGEntryPoint()) {
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_BWG_ASK_GEMINI_ACCESSIBILITY_LABEL);
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-      [self setImage:CustomSymbolWithPointSize(kGeminiBrandedLogoImage,
-                                               kIconPointSize)
-            forState:UIControlStateNormal];
-#else
-      [self setImage:DefaultSymbolWithPointSize(kGeminiNonBrandedLogoImage,
-                                                kIconPointSize)
-            forState:UIControlStateNormal];
-#endif
     } else {
-      [self setImage:CustomSymbolWithPointSize(kTextSparkSymbol, kIconPointSize)
-            forState:UIControlStateNormal];
+      self.accessibilityLabel = l10n_util::GetNSString(
+          IDS_IOS_BWG_PAGE_ACTION_MENU_ENTRY_POINT_ACCESSIBILITY_LABEL);
     }
-    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+
+    [self setNewBadgeVisible:isNewBadgeVisible];
     [self createBackgroundView];
     [self setNewBadgeVisible:isNewBadgeVisible];
 
@@ -100,18 +94,23 @@ const CGFloat kHighlightScaling = 0.7;
   _isNewBadgeVisible = enabled;
 
   if (_isNewBadgeVisible) {
+    [self setEntrypointIconWithScale:kHighlightScaling];
     [self setUpButtonWithNewFeatureBadge];
   } else {
-    [self removeNewFeatureBadge];
+    __weak __typeof(self) weakSelf = self;
+    [UIView animateWithDuration:kAnimationDuration
+                     animations:^{
+                       [weakSelf removeNewFeatureBadge];
+                       [weakSelf resetButtonState];
+                     }];
   }
 }
 
 #pragma mark - PageActionMenuEntryPointCommands
 
 - (void)toggleEntryPointHighlight:(BOOL)highlight {
-  NSTimeInterval animationDuration = 0.3;
   __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:animationDuration
+  [UIView animateWithDuration:kAnimationDuration
                    animations:^{
                      [weakSelf updateHighlightState:highlight];
                    }];
@@ -122,24 +121,18 @@ const CGFloat kHighlightScaling = 0.7;
 // Updates properties related to highlighting the button.
 - (void)updateHighlightState:(BOOL)shouldHighlight {
   if (shouldHighlight) {
-    self.imageView.transform =
-        CGAffineTransformMakeScale(kHighlightScaling, kHighlightScaling);
+    [self setEntrypointIconWithScale:kHighlightScaling];
     self.tintColor = [UIColor colorNamed:kSolidWhiteColor];
     _backgroundView.hidden = NO;
   } else {
-    self.imageView.transform = CGAffineTransformIdentity;
-    self.tintColor = [UIColor colorNamed:kToolbarButtonColor];
-    _backgroundView.hidden = YES;
+    [self resetButtonState];
   }
 }
 
 // Creates button's background view.
 - (void)createBackgroundView {
-  _backgroundView = [[UIView alloc] init];
   _backgroundView.layer.cornerRadius = kBackgroundWidth / 2;
-  _backgroundView.backgroundColor = [UIColor colorNamed:kBlueColor];
   _backgroundView.clipsToBounds = YES;
-  _backgroundView.hidden = YES;
   _backgroundView.userInteractionEnabled = NO;
   _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   [self insertSubview:_backgroundView atIndex:0];
@@ -147,6 +140,14 @@ const CGFloat kHighlightScaling = 0.7;
 
 // Creates a new badge and positions the badge relative to the button.
 - (void)setUpButtonWithNewFeatureBadge {
+  self.tintColor = [UIColor colorNamed:kBlueColor];
+  _backgroundView.backgroundColor = [UIColor colorNamed:kSolidWhiteColor];
+  _backgroundView.hidden = NO;
+  self.layer.shadowColor = [UIColor blackColor].CGColor;
+  self.layer.shadowOffset = CGSizeMake(0, kButtonShadowVerticalOffset);
+  self.layer.shadowOpacity = kButtonShadowOpacity;
+  self.layer.shadowRadius = kButtonShadowRadius;
+
   _newBadgeView =
       [[NewFeatureBadgeView alloc] initWithBadgeSize:kNewFeatureBadgeSize
                                             fontSize:kNewFeatureFontSize];
@@ -157,10 +158,10 @@ const CGFloat kHighlightScaling = 0.7;
   [NSLayoutConstraint activateConstraints:@[
     [_newBadgeView.centerXAnchor
         constraintEqualToAnchor:self.centerXAnchor
-                       constant:kNewBadgeOffsetFromButtonCenter],
+                       constant:kNewBadgeOffsetFromButtonCenterX],
     [_newBadgeView.centerYAnchor
         constraintEqualToAnchor:self.centerYAnchor
-                       constant:-kNewBadgeOffsetFromButtonCenter],
+                       constant:-kNewBadgeOffsetFromButtonCenterY],
   ]];
 }
 
@@ -169,6 +170,34 @@ const CGFloat kHighlightScaling = 0.7;
   if (_newBadgeView) {
     [_newBadgeView removeFromSuperview];
     _newBadgeView = nil;
+  }
+}
+
+// Resets button to default state.
+- (void)resetButtonState {
+  [self setEntrypointIconWithScale:kNormalScaling];
+  self.tintColor = [UIColor colorNamed:kToolbarButtonColor];
+  self.layer.shadowOpacity = 0;
+  _backgroundView.hidden = YES;
+  _backgroundView.backgroundColor = [UIColor colorNamed:kBlueColor];
+}
+
+// Sets the entry point icon with a scale factor.
+- (void)setEntrypointIconWithScale:(CGFloat)scale {
+  if (IsDirectBWGEntryPoint()) {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+    [self setImage:CustomSymbolWithPointSize(kGeminiBrandedLogoImage,
+                                             kIconPointSize * scale)
+          forState:UIControlStateNormal];
+#else
+    [self setImage:DefaultSymbolWithPointSize(kGeminiNonBrandedLogoImage,
+                                              kIconPointSize * scale)
+          forState:UIControlStateNormal];
+#endif
+  } else {
+    [self setImage:CustomSymbolWithPointSize(kTextSparkSymbol,
+                                             kIconPointSize * scale)
+          forState:UIControlStateNormal];
   }
 }
 

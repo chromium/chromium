@@ -1054,6 +1054,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 - (void)handlePageActionMenuEntrypointTapped {
   // TODO(crbug.com/402827015): Log opens.
+  if (_isAIHubNewBadgeVisible) {
+    [_pageActionMenuEntrypointView setNewBadgeVisible:NO];
+    _isAIHubNewBadgeVisible = NO;
+  }
   if (IsDirectBWGEntryPoint()) {
     [self.BWGHandler startBWGFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
   } else {
