@@ -5341,7 +5341,7 @@ targets.bundle(
         "ios_chrome_integration_eg2tests_module": [
             targets.mixin(
                 swarming = targets.swarming(
-                    shards = 8,
+                    shards = 9,
                 ),
             ),
             "ios_parallel_simulators",
