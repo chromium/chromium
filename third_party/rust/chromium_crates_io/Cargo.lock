@@ -1058,7 +1058,7 @@ dependencies = [
 
 [[package]]
 name = "temporal_capi"
-version = "0.0.12"
+version = "0.0.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "diplomat",
@@ -1072,7 +1072,7 @@ dependencies = [
 
 [[package]]
 name = "temporal_rs"
-version = "0.0.12"
+version = "0.0.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "combine",
@@ -1098,7 +1098,7 @@ dependencies = [
 
 [[package]]
 name = "timezone_provider"
-version = "0.0.12"
+version = "0.0.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "tinystr",

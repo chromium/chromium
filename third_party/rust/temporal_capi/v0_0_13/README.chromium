@@ -1,0 +1,11 @@
+Name: temporal_capi
+URL: https://crates.io/crates/temporal_capi
+Version: 0.0.13
+Revision: d0b76fab6dcbc7f6819b1e8fd4f5523af043bc06
+Update Mechanism: Manual
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0_13/LICENSE-MIT,//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0_13/LICENSE-Apache
+Shipped: yes
+Security Critical: yes
+
+Description: C interface to temporal_rs
