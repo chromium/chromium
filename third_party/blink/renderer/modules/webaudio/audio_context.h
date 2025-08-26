@@ -316,9 +316,6 @@ class MODULES_EXPORT AudioContext final
   // posting a main thread task to perform the actual resolving, if needed.
   void ResolvePromisesForUnpause();
 
-  AudioIOPosition OutputPosition() const
-      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
-
   // Send notification to browser that an AudioContext has started or stopped
   // playing audible audio.
   void NotifyAudibleAudioStarted()
@@ -376,7 +373,9 @@ class MODULES_EXPORT AudioContext final
   uint32_t context_id_;
   Member<ScriptPromiseResolver<IDLUndefined>> close_resolver_;
 
-  AudioIOPosition output_position_;
+  // Protected by the graph lock.
+  AudioIOPosition output_position_{0.0, 0.0, 0.0};
+
   AudioCallbackMetric callback_metric_;
 
   // Accessed only on the thread pulling audio from the graph.

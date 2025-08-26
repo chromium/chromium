@@ -119,7 +119,7 @@ class PLATFORM_EXPORT AudioDestination final
   void StartWithWorkletTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> worklet_task_runner);
 
-  bool IsPlaying();
+  bool IsPlaying() const;
 
   // This is the context sample rate, not the device one.
   double SampleRate() const;
@@ -144,6 +144,17 @@ class PLATFORM_EXPORT AudioDestination final
   // RealtimeAudioDestinationHandler::SetSinkDescriptor, which can be invoked
   // from the constructor of AudioContext and AudioContext.setSinkId() method.
   media::OutputDeviceStatus MaybeCreateSinkAndGetStatus();
+
+  // Returns the elapsed frames of the destination. This only gets called when
+  // switching sink devices. (i.e. stopped destinations)
+  size_t FramesElapsed() const;
+
+  // Transfer the elapsed frame from the previous platform destination to
+  // the new one. This ensures the timestamp, which is based on the frame
+  // count, does not go backward. This only gets called when switching sink
+  // devices.
+  void TransferElapsedFramesFrom(
+      const scoped_refptr<AudioDestination> previous_platform_destination);
 
   const PushPullFIFOStateForTest GetPushPullFIFOStateForTest() {
     return fifo_->GetStateForTest();

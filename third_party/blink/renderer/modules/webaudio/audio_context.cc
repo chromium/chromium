@@ -726,39 +726,21 @@ bool AudioContext::IsPullingAudioGraph() const {
 
 AudioTimestamp* AudioContext::getOutputTimestamp(
     ScriptState* script_state) const {
-  AudioTimestamp* result = AudioTimestamp::Create();
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+
+  AudioTimestamp* result = AudioTimestamp::Create();
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   if (!window) {
     return result;
   }
-
-  if (!destination()) {
-    result->setContextTime(0.0);
-    result->setPerformanceTime(0.0);
-    return result;
-  }
-
   WindowPerformance* performance = DOMWindowPerformance::performance(*window);
   DCHECK(performance);
 
-  AudioIOPosition position = OutputPosition();
-
-  // The timestamp of what is currently being played (contextTime) cannot be
-  // later than what is being rendered. (currentTime)
-  if (position.position > currentTime()) {
-    position.position = currentTime();
-  }
-
+  DeferredTaskHandler::GraphAutoLocker locker(this);
   double performance_time = performance->MonotonicTimeToDOMHighResTimeStamp(
-      base::TimeTicks() + base::Seconds(position.timestamp));
-  if (performance_time < 0.0) {
-    performance_time = 0.0;
-  }
-
-  result->setContextTime(position.position);
-  result->setPerformanceTime(performance_time);
+      base::TimeTicks() + base::Seconds(output_position_.timestamp));
+  result->setContextTime(output_position_.position);
+  result->setPerformanceTime(performance_time < 0.0 ? 0.0 : performance_time);
   return result;
 }
 
@@ -1146,8 +1128,14 @@ bool AudioContext::HandlePreRenderTasks(
     // Update the dirty state of the AudioListenerHandler.
     listener()->Handler().UpdateState();
 
-    // Update output timestamp and metric.
+    // Update output timestamp and metric. The timestamp of what is currently
+    // being played (e.g. getOutputTimestamp().contextTime) cannot be later
+    // than what is being rendered. (AudioContext.currentTime)
     output_position_ = *output_position;
+    if (output_position_.position > currentTime()) {
+      output_position_.position = currentTime();
+    }
+
     callback_metric_ = *metric;
 
     audio_frame_stats_.Absorb(pending_audio_frame_stats_);
@@ -1243,11 +1231,6 @@ void AudioContext::ResolvePromisesForUnpause() {
     is_resolving_resume_promises_ = true;
     ScheduleMainThreadCleanup();
   }
-}
-
-AudioIOPosition AudioContext::OutputPosition() const {
-  DeferredTaskHandler::GraphAutoLocker locker(this);
-  return output_position_;
 }
 
 void AudioContext::NotifyAudibleAudioStopped() {

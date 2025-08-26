@@ -96,10 +96,9 @@ scoped_refptr<AudioDestination> AudioDestination::Create(
     std::optional<float> context_sample_rate,
     unsigned render_quantum_frames) {
   TRACE_EVENT0("webaudio", "AudioDestination::Create");
-  return base::AdoptRef(
-      new AudioDestination(callback, sink_descriptor, number_of_output_channels,
-                           latency_hint, context_sample_rate,
-                           render_quantum_frames));
+  return base::AdoptRef(new AudioDestination(
+      callback, sink_descriptor, number_of_output_channels, latency_hint,
+      context_sample_rate, render_quantum_frames));
 }
 
 AudioDestination::~AudioDestination() {
@@ -358,7 +357,7 @@ void AudioDestination::StartWithWorkletTaskRunner(
   web_audio_device_->Start();
 }
 
-bool AudioDestination::IsPlaying() {
+bool AudioDestination::IsPlaying() const {
   DCHECK(IsMainThread());
   return device_state_ == DeviceState::kRunning;
 }
@@ -667,6 +666,19 @@ void AudioDestination::PullFromCallback(AudioBus* destination_bus,
 media::OutputDeviceStatus AudioDestination::MaybeCreateSinkAndGetStatus() {
   TRACE_EVENT0("webaudio", "AudioDestination::MaybeCreateSinkAndGetStatus");
   return web_audio_device_->MaybeCreateSinkAndGetStatus();
+}
+
+size_t AudioDestination::FramesElapsed() const {
+  DCHECK(IsMainThread());
+  DCHECK(!IsPlaying());
+  return frames_elapsed_;
+}
+
+void AudioDestination::TransferElapsedFramesFrom(
+    const scoped_refptr<AudioDestination> previous_platform_destination) {
+  DCHECK(IsMainThread());
+  DCHECK(!IsPlaying() && !previous_platform_destination->IsPlaying());
+  frames_elapsed_ += previous_platform_destination->FramesElapsed();
 }
 
 void AudioDestination::SendLogMessage(const char* const function_name,

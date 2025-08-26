@@ -508,7 +508,14 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
   if (status == media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
     const bool was_playing = platform_destination_->IsPlaying();
     StopPlatformDestination();
+
+    // The elapsed frame count of the current destination must be transferred
+    // to the new one. This ensures that `getOutputTimestamp().contextTime`
+    // does not go backward after the device change.
+    pending_platform_destination->TransferElapsedFramesFrom(
+        platform_destination_);
     platform_destination_ = pending_platform_destination;
+
     // Update the echo cancellation reference on next start if there is already
     // a pending change, or if the sink has actually changed.
     update_echo_cancellation_on_next_start_ =
