@@ -454,6 +454,8 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   wgpu::Adapter GetAdapter() const { return adapter_; }
   wgpu::Instance GetInstance() const { return instance_->Get(); }
 
+  webgpu::DawnPlatform* GetDawnPlatform() { return &platform_; }
+
 #if BUILDFLAG(IS_WIN)
   Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const {
     if (backend_type() == wgpu::BackendType::D3D11) {
@@ -1265,6 +1267,10 @@ GraphiteSharedContext* DawnContextProvider::GetGraphiteSharedContext() const {
     // skgpu::graphite::Context
     return graphite_shared_context_.get();
   }
+}
+
+webgpu::DawnPlatform* DawnContextProvider::GetDawnPlatform() {
+  return dawn_shared_context_->GetDawnPlatform();
 }
 
 }  // namespace gpu

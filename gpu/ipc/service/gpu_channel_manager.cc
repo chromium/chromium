@@ -21,6 +21,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -593,6 +594,8 @@ void GpuChannelManager::PopulateCache(const gpu::GpuDiskCacheHandle& handle,
     case gpu::GpuDiskCacheType::kDawnWebGPU:
     case gpu::GpuDiskCacheType::kDawnGraphite: {
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+      TRACE_EVENT1("gpu", "GpuChannelManager::PopulateCacheDawn", "handle_type",
+                   gpu::GetHandleType(handle));
       std::unique_ptr<gpu::webgpu::DawnCachingInterface>
           dawn_caching_interface =
               dawn_caching_interface_factory()->CreateInstance(handle);

@@ -289,4 +289,31 @@ bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
   }
 }
 
+void DawnPlatform::OnFramePresented() {
+  // Report cache hits' stats but only for first presentation.
+  base::AutoLock autolock(cache_map_->lock);
+  if (did_report_1st_present_cache_stats_) {
+    return;
+  }
+  did_report_1st_present_cache_stats_ = true;
+
+  for (auto const& [base_name, cache_counts] : cache_map_->counts) {
+    // Report Hit counts
+    base::UmaHistogramCounts10000(
+        uma_prefix_ + base_name + "CacheHit.Counts.1stPresent",
+        cache_counts.cache_hit_count);
+
+    // Report Percentage
+    int total_counts =
+        cache_counts.cache_hit_count + cache_counts.cache_miss_count;
+    if (total_counts > 0) {
+      int hit_percentage = (cache_counts.cache_hit_count * 100) / total_counts;
+
+      base::UmaHistogramPercentage(
+          uma_prefix_ + base_name + "CacheHit.Percentage.1stPresent",
+          hit_percentage);
+    }
+  }
+}
+
 }  // namespace gpu::webgpu

@@ -132,6 +132,11 @@
 #include "components/viz/service/display_embedder/skia_output_device_dawn.h"
 #endif
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#include "gpu/command_buffer/service/dawn_platform.h"
+#endif
+
 #if BUILDFLAG(IS_FUCHSIA)
 #include "components/viz/service/display_embedder/output_presenter_fuchsia.h"
 #endif
@@ -2445,6 +2450,12 @@ bool SkiaOutputSurfaceImplOnGpu::PresentFrame(OutputSurfaceFrame frame) {
   DCHECK(!frame.sub_buffer_rect || capabilities().supports_post_sub_buffer);
   output_device_->Present(frame.sub_buffer_rect, buffer_presented_callback_,
                           std::move(frame));
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+  if (auto* dawn_context_provider = context_state_->dawn_context_provider()) {
+    dawn_context_provider->GetDawnPlatform()->OnFramePresented();
+  }
+#endif
 
   return true;
 }

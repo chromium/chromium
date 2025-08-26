@@ -73,6 +73,8 @@ class GPU_GLES2_EXPORT DawnPlatform : public dawn::platform::Platform {
 
   bool IsFeatureEnabled(dawn::platform::Features feature) override;
 
+  void OnFramePresented();
+
   struct CacheCountsMap : public base::RefCountedThreadSafe<CacheCountsMap> {
     struct CacheCounts {
       CacheCounts() = default;
@@ -105,6 +107,7 @@ class GPU_GLES2_EXPORT DawnPlatform : public dawn::platform::Platform {
 
   scoped_refptr<CacheCountsMap> cache_map_;
   base::TimeTicks startup_time_;
+  bool did_report_1st_present_cache_stats_ = false;
 };
 
 }  // namespace gpu::webgpu

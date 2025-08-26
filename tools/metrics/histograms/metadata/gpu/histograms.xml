@@ -1607,6 +1607,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="GPU.{GraphiteDawnOrWebGPU}.{Cacheable}.CacheHit.Counts.1stPresent"
+    units="%" expires_after="2026-01-11">
+  <owner>lehoangquyen@google.com</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Tracks the number of cache hits for {Cacheable} for the 1st Presentation.
+    Recorded only for clients that support high-resolution clocks.
+  </summary>
+  <token key="Cacheable" variants="WebGPUCacheable"/>
+  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+</histogram>
+
+<histogram
+    name="GPU.{GraphiteDawnOrWebGPU}.{Cacheable}.CacheHit.Percentage.1stPresent"
+    units="%" expires_after="2026-01-11">
+  <owner>lehoangquyen@google.com</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Tracks the percentage of cache hits for {Cacheable} for the 1st
+    Presentation. Recorded only for clients that support high-resolution clocks.
+  </summary>
+  <token key="Cacheable" variants="WebGPUCacheable"/>
+  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+</histogram>
+
+<histogram
     name="GPU.{GraphiteDawnOrWebGPU}.{Cacheable}.CacheHit.Percentage.90SecondsPostStartup"
     units="%" expires_after="2026-01-11">
   <owner>lehoangquyen@google.com</owner>

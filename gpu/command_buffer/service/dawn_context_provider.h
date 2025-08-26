@@ -36,6 +36,10 @@ namespace gpu {
 class DawnSharedContext;
 class GpuProcessShmCount;
 
+namespace webgpu {
+class DawnPlatform;
+}
+
 class GPU_GLES2_EXPORT DawnContextProvider {
  public:
   using ValidateAdapterFn =
@@ -77,6 +81,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   bool is_vulkan_swiftshader_adapter() const;
   wgpu::Adapter GetAdapter() const;
   wgpu::Instance GetInstance() const;
+  webgpu::DawnPlatform* GetDawnPlatform();
 
   // Sets the caching interface. This must be called before graphite context
   // is created and before device is shared with any other threads.
