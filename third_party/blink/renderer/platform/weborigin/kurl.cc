@@ -215,7 +215,7 @@ const KURL& NullURL() {
 }
 
 String KURL::ElidedString() const {
-  const WTF::String& string = string_;
+  const String& string = string_;
   if (string.length() <= 1024) {
     return string;
   }

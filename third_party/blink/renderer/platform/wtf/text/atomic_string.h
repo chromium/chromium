@@ -250,8 +250,8 @@ inline bool operator==(const AtomicString& a, const AtomicString& b) {
   return a.Impl() == b.Impl();
 }
 inline bool operator==(const AtomicString& a, const String& b) {
-  // We don't use equalStringView so we get the isAtomic() optimization inside
-  // WTF::equal.
+  // We don't use EqualStringView so we get the IsAtomic() optimization inside
+  // blink::Equal.
   return Equal(a.Impl(), b.Impl());
 }
 inline bool operator==(const String& a, const AtomicString& b) {

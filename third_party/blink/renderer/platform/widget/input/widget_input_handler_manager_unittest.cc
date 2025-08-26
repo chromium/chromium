@@ -105,11 +105,10 @@ void WidgetInputHandlerManagerTest::DispatchTouchEvent(
 void WidgetInputHandlerManagerTest::ExpectNotConsumedDispatchEvent() {
   DispatchTouchEvent(
       /*expected_times_called=*/0,
-      WTF::BindOnce([](mojom::blink::InputEventResultSource,
-                       const ui::LatencyInfo&,
-                       mojom::blink::InputEventResultState result_state,
-                       mojom::blink::DidOverscrollParamsPtr,
-                       mojom::blink::TouchActionOptionalPtr) {
+      BindOnce([](mojom::blink::InputEventResultSource, const ui::LatencyInfo&,
+                  mojom::blink::InputEventResultState result_state,
+                  mojom::blink::DidOverscrollParamsPtr,
+                  mojom::blink::TouchActionOptionalPtr) {
         EXPECT_EQ(result_state,
                   mojom::blink::InputEventResultState::kNotConsumed);
       }));

@@ -582,8 +582,8 @@ class WTF_EXPORT String {
 #undef DISPATCH_CASE_OP
 
 inline bool operator==(const String& a, const String& b) {
-  // We don't use equalStringView here since we want the isAtomic() fast path
-  // inside WTF::equal.
+  // We don't use EqualStringView here since we want the IsAtomic() fast path
+  // inside blink::Equal.
   return Equal(a.Impl(), b.Impl());
 }
 inline bool operator==(const String& a, const char* b) {

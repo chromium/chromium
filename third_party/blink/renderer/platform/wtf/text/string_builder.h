@@ -152,7 +152,7 @@ class WTF_EXPORT StringBuilder {
 
   void AppendNumber(double, unsigned precision = 6);
 
-  // Like WTF::String::Format, supports Latin-1 only.
+  // Like blink::String::Format, supports Latin-1 only.
   PRINTF_FORMAT(2, 3)
   void AppendFormat(const char* format, ...);
 

@@ -434,11 +434,11 @@ void Compare() {
 TEST(VectorTest, Compare) {
   Compare<int>();
   Compare<Comparable>();
-  Compare<WTF::String>();
+  Compare<String>();
 }
 
 TEST(VectorTest, AppendFirst) {
-  Vector<WTF::String> vector;
+  Vector<String> vector;
   vector.push_back("string");
   // Test passes if it does not crash (reallocation did not make
   // the input reference stale).
@@ -448,7 +448,7 @@ TEST(VectorTest, AppendFirst) {
 
   limit = vector.capacity() + 1;
   for (size_t i = 0; i < limit; i++)
-    vector.push_back(const_cast<const WTF::String&>(vector.front()));
+    vector.push_back(const_cast<const String&>(vector.front()));
 }
 
 // The test below is for the following issue:

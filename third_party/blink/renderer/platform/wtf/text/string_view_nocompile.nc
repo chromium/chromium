@@ -10,11 +10,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 blink::StringView CannotReturnStringViewOfLocalString() {
-  WTF::String local_string{};
+  blink::String local_string{};
   return local_string; // expected-error {{address of stack memory associated with local variable 'local_string' returned}}
 }
 
-WTF::String ReturnsAString() {
+blink::String ReturnsAString() {
   return {};
 }
 

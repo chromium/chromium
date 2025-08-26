@@ -17,12 +17,12 @@ ScopedFakeUkmRecorder::ScopedFakeUkmRecorder()
     : recorder_(std::make_unique<ukm::TestUkmRecorder>()) {
   Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
       ukm::mojom::UkmRecorderFactory::Name_,
-      WTF::BindRepeating(
+      BindRepeating(
           [](ScopedFakeUkmRecorder* interface,
              mojo::ScopedMessagePipeHandle handle) {
             interface->SetHandle(std::move(handle));
           },
-          WTF::Unretained(this)));
+          Unretained(this)));
 }
 
 ScopedFakeUkmRecorder::~ScopedFakeUkmRecorder() {

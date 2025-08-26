@@ -240,8 +240,8 @@ TEST(SparseVectorPtrTest, SettingToNullptrMaintainsField) {
   EXPECT_FALSE(sparse_vector.HasField(FieldId::kFoo));
 }
 
-// WTF::Vector always uses 0 inline capacity when ANNOTATE_CONTIGUOUS_CONTAINER
-// is defined.
+// blink::Vector always uses 0 inline capacity
+// when ANNOTATE_CONTIGUOUS_CONTAINER is defined.
 #ifndef ANNOTATE_CONTIGUOUS_CONTAINER
 TEST(SparseVectorInlineCapacityTest, Basic) {
   SparseVector<FieldId, int, 16> sparse_vector;

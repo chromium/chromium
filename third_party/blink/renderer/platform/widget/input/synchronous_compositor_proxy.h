@@ -94,9 +94,9 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
       uint32_t layer_tree_frame_sink_id,
       uint32_t sequence_id) final;
   void SetScroll(const gfx::PointF& total_scroll_offset) final;
-  void BeginFrame(const viz::BeginFrameArgs& args,
-                  const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&
-                      timing_details) final;
+  void BeginFrame(
+      const viz::BeginFrameArgs& args,
+      const HashMap<uint32_t, viz::FrameTimingDetails>& timing_details) final;
   void SetBeginFrameSourcePaused(bool paused) final;
 
  protected:

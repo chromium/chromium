@@ -111,7 +111,7 @@ TEST(BlinkSchemefulSiteTest, FromWire) {
 }
 
 TEST(BlinkSchemefulSiteTest, HashBlinkSchemefulSite) {
-  WTF::HashMap<BlinkSchemefulSite, int> blink_schemeful_site_map_;
+  HashMap<BlinkSchemefulSite, int> blink_schemeful_site_map_;
 
   BlinkSchemefulSite blink_site_1(
       SecurityOrigin::CreateFromString("https://example.com"));

@@ -83,8 +83,8 @@ class TimerTest : public testing::Test {
 
  protected:
   base::TimeTicks start_time_;
-  WTF::Vector<base::TimeTicks> run_times_;
-  WTF::Vector<base::TimeTicks> next_fire_times_;
+  Vector<base::TimeTicks> run_times_;
+  Vector<base::TimeTicks> next_fire_times_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

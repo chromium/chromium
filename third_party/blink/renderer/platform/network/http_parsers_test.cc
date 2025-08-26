@@ -933,7 +933,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {
       "Set-Cookie: a\r\n"
       "Set-Cookie: b\r\n\r\n";
   const auto parsed_headers =
-      ParseHeaders(WTF::String::FromUTF8(headers), KURL("https://a.com"));
+      ParseHeaders(String::FromUTF8(headers), KURL("https://a.com"));
 
   ASSERT_TRUE(parsed_headers);
   ASSERT_TRUE(parsed_headers->no_vary_search_with_parse_error);

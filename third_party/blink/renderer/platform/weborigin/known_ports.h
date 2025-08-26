@@ -40,11 +40,11 @@ class KURL;
 // Returns true if |port| is known to be the default for |protocol|. |protocol|
 // must be lower case.
 PLATFORM_EXPORT bool IsDefaultPortForProtocol(uint16_t port,
-                                              const WTF::String& protocol);
+                                              const String& protocol);
 
 // Returns 0 for unknown protocols. |protocol| must be lower case.
 // Based on https://url.spec.whatwg.org/#default-port
-PLATFORM_EXPORT uint16_t DefaultPortForProtocol(const WTF::String& protocol);
+PLATFORM_EXPORT uint16_t DefaultPortForProtocol(const String& protocol);
 
 // Returns true if the port of the |url| is allowed for the scheme of the |url|.
 PLATFORM_EXPORT bool IsPortAllowedForScheme(const KURL&);

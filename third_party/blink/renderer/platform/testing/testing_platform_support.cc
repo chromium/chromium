@@ -336,8 +336,8 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
   InitializeWtf();
   Length::Initialize();
 
-  // This must be called after WTF::Initialize(), because ThreadSpecific<>
-  // used in this function depends on WTF::IsMainThread().
+  // This must be called after blink::InitializeWtf(), because ThreadSpecific<>
+  // used in this function depends on blink::IsMainThread().
   Platform::CreateMainThreadForTesting();
 
   testing_platform_support_ = std::make_unique<TestingPlatformSupport>();

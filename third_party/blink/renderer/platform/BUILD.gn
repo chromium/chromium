@@ -2720,7 +2720,7 @@ source_set("blink_image_decoder_fuzzer_test_support") {
   deps = [ ":platform" ]
 }
 
-# Fuzzer for WTF::unicode::MathVariant.
+# Fuzzer for blink::unicode::MathVariant.
 fuzzer_test("math_transform_fuzzer") {
   sources = [ "math_transform_fuzzer.cc" ]
   deps = [

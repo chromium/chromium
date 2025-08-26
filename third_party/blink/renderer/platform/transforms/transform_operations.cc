@@ -175,7 +175,7 @@ TransformOperations TransformOperations::Blend(
 
   bool success = true;
   TransformOperations result = ApplyFunctionToMatchingPrefix(
-      WTF::BindRepeating(
+      BindRepeating(
           [](double progress, TransformOperation* from,
              TransformOperation* to) {
             // Where the lists matched but one was longer, the shorter list is
@@ -211,7 +211,7 @@ TransformOperations TransformOperations::Accumulate(
 
   // Accumulate matching pairs of transform functions.
   TransformOperations result = ApplyFunctionToMatchingPrefix(
-      WTF::BindRepeating([](TransformOperation* from, TransformOperation* to) {
+      BindRepeating([](TransformOperation* from, TransformOperation* to) {
         if (to && from)
           return from->Accumulate(*to);
         // Where the lists matched but one was longer, the shorter list is

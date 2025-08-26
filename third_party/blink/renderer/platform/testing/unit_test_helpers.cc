@@ -65,14 +65,14 @@ base::FilePath WebTestsFilePath() {
 void RunPendingTasks() {
   base::RunLoop loop;
   scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
-      FROM_HERE, WTF::BindOnce(loop.QuitWhenIdleClosure()));
+      FROM_HERE, blink::BindOnce(loop.QuitWhenIdleClosure()));
   loop.Run();
 }
 
 void RunDelayedTasks(base::TimeDelta delay) {
   base::RunLoop loop;
   scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
-      FROM_HERE, WTF::BindOnce(loop.QuitWhenIdleClosure()), delay);
+      FROM_HERE, blink::BindOnce(loop.QuitWhenIdleClosure()), delay);
   loop.Run();
 }
 

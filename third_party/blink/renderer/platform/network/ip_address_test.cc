@@ -46,7 +46,7 @@ TEST(BlinkIPAddressTest, HashTraits) {
 }
 
 TEST(BlinkIPAddressTest, HashIpAddress) {
-  WTF::HashMap<net::IPAddress, int> ip_address_map;
+  HashMap<net::IPAddress, int> ip_address_map;
 
   const net::IPAddress kIPAddr1(kIpAddressBytes1);
   const net::IPAddress kIPAddr2(kIpAddressBytes2);

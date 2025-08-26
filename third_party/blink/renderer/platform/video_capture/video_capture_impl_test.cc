@@ -201,11 +201,11 @@ class VideoCaptureImplTest : public ::testing::Test {
                void(const Vector<media::VideoCaptureFormat>&));
 
   void StartCapture(int client_id, const media::VideoCaptureParams& params) {
-    const auto state_update_callback = WTF::BindRepeating(
+    const auto state_update_callback = BindRepeating(
         &VideoCaptureImplTest::OnStateUpdate, base::Unretained(this));
-    const auto frame_ready_callback = WTF::BindRepeating(
+    const auto frame_ready_callback = blink::BindRepeating(
         &VideoCaptureImplTest::OnFrameReady, base::Unretained(this));
-    const auto frame_dropped_callback = WTF::BindRepeating(
+    const auto frame_dropped_callback = BindRepeating(
         &VideoCaptureImplTest::OnFrameDropped, base::Unretained(this));
 
     VideoCaptureCallbacks video_capture_callbacks;
@@ -256,12 +256,12 @@ class VideoCaptureImplTest : public ::testing::Test {
 
   void GetDeviceSupportedFormats() {
     video_capture_impl_->GetDeviceSupportedFormats(
-        WTF::BindOnce(&VideoCaptureImplTest::OnDeviceSupportedFormats,
-                      base::Unretained(this)));
+        BindOnce(&VideoCaptureImplTest::OnDeviceSupportedFormats,
+                 base::Unretained(this)));
   }
 
   void GetDeviceFormatsInUse() {
-    video_capture_impl_->GetDeviceFormatsInUse(WTF::BindOnce(
+    video_capture_impl_->GetDeviceFormatsInUse(BindOnce(
         &VideoCaptureImplTest::OnDeviceFormatsInUse, base::Unretained(this)));
   }
 

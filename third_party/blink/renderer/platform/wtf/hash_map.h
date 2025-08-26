@@ -195,7 +195,7 @@ class HashMap {
   // Erases all elements for which pred(element) returns true.
   //
   // The predicate should have a signature compatible with:
-  //   bool pred(const WTF::KeyValuePair<KeyType, MappedType>&);
+  //   bool pred(const blink::KeyValuePair<KeyType, MappedType>&);
   template <typename Pred>
   void erase_if(Pred pred);
 

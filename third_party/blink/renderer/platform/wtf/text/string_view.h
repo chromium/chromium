@@ -410,9 +410,9 @@ inline bool EqualIgnoringASCIICase(const StringView& a,
                     : EqualIgnoringASCIICase(a.Span16(), span);
 }
 
-// TODO(esprehn): Can't make this an overload of WTF::equal since that makes
-// calls to equal() that pass literal strings ambiguous. Figure out if we can
-// replace all the callers with equalStringView and then rename it to equal().
+// TODO(esprehn): Can't make this an overload of blink::Equal since that makes
+// calls to Equal() that pass literal strings ambiguous. Figure out if we can
+// replace all the callers with EqualStringView and then rename it to Equal().
 WTF_EXPORT bool EqualStringView(const StringView&, const StringView&);
 
 inline bool operator==(const StringView& a, const StringView& b) {

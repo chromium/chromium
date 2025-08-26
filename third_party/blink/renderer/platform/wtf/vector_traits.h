@@ -37,7 +37,7 @@ namespace blink {
 //    possible.
 // 2. Garbage collection support: HeapVector requires certain traits to be set
 //    which is used to acknowledge that semantics are different from regular
-//    `WTF::Vector` and `std::vector`.
+//    `blink::Vector` and `std::vector`.
 template <typename T>
 struct VectorTraitsBase {
   using TraitType = T;
