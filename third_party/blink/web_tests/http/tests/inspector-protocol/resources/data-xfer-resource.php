@@ -1,16 +1,16 @@
 <?php
 header_remove("X-Powered-By");
 
-$redirect = (bool) $_GET["redirect"];
-$cached = (bool) $_GET["cached"];
-$chunked = (bool) $_GET["chunked"];
-$size = (int) $_GET["size"];
-$gzip = (bool) $_GET["gzip"];
-$flush_header_with_x_bytes = (int) $_GET["flush_header_with_x_bytes"];
-$wait_after_headers_packet = (int) $_GET["wait_after_headers_packet"];
-$flush_every_x_bytes = ((int) $_GET["flush_every"])?:1;
-$wait_every_x_bytes = ((int) $_GET["wait_every_x_bytes"])?:0xFFFFF;
-$wait_duration_every_x_bytes = ((int) $_GET["wait_duration_every_x_bytes"])?:50;
+$redirect = (bool) ($_GET["redirect"] ?? false);
+$cached = (bool) ($_GET["cached"] ?? false);
+$chunked = (bool) ($_GET["chunked"] ?? false);
+$size = (int) ($_GET["size"] ?? 0);
+$gzip = (bool) ($_GET["gzip"] ?? false);
+$flush_header_with_x_bytes = (int) ($_GET["flush_header_with_x_bytes"] ?? 0);
+$wait_after_headers_packet = (int) ($_GET["wait_after_headers_packet"] ?? 0);
+$flush_every_x_bytes = (int) ($_GET["flush_every"] ?? 1);
+$wait_every_x_bytes = (int) ($_GET["wait_every_x_bytes"] ?? 0xFFFFF);
+$wait_duration_every_x_bytes = (int) ($_GET["wait_duration_every_x_bytes"] ?? 50);
 
 $sent_data_size = 0;
 
