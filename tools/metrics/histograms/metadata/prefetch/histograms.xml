@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{WasServed}.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2025-12-21">
+    units="ms" expires_after="2026-02-22">
   <owner>kenoss@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>

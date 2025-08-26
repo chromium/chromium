@@ -379,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMPolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2025-12-20">
+    enum="EnterprisePolicyInvalidations" expires_after="2026-02-22">
   <owner>zmin@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMPolicyRefresh" enum="EnterprisePolicyRefresh"
-    expires_after="2025-12-20">
+    expires_after="2026-02-22">
   <owner>zmin@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -3753,7 +3753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserPolicyChromeOS.ChildUser.OAuthTokenError"
-    enum="GoogleServiceAuthError" expires_after="2025-12-07">
+    enum="GoogleServiceAuthError" expires_after="2026-02-22">
   <owner>longbowei@google.com</owner>
   <owner>zhangwenyu@google.com</owner>
   <owner>michaelpg@chromium.org</owner>

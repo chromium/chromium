@@ -492,7 +492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.Variant.OnPageLoad"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2025-12-21">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2026-02-22">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -2369,7 +2369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.GridTabSwitcher.ThumbnailFetchingResult"
-    enum="GridTabSwitcherThumbnailFetchingResult" expires_after="2025-12-22">
+    enum="GridTabSwitcherThumbnailFetchingResult" expires_after="2026-02-22">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-isochron-team@google.com</owner>
   <summary>

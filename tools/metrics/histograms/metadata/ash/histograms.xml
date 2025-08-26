@@ -5591,7 +5591,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Notification.MoveDown.AnimationSmoothness" units="%"
-    expires_after="2025-12-21">
+    expires_after="2026-02-22">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>

@@ -1652,7 +1652,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.FrameType" enum="FedCmRequesterFrameType"
-    expires_after="2025-12-21">
+    expires_after="2026-02-22">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -3022,7 +3022,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedTotal4" units="tokens"
-    expires_after="2025-12-14">
+    expires_after="2026-02-22">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <summary>

@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PDF.Actions" enum="ChromePDFViewerActions"
-    expires_after="2025-12-21">
+    expires_after="2026-02-22">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>

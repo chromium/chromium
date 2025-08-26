@@ -603,7 +603,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ConfigureDataTypes" enum="SyncDataTypes"
-    expires_after="2025-12-21">
+    expires_after="2026-02-22">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -2046,7 +2046,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncErrorInfobarDismissed" enum="SyncErrorInfobarTypes"
-    expires_after="2025-12-21">
+    expires_after="2026-02-22">
   <owner>rgod@google.com</owner>
   <owner>ylahodiuk@google.com</owner>
   <summary>
@@ -2059,7 +2059,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncErrorInfobarDisplayed2{SyncErrorInfobarTrigger}"
-    enum="SyncErrorInfobarTypes" expires_after="2025-12-21">
+    enum="SyncErrorInfobarTypes" expires_after="2026-02-22">
   <owner>rgod@google.com</owner>
   <owner>ylahodiuk@google.com</owner>
   <owner>jlebel@chromium.org</owner>

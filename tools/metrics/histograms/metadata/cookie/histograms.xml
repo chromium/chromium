@@ -604,7 +604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.LoadProblem" enum="CookieLoadProblem"
-    expires_after="2025-12-21">
+    expires_after="2026-02-22">
   <owner>morlovich@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1102,7 +1102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"
-    expires_after="2025-12-21">
+    expires_after="2026-02-22">
   <owner>wfh@chromium.org</owner>
   <summary>
     The amount of time (ms) between the cookie store load starting and

@@ -1391,7 +1391,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFinalLoaderCallback"
-    units="ms" expires_after="2025-12-21">
+    units="ms" expires_after="2026-02-22">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1614,7 +1614,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch{Granularity}.PaintTiming.NavigationToLargestContentfulPaint"
-    units="ms" expires_after="2025-12-21">
+    units="ms" expires_after="2026-02-22">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
@@ -1798,7 +1798,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.PaintTiming.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2025-12-21">
+    units="ms" expires_after="2026-02-22">
   <owner>kouhei@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -1812,7 +1812,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.PaintTiming.NavigationToLargestContentfulPaint"
-    units="ms" expires_after="2025-12-21">
+    units="ms" expires_after="2026-02-22">
   <owner>kouhei@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3994,7 +3994,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.LayoutInstability.CumulativeShiftScore"
-    units="scorex10" expires_after="2025-12-21">
+    units="scorex10" expires_after="2026-02-22">
   <owner>bmcquade@chromium.org</owner>
   <owner>skobes@chromium.org</owner>
   <summary>
