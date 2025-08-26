@@ -16,11 +16,13 @@
 #include "remoting/protocol/channel_socket_adapter.h"
 #include "remoting/protocol/port_allocator_factory.h"
 #include "remoting/protocol/transport_context.h"
+#include "third_party/webrtc/api/ice_transport_interface.h"
 #include "third_party/webrtc/p2p/base/p2p_constants.h"
 #include "third_party/webrtc/p2p/base/p2p_transport_channel.h"
 #include "third_party/webrtc/p2p/base/packet_transport_internal.h"
 #include "third_party/webrtc/p2p/base/port.h"
 #include "third_party/webrtc/rtc_base/crypto_random.h"
+#include "third_party/webrtc_overrides/environment.h"
 
 namespace remoting::protocol {
 
@@ -92,8 +94,10 @@ void IceTransportChannel::Connect(const std::string& name,
 
   // Create P2PTransportChannel, attach signal handlers and connect it.
   // TODO(sergeyu): Specify correct component ID for the channel.
-  channel_ = std::make_unique<webrtc::P2PTransportChannel>(
-      name_, 0, port_allocator_.get());
+  webrtc::IceTransportInit ice_init(WebRtcEnvironment());
+  ice_init.set_port_allocator(port_allocator_.get());
+  channel_ = webrtc::P2PTransportChannel::Create(name_, /*component=*/0,
+                                                 std::move(ice_init));
   std::string ice_password = webrtc::CreateRandomString(webrtc::ICE_PWD_LENGTH);
   channel_->SetIceRole((transport_context_->role() == TransportRole::CLIENT)
                            ? webrtc::ICEROLE_CONTROLLING
