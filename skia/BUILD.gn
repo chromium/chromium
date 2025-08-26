@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/avx512.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build/config/freetype/freetype.gni")
@@ -162,6 +163,9 @@ config("skia_library_config") {
     "IS_SKIA_IMPL=1",
     "SKIA_IMPLEMENTATION=1",
   ]
+  if (!allow_avx512) {
+    defines += [ "SKCMS_DISABLE_SKX=1" ]
+  }
 
   # Let Skia know whether to use `libpng`-based or Rust-based PNG decoder and
   # encoder in internal Skia code (e.g. in implementation of Fontations).
