@@ -16,6 +16,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//ios/chrome/test/wpt:chrome_ios_wpt/",
+        "module_scheme": "webtest",
         "name": "wpt_tests_ios",
         "resultdb": {
           "enable": true,

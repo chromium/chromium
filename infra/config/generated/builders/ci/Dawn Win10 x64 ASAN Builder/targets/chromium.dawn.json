@@ -263,6 +263,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:webgpu_blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "webgpu_blink_web_tests",
         "resultdb": {
           "enable": true
@@ -294,6 +295,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:webgpu_blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "webgpu_blink_web_tests_with_backend_validation",
         "resultdb": {
           "enable": true
@@ -401,6 +403,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:webgpu_blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "webgpu_swiftshader_blink_web_tests",
         "resultdb": {
           "enable": true
@@ -432,6 +435,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:webgpu_blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
         "resultdb": {
           "enable": true
@@ -715,6 +719,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:webgpu_blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "webgpu_blink_web_tests",
         "resultdb": {
           "enable": true
@@ -746,6 +751,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:webgpu_blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "webgpu_blink_web_tests_with_backend_validation",
         "resultdb": {
           "enable": true
@@ -967,6 +973,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:webgpu_blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "webgpu_swiftshader_blink_web_tests",
         "resultdb": {
           "enable": true
@@ -998,6 +1005,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:webgpu_blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
         "resultdb": {
           "enable": true

@@ -3569,6 +3569,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//chrome/android:chrome_public_wpt/",
+        "module_scheme": "webtest",
         "name": "android_chrome_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -3619,6 +3620,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//chrome/android:chrome_public_wpt/",
+        "module_scheme": "webtest",
         "name": "android_webdriver_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -3667,6 +3669,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//android_webview/test:trichrome_webview_wpt_64/",
+        "module_scheme": "webtest",
         "name": "android_webview_wpt_tests",
         "resultdb": {
           "enable": true,

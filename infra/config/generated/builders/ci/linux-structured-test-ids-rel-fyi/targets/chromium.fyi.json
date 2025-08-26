@@ -700,6 +700,129 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//:blink_python_tests/",
+        "name": "blink_python_tests",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_python_tests",
+        "test_id_prefix": "ninja://:blink_python_tests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "module_name": "//:blink_web_tests/",
+        "module_scheme": "webtest",
+        "name": "blink_web_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test": "blink_web_tests",
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "module_name": "//:blink_wpt_tests/",
+        "module_scheme": "webtest",
+        "name": "blink_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test": "blink_wpt_tests",
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "module_name": "//:chrome_wpt_tests/",
+        "module_scheme": "webtest",
+        "name": "chrome_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//content/shell:content_shell_crash_test/",
+        "module_scheme": "single",
+        "name": "content_shell_crash_test",
+        "resultdb": {
+          "enable": true,
+          "result_format": "single"
+        },
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "content_shell_crash_test",
+        "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
         "module_name": "//third_party/flatbuffers:flatbuffers_unittests/",
         "module_scheme": "single",
         "name": "flatbuffers_unittests",
@@ -715,6 +838,101 @@
         },
         "test": "flatbuffers_unittests",
         "test_id_prefix": "ninja://third_party/flatbuffers:flatbuffers_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//tools/grit:grit_python_unittests/",
+        "name": "grit_python_unittests",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "grit_python_unittests",
+        "test_id_prefix": "ninja://tools/grit:grit_python_unittests/"
+      },
+      {
+        "args": [
+          "--test-type",
+          "testharness",
+          "reftest",
+          "crashtest",
+          "print-reftest",
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "module_name": "//:headless_shell_wpt/",
+        "module_scheme": "webtest",
+        "name": "headless_shell_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 18
+        },
+        "test": "headless_shell_wpt",
+        "test_id_prefix": "ninja://:headless_shell_wpt/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//chrome/test:telemetry_gpu_unittests/",
+        "name": "telemetry_gpu_unittests",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_unittests",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_unittests/"
+      },
+      {
+        "args": [
+          "--jobs=1",
+          "--extra-browser-args=--disable-gpu"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//chrome/test:telemetry_unittests/",
+        "name": "telemetry_unittests",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "telemetry_unittests",
+        "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
       {
         "args": [
@@ -743,6 +961,27 @@
         },
         "test": "variations_smoke_tests",
         "test_id_prefix": "ninja://chrome/test:variations_smoke_tests/"
+      },
+      {
+        "args": [
+          "--gtest-benchmark-name=views_perftests"
+        ],
+        "merge": {
+          "args": [
+            "--smoke-test-mode"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "module_name": "//ui/views:views_perftests/",
+        "name": "views_perftests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_perftests",
+        "test_id_prefix": "ninja://ui/views:views_perftests/"
       }
     ]
   }

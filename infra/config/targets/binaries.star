@@ -272,6 +272,7 @@ targets.binaries.generated_script(
             "--verbose",
         ],
     ),
+    module_scheme = "webtest",
 )
 
 targets.binaries.generated_script(
@@ -288,6 +289,7 @@ targets.binaries.generated_script(
             "--verbose",
         ],
     ),
+    module_scheme = "webtest",
 )
 
 targets.binaries.console_test_launcher(
@@ -558,6 +560,7 @@ targets.binaries.generated_script(
             "--verbose",
         ],
     ),
+    module_scheme = "webtest",
 )
 
 targets.binaries.generated_script(
@@ -625,6 +628,7 @@ targets.binaries.generated_script(
             "--verbose",
         ],
     ),
+    module_scheme = "webtest",
 )
 
 targets.binaries.generated_script(
@@ -643,6 +647,7 @@ targets.binaries.generated_script(
             "--verbose",
         ],
     ),
+    module_scheme = "webtest",
 )
 
 targets.binaries.script(
@@ -1049,6 +1054,7 @@ targets.binaries.generated_script(
             "--verbose",
         ],
     ),
+    module_scheme = "webtest",
 )
 
 targets.binaries.console_test_launcher(
@@ -1691,6 +1697,7 @@ targets.binaries.generated_script(
             "--verbose",
         ],
     ),
+    module_scheme = "webtest",
 )
 
 targets.binaries.console_test_launcher(
@@ -2022,6 +2029,7 @@ targets.binaries.generated_script(
             "--verbose",
         ],
     ),
+    module_scheme = "webtest",
 )
 
 targets.binaries.generated_script(
@@ -2040,6 +2048,7 @@ targets.binaries.generated_script(
             "--verbose",
         ],
     ),
+    module_scheme = "webtest",
 )
 
 targets.binaries.generated_script(
@@ -2471,6 +2480,7 @@ targets.binaries.generated_script(
         "--results-directory",
         "${ISOLATED_OUTDIR}",
     ],
+    module_scheme = "webtest",
 )
 
 targets.binaries.script(

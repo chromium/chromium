@@ -1492,6 +1492,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "blink_web_tests",
         "resultdb": {
           "enable": true,
@@ -1522,6 +1523,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_wpt_tests/",
+        "module_scheme": "webtest",
         "name": "blink_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -1555,6 +1557,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "brfetch_blink_web_tests",
         "resultdb": {
           "enable": true,
@@ -1587,6 +1590,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_wpt_tests/",
+        "module_scheme": "webtest",
         "name": "brfetch_blink_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -1620,6 +1624,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:headless_shell_wpt/",
+        "module_scheme": "webtest",
         "name": "brfetch_headless_shell_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -1647,6 +1652,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:chrome_wpt_tests/",
+        "module_scheme": "webtest",
         "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -1861,6 +1867,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:headless_shell_wpt/",
+        "module_scheme": "webtest",
         "name": "headless_shell_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -1892,6 +1899,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "high_dpi_blink_web_tests",
         "resultdb": {
           "enable": true,
@@ -1922,6 +1930,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_wpt_tests/",
+        "module_scheme": "webtest",
         "name": "high_dpi_blink_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -1953,6 +1962,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:headless_shell_wpt/",
+        "module_scheme": "webtest",
         "name": "high_dpi_headless_shell_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -2003,6 +2013,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "not_site_per_process_blink_web_tests",
         "resultdb": {
           "enable": true,
@@ -2033,6 +2044,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_wpt_tests/",
+        "module_scheme": "webtest",
         "name": "not_site_per_process_blink_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -2064,6 +2076,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:headless_shell_wpt/",
+        "module_scheme": "webtest",
         "name": "not_site_per_process_headless_shell_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -2227,6 +2240,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "vulkan_swiftshader_blink_web_tests",
         "resultdb": {
           "enable": true,
@@ -2255,6 +2269,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:chrome_wpt_tests/",
+        "module_scheme": "webtest",
         "name": "webdriver_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -2399,6 +2414,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_web_tests/",
+        "module_scheme": "webtest",
         "name": "blink_web_tests",
         "resultdb": {
           "enable": true,
@@ -2428,6 +2444,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_wpt_tests/",
+        "module_scheme": "webtest",
         "name": "blink_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -2456,6 +2473,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:chrome_wpt_tests/",
+        "module_scheme": "webtest",
         "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,

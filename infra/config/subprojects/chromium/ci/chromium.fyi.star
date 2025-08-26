@@ -1511,9 +1511,10 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_gtests",
-            "flatbuffers_unittests",
-            "variations_smoke_tests",
+            "chromium_gtests",  # gtest module scheme
+            "desktop_chromium_isolated_scripts",  # webtest module scheme
+            "flatbuffers_unittests",  # single module scheme
+            "variations_smoke_tests",  # single module scheme
         ],
         mixins = [
             "linux-jammy",
