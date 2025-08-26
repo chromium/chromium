@@ -15,12 +15,12 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_toggle_button.js';
 import '../privacy_icons.html.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import './recent_site_permissions.js';
+import './site_settings_list.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -29,11 +29,14 @@ import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, SafetyHubEntryPoint} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
+import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import type {SafetyHubBrowserProxy, UnusedSitePermissions} from '../safety_hub/safety_hub_browser_proxy.js';
 import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from '../safety_hub/safety_hub_browser_proxy.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 
+import type {SettingsRecentSitePermissionsElement} from './recent_site_permissions.js';
 import type {CategoryListItem} from './site_settings_list.js';
 import {getTemplate} from './site_settings_page.html.js';
 
@@ -467,11 +470,12 @@ function buildItemListFromIds(orderedIdList: ContentSettingsTypes[]):
 export interface SettingsSiteSettingsPageElement {
   $: {
     advancedContentList: HTMLElement,
+    recentSitePermissions: SettingsRecentSitePermissionsElement,
   };
 }
 
 const SettingsSiteSettingsPageElementBase =
-    RouteObserverMixin(WebUiListenerMixin(PolymerElement));
+    RouteObserverMixin(SettingsViewMixin(WebUiListenerMixin(PolymerElement)));
 
 export class SettingsSiteSettingsPageElement extends
     SettingsSiteSettingsPageElementBase {
@@ -559,11 +563,6 @@ export class SettingsSiteSettingsPageElement extends
         },
       },
 
-      focusConfig: {
-        type: Object,
-        observer: 'focusConfigChanged_',
-      },
-
       permissionsExpanded_: Boolean,
       contentExpanded_: Boolean,
       noRecentSitePermissions_: Boolean,
@@ -592,7 +591,6 @@ export class SettingsSiteSettingsPageElement extends
   }
 
   declare prefs: Object;
-  declare focusConfig: FocusConfig;
   declare private permissionsExpanded_: boolean;
   declare private contentExpanded_: boolean;
   declare private noRecentSitePermissions_: boolean;
@@ -612,7 +610,9 @@ export class SettingsSiteSettingsPageElement extends
     contentAdvanced: CategoryListItem[],
   };
 
-  override currentRouteChanged() {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     if (Router.getInstance().getCurrentRoute() !== routes.SITE_SETTINGS) {
       return;
     }
@@ -622,17 +622,6 @@ export class SettingsSiteSettingsPageElement extends
       this.metricsBrowserProxy_.recordSafetyHubEntryPointShown(
           SafetyHubEntryPoint.SITE_SETTINGS);
     }
-  }
-
-  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
-    // focusConfig is set only once on the parent, so this observer should
-    // only fire once.
-    assert(!oldConfig);
-    this.focusConfig.set(routes.SITE_SETTINGS_ALL.path, () => {
-      const allSites = this.shadowRoot!.querySelector<HTMLElement>('#allSites');
-      assert(!!allSites);
-      focusWithoutInk(allSites);
-    });
   }
 
   private onSiteSettingsAllClick_() {
@@ -668,6 +657,35 @@ export class SettingsSiteSettingsPageElement extends
     this.metricsBrowserProxy_.recordSafetyHubEntryPointClicked(
         SafetyHubEntryPoint.SITE_SETTINGS);
     Router.getInstance().navigateTo(routes.SAFETY_HUB);
+  }
+
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    const focusConfig: FocusConfig = new Map([
+      [
+        `${routes.SITE_SETTINGS_ALL.path}`,
+        '#allSites',
+      ],
+    ]);
+
+    const siteSettingsLists =
+        this.shadowRoot!.querySelectorAll('settings-site-settings-list');
+    for (const list of siteSettingsLists) {
+      for (const [key, value] of list.getFocusConfig()) {
+        focusConfig.set(key, value);
+      }
+    }
+
+    for (const [key, value] of this.$.recentSitePermissions.getFocusConfig()) {
+      focusConfig.set(key, value);
+    }
+
+    return focusConfig;
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

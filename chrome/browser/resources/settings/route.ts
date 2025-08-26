@@ -29,6 +29,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.PRIVACY_GUIDE = r.PRIVACY.createChild('guide');
   }
   r.SITE_SETTINGS = r.PRIVACY.createChild('/content');
+  r.SITE_SETTINGS.hasMigratedToPlugin = true;
   r.SECURITY = r.PRIVACY.createChild('/security');
 
   r.COOKIES = r.PRIVACY.createChild('/cookies');

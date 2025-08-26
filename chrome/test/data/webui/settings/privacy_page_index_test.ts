@@ -63,17 +63,39 @@ suite('PrivacyPageIndex', function() {
     // Some of these routs have not been migrated to the new architecture
     // (crbug.com/424223101), therefore the contents still reside in the 'old'
     // <settings-basic-page> view.
-    const routesToVisit: Array<{route: Route, viewId: string}> = [
+    interface RouteInfo {
+      route: Route;
+      viewId: string;
+      parentViewId?: string;
+    }
+
+    const routesToVisit: RouteInfo[] = [
       {route: routes.CLEAR_BROWSER_DATA, viewId: 'old'},
-      {route: routes.COOKIES, viewId: 'cookies'},
-      {route: routes.SAFETY_HUB, viewId: 'safetyHub'},
+      {route: routes.COOKIES, viewId: 'cookies', parentViewId: 'old'},
+      {
+        route: routes.SAFETY_HUB,
+        viewId: 'safetyHub',
+        parentViewId: 'safetyHubEntryPoint',
+      },
       {route: routes.SECURITY, viewId: 'old'},
       {route: routes.SITE_SETTINGS_LOCATION, viewId: 'old'},
-      {route: routes.SITE_SETTINGS, viewId: 'old'},
+      {
+        route: routes.SITE_SETTINGS,
+        viewId: 'siteSettings',
+        parentViewId: 'old',
+      },
     ];
 
-    for (const {route, viewId} of routesToVisit) {
-      await testActiveViewsForRoute(route, [viewId]);
+    for (const routeInfo of routesToVisit) {
+      await testActiveViewsForRoute(routeInfo.route, [routeInfo.viewId]);
+      if (routeInfo.parentViewId) {
+        assertTrue(!!index.$.viewManager.querySelector(
+            `#${routeInfo.viewId}[slot=view][data-parent-view-id=${
+                routeInfo.parentViewId}]`));
+      } else {
+        assertTrue(!!index.$.viewManager.querySelector(
+            `#${routeInfo.viewId}[slot=view]:not([data-parent-view-id])`));
+      }
     }
   });
 

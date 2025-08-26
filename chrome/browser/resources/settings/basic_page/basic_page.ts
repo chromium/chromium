@@ -95,6 +95,12 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
           focusInSecurityPage.bind(this, '#securityKeysSubpageTrigger'));
     }
 
+    if (routes.SITE_SETTINGS) {
+      map.set(
+          routes.SITE_SETTINGS.path,
+          focusInPrivacyPage.bind(this, '#permissionsLinkRow'));
+    }
+
     return map;
   }
 

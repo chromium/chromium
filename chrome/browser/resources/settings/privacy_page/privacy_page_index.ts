@@ -169,6 +169,8 @@ export class SettingsPrivacyPageIndexElement extends
       case routes.SECURITY_KEYS:
         assert(this.enableSecurityKeysSubpage_);
         return ['securityKeys'];
+      case routes.SITE_SETTINGS:
+        return ['siteSettings'];
       case routes.SAFETY_HUB:
         return ['safetyHub'];
       case routes.PRIVACY_SANDBOX:

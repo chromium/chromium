@@ -215,19 +215,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             map.set(routes.SECURITY.path, '#securityLinkRow');
           }
 
-          if (routes.COOKIES) {
-            map.set(
-                `${routes.COOKIES.path}_${routes.PRIVACY.path}`,
-                '#thirdPartyCookiesLinkRow');
-            map.set(
-                `${routes.COOKIES.path}_${routes.BASIC.path}`,
-                '#thirdPartyCookiesLinkRow');
-          }
-
-          if (routes.SITE_SETTINGS) {
-            map.set(routes.SITE_SETTINGS.path, '#permissionsLinkRow');
-          }
-
           if (routes.PRIVACY_GUIDE) {
             map.set(routes.PRIVACY_GUIDE.path, '#privacyGuideLinkRow');
           }
@@ -522,6 +509,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         break;
       case 'securityKeys':
         triggerId = 'securityLinkRow';
+        break;
+      case 'siteSettings':
+        triggerId = 'permissionsLinkRow';
         break;
       case 'privacySandbox':
       case 'privacySandboxAdMeasurement':

@@ -1,12 +1,14 @@
-    <style include="cr-shared-style settings-shared">
-      .no-min-height {
-        min-height: 0;
-      }
+  <style include="cr-shared-style settings-shared">
+    .no-min-height {
+      min-height: 0;
+    }
 
-      #safetyHubModule {
-        padding: 0 var(--cr-section-padding);
-      }
-    </style>
+    #safetyHubModule {
+      padding: 0 var(--cr-section-padding);
+    }
+  </style>
+  <settings-subpage page-title="$i18n{siteSettings}"
+      learn-more-url="$i18n{exceptionsLearnMoreURL}">
     <template is="dom-if" if="[[showUnusedSitePermissions_]]">
       <div class="cr-row first">
         <h2>$i18n{safetyHub}</h2>
@@ -25,8 +27,7 @@
       <h2>$i18n{siteSettingsRecentPermissionsSectionLabel}</h2>
     </div>
     <settings-recent-site-permissions id="recentSitePermissions"
-        no-recent-permissions="{{noRecentSitePermissions_}}"
-        focus-config="[[focusConfig]]">
+        no-recent-permissions="{{noRecentSitePermissions_}}">
     </settings-recent-site-permissions>
 
     <cr-link-row data-route="SITE_SETTINGS_ALL" id="allSites"
@@ -39,8 +40,7 @@
     </div>
 
     <settings-site-settings-list id="basicPermissionsList" prefs="{{prefs}}"
-        category-list="[[lists_.permissionsBasic]]"
-        focus-config="[[focusConfig]]">
+        category-list="[[lists_.permissionsBasic]]">
     </settings-site-settings-list>
     <cr-expand-button class="cr-row"
         expanded="{{permissionsExpanded_}}">
@@ -48,8 +48,7 @@
     </cr-expand-button>
     <cr-collapse opened="[[permissionsExpanded_]]">
       <settings-site-settings-list id="advancedPermissionsList"
-          category-list="[[lists_.permissionsAdvanced]]"
-          focus-config="[[focusConfig]]">
+          category-list="[[lists_.permissionsAdvanced]]">
       </settings-site-settings-list>
     </cr-collapse>
 
@@ -57,8 +56,7 @@
       <h2>$i18n{siteSettingsContent}</h2>
     </div>
     <settings-site-settings-list id="basicContentList" prefs="{{prefs}}"
-        category-list="[[lists_.contentBasic]]"
-        focus-config="[[focusConfig]]">
+        category-list="[[lists_.contentBasic]]">
     </settings-site-settings-list>
     <cr-expand-button id="expandContent" class="cr-row"
         expanded="{{contentExpanded_}}">
@@ -66,8 +64,7 @@
     </cr-expand-button>
     <cr-collapse opened="[[contentExpanded_]]">
       <settings-site-settings-list id="advancedContentList" prefs="{{prefs}}"
-          category-list="[[lists_.contentAdvanced]]"
-          focus-config="[[focusConfig]]">
+          category-list="[[lists_.contentAdvanced]]">
       </settings-site-settings-list>
     </cr-collapse>
     <settings-toggle-button
@@ -78,3 +75,4 @@
         sub-label=
             "$i18n{safetyHubUnusedSitePermissionsSettingSublabel}">
     </settings-toggle-button>
+  </settings-subpage>

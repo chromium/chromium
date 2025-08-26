@@ -67,18 +67,12 @@ export class SettingsRecentSitePermissionsElement extends
         type: Array,
         value: () => [],
       },
-
-      focusConfig: {
-        type: Object,
-        observer: 'focusConfigChanged_',
-      },
     };
   }
 
   declare noRecentPermissions: boolean;
   declare private shouldFocusAfterPopulation_: boolean;
   declare private recentSitePermissionsList_: RecentSitePermissions[];
-  declare focusConfig: FocusConfig;
   private lastSelected_: {origin: string, incognito: boolean, index: number}|
       null;
 
@@ -94,17 +88,16 @@ export class SettingsRecentSitePermissionsElement extends
     this.lastSelected_ = null;
   }
 
-  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
-    // focusConfig is set only once on the parent, so this observer should
-    // only fire once.
-    assert(!oldConfig);
-
-    this.focusConfig.set(
+  getFocusConfig(): FocusConfig {
+    return new Map([
+      [
         routes.SITE_SETTINGS_SITE_DETAILS.path + '_' +
             routes.SITE_SETTINGS.path,
         () => {
           this.shouldFocusAfterPopulation_ = true;
-        });
+        },
+      ],
+    ]);
   }
 
   /**

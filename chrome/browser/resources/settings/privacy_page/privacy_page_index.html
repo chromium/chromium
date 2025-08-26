@@ -45,6 +45,13 @@
     </settings-cookies-page>
   </template>
 
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS, currentRoute, inSearchMode)]]">
+    <settings-site-settings-page slot="view" id="siteSettings"
+        data-parent-view-id="old" prefs="{{prefs}}">
+    </settings-site-settings-page>
+  </template>
+
   <template is="dom-if" if="[[isAdPrivacyAvailable_]]" restamp>
     <template is="dom-if" if="[[renderView_(
         routes_.PRIVACY_SANDBOX, currentRoute, inSearchMode)]]">

@@ -13,7 +13,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
 import type {FocusConfig} from '../focus_config.js';
@@ -72,11 +72,6 @@ class SettingsSiteSettingsListElement extends
         type: Map,
         computed: 'computeCategoryMap(categoryList)',
       },
-
-      focusConfig: {
-        type: Object,
-        observer: 'focusConfigChanged_',
-      },
     };
   }
 
@@ -93,27 +88,23 @@ class SettingsSiteSettingsListElement extends
   }
 
   declare categoryList: CategoryListItem[];
-  declare focusConfig: FocusConfig;
   declare private categoryMap_: Map<ContentSettingsTypes, number>;
   private browserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
 
-  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
-    // focusConfig is set only once on the parent, so this observer should
-    // only fire once.
-    assert(!oldConfig);
-
-    // Populate the |focusConfig| map of the parent <settings-animated-pages>
-    // element, with additional entries that correspond to subpage trigger
-    // elements residing in this element's Shadow DOM.
+  getFocusConfig(): FocusConfig {
+    const focusConfig: FocusConfig = new Map();
+    // Populate the |focusConfig| map with entries that correspond to subpage
+    // trigger elements residing in this element's Shadow DOM.
     for (const item of this.categoryList) {
-      this.focusConfig.set(item.route.path, () => microTask.run(() => {
+      focusConfig.set(item.route.path, () => {
         const toFocus =
             this.shadowRoot!.querySelector<HTMLElement>(`#${item.id}`);
         assert(!!toFocus);
         focusWithoutInk(toFocus);
-      }));
+      });
     }
+    return focusConfig;
   }
 
   private computeCategoryMap(categoryList: CategoryListItem[]):
@@ -360,6 +351,12 @@ class SettingsSiteSettingsListElement extends
 
   private onClick_(event: DomRepeatEvent<CategoryListItem>) {
     Router.getInstance().navigateTo(this.categoryList[event.model.index].route);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-site-settings-list': SettingsSiteSettingsListElement;
   }
 }
 
