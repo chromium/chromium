@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
@@ -142,24 +143,20 @@ void MessagePort::postMessage(ScriptState* script_state,
 
   msg.sender_agent_cluster_id = GetExecutionContext()->GetAgentClusterID();
   msg.locked_to_sender_agent_cluster = msg.message->IsLockedToAgentCluster();
+  msg.task_state_id = std::nullopt;
 
   // Only pass the task state ID if we're in the main world, as isolated world
   // task tracking is not yet supported. Also, only pass the task state if the
   // port is still entangled to its initially entangled port.
-  if (auto* tracker =
-          scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-      initially_entangled_port_ && tracker &&
-      script_state->World().IsMainWorld()) {
+  if (initially_entangled_port_) {
     if (scheduler::TaskAttributionInfo* task_state =
-            tracker->CurrentTaskState()) {
+            CaptureCurrentTaskStateIfMainWorld(script_state)) {
       // Since `initially_entangled_port_` is not nullptr, neither should be
       // `post_message_task_container_`.
       CHECK(post_message_task_container_);
       post_message_task_container_->AddPostMessageTask(task_state);
       msg.task_state_id =
           std::optional<scheduler::TaskAttributionId>(task_state->Id());
-    } else {
-      msg.task_state_id = std::nullopt;
     }
   }
 

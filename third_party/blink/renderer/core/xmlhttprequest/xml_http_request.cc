@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -582,8 +583,9 @@ void XMLHttpRequest::DispatchReadyStateChangeEvent() {
       else
         action = XMLHttpRequestProgressEventThrottle::kFlush;
     }
-    std::optional<scheduler::TaskAttributionTracker::TaskScope>
-        task_attribution_scope = MaybeCreateTaskAttributionScope();
+    std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope(
+        SetCurrentTaskStateIfTopLevel(task_state_, GetExecutionContext(),
+                                      TaskScopeType::kXMLHttpRequest));
     progress_event_throttle_->DispatchReadyStateChangeEvent(
         Event::Create(event_type_names::kReadystatechange), action);
   }
@@ -1011,10 +1013,7 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
   if (async_) {
     CHECK(!execution_context.IsContextDestroyed());
     if (world_ && world_->IsMainWorld()) {
-      if (auto* tracker = scheduler::TaskAttributionTracker::From(
-              execution_context.GetIsolate())) {
-        task_state_ = tracker->CurrentTaskState();
-      }
+      task_state_ = CaptureCurrentTaskState(&execution_context);
     }
     async_task_context_.Schedule(&execution_context, "XMLHttpRequest.send");
     DispatchProgressEvent(event_type_names::kLoadstart, 0, 0);
@@ -1278,9 +1277,10 @@ void XMLHttpRequest::DispatchProgressEvent(const AtomicString& type,
   uint64_t total =
       length_computable ? static_cast<uint64_t>(expected_length) : 0;
 
-  std::optional<scheduler::TaskAttributionTracker::TaskScope>
-      task_attribution_scope = MaybeCreateTaskAttributionScope();
   ExecutionContext* context = GetExecutionContext();
+  std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope(
+      SetCurrentTaskStateIfTopLevel(task_state_, context,
+                                    TaskScopeType::kXMLHttpRequest));
   probe::AsyncTask async_task(
       context, &async_task_context_,
       type == event_type_names::kLoadend ? nullptr : "progress", async_);
@@ -2077,21 +2077,6 @@ void XMLHttpRequest::Trace(Visitor* visitor) const {
 
 bool XMLHttpRequest::HasRequestHeaderForTesting(AtomicString name) const {
   return request_headers_.Contains(name);
-}
-
-std::optional<scheduler::TaskAttributionTracker::TaskScope>
-XMLHttpRequest::MaybeCreateTaskAttributionScope() {
-  if (!task_state_ || !GetExecutionContext() ||
-      GetExecutionContext()->IsContextDestroyed()) {
-    return std::nullopt;
-  }
-  // `task_state_` being non-null implies that task tracking is enabled and this
-  // object is associated with the main world.
-  auto* tracker = scheduler::TaskAttributionTracker::From(
-      GetExecutionContext()->GetIsolate());
-  CHECK(tracker);
-  return tracker->SetCurrentTaskStateIfTopLevel(task_state_,
-                                                TaskScopeType::kXMLHttpRequest);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const XMLHttpRequest* xhr) {

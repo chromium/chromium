@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/core/scheduler/scheduler_task_context.h"
 #include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/scheduler/web_scheduling_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -40,19 +41,14 @@ class V8IdleTask : public IdleTask {
              ExecutionContext* scheduling_context)
       : callback_(callback) {
     ScriptState* script_state = callback_->CallbackRelevantScriptState();
-    auto* tracker =
-        scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-    scheduler::TaskAttributionInfo* task_state = nullptr;
-    if (tracker && script_state->World().IsMainWorld()) {
-      task_state = tracker->CurrentTaskState();
-    }
     auto* signal =
         DOMScheduler::scheduler(*scheduling_context)
             ->GetFixedPriorityTaskSignal(
                 script_state, WebSchedulingPriority::kBackgroundPriority);
     web_scheduling_task_state_ = MakeGarbageCollected<WebSchedulingTaskState>(
-        task_state, MakeGarbageCollected<SchedulerTaskContext>(
-                        scheduling_context, /*abort_source=*/nullptr, signal));
+        CaptureCurrentTaskStateIfMainWorld(script_state),
+        MakeGarbageCollected<SchedulerTaskContext>(
+            scheduling_context, /*abort_source=*/nullptr, signal));
   }
 
   ~V8IdleTask() override = default;

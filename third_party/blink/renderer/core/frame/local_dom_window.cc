@@ -136,6 +136,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -189,13 +190,8 @@ int RequestAnimationFrame(Document* document,
   // impact is understood.
   SyncScrollAttemptHeuristic::DidRequestAnimationFrame();
 
-  ScriptState* script_state = callback->CallbackRelevantScriptState();
-  if (auto* tracker =
-          scheduler::TaskAttributionTracker::From(script_state->GetIsolate())) {
-    if (script_state->World().IsMainWorld()) {
-      callback->SetTaskState(tracker->CurrentTaskState());
-    }
-  }
+  callback->SetTaskState(CaptureCurrentTaskStateIfMainWorld(
+      callback->CallbackRelevantScriptState()));
 
   auto* frame_callback = MakeGarbageCollected<V8FrameCallback>(callback);
   frame_callback->SetUseLegacyTimeBase(legacy);
@@ -1011,13 +1007,8 @@ void LocalDOMWindow::DispatchPopstateEvent(
     bool has_ua_visual_transition) {
   DCHECK(GetFrame());
   std::optional<scheduler::TaskAttributionTracker::TaskScope>
-      task_attribution_scope;
-  if (task_state) {
-    if (auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate())) {
-      task_attribution_scope = tracker->SetCurrentTaskStateIfTopLevel(
-          task_state, TaskScopeType::kPopState);
-    }
-  }
+      task_attribution_scope(SetCurrentTaskStateIfTopLevel(
+          task_state, this, TaskScopeType::kPopState));
   DispatchEvent(*PopStateEvent::Create(std::move(state_object), history(),
                                        has_ua_visual_transition));
 }
@@ -1254,12 +1245,8 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   // which is commonly used as a scheduling mechanism.
   //
   // TODO(crbug.com/41494072): Consider only propagating in the main world.
-  scheduler::TaskAttributionInfo* task_context = nullptr;
-  if (source == this) {
-    if (auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate())) {
-      task_context = tracker->CurrentTaskState();
-    }
-  }
+  scheduler::TaskAttributionInfo* task_context =
+      source == this ? CaptureCurrentTaskState(this) : nullptr;
 
   // Allowing unbounded amounts of messages to build up for a suspended context
   // is problematic; consider imposing a limit or other restriction if this
@@ -1309,14 +1296,10 @@ void LocalDOMWindow::DispatchPostMessage(
       },
       perfetto::Flow::Global(event->GetTraceId()));
 
-  std::optional<scheduler::TaskAttributionTracker::TaskScope>
-      task_attribution_scope;
-  if (task_state) {
-    auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate());
-    CHECK(tracker);
-    task_attribution_scope = tracker->SetCurrentTaskStateIfTopLevel(
-        task_state, TaskScopeType::kPostMessage);
-  }
+  std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope(
+      SetCurrentTaskStateIfTopLevel(task_state, this,
+                                    TaskScopeType::kPostMessage));
+
   DispatchMessageEventWithOriginCheck(intended_target_origin.get(), event,
                                       location, source_agent_cluster_id);
 }

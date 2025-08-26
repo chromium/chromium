@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_function.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -50,21 +51,6 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
-
-namespace {
-scheduler::TaskAttributionInfo* CaptureCurrentTaskState(
-    ScriptState* script_state) {
-  auto* tracker =
-      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-  if (!tracker) {
-    return nullptr;
-  }
-  if (!script_state->World().IsMainWorld()) {
-    return nullptr;
-  }
-  return tracker->CurrentTaskState();
-}
-}  // namespace
 
 ScheduledAction::ScheduledAction(ScriptState* script_state,
                                  ExecutionContext& target,
@@ -78,7 +64,7 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
           To<LocalDOMWindow>(&target))) {
     function_ = handler;
     arguments_ = arguments;
-    task_state_ = CaptureCurrentTaskState(script_state);
+    task_state_ = CaptureCurrentTaskStateIfMainWorld(script_state);
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
   }
@@ -94,7 +80,7 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
           EnteredDOMWindow(script_state->GetIsolate()),
           To<LocalDOMWindow>(&target))) {
     code_ = handler;
-    task_state_ = CaptureCurrentTaskState(script_state);
+    task_state_ = CaptureCurrentTaskStateIfMainWorld(script_state);
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
   }
@@ -134,12 +120,9 @@ void ScheduledAction::Execute(ExecutionContext* context) {
   }
   ScriptState* script_state = script_state_->Get();
 
-  std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope =
-      task_state_
-          ? scheduler::TaskAttributionTracker::From(script_state->GetIsolate())
-                ->SetCurrentTaskStateIfTopLevel(task_state_,
-                                                TaskScopeType::kScheduledAction)
-          : std::nullopt;
+  std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope(
+      SetCurrentTaskStateIfTopLevel(task_state_, context,
+                                    TaskScopeType::kScheduledAction));
   {
     // ExecutionContext::CanExecuteScripts() relies on the current context to
     // determine if it is allowed. Enter the scope here.

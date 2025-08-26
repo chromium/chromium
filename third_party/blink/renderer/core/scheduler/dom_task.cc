@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/core/scheduler/scheduler_task_context.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_task_state.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/scheduler/web_scheduling_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -87,15 +88,8 @@ DOMTask::DOMTask(ScriptPromiseResolver<IDLAny>* resolver,
       callback_->CallbackRelevantScriptStateOrReportError("DOMTask", "Create");
   DCHECK(script_state && script_state->ContextIsValid());
 
-  scheduler::TaskAttributionInfo* task_state = nullptr;
-  if (script_state->World().IsMainWorld()) {
-    if (auto* tracker = scheduler::TaskAttributionTracker::From(
-            script_state->GetIsolate())) {
-      task_state = tracker->CurrentTaskState();
-    }
-  }
   web_scheduling_task_state_ = MakeGarbageCollected<WebSchedulingTaskState>(
-      task_state, scheduler_task_context);
+      CaptureCurrentTaskStateIfMainWorld(script_state), scheduler_task_context);
 
   auto* context = ExecutionContext::From(script_state);
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(

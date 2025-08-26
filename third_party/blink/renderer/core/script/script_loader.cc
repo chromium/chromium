@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/loader/url_matcher.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/import_map.h"
@@ -88,19 +89,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
-
-namespace {
-
-scheduler::TaskAttributionInfo* GetCurrentTaskState(ScriptState* script_state) {
-  auto* tracker =
-      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-  if (!script_state || !script_state->World().IsMainWorld() || !tracker) {
-    return nullptr;
-  }
-  return tracker->CurrentTaskState();
-}
-
-}  // namespace
 
 ScriptLoader::ScriptLoader(ScriptElementBase* element,
                            const CreateElementFlags flags)
@@ -882,7 +870,7 @@ PendingScript* ScriptLoader::PrepareScript(
         }
         ClassicPendingScript* pending_script = ClassicPendingScript::Fetch(
             url, element_document, options, cross_origin, encoding, element_,
-            defer, GetCurrentTaskState(script_state));
+            defer, CaptureCurrentTaskStateIfMainWorld(script_state));
         prepared_pending_script_ = pending_script;
         Resource* resource = pending_script->GetResource();
         resource_keep_alive_ = resource;
@@ -1037,7 +1025,8 @@ PendingScript* ScriptLoader::PrepareScript(
 
         prepared_pending_script_ = ClassicPendingScript::CreateInline(
             element_, position, source_url, base_url, source_text,
-            script_location_type, options, GetCurrentTaskState(script_state));
+            script_location_type, options,
+            CaptureCurrentTaskStateIfMainWorld(script_state));
 
         // <spec step="30.2.A.2">Mark as ready el given script.</spec>
         //
@@ -1103,7 +1092,7 @@ PendingScript* ScriptLoader::PrepareScript(
             network::mojom::RequestDestination::kScript, module_tree_client);
         prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(
             element_, module_tree_client, is_external_script_,
-            GetCurrentTaskState(script_state));
+            CaptureCurrentTaskStateIfMainWorld(script_state));
         break;
       }
     }
@@ -1244,7 +1233,7 @@ void ScriptLoader::FetchModuleScriptTree(
                        ModuleImportPhase::kEvaluation);
   prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(
       element_, module_tree_client, is_external_script_,
-      GetCurrentTaskState(modulator->GetScriptState()));
+      CaptureCurrentTaskStateIfMainWorld(modulator->GetScriptState()));
 }
 
 PendingScript* ScriptLoader::TakePendingScript(
