@@ -2266,6 +2266,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that interacting with the Tab Grid search UI shows the correct header
 // at each step.
 - (void)testSearchHeaderWithInactiveTabs {
+  // TODO(crbug.com/441293287): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [self loadTestURLsInNewTabs];
   [self relaunchAppWithInactiveTabsTestMode];
 
