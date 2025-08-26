@@ -532,8 +532,7 @@ const LayoutResult* BlockNode::Layout(
 
 #if DCHECK_IS_ON()
     if (layout_result) {
-      layout_result->CheckSameForSimplifiedLayout(
-          *previous_result, /* check_same_block_size */ !block_flow);
+      layout_result->CheckSameForSimplifiedLayout(*previous_result);
     }
 #endif
   } else if (cache_status == LayoutCacheStatus::kCanReuseLines) {

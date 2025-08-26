@@ -453,7 +453,6 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 
 #if DCHECK_IS_ON()
   void CheckSameForSimplifiedLayout(const PhysicalBoxFragment&,
-                                    bool check_same_block_size,
                                     bool check_no_fragmentation) const;
 #endif
 

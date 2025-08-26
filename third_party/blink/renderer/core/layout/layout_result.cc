@@ -348,12 +348,11 @@ void LayoutResult::MutableForOutOfFlow::SetDisplayLocksAffectedByAnchors(
 #if DCHECK_IS_ON()
 void LayoutResult::CheckSameForSimplifiedLayout(
     const LayoutResult& other,
-    bool check_same_block_size,
     bool check_no_fragmentation) const {
   To<PhysicalBoxFragment>(*physical_fragment_)
       .CheckSameForSimplifiedLayout(
           To<PhysicalBoxFragment>(*other.physical_fragment_),
-          check_same_block_size, check_no_fragmentation);
+          check_no_fragmentation);
 
   DCHECK(LinesUntilClamp() == other.LinesUntilClamp());
   GetExclusionSpace().CheckSameForSimplifiedLayout(other.GetExclusionSpace());

@@ -522,7 +522,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
     // We haven't actually performed simplified layout. Skip the checks for no
     // fragmentation, since it's okay to be fragmented in this case.
     cloned_cached_layout_result->CheckSameForSimplifiedLayout(
-        *cached_layout_result, /* check_same_block_size */ true,
+        *cached_layout_result,
         /* check_no_fragmentation*/ false);
 #endif
   }

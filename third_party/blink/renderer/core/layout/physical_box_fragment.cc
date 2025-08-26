@@ -1538,15 +1538,9 @@ PhysicalBoxFragment::AllowPostLayoutScope::~AllowPostLayoutScope() {
 
 void PhysicalBoxFragment::CheckSameForSimplifiedLayout(
     const PhysicalBoxFragment& other,
-    bool check_same_block_size,
     bool check_no_fragmentation) const {
   DCHECK_EQ(layout_object_, other.layout_object_);
-
-  LogicalSize size = ToLogicalSize(size_, Style().GetWritingMode());
-  LogicalSize other_size = ToLogicalSize(other.size_, Style().GetWritingMode());
-  DCHECK_EQ(size.inline_size, other_size.inline_size);
-  if (check_same_block_size)
-    DCHECK_EQ(size.block_size, other_size.block_size);
+  DCHECK_EQ(size_, other.size_);
 
   if (check_no_fragmentation) {
     // "simplified" layout doesn't work within a fragmentation context.
