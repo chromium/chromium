@@ -38,7 +38,7 @@ class HeadlessCustomScreenSizeBrowserTest : public HeadlessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(HeadlessCustomScreenSizeBrowserTest,
                        ScreenCoordinateConversion) {
-  display::Screen& screen = CHECK_DEREF(display::Screen::GetScreen());
+  display::Screen& screen = CHECK_DEREF(display::Screen::Get());
   display::Display primary_display = screen.GetPrimaryDisplay();
   ASSERT_THAT(primary_display.bounds(),
               testing::Eq(gfx::Rect(0, 0, kScreenWidth, kScreenHeight)));

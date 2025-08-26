@@ -27,7 +27,7 @@ int64_t GetDisplayIdFromWebContents(content::WebContents* web_contents) {
 display::mojom::ScreenOrientation GetNaturalScreenOrientation(
     int64_t display_id) {
   auto& headless_screen =
-      CHECK_DEREF(static_cast<HeadlessScreen*>(display::Screen::GetScreen()));
+      CHECK_DEREF(static_cast<HeadlessScreen*>(display::Screen::Get()));
   return headless_screen.IsNaturalPortrait(display_id)
              ? display::mojom::ScreenOrientation::kPortraitPrimary
              : display::mojom::ScreenOrientation::kLandscapePrimary;

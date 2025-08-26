@@ -28,7 +28,7 @@ const std::vector<display::Display>& GetAllDisplays() {
   // Web Platform we only have a collection of screens. So the protocol screen
   // is referring to Chrome's display. This is consistent with
   // window.getScreenDetails() API naming conventions.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   CHECK(screen);
 
   return screen->GetAllDisplays();
@@ -45,7 +45,7 @@ std::optional<display::Display> GetDisplay(int64_t display_id) {
 }
 
 bool IsPrimaryDisplay(int64_t display_id) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   CHECK(screen);
 
   return screen->GetPrimaryDisplay().id() == display_id;
@@ -139,7 +139,7 @@ Response EmulationHandler::AddScreen(
     std::optional<String> label,
     std::optional<bool> is_internal,
     std::unique_ptr<protocol::Emulation::ScreenInfo>* out_screen_info) {
-  CHECK(display::Screen::GetScreen()->IsHeadless());
+  CHECK(display::Screen::Get()->IsHeadless());
 
   display::Display display;
   display.SetScaleAndBounds(device_pixel_ratio.value_or(1.0),
@@ -186,7 +186,7 @@ Response EmulationHandler::AddScreen(
 }
 
 Response EmulationHandler::RemoveScreen(const String& screen_id) {
-  CHECK(display::Screen::GetScreen()->IsHeadless());
+  CHECK(display::Screen::Get()->IsHeadless());
 
   int64_t display_id;
   if (!base::StringToInt64(screen_id, &display_id)) {

@@ -134,7 +134,7 @@ void HeadlessScreen::UpdateScreenSizeForScreenOrientation(
     int64_t display_id,
     display::mojom::ScreenOrientation screen_orientation) {
   auto& headless_screen =
-      CHECK_DEREF(static_cast<HeadlessScreen*>(GetScreen()));
+      CHECK_DEREF(static_cast<HeadlessScreen*>(display::Screen::Get()));
   headless_screen.UpdateScreenSizeForScreenOrientationImpl(display_id,
                                                            screen_orientation);
 }
@@ -191,7 +191,7 @@ void HeadlessScreen::UpdateScreenSizeForScreenOrientationImpl(
 // static
 int64_t HeadlessScreen::AddDisplay(const display::Display& display) {
   auto& headless_screen =
-      CHECK_DEREF(static_cast<HeadlessScreen*>(GetScreen()));
+      CHECK_DEREF(static_cast<HeadlessScreen*>(display::Screen::Get()));
 
   display::Display new_display(display);
   new_display.set_id(GetNewDisplayId());
@@ -207,7 +207,7 @@ int64_t HeadlessScreen::AddDisplay(const display::Display& display) {
 // static
 void HeadlessScreen::RemoveDisplay(int64_t display_id) {
   auto& headless_screen =
-      CHECK_DEREF(static_cast<HeadlessScreen*>(GetScreen()));
+      CHECK_DEREF(static_cast<HeadlessScreen*>(display::Screen::Get()));
   headless_screen.display_list().RemoveDisplay(display_id);
   display::RemoveInternalDisplayId(display_id);
 }
