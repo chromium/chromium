@@ -207,7 +207,7 @@ TEST_F(ClipboardHistoryTest, HistoryIsReverseChronological) {
                                             u"test4"};
   std::vector<std::u16string> expected_strings = input_strings;
   // Reverse the vector, history should match this ordering.
-  std::reverse(std::begin(expected_strings), std::end(expected_strings));
+  std::ranges::reverse(expected_strings);
   WriteAndEnsureTextHistory(input_strings, expected_strings);
 }
 
@@ -295,7 +295,7 @@ TEST_F(ClipboardHistoryTest, HistoryLimit) {
   // The result should be a reversal of the last five elements.
   std::vector<std::u16string> expected_strings{input_strings.begin() + 1,
                                                input_strings.end()};
-  std::reverse(expected_strings.begin(), expected_strings.end());
+  std::ranges::reverse(expected_strings);
   WriteAndEnsureTextHistory(input_strings, expected_strings);
 }
 

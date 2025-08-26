@@ -74,7 +74,7 @@ void DeskButtonContainer::Layout(PassKey) {
     }
 
     if (base::i18n::IsRTL()) {
-      std::reverse(views_to_layout.begin(), views_to_layout.end());
+      std::ranges::reverse(views_to_layout);
     }
 
     int x = kDeskButtonContainerInsetsHorizontal.left();

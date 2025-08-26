@@ -6118,7 +6118,7 @@ TEST_P(WallpaperControllerTest, UpdateGooglePhotosDailyRefreshWallpaper) {
   // The `TestWallpaperControllerClient` sends back the reversed
   // `collection_id` when asked to fetch a daily photo.
   std::string expected_photo_id = kFakeGooglePhotosAlbumId;
-  std::reverse(expected_photo_id.begin(), expected_photo_id.end());
+  std::ranges::reverse(expected_photo_id);
 
   SimulateUserLogin(kAccountId1);
 
@@ -6202,7 +6202,7 @@ TEST_P(WallpaperControllerTest, DailyGooglePhotosAreCached) {
   // The `TestWallpaperControllerClient` sends back the reversed
   // `collection_id` when asked to fetch a daily photo.
   std::string expected_photo_id = kFakeGooglePhotosAlbumId;
-  std::reverse(expected_photo_id.begin(), expected_photo_id.end());
+  std::ranges::reverse(expected_photo_id);
 
   base::test::TestFuture<bool> google_photos_future;
   controller_->SetGooglePhotosWallpaper(

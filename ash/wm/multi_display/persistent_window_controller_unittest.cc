@@ -620,8 +620,7 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStacking) {
   ASSERT_TRUE(parent);
   std::vector<raw_ptr<aura::Window, VectorExperimental>>
       children_ordered_by_stacking = parent->children();
-  std::reverse(children_ordered_by_stacking.begin(),
-               children_ordered_by_stacking.end());
+  std::ranges::reverse(children_ordered_by_stacking);
   EXPECT_EQ(
       expected_mru_order,
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kAllDesks));
@@ -634,8 +633,7 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStacking) {
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   parent = window1->parent();
   children_ordered_by_stacking = parent->children();
-  std::reverse(children_ordered_by_stacking.begin(),
-               children_ordered_by_stacking.end());
+  std::ranges::reverse(children_ordered_by_stacking);
   ASSERT_TRUE(parent);
   EXPECT_EQ(
       expected_mru_order,
@@ -688,8 +686,7 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStackingInterleaved) {
   ASSERT_EQ(parent, window2->parent());
   std::vector<raw_ptr<aura::Window, VectorExperimental>>
       children_ordered_by_stacking = parent->children();
-  std::reverse(children_ordered_by_stacking.begin(),
-               children_ordered_by_stacking.end());
+  std::ranges::reverse(children_ordered_by_stacking);
   EXPECT_EQ(
       expected_mru_order,
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kAllDesks));
