@@ -23,6 +23,7 @@ import type {ComposeboxFile} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import type {PageCallbackRouter, PageHandlerRemote} from './composebox.mojom-webui.js';
+import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {FileUploadErrorType, FileUploadStatus} from './composebox_query.mojom-webui.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
@@ -38,6 +39,7 @@ export interface ComposeboxElement {
     input: HTMLInputElement,
     composebox: HTMLElement,
     submitIcon: CrIconButtonElement,
+    matches: ComposeboxDropdownElement,
   };
 }
 
@@ -124,6 +126,15 @@ export class ComposeboxElement extends I18nMixinLit
         type: Boolean,
       },
       showDropdown_: {type: Boolean},
+
+      /**
+       * Index of the currently selected match, if any.
+       * Do not modify this. Use <composebox-dropdown> API to change
+       * selection.
+       */
+      selectedMatchIndex_: {
+        type: Number,
+      },
     };
   }
 
@@ -145,6 +156,7 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxShowZps');
   // When enabled, the file input buttons will not be rendered.
   protected accessor hideFileInputs_: boolean = false;
+  protected accessor selectedMatchIndex_: number = -1;
   protected accessor submitEnabled_: boolean = false;
   protected accessor submitting_: boolean = false;
   protected accessor showErrorScrim_: boolean = false;
@@ -413,6 +425,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected handleInput_(e: Event) {
     const inputElement = e.target as HTMLInputElement;
     this.input_ = inputElement.value;
+    this.searchboxHandler_.queryAutocomplete(
+        stringToMojoString16(this.$.input.value), false);
   }
 
   protected onInputKeydown_(e: KeyboardEvent) {
@@ -452,9 +466,30 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onSubmitClick_(e: KeyboardEvent|MouseEvent) {
-    this.pageHandler_.submitQuery(
-        this.$.input.value.trim(), (e as MouseEvent).button || 0, e.altKey,
-        e.ctrlKey, e.metaKey, e.shiftKey);
+    // Users are allowed to submit queries that consist of only files with no
+    // input. `selectedMatchIndex_` will be >= 0 when there is non-empty input
+    // since the verbatim match is present.
+    assert(
+        (this.selectedMatchIndex_ >= 0 && this.result_) ||
+        this.files_.size > 0);
+
+    // If there is a match that is selected, open that match, else follow the
+    // non-autocomplete submission flow. The non-autocomplete submission flow
+    // will not have omnibox metrics recorded for it.
+    if (this.selectedMatchIndex_ >= 0) {
+      const match = this.result_!.matches[this.selectedMatchIndex_];
+      assert(match);
+
+      this.searchboxHandler_.openAutocompleteMatch(
+          this.selectedMatchIndex_, match.destinationUrl,
+          /* are_matches_showing */ true, (e as MouseEvent).button || 0,
+          e.altKey, e.ctrlKey, e.metaKey, e.shiftKey);
+    } else {
+      this.pageHandler_.submitQuery(
+          this.$.input.value.trim(), (e as MouseEvent).button || 0, e.altKey,
+          e.ctrlKey, e.metaKey, e.shiftKey);
+    }
+
     this.submitting_ = true;
 
     // If the composebox is expandable, collapse it and clear the input after
@@ -464,6 +499,10 @@ export class ComposeboxElement extends I18nMixinLit
       this.$.input.blur();
       this.submitEnabled_ = false;
     }
+  }
+
+  protected onSelectedMatchIndexChanged_(e: CustomEvent<{value: number}>) {
+    this.selectedMatchIndex_ = e.detail.value;
   }
 
   private recordFileValidationMetric_(
@@ -476,6 +515,13 @@ export class ComposeboxElement extends I18nMixinLit
   private onAutocompleteResultChanged_(result: AutocompleteResult) {
     // TODO(crbug.com/434748455): Display suggestions below composebox.
     this.result_ = result;
+    const hasMatches = this.result_?.matches?.length > 0;
+    const firstMatch = hasMatches ? this.result_.matches[0] : null;
+    // Zero suggest matches are not allowed to be default. Therefore, this
+    // makes sure zero suggest results aren't focused when they are returned.
+    if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
+      this.$.matches.selectFirst();
+    }
   }
 }
 

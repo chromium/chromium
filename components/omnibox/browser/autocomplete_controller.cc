@@ -1106,7 +1106,8 @@ bool AutocompleteController::ShouldRunProvider(
   }
 
   if (omnibox::IsComposebox(input_.current_page_classification())) {
-    return provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST;
+    return provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST ||
+           provider->type() == AutocompleteProvider::TYPE_SEARCH;
   }
 
 #if BUILDFLAG(IS_ANDROID)

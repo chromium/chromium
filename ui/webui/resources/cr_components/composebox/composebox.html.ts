@@ -42,6 +42,8 @@ export function getHtml(this: ComposeboxElement) {
       <ntp-composebox-dropdown id="matches"
         role="listbox"
         .result="${this.result_}"
+        .selected-match-index="${this.selectedMatchIndex_}"
+        @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
         ?hidden="${!this.showDropdown_}">
       </ntp-composebox-dropdown>
       <div id="uploadContainer" class="icon-fade">

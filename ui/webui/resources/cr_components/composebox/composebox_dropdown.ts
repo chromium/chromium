@@ -35,10 +35,20 @@ export class ComposeboxDropdownElement extends CrLitElement {
       result: {
         type: Object,
       },
+      selectedMatchIndex: {
+        type: Number,
+        notify: true,
+      },
     };
   }
 
   accessor result: AutocompleteResult|null = null;
+  protected accessor selectedMatchIndex: number = -1;
+
+  // Selects the first match.
+  selectFirst() {
+    this.selectedMatchIndex = 0;
+  }
 }
 
 declare global {

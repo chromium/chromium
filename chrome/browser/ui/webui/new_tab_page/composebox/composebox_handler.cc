@@ -17,24 +17,58 @@ using composebox::SessionState;
 namespace {
 class ComposeboxOmniboxClient final : public SearchboxOmniboxClient {
  public:
-  ComposeboxOmniboxClient(Profile* profile, content::WebContents* web_contents);
+  ComposeboxOmniboxClient(Profile* profile,
+                          content::WebContents* web_contents,
+                          ComposeboxHandler* composebox_handler);
   ~ComposeboxOmniboxClient() override;
 
   // OmniboxClient:
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override;
+  void OnAutocompleteAccept(
+      const GURL& destination_url,
+      TemplateURLRef::PostContent* post_content,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      AutocompleteMatchType::Type match_type,
+      base::TimeTicks match_selection_timestamp,
+      bool destination_url_entered_without_scheme,
+      bool destination_url_entered_with_http_scheme,
+      const std::u16string& text,
+      const AutocompleteMatch& match,
+      const AutocompleteMatch& alternative_nav_match) override;
+
+ private:
+  raw_ptr<ComposeboxHandler> composebox_handler_;
 };
 
 ComposeboxOmniboxClient::ComposeboxOmniboxClient(
     Profile* profile,
-    content::WebContents* web_contents)
-    : SearchboxOmniboxClient(profile, web_contents) {}
+    content::WebContents* web_contents,
+    ComposeboxHandler* composebox_handler)
+    : SearchboxOmniboxClient(profile, web_contents),
+      composebox_handler_(composebox_handler) {}
 
 ComposeboxOmniboxClient::~ComposeboxOmniboxClient() = default;
 
 metrics::OmniboxEventProto::PageClassification
 ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
   return metrics::OmniboxEventProto::NTP_COMPOSEBOX;
+}
+
+void ComposeboxOmniboxClient::OnAutocompleteAccept(
+    const GURL& destination_url,
+    TemplateURLRef::PostContent* post_content,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    AutocompleteMatchType::Type match_type,
+    base::TimeTicks match_selection_timestamp,
+    bool destination_url_entered_without_scheme,
+    bool destination_url_entered_with_http_scheme,
+    const std::u16string& text,
+    const AutocompleteMatch& match,
+    const AutocompleteMatch& alternative_nav_match) {
+  composebox_handler_->SubmitQuery(base::UTF16ToUTF8(text), disposition);
 }
 
 }  // namespace
@@ -63,7 +97,7 @@ ComposeboxHandler::ComposeboxHandler(
   // TODO(crbug.com/435470637): Consider moving to SearchboxHandler base class.
   owned_controller_ = std::make_unique<OmniboxController>(
       /*view=*/nullptr,
-      std::make_unique<ComposeboxOmniboxClient>(profile_, web_contents_));
+      std::make_unique<ComposeboxOmniboxClient>(profile_, web_contents_, this));
   controller_ = owned_controller_.get();
 
   autocomplete_controller_observation_.Observe(autocomplete_controller());
@@ -84,23 +118,30 @@ void ComposeboxHandler::NotifySessionAbandoned() {
 }
 
 void ComposeboxHandler::SubmitQuery(const std::string& query_text,
+                                    WindowOpenDisposition disposition) {
+  // This is the time that the user clicked the submit button, however optional
+  // autocomplete logic may be run before this if there was a match associated
+  // with the query.
+  base::Time query_start_time = base::Time::Now();
+  metrics_recorder_->NotifySessionStateChanged(SessionState::kQuerySubmitted);
+  OpenUrl(query_controller_->CreateAimUrl(query_text, query_start_time),
+          disposition);
+  metrics_recorder_->NotifySessionStateChanged(
+      SessionState::kNavigationOccurred);
+  metrics_recorder_->RecordQueryMetrics(
+      query_text.size(), query_controller_->num_files_in_request());
+}
+
+void ComposeboxHandler::SubmitQuery(const std::string& query_text,
                                     uint8_t mouse_button,
                                     bool alt_key,
                                     bool ctrl_key,
                                     bool meta_key,
                                     bool shift_key) {
-  // This is the time that the user clicked the submit button, and should not
-  // go any lower in this method.
-  base::Time query_start_time = base::Time::Now();
-  metrics_recorder_->NotifySessionStateChanged(SessionState::kQuerySubmitted);
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  OpenUrl(query_controller_->CreateAimUrl(query_text, query_start_time), disposition);
-  metrics_recorder_->NotifySessionStateChanged(
-      SessionState::kNavigationOccurred);
-  metrics_recorder_->RecordQueryMetrics(
-      query_text.size(), query_controller_->num_files_in_request());
+  SubmitQuery(query_text, disposition);
 }
 
 void ComposeboxHandler::FocusChanged(bool focused) {

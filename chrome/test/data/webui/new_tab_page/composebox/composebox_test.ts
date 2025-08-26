@@ -8,7 +8,9 @@ import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_compo
 import type {PageRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {FileUploadErrorType, FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -29,6 +31,7 @@ suite('NewTabPageComposeboxTest', () => {
   let handler: TestMock<PageHandlerRemote>;
   let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
+  let searchboxCallbackRouterRemote: SearchboxPageRemote;
   let metrics: MetricsTracker;
 
   setup(() => {
@@ -43,6 +46,9 @@ suite('NewTabPageComposeboxTest', () => {
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
+    searchboxCallbackRouterRemote =
+        ComposeboxProxyImpl.getInstance()
+            .searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
     metrics = fakeMetricsPrivate();
   });
 
@@ -88,6 +94,49 @@ suite('NewTabPageComposeboxTest', () => {
       value: composeboxElement.$.imageInput,
     });
     return mockFileChange;
+  }
+
+  function createAutocompleteMatch(): AutocompleteMatch {
+    return {
+      a11yLabel: {data: []},
+      actions: [],
+      allowedToBeDefaultMatch: false,
+      isSearchType: false,
+      isEnterpriseSearchAggregatorPeopleType: false,
+      swapContentsAndDescription: false,
+      supportsDeletion: false,
+      suggestionGroupId: -1,  // Indicates a missing suggestion group Id.
+      contents: {data: []},
+      contentsClass: [{offset: 0, style: 0}],
+      description: {data: []},
+      descriptionClass: [{offset: 0, style: 0}],
+      destinationUrl: {url: ''},
+      inlineAutocompletion: {data: []},
+      fillIntoEdit: {data: []},
+      iconPath: '',
+      iconUrl: {url: ''},
+      imageDominantColor: '',
+      imageUrl: '',
+      removeButtonA11yLabel: {data: []},
+      type: '',
+      isRichSuggestion: false,
+      isWeatherAnswerSuggestion: null,
+      answer: null,
+      tailSuggestCommonPrefix: null,
+    };
+  }
+
+  function createSearchMatch(modifiers: Partial<AutocompleteMatch> = {}):
+      AutocompleteMatch {
+    return Object.assign(
+        createAutocompleteMatch(), {
+          isSearchType: true,
+          contents: stringToMojoString16('hello world'),
+          destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
+          fillIntoEdit: stringToMojoString16('hello world'),
+          type: 'search-suggest',
+        },
+        modifiers);
   }
 
   async function uploadFileAndVerify(token: Object, file: File) {
@@ -500,23 +549,28 @@ suite('NewTabPageComposeboxTest', () => {
   test('submit button click leads to handler called', async () => {
     createComposeboxElement();
     // Assert.
-    assertEquals(handler.getCallCount('submitQuery'), 0);
+    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
 
     // Arrange.
     composeboxElement.$.input.value = 'test';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
+    const matches = [createSearchMatch({allowedToBeDefaultMatch: true})];
+    searchboxCallbackRouterRemote.autocompleteResultChanged({
+      input: stringToMojoString16('test'),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     composeboxElement.$.submitIcon.click();
     await microtasksFinished();
 
     // Assert call occurs.
-    assertEquals(handler.getCallCount('submitQuery'), 1);
+    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 1);
   });
 
   test('empty input does not lead to submission', async () => {
     createComposeboxElement();
-    // Assert.
-    assertEquals(handler.getCallCount('submitQuery'), 0);
 
     // Arrange.
     composeboxElement.$.input.value = '';
@@ -527,6 +581,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert call does not occur.
     assertEquals(handler.getCallCount('submitQuery'), 0);
+    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
   });
 
   test('submit button is disabled', async () => {
@@ -542,11 +597,18 @@ suite('NewTabPageComposeboxTest', () => {
   test('keydown submit only works for enter', async () => {
     createComposeboxElement();
     // Assert.
-    assertEquals(handler.getCallCount('submitQuery'), 0);
+    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
 
     // Arrange.
     composeboxElement.$.input.value = 'test';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
+    const matches = [createSearchMatch({allowedToBeDefaultMatch: true})];
+    searchboxCallbackRouterRemote.autocompleteResultChanged({
+      input: stringToMojoString16('test'),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     const shiftEnterEvent = new KeyboardEvent('keydown', {
       key: 'Enter',
@@ -558,7 +620,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert.
-    assertEquals(handler.getCallCount('submitQuery'), 0);
+    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
 
     const enterEvent = new KeyboardEvent('keydown', {
       key: 'Enter',
@@ -569,7 +631,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert call occurs.
-    assertEquals(handler.getCallCount('submitQuery'), 1);
+    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 1);
   });
 
   test('clear button title changes with input', async () => {
@@ -631,5 +693,21 @@ suite('NewTabPageComposeboxTest', () => {
     // Restore.
     loadTimeData.overrideValues(
         {composeboxShowZps: false, composeboxShowTypedSuggest: false});
+  });
+
+  test('composebox does not open match when only file present', async () => {
+    createComposeboxElement();
+
+    assertEquals(handler.getCallCount('submitQuery'), 0);
+    const token = {low: BigInt(1), high: BigInt(2)};
+    await uploadFileAndVerify(
+        token, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+
+    composeboxElement.$.submitIcon.click();
+    await microtasksFinished();
+
+    // Assert call occurs.
+    assertEquals(handler.getCallCount('submitQuery'), 1);
+    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
   });
 });

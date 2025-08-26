@@ -43,6 +43,13 @@ class ComposeboxHandler
       MetricsReporter* metrics_reporter);
   ~ComposeboxHandler() override;
 
+  // This is called from either the ComposeboxOmniboxClient when a match is
+  // present in navigation or for the PageHandler's `SubmitQuery()` when there
+  // was no match present. The latter only happens when submit is clicked with
+  // only a file and no input.
+  void SubmitQuery(const std::string& query_text,
+                   WindowOpenDisposition disposition);
+
   // composebox::mojom::PageHandler:
   void NotifySessionStarted() override;
   void NotifySessionAbandoned() override;

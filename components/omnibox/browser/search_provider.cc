@@ -301,11 +301,13 @@ void SearchProvider::Start(const AutocompleteInput& input,
 
   input_ = input;
 
-  // Don't search the history database for on-focus inputs or Lens searchboxes.
-  // On-focus inputs should only be used to warm up the suggest server; and Lens
-  // searchboxes do not show suggestions from the history database.
+  // Don't search the history database for on-focus inputs, Lens, or compose
+  // searchboxes. On-focus inputs should only be used to warm up the suggest
+  // server; and Lens searchboxes do not show suggestions from the history
+  // database.
   if (!input.IsZeroSuggest() &&
-      !omnibox::IsLensSearchbox(input_.current_page_classification())) {
+      !omnibox::IsLensSearchbox(input_.current_page_classification()) &&
+      !omnibox::IsComposebox(input_.current_page_classification())) {
     DoHistoryQuery(minimal_changes);
     // Answers needs scored history results before any suggest query has been
     // started, since the query for answer-bearing results needs additional
@@ -700,12 +702,13 @@ base::TimeDelta SearchProvider::GetSuggestQueryDelay() const {
 }
 
 void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
-  // Since there is currently no contextual search suggest, lens contextual
-  // searchboxes, shouldn't query suggest and only the verbatim matches should
-  // be shown.
-  if (omnibox::IsLensContextualSearchbox(
-          input_.current_page_classification()) &&
-      !lens::features::ShowContextualSearchboxSearchSuggest()) {
+  // Since there is currently no contextual search suggest or typed AI mode
+  // suggest, lens contextual searchboxes and the composebox, shouldn't query
+  // suggest and only the verbatim matches should be shown.
+  if ((omnibox::IsLensContextualSearchbox(
+           input_.current_page_classification()) &&
+       !lens::features::ShowContextualSearchboxSearchSuggest()) ||
+      omnibox::IsComposebox(input_.current_page_classification())) {
     return;
   }
   // Make sure the current query can be sent to at least one suggest service.
