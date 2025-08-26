@@ -90,9 +90,6 @@ class WebHistoryService : public KeyedService {
 
   using ExpireWebHistoryCallback = base::OnceCallback<void(bool success)>;
 
-  using AudioWebHistoryCallback =
-      base::OnceCallback<void(bool success, bool new_enabled_value)>;
-
   using QueryWebAndAppActivityCallback = base::OnceCallback<void(bool success)>;
 
   using QueryOtherFormsOfBrowsingHistoryCallback =
@@ -141,27 +138,11 @@ class WebHistoryService : public KeyedService {
                             const net::PartialNetworkTrafficAnnotationTag&
                                 partial_traffic_annotation);
 
-  // Requests whether audio history recording is enabled.
-  virtual void GetAudioHistoryEnabled(
-      AudioWebHistoryCallback callback,
-      const net::PartialNetworkTrafficAnnotationTag&
-          partial_traffic_annotation);
-
-  // Sets the state of audio history recording to `new_enabled_value`.
-  virtual void SetAudioHistoryEnabled(
-      bool new_enabled_value,
-      AudioWebHistoryCallback callback,
-      const net::PartialNetworkTrafficAnnotationTag&
-          partial_traffic_annotation);
-
   // Queries whether web and app activity is enabled on the server.
   virtual void QueryWebAndAppActivity(
       QueryWebAndAppActivityCallback callback,
       const net::PartialNetworkTrafficAnnotationTag&
           partial_traffic_annotation);
-
-  // Used for tests.
-  size_t GetNumberOfPendingAudioHistoryRequests();
 
   // Whether there are other forms of browsing history stored on the server.
   void QueryOtherFormsOfBrowsingHistory(
@@ -199,14 +180,6 @@ class WebHistoryService : public KeyedService {
       WebHistoryService::Request* request,
       bool success);
 
-  // Called by `request` when a request to get or set audio history from the
-  // server has completed. Unpacks the response and calls `callback`, which is
-  // the original callback that was passed to AudioHistory().
-  void AudioHistoryCompletionCallback(
-      WebHistoryService::AudioWebHistoryCallback callback,
-      WebHistoryService::Request* request,
-      bool success);
-
   // Called by `request` when a web and app activity query has completed.
   // Unpacks the response and calls `callback`, which is the original callback
   // that was passed to QueryWebAndAppActivity().
@@ -241,9 +214,6 @@ class WebHistoryService : public KeyedService {
   // Pending expiration requests to be canceled if not complete by profile
   // shutdown.
   std::map<Request*, std::unique_ptr<Request>> pending_expire_requests_;
-
-  // Pending requests to be canceled if not complete by profile shutdown.
-  std::map<Request*, std::unique_ptr<Request>> pending_audio_history_requests_;
 
   // Pending web and app activity queries to be canceled if not complete by
   // profile shutdown.
