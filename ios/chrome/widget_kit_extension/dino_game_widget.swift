@@ -12,7 +12,7 @@ struct DinoGameWidget: Widget {
   let kind: String = "DinoGameWidget"
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
-      DinoGameWidgetEntryView(entry: entry)
+      DinoGameWidgetEntryView(destinationURL: WidgetConstants.DinoGameWidget.url, entry: entry)
     }
     .configurationDisplayName(
       Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DISPLAY_NAME")
@@ -35,7 +35,9 @@ struct DinoGameWidget: Widget {
       AppIntentConfiguration(
         kind: kind, intent: SelectAccountIntent.self, provider: ConfigurableProvider()
       ) { entry in
-        DinoGameWidgetEntryView(entry: entry)
+        DinoGameWidgetEntryView(
+          destinationURL: destinationURL(
+            url: WidgetConstants.DinoGameWidget.url, gaia: entry.gaiaID), entry: entry)
       }
       .configurationDisplayName(
         Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DISPLAY_NAME")
@@ -50,6 +52,7 @@ struct DinoGameWidget: Widget {
 #endif
 
 struct DinoGameWidgetEntryView: View {
+  let destinationURL: URL
   let background = "widget_dino_background"
   let backgroundPlaceholder = "widget_dino_background_placeholder"
   var entry: ConfigureWidgetEntry
@@ -63,7 +66,7 @@ struct DinoGameWidgetEntryView: View {
       // We wrap this widget in a link on top of using `widgetUrl` so that the voice over will treat
       // the widget as one tap target. Without the wrapping, voice over treats the content within
       // the widget as multiple tap targets.
-      Link(destination: WidgetConstants.DinoGameWidget.url) {
+      Link(destination: destinationURL) {
         ZStack {
           Image(redactionReasons.isEmpty ? background : backgroundPlaceholder)
             .resizable()
@@ -85,7 +88,7 @@ struct DinoGameWidgetEntryView: View {
           }
         }
       }
-      .widgetURL(destinationURL(url: WidgetConstants.DinoGameWidget.url, gaia: entry.gaiaID))
+      .widgetURL(destinationURL)
       .accessibility(
         label: Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL")
       )
