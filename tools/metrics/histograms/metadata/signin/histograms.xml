@@ -2501,6 +2501,34 @@ tokens and is needed for as long as Chrome is fetching access tokens. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.OAuthMultiloginDeviceBoundSessionParsingError"
+    enum="OAuthMultiloginDeviceBoundSessionParsingError"
+    expires_after="2026-06-01">
+  <owner>ernn@google.com</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records an error (or lack of any) that occured during parsing the device
+    bound sessions data from the OAuthMultilogin API response. Recorded upon
+    receiving a successful response from OAuthMultilogin API only if the cookie
+    parsing completed successfully and the response contained extra information
+    about device bound cookies.
+  </summary>
+</histogram>
+
+<histogram name="Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain"
+    units="domains" expires_after="2026-06-01">
+  <owner>ernn@google.com</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the number of unknown domains in the device bound sessions data from
+    the OAuthMultilogin API response. Recorded upon receiving a successful
+    response from OAuthMultilogin API only if the cookie parsing and the device
+    bound sessions parsing completed successfully.
+  </summary>
+</histogram>
+
 <histogram name="Signin.OAuthMultiloginResponseEncryptionError"
     enum="TokenBindingResponseEncryptionError" expires_after="2025-12-28">
   <owner>alexilin@chromium.org</owner>

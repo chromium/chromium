@@ -41,6 +41,17 @@ void RecordMultiloginResponseEncryptionError(
                                 error);
 }
 
+void RecordDeviceBoundSessionParsingError(
+    OAuthMultiloginDeviceBoundSessionParsingError error) {
+  base::UmaHistogramEnumeration(
+      "Signin.OAuthMultiloginDeviceBoundSessionParsingError", error);
+}
+
+void RecordDeviceBoundSessionUnknownDomainsCount(int count) {
+  base::UmaHistogramCounts100(
+      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain", count);
+}
+
 DeviceBoundSession::Domain ParseDeviceBoundSessionDomain(
     std::string_view domain) {
   if (base::EqualsCaseInsensitiveASCII(domain, "GOOGLE_COM")) {
@@ -229,6 +240,7 @@ void OAuthMultiloginResult::TryParseDeviceBoundSessionsFromValue(
     return;
   }
 
+  int unknown_domains_count = 0;
   std::vector<DeviceBoundSession> device_bound_sessions;
   for (const base::Value& device_bound_session_val :
        *device_bound_sessions_list) {
@@ -250,11 +262,17 @@ void OAuthMultiloginResult::TryParseDeviceBoundSessionsFromValue(
     const std::string* domain = device_bound_session_dict->FindString("domain");
     if (!domain) {
       // Malformed response, domain is required.
+      RecordDeviceBoundSessionParsingError(
+          OAuthMultiloginDeviceBoundSessionParsingError::kInvalidDomain);
       return;
     }
     device_bound_session.domain = ParseDeviceBoundSessionDomain(*domain);
     if (device_bound_session.domain == DeviceBoundSession::Domain::kUnknown) {
-      // Unknown domain, nothing to do.
+      // Unknown domain, nothing to do. This is not necessarily an error, as the
+      // server might return a session for a domain that the client doesn't
+      // recognize yet, we record the histogram to track the rate of such
+      // events.
+      ++unknown_domains_count;
       continue;
     }
 
@@ -272,6 +290,19 @@ void OAuthMultiloginResult::TryParseDeviceBoundSessionsFromValue(
             *register_session_payload_dict);
     if (!register_session_payload.has_value()) {
       // Malformed response, failed to parse register session payload.
+      OAuthMultiloginDeviceBoundSessionParsingError error;
+      switch (register_session_payload.error()) {
+        case RegisterBoundSessionPayload::ParserError::kRequiredFieldMissing:
+          error = OAuthMultiloginDeviceBoundSessionParsingError::
+              kRegisterPayloadRequiredFieldMissing;
+          break;
+        case RegisterBoundSessionPayload::ParserError::
+            kRequiredCredentialFieldMissing:
+          error = OAuthMultiloginDeviceBoundSessionParsingError::
+              kRegisterPayloadRequiredCredentialFieldMissing;
+          break;
+      }
+      RecordDeviceBoundSessionParsingError(error);
       return;
     }
     device_bound_session.register_session_payload =
@@ -281,6 +312,10 @@ void OAuthMultiloginResult::TryParseDeviceBoundSessionsFromValue(
   }
 
   device_bound_sessions_ = std::move(device_bound_sessions);
+
+  RecordDeviceBoundSessionUnknownDomainsCount(unknown_domains_count);
+  RecordDeviceBoundSessionParsingError(
+      OAuthMultiloginDeviceBoundSessionParsingError::kNone);
 }
 
 OAuthMultiloginResult::OAuthMultiloginResult(

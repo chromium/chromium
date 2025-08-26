@@ -747,6 +747,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->
 
+<!-- LINT.IfChange(OAuthMultiloginDeviceBoundSessionParsingError) -->
+
+<enum name="OAuthMultiloginDeviceBoundSessionParsingError">
+  <int value="0" label="No error, successfully parsed"/>
+  <int value="1" label="Invalid domain"/>
+  <int value="2" label="Register payload required field missing"/>
+  <int value="3" label="Register payload required credential field missing"/>
+</enum>
+
+<!-- LINT.ThenChange(//google_apis/gaia/oauth_multilogin_result.h:OAuthMultiloginDeviceBoundSessionParsingError) -->
+
 <!-- LINT.IfChange(OAuthMultiloginResponseStatus) -->
 
 <enum name="OAuthMultiloginResponseStatus">

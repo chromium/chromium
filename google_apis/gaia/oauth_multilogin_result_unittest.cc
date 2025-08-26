@@ -1037,6 +1037,8 @@ TEST(OAuthMultiloginResultTest, ParseEncryptedCookiesDecryptionFails) {
 }
 
 TEST(OAuthMultiloginResultTest, NoDeviceBoundSessionInfo) {
+  base::HistogramTester histogram_tester;
+
   const std::string raw_data =
       R"()]}'
         {
@@ -1065,9 +1067,18 @@ TEST(OAuthMultiloginResultTest, NoDeviceBoundSessionInfo) {
       }));
   ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
   EXPECT_THAT(result.device_bound_sessions(), IsEmpty());
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.OAuthMultiloginDeviceBoundSessionParsingError",
+      /*expected_count=*/0);
 }
 
 TEST(OAuthMultiloginResultTest, ReuseExistingDeviceBoundSession) {
+  base::HistogramTester histogram_tester;
+
   const std::string raw_data =
       R"()]}'
         {
@@ -1107,9 +1118,20 @@ TEST(OAuthMultiloginResultTest, ReuseExistingDeviceBoundSession) {
                         Field(&DeviceBoundSession::domain, kGoogle),
                         Field(&DeviceBoundSession::register_session_payload,
                               Eq(std::nullopt)))));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginDeviceBoundSessionParsingError",
+      OAuthMultiloginDeviceBoundSessionParsingError::kNone,
+      /*expected_bucket_count=*/1);
 }
 
 TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSession) {
+  base::HistogramTester histogram_tester;
+
   const std::string raw_data =
       R"()]}'
         {
@@ -1193,9 +1215,20 @@ TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSession) {
                                               Field(&Scope::path, "/")))))))))),
           AllOf(Field(&DeviceBoundSession::is_device_bound, true),
                 Field(&DeviceBoundSession::domain, kGoogle))));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginDeviceBoundSessionParsingError",
+      OAuthMultiloginDeviceBoundSessionParsingError::kNone,
+      /*expected_bucket_count=*/1);
 }
 
 TEST(OAuthMultiloginResultTest, UnknownDeviceBoundSessionDomain) {
+  base::HistogramTester histogram_tester;
+
   const std::string raw_data =
       R"()]}'
         {
@@ -1237,9 +1270,20 @@ TEST(OAuthMultiloginResultTest, UnknownDeviceBoundSessionDomain) {
               UnorderedElementsAre(
                   AllOf(Field(&DeviceBoundSession::is_device_bound, true),
                         Field(&DeviceBoundSession::domain, kGoogle))));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain",
+      /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginDeviceBoundSessionParsingError",
+      OAuthMultiloginDeviceBoundSessionParsingError::kNone,
+      /*expected_bucket_count=*/1);
 }
 
 TEST(OAuthMultiloginResultTest, IsNotDeviceBoundSession) {
+  base::HistogramTester histogram_tester;
+
   const std::string raw_data =
       R"()]}'
         {
@@ -1274,9 +1318,20 @@ TEST(OAuthMultiloginResultTest, IsNotDeviceBoundSession) {
       }));
   ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
   EXPECT_THAT(result.device_bound_sessions(), IsEmpty());
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginDeviceBoundSessionParsingError",
+      OAuthMultiloginDeviceBoundSessionParsingError::kNone,
+      /*expected_bucket_count=*/1);
 }
 
 TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSessionInvalidPayload) {
+  base::HistogramTester histogram_tester;
+
   // The payload is invalid because it's missing the `session_identifier` field.
   const std::string raw_data =
       R"()]}'
@@ -1325,4 +1380,13 @@ TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSessionInvalidPayload) {
       }));
   ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
   EXPECT_THAT(result.device_bound_sessions(), IsEmpty());
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain",
+      /*expected_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.OAuthMultiloginDeviceBoundSessionParsingError",
+      OAuthMultiloginDeviceBoundSessionParsingError::
+          kRegisterPayloadRequiredFieldMissing,
+      /*expected_bucket_count=*/1);
 }

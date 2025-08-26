@@ -62,6 +62,20 @@ enum class OAuthMultiloginResponseStatus {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthMultiloginResponseStatus)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// They are public for testing purposes only.
+// LINT.IfChange(OAuthMultiloginDeviceBoundSessionParsingError)
+enum class OAuthMultiloginDeviceBoundSessionParsingError {
+  kNone = 0,
+  kInvalidDomain = 1,
+  kRegisterPayloadRequiredFieldMissing = 2,
+  kRegisterPayloadRequiredCredentialFieldMissing = 3,
+  kMaxValue = kRegisterPayloadRequiredCredentialFieldMissing,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthMultiloginDeviceBoundSessionParsingError)
+
 // Parses the status field of the response.
 COMPONENT_EXPORT(GOOGLE_APIS)
 OAuthMultiloginResponseStatus ParseOAuthMultiloginResponseStatus(
