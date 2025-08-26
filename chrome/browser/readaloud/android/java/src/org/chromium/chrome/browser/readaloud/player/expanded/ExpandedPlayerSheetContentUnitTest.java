@@ -52,6 +52,7 @@ import java.util.Locale;
 @Config(manifest = Config.NONE)
 @DisableFeatures({
     ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS_FEEDBACK,
+    ChromeFeatureList.FEED_AUDIO_OVERVIEWS
 })
 public class ExpandedPlayerSheetContentUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

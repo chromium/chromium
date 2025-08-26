@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.readaloud;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,13 +30,27 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.WindowManager;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.Callback;
@@ -107,32 +122,23 @@ import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 
 /** Unit tests for {@link ReadAloudController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-    manifest = Config.NONE,
-    shadows = {ShadowDeviceConditions.class})
+        manifest = Config.NONE,
+        shadows = {ShadowDeviceConditions.class})
 @EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
 @DisableFeatures({
-  ChromeFeatureList.READALOUD_IN_MULTI_WINDOW,
-  ChromeFeatureList.READALOUD_BACKGROUND_PLAYBACK,
-  ChromeFeatureList.READALOUD_TAP_TO_SEEK,
-  ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS,
+    ChromeFeatureList.READALOUD_IN_MULTI_WINDOW,
+    ChromeFeatureList.READALOUD_BACKGROUND_PLAYBACK,
+    ChromeFeatureList.READALOUD_TAP_TO_SEEK,
+    ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS,
 })
 public class ReadAloudControllerUnitTest {
   private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
@@ -1978,21 +1984,58 @@ public class ReadAloudControllerUnitTest {
         .createPlayback(mPlaybackArgsCaptor.capture(), mPlaybackCallbackCaptor.capture());
     assertEquals(
         ImmutableList.of(PlaybackMode.CLASSIC), mPlaybackArgsCaptor.getValue().getPlaybackModes());
-    assertEquals(PlaybackMode.CLASSIC, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+        assertEquals(PlaybackMode.CLASSIC, mPlaybackArgsCaptor.getValue().getPlaybackMode());
 
-    onPlaybackSuccess(mPlayback);
-    verify(mPlayback, times(2)).play();
-    verify(mPlayback, never()).seekToParagraph(anyInt(), anyLong());
-  }
+        onPlaybackSuccess(mPlayback);
+        verify(mPlayback, times(2)).play();
+        verify(mPlayback, never()).seekToParagraph(anyInt(), anyLong());
+    }
 
-  @Test
-  public void testSetVoiceAndRestartPlayback() {
-    // Voices setup
-    var oldVoice = new PlaybackVoice("lang", "OLD VOICE ID");
-    doReturn(List.of(oldVoice)).when(mPlaybackHooks).getPlaybackVoiceList(any());
+    @Test
+    @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    public void testPlayOverviewForUrls() {
+        resetPlaybackMocks();
+        mController.playOverviewForUrls(
+                ImmutableList.of("https://en.wikipedia.org/wiki/Google", "https://google.com"),
+                ReadAloudController.Entrypoint.OVERFLOW_MENU);
+        resolvePromises();
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(mPlaybackArgsCaptor.capture(), mPlaybackCallbackCaptor.capture());
+        assertEquals(
+                ImmutableList.of(PlaybackMode.OVERVIEW),
+                mPlaybackArgsCaptor.getValue().getPlaybackModes());
+        onPlaybackSuccess(mPlayback);
+        verify(mPlayerCoordinator, times(1))
+                .playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
+        verify(mPlayback, times(1)).play();
+        assertEquals(2, mController.getNumberOfUrlsForTest());
+        assertEquals(0, mController.getCurrentUrlIndexForTest());
 
-    // First play tab.
-    mFakeTranslateBridge.setCurrentLanguage("en");
+        // Navigate to the next one.
+        mController.moveToNext();
+        assertEquals(1, mController.getCurrentUrlIndexForTest());
+
+        // No action if trying to move beyond the last one.
+        mController.moveToNext();
+        assertEquals(1, mController.getCurrentUrlIndexForTest());
+
+        // Navigate to the previous one.
+        mController.moveToPrevious();
+        assertEquals(0, mController.getCurrentUrlIndexForTest());
+
+        // No action if trying to move before the first one.
+        mController.moveToPrevious();
+        assertEquals(0, mController.getCurrentUrlIndexForTest());
+    }
+
+    @Test
+    public void testSetVoiceAndRestartPlayback() {
+        // Voices setup
+        var oldVoice = new PlaybackVoice("lang", "OLD VOICE ID");
+        doReturn(List.of(oldVoice)).when(mPlaybackHooks).getPlaybackVoiceList(any());
+
+        // First play tab.
+        mFakeTranslateBridge.setCurrentLanguage("en");
     mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
     mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
     resolvePromises();

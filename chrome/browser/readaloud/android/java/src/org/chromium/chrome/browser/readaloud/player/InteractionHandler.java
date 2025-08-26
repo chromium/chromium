@@ -30,6 +30,12 @@ public interface InteractionHandler {
     /** Called when the seek forward button is clicked. */
     void onSeekForwardClick();
 
+    /** Called when the move-to-previous button is clicked. */
+    void onMoveToPreviousClick();
+
+    /** Called when the move-to-previous button is clicked. */
+    void onMoveToNextClick();
+
     /**
      * Called when a playback voice is chosen.
      *

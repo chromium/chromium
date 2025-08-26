@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
+import org.chromium.chrome.browser.readaloud.ReadAloudController.Entrypoint;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleCoordinator;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils;
@@ -1276,7 +1277,15 @@ public class NewTabPage
                 && (mOmniboxStub != null && mOmniboxStub.isUrlBarFocused());
     }
 
-    public void listenToFeed(Supplier<ReadAloudController> readAloudControllerSupplier) {}
+    public void listenToFeed(Supplier<ReadAloudController> readAloudControllerSupplier) {
+        ReadAloudController readAloudController = readAloudControllerSupplier.get();
+        if (readAloudController == null) return;
+
+        List<String> feedUrls = mFeedSurfaceProvider.getFeedUrls();
+        if (feedUrls == null || feedUrls.isEmpty()) return;
+
+        readAloudController.playOverviewForUrls(feedUrls, Entrypoint.FEED_PLAYBACK);
+    }
 
     public FeedSurfaceCoordinator getCoordinatorForTesting() {
         return (FeedSurfaceCoordinator) mFeedSurfaceProvider;

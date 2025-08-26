@@ -48,8 +48,10 @@ found in the LICENSE file.
     <dimen name="readaloud_control_buttons_margin_top">24dp</dimen>
     <dimen name="readaloud_control_buttons_margin_bottom">16dp</dimen>
     <dimen name="readaloud_control_button_diameter">72dp</dimen>
+    <dimen name="readaloud_control_button_for_navigation_diameter">32dp</dimen>
     <dimen name="readaloud_play_button_width">104dp</dimen>
     <dimen name="readaloud_control_button_spacing">12dp</dimen>
+    <dimen name="readaloud_control_button_for_navigation_spacing">12dp</dimen>
     <dimen name="readaloud_controls_portrait_padding">60dp</dimen>
     <dimen name="readaloud_controls_landscape_padding">0dp</dimen>
     <dimen name="readaloud_playback_mode_selector_diameter">48dp</dimen>

@@ -25,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
@@ -95,7 +96,11 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
                 context,
                 bottomSheetController,
                 LayoutInflater.from(context)
-                        .inflate(R.layout.readaloud_expanded_player_layout, null),
+                        .inflate(
+                                ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_AUDIO_OVERVIEWS)
+                                        ? R.layout.readaloud_expanded_player_with_navigation_layout
+                                        : R.layout.readaloud_expanded_player_layout,
+                                null),
                 model,
                 playbackModeIphController);
     }
@@ -394,6 +399,10 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         setOnClickListener(R.id.readaloud_mode_selector, () -> onPlaybackModeChangeClick(handler));
         setOnClickListener(R.id.readaloud_thumb_down_button, () -> showNegativeFeedbackMenu());
         setOnClickListener(R.id.readaloud_thumb_up_button, () -> handlePositiveFeedback(handler));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_AUDIO_OVERVIEWS)) {
+            setOnClickListener(R.id.readaloud_previous_button, handler::onMoveToPreviousClick);
+            setOnClickListener(R.id.readaloud_next_button, handler::onMoveToNextClick);
+        }
 
         SeekBar seekBar =
                 (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);

@@ -20,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
@@ -71,23 +72,32 @@ class PlayerMediator implements InteractionHandler {
             new PlaybackListener() {
                 @Override
                 public void onPlaybackDataChanged(PlaybackData data) {
-                  // Due to a race, sometimes a STOPPED state is received after the playback is null (e.g. if it was received in favor of creating a new playback).
-                  // In these cases, we don't propagate the state event.
-                  if (mPlayback == null) {
-                    return;
-                  }
+                    // Due to a race, sometimes a STOPPED state is received after the playback is
+                    // null (e.g. if it was received in favor of creating a new playback).
+                    // In these cases, we don't propagate the state event.
+                    if (mPlayback == null) {
+                        return;
+                    }
 
                     if (!isHiddenAndPlaying()) {
                         mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
                         float percent =
                                 (float) data.absolutePositionNanos()
                                         / (float) data.totalDurationNanos();
-                        // We update the progress only if the user is not currently interacting with the seekbar (i.e. scrubbing).
+                        // We update the progress only if the user is not currently interacting with
+                        // the seekbar (i.e. scrubbing).
                         if (!mIsScrubbingSeekBar) {
-                          mModel.set(PlayerProperties.PROGRESS, percent);
-                          mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
+                            mModel.set(PlayerProperties.PROGRESS, percent);
+                            mModel.set(
+                                    PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
                         }
                         mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
+
+                        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_AUDIO_OVERVIEWS)
+                                && data.totalDurationNanos() > 0
+                                && data.absolutePositionNanos() >= data.totalDurationNanos()) {
+                            maybeMoveToNext();
+                        }
                     }
 
                     if (data.state() != mLastState) {
@@ -320,6 +330,16 @@ class PlayerMediator implements InteractionHandler {
     }
 
     @Override
+    public void onMoveToPreviousClick() {
+        maybeMoveToPrevious();
+    }
+
+    @Override
+    public void onMoveToNextClick() {
+        maybeMoveToNext();
+    }
+
+    @Override
     public void onVoiceSelected(PlaybackVoice voice) {
         mDelegate.setVoiceOverrideAndApplyToPlayback(voice);
     }
@@ -468,6 +488,22 @@ class PlayerMediator implements InteractionHandler {
         } else {
             mPlayback.seekRelative(nanos);
         }
+    }
+
+    private void maybeMoveToPrevious() {
+        if (mPlayback == null) {
+            return;
+        }
+        mPlayback.pause();
+        mDelegate.moveToPrevious();
+    }
+
+    private void maybeMoveToNext() {
+        if (mPlayback == null) {
+            return;
+        }
+        mPlayback.pause();
+        mDelegate.moveToNext();
     }
 
     private void setPlaybackModeSelectionEnabled(PlaybackModeSelectionEnablementStatus status) {

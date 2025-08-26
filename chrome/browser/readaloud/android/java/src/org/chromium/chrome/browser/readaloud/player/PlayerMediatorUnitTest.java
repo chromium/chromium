@@ -48,11 +48,13 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefsJni;
@@ -72,6 +74,7 @@ import java.util.Map;
 
 /** Unit tests for {@link PlayerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
 @Config(manifest = Config.NONE)
 public class PlayerMediatorUnitTest {
     private static final String TITLE = "Title";
@@ -286,6 +289,18 @@ public class PlayerMediatorUnitTest {
         mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
 
         assertEquals(0.1f, (float) mModel.get(PlayerProperties.PROGRESS), /* delta= */ 1e-8f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.FEED_AUDIO_OVERVIEWS)
+    public void testMoveToNextOnPlaybackComleted() {
+        mMediator.setPlayback(mPlayback);
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+
+        mPlaybackData.mAbsolutePositionNanos = DURATION_NS;
+        mPlaybackData.mTotalDurationNanos = DURATION_NS;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        verify(mDelegate).moveToNext();
     }
 
     @Test
