@@ -409,14 +409,14 @@ found in the LICENSE file.
         <item name="android:gravity">center_vertical</item>
     </style>
     <style name="ListMenuItemIconStyle">
-        <item name="android:layout_width">@dimen/list_menu_item_start_view_width</item>
-        <item name="android:layout_height">@dimen/list_menu_item_icon_size</item>
+        <item name="android:layout_width">?attr/listItemIconViewWidth</item>
+        <item name="android:layout_height">?attr/listItemIconSize</item>
         <!-- list_menu_item_start_view_width - list_menu_item_icon_size -->
-        <item name="android:paddingHorizontal">@dimen/list_menu_item_icon_horizontal_padding</item>
+        <item name="android:paddingHorizontal">?attr/listItemIconHorizontalPadding</item>
     </style>
     <style name="ListMenuItemIconStyle.Start">
         <item name="android:layout_marginStart">0dp</item>
-        <item name="android:layout_marginEnd">@dimen/list_menu_item_start_icon_end_margin</item>
+        <item name="android:layout_marginEnd">?attr/listItemIconTextSpacing</item>
     </style>
     <style name="TextAppearance.DensityAdaptive.ListMenuItem" parent="TextAppearance">
         <item name="android:textColor">@color/list_menu_item_text_color_list</item>

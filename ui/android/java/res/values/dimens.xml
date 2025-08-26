@@ -113,6 +113,11 @@ found in the LICENSE file.
     <dimen name="list_menu_elevation">3dp</dimen>
     <dimen name="list_menu_item_min_height">48dp</dimen>
 
+    <dimen name="list_menu_item_start_view_width_desktop">30dp</dimen>
+    <dimen name="list_menu_item_icon_size_desktop">20dp</dimen>
+    <dimen name="list_menu_item_icon_horizontal_padding_desktop">5dp</dimen>
+    <dimen name="list_menu_item_start_icon_end_margin_desktop">12dp</dimen>
+
     <!-- Automotive -->
     <item name="automotive_ui_scale_factor" format="float" type="dimen">1.34</item>
 

@@ -6,14 +6,22 @@ found in the LICENSE file.
 -->
 <resources>
     <style name="ThemeOverlay.UI.AdaptiveDensityDefaults" parent="">
+        <!-- LINT.IfChange(AdaptiveDensityDefaults) -->
         <!-- General dimensions. -->
         <item name="minInteractTargetSize">@dimen/min_touch_target_size</item>
         <!-- We've created a new attr instead of android:listPreferredItemHeightSmall to keep the
              changes limited to the UI components we choose. -->
+
+        <!-- List item dimensions. -->
         <item name="listItemHeight">?attr/minInteractTargetSize</item>
+        <item name="listItemIconSize">@dimen/list_menu_item_icon_size</item>
+        <item name="listItemIconViewWidth">@dimen/list_menu_item_start_view_width</item>
+        <item name="listItemIconHorizontalPadding">@dimen/list_menu_item_icon_horizontal_padding</item>
+        <item name="listItemIconTextSpacing">@dimen/list_menu_item_start_icon_end_margin</item>
 
         <!-- Text dimensions. -->
         <item name="textLargeSize">@dimen/text_size_large</item>
         <item name="textLargeLeading">@dimen/text_size_large_leading</item>
+        <!-- LINT.ThenChange(//components/browser_ui/theme/android/templates/res/values/themes.xml:AdaptiveDensityDefaults) -->
     </style>
 </resources>
