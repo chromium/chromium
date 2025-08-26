@@ -145,7 +145,7 @@ bool CampaignsManagerClientImpl::IsAppIconOnShelf(
 
   // Shelf is always considered hidden when in tablet mode, but the Hotseat can
   // still be expanded.
-  const bool is_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool is_tablet_mode = display::Screen::Get()->InTabletMode();
 
   if (!is_shelf_visible && !is_tablet_mode) {
     growth::RecordCampaignsManagerError(

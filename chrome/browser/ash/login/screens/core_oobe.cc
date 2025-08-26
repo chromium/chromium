@@ -40,9 +40,8 @@ CoreOobe::CoreOobe(const std::string& display_type,
   version_info_updater_.StartUpdate(false);
 #endif
 
-  OnTabletModeChanged(display::Screen::GetScreen()->InTabletMode());
-  UpdateClientAreaSize(
-      display::Screen::GetScreen()->GetPrimaryDisplay().size());
+  OnTabletModeChanged(display::Screen::Get()->InTabletMode());
+  UpdateClientAreaSize(display::Screen::Get()->GetPrimaryDisplay().size());
 
   // Don't show version label on the stable and beta channels by default.
   version_info::Channel channel = ash::GetChannel();
@@ -140,7 +139,7 @@ void CoreOobe::UpdateClientAreaSize(const gfx::Size& size) {
   view_->SetShelfHeight(ShelfConfig::Get()->shelf_size());
 
   const gfx::Size display_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().size();
+      display::Screen::Get()->GetPrimaryDisplay().size();
   const bool is_horizontal = display_size.width() > display_size.height();
   view_->SetOrientation(is_horizontal);
 

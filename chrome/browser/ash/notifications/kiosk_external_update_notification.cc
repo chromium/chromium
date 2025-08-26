@@ -131,8 +131,7 @@ void KioskExternalUpdateNotification::CreateAndShowNotificationView(
   view_ = new KioskExternalUpdateNotificationView(this);
   view_->SetMessage(message);
 
-  gfx::Size display_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().size();
+  gfx::Size display_size = display::Screen::Get()->GetPrimaryDisplay().size();
   gfx::Size view_size = view_->GetPreferredSize();
   gfx::Rect bounds((display_size.width() - view_size.width()) / 2,
                    (display_size.height() - view_size.height()) / 10,

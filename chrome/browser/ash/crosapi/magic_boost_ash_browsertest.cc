@@ -21,7 +21,7 @@ using MagicBoostAshBrowserTest = InProcessBrowserTest;
 // Make sure `MagicBoostController` api calls don't crash.
 IN_PROC_BROWSER_TEST_F(MagicBoostAshBrowserTest, Basics) {
   auto* magic_boost_controller = ash::MagicBoostControllerAsh::Get();
-  auto display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  auto display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   magic_boost_controller->ShowDisclaimerUi(
       /*display_id=*/display_id,
       /*action=*/

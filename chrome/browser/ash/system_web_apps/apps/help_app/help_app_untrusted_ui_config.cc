@@ -180,8 +180,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean(
       "multiDeviceFeaturesAllowed",
       multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(pref_service));
-  source->AddBoolean("tabletMode",
-                     display::Screen::GetScreen()->InTabletMode());
+  source->AddBoolean("tabletMode", display::Screen::Get()->InTabletMode());
   // Whether or not RGB Keyboard is supported and configurable from the
   // Personalization Hub.
   RgbKeyboardManager* rgb_keyboard_manager =

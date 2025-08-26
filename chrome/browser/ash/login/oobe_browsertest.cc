@@ -213,7 +213,7 @@ class MeetDeviceDisplayOobeTest
 };
 
 IN_PROC_BROWSER_TEST_P(MeetDeviceDisplayOobeTest, OobeMeetsScaledResolution) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   gfx::Size display_size = screen->GetPrimaryDisplay().size();
   EXPECT_EQ(display_size, ExpectedScaledDisplaySize());
 

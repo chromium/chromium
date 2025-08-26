@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsExtensionAppOpen) {
                             false /* preferred_containner */),
         apps::LaunchSource::kFromTest,
         std::make_unique<apps::WindowInfo>(
-            display::Screen::GetScreen()->GetPrimaryDisplay().id()));
+            display::Screen::Get()->GetPrimaryDisplay().id()));
     app_loaded_observer.Wait();
   }
   EXPECT_TRUE(delegate->IsAppOpen(extension_app->id()));
@@ -691,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   display_manager.UpdateDisplay("400x300,500x400");
 
   const display::Display& primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   AppListClientImpl* const client = AppListClientImpl::GetInstance();
   ASSERT_TRUE(client);
   // Associate |client| with the current profile.
@@ -826,12 +826,12 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
 
   {
     display::ScopedDisplayForNewWindows scoped_display(
-        display::Screen::GetScreen()->GetPrimaryDisplay().id());
+        display::Screen::Get()->GetPrimaryDisplay().id());
     client->ShowAppList(ash::AppListShowSource::kSearchKey);
     ash::AppListTestApi().WaitForBubbleWindow(
         /*wait_for_opening_animation=*/true);
   }
-  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+  EXPECT_EQ(display::Screen::Get()->GetPrimaryDisplay().id(),
             client->GetAppListDisplayId());
 }
 

@@ -120,8 +120,7 @@ ArcScreenCaptureSession::Initialize(content::DesktopMediaID desktop_id,
   context_provider->AddObserver(this);
 
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          display_root_window_);
+      display::Screen::Get()->GetDisplayNearestWindow(display_root_window_);
   display_id_ = display.id();
 
   display_root_window_->GetHost()->compositor()->AddAnimationObserver(this);

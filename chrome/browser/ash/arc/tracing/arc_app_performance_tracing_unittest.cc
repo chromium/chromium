@@ -558,9 +558,8 @@ TEST_F(ArcAppPerformanceTracingTest, DetachDisplayDuringTrace) {
 }
 
 TEST_F(ArcAppPerformanceTracingTest, NoTracingForArcGhostWindow) {
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          ash::Shell::GetPrimaryRootWindow());
+  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+      ash::Shell::GetPrimaryRootWindow());
   std::unique_ptr<ash::full_restore::ArcGhostWindowHandler>
       ghost_window_handler =
           std::make_unique<ash::full_restore::ArcGhostWindowHandler>();

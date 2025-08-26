@@ -29,7 +29,7 @@ constexpr base::TimeDelta kBubbleBoundsAnimationTime = base::Milliseconds(250);
 
 bool IsRectContainedByAnyDisplay(const gfx::Rect& rect) {
   const std::vector<display::Display>& displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   for (const auto& display : displays) {
     if (display.bounds().Contains(rect))
       return true;
@@ -39,7 +39,7 @@ bool IsRectContainedByAnyDisplay(const gfx::Rect& rect) {
 
 void CalculateAndSetWidgetBounds(views::Widget* widget,
                                  const gfx::Size& bubble_size) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   display::Display display = screen->GetPrimaryDisplay();
 
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
@@ -47,8 +47,7 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
   ui::TextInputClient* text_input_client =
       host->GetInputMethod()->GetTextInputClient();
 
-  gfx::Point widget_origin =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point widget_origin = display::Screen::Get()->GetCursorScreenPoint();
 
   // `text_input_client` may be null. For example, in clamshell mode and without
   // any window open.

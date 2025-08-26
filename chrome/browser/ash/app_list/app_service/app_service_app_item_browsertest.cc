@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest,
                        ActivateAppRecordsNewInstallHistogram) {
   base::HistogramTester histograms;
   {
-    ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+    ASSERT_FALSE(display::Screen::Get()->InTabletMode());
 
     // Simulate a user-installed chrome app item.
     std::unique_ptr<AppServiceAppItem> app_item =

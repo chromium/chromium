@@ -19,8 +19,7 @@ ArcTestWindow::ArcTestWindow(exo::test::ExoTestHelper* helper,
   shell_surface_ = exo::test::ShellSurfaceBuilder({100, 100})
                        .SetApplicationId(package_name.c_str())
                        .BuildClientControlledShellSurface();
-  auto display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root).id();
+  auto display_id = display::Screen::Get()->GetDisplayNearestWindow(root).id();
   shell_surface_->SetBounds(display_id, bounds);
   surface_ = shell_surface_->root_surface();
   surface_->Commit();

@@ -398,7 +398,7 @@ em::StatefulPartitionInfo ReadStatefulPartitionInfo() {
 // Collects all the display related information.
 void GetDisplayStatus(em::GraphicsStatus* graphics_status) {
   const std::vector<display::Display> displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   for (const auto& display : displays) {
     em::DisplayInfo* display_info = graphics_status->add_displays();
     display_info->set_resolution_width(display.GetSizeInPixel().width());

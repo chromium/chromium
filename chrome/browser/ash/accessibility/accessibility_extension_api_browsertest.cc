@@ -459,8 +459,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, SetCursorPosition) {
     // The screen point is in density-independent pixels, so it should always be
     // the same as what the JS has set, (450, 350), assuming all the
     // multiple-display and DPI math was correct.
-    const gfx::Point point =
-        display::Screen::GetScreen()->GetCursorScreenPoint();
+    const gfx::Point point = display::Screen::Get()->GetCursorScreenPoint();
     EXPECT_EQ(point, gfx::Point(450, 350));
   }
 }

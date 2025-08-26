@@ -97,7 +97,7 @@ bool OSFeedbackAppDelegate::ShouldShowInSearchAndShelf() const {
 
 gfx::Rect OSFeedbackAppDelegate::GetDefaultBounds(ash::BrowserDelegate*) const {
   gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+      display::Screen::Get()->GetDisplayForNewWindows().work_area();
   bounds.ClampToCenteredSize(
       {kFeedbackAppDefaultWidth, kFeedbackAppDefaultHeight});
   return bounds;

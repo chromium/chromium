@@ -384,8 +384,7 @@ void TouchInjector::UpdatePositionsForRegister() {
   }
 
   // No need to transform if there is no rotation.
-  if (auto display =
-          display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+  if (auto display = display::Screen::Get()->GetDisplayNearestWindow(window_);
       display.panel_rotation() != display::Display::ROTATE_0) {
     rotation_transform_ =
         std::make_unique<gfx::Transform>(ash::CreateRotationTransform(

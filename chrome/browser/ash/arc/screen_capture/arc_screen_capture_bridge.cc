@@ -101,7 +101,7 @@ void ArcScreenCaptureBridge::RequestPermission(
   DesktopMediaPicker::Params picker_params{
       DesktopMediaPicker::Params::RequestSource::kArcScreenCapture};
   picker_params.context = ash::Shell::GetRootWindowForDisplayId(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      display::Screen::Get()->GetPrimaryDisplay().id());
   picker_params.modality = ui::mojom::ModalType::kSystem;
   picker_params.app_name = display_name16;
   picker_params.target_name = display_name16;

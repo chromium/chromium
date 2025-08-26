@@ -229,7 +229,7 @@ void SearchController::OnZeroStateTimedOut() {
 void SearchController::AppListViewChanging(bool is_visible) {
   // In tablet mode, the launcher is always visible so do not log launcher open
   // if the device is in tablet mode.
-  if (is_visible && !display::Screen::GetScreen()->InTabletMode()) {
+  if (is_visible && !display::Screen::Get()->InTabletMode()) {
     app_discovery_metrics_manager_->OnLauncherOpen();
   }
 
@@ -256,7 +256,7 @@ void SearchController::OpenResult(ChromeSearchResult* result, int event_flags) {
 
   // Launching apps can take some time. It looks nicer to eagerly dismiss the
   // app list if |result| permits it. Do not close app list for home launcher.
-  if (dismiss_view_on_open && !display::Screen::GetScreen()->InTabletMode()) {
+  if (dismiss_view_on_open && !display::Screen::Get()->InTabletMode()) {
     list_controller_->DismissView();
   }
 }

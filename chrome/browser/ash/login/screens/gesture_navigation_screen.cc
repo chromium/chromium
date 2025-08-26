@@ -62,7 +62,7 @@ bool GestureNavigationScreen::MaybeSkip(WizardContext& context) {
 
   // Skip the screen if the device is not in tablet mode, unless tablet mode
   // first user run is forced on the device.
-  if (!display::Screen::GetScreen()->InTabletMode() &&
+  if (!display::Screen::Get()->InTabletMode() &&
       !switches::ShouldOobeUseTabletModeFirstRun()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;

@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, DefaultWindowBounds) {
   EXPECT_TRUE(app_browser);
 
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+      display::Screen::Get()->GetDisplayForNewWindows().work_area();
 
   int expected_width = 600;
   int expected_height = 640;

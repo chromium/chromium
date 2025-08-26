@@ -39,14 +39,14 @@ class TestDisplayObserver : public display::DisplayObserver {
  public:
   explicit TestDisplayObserver(base::OnceClosure quit_closure)
       : quit_closure_(std::move(quit_closure)) {
-    display::Screen::GetScreen()->AddObserver(this);
+    display::Screen::Get()->AddObserver(this);
   }
 
   TestDisplayObserver(const TestDisplayObserver&) = delete;
   const TestDisplayObserver& operator=(const TestDisplayObserver&) = delete;
 
   ~TestDisplayObserver() override {
-    display::Screen::GetScreen()->RemoveObserver(this);
+    display::Screen::Get()->RemoveObserver(this);
   }
 
   // display::DisplayObserver:

@@ -60,8 +60,7 @@ base::flat_map<std::string, std::string> BorealisSurveyHandler::GetSurveyData(
   // Number of monitors
   int internal_displays = 0;
   int external_displays = 0;
-  for (const display::Display& d :
-       display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const display::Display& d : display::Screen::Get()->GetAllDisplays()) {
     if (d.IsInternal()) {
       internal_displays++;
     } else {

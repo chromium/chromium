@@ -525,8 +525,7 @@ ChromeosInfoPrivateIsTabletModeEnabledFunction::
 
 ExtensionFunction::ResponseAction
 ChromeosInfoPrivateIsTabletModeEnabledFunction::Run() {
-  return RespondNow(
-      WithArguments(display::Screen::GetScreen()->InTabletMode()));
+  return RespondNow(WithArguments(display::Screen::Get()->InTabletMode()));
 }
 
 }  // namespace extensions

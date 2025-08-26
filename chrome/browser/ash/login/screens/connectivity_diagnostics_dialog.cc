@@ -34,8 +34,7 @@ ConnectivityDiagnosticsDialog::ConnectivityDiagnosticsDialog()
 ConnectivityDiagnosticsDialog::~ConnectivityDiagnosticsDialog() = default;
 
 void ConnectivityDiagnosticsDialog::GetDialogSize(gfx::Size* size) const {
-  const display::Display display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display display = display::Screen::Get()->GetPrimaryDisplay();
 
   *size =
       gfx::Size(display.size().width() * kConnectivityDiagnosticsDialogScale,

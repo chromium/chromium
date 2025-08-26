@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_P(KioskBlockTabletModeTest, TabletModeIsBlocked) {
 
   tablet_test_api_->EnterTabletMode();
 
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_TRUE(tablet_test_api_->IsInPhysicalTabletState());
   EXPECT_TRUE(tablet_test_api_->AreEventsBlocked());
 }
@@ -71,13 +71,13 @@ IN_PROC_BROWSER_TEST_P(KioskBlockTabletModeTest, TabletModeIsBlocked) {
 IN_PROC_BROWSER_TEST_P(KioskBlockTabletModeTest,
                        SwitchToClamshellModeWhenKioskStarts) {
   tablet_test_api_->EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_TRUE(tablet_test_api_->IsInPhysicalTabletState());
   EXPECT_TRUE(tablet_test_api_->AreEventsBlocked());
 
   ASSERT_TRUE(LaunchKioskAppAndWaitSession());
 
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_TRUE(tablet_test_api_->IsInPhysicalTabletState());
   EXPECT_TRUE(tablet_test_api_->AreEventsBlocked());
 }

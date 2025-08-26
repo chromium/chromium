@@ -169,9 +169,8 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
 
   // Hardware capability check. In order for the screen to be shown, the device
   // needs to support PIN for login, OR be a tablet device.
-  const bool is_device_a_tablet =
-      display::Screen::GetScreen()->InTabletMode() ||
-      switches::ShouldOobeUseTabletModeFirstRun();
+  const bool is_device_a_tablet = display::Screen::Get()->InTabletMode() ||
+                                  switches::ShouldOobeUseTabletModeFirstRun();
   const bool has_login_support =
       hardware_support_.value() == HardwareSupport::kLoginCompatible;
   if (!(is_device_a_tablet || has_login_support)) {

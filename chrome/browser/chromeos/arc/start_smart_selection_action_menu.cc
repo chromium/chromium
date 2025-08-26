@@ -136,9 +136,9 @@ void StartSmartSelectionActionMenu::ExecuteCommand(int command_id) {
   if (actions_.size() <= index)
     return;
 
-  gfx::Point point = display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point point = display::Screen::Get()->GetCursorScreenPoint();
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(point);
+      display::Screen::Get()->GetDisplayNearestPoint(point);
 
   Profile* profile = Profile::FromBrowserContext(context_);
   if (actions_[index].activity.package_name ==

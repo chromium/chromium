@@ -513,7 +513,7 @@ void Action::UpdateTouchDownPositions() {
   // floating. In this scenario, the parent window of the target
   // window is temporarily set to null when this function is called.
   const float scale = host ? host->device_scale_factor()
-                           : display::Screen::GetScreen()
+                           : display::Screen::Get()
                                  ->GetDisplayNearestWindow(window)
                                  .device_scale_factor();
 

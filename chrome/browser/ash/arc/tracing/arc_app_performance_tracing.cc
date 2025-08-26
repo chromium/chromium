@@ -149,7 +149,7 @@ ArcAppPerformanceTracing::ArcAppPerformanceTracing(
     exo::WMHelper::GetInstance()->AddActivationObserver(this);
   }
   ArcAppListPrefs::Get(context_)->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
+  display::Screen::Get()->AddObserver(this);
 }
 
 // Releasing resources in DTOR is not safe, see |Shutdown|.
@@ -189,7 +189,7 @@ void ArcAppPerformanceTracing::MaybeCancelTracing() {
 }
 
 void ArcAppPerformanceTracing::Shutdown() {
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display::Screen::Get()->RemoveObserver(this);
 
   MaybeCancelTracing();
 
@@ -222,7 +222,7 @@ void ArcAppPerformanceTracing::OnCustomTraceDone(
 }
 
 bool ExpectingPresentEvents() {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
 
   return screen->GetNumDisplays() > 1 || screen->GetPrimaryDisplay().detected();
 }

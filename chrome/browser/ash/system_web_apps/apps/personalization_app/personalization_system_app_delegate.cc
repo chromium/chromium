@@ -80,7 +80,7 @@ gfx::Size PersonalizationSystemAppDelegate::GetMinimumWindowSize() const {
 gfx::Rect PersonalizationSystemAppDelegate::GetDefaultBounds(
     ash::BrowserDelegate*) const {
   gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+      display::Screen::Get()->GetDisplayForNewWindows().work_area();
   if (ash::Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
     bounds.ClampToCenteredSize({826, 881});
   } else {

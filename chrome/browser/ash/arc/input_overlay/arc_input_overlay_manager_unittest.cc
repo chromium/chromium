@@ -348,9 +348,9 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
   UpdateDisplay("1000x900,1000x900");
   aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
-  display::Display display0 = display::Screen::GetScreen()->GetDisplayMatching(
+  display::Display display0 = display::Screen::Get()->GetDisplayMatching(
       root_windows[0]->GetBoundsInScreen());
-  display::Display display1 = display::Screen::GetScreen()->GetDisplayMatching(
+  display::Display display1 = display::Screen::Get()->GetDisplayMatching(
       root_windows[1]->GetBoundsInScreen());
 
   // Test when launching input overlay window on the secondary display, there
@@ -480,7 +480,7 @@ TEST_F(ArcInputOverlayManagerTest, TestWindowBoundsChanged) {
 
   // Confirm the content bounds and touch down positions are updated after
   // window bounds changed.
-  auto display = display::Screen::GetScreen()->GetDisplayMatching(
+  auto display = display::Screen::Get()->GetDisplayMatching(
       ash::Shell::GetPrimaryRootWindow()->GetBoundsInScreen());
   auto new_window_bounds = gfx::Rect(10, 10, 150, 150);
   arc_window->GetNativeWindow()->SetBoundsInScreen(new_window_bounds, display);

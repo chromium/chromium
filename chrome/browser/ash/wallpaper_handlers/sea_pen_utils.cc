@@ -25,7 +25,7 @@ gfx::Size GetLargestDisplaySizeLandscape() {
 
   gfx::Size largest_size;
   uint64_t largest_area = 0u;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     DVLOG(2) << display.ToString();
     auto next_area = display.GetSizeInPixel().Area64();
     if (next_area > largest_area) {

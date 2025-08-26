@@ -3200,7 +3200,7 @@ void AccessibilityManager::SendSyntheticMouseEvent(
     gfx::Point location_in_screen,
     bool use_rewriters) {
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
+      display::Screen::Get()->GetDisplayNearestPoint(location_in_screen);
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
   if (!host) {
     return;

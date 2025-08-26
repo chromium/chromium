@@ -76,8 +76,7 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
     DCHECK(chromeos::IsMaximizedOrFullscreenWindowStateType(window_state) ||
            chromeos::IsMinimizedWindowStateType(window_state));
     display::Display disp;
-    display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id_value,
-                                                          &disp);
+    display::Screen::Get()->GetDisplayWithDisplayId(display_id_value, &disp);
     local_bounds = disp.work_area();
   }
 

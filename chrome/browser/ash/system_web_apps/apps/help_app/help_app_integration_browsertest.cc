@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2DefaultWindowBounds) {
   Browser* browser;
   LaunchApp(SystemWebAppType::HELP, &browser);
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+      display::Screen::Get()->GetDisplayForNewWindows().work_area();
   int x = (work_area.width() - 960) / 2;
   int y = (work_area.height() - 600) / 2;
   EXPECT_EQ(browser->window()->GetBounds(), gfx::Rect(x, y, 960, 600));

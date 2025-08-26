@@ -21,11 +21,11 @@ namespace ash {
 namespace {
 
 aura::WindowTreeHost* GetHostForPrimaryDisplay() {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   CHECK(screen);
 
   aura::WindowTreeHost* host = ash::GetWindowTreeHostForDisplay(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      display::Screen::Get()->GetPrimaryDisplay().id());
   CHECK(host);
   return host;
 }

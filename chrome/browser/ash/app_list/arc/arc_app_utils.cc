@@ -203,8 +203,9 @@ bool Launch(Profile* profile,
 int64_t GetValidDisplayId(int64_t display_id) {
   if (display_id != display::kInvalidDisplayId)
     return display_id;
-  if (auto* screen = display::Screen::GetScreen())
+  if (auto* screen = display::Screen::Get()) {
     return screen->GetPrimaryDisplay().id();
+  }
   return display::kInvalidDisplayId;
 }
 

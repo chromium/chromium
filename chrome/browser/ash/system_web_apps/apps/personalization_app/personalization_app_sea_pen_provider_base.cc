@@ -427,7 +427,7 @@ void PersonalizationAppSeaPenProviderBase::
 
 void PersonalizationAppSeaPenProviderBase::IsInTabletMode(
     IsInTabletModeCallback callback) {
-  std::move(callback).Run(display::Screen::GetScreen()->InTabletMode());
+  std::move(callback).Run(display::Screen::Get()->InTabletMode());
 }
 
 void PersonalizationAppSeaPenProviderBase::MakeTransparent() {

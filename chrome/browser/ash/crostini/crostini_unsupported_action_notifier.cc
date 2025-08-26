@@ -118,7 +118,7 @@ CrostiniUnsupportedActionNotifier::Delegate::Delegate() = default;
 CrostiniUnsupportedActionNotifier::Delegate::~Delegate() = default;
 
 bool CrostiniUnsupportedActionNotifier::Delegate::IsInTabletMode() {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 bool CrostiniUnsupportedActionNotifier::Delegate::IsFocusedWindowCrostini() {
@@ -166,12 +166,12 @@ void CrostiniUnsupportedActionNotifier::Delegate::RemoveFocusObserver(
 
 void CrostiniUnsupportedActionNotifier::Delegate::AddDisplayObserver(
     display::DisplayObserver* observer) {
-  display::Screen::GetScreen()->AddObserver(observer);
+  display::Screen::Get()->AddObserver(observer);
 }
 
 void CrostiniUnsupportedActionNotifier::Delegate::RemoveDisplayObserver(
     display::DisplayObserver* observer) {
-  display::Screen::GetScreen()->RemoveObserver(observer);
+  display::Screen::Get()->RemoveObserver(observer);
 }
 
 void CrostiniUnsupportedActionNotifier::Delegate::AddKeyboardControllerObserver(

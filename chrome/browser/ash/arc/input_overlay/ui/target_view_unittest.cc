@@ -205,7 +205,7 @@ TEST_F(TargetViewTest, TestGestureSupport) {
 TEST_F(TargetViewTest, TestMultiDisplay) {
   UpdateDisplay("1000x900,1000x900");
   aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
-  display::Display display1 = display::Screen::GetScreen()->GetDisplayMatching(
+  display::Display display1 = display::Screen::Get()->GetDisplayMatching(
       root_windows[1]->GetBoundsInScreen());
 
   // Move the window from the primary display to `display1`.

@@ -96,7 +96,7 @@ gfx::Rect TerminalSystemAppDelegate::GetDefaultBounds(
     ash::BrowserDelegate* browser) const {
   if (browser->GetType() == ash::BrowserType::kAppPopup) {
     gfx::Rect bounds =
-        display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+        display::Screen::Get()->GetDisplayForNewWindows().work_area();
     bounds.ClampToCenteredSize(TERMINAL_SETTINGS_DEFAULT_SIZE);
     return bounds;
   }

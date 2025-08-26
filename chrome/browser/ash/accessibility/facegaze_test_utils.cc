@@ -359,7 +359,7 @@ void FaceGazeTestUtils::MoveMouseTo(const gfx::Point& location) {
 
 void FaceGazeTestUtils::AssertCursorAt(const gfx::Point& location) {
   WaitForCursorPosition(location);
-  ASSERT_EQ(location, display::Screen::GetScreen()->GetCursorScreenPoint());
+  ASSERT_EQ(location, display::Screen::Get()->GetCursorScreenPoint());
 }
 
 void FaceGazeTestUtils::AssertScrollMode(bool active) {

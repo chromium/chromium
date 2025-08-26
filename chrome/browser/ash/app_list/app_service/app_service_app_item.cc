@@ -242,7 +242,7 @@ void AppServiceAppItem::ResetIsNewInstall() {
 
   // Record metric for approximate time from installation to launch.
   base::TimeDelta time_since_install = base::TimeTicks::Now() - creation_time_;
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     base::UmaHistogramCustomTimes(
         "Apps.TimeBetweenAppInstallAndLaunch.TabletMode", time_since_install,
         kTimeMetricsMin, kTimeMetricsMax, kTimeMetricsBucketCount);

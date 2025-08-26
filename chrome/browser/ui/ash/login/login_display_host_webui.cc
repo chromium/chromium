@@ -777,7 +777,7 @@ void LoginDisplayHostWebUI::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
   const display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   if (display.id() != primary_display.id() ||
       !(changed_metrics & DISPLAY_METRIC_BOUNDS)) {
     return;

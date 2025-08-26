@@ -46,7 +46,7 @@ ui::DataTransferEndpoint CloneEndpoint(
 
 void SynthesizePaste() {
   auto* host = ash::GetWindowTreeHostForDisplay(
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id());
+      display::Screen::Get()->GetDisplayForNewWindows().id());
   DCHECK(host);
 
   ui::KeyEvent control_press(/*type=*/ui::EventType::kKeyPressed,
@@ -250,8 +250,8 @@ void DlpClipboardNotifier::ProceedPressed(
 
   std::move(reporting_cb).Run();
 
-  if (!display::Screen::GetScreen()) {  // Clipboard related elements do not
-                                        // exist in unittests.
+  if (!display::Screen::Get()) {  // Clipboard related elements do not
+                                  // exist in unittests.
     return;
   }
 

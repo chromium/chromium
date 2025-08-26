@@ -72,7 +72,7 @@ gfx::Size CameraSystemAppDelegate::GetMinimumWindowSize() const {
 gfx::Rect CameraSystemAppDelegate::GetDefaultBounds(
     ash::BrowserDelegate*) const {
   gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+      display::Screen::Get()->GetDisplayForNewWindows().work_area();
   bounds.ClampToCenteredSize(CAMERA_WINDOW_DEFAULT_SIZE);
   return bounds;
 }

@@ -899,7 +899,7 @@ bool GetDisplayIdFromOptionalArg(const std::optional<std::string>& arg,
     return base::StringToInt64(*arg, display_id);
   }
 
-  *display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  *display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   return true;
 }
 
@@ -1210,7 +1210,7 @@ class EventGenerator {
       }
       case ui::EventType::kMouseMoved: {
         display::Display display =
-            display::Screen::GetScreen()->GetDisplayNearestPoint(
+            display::Screen::Get()->GetDisplayNearestPoint(
                 gfx::ToFlooredPoint((task->location_in_screen)));
         auto* root_window = ash::Shell::GetRootWindowForDisplayId(display.id());
         if (!root_window->GetBoundsInScreen().Contains(
@@ -2269,7 +2269,7 @@ ExtensionFunction::ResponseAction AutotestPrivateLaunchAppFunction::Run() {
   controller->LaunchApp(ash::ShelfID(params->app_id),
                         ash::ShelfLaunchSource::LAUNCH_FROM_INTERNAL,
                         0, /* event_flags */
-                        display::Screen::GetScreen()->GetPrimaryDisplay().id());
+                        display::Screen::Get()->GetPrimaryDisplay().id());
   return RespondNow(NoArguments());
 }
 
@@ -2840,7 +2840,7 @@ AutotestPrivateTakeScreenshotForDisplayFunction::Run() {
 
   for (aura::Window* const window : ash::Shell::GetAllRootWindows()) {
     const int64_t display_id =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+        display::Screen::Get()->GetDisplayNearestWindow(window).id();
     if (display_id == target_display_id) {
       auto* const grabber_ptr = grabber.get();
       grabber_ptr->TakeScreenshot(
@@ -3228,7 +3228,7 @@ AutotestPrivateGetPrimaryDisplayScaleFactorFunction::Run() {
   DVLOG(1) << "AutotestPrivateGetPrimaryDisplayScaleFactorFunction";
 
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   float scale_factor = primary_display.device_scale_factor();
   return RespondNow(WithArguments(scale_factor));
 }
@@ -3244,8 +3244,7 @@ ExtensionFunction::ResponseAction
 AutotestPrivateIsTabletModeEnabledFunction::Run() {
   DVLOG(1) << "AutotestPrivateIsTabletModeEnabledFunction";
 
-  return RespondNow(
-      WithArguments(display::Screen::GetScreen()->InTabletMode()));
+  return RespondNow(WithArguments(display::Screen::Get()->InTabletMode()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3262,9 +3261,8 @@ AutotestPrivateSetTabletModeEnabledFunction::Run() {
   std::optional<api::autotest_private::SetTabletModeEnabled::Params> params =
       api::autotest_private::SetTabletModeEnabled::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  if (display::Screen::GetScreen()->InTabletMode() == params->enabled) {
-    return RespondNow(
-        WithArguments(display::Screen::GetScreen()->InTabletMode()));
+  if (display::Screen::Get()->InTabletMode() == params->enabled) {
+    return RespondNow(WithArguments(display::Screen::Get()->InTabletMode()));
   }
 
   ash::TabletMode::Waiter waiter(params->enabled);
@@ -3272,8 +3270,7 @@ AutotestPrivateSetTabletModeEnabledFunction::Run() {
     return RespondNow(Error("failed to switch the tablet mode state"));
   }
   waiter.Wait();
-  return RespondNow(
-      WithArguments(display::Screen::GetScreen()->InTabletMode()));
+  return RespondNow(WithArguments(display::Screen::Get()->InTabletMode()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3830,8 +3827,8 @@ AutotestPrivateWaitForDisplayRotationFunction::Run() {
 
   if (params->rotation == api::autotest_private::RotationType::kRotateAny) {
     display::Display display;
-    if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id_,
-                                                               &display)) {
+    if (!display::Screen::Get()->GetDisplayWithDisplayId(display_id_,
+                                                         &display)) {
       return RespondNow(Error(base::StrCat(
           {"Display is not found for display_id ", params->display_id})));
     }
@@ -3868,7 +3865,7 @@ void AutotestPrivateWaitForDisplayRotationFunction::
   animator->RemoveObserver(this);
 
   display::Display display;
-  display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id_, &display);
+  display::Screen::Get()->GetDisplayWithDisplayId(display_id_, &display);
   Respond(WithArguments(display.is_valid() &&
                         (!target_rotation_.has_value() ||
                          display.rotation() == *target_rotation_)));
@@ -3904,8 +3901,7 @@ AutotestPrivateWaitForDisplayRotationFunction::CheckScreenRotationAnimation() {
   auto* animator = root_controller->GetScreenRotationAnimator();
   if (!animator->IsRotating()) {
     display::Display display;
-    display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id_,
-                                                          &display);
+    display::Screen::Get()->GetDisplayWithDisplayId(display_id_, &display);
     // This should never fail.
     DCHECK(display.is_valid());
     return WithArguments(!target_rotation_.has_value() ||
@@ -3952,7 +3948,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
         ToBoundsDictionary(window->GetBoundsInRootWindow());
     window_info.target_bounds = ToBoundsDictionary(window->GetTargetBounds());
     window_info.display_id = base::NumberToString(
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window).id());
+        display::Screen::Get()->GetDisplayNearestWindow(window).id());
     window_info.title = base::UTF16ToUTF8(window->GetTitle());
     // Check for window hiding animations separately because they pertain to
     // layers detached from the window.
@@ -4448,7 +4444,7 @@ AutotestPrivateWaitForLauncherStateFunction::Run() {
   // Exceptionally, allow waiting for kClosed state in clamshell mode, so tests
   // can wait for fullscreen launcher state change to finish when exiting tablet
   // mode.
-  if (!display::Screen::GetScreen()->InTabletMode() &&
+  if (!display::Screen::Get()->InTabletMode() &&
       target_state != ash::AppListViewState::kClosed) {
     return RespondNow(Error("Not supported for bubble launcher"));
   }
@@ -5129,7 +5125,7 @@ AutotestPrivateSetWindowBoundsFunction::Run() {
   }
 
   display::Display display;
-  display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id, &display);
+  display::Screen::Get()->GetDisplayWithDisplayId(display_id, &display);
   if (!display.is_valid()) {
     return RespondNow(
         Error("Given display ID does not correspond to a valid display"));
@@ -6132,7 +6128,7 @@ AutotestPrivateStartOverdrawTrackingFunction::Run() {
   bool found_display = false;
   for (aura::Window* const window : ash::Shell::GetAllRootWindows()) {
     const int64_t display_id =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+        display::Screen::Get()->GetDisplayNearestWindow(window).id();
     if (display_id == target_display_id) {
       found_display = true;
     }
@@ -6193,7 +6189,7 @@ AutotestPrivateStopOverdrawTrackingFunction::Run() {
   bool found_display = false;
   for (aura::Window* const window : ash::Shell::GetAllRootWindows()) {
     const int64_t display_id =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+        display::Screen::Get()->GetDisplayNearestWindow(window).id();
     if (display_id == target_display_id) {
       found_display = true;
     }

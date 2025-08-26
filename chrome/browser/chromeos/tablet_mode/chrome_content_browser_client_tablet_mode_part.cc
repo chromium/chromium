@@ -55,8 +55,8 @@ void OverrideWebPreferencesForTabletMode(
     content::WebContents* contents,
     blink::web_pref::WebPreferences* web_prefs) {
   // Enable some mobile-like behaviors when in tablet mode on Chrome OS.
-  if (!display::Screen::GetScreen()->HasScreen() ||
-      !display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->HasScreen() ||
+      !display::Screen::Get()->InTabletMode()) {
     return;
   }
 

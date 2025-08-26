@@ -315,7 +315,7 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
   base::ScopedTempDir temp_dir_;
 
  private:
-  bool InTabletMode() { return display::Screen::GetScreen()->InTabletMode(); }
+  bool InTabletMode() { return display::Screen::Get()->InTabletMode(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;

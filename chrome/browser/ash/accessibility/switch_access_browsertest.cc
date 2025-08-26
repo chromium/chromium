@@ -71,8 +71,7 @@ class SwitchAccessTest : public AccessibilityFeatureBrowserTest,
   aura::client::CursorClient* GetCursorClient(const int x, const int y) {
     gfx::Point location_in_screen(x, y);
     const display::Display& display =
-        display::Screen::GetScreen()->GetDisplayNearestPoint(
-            location_in_screen);
+        display::Screen::Get()->GetDisplayNearestPoint(location_in_screen);
     auto* host = GetWindowTreeHostForDisplay(display.id());
     CHECK(host);
 

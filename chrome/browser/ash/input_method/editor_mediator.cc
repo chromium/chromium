@@ -91,8 +91,7 @@ EditorMediator::EditorMediator(
           std::make_unique<EditorConsentStore>(profile->GetPrefs(),
                                                metrics_recorder_.get())),
       announcer_(kAnnouncementViewName) {
-  editor_context_.OnTabletModeUpdated(
-      display::Screen::GetScreen()->InTabletMode());
+  editor_context_.OnTabletModeUpdated(display::Screen::Get()->InTabletMode());
 }
 
 EditorMediator::~EditorMediator() = default;
@@ -282,7 +281,7 @@ void EditorMediator::ShowNotice(
     EditorNoticeTransitionAction transition_action) {
   if (chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures()) {
     ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
-        /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+        /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
         /*action=*/
         ConvertToMagicBoostTransitionAction(transition_action),
         /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);

@@ -1627,7 +1627,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
                                     false /* preferred_containner */),
                 apps::LaunchSource::kFromChromeInternal,
                 std::make_unique<apps::WindowInfo>(
-                    display::Screen::GetScreen()->GetPrimaryDisplay().id()));
+                    display::Screen::Get()->GetPrimaryDisplay().id()));
   run_loop_->Run();
   EXPECT_EQ(1U, app_window_registry->app_windows().size());
 

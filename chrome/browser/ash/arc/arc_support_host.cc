@@ -820,7 +820,7 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
   } else if (*event == kEventOnOpenPrivacySettingsPageClicked) {
     chrome::ShowSettingsSubPageForProfile(profile_, chrome::kPrivacySubPage);
   } else if (*event == kEventRequestWindowBounds) {
-    SetWindowBound(display::Screen::GetScreen()->GetDisplayForNewWindows());
+    SetWindowBound(display::Screen::Get()->GetDisplayForNewWindows());
   } else {
     NOTREACHED() << "Unknown message: " << *event;
   }
