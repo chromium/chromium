@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
@@ -55,6 +54,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /**
@@ -86,7 +86,7 @@ public class IdentityDiscController
 
     private boolean mIsTabNtp;
 
-    private @SyncError int mIdentityError = SyncError.NO_ERROR;
+    private @UserActionableError int mIdentityError = UserActionableError.NONE;
 
     /**
      * @param context The Context for retrieving resources, launching preference activity, etc.
@@ -170,7 +170,7 @@ public class IdentityDiscController
                 AdaptiveToolbarButtonVariant.UNKNOWN,
                 buttonSpec.getActionChipLabelResId(),
                 buttonSpec.getHoverTooltipTextId(),
-                /* hasErrorBadge= */ mIdentityError != SyncError.NO_ERROR);
+                /* hasErrorBadge= */ mIdentityError != UserActionableError.NONE);
     }
 
     /**
@@ -279,7 +279,7 @@ public class IdentityDiscController
     }
 
     @VisibleForTesting
-    public @SyncError int getIdentityError() {
+    public @UserActionableError int getIdentityError() {
         return mIdentityError;
     }
 
@@ -288,7 +288,7 @@ public class IdentityDiscController
             return;
         }
 
-        @SyncError int error = SyncSettingsUtils.getSyncError(mProfile);
+        @UserActionableError int error = SyncSettingsUtils.getSyncError(mProfile);
         if (error == mIdentityError
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
             // Nothing changed.
@@ -301,7 +301,7 @@ public class IdentityDiscController
             ensureProfileDataCache(mProfile);
             mProfileDataCache.setBadge(
                     coreAccountInfo.getEmail(),
-                    mIdentityError == SyncError.NO_ERROR
+                    mIdentityError == UserActionableError.NONE
                             ? null
                             : ProfileDataCache.createToolbarIdentityDiscBadgeConfig(
                                     mContext, R.drawable.ic_error_badge_16dp));
@@ -375,7 +375,7 @@ public class IdentityDiscController
         String userName = profileData.getFullName();
         if (profileData.hasDisplayableEmailAddress()) {
             return mContext.getString(
-                    mIdentityError == SyncError.NO_ERROR
+                    mIdentityError == UserActionableError.NONE
                             ? R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email
                             : R.string
                                     .accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
@@ -384,7 +384,7 @@ public class IdentityDiscController
         }
 
         return mContext.getString(
-                mIdentityError == SyncError.NO_ERROR
+                mIdentityError == UserActionableError.NONE
                         ? R.string.accessibility_toolbar_btn_identity_disc_with_name
                         : R.string.accessibility_toolbar_btn_identity_disc_error_with_name,
                 userName);

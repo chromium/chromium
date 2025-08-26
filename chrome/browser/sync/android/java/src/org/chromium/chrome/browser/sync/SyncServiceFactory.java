@@ -18,6 +18,7 @@ import org.chromium.components.sync.SyncService;
 @NullMarked
 public class SyncServiceFactory {
     private static @Nullable SyncService sSyncServiceForTest;
+    private static boolean sIsSyncServiceOverriddenForTest;
 
     private SyncServiceFactory() {}
 
@@ -25,14 +26,14 @@ public class SyncServiceFactory {
      * Retrieves or creates the SyncService associated with the specified Profile. Returns null for
      * off-the-record profiles and if sync is disabled (via flag or variation).
      *
-     * Can only be accessed on the main thread.
+     * <p>Can only be accessed on the main thread.
      *
      * @param profile The profile associated the SyncService being fetched.
      * @return The SyncService (if any) associated with the Profile.
      */
     public static @Nullable SyncService getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
-        if (sSyncServiceForTest != null) return sSyncServiceForTest;
+        if (sIsSyncServiceOverriddenForTest) return sSyncServiceForTest;
         if (profile == null) {
             throw new IllegalArgumentException(
                     "Attempting to access the SyncService with a null profile");
@@ -44,9 +45,18 @@ public class SyncServiceFactory {
     /**
      * Overrides the initialization for tests. The tests should call resetForTests() at shutdown.
      */
-    public static void setInstanceForTesting(SyncService syncService) {
-        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> sSyncServiceForTest = syncService);
-        ResettersForTesting.register(() -> sSyncServiceForTest = null);
+    public static void setInstanceForTesting(@Nullable SyncService syncService) {
+        ThreadUtils.runOnUiThreadBlocking(
+                (Runnable)
+                        () -> {
+                            sSyncServiceForTest = syncService;
+                            sIsSyncServiceOverriddenForTest = true;
+                        });
+        ResettersForTesting.register(
+                () -> {
+                    sSyncServiceForTest = null;
+                    sIsSyncServiceOverriddenForTest = false;
+                });
     }
 
     @NativeMethods
