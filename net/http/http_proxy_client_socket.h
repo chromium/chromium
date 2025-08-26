@@ -139,7 +139,6 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   // Returns whether |next_state_| is STATE_DONE.
   bool CheckDone();
 
-  CompletionRepeatingCallback io_callback_;
   State next_state_ = STATE_NONE;
 
   // Stores the callback provided by the caller of async operations.

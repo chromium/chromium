@@ -44,9 +44,7 @@ HttpProxyClientSocket::HttpProxyClientSocket(
     scoped_refptr<HttpAuthController> http_auth_controller,
     ProxyDelegate* proxy_delegate,
     const NetworkTrafficAnnotationTag& traffic_annotation)
-    : io_callback_(base::BindRepeating(&HttpProxyClientSocket::OnIOComplete,
-                                       base::Unretained(this))),
-      user_agent_(user_agent),
+    : user_agent_(user_agent),
       socket_(std::move(socket)),
       endpoint_(endpoint),
       auth_(std::move(http_auth_controller)),
@@ -328,7 +326,11 @@ int HttpProxyClientSocket::DoLoop(int last_io_result) {
 
 int HttpProxyClientSocket::DoGenerateAuthToken() {
   next_state_ = STATE_GENERATE_AUTH_TOKEN_COMPLETE;
-  return auth_->MaybeGenerateAuthToken(&request_, io_callback_, net_log_);
+  return auth_->MaybeGenerateAuthToken(
+      &request_,
+      base::BindOnce(&HttpProxyClientSocket::OnIOComplete,
+                     weak_factory_.GetWeakPtr()),
+      net_log_);
 }
 
 int HttpProxyClientSocket::DoGenerateAuthTokenComplete(int result) {
@@ -425,9 +427,10 @@ int HttpProxyClientSocket::DoSendRequest() {
   http_stream_parser_ = std::make_unique<HttpStreamParser>(
       socket_.get(), is_reused_, request_.url, request_.method,
       /*upload_data_stream=*/nullptr, parser_buf_.get(), net_log_);
-  return http_stream_parser_->SendRequest(request_line_, request_headers_,
-                                          traffic_annotation_, &response_,
-                                          io_callback_);
+  return http_stream_parser_->SendRequest(
+      request_line_, request_headers_, traffic_annotation_, &response_,
+      base::BindOnce(&HttpProxyClientSocket::OnIOComplete,
+                     base::Unretained(this)));
 }
 
 int HttpProxyClientSocket::DoSendRequestComplete(int result) {
@@ -440,7 +443,8 @@ int HttpProxyClientSocket::DoSendRequestComplete(int result) {
 
 int HttpProxyClientSocket::DoReadHeaders() {
   next_state_ = STATE_READ_HEADERS_COMPLETE;
-  return http_stream_parser_->ReadResponseHeaders(io_callback_);
+  return http_stream_parser_->ReadResponseHeaders(base::BindOnce(
+      &HttpProxyClientSocket::OnIOComplete, base::Unretained(this)));
 }
 
 int HttpProxyClientSocket::DoReadHeadersComplete(int result) {
@@ -503,7 +507,9 @@ int HttpProxyClientSocket::DoDrainBody() {
   DCHECK(drain_buf_.get());
   next_state_ = STATE_DRAIN_BODY_COMPLETE;
   return http_stream_parser_->ReadResponseBody(
-      drain_buf_.get(), kDrainBodyBufferSize, io_callback_);
+      drain_buf_.get(), kDrainBodyBufferSize,
+      base::BindOnce(&HttpProxyClientSocket::OnIOComplete,
+                     base::Unretained(this)));
 }
 
 int HttpProxyClientSocket::DoDrainBodyComplete(int result) {
