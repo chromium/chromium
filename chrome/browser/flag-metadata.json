@@ -2852,7 +2852,7 @@
       "chominskib@google.com",
       "lt-web-apps-team@google.com"
     ],
-    "expiry_milestone": 142
+    "expiry_milestone": 150
   },
   {
     "name": "enable-android-window-popup-predict-final-bounds",
