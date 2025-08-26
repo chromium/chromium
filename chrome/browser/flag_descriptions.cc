@@ -7914,9 +7914,6 @@ const char kCrosMallUrlName[] = "ChromeOS App Mall URL";
 const char kCrosMallUrlDescription[] =
     "Customize the URL used for the ChromeOS App Mall.";
 
-const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
-const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
-
 const char kCrosSeparateGeoApiKeyName[] =
     "Use ChromeOS-specific API keys for location resolution";
 const char kCrosSeparateGeoApiKeyDescription[] =
