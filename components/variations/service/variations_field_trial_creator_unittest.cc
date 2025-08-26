@@ -811,7 +811,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ValidSafeSeed_NoLastFetchTime) {
       user_data_dir_path());
 
   // Verify that the safe seed does not have a fetch time.
-  EXPECT_EQ(0, local_state()->GetInt64(prefs::kVariationsSafeSeedFetchTime));
+  EXPECT_EQ(base::Time(),
+            local_state()->GetTime(prefs::kVariationsSafeSeedFetchTime));
 
   // Check that field trials are created from the safe seed. Since the test
   // study has only one experiment with 100% probability weight, we must be part

@@ -340,7 +340,7 @@ class UkmReduceAddEntryIpcTest : public testing::Test {
 }  // namespace
 
 TEST_F(UkmServiceTest, ClientIdClonedInstall) {
-  prefs_.SetInt64(prefs::kUkmClientId, 123);
+  prefs_.SetUint64(prefs::kUkmClientId, 123);
   UkmService service(&prefs_, &client_,
                      std::make_unique<MockDemographicMetricsProvider>());
 
