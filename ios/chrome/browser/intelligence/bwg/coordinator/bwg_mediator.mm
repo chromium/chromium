@@ -185,7 +185,7 @@
   _BWGBrowserAgent->PresentBwgOverlay(self.baseViewController,
                                       std::move(pageContextWrapperResponse));
 
-  base::UmaHistogramTimes(
+  base::UmaHistogramLongTimes100(
       _didPresentBWGFRE ? kStartupTimeWithFREHistogram
                         : kStartupTimeNoFREHistogram,
       base::TimeTicks::Now() - _BWGOverlayPreparationStartTime);
