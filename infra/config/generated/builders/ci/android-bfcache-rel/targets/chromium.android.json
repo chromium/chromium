@@ -117,6 +117,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//android_webview/test:webview_cts_tests/",
+        "module_scheme": "junit",
         "name": "webview_cts_tests_bfcache_mutations",
         "resultdb": {
           "enable": true,
@@ -173,6 +174,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
+        "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk_bfcache_mutations",
         "resultdb": {
           "enable": true,

@@ -157,11 +157,60 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "chrome_public_smoke_test"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "module_name": "//chrome/android:chrome_public_smoke_test/",
+        "module_scheme": "junit",
+        "name": "chrome_public_smoke_test",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "8",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_36_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_public_smoke_test",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_smoke_test/"
+      },
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_36_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "content_shell_test_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//content/shell/android:content_shell_test_apk/",
+        "module_scheme": "junit",
         "name": "content_shell_test_apk",
         "resultdb": {
           "enable": true,
@@ -306,7 +355,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//mojo/public/java/system:mojo_test_apk/",
-        "module_scheme": "gtest",
+        "module_scheme": "junit",
         "name": "mojo_test_apk",
         "resultdb": {
           "enable": true,
@@ -449,6 +498,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
+        "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,

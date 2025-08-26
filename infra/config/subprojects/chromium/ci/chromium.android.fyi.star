@@ -1366,6 +1366,7 @@ ci.builder(
         targets = [
             "android_specific_chromium_gtests",
             "chromium_junit_tests_scripts",
+            "chrome_public_smoke_test",
         ],
         mixins = [
             "16-x64-emulator",

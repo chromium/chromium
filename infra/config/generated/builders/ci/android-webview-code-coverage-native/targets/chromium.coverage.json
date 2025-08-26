@@ -54,6 +54,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
+        "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk_mutations",
         "resultdb": {
           "enable": true,
@@ -92,6 +93,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
+        "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk_no_field_trial",
         "resultdb": {
           "enable": true,

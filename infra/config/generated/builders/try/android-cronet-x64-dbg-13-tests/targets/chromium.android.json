@@ -60,6 +60,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//components/cronet/android:cronet_sample_test_apk/",
+        "module_scheme": "junit",
         "name": "cronet_sample_test_apk",
         "resultdb": {
           "enable": true,
@@ -107,6 +108,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//components/cronet/android:cronet_smoketests_apk/",
+        "module_scheme": "junit",
         "name": "cronet_smoketests_apk",
         "resultdb": {
           "enable": true,
@@ -154,6 +156,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//components/cronet/android:cronet_smoketests_missing_native_library_instrumentation_apk/",
+        "module_scheme": "junit",
         "name": "cronet_smoketests_missing_native_library_instrumentation_apk",
         "resultdb": {
           "enable": true,
@@ -201,6 +204,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//components/cronet/android:cronet_smoketests_platform_only_instrumentation_apk/",
+        "module_scheme": "junit",
         "name": "cronet_smoketests_platform_only_instrumentation_apk",
         "resultdb": {
           "enable": true,
@@ -249,6 +253,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//components/cronet/android:cronet_test_instrumentation_apk/",
+        "module_scheme": "junit",
         "name": "cronet_test_instrumentation_apk",
         "resultdb": {
           "enable": true,

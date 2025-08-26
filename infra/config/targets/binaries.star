@@ -506,6 +506,7 @@ targets.binaries.console_test_launcher(
     label = "//chrome/test/android:chrome_public_apk_baseline_profile_generator",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -513,6 +514,7 @@ targets.binaries.console_test_launcher(
     label = "//chrome/android:chrome_public_smoke_test",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 # TODO(crbug.com/40193330): Rename to chrome_public_integration_test_apk
@@ -521,7 +523,7 @@ targets.binaries.console_test_launcher(
     label = "//chrome/android:chrome_public_test_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
-    module_scheme = "gtest",
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -529,6 +531,7 @@ targets.binaries.console_test_launcher(
     label = "//chrome/android:chrome_public_test_vr_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -536,6 +539,7 @@ targets.binaries.console_test_launcher(
     label = "//chrome/android:chrome_public_unit_test_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.generated_script(
@@ -762,6 +766,7 @@ targets.binaries.console_test_launcher(
     label = "//content/shell/android:content_shell_test_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -779,6 +784,7 @@ targets.binaries.console_test_launcher(
     label = "//components/cronet/android:cronet_sample_test_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.generated_script(
@@ -805,6 +811,7 @@ targets.binaries.console_test_launcher(
     label = "//components/cronet/android:cronet_smoketests_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -812,6 +819,7 @@ targets.binaries.console_test_launcher(
     label = "//components/cronet/android:cronet_smoketests_missing_native_library_instrumentation_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -819,6 +827,7 @@ targets.binaries.console_test_launcher(
     label = "//components/cronet/android:cronet_smoketests_platform_only_instrumentation_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -826,6 +835,7 @@ targets.binaries.console_test_launcher(
     label = "//components/cronet/android:cronet_test_instrumentation_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -1502,6 +1512,7 @@ targets.binaries.console_test_launcher(
     label = "//third_party/jni_zero/sample:jni_zero_sample_apk_test",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.generated_script(
@@ -1569,7 +1580,7 @@ targets.binaries.console_test_launcher(
     label = "//mojo/public/java/system:mojo_test_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
-    module_scheme = "gtest",
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -1605,6 +1616,7 @@ targets.binaries.console_test_launcher(
     label = "//chrome/android:monochrome_public_test_ar_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.generated_script(
@@ -1991,6 +2003,7 @@ targets.binaries.console_test_launcher(
     label = "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.generated_script(
@@ -2478,6 +2491,7 @@ targets.binaries.script(
         "--output-directory",
         ".",
     ],
+    module_scheme = "junit",
 )
 
 targets.binaries.script(
@@ -2500,6 +2514,7 @@ targets.binaries.script(
         "--output-directory",
         ".",
     ],
+    module_scheme = "junit",
 )
 
 targets.binaries.script(
@@ -2522,6 +2537,7 @@ targets.binaries.script(
         "--output-directory",
         ".",
     ],
+    module_scheme = "junit",
 )
 
 targets.binaries.script(
@@ -2544,6 +2560,7 @@ targets.binaries.script(
         "--output-directory",
         ".",
     ],
+    module_scheme = "junit",
 )
 
 targets.binaries.script(
@@ -2563,6 +2580,7 @@ targets.binaries.script(
         "--module-apk",
         "CtsHostsideWebViewTests.apk",
     ],
+    module_scheme = "junit",
 )
 
 targets.binaries.script(
@@ -2583,6 +2601,7 @@ targets.binaries.script(
         "--output-directory",
         ".",
     ],
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -2590,6 +2609,7 @@ targets.binaries.console_test_launcher(
     label = "//android_webview/test:webview_instrumentation_test_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
@@ -2597,6 +2617,7 @@ targets.binaries.console_test_launcher(
     label = "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.windowed_test_launcher(

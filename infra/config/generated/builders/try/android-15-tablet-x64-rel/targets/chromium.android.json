@@ -682,6 +682,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//chrome/android:chrome_public_smoke_test/",
+        "module_scheme": "junit",
         "name": "chrome_public_smoke_test",
         "resultdb": {
           "enable": true,
@@ -732,7 +733,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//chrome/android:chrome_public_test_apk/",
-        "module_scheme": "gtest",
+        "module_scheme": "junit",
         "name": "chrome_public_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -788,6 +789,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//chrome/android:chrome_public_unit_test_apk/",
+        "module_scheme": "junit",
         "name": "chrome_public_unit_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -985,6 +987,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//content/shell/android:content_shell_test_apk/",
+        "module_scheme": "junit",
         "name": "content_shell_test_apk",
         "resultdb": {
           "enable": true,
@@ -2121,7 +2124,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//mojo/public/java/system:mojo_test_apk/",
-        "module_scheme": "gtest",
+        "module_scheme": "junit",
         "name": "mojo_test_apk",
         "resultdb": {
           "enable": true,
@@ -2594,6 +2597,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk/",
+        "module_scheme": "junit",
         "name": "system_webview_shell_layout_test_apk",
         "resultdb": {
           "enable": true,
@@ -3020,6 +3024,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
+        "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
@@ -3068,6 +3073,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/",
+        "module_scheme": "junit",
         "name": "webview_ui_test_app_test_apk",
         "resultdb": {
           "enable": true,
