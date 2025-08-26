@@ -15,8 +15,8 @@ namespace partition_alloc {
 namespace {
 
 enum ExternalMetadataTrialGroupPercentage {
-  kEnabled = 10,   // 10%
-  kDisabled = 10,  // 10%
+  kEnabled = 50,   // 50%
+  kDisabled = 50,  // 50%
 };
 
 ExternalMetadataTrialGroup s_externalMetadataJoinedGroup =
