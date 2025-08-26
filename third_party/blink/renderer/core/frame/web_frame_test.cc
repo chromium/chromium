@@ -340,10 +340,6 @@ class WebFrameTest : public PageTestBase {
 
   ~WebFrameTest() override {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
-    // Fonts cached with a different antialiasing state are not
-    // automatically invalidated and need to be cleared between test
-    // runs.
-    FontCache::Get().Invalidate();
   }
 
   void DisableRendererSchedulerThrottling() {
