@@ -6579,9 +6579,6 @@ const char kCrosContentAdjustedRefreshRateName[] =
 const char kCrosContentAdjustedRefreshRateDescription[] =
     "Allows the display to adjust the refresh rate in order to match content.";
 
-const char kCrosSoulName[] = "CrOS SOUL";
-const char kCrosSoulDescription[] = "Enable the CrOS SOUL feature.";
-
 const char kDesksTemplatesName[] = "Desk Templates";
 const char kDesksTemplatesDescription[] =
     "Streamline workflows by saving a group of applications and windows as a "

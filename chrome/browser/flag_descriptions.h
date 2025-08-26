@@ -3796,9 +3796,6 @@ extern const char kCaptureModeEducationBypassLimitsDescription[];
 extern const char kCrosContentAdjustedRefreshRateName[];
 extern const char kCrosContentAdjustedRefreshRateDescription[];
 
-extern const char kCrosSoulName[];
-extern const char kCrosSoulDescription[];
-
 extern const char kDesksTemplatesName[];
 extern const char kDesksTemplatesDescription[];
 

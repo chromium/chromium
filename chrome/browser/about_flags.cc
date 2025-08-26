@@ -10718,12 +10718,6 @@ const FeatureEntry kFeatureEntries[] = {
              kEnableBoundSessionCredentialsSoftwareKeysForManualTesting)},
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"cros-soul", flag_descriptions::kCrosSoulName,
-     flag_descriptions::kCrosSoulDescription, kOsCrOS,
-     PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootCrOSSOUL")},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     {"menu-elements", flag_descriptions::kMenuElementsName,
      flag_descriptions::kMenuElementsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kMenuElements)},
