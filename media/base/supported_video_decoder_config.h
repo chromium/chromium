@@ -49,6 +49,8 @@ struct MEDIA_EXPORT SupportedVideoDecoderConfig {
     return !(*this == other);
   }
 
+  bool IsValid() const;
+
   // Range of VideoCodecProfiles to match, inclusive.
   VideoCodecProfile profile_min = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoCodecProfile profile_max = VIDEO_CODEC_PROFILE_UNKNOWN;
