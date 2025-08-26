@@ -214,7 +214,6 @@ class JPEGImageReader final {
         last_set_byte_(nullptr),
         state_(kJpegHeader),
         samples_(nullptr) {
-    UNSAFE_TODO(memset(&info_, 0, sizeof(jpeg_decompress_struct)));
 
     // Set up the normal JPEG error routines, then override error_exit.
     info_.err = jpeg_std_error(&err_.pub);
@@ -224,7 +223,6 @@ class JPEGImageReader final {
     jpeg_create_decompress(&info_);
 
     // Initialize source manager.
-    UNSAFE_TODO(memset(&src_, 0, sizeof(decoder_source_mgr)));
     info_.src = reinterpret_cast_ptr<jpeg_source_mgr*>(&src_);
 
     // Set up callback functions.
@@ -764,9 +762,9 @@ class JPEGImageReader final {
   // value, we know we've reached the next restart position.
   raw_ptr<const JOCTET> last_set_byte_;
 
-  jpeg_decompress_struct info_;
+  jpeg_decompress_struct info_ = {};
   decoder_error_mgr err_;
-  decoder_source_mgr src_;
+  decoder_source_mgr src_ = {};
   jpeg_progress_mgr progress_mgr_;
   jstate state_;
 

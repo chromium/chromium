@@ -323,7 +323,7 @@ class PLATFORM_EXPORT BMPImageReader final {
   wtf_size_t img_data_offset_;
 
   // The BMP info header.
-  BitmapInfoHeader info_header_;
+  BitmapInfoHeader info_header_ = {};
 
   // Used only for bitmaps with compression types JPEG or PNG.
   std::unique_ptr<ImageDecoder> alternate_decoder_;

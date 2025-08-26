@@ -1617,8 +1617,7 @@ static void IgnorableWhitespaceHandler(void*, const xmlChar*, int) {
 }
 
 void XMLDocumentParser::InitializeParserContext(const std::string& chunk) {
-  xmlSAXHandler sax;
-  UNSAFE_TODO(memset(&sax, 0, sizeof(sax)));
+  xmlSAXHandler sax = {};
 
   // According to http://xmlsoft.org/html/libxml-tree.html#xmlSAXHandler and
   // http://xmlsoft.org/html/libxml-parser.html#fatalErrorSAXFunc the SAX
@@ -1868,8 +1867,7 @@ HashMap<String, String> ParseAttributes(const String& string, bool& attrs_ok) {
   AttributeParseState state;
   state.got_attributes = false;
 
-  xmlSAXHandler sax;
-  UNSAFE_TODO(memset(&sax, 0, sizeof(sax)));
+  xmlSAXHandler sax = {};
   sax.startElementNs = AttributesStartElementNsHandler;
   sax.initialized = XML_SAX2_MAGIC;
   scoped_refptr<XMLParserContext> parser =

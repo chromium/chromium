@@ -80,9 +80,7 @@ class MockMemoryUsageMonitor : public MemoryUsageMonitor {
         agent_group_scheduler_(Thread::MainThread()
                                    ->Scheduler()
                                    ->ToMainThreadScheduler()
-                                   ->CreateAgentGroupScheduler()) {
-    UNSAFE_TODO(memset(&mock_memory_usage_, 0, sizeof(mock_memory_usage_)));
-  }
+                                   ->CreateAgentGroupScheduler()) {}
   ~MockMemoryUsageMonitor() override = default;
 
   MemoryUsage GetCurrentMemoryUsage() override { return mock_memory_usage_; }
@@ -128,7 +126,7 @@ class MockMemoryUsageMonitor : public MemoryUsageMonitor {
                                    /*color_provider_colors=*/nullptr);
   }
 
-  MemoryUsage mock_memory_usage_;
+  MemoryUsage mock_memory_usage_ = {};
   std::vector<Persistent<Page>> dummy_pages_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
 };

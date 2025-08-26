@@ -56,7 +56,6 @@ BMPImageReader::BMPImageReader(ImageDecoder* parent,
       img_data_offset_(img_data_offset),
       is_in_ico_(is_in_ico) {
   // Clue-in decodeBMP() that we need to detect the correct info header size.
-  UNSAFE_TODO(memset(&info_header_, 0, sizeof(info_header_)));
 }
 
 BMPImageReader::~BMPImageReader() = default;
