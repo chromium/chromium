@@ -522,12 +522,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::AuthCredentials& credentials,
       AddAuthCacheEntryCallback callback) override;
   void SetCorsNonWildcardRequestHeadersSupport(bool value) override;
-  // TODO(mmenke): Rename this method and update Mojo docs to make it clear this
-  // doesn't give proxy auth credentials.
-  void LookupServerBasicAuthCredentials(
-      const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      LookupServerBasicAuthCredentialsCallback callback) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void LookupProxyAuthCredentials(
       const net::ProxyServer& proxy_server,

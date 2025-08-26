@@ -332,10 +332,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       const net::AuthCredentials& credentials,
       AddAuthCacheEntryCallback callback) override {}
   void SetCorsNonWildcardRequestHeadersSupport(bool value) override {}
-  void LookupServerBasicAuthCredentials(
-      const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      LookupServerBasicAuthCredentialsCallback callback) override {}
 #if BUILDFLAG(IS_CHROMEOS)
   void LookupProxyAuthCredentials(
       const net::ProxyServer& proxy_server,

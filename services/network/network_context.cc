@@ -2497,24 +2497,6 @@ void NetworkContext::SetCorsNonWildcardRequestHeadersSupport(bool value) {
       cors::NonWildcardRequestHeadersSupport(value);
 }
 
-void NetworkContext::LookupServerBasicAuthCredentials(
-    const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
-    LookupServerBasicAuthCredentialsCallback callback) {
-  net::HttpAuthCache* http_auth_cache =
-      url_request_context_->http_transaction_factory()
-          ->GetSession()
-          ->http_auth_cache();
-  net::HttpAuthCache::Entry* entry = http_auth_cache->LookupByPath(
-      url::SchemeHostPort(url), net::HttpAuth::AUTH_SERVER,
-      network_anonymization_key, url.path());
-  if (entry && entry->scheme() == net::HttpAuth::AUTH_SCHEME_BASIC) {
-    std::move(callback).Run(entry->credentials());
-  } else {
-    std::move(callback).Run(std::nullopt);
-  }
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void NetworkContext::LookupProxyAuthCredentials(
     const net::ProxyServer& proxy_server,

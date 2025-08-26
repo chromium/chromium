@@ -1657,14 +1657,6 @@ interface NetworkContext {
   // supported in this network context.
   SetCorsNonWildcardRequestHeadersSupport(bool value);
 
-  // Looks up credentials in the HttpAuthCache using the origin and path from
-  // |url|. Only supports basic auth scheme. Only looks up server (not proxy)
-  // auth credentials, and only those that are usable in the scope of
-  // |network_anonymization_key|.
-  LookupServerBasicAuthCredentials(
-      url.mojom.Url url, NetworkAnonymizationKey network_anonymization_key)
-      => (AuthCredentials? credentials);
-
   // Looks up the proxy authentication credentials associated with
   // |proxy_server|, |auth_scheme| and |realm| in the HttpAuthCache.
   // |auth_scheme| is the authentication scheme of the challenge and it's
