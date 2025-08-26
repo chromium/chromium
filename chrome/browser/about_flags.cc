@@ -11147,12 +11147,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(net::features::kPersistDeviceBoundSessions)},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"cros-soul-gd", flag_descriptions::kCrosSoulGravediggerName,
-     flag_descriptions::kCrosSoulGravediggerDescription, kOsCrOS,
-     PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootGravedigger")},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     {"replace-sync-promos-with-sign-in-promos-desktop",
      flag_descriptions::kReplaceSyncPromosWithSignInPromosName,

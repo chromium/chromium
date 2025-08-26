@@ -6582,9 +6582,6 @@ const char kCrosContentAdjustedRefreshRateDescription[] =
 const char kCrosSoulName[] = "CrOS SOUL";
 const char kCrosSoulDescription[] = "Enable the CrOS SOUL feature.";
 
-const char kCrosSoulGravediggerName[] = "CrOS SOUL Gravedigger";
-const char kCrosSoulGravediggerDescription[] = "Use Gravedigger.";
-
 const char kDesksTemplatesName[] = "Desk Templates";
 const char kDesksTemplatesDescription[] =
     "Streamline workflows by saving a group of applications and windows as a "

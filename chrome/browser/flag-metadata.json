@@ -2025,11 +2025,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "cros-soul-gd",
-    "owners": [ "cschlosser@chromium.org", "cros-privacy-features-dev@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "cros-switcher",
     "owners": [ "assistive-eng@google.com" ],
     "expiry_milestone": 135

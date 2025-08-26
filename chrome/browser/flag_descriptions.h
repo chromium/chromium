@@ -3799,9 +3799,6 @@ extern const char kCrosContentAdjustedRefreshRateDescription[];
 extern const char kCrosSoulName[];
 extern const char kCrosSoulDescription[];
 
-extern const char kCrosSoulGravediggerName[];
-extern const char kCrosSoulGravediggerDescription[];
-
 extern const char kDesksTemplatesName[];
 extern const char kDesksTemplatesDescription[];
 
