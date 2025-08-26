@@ -466,7 +466,9 @@ function handleProcessFilterOptionClick(event) {
   const type = listItem.dataset.type;
 
   listItem.classList.toggle('selected');
-  checkbox.checked = !checkbox.checked;
+  if (event.target.type !== 'checkbox') {
+    checkbox.checked = !checkbox.checked;
+  }
   const isSelected = checkbox.checked;
 
   if (type === 'main-process' && value === 'all') {
@@ -577,7 +579,9 @@ function handleTagFilterOptionClick(event) {
   const type = listItem.dataset.type;
 
   listItem.classList.toggle('selected');
-  checkbox.checked = !checkbox.checked;
+  if (event.target.type !== 'checkbox') {
+    checkbox.checked = !checkbox.checked;
+  }
   const isSelected = checkbox.checked;
 
   if (type === 'main-tag' && value === 'all') {
@@ -630,7 +634,9 @@ function handlePriorityFilterOptionClick(event) {
   const type = listItem.dataset.type;
 
   listItem.classList.toggle('selected');
-  checkbox.checked = !checkbox.checked;
+  if (event.target.type !== 'checkbox') {
+    checkbox.checked = !checkbox.checked;
+  }
   const isSelected = checkbox.checked;
 
   if (type === 'main-priority' && value === 'all') {
