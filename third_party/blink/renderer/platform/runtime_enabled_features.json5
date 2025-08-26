@@ -3202,7 +3202,7 @@
     },
     {
       name: "NavigateEventCommitBehavior",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "NavigateEventPopstateLimitations",
