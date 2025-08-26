@@ -24,7 +24,6 @@
 
 using base::ASCIIToUTF16;
 using testing::_;
-using testing::Invoke;
 
 namespace password_manager {
 

@@ -54,7 +54,6 @@ using testing::DoAll;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::Eq;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::Pointee;
 using testing::SizeIs;
@@ -471,17 +470,16 @@ TEST_F(PasswordStoreTest,
        RemoveLoginsCreatedBetweenCompletedSuccessfullyWithEmtpyListOfChanges) {
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
 
   base::test::TestFuture<bool> completion_future;
   EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
-      .WillOnce(WithArg<4>(Invoke([](PasswordChangesOrErrorReply reply) {
+      .WillOnce(WithArg<4>([](PasswordChangesOrErrorReply reply) {
         std::move(reply).Run(PasswordStoreChangeList());
-      })));
+      }));
   store->RemoveLoginsCreatedBetween(FROM_HERE,
                                     base::Time::FromSecondsSinceUnixEpoch(0),
                                     base::Time::FromSecondsSinceUnixEpoch(2),
@@ -495,18 +493,16 @@ TEST_F(PasswordStoreTest,
        RemoveLoginsCreatedBetweenCompletionFailedWithBackendError) {
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
 
   base::test::TestFuture<bool> completion_future;
   EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
-      .WillOnce(
-          WithArg<4>(Invoke([](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(kBackendError);
-          })));
+      .WillOnce(WithArg<4>([](PasswordChangesOrErrorReply reply) -> void {
+        std::move(reply).Run(kBackendError);
+      }));
   store->RemoveLoginsCreatedBetween(FROM_HERE,
                                     base::Time::FromSecondsSinceUnixEpoch(0),
                                     base::Time::FromSecondsSinceUnixEpoch(2),
@@ -1300,10 +1296,9 @@ TEST_F(PasswordStoreGroupsTest, GetLoginsWithWebGroup) {
 TEST_F(PasswordStoreTest, DelegatesGetAllLoginsToBackend) {
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
 
   MockPasswordStoreConsumer mock_consumer;
@@ -1316,10 +1311,9 @@ TEST_F(PasswordStoreTest, DelegatesGetAllLoginsToBackend) {
 TEST_F(PasswordStoreTest, DelegatesGetAutofillableLoginsToBackend) {
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
 
   MockPasswordStoreConsumer mock_consumer;
@@ -1334,21 +1328,19 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfRemovalProvidesChanges) {
   MockPasswordStoreObserver mock_observer;
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // Expect that observers receive the removal when the backend invokes the
   // reply with a `PasswordStoreChangeList`.
   EXPECT_CALL(*mock_backend, RemoveLoginAsync(_, Eq(kTestForm), _))
-      .WillOnce(
-          WithArg<2>(Invoke([&](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(
-                CreateChangeList(PasswordStoreChange::REMOVE, kTestForm));
-          })));
+      .WillOnce(WithArg<2>([&](PasswordChangesOrErrorReply reply) -> void {
+        std::move(reply).Run(
+            CreateChangeList(PasswordStoreChange::REMOVE, kTestForm));
+      }));
   EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
   EXPECT_CALL(mock_observer,
               OnLoginsChanged(store.get(), ElementsAre(EqRemoval(kTestForm))));
@@ -1364,21 +1356,19 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfAdditionProvidesChanges) {
   MockPasswordStoreObserver mock_observer;
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // Expect that observers receive the addition when the backend invokes the
   // reply with a `PasswordStoreChangeList`.
   EXPECT_CALL(*mock_backend, AddLoginAsync(Eq(kTestForm), _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(
-                CreateChangeList(PasswordStoreChange::ADD, kTestForm));
-          })));
+      .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
+        std::move(reply).Run(
+            CreateChangeList(PasswordStoreChange::ADD, kTestForm));
+      }));
   EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
   EXPECT_CALL(mock_observer,
               OnLoginsChanged(store.get(), ElementsAre(EqAddition(kTestForm))));
@@ -1394,21 +1384,19 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfUpdateProvidesChanges) {
   MockPasswordStoreObserver mock_observer;
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // Expect that observers receive the update when the backend invokes the
   // reply with a `PasswordStoreChangeList`.
   EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(
-                CreateChangeList(PasswordStoreChange::UPDATE, kTestForm));
-          })));
+      .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
+        std::move(reply).Run(
+            CreateChangeList(PasswordStoreChange::UPDATE, kTestForm));
+      }));
   EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
   EXPECT_CALL(mock_observer,
               OnLoginsChanged(store.get(), ElementsAre(EqUpdate(kTestForm))));
@@ -1424,19 +1412,17 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfAdditionReturnsError) {
   MockPasswordStoreObserver mock_observer;
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // Expect that observers does not receive the change when backend fails.
   EXPECT_CALL(*mock_backend, AddLoginAsync(Eq(kTestForm), _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(kBackendError);
-          })));
+      .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
+        std::move(reply).Run(kBackendError);
+      }));
   EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
   EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
   store->AddLogin(kTestForm);
@@ -1451,19 +1437,17 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfUpdateReturnsError) {
   MockPasswordStoreObserver mock_observer;
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // Expect that observers does not receive the update when backend fails.
   EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(kBackendError);
-          })));
+      .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
+        std::move(reply).Run(kBackendError);
+      }));
   EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
   EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
   store->UpdateLogin(kTestForm);
@@ -1490,25 +1474,23 @@ TEST_F(PasswordStoreTest, CallOnLoginsRetainedIfUpdateProvidesNoChanges) {
   MockPasswordStoreObserver mock_observer;
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // Expect that observers receive the full list if the backend invokes the
   // reply with a nullopt.
   EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
-      .WillOnce(
-          WithArg<1>(Invoke([](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(std::nullopt);
-          })));
+      .WillOnce(WithArg<1>([](PasswordChangesOrErrorReply reply) -> void {
+        std::move(reply).Run(std::nullopt);
+      }));
   EXPECT_CALL(*mock_backend, GetAllLoginsAsync(_))
-      .WillOnce(WithArg<0>(
-          Invoke([&all_credentials](LoginsOrErrorReply reply) -> void {
+      .WillOnce(
+          WithArg<0>([&all_credentials](LoginsOrErrorReply reply) -> void {
             std::move(reply).Run(std::move(all_credentials));
-          })));
+          }));
   EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
   EXPECT_CALL(mock_observer,
               OnLoginsRetained(store.get(),
@@ -1530,10 +1512,9 @@ TEST_F(PasswordStoreTest, RecordsPotentialOnLoginsRetainedInvokations) {
   MockPasswordStoreObserver mock_observer;
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
@@ -1542,10 +1523,9 @@ TEST_F(PasswordStoreTest, RecordsPotentialOnLoginsRetainedInvokations) {
   // Regardless, this is a case where `OnLoginsRetained` would be called if the
   // GMS backend was active — therefore record the potential call.
   EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
-      .WillOnce(
-          WithArg<1>(Invoke([](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(PasswordStoreChangeList());
-          })));
+      .WillOnce(WithArg<1>([](PasswordChangesOrErrorReply reply) -> void {
+        std::move(reply).Run(PasswordStoreChangeList());
+      }));
   EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
   EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
   store->UpdateLogin(kTestForm);
@@ -1564,10 +1544,9 @@ TEST_F(PasswordStoreTest, RecordsPotentialOnLoginsRetainedInvokations) {
 TEST_F(PasswordStoreTest, AbleToSavePasswords) {
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   EXPECT_CALL(*mock_backend, IsAbleToSavePasswords)
       .WillOnce(testing::Return(true));
@@ -1579,10 +1558,9 @@ TEST_F(PasswordStoreTest, AbleToSavePasswords) {
 TEST_F(PasswordStoreTest, NotAbleToSavePasswords) {
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(true);
-          })));
+      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   EXPECT_CALL(*mock_backend, IsAbleToSavePasswords)
       .WillOnce(testing::Return(false));

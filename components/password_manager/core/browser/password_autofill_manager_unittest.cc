@@ -103,7 +103,6 @@ using testing::DoAll;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::Field;
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
@@ -334,7 +333,7 @@ class PasswordAutofillManagerTest : public testing::Test {
         .WillOnce(Return(&favicon_service));
     EXPECT_CALL(favicon_service,
                 GetFaviconImageForPageURL(fill_data_.url, _, _))
-        .WillOnce(Invoke(RespondWithTestIcon));
+        .WillOnce(RespondWithTestIcon);
     password_autofill_manager_->OnAddPasswordFillData(fill_data_);
     testing::Mock::VerifyAndClearExpectations(client);
     // Suppress the warnings in the tests.
@@ -486,7 +485,7 @@ TEST_F(PasswordAutofillManagerTest, ExternalDelegatePasswordSuggestions) {
   favicon::MockFaviconService favicon_service;
   EXPECT_CALL(client, GetFaviconService()).WillOnce(Return(&favicon_service));
   EXPECT_CALL(favicon_service, GetFaviconImageForPageURL(data.url, _, _))
-      .WillOnce(Invoke(RespondWithTestIcon));
+      .WillOnce(RespondWithTestIcon);
   password_autofill_manager_->OnAddPasswordFillData(data);
 
   // Show the popup and verify the suggestions.
@@ -544,7 +543,7 @@ TEST_F(PasswordAutofillManagerTest,
   favicon::MockFaviconService favicon_service;
   EXPECT_CALL(client, GetFaviconService()).WillOnce(Return(&favicon_service));
   EXPECT_CALL(favicon_service, GetFaviconImageForPageURL(data.url, _, _))
-      .WillOnce(Invoke(RespondWithTestIcon));
+      .WillOnce(RespondWithTestIcon);
   password_autofill_manager_->OnAddPasswordFillData(data);
 
   // Show the popup and verify local and account-stored suggestion coexist.
@@ -1662,7 +1661,7 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_CALL(client, GetFaviconService()).WillOnce(Return(&favicon_service));
   EXPECT_CALL(*client.mock_driver(), CanShowAutofillUi).WillOnce(Return(true));
   EXPECT_CALL(favicon_service, GetFaviconImageForPageURL(data.url, _, _))
-      .WillOnce(Invoke(RespondWithTestIcon));
+      .WillOnce(RespondWithTestIcon);
   password_autofill_manager_->OnAddPasswordFillData(data);
 
   // Enable WebAuthn autofill to return a credential.
@@ -1707,7 +1706,7 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
   EXPECT_CALL(client, GetFaviconService()).WillOnce(Return(&favicon_service));
   EXPECT_CALL(*client.mock_driver(), CanShowAutofillUi).WillOnce(Return(true));
   EXPECT_CALL(favicon_service, GetFaviconImageForPageURL(data.url, _, _))
-      .WillOnce(Invoke(RespondWithTestIcon));
+      .WillOnce(RespondWithTestIcon);
   password_autofill_manager_->OnAddPasswordFillData(data);
 
   // Enable WebAuthn autofill to return a credential.
