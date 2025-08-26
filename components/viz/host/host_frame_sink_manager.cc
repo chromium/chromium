@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -246,8 +247,11 @@ void HostFrameSinkManager::OnFrameTokenChanged(
     return;
 
   const FrameSinkData& data = iter->second;
-  if (data.client)
+  if (data.client) {
+    // TODO(crbug.com/431761865): Remove after the bug is fixed.
+    SCOPED_CRASH_KEY_STRING32("content", "debug_label", data.debug_label);
     data.client->OnFrameTokenChanged(frame_token, activation_time);
+  }
 }
 
 bool HostFrameSinkManager::RegisterFrameSinkHierarchy(
