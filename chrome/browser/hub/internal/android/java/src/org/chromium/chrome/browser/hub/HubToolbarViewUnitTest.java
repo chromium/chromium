@@ -239,7 +239,6 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS)
     public void testMenuButtonContainerVisibility() {
         OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.setForTesting(false);
         mPropertyModel.set(MENU_BUTTON_VISIBLE, false);
@@ -251,7 +250,6 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS)
     public void testMenuButtonWrapperVisibility() {
         mPropertyModel.set(MENU_BUTTON_VISIBLE, false);
         assertEquals(View.INVISIBLE, mMenuButtonWrapper.getVisibility());
