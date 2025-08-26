@@ -4250,6 +4250,24 @@
       "jkarlin@chromium.org"
     ]
   },
+  {
+    "prefix": "sri-message-signatures",
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "external/wpt/subresource-integrity/signatures/tentative/server-initiated.window.html",
+      "http/tests/inspector-protocol/issues/sri-message-signatures/"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=SRIMessageSignatureEnforcement"
+    ],
+    "owners": [
+      "mkwst@chromium.org"
+    ],
+    "expires": "May 1, 2025"
+  },
   "The stable suite tests for conformance to HTML/web specifications, and",
   "detects unintentional changes to web exposed surface, so should not expire.",
   "Owners are part of third_party/blink/API_OWNERS.",

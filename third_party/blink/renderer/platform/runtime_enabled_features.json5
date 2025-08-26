@@ -4495,7 +4495,9 @@
     },
     {
       name: "SignatureBasedIntegrity",
-      status: "stable",
+      status: "experimental",
+      origin_trial_feature_name: "SignatureBasedIntegrity",
+      origin_trial_allows_third_party: true,
     },
     {
       name: "SkipAd",
@@ -5111,7 +5113,12 @@
     },
     {
       name: "UnencodedDigest",
-      status: "stable",
+      status: "experimental",
+      implied_by: ["SignatureBasedIntegrity"],
+      // It's unclear whether we'll trial this feature separately from
+      // `SignatureBasedIntegrity`, but we must specify an origin trial feature
+      // name in order for the `implied_by` relationship above to function.
+      origin_trial_feature_name: "UnencodedDigest"
     },
     {
       name: "UnexposedTaskIds",
