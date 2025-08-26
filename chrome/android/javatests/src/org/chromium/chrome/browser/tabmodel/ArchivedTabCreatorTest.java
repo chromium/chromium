@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
@@ -101,6 +102,7 @@ public class ArchivedTabCreatorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky test, see crbug.com/441306188")
     public void testRestoreFallback() {
         runOnUiThreadBlocking(
                 () -> {
