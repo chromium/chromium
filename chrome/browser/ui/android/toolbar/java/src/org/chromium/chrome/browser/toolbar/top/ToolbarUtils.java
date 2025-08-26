@@ -69,10 +69,14 @@ public class ToolbarUtils {
 
     public static final @ToolbarComponentId int[] RANKED_TOOLBAR_COMPONENTS =
             new int[] {
-                ToolbarComponentId.BACK, ToolbarComponentId.RELOAD, ToolbarComponentId.FORWARD,
+                ToolbarComponentId.BACK,
+                ToolbarComponentId.RELOAD,
+                ToolbarComponentId.FORWARD,
+                ToolbarComponentId.HOME,
             };
 
     @IntDef({
+        ToolbarComponentId.HOME,
         ToolbarComponentId.BACK,
         ToolbarComponentId.FORWARD,
         ToolbarComponentId.RELOAD,
@@ -80,10 +84,11 @@ public class ToolbarUtils {
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ToolbarComponentId {
-        int BACK = 0;
-        int FORWARD = 1;
-        int RELOAD = 2;
-        int COUNT = 3;
+        int HOME = 0;
+        int BACK = 1;
+        int FORWARD = 2;
+        int RELOAD = 3;
+        int COUNT = 4;
     }
 
     /**

@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.incognito.IncognitoIndicatorCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
@@ -390,6 +391,10 @@ public class ToolbarTablet extends ToolbarLayout {
                         incognitoStateProvider,
                         mToolbarButtonsVisible);
 
+        if (homeButtonDisplay instanceof ToolbarWidthConsumer) {
+            mToolbarWidthConsumers[ToolbarComponentId.HOME] =
+                    (HomeButtonCoordinator) homeButtonDisplay;
+        }
         mToolbarWidthConsumers[ToolbarComponentId.BACK] = mBackButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.FORWARD] = mForwardButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.RELOAD] = mReloadButtonCoordinator;
@@ -446,9 +451,6 @@ public class ToolbarTablet extends ToolbarLayout {
             width += buttonWidth;
         }
         if (getMenuButtonCoordinator().isVisible()) {
-            width += buttonWidth;
-        }
-        if (mHomeButton.getVisibility() == VISIBLE) {
             width += buttonWidth;
         }
         View tabSwitcherButton = findViewById(R.id.tab_switcher_button);
@@ -716,6 +718,10 @@ public class ToolbarTablet extends ToolbarLayout {
     void setBackButtonCoordinator(BackButtonCoordinator coordinator) {
         mBackButtonCoordinator = coordinator;
         mToolbarWidthConsumers[ToolbarComponentId.BACK] = mBackButtonCoordinator;
+    }
+
+    void setHomeButtonWidthConsumerForTesting(ToolbarWidthConsumer consumer) {
+        mToolbarWidthConsumers[ToolbarComponentId.HOME] = consumer;
     }
 
     void setIncognitoIndicatorCoordinatorForTesting(IncognitoIndicatorCoordinator coordinator) {

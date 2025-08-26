@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.HomeButtonDisplay;
-import org.chromium.chrome.browser.toolbar.top.ToolbarChild;
+import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -38,7 +38,7 @@ import org.chromium.ui.widget.RectProvider;
  */
 // TODO(crbug.com/40676825): Fix the visibility bug on NTP.
 @NullMarked
-public class HomeButtonCoordinator extends ToolbarChild implements HomeButtonDisplay {
+public class HomeButtonCoordinator extends ToolbarChildButton implements HomeButtonDisplay {
     private static final int ID_SETTINGS = 0;
 
     private final Context mContext;
@@ -66,7 +66,7 @@ public class HomeButtonCoordinator extends ToolbarChild implements HomeButtonDis
             Supplier<Boolean> isHomepageMenuDisabledSupplier,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider) {
-        super(themeColorProvider, incognitoStateProvider);
+        super(context, themeColorProvider, incognitoStateProvider);
         mContext = context;
         mHomeButton = (HomeButton) homeButton;
         mOnMenuClickCallback = onMenuClickCallback;
@@ -121,6 +121,11 @@ public class HomeButtonCoordinator extends ToolbarChild implements HomeButtonDis
     @Override
     public void setVisibility(int visibility) {
         mHomeButton.setVisibility(visibility);
+    }
+
+    @Override
+    public void setVisibility(boolean isVisible) {
+        setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
     @Override

@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.BACK;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.FORWARD;
+import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.HOME;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.RELOAD;
 
 import android.animation.ObjectAnimator;
@@ -82,6 +83,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.incognito.IncognitoIndicatorCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
@@ -120,6 +122,7 @@ public final class ToolbarTabletUnitTest {
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private ReloadButtonCoordinator mReloadButtonCoordinator;
     @Mock private BackButtonCoordinator mBackButtonCoordinator;
+    @Mock private HomeButtonCoordinator mHomeButtonCoordinator;
     @Mock private IncognitoIndicatorCoordinator mIncognitoIndicatorCoordinator;
     @Mock private ForwardButtonCoordinator mForwardButtonCoordinator;
     @Mock private ThemeColorProvider mThemeColorProvider;
@@ -187,6 +190,7 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.setToolbarColorObserver(mToolbarColorObserver);
         mToolbarTablet.setReloadButtonCoordinator(mReloadButtonCoordinator);
         mToolbarTablet.setBackButtonCoordinator(mBackButtonCoordinator);
+        mToolbarTablet.setHomeButtonWidthConsumerForTesting(mHomeButtonCoordinator);
         mToolbarTablet.setIncognitoIndicatorCoordinatorForTesting(mIncognitoIndicatorCoordinator);
         mToolbarTabletLayout = mToolbarTablet.findViewById(R.id.toolbar_tablet_layout);
         mHomeButton = mToolbarTablet.findViewById(R.id.home_button);
@@ -851,6 +855,16 @@ public final class ToolbarTabletUnitTest {
                 MeasureSpec.makeMeasureSpec(3 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
         assertToolbarComponentsReceivedWidth(Set.of(BACK, FORWARD, RELOAD));
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(4 * buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of(HOME, BACK, FORWARD, RELOAD));
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(5 * buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of(HOME, BACK, FORWARD, RELOAD));
     }
 
     @SuppressLint("WrongCall")
@@ -863,6 +877,16 @@ public final class ToolbarTabletUnitTest {
                         .getContext()
                         .getResources()
                         .getDimensionPixelSize(R.dimen.toolbar_button_width);
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(5 * buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of(HOME, BACK, FORWARD, RELOAD));
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(4 * buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of(HOME, BACK, FORWARD, RELOAD));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(3 * buttonWidth + widthForStaticComponents, EXACTLY),
@@ -892,13 +916,16 @@ public final class ToolbarTabletUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.toolbar_button_width);
 
+        verify(mHomeButtonCoordinator, visibleComponents.contains(HOME) ? atLeastOnce() : never())
+                .updateVisibility(geq(buttonWidth));
         verify(mBackButtonCoordinator, visibleComponents.contains(BACK) ? atLeastOnce() : never())
                 .updateVisibility(geq(buttonWidth));
         verify(
                         mReloadButtonCoordinator,
                         visibleComponents.contains(RELOAD) ? atLeastOnce() : never())
                 .updateVisibility(geq(buttonWidth));
-        Mockito.clearInvocations(mBackButtonCoordinator, mReloadButtonCoordinator);
+        Mockito.clearInvocations(
+                mHomeButtonCoordinator, mBackButtonCoordinator, mReloadButtonCoordinator);
 
         // Replace with a mock when the ForwardButtonCoordinator has its own unit tests.
         assertEquals(
