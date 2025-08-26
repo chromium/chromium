@@ -7,6 +7,7 @@ found in the LICENSE file.
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/touch_to_fill_credential_background_modern_rounded_all"
     android:descendantFocusability="blocksDescendants"
     android:gravity="center_vertical"
@@ -33,6 +34,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_toEndOf="@id/payment_app_icon"
+        android:layout_toStartOf="@+id/open_in_new_icon"
         android:layout_alignParentTop="true"
         android:maxLines="1"
         android:ellipsize="end"
@@ -43,8 +45,20 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_toEndOf="@id/payment_app_icon"
+        android:layout_toStartOf="@+id/open_in_new_icon"
         android:layout_below="@id/payment_app_name"
         android:maxLines="1"
         android:ellipsize="end"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+    <ImageView
+        android:id="@+id/open_in_new_icon"
+        app:srcCompat="@drawable/ic_open_in_new"
+        android:layout_width="@dimen/facilitated_payments_open_in_new_icon_size"
+        android:layout_height="@dimen/facilitated_payments_open_in_new_icon_size"
+        android:padding="@dimen/facilitated_payments_open_in_new_icon_padding"
+        android:layout_marginStart="@dimen/facilitated_payments_open_in_new_icon_margin_start"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:importantForAccessibility="no"/>
 </RelativeLayout>
