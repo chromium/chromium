@@ -65,7 +65,6 @@ class AutoResumptionHandlerTest : public testing::Test {
     task_manager_ = task_manager.get();
     auto config = std::make_unique<AutoResumptionHandler::Config>();
     config->auto_resumption_size_limit = 100;
-    config->is_auto_resumption_enabled_in_native = true;
     clock_.SetNow(GetNow());
 
     auto_resumption_handler_ = std::make_unique<AutoResumptionHandler>(

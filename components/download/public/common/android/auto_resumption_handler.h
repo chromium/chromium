@@ -35,7 +35,6 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
     ~Config() = default;
 
     int auto_resumption_size_limit;
-    bool is_auto_resumption_enabled_in_native;
   };
 
   // Creates the singleton instance of AutoResumptionHandler.
@@ -114,6 +113,14 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
       downloads_to_retry_;
 
   bool recompute_task_params_scheduled_ = false;
+
+  // Whether download manager and database have been initialized, which would
+  // invoke SetResumableDownloads().
+  bool is_resumable_downloads_initialized_ = false;
+
+  // Whether a background task was launched that has been waiting for download
+  // manager and database to be initialized.
+  bool is_waiting_for_resumable_downloads_ = false;
 
   base::WeakPtrFactory<AutoResumptionHandler> weak_factory_{this};
 };
