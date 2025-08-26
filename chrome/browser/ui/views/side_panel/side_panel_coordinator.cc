@@ -267,16 +267,16 @@ void SidePanelCoordinator::Toggle(
 }
 
 void SidePanelCoordinator::OpenInNewTab() {
-  if (!browser_view_->unified_side_panel() || !current_key_) {
+  if (!browser_view_->unified_side_panel() || !current_key()) {
     return;
   }
 
-  GURL new_tab_url = GetEntryForUniqueKey(*current_key_)->GetOpenInNewTabURL();
+  GURL new_tab_url = GetEntryForUniqueKey(*current_key())->GetOpenInNewTabURL();
   if (!new_tab_url.is_valid()) {
     return;
   }
 
-  SidePanelUtil::RecordNewTabButtonClicked(current_key_->key.id());
+  SidePanelUtil::RecordNewTabButtonClicked(current_key()->key.id());
   content::OpenURLParams params(new_tab_url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK,
@@ -289,7 +289,7 @@ void SidePanelCoordinator::UpdatePinState() {
   Profile* const profile = browser_view_->GetProfile();
 
   std::optional<actions::ActionId> action_id =
-      GetActionItem(current_key_->key)->GetActionId();
+      GetActionItem(current_key()->key)->GetActionId();
   CHECK(action_id.has_value());
 
   bool updated_pin_state = false;
@@ -297,7 +297,7 @@ void SidePanelCoordinator::UpdatePinState() {
   // TODO(b/310910098): Clean condition up once/if ToolbarActionModel and
   // PinnedToolbarActionModel are merged together.
   if (const std::optional<extensions::ExtensionId> extension_id =
-          current_key_->key.extension_id();
+          current_key()->key.extension_id();
       extension_id.has_value()) {
     ToolbarActionsModel* const actions_model =
         ToolbarActionsModel::Get(profile);
@@ -312,7 +312,7 @@ void SidePanelCoordinator::UpdatePinState() {
     actions_model->UpdatePinnedState(action_id.value(), updated_pin_state);
   }
 
-  SidePanelUtil::RecordPinnedButtonClicked(current_key_->key.id(),
+  SidePanelUtil::RecordPinnedButtonClicked(current_key()->key.id(),
                                            updated_pin_state);
   header_pin_button_->GetViewAccessibility().AnnounceText(
       l10n_util::GetStringUTF16(updated_pin_state ? IDS_SIDE_PANEL_PINNED
@@ -324,7 +324,7 @@ void SidePanelCoordinator::UpdatePinState() {
 
 void SidePanelCoordinator::OpenMoreInfoMenu() {
   more_info_menu_model_ =
-      GetEntryForUniqueKey(*current_key_)->GetMoreInfoMenuModel();
+      GetEntryForUniqueKey(*current_key())->GetMoreInfoMenuModel();
   CHECK(more_info_menu_model_);
   menu_runner_ = std::make_unique<views::MenuRunner>(
       more_info_menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);
@@ -338,29 +338,32 @@ void SidePanelCoordinator::OpenMoreInfoMenu() {
 
 std::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
     const {
-  return current_key_
-             ? std::optional<SidePanelEntry::Id>(current_key_->key.id())
-             : std::nullopt;
+  // We intentionally override with a trivial pass-through to the intermediate
+  // class's implementation to make this a local definition and prevent a linker
+  // error in component builds.
+  return SidePanelUIBase::GetCurrentEntryId();
 }
 
 int SidePanelCoordinator::GetCurrentEntryDefaultContentWidth() const {
-  if (!current_key_) {
-    return SidePanelEntry::kSidePanelDefaultContentWidth;
-  }
-
-  const SidePanelEntry* const entry = GetEntryForUniqueKey(*current_key_);
-  CHECK(entry);
-
-  return entry->GetDefaultContentWidth();
+  // We intentionally override with a trivial pass-through to the intermediate
+  // class's implementation to make this a local definition and prevent a linker
+  // error in component builds.
+  return SidePanelUIBase::GetCurrentEntryDefaultContentWidth();
 }
 
 bool SidePanelCoordinator::IsSidePanelShowing() const {
-  return current_key_.has_value();
+  // We intentionally override with a trivial pass-through to the intermediate
+  // class's implementation to make this a local definition and prevent a linker
+  // error in component builds.
+  return SidePanelUIBase::IsSidePanelShowing();
 }
 
 bool SidePanelCoordinator::IsSidePanelEntryShowing(
     const SidePanelEntry::Key& entry_key) const {
-  return current_key_ && current_key_->key == entry_key;
+  // We intentionally override with a trivial pass-through to the intermediate
+  // class's implementation to make this a local definition and prevent a linker
+  // error in component builds.
+  return SidePanelUIBase::IsSidePanelEntryShowing(entry_key);
 }
 
 content::WebContents* SidePanelCoordinator::GetWebContentsForTest(
@@ -380,13 +383,6 @@ content::WebContents* SidePanelCoordinator::GetWebContentsForTest(
 void SidePanelCoordinator::DisableAnimationsForTesting() {
   browser_view_->unified_side_panel()
       ->DisableAnimationsForTesting();  // IN-TEST
-}
-
-bool SidePanelCoordinator::IsSidePanelEntryShowing(
-    const SidePanelEntry::Key& entry_key,
-    bool for_tab) const {
-  return current_key_ && current_key_->key == entry_key &&
-         current_key_->tab_handle.has_value() == for_tab;
 }
 
 SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
@@ -427,7 +423,7 @@ void SidePanelCoordinator::Show(
   SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(open_trigger);
 
   // If the side panel is already showing, cancel all loads and do nothing.
-  if (current_key_ && *current_key_ == input) {
+  if (current_key() && *current_key() == input) {
     waiter_->ResetLoadingEntryIfNecessary();
 
     // If the side panel is in the process of closing, show it instead.
@@ -478,11 +474,11 @@ void SidePanelCoordinator::Close(bool suppress_animations) {
     return;
   }
 
-  if (current_key_) {
+  if (current_key()) {
     if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
-      NotifyPinnedContainerOfActiveStateChange(current_key_->key, false);
+      NotifyPinnedContainerOfActiveStateChange(current_key()->key, false);
     }
-    SidePanelEntry* entry = GetEntryForUniqueKey(*current_key_);
+    SidePanelEntry* entry = GetEntryForUniqueKey(*current_key());
     if (entry) {
       entry->OnEntryWillHide(SidePanelEntryHideReason::kSidePanelClosed);
     }
@@ -500,13 +496,6 @@ SidePanelEntry* SidePanelCoordinator::GetEntryForKey(
   }
 
   return window_registry_->GetEntryForKey(entry_key);
-}
-
-SidePanelEntry* SidePanelCoordinator::GetActiveContextualEntryForKey(
-    const SidePanelEntry::Key& entry_key) const {
-  return GetActiveContextualRegistry()
-             ? GetActiveContextualRegistry()->GetEntryForKey(entry_key)
-             : nullptr;
 }
 
 void SidePanelCoordinator::PopulateSidePanel(
@@ -535,7 +524,7 @@ void SidePanelCoordinator::PopulateSidePanel(
   content_wrapper->SetVisible(true);
   browser_view_->unified_side_panel()->Open(/*animated=*/!suppress_animations);
 
-  SidePanelEntry* previous_entry = current_entry_.get();
+  SidePanelEntry* previous_entry = current_entry().get();
 
   if (content_wrapper->children().size()) {
     if (previous_entry) {
@@ -557,8 +546,8 @@ void SidePanelCoordinator::PopulateSidePanel(
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
     contextual_registry->ResetActiveEntry();
   }
-  current_key_ = unique_key;
-  current_entry_ = entry->GetWeakPtr();
+  set_current_key(unique_key);
+  set_current_entry(entry->GetWeakPtr());
   if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
     NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
     // Notify active state change only if the entry ids for the side panel are
@@ -701,8 +690,8 @@ SidePanelCoordinator::GetNewActiveKeyOnTabChanged() {
         (*active_contextual_registry->active_entry())->key()};
   }
 
-  if (current_key_ && window_registry_->GetEntryForKey(current_key_->key)) {
-    return GetUniqueKeyForKey(current_key_->key);
+  if (current_key() && window_registry_->GetEntryForKey(current_key()->key)) {
+    return GetUniqueKeyForKey(current_key()->key);
   }
 
   if (window_registry_->active_entry()) {
@@ -735,7 +724,7 @@ void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
 void SidePanelCoordinator::MaybeQueuePinPromo() {
   // Which feature is shown depends on the specific side panel that is showing.
   const base::Feature* const iph_feature =
-      (current_key_->key.id() == SidePanelEntryId::kLensOverlayResults)
+      (current_key()->key.id() == SidePanelEntryId::kLensOverlayResults)
           ? &feature_engagement::kIPHSidePanelLensOverlayPinnableFeature
           : &feature_engagement::kIPHSidePanelGenericPinnableFeature;
 
@@ -851,10 +840,10 @@ void SidePanelCoordinator::OnTabStripModelChanged(
       // the view of the old contextual registry (if it was active), and close
       // the side panel.
       if (old_contextual_registry && old_contextual_registry->active_entry() &&
-          current_key_ &&
+          current_key() &&
           (*old_contextual_registry->active_entry())->key() ==
-              current_key_->key &&
-          current_key_->tab_handle) {
+              current_key()->key &&
+          current_key()->tab_handle) {
         auto* content_wrapper =
             browser_view_->unified_side_panel()->GetContentParentView();
         DCHECK(content_wrapper->children().size() == 1);
@@ -875,8 +864,8 @@ void SidePanelCoordinator::OnTabStripModelChanged(
 }
 
 void SidePanelCoordinator::UpdateNewTabButtonState() {
-  if (header_open_in_new_tab_button_ && current_key_) {
-    SidePanelEntry* current_entry = GetEntryForUniqueKey(*current_key_);
+  if (header_open_in_new_tab_button_ && current_key()) {
+    SidePanelEntry* current_entry = GetEntryForUniqueKey(*current_key());
     bool has_open_in_new_tab_button =
         current_entry->SupportsNewTabButton() &&
         current_entry->GetOpenInNewTabURL().is_valid();
@@ -885,12 +874,12 @@ void SidePanelCoordinator::UpdateNewTabButtonState() {
 }
 
 void SidePanelCoordinator::UpdateHeaderPinButtonState() {
-  if (!current_key_) {
+  if (!current_key()) {
     return;
   }
 
   Profile* const profile = browser_view_->GetProfile();
-  actions::ActionItem* const action_item = GetActionItem(current_key_->key);
+  actions::ActionItem* const action_item = GetActionItem(current_key()->key);
   std::optional<actions::ActionId> action_id = action_item->GetActionId();
   CHECK(action_id.has_value());
 
@@ -899,7 +888,7 @@ void SidePanelCoordinator::UpdateHeaderPinButtonState() {
   // TODO(b/310910098): Clean condition up once/if ToolbarActionModel and
   // PinnedToolbarActionModel are merged together.
   if (const std::optional<extensions::ExtensionId> extension_id =
-          current_key_->key.extension_id();
+          current_key()->key.extension_id();
       extension_id.has_value()) {
     ToolbarActionsModel* const actions_model =
         ToolbarActionsModel::Get(profile);
@@ -926,7 +915,7 @@ void SidePanelCoordinator::UpdateHeaderPinButtonState() {
 }
 
 SidePanelEntry* SidePanelCoordinator::GetCurrentSidePanelEntryForTesting() {
-  return GetEntryForUniqueKey(*current_key_);
+  return GetEntryForUniqueKey(*current_key());
 }
 
 void SidePanelCoordinator::SetNoDelaysForTesting(bool no_delays_for_testing) {
@@ -958,7 +947,7 @@ void SidePanelCoordinator::UpdatePanelIconAndTitle(
 }
 
 void SidePanelCoordinator::OnActionItemChanged(const UniqueKey key) {
-  if (key != current_key_) {
+  if (key != current_key()) {
     return;
   }
   const SidePanelEntry* entry = GetEntryForUniqueKey(key);
@@ -983,21 +972,21 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   //   non-animated.
   //   (3) A parent view or widget changes its visibility state (e.g. window
   //   becomes visible).
-  //   We currently only take action on (2). We use `current_key_` to
+  //   We currently only take action on (2). We use `current_key()` to
   //   distinguish (3) from (2). We use visibility to distinguish (1) from (2).
-  if (observed_view->GetVisible() || !current_key_) {
+  if (observed_view->GetVisible() || !current_key()) {
     return;
   }
 
-  bool closing_global = !current_key_->tab_handle;
+  bool closing_global = !current_key()->tab_handle;
 
-  // Reset current_key_ first to prevent previous_entry->OnEntryHidden()
+  // Reset current_key() first to prevent previous_entry->OnEntryHidden()
   // from calling multiple times. This could happen in the edge cases when
   // callback inside current_entry->OnEntryHidden() is calling Close() to
   // trigger race condition.
-  SidePanelEntry* previous_entry = current_entry_.get();
-  current_key_.reset();
-  current_entry_.reset();
+  SidePanelEntry* previous_entry = current_entry().get();
+  set_current_key(std::nullopt);
+  set_current_entry(nullptr);
   if (previous_entry) {
     previous_entry->OnEntryHidden();
   }
@@ -1028,20 +1017,9 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
 }
 
 void SidePanelCoordinator::OnActionsChanged() {
-  if (current_key_) {
+  if (current_key()) {
     UpdateHeaderPinButtonState();
   }
-}
-
-SidePanelEntry* SidePanelCoordinator::GetEntryForUniqueKey(
-    const UniqueKey& unique_key) const {
-  SidePanelEntry* entry = nullptr;
-  if (unique_key.tab_handle) {
-    entry = GetActiveContextualEntryForKey(unique_key.key);
-  } else {
-    entry = window_registry_->GetEntryForKey(unique_key.key);
-  }
-  return entry;
 }
 
 void SidePanelCoordinator::ClosePromoAndMaybeNotifyUsed(

@@ -82,11 +82,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
   void DisableAnimationsForTesting() override;
 
-  // Similar to IsSidePanelEntryShowing, but restricts to either the tab-scoped
-  // or window-scoped registry.
-  bool IsSidePanelEntryShowing(const SidePanelEntry::Key& entry_key,
-                               bool for_tab) const;
-
   // Re-runs open new tab URL check and sets button state to enabled/disabled
   // accordingly.
   void UpdateNewTabButtonState();
@@ -110,12 +105,11 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   void Close(bool suppress_animations);
 
   // SidePanelUIBase:
+  using SidePanelUIBase::IsSidePanelEntryShowing;
   using SidePanelUIBase::Show;
   void Show(const UniqueKey& entry,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
             bool suppress_animations) override;
-
-  std::optional<UniqueKey> current_key() { return current_key_; }
 
   // Register for this callback to detect when the side panel opens or changes.
   // If the open is animated, this will be called at the beginning of the
@@ -136,9 +130,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   // not registered in the currently observed registries. This looks through the
   // active contextual registry first, then the global registry.
   SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key) const;
-
-  SidePanelEntry* GetActiveContextualEntryForKey(
-      const SidePanelEntry::Key& entry_key) const;
 
   // SidePanelUIBase:
   void PopulateSidePanel(
@@ -203,9 +194,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   void OnToolbarModelInitialized() override {}
   void OnToolbarPinnedActionsChanged() override;
 
-  // Returns the SidePanelEntry uniquely specified by UniqueKey.
-  SidePanelEntry* GetEntryForUniqueKey(const UniqueKey& unique_key) const;
-
   // Closes `promo_feature` if showing and if actual_id == promo_id, also
   // notifies the User Education system that the feature was used.
   void ClosePromoAndMaybeNotifyUsed(const base::Feature& promo_feature,
@@ -222,21 +210,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   // This subscription is used to update the side panel title when the action
   // item associated with the side panel entry changes.
   base::CallbackListSubscription action_item_controller_subscription_;
-
-  // current_key_ uniquely identifies the SidePanelEntry that has its view
-  // hosted by the side panel. At the time that it is set and for most code
-  // paths, the SidePanelEntry is guaranteed to exist. It does not exist in the
-  // following cases:
-  //   * The active tab is switched, and UniqueKey is tab-scoped.
-  //   * The entry is removed from tab or window-scoped registry.
-  // The side-panel is showing if and only if current_key_ is set. That means it
-  // must only be set in one place: PopulateSidePanel() and unset in one place:
-  // OnViewVisibilityChanged()
-  std::optional<UniqueKey> current_key_;
-  // TODO(https://crbug.com/363743081): Remove this member.
-  // There are a few cases where the current control flow first modifies the
-  // active registry, then tries to reference the previous entry.
-  base::WeakPtr<SidePanelEntry> current_entry_;
 
   // Used to update icon in the side panel header.
   raw_ptr<views::ImageView, AcrossTasksDanglingUntriaged> panel_icon_ = nullptr;

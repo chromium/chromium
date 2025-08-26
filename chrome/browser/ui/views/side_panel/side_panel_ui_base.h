@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -49,16 +50,34 @@ class CHROME_VIEWS_EXPORT SidePanelUIBase : public SidePanelUI,
   };
 
   // SidePanelUI:
+  //
+  // Use NOINLINE for these exported virtual overrides. On the one hand, it's
+  // necessary to export this class in order to have it available across
+  // component boundaries, but on the other, we need to prevent the methods from
+  // being both locally defined and imported in some tests for component builds.
   using SidePanelUI::Show;
-  void Show(
+  NOINLINE void Show(
       SidePanelEntry::Id entry_id,
       std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
-  void Show(
+  NOINLINE void Show(
       SidePanelEntry::Key entry_key,
       std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
+  NOINLINE std::optional<SidePanelEntry::Id> GetCurrentEntryId() const override;
+  NOINLINE int GetCurrentEntryDefaultContentWidth() const override;
+  NOINLINE bool IsSidePanelShowing() const override;
+  NOINLINE bool IsSidePanelEntryShowing(
+      const SidePanelEntry::Key& entry_key) const override;
+
+  // Similar to IsSidePanelEntryShowing, but restricts to either the tab-scoped
+  // or window-scoped registry.
+  bool IsSidePanelEntryShowing(const SidePanelEntry::Key& entry_key,
+                               bool for_tab) const;
 
   Browser* browser() const { return browser_; }
   SidePanelRegistry* GetWindowRegistry() { return window_registry_.get(); }
+
+  std::optional<UniqueKey> current_key() const { return current_key_; }
+  base::WeakPtr<SidePanelEntry> current_entry() const { return current_entry_; }
 
  protected:
   friend class SidePanelEntryWaiter;
@@ -82,10 +101,24 @@ class CHROME_VIEWS_EXPORT SidePanelUIBase : public SidePanelUI,
       SidePanelEntry* entry,
       std::optional<std::unique_ptr<views::View>> content_view) = 0;
 
+  void set_current_key(std::optional<UniqueKey> new_key) {
+    current_key_ = new_key;
+  }
+
+  void set_current_entry(base::WeakPtr<SidePanelEntry> new_entry) {
+    current_entry_ = new_entry;
+  }
+
   std::optional<UniqueKey> GetUniqueKeyForKey(
       const SidePanelEntry::Key& entry_key) const;
 
+  // Returns the SidePanelEntry uniquely specified by UniqueKey.
+  SidePanelEntry* GetEntryForUniqueKey(const UniqueKey& unique_key) const;
+
   SidePanelRegistry* GetActiveContextualRegistry() const;
+
+  SidePanelEntry* GetActiveContextualEntryForKey(
+      const SidePanelEntry::Key& entry_key) const;
 
   const raw_ptr<Browser> browser_;
 
@@ -101,6 +134,22 @@ class CHROME_VIEWS_EXPORT SidePanelUIBase : public SidePanelUI,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+
+  // current_key_ uniquely identifies the SidePanelEntry that has its view
+  // hosted by the side panel. At the time that it is set and for most code
+  // paths, the SidePanelEntry is guaranteed to exist. It does not exist in the
+  // following cases:
+  //   * The active tab is switched, and UniqueKey is tab-scoped.
+  //   * The entry is removed from tab or window-scoped registry.
+  // The side-panel is showing if and only if current_key_ is set. That means it
+  // must only be set in one place: PopulateSidePanel() and unset in one place:
+  // OnViewVisibilityChanged()
+  std::optional<UniqueKey> current_key_;
+
+  // TODO(https://crbug.com/363743081): Remove this member.
+  // There are a few cases where the current control flow first modifies the
+  // active registry, then tries to reference the previous entry.
+  base::WeakPtr<SidePanelEntry> current_entry_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_BASE_H_

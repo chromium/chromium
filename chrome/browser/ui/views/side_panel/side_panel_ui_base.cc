@@ -35,6 +35,40 @@ void SidePanelUIBase::Show(
   Show(unique_key.value(), open_trigger, /*suppress_animations=*/false);
 }
 
+std::optional<SidePanelEntry::Id> SidePanelUIBase::GetCurrentEntryId() const {
+  if (!current_key_.has_value()) {
+    return std::nullopt;
+  }
+  return current_key_->key.id();
+}
+
+int SidePanelUIBase::GetCurrentEntryDefaultContentWidth() const {
+  if (!current_key_.has_value()) {
+    return SidePanelEntry::kSidePanelDefaultContentWidth;
+  }
+
+  const SidePanelEntry* const entry = GetEntryForUniqueKey(*current_key_);
+  CHECK(entry);
+
+  return entry->GetDefaultContentWidth();
+}
+
+bool SidePanelUIBase::IsSidePanelShowing() const {
+  return current_key_.has_value();
+}
+
+bool SidePanelUIBase::IsSidePanelEntryShowing(
+    const SidePanelEntry::Key& entry_key) const {
+  return current_key_.has_value() && current_key_->key == entry_key;
+}
+
+bool SidePanelUIBase::IsSidePanelEntryShowing(
+    const SidePanelEntry::Key& entry_key,
+    bool for_tab) const {
+  return current_key_.has_value() && current_key_->key == entry_key &&
+         current_key_->tab_handle.has_value() == for_tab;
+}
+
 std::optional<SidePanelUIBase::UniqueKey> SidePanelUIBase::GetUniqueKeyForKey(
     const SidePanelEntry::Key& entry_key) const {
   // For tab-scoped side panels.
@@ -50,6 +84,17 @@ std::optional<SidePanelUIBase::UniqueKey> SidePanelUIBase::GetUniqueKeyForKey(
   return std::nullopt;
 }
 
+SidePanelEntry* SidePanelUIBase::GetEntryForUniqueKey(
+    const UniqueKey& unique_key) const {
+  SidePanelEntry* entry = nullptr;
+  if (unique_key.tab_handle) {
+    entry = GetActiveContextualEntryForKey(unique_key.key);
+  } else {
+    entry = window_registry_->GetEntryForKey(unique_key.key);
+  }
+  return entry;
+}
+
 SidePanelRegistry* SidePanelUIBase::GetActiveContextualRegistry() const {
   if (browser_->tab_strip_model()->empty()) {
     return nullptr;
@@ -57,6 +102,14 @@ SidePanelRegistry* SidePanelUIBase::GetActiveContextualRegistry() const {
   return browser_->GetActiveTabInterface()
       ->GetTabFeatures()
       ->side_panel_registry();
+}
+
+SidePanelEntry* SidePanelUIBase::GetActiveContextualEntryForKey(
+    const SidePanelEntry::Key& entry_key) const {
+  if (auto* contextual_registry = GetActiveContextualRegistry()) {
+    return contextual_registry->GetEntryForKey(entry_key);
+  }
+  return nullptr;
 }
 
 void SidePanelUIBase::OnTabStripModelChanged(
