@@ -72,10 +72,10 @@ bool IsSectionSafeToMap(HANDLE handle) {
 // In order to remove the access control permissions, after being created the
 // handle is duplicated with only the file access permissions.
 HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
-                                               size_t rounded_size,
+                                               size_t size,
                                                LPCWSTR name) {
   HANDLE h = CreateFileMapping(INVALID_HANDLE_VALUE, sa, PAGE_READWRITE, 0,
-                               static_cast<DWORD>(rounded_size), name);
+                               static_cast<DWORD>(size), name);
   if (!h) {
     return nullptr;
   }
@@ -194,15 +194,22 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
-  // TODO(crbug.com/40307662): NaCl forces us to round up 64k here, wasting 32k
-  // per mapping on average.
-  static const size_t kSectionSize = 65536;
   if (size == 0) {
     return {};
   }
 
-  // Aligning may overflow so check that the result doesn't decrease.
+  // Historically, //base aligned sizes to 64k due to NaCl constraints (see
+  // crbug.com/40307662). Windows itself doesn't enforce any alignment on
+  // sizes (internally, it appears to align on page size though).
+  //
+  // However, Windows also has the concept of "allocation granularity", which
+  // is 64K–this is probably the origin of NaCl's constraints. However, even
+  // though NaCl is gone, V8's address space management has many `CHECK()`s
+  // throughout that the size is aligned to allocation granularity–so for now,
+  // preserve the old alignment behavior to avoid breaking V8.
+  static const size_t kSectionSize = 65536;
   size_t rounded_size = bits::AlignUp(size, kSectionSize);
+  // Aligning may overflow so check that the result doesn't decrease.
   if (rounded_size < size ||
       rounded_size > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return {};
