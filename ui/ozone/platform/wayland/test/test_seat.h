@@ -8,6 +8,7 @@
 #include <wayland-server-protocol.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 namespace wl {
@@ -42,10 +43,15 @@ class TestSeat : public GlobalObject {
   void set_touch(TestTouch* touch) { touch_ = touch; }
   TestTouch* touch() const { return touch_; }
 
+  base::WeakPtr<TestSeat> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
-  raw_ptr<MockPointer, DanglingUntriaged> pointer_;
-  raw_ptr<TestKeyboard, DanglingUntriaged> keyboard_;
-  raw_ptr<TestTouch, DanglingUntriaged> touch_;
+  raw_ptr<MockPointer> pointer_;
+  raw_ptr<TestKeyboard> keyboard_;
+  raw_ptr<TestTouch> touch_;
+  base::WeakPtrFactory<TestSeat> weak_ptr_factory_{this};
 };
 
 }  // namespace wl
