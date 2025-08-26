@@ -9801,24 +9801,6 @@
             ]
         }
     ],
-    "EnableNtpBrowserPromos": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableNtpBrowserPromos"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnablePDPMetricsUSDesktopIOS": [
         {
             "platforms": [
@@ -16115,6 +16097,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NotificationsIgnoreRequireInteraction"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NtpBrowserPromos": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "NtpBrowserPromoType": "setuplist"
+                    },
+                    "enable_features": [
+                        "EnableNtpBrowserPromos"
                     ]
                 }
             ]
