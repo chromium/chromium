@@ -53,13 +53,17 @@ WindowController* ChromeExtensionFunctionDetails::GetCurrentWindowController()
   // |include_incognito|.
   Profile* profile = Profile::FromBrowserContext(function_->browser_context());
 
-  for (auto* browser : GetBrowserWindowInterfacesOrderedByActivation()) {
-    if (browser->GetProfile() == profile ||
-        (function_->include_incognito_information() &&
-         browser->GetProfile()->GetOriginalProfile() == profile)) {
-      return BrowserExtensionWindowController::From(browser);
-    }
-  }
+  WindowController* window_controller = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() == profile ||
+            (function_->include_incognito_information() &&
+             browser->GetProfile()->GetOriginalProfile() == profile)) {
+          window_controller = BrowserExtensionWindowController::From(browser);
+          return false;  // Stop iterating.
+        }
+        return true;  // Continue iterating.
+      });
 
   // NOTE(rafaelw): This can return NULL in some circumstances. In particular,
   // a background_page onload chrome.tabs api call can make it into here
@@ -68,7 +72,7 @@ WindowController* ChromeExtensionFunctionDetails::GetCurrentWindowController()
   // A similar situation may arise during shutdown.
   // TODO(rafaelw): Delay creation of background_page until the browser
   // is available. http://code.google.com/p/chromium/issues/detail?id=13284
-  return nullptr;
+  return window_controller;
 }
 
 gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
@@ -77,8 +81,9 @@ gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
   // is not focused.
   WindowController* controller =
       WindowControllerList::GetInstance()->CurrentWindowForFunction(function_);
-  if (controller)
+  if (controller) {
     return controller->window()->GetNativeWindow();
+  }
 
   // Next, check the sender web contents for if it supports modal dialogs.
   // TODO(devlin): This seems weird. Why wouldn't we check this first?
@@ -98,13 +103,13 @@ gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
   // Then, check for any app windows that are open.
-  if (function_->extension() &&
-      function_->extension()->is_app()) {
+  if (function_->extension() && function_->extension()->is_app()) {
     AppWindow* window =
         AppWindowRegistry::Get(function_->browser_context())
             ->GetCurrentAppWindowForApp(function_->extension()->id());
-    if (window)
+    if (window) {
       return window->web_contents()->GetTopLevelNativeWindow();
+    }
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
