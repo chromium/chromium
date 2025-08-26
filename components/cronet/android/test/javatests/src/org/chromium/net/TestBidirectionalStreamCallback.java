@@ -10,6 +10,8 @@ import static org.junit.Assert.fail;
 
 import android.os.ConditionVariable;
 
+import org.chromium.net.impl.CronetBidirectionalStream;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -308,6 +310,9 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public void onSucceeded(BidirectionalStream stream, UrlResponseInfo info) {
         checkOnValidThread();
         assertThat(stream.isDone()).isTrue();
+        if (stream instanceof CronetBidirectionalStream cronetBidiStream) {
+            assertThat(cronetBidiStream.getFinishedRequestTimings()).isNotNull();
+        }
         assertThat(mResponseStep)
                 .isAnyOf(
                         ResponseStep.ON_RESPONSE_STARTED,
@@ -331,6 +336,9 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public void onFailed(BidirectionalStream stream, UrlResponseInfo info, CronetException error) {
         checkOnValidThread();
         assertThat(stream.isDone()).isTrue();
+        if (stream instanceof CronetBidirectionalStream cronetBidiStream) {
+            assertThat(cronetBidiStream.getFinishedRequestTimings()).isNotNull();
+        }
         // Shouldn't happen after success.
         assertThat(mResponseStep).isNotEqualTo(ResponseStep.ON_SUCCEEDED);
         // Should happen at most once for a single stream.
@@ -351,6 +359,9 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public void onCanceled(BidirectionalStream stream, UrlResponseInfo info) {
         checkOnValidThread();
         assertThat(stream.isDone()).isTrue();
+        if (stream instanceof CronetBidirectionalStream cronetBidiStream) {
+            assertThat(cronetBidiStream.getFinishedRequestTimings()).isNotNull();
+        }
         // Should happen at most once for a single stream.
         assertThat(mOnCanceledCalled).isFalse();
         assertThat(mOnErrorCalled).isFalse();

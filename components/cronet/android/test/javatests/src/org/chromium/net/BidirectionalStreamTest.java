@@ -55,6 +55,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -295,6 +297,34 @@ public class BidirectionalStreamTest {
         mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
         checkResponseInfo(
                 callback.getResponseInfoWithChecks(), Http2TestServer.getEchoMethodUrl(), 200, "");
+    }
+
+    @Test
+    @SmallTest
+    public void testRejectedExecutorShouldHaveCronetMetricsAvailable() throws Exception {
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        // Create stream.
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(
+                                Http2TestServer.getEchoMethodUrl(),
+                                callback,
+                                new Executor() {
+                                    @Override
+                                    public void execute(Runnable task) {
+                                        throw new RejectedExecutionException();
+                                    }
+                                })
+                        .setHttpMethod("GET")
+                        .build();
+        stream.start();
+        while (!stream.isDone()) {
+            // Since the executor rejects callback then the terminal callbacks will never be
+            // executed. This means that we don't have any reasonable way to know when the request
+            // has finished other than busy looping.
+            Thread.sleep(100);
+        }
+        // There's no way to figure out why the request has silently died other than logcat :(
     }
 
     @Test

@@ -60,7 +60,7 @@ class AndroidRequestFinishedInfoWrapper extends RequestFinishedInfoImpl {
                         url,
                         annotations,
                         new CronetMetrics(
-                                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, false, -1, -1),
+                                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, false, 0, 0),
                         finishedReason,
                         responseInfo,
                         exception);
