@@ -22,7 +22,6 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/types/expected.h"
 #include "crypto/apple/keychain_v2.h"
-#include "crypto/scoped_lacontext.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/unexportable_key_mac.h"
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CRYPTO_SCOPED_LACONTEXT_H_
-#define CRYPTO_SCOPED_LACONTEXT_H_
+#ifndef CRYPTO_APPLE_SCOPED_LACONTEXT_H_
+#define CRYPTO_APPLE_SCOPED_LACONTEXT_H_
 
 #if defined(__OBJC__)
 #import <LocalAuthentication/LocalAuthentication.h>
@@ -13,7 +13,7 @@
 
 #include "crypto/crypto_export.h"
 
-namespace crypto {
+namespace crypto::apple {
 
 // ScopedLAContext can hold an `LAContext` and is safe to pass around from C++.
 // ScopedLAContext functions as a unique pointer. The UI can create one with an
@@ -41,6 +41,6 @@ class CRYPTO_EXPORT ScopedLAContext {
   std::unique_ptr<ObjCStorage> storage_;
 };
 
-}  // namespace crypto
+}  // namespace crypto::apple
 
-#endif  // CRYPTO_SCOPED_LACONTEXT_H_
+#endif  // CRYPTO_APPLE_SCOPED_LACONTEXT_H_

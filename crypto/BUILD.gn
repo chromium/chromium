@@ -97,10 +97,10 @@ component("crypto") {
       sources += [
         "apple/keychain_seckeychain.cc",
         "apple/keychain_seckeychain.h",
+        "apple/scoped_lacontext.h",
+        "apple/scoped_lacontext.mm",
         "apple/security_framework_lock.cc",
         "apple/security_framework_lock.h",
-        "scoped_lacontext.h",
-        "scoped_lacontext.mm",
         "unexportable_key_mac.h",
         "unexportable_key_mac.mm",
         "user_verifying_key_mac.mm",

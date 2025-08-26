@@ -16,8 +16,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "crypto/apple/scoped_lacontext.h"
 #include "crypto/crypto_export.h"
-#include "crypto/scoped_lacontext.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 
@@ -118,7 +118,7 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
     // Optional LAContext to be used when retrieving and storing keys. Passing
     // an authenticated LAContext lets you call UserVerifyingSigningKey::Sign()
     // without triggering a macOS local authentication prompt.
-    std::optional<ScopedLAContext> lacontext;
+    std::optional<apple::ScopedLAContext> lacontext;
 #endif  // BUILDFLAG(IS_MAC)
   };
 

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "crypto/scoped_lacontext.h"
-
-#include <memory>
+#include "crypto/apple/scoped_lacontext.h"
 
 #include <LocalAuthentication/LocalAuthentication.h>
 
+#include <memory>
+
 #include "base/check.h"
 
-namespace crypto {
+namespace crypto::apple {
 
 struct ScopedLAContext::ObjCStorage {
   LAContext* __strong context;
@@ -32,4 +32,4 @@ LAContext* ScopedLAContext::release() {
   return context;
 }
 
-}  // namespace crypto
+}  // namespace crypto::apple

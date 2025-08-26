@@ -13,7 +13,6 @@
 #include "chrome/browser/webauthn/local_authentication_token.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/scoped_lacontext.h"
 #include "device/fido/mac/util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"

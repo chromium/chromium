@@ -16,7 +16,7 @@
 #include "base/test/task_environment.h"
 #include "crypto/apple/fake_keychain_v2.h"
 #include "crypto/apple/scoped_fake_keychain_v2.h"
-#include "crypto/scoped_lacontext.h"
+#include "crypto/apple/scoped_lacontext.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crypto {
@@ -114,7 +114,7 @@ TEST_F(UserVerifyingKeyMacTest, RoundTrip) {
     SCOPED_TRACE(use_lacontext);
     UserVerifyingKeyProvider::Config config = MakeConfig();
     if (use_lacontext) {
-      config.lacontext = ScopedLAContext([[LAContext alloc] init]);
+      config.lacontext = apple::ScopedLAContext([[LAContext alloc] init]);
     }
     provider_ = crypto::GetUserVerifyingKeyProvider(std::move(config));
 
