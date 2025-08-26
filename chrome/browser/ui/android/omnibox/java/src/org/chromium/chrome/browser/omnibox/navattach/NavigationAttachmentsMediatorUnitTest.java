@@ -147,7 +147,7 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void addAttachment_setsAttachmentsVisible() {
-        mMediator.addAttachment(null);
+        mMediator.addAttachment(null, "title", "description");
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
     }
 

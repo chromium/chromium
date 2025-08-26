@@ -52,6 +52,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/UrlFocusChangeListener.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeader.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationTracker.java",
+    "java/src/org/chromium/chrome/browser/omnibox/navattach/AttachmentDetailsFetcher.java",
     "java/src/org/chromium/chrome/browser/omnibox/navattach/NavigationAttachmentItemProperties.java",
     "java/src/org/chromium/chrome/browser/omnibox/navattach/NavigationAttachmentItemViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/navattach/NavigationAttachmentsCoordinator.java",

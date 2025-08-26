@@ -14,8 +14,11 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
@@ -103,7 +106,12 @@ class NavigationAttachmentsMediator {
 
                     var bitmap = (Bitmap) data.getExtras().get("data");
                     if (bitmap == null) return;
-                    addAttachment(new BitmapDrawable(mContext.getResources(), bitmap));
+                    addAttachment(
+                            new BitmapDrawable(mContext.getResources(), bitmap),
+                            // TODO(crbug.com/436888404): use dedicated tile for pictures and remove
+                            // these  strings.
+                            "Camera Shot",
+                            "Image");
                 },
                 R.string.low_memory_error);
     }
@@ -123,8 +131,13 @@ class NavigationAttachmentsMediator {
                     if (resultCode != Activity.RESULT_OK || data == null) return;
 
                     var uris = extractUrisFromResult(data);
-                    for (var unused : uris) {
-                        addAttachment(null);
+                    for (var uri : uris) {
+                        fetchAttachmentDetails(
+                                uri,
+                                (details) -> {
+                                    addAttachment(
+                                            details.thumbnail, details.title, details.description);
+                                });
                     }
                 },
                 R.string.low_memory_error);
@@ -148,22 +161,35 @@ class NavigationAttachmentsMediator {
                     if (resultCode != Activity.RESULT_OK || data == null) return;
 
                     var uris = extractUrisFromResult(data);
-                    for (var unused : uris) {
-                        addAttachment(null);
+                    for (var uri : uris) {
+                        fetchAttachmentDetails(
+                                uri,
+                                (details) -> {
+                                    addAttachment(
+                                            details.thumbnail, details.title, details.description);
+                                });
                     }
                 },
                 /* errorId= */ android.R.string.cancel);
     }
 
-    /* package */ void addAttachment(@Nullable Drawable thumbnail) {
+    @VisibleForTesting
+    void fetchAttachmentDetails(
+            Uri uri, Callback<AttachmentDetailsFetcher.AttachmentDetails> callback) {
+        new AttachmentDetailsFetcher(mContext, mContext.getContentResolver(), uri, callback)
+                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /* package */ void addAttachment(
+            @Nullable Drawable thumbnail, String title, String description) {
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
         PropertyModel model =
                 new PropertyModel.Builder(NavigationAttachmentItemProperties.ALL_KEYS)
                         .with(
                                 NavigationAttachmentItemProperties.THUMBNAIL,
                                 thumbnail != null ? thumbnail : mFallbackDrawable)
-                        .with(NavigationAttachmentItemProperties.TITLE, "Attachment")
-                        .with(NavigationAttachmentItemProperties.DESCRIPTION, "Description")
+                        .with(NavigationAttachmentItemProperties.TITLE, title)
+                        .with(NavigationAttachmentItemProperties.DESCRIPTION, description)
                         .build();
         mModelList.add(
                 new SimpleRecyclerViewAdapter.ListItem(
