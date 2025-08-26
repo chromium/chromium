@@ -1304,7 +1304,7 @@ TEST_F(ExtensionPrefsSimpleTest, ProfileExtensionPrefsMapTest) {
   registry->RegisterBooleanPref(kTestBooleanPref.name, false);
   registry->RegisterIntegerPref(kTestIntegerPref.name, 0);
   registry->RegisterStringPref(kTestStringPref.name, std::string());
-  registry->RegisterStringPref(kTestTimePref.name, std::string());
+  registry->RegisterTimePref(kTestTimePref.name, base::Time());
   registry->RegisterStringPref(kTestGURLPref.name, std::string());
   registry->RegisterDictionaryPref(kTestDictPref.name);
 
