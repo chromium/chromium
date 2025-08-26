@@ -21,7 +21,7 @@ suite('<history-synced-device-manager>', function() {
 
     return ensureLazyLoaded().then(() => {
       element = document.createElement('history-synced-device-manager');
-      element.signInState = HistorySignInState.SIGNED_IN;
+      element.signInState = HistorySignInState.SIGNED_IN_SYNCING_TABS;
       element.searchTerm = '';
       document.body.appendChild(element);
     });

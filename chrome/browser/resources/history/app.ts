@@ -759,7 +759,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
         histogramValue = HistoryPageViewHistogram.JOURNEYS;
         break;
       case Page.SYNCED_TABS:
-        histogramValue = this.signInState_ === HistorySignInState.SIGNED_IN ?
+        histogramValue = this.signInState_ ===
+                HistorySignInState.SIGNED_IN_SYNCING_TABS ?
             HistoryPageViewHistogram.SYNCED_TABS :
             HistoryPageViewHistogram.SIGNIN_PROMO;
         break;

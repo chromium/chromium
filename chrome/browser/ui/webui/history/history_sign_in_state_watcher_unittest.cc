@@ -76,22 +76,43 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesAboutStateChanges) {
                                     &sync_service_, callback.Get());
   ASSERT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
 
-  // Signing in, but without history, should not change the state, nor trigger a
-  // notification yet.
+  // Signing in to web only, should change the state and trigger a notification.
+  identity_test_env_.MakeAccountAvailable("test@email.com",
+                                          {.set_cookie = true});
+  EXPECT_CALL(callback, Run());
+  // TODO: crbug.com/418144047 - This should be replaced by an IdentityManager
+  // (instead of a SyncService) notification once the watcher observes it.
+  sync_service_.FireStateChanged();
+  EXPECT_EQ(HistorySignInState::kWebOnlySignedIn, watcher.GetSignInState());
+
+  // Signing in to Chrome, but without history and tabs, should change the state
+  // and trigger a notification.
+  EXPECT_CALL(callback, Run());
   CoreAccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, false);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, false);
   sync_service_.FireStateChanged();
-  EXPECT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
+  EXPECT_EQ(HistorySignInState::kSignedInNotSyncingTabs,
+            watcher.GetSignInState());
 
-  // Opting in to history should change the state and trigger a notification.
+  // Opting in to history should not change the state and trigger a
+  // notification.
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, true);
+  sync_service_.FireStateChanged();
+  EXPECT_EQ(HistorySignInState::kSignedInNotSyncingTabs,
+            watcher.GetSignInState());
+
+  // Opting in to tabs should change the state and trigger a notification.
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, true);
   EXPECT_CALL(callback, Run());
   sync_service_.FireStateChanged();
-  EXPECT_EQ(HistorySignInState::kSignedIn, watcher.GetSignInState());
+  EXPECT_EQ(HistorySignInState::kSignedInSyncingTabs, watcher.GetSignInState());
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Signing out again should once again change the state and trigger a
@@ -132,7 +153,8 @@ TEST_F(HistorySignInStateWatcherWithoutSyncToSigninTest,
   sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
   EXPECT_CALL(callback, Run());
   sync_service_.FireStateChanged();
-  EXPECT_EQ(HistorySignInState::kSignedIn, watcher.GetSignInState());
+  EXPECT_EQ(HistorySignInState::kSignedInSyncingTabs,
+            watcher.GetSignInState());
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Signing out and disabling Sync again should once again change the state and

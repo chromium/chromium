@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -17,19 +18,32 @@ HistorySignInState GetHistorySignInState(
     const syncer::SyncService* sync_service) {
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // TODO(crbug.com/418144047): Distinguish additional signin states (like
-    // signed in without history).
-    return sync_service &&
-                   sync_service->GetUserSettings()->GetSelectedTypes().Has(
-                       syncer::UserSelectableType::kHistory)
-               ? HistorySignInState::kSignedIn
-               : HistorySignInState::kSignedOut;
+    if (!identity_manager) {
+      return HistorySignInState::kSignedOut;
+    }
+    switch (signin_util::GetSignedInState(identity_manager)) {
+      case signin_util::SignedInState::kSignedOut:
+        return HistorySignInState::kSignedOut;
+
+      case signin_util::SignedInState::kWebOnlySignedIn:
+        return HistorySignInState::kWebOnlySignedIn;
+
+      case signin_util::SignedInState::kSignedIn:
+      case signin_util::SignedInState::kSignInPending:
+      case signin_util::SignedInState::kSyncing:
+      case signin_util::SignedInState::kSyncPaused:
+        return sync_service &&
+                       sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kTabs)
+                   ? HistorySignInState::kSignedInSyncingTabs
+                   : HistorySignInState::kSignedInNotSyncingTabs;
+    }
   } else {
     // Note: This intentionally does not check whether the history data type is
     // actually enabled (for historical reasons, mostly).
     return identity_manager && identity_manager->HasPrimaryAccount(
                                    signin::ConsentLevel::kSync)
-               ? HistorySignInState::kSignedIn
+               ? HistorySignInState::kSignedInSyncingTabs
                : HistorySignInState::kSignedOut;
   }
 }

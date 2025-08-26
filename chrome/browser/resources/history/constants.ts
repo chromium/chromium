@@ -17,7 +17,9 @@ export const BROWSING_GAP_TIME = 15 * 60 * 1000;
 // LINT.IfChange(HistorySignInState)
 export enum HistorySignInState {
   SIGNED_OUT = 0,
-  SIGNED_IN = 1,
+  WEB_ONLY_SIGNED_IN = 1,
+  SIGNED_IN_NOT_SYNCING_TABS = 2,
+  SIGNED_IN_SYNCING_TABS = 3,
 }
 // LINT.ThenChange(/chrome/browser/ui/webui/history/history_sign_in_state_watcher.h:HistorySignInState)
 

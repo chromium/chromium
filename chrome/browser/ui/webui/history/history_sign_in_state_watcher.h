@@ -23,10 +23,12 @@ class SyncService;
 // LINT.IfChange(HistorySignInState)
 enum class HistorySignInState {
   kSignedOut = 0,
-  // TODO(crbug.com/418144047): Add additional signin states (like signed in
-  // without history). Also rename kSignedIn to better reflect what it actually
-  // means - currently it means "Sync-the-feature is enabled".
-  kSignedIn = 1,
+  // The user is signed in only in web.
+  kWebOnlySignedIn = 1,
+  // The user is signed in, but not syncing their tabs.
+  kSignedInNotSyncingTabs = 2,
+  // The user is signed in and syncing their tabs.
+  kSignedInSyncingTabs = 3,
 };
 // LINT.ThenChange(/chrome/browser/resources/history/constants.ts:HistorySignInState)
 
@@ -35,6 +37,8 @@ HistorySignInState GetHistorySignInState(
     const syncer::SyncService* sync_service);
 
 // Watches for changes in the history sign-in state.
+// TODO: crbug.com/418144047 - This class should also observe IdentityManager
+// to detect changes between kSignedOut and kWebOnlySignedIn.
 class HistorySignInStateWatcher : public syncer::SyncServiceObserver {
  public:
   // `identity_manager` and `sync_service` may be null, but if non-null, must

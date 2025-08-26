@@ -77,7 +77,7 @@ suite('Metrics', function() {
 
     testService.resetResolver('recordHistogram');
     webUIListenerCallback(
-        'sign-in-state-changed', HistorySignInState.SIGNED_IN);
+        'sign-in-state-changed', HistorySignInState.SIGNED_IN_SYNCING_TABS);
     await testService.whenCalled('recordHistogram');
 
     assertEquals(1, histogram[HistoryPageViewHistogram.SYNCED_TABS]);

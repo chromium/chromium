@@ -52,7 +52,7 @@ suite('<history-synced-device-manager>', function() {
       // https://crbug.com/915641.
       element.searchTerm = '';
       element.configureSignInForTest({
-        signInState: HistorySignInState.SIGNED_IN,
+        signInState: HistorySignInState.SIGNED_IN_SYNCING_TABS,
         signInAllowed: true,
         guestSession: false,
       });
@@ -261,7 +261,7 @@ suite('<history-synced-device-manager>', function() {
     await microtasksFinished();
     assertFalse(element.$['sign-in-guide'].hidden);
     element.configureSignInForTest({
-      signInState: HistorySignInState.SIGNED_IN,
+      signInState: HistorySignInState.SIGNED_IN_SYNCING_TABS,
       signInAllowed: true,
       guestSession: false,
     });
@@ -284,7 +284,7 @@ suite('<history-synced-device-manager>', function() {
     assertEquals(0, cards.length);
 
     element.configureSignInForTest({
-      signInState: HistorySignInState.SIGNED_IN,
+      signInState: HistorySignInState.SIGNED_IN_SYNCING_TABS,
       signInAllowed: true,
       guestSession: false,
     });

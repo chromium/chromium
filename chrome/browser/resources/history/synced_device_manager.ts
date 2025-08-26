@@ -279,7 +279,8 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
       return true;
     }
 
-    return this.signInState === HistorySignInState.SIGNED_IN &&
+    return this.signInState ===
+        HistorySignInState.SIGNED_IN_SYNCING_TABS &&
         this.syncedDevices_.length === 0;
   }
 
@@ -288,7 +289,8 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
    * and not in a guest session.
    */
   protected showSignInGuide_(): boolean {
-    const show = this.signInState !== HistorySignInState.SIGNED_IN &&
+    const show =
+        this.signInState === HistorySignInState.SIGNED_OUT &&
         !this.guestSession_ && this.signInAllowed_;
     if (show) {
       BrowserServiceImpl.getInstance().recordAction(
