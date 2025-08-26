@@ -1,5 +1,5 @@
 file://net/OWNERS
 
 per-file network_annotation_monitor*=file://chrome/browser/policy/annotations/OWNERS
-per-file private_network_access_browsertest*=titouan@chromium.org
+per-file private_network_access_browsertest*=file://chrome/browser/local_network_access/OWNERS
 per-file device_bound_sessions_browsertest*=file://net/device_bound_sessions/OWNERS
