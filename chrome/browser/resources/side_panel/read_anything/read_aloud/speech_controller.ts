@@ -6,13 +6,15 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {getCurrentSpeechRate, getWordCount, playFromSelectionTimeout} from '../common.js';
 import {NodeStore} from '../node_store.js';
-import {AxReadAloudNode, getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
-import type {ReadAloudModelBrowserProxy, ReadAloudNode} from '../read_aloud/read_aloud_model_browser_proxy.js';
 import {ReadAnythingLogger} from '../read_anything_logger.js';
 import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
 
 import {ReadAloudHighlighter} from './highlighter.js';
+import {AxReadAloudNode} from './read_aloud_types.js';
+import type {ReadAloudNode, Segment} from './read_aloud_types.js';
+import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';
+import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
 import {PauseActionSource, SpeechEngineState, SpeechModel} from './speech_model.js';
 import type {SpeechPlayingState} from './speech_model.js';
 import {VoiceLanguageController} from './voice_language_controller.js';
@@ -228,7 +230,8 @@ export class SpeechController {
 
     // Rehighlight the new granularity.
     if (newGranularity !== chrome.readingMode.noHighlighting) {
-      this.highlightCurrentGranularity_(this.readAloudModel_.getCurrentText());
+      this.highlightCurrentGranularity_(
+          this.readAloudModel_.getCurrentTextSegments());
     }
 
     this.logger_.logHighlightGranularity(newGranularity);
@@ -262,7 +265,8 @@ export class SpeechController {
   // Prefer calling this rather than movePositionToNextGranularity directly so
   // that the highlighter is always informed of the change.
   private moveToNextGranularity_() {
-    this.highlighter_.onWillMoveToNextGranularity();
+    this.highlighter_.onWillMoveToNextGranularity(
+        this.readAloudModel_.getCurrentTextSegments());
     this.readAloudModel_.moveSpeechForward();
   }
 
@@ -270,7 +274,8 @@ export class SpeechController {
     // This must be called BEFORE calling
     // moveSpeechBackwards so we can accurately
     // determine what's currently being highlighted.
-    this.highlighter_.removeCurrentHighlight();
+    this.highlighter_.removeCurrentHighlight(
+        this.readAloudModel_.getCurrentTextSegments());
     this.onMovingGranularity_();
     this.readAloudModel_.moveSpeechBackwards();
 
@@ -318,7 +323,8 @@ export class SpeechController {
     // updateContent, such as via a preference change, rehighlight the nodes
     // after a pause.
     if (!playedFromSelection) {
-      this.highlightCurrentGranularity_(this.readAloudModel_.getCurrentText());
+      this.highlightCurrentGranularity_(
+          this.readAloudModel_.getCurrentTextSegments());
     }
   }
 
@@ -420,19 +426,14 @@ export class SpeechController {
   private highlightAndPlayMessage_(
       isInterrupted: boolean = false,
       isMovingBackward: boolean = false): boolean {
-    const nodes: ReadAloudNode[] = this.readAloudModel_.getCurrentText();
+    const segments: Segment[] = this.readAloudModel_.getCurrentTextSegments();
 
     // If there aren't any valid ax node ids returned by getCurrentText,
     // speech should stop.
-    if (nodes.length === 0) {
+    if (segments.length === 0) {
       return false;
     }
 
-    if (this.nodeStore_.areNodesAllHidden(nodes)) {
-      return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
-    }
-
-    const utteranceText = this.extractTextOf_(nodes);
     // If node ids were returned but they don't exist in the Reading Mode panel,
     // there's been a mismatch between Reading Mode and Read Aloud. In this
     // case, we should move to the next Read Aloud node and attempt to continue
@@ -440,6 +441,13 @@ export class SpeechController {
     // needed, but it is. Investigate root cause of Read Aloud / Reading Mode
     // mismatch. Additionally, the TTS engine may not like attempts to speak
     // whitespace, so move to the next utterance in that case.
+    const nodes: ReadAloudNode[] = segments.map(segment => segment.node);
+    if (!this.nodeStore_.hasAnyNode(nodes) ||
+        this.nodeStore_.areNodesAllHidden(nodes)) {
+      return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
+    }
+
+    const utteranceText = this.readAloudModel_.getCurrentTextContent();
     if (!utteranceText || utteranceText.trim().length === 0) {
       return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
     }
@@ -463,7 +471,7 @@ export class SpeechController {
       this.playText_(utteranceText);
     }
 
-    this.highlightCurrentGranularity_(nodes);
+    this.highlightCurrentGranularity_(segments);
     return true;
   }
 
@@ -594,30 +602,6 @@ export class SpeechController {
     if (error.error === 'voice-unavailable') {
       this.voiceLanguageController_.onVoiceUnavailableError();
     }
-  }
-
-  private extractTextOf_(nodes: ReadAloudNode[]): string {
-    let utteranceText: string = '';
-    for (const node of nodes) {
-      if (!(node instanceof AxReadAloudNode)) {
-        continue;
-      }
-      const nodeId = node.axNodeId;
-
-      const startIndex = this.readAloudModel_.getCurrentTextStartIndex(node);
-      const endIndex = this.readAloudModel_.getCurrentTextEndIndex(node);
-      const element = this.nodeStore_.getDomNode(nodeId);
-      if (!element || startIndex < 0 || endIndex < 0) {
-        continue;
-      }
-      const content = chrome.readingMode.getTextContent(nodeId).substring(
-          startIndex, endIndex);
-      if (content) {
-        // Add all of the text from the current nodes into a single utterance.
-        utteranceText += content;
-      }
-    }
-    return utteranceText;
   }
 
   private stopSpeech_(pauseSource: PauseActionSource) {
@@ -855,7 +839,8 @@ export class SpeechController {
       // Since we're setting the reading position after a content update when
       // we're paused, redraw the highlight after moving the traversal state to
       // the right spot above.
-      this.highlightCurrentGranularity_(this.readAloudModel_.getCurrentText());
+      this.highlightCurrentGranularity_(
+          this.readAloudModel_.getCurrentTextSegments());
       return true;
     } else {
       this.model_.setLastPosition(null);
@@ -864,45 +849,47 @@ export class SpeechController {
   }
 
   private movePlaybackToNode_(node: ReadAloudNode, offset: number): void {
-    let currentTextNodes = this.readAloudModel_.getCurrentText();
-    let hasCurrentText = currentTextNodes.length > 0;
+    let currentSegments: Segment[] =
+        this.readAloudModel_.getCurrentTextSegments();
+    let hasCurrentText = currentSegments.length > 0;
     // Since a node could spread across multiple granularities, we use the
     // offset to determine if the selected text is in this granularity or if
     // we have to move to the next one.
-    let nodeForSelection = currentTextNodes.find(n => node.equals(n));
-    let startOfSelectionIsInCurrentText = !!nodeForSelection &&
-        this.readAloudModel_.getCurrentTextEndIndex(nodeForSelection) > offset;
-    while (hasCurrentText && !startOfSelectionIsInCurrentText) {
+    let foundSegment = this.findSegment_(currentSegments, node, offset);
+    while (hasCurrentText && !foundSegment) {
       this.highlightCurrentGranularity_(
-          currentTextNodes, /*scrollIntoView=*/ false,
+          currentSegments, /*scrollIntoView=*/ false,
           /*shouldUpdateSentenceHighlight=*/ true,
           /*shouldSetLastReadingPos=*/ false);
       this.moveToNextGranularity_();
-      currentTextNodes = this.readAloudModel_.getCurrentText();
-      hasCurrentText = currentTextNodes.length > 0;
-      nodeForSelection = currentTextNodes.find(n => node.equals(n));
-      startOfSelectionIsInCurrentText = !!nodeForSelection &&
-          this.readAloudModel_.getCurrentTextEndIndex(nodeForSelection) >
-              offset;
+
+      currentSegments = this.readAloudModel_.getCurrentTextSegments();
+      hasCurrentText = currentSegments.length > 0;
+      foundSegment = this.findSegment_(currentSegments, node, offset);
     }
+  }
+
+  private findSegment_(
+      segments: Segment[], node: ReadAloudNode, offset: number): Segment
+      |undefined {
+    return segments.find(
+        segment => segment.node.equals(node) &&
+            (segment.start + segment.length > offset));
   }
 
   // Highlights or rehighlights the current granularity, sentence or word.
   private highlightCurrentGranularity_(
-      nodes: ReadAloudNode[], scrollIntoView: boolean = true,
+      segments: Segment[], scrollIntoView: boolean = true,
       shouldUpdateSentenceHighlight: boolean = true,
       shouldSetLastReadingPos: boolean = true) {
-    if (shouldSetLastReadingPos && nodes.length && nodes[0]) {
-      const firstNode = nodes[0];
-      if (firstNode instanceof AxReadAloudNode) {
-        this.model_.setLastPosition({
-          node: firstNode,
-          offset: this.readAloudModel_.getCurrentTextStartIndex(firstNode),
-        });
-      }
+    if (shouldSetLastReadingPos && segments.length && segments[0]) {
+      this.model_.setLastPosition({
+        node: segments[0].node,
+        offset: segments[0].start,
+      });
     }
     this.highlighter_.highlightCurrentGranularity(
-        nodes, scrollIntoView, shouldUpdateSentenceHighlight);
+        segments, scrollIntoView, shouldUpdateSentenceHighlight);
   }
 
   private isTextTooLong_(text: string): boolean {

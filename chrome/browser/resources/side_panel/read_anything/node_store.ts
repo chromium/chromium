@@ -5,8 +5,8 @@
 import {assert} from '//resources/js/assert.js';
 
 import {getWordCount, isRectMostlyVisible} from './common.js';
-import type {ReadAloudNode} from './read_aloud/read_aloud_model_browser_proxy.js';
-import {AxReadAloudNode} from './read_aloud/read_aloud_model_browser_proxy.js';
+import type {ReadAloudNode} from './read_aloud/read_aloud_types.js';
+import {AxReadAloudNode} from './read_aloud/read_aloud_types.js';
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
@@ -178,6 +178,12 @@ export class NodeStore {
     textShownSinceLastSave.forEach(node => this.textNodesSeen_.add(node));
     const wordsSeen = this.estimateWordCount_(this.textNodesSeen_);
     chrome.readingMode.updateWordsSeen(wordsSeen);
+  }
+
+  hasAnyNode(nodes: ReadAloudNode[]): boolean {
+    return nodes.some(
+        node => node instanceof AxReadAloudNode &&
+            this.getDomNode(node.axNodeId) !== undefined);
   }
 
   getDomNode(axNodeId: number): Node|undefined {

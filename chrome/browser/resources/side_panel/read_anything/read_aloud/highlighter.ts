@@ -6,10 +6,12 @@ import {assert} from '//resources/js/assert.js';
 
 import {getCurrentSpeechRate, isRectVisible} from '../common.js';
 import {NodeStore} from '../node_store.js';
-import {AxReadAloudNode, getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
-import type {ReadAloudModelBrowserProxy, ReadAloudNode} from '../read_aloud/read_aloud_model_browser_proxy.js';
 import {isEspeak} from '../voice_language_util.js';
 
+import {AxReadAloudNode} from './read_aloud_types.js';
+import type {Segment} from './read_aloud_types.js';
+import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';
+import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
 import {VoiceLanguageController} from './voice_language_controller.js';
 import {WordBoundaries} from './word_boundaries.js';
 
@@ -64,7 +66,7 @@ export class ReadAloudHighlighter {
   }
 
   highlightCurrentGranularity(
-      nodes: ReadAloudNode[], scrollIntoView: boolean,
+      segments: Segment[], scrollIntoView: boolean,
       shouldUpdateSentenceHighlight: boolean): void {
     const highlightGranularity = this.getEffectiveHighlightingGranularity_();
     switch (highlightGranularity) {
@@ -78,7 +80,7 @@ export class ReadAloudHighlighter {
       // highlights have already been calculated.
       case chrome.readingMode.sentenceHighlighting:
         if (shouldUpdateSentenceHighlight) {
-          this.highlightCurrentSentence_(nodes, scrollIntoView);
+          this.highlightCurrentSentence_(segments, scrollIntoView);
         }
         break;
       case chrome.readingMode.wordHighlighting:
@@ -94,7 +96,7 @@ export class ReadAloudHighlighter {
     }
   }
 
-  onWillMoveToNextGranularity() {
+  onWillMoveToNextGranularity(segments: Segment[]) {
     const highlightGranularity = this.getEffectiveHighlightingGranularity_();
     if (highlightGranularity === chrome.readingMode.sentenceHighlighting) {
       return;
@@ -104,16 +106,16 @@ export class ReadAloudHighlighter {
     // sentence we are about to skip is still highlighted for previous
     // highlight formatting.
     this.highlightCurrentSentence_(
-        this.readAloudModel_.getCurrentText(), /*scrollIntoView=*/ false,
+        segments, /*scrollIntoView=*/ false,
         /* previousHighlightOnly=*/ true);
   }
 
   // Resets formatting on the current highlight, including previous highlight
   // formatting.
-  removeCurrentHighlight() {
+  removeCurrentHighlight(segments: Segment[]) {
     // The most recent highlight could have been spread across multiple
     // segments so clear the formatting for all of the segments.
-    for (let i = 0; i < this.readAloudModel_.getCurrentText().length; i++) {
+    for (let i = 0; i < segments.length; i++) {
       const lastElement = this.previousHighlights_.pop();
       if (lastElement) {
         lastElement.classList.remove(currentReadHighlightClass);
@@ -300,21 +302,27 @@ export class ReadAloudHighlighter {
   }
 
   private highlightCurrentSentence_(
-      nodes: ReadAloudNode[], scrollIntoView: boolean,
+      segments: Segment[], scrollIntoView: boolean,
       previousHighlightOnly: boolean = false) {
-    if (!nodes.length) {
+    if (!segments.length) {
       return;
     }
 
     this.resetPreviousHighlight();
-    for (const node of nodes) {
+    for (const {node, start, length} of segments) {
       if (!(node instanceof AxReadAloudNode)) {
         continue;
       }
-      const nodeId = node.axNodeId;
-      const element = this.nodeStore_.getDomNode(nodeId) as HTMLElement;
-      const highlighted =
-          this.highlightCurrentElement_(node, previousHighlightOnly, element);
+      const element = this.nodeStore_.getDomNode(node.axNodeId) as HTMLElement;
+      if (!element) {
+        continue;
+      }
+      const end = start + length;
+      if (start < 0 || end < 0) {
+        continue;
+      }
+      const highlighted = this.highlightCurrentText_(
+          start, start + length, element, previousHighlightOnly);
       if (highlighted) {
         this.nodeStore_.replaceDomNode(element, highlighted);
       }
@@ -323,22 +331,6 @@ export class ReadAloudHighlighter {
     if (scrollIntoView) {
       this.scrollHighlightIntoView_();
     }
-  }
-
-  private highlightCurrentElement_(
-      node: ReadAloudNode, previousHighlightOnly = false,
-      element?: HTMLElement): HTMLElement|undefined {
-    if (!element) {
-      return undefined;
-    }
-    const start = this.readAloudModel_.getCurrentTextStartIndex(node);
-    const end = this.readAloudModel_.getCurrentTextEndIndex(node);
-    if ((start < 0) || (end < 0)) {
-      // If the start or end index is invalid, don't use this node.
-      return undefined;
-    }
-    return this.highlightCurrentText_(
-        start, end, element, previousHighlightOnly);
   }
 
   // The following results in

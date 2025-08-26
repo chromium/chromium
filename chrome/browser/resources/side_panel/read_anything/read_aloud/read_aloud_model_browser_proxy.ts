@@ -2,29 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO: crbug.com/440400392- Add a TestModelBrowserProxyImpl to replace
+import {AxReadAloudNode} from './read_aloud_types.js';
+import type {ReadAloudNode, Segment} from './read_aloud_types.js';
+
+// TODO: crbug.com/440400392- Use TestReadAloudModelBrowserProxy to replace
 // FakeReadingMode.
-
-// Wrapper class to represent a node used by read aloud. The type of node
-// could be either a DOM node or an AXNode depending on what type of text
-// segmentation method is used.
-export abstract class ReadAloudNode {
-  abstract equals(other: ReadAloudNode|undefined|null): boolean;
-}
-
-export class AxReadAloudNode extends ReadAloudNode {
-  constructor(public readonly axNodeId: number) {
-    super();
-  }
-
-  equals(other: ReadAloudNode|undefined|null): boolean {
-    if (!(other instanceof AxReadAloudNode)) {
-      return false;
-    }
-
-    return this.axNodeId === other.axNodeId;
-  }
-}
+// TODO: crbug.com/440400392- Move logic into read_aloud_model. The browser
+// proxy should only be a wrapper around browser calls (e.g.
+// chrome.readingMode).
 
 // Proxy class used to wrap text segmentation calls. This can be used to use
 // different text segmentation approaches via feature flag, such as an
@@ -32,11 +17,10 @@ export class AxReadAloudNode extends ReadAloudNode {
 export interface ReadAloudModelBrowserProxy {
   // TODO: crbug.com/440400392- Ensure all methods have documentation once
   // the structure is finalized.
-  getCurrentText(): ReadAloudNode[];
   getHighlightForCurrentSegmentIndex(index: number, phrases: boolean):
-      Array<{node: ReadAloudNode, start: number, length: number}>;
-  getCurrentTextStartIndex(node: ReadAloudNode): number;
-  getCurrentTextEndIndex(node: ReadAloudNode): number;
+      Segment[];
+  getCurrentTextSegments(): Segment[];
+  getCurrentTextContent(): string;
   getAccessibleBoundary(text: string, maxSpeechLength: number): number;
 
   // Handle speech positioning.
@@ -50,31 +34,24 @@ export interface ReadAloudModelBrowserProxy {
 }
 
 class V8ModelImpl implements ReadAloudModelBrowserProxy {
-  getCurrentText(): ReadAloudNode[] {
-    return chrome.readingMode.getCurrentText().map(
-        id => new AxReadAloudNode(id));
-  }
 
   getHighlightForCurrentSegmentIndex(index: number, phrases: boolean):
-      Array<{node: ReadAloudNode, start: number, length: number}> {
+      Segment[] {
     return chrome.readingMode.getHighlightForCurrentSegmentIndex(index, phrases)
         .map(
             ({nodeId, start, length}) =>
                 ({node: new AxReadAloudNode(nodeId), start, length}));
   }
 
-  getCurrentTextStartIndex(node: ReadAloudNode): number {
-    if (!(node instanceof AxReadAloudNode)) {
-      return -1;
-    }
-    return chrome.readingMode.getCurrentTextStartIndex(node.axNodeId);
+  getCurrentTextSegments():
+      Segment[] {
+    return chrome.readingMode.getCurrentTextSegments().map(
+        ({nodeId, start, length}) =>
+            ({node: new AxReadAloudNode(nodeId), start, length}));
   }
 
-  getCurrentTextEndIndex(node: ReadAloudNode): number {
-    if (!(node instanceof AxReadAloudNode)) {
-      return -1;
-    }
-    return chrome.readingMode.getCurrentTextEndIndex(node.axNodeId);
+  getCurrentTextContent(): string {
+    return chrome.readingMode.getCurrentTextContent();
   }
 
   resetSpeechToBeginning(): void {
@@ -110,21 +87,17 @@ class V8ModelImpl implements ReadAloudModelBrowserProxy {
 class TsReadModelImpl implements ReadAloudModelBrowserProxy {
   // TODO: crbug.com/440400392- Implement all of the ReadAloudModelBrowserProxy
   // methods.
-  getCurrentText(): ReadAloudNode[] {
-    return [];
-  }
-
   getHighlightForCurrentSegmentIndex():
-      Array<{node: ReadAloudNode, start: number, length: number}> {
+      Segment[] {
     return [];
   }
 
-  getCurrentTextStartIndex(): number {
-    return -1;
+  getCurrentTextSegments(): Segment[] {
+    return [];
   }
 
-  getCurrentTextEndIndex(): number {
-    return -1;
+  getCurrentTextContent(): string {
+    return '';
   }
 
   getAccessibleBoundary(): number {

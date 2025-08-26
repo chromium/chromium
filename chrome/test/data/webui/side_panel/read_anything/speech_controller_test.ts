@@ -628,7 +628,7 @@ suite('SpeechController', () => {
 
     speech.reset();
     isSpeechActiveChanged = false;
-    chrome.readingMode.getCurrentText = () => [];
+    chrome.readingMode.getCurrentTextSegments = () => [];
     spoken.onend();
 
     assertTrue(isSpeechActiveChanged);
@@ -644,7 +644,7 @@ suite('SpeechController', () => {
 
   test('onNextGranularityClick propagates change', () => {
     let movedToNext = false;
-    chrome.readingMode.getCurrentText = () => [];
+    chrome.readingMode.getCurrentTextSegments = () => [];
     chrome.readingMode.movePositionToNextGranularity = () => {
       movedToNext = true;
     };
@@ -656,7 +656,7 @@ suite('SpeechController', () => {
 
   test('onPreviousGranularityClick propagates change', () => {
     let movedToPrevious: boolean = false;
-    chrome.readingMode.getCurrentText = () => [];
+    chrome.readingMode.getCurrentTextSegments = () => [];
     chrome.readingMode.movePositionToPreviousGranularity = () => {
       movedToPrevious = true;
     };

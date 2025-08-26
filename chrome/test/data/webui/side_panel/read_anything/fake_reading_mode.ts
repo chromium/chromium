@@ -384,25 +384,10 @@ export class FakeReadingMode {
   // position, but we should be able to remove this in the future.
   initAxPositionWithNode(_startingNodeId: number): void {}
 
-  // Gets the starting text index for the current Read Aloud text segment
-  // for the given node. nodeId should be a node returned by getCurrentText.
-  // Returns -1 if the node is invalid.
-  getCurrentTextStartIndex(_nodeId: number): number {
-    return 0;
-  }
-
-  // Gets the ending text index for the current Read Aloud text segment
-  // for the given node. nodeId should be a node returned by getCurrentText or
-  // getPreviousText. Returns -1 if the node is invalid.
-  getCurrentTextEndIndex(_nodeId: number): number {
-    return 5;
-  }
-
-  // Gets the nodes of the  next text that should be spoken and highlighted.
-  // Use getCurrentTextStartIndex and getCurrentTextEndIndex to get the bounds
-  // for text associated with these nodes.
-  getCurrentText(): number[] {
-    return [2];
+  // Gets the text content of the next text that should be spoken and
+  // highlighted.
+  getCurrentTextContent() {
+    return 'default text content';
   }
 
   // Increments the processed_granularity_index_ in ReadAnythingAppModel,
@@ -459,6 +444,16 @@ export class FakeReadingMode {
   // An index of "20" will return the node id associated with node 2, a start
   // index of 0, and a length of 8 (covering the word "segment ").
   getHighlightForCurrentSegmentIndex(_index: number, _phrases: boolean):
+      Array<{nodeId: number, start: number, length: number}> {
+    return [];
+  }
+
+  // Returns a list of node ids and ranges (start and length) associated with
+  // the full next text segment to speak and highlight. Note that a highlight
+  // can span over multiple nodes in certain cases. This is different from
+  // getHighlightForCurrentSegmentIndex in that this returns the full sentence
+  // whereas the other returns a segment (word or phrase) within the sentence.
+  getCurrentTextSegments():
       Array<{nodeId: number, start: number, length: number}> {
     return [];
   }

@@ -1201,11 +1201,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::InitAXPositionWithNode)
       .SetMethod("resetGranularityIndex",
                  &ReadAnythingAppController::ResetGranularityIndex)
-      .SetMethod("getCurrentTextStartIndex",
-                 &ReadAnythingAppController::GetCurrentTextStartIndex)
-      .SetMethod("getCurrentTextEndIndex",
-                 &ReadAnythingAppController::GetCurrentTextEndIndex)
-      .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
       .SetMethod("getCurrentTextContent",
                  &ReadAnythingAppController::GetCurrentTextContent)
       .SetMethod("shouldShowUi", &ReadAnythingAppController::ShouldShowUI)
@@ -2000,11 +1995,6 @@ bool ReadAnythingAppController::IsSpeechTreeInitialized() {
   return read_aloud_model_.speech_tree_initialized();
 }
 
-std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {
-  return read_aloud_model_.GetCurrentText(model_.is_pdf(), model_.IsDocs(),
-                                          model_.GetCurrentlyVisibleNodes()).node_ids;
-}
-
 std::u16string ReadAnythingAppController::GetCurrentTextContent() {
   return read_aloud_model_
       .GetCurrentText(model_.is_pdf(), model_.IsDocs(),
@@ -2023,14 +2013,6 @@ void ReadAnythingAppController::MovePositionToNextGranularity() {
 
 void ReadAnythingAppController::MovePositionToPreviousGranularity() {
   read_aloud_model_.MovePositionToPreviousGranularity();
-}
-
-int ReadAnythingAppController::GetCurrentTextStartIndex(ui::AXNodeID node_id) {
-  return read_aloud_model_.GetCurrentTextStartIndex(node_id);
-}
-
-int ReadAnythingAppController::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
-  return read_aloud_model_.GetCurrentTextEndIndex(node_id);
 }
 
 void ReadAnythingAppController::SetLanguageForTesting(

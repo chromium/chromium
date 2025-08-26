@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AxReadAloudNode, BrowserProxy, currentReadHighlightClass, previousReadHighlightClass, ReadAloudHighlighter, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, currentReadHighlightClass, getReadAloudModel, previousReadHighlightClass, ReadAloudHighlighter, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -75,14 +75,14 @@ suite('UpdateContentSelectionWithHighlights', () => {
     while (textNodeIds[i]! !== id) {
       fakeTree.highlightNode(textNodeIds[i]!);
       highlighter.highlightCurrentGranularity(
-          [new AxReadAloudNode(textNodeIds[i]!)], false, true);
+          getReadAloudModel().getCurrentTextSegments(), false, true);
       i++;
     }
 
     // highlight given node
     fakeTree.highlightNode(id);
     highlighter.highlightCurrentGranularity(
-        [new AxReadAloudNode(id)], false, true);
+        getReadAloudModel().getCurrentTextSegments(), false, true);
     return microtasksFinished();
   }
 
@@ -93,18 +93,14 @@ suite('UpdateContentSelectionWithHighlights', () => {
     while (fromId !== textNodeIds[i]!) {
       fakeTree.highlightNode(textNodeIds[i]!);
       highlighter.highlightCurrentGranularity(
-          [new AxReadAloudNode(textNodeIds[i]!)], false, true);
+          getReadAloudModel().getCurrentTextSegments(), false, true);
       i++;
     }
 
     // highlight given nodes
     fakeTree.setReadingHighlight(fromId, fromOffset, toId, toOffset);
-    const nodeIds = [fromId];
-    if (toId !== fromId) {
-      nodeIds.push(toId);
-    }
     highlighter.highlightCurrentGranularity(
-        nodeIds.map(id => new AxReadAloudNode(id)), false, true);
+        getReadAloudModel().getCurrentTextSegments(), false, true);
     return microtasksFinished();
   }
 

@@ -31,25 +31,18 @@ export class FakeTree {
     assertTrue(
         this.nodes.has(fromId) && this.nodes.has(toId),
         'You\'re trying to highlight a node that is not in this tree!');
-    this.readingMode.getCurrentTextStartIndex = id => {
-      switch (id) {
-        case fromId:
-          return fromOffset;
-        case toId:
-          return 0;
-        default:
-          return -1;
-      }
-    };
 
-    this.readingMode.getCurrentTextEndIndex = id => {
-      switch (id) {
-        case toId:
-          return toOffset;
-        case fromId:
-          return this.nodes.get(fromId)!.textContent.length;
-        default:
-          return -1;
+    this.readingMode.getCurrentTextSegments = () => {
+      const length = toOffset - fromOffset;
+      if (fromId === toId) {
+        return [{nodeId: fromId, start: fromOffset, length}];
+      } else {
+        const fromLength =
+            this.nodes.get(fromId)!.textContent.length - fromOffset;
+        return [
+          {nodeId: fromId, start: fromOffset, length: fromLength},
+          {nodeId: toId, start: 0, length: toOffset},
+        ];
       }
     };
   }

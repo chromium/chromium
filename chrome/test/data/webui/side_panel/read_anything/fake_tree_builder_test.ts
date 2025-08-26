@@ -171,48 +171,32 @@ suite('FakeTreeBuilderTest', () => {
         assertThrows(() => tree.setReadingHighlight(2, 1, 3, 2), errorMsg);
       });
 
-      suite('when highlighting one node', () => {
-        setup(() => {
-          tree.setReadingHighlight(textNodes[1]!, 3, textNodes[1]!, 10);
-        });
+      test('segments are correct when highlighting one node', () => {
+        const id = textNodes[1]!;
+        tree.setReadingHighlight(id, 3, id, 10);
 
-        test('indices for highlighted node are correct', () => {
-          assertEquals(3, readingMode.getCurrentTextStartIndex(textNodes[1]!));
-          assertEquals(10, readingMode.getCurrentTextEndIndex(textNodes[1]!));
-        });
+        const segments = readingMode.getCurrentTextSegments();
 
-        test('indices for valid but not highlighted node are not found', () => {
-          assertEquals(-1, readingMode.getCurrentTextStartIndex(textNodes[2]!));
-          assertEquals(-1, readingMode.getCurrentTextEndIndex(textNodes[2]!));
-        });
-
-        test('indices for invalid node are not found', () => {
-          assertEquals(-1, readingMode.getCurrentTextStartIndex(0));
-          assertEquals(-1, readingMode.getCurrentTextEndIndex(0));
-        });
+        assertEquals(1, segments.length);
+        assertEquals(id, segments[0]!.nodeId);
+        assertEquals(3, segments[0]!.start);
+        assertEquals(7, segments[0]!.length);
       });
 
-      suite('when highlighting across nodes', () => {
-        setup(() => {
-          tree.setReadingHighlight(textNodes[1]!, 4, textNodes[3]!, 5);
-        });
+      test('segments are correct when highlighting across nodes', () => {
+        const id1 = textNodes[1]!;
+        const id2 = textNodes[3]!;
+        tree.setReadingHighlight(id1, 4, id2, 5);
 
-        test('indices for first highlighted node are correct', () => {
-          assertEquals(4, readingMode.getCurrentTextStartIndex(textNodes[1]!));
-          assertEquals(
-              readingMode.getCurrentTextEndIndex(textNodes[1]!),
-              text[1]!.length);
-        });
+        const segments = readingMode.getCurrentTextSegments();
 
-        test('indices for last highlighted node are correct', () => {
-          assertEquals(0, readingMode.getCurrentTextStartIndex(textNodes[3]!));
-          assertEquals(5, readingMode.getCurrentTextEndIndex(textNodes[3]!));
-        });
-
-        test('indices for invalid node are not found', () => {
-          assertEquals(-1, readingMode.getCurrentTextStartIndex(0));
-          assertEquals(-1, readingMode.getCurrentTextEndIndex(0));
-        });
+        assertEquals(2, segments.length);
+        assertEquals(id1, segments[0]!.nodeId);
+        assertEquals(4, segments[0]!.start);
+        assertEquals(text[1]!.length - 4, segments[0]!.length);
+        assertEquals(id2, segments[1]!.nodeId);
+        assertEquals(0, segments[1]!.start);
+        assertEquals(5, segments[1]!.length);
       });
     });
 
@@ -221,27 +205,16 @@ suite('FakeTreeBuilderTest', () => {
         assertThrows(() => tree.highlightNode(0), errorMsg);
       });
 
-      suite('when highlighting valid node', () => {
-        setup(() => {
-          tree.highlightNode(textNodes[2]!);
-        });
+      test('segments are correct when highlighting valid node', () => {
+        const id = textNodes[2]!;
+        tree.highlightNode(id);
 
-        test('full node is highlighted', () => {
-          assertEquals(0, readingMode.getCurrentTextStartIndex(textNodes[2]!));
-          assertEquals(
-              readingMode.getCurrentTextEndIndex(textNodes[2]!),
-              text[2]!.length);
-        });
+        const segments = readingMode.getCurrentTextSegments();
 
-        test('valid but not highlighted node has invalid indices', () => {
-          assertEquals(-1, readingMode.getCurrentTextStartIndex(textNodes[3]!));
-          assertEquals(-1, readingMode.getCurrentTextEndIndex(textNodes[3]!));
-        });
-
-        test('indices for invalid node are not found', () => {
-          assertEquals(-1, readingMode.getCurrentTextStartIndex(0));
-          assertEquals(-1, readingMode.getCurrentTextEndIndex(0));
-        });
+        assertEquals(1, segments.length);
+        assertEquals(id, segments[0]!.nodeId);
+        assertEquals(0, segments[0]!.start);
+        assertEquals(text[2]!.length, segments[0]!.length);
       });
     });
   });

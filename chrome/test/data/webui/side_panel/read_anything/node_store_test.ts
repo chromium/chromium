@@ -116,6 +116,25 @@ suite('NodeStore', () => {
     assertFalse(areNodesAllHidden([id1, id3]));
   });
 
+  test('hasAnyNode', () => {
+    const id1 = 216;
+    const id2 = 218;
+    const id3 = 219;
+    nodeStore.setDomNode(document.createElement('p'), id1);
+    nodeStore.setDomNode(document.createElement('p'), id2);
+
+    assertTrue(nodeStore.hasAnyNode([
+      new AxReadAloudNode(id1),
+      new AxReadAloudNode(id2),
+      new AxReadAloudNode(id3),
+    ]));
+    assertTrue(nodeStore.hasAnyNode(
+        [new AxReadAloudNode(id1), new AxReadAloudNode(id2)]));
+    assertTrue(nodeStore.hasAnyNode(
+        [new AxReadAloudNode(id1), new AxReadAloudNode(id3)]));
+    assertFalse(nodeStore.hasAnyNode([new AxReadAloudNode(id3)]));
+  });
+
   test('addImageToFetch', () => {
     nodeStore.addImageToFetch(216);
     assertTrue(nodeStore.hasImagesToFetch());

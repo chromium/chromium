@@ -285,29 +285,6 @@ class ReadAnythingAppController
       const std::string& locale,
       const std::string& display_locale) const;
 
-  // Returns a list of AXNodeIds representing the next nodes that should be
-  // spoken and highlighted with Read Aloud.
-  // This defaults to returning the first granularity until
-  // MovePositionTo<Next,Previous>Granularity() moves the position.
-  // If the the current processed_granularity_index_ has not been calculated
-  // yet, GetNextNodes() is called which updates the AXPosition.
-  // GetCurrentTextStartIndex and GetCurrentTextEndIndex called with an AXNodeID
-  // return by GetCurrentText will return the starting text and ending text
-  // indices for specific text that should be referenced within the node.
-  std::vector<ui::AXNodeID> GetCurrentText();
-
-  // Returns the Read Aloud starting text index for a node. For example,
-  // if the entire text of the node should be read by Read Aloud at a particular
-  // moment, this will return 0. Returns -1 if the node isn't in the current
-  // segment.
-  int GetCurrentTextStartIndex(ui::AXNodeID node_id);
-
-  // Returns the Read Aloud ending text index for a node. For example,
-  // if the entire text of the node should be read by Read Aloud at a particular
-  // moment, this will return the length of the node's text. Returns -1 if the
-  // node isn't in the current segment.
-  int GetCurrentTextEndIndex(ui::AXNodeID node_id);
-
   // Returns a list of nodes and ranges representing the next nodes that should
   // be spoken and highlighted with Read Aloud. The ranges are represented as a
   // start offset and a length. Multiple nodes are returned if the segment spans

@@ -3,16 +3,18 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {AxReadAloudNode, BrowserProxy, NodeStore, previousReadHighlightClass, ReadAloudHighlighter, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AxReadAloudNode, BrowserProxy, NodeStore, previousReadHighlightClass, ReadAloudHighlighter, setInstance, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 
 suite('Highlighter', () => {
   let highlighter: ReadAloudHighlighter;
   let nodeStore: NodeStore;
   let wordBoundaries: WordBoundaries;
+  let readAloudModel: TestReadAloudModelBrowserProxy;
 
   function assertFullNodeIsHighlighted(id: number, text: string) {
     assertEquals(
@@ -45,6 +47,8 @@ suite('Highlighter', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isPhraseHighlightingEnabled = true;
 
+    readAloudModel = new TestReadAloudModelBrowserProxy();
+    setInstance(readAloudModel);
     highlighter = new ReadAloudHighlighter();
     nodeStore = NodeStore.getInstance();
     nodeStore.clear();
@@ -67,25 +71,29 @@ suite('Highlighter', () => {
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.sentenceHighlighting);
 
-    const id = 10;
+    const nodeId = 10;
     const sentence = document.createElement('p');
     const text1 = 'When my legs don\'t work like they used to before. ';
     const text2 = 'And I can\'t sweep you off of your feet.';
     sentence.appendChild(document.createTextNode(text1 + text2));
-    nodeStore.setDomNode(sentence, id);
-    chrome.readingMode.getCurrentTextStartIndex = () => text1.length;
-    chrome.readingMode.getCurrentTextEndIndex = () =>
-        text1.length + text2.length;
+    nodeStore.setDomNode(sentence, nodeId);
+    const segments = [{
+      node: new AxReadAloudNode(nodeId),
+      start: text1.length,
+      length: text2.length,
+    }];
+    readAloudModel.setCurrentTextSegments(segments);
 
     highlighter.highlightCurrentGranularity(
-        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
+        segments,
+        /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
     assertTrue(highlighter.hasCurrentHighlights());
     assertHtml(
         '<span class="previous-read-highlight">' + text1 + '</span>' +
             '<span class="current-read-highlight">' + text2 + '</span>',
-        id);
+        nodeId);
   });
 
   test('sentence highlight across multiple nodes', () => {
@@ -101,12 +109,14 @@ suite('Highlighter', () => {
     const id2 = 12;
     nodeStore.setDomNode(sentence, id1);
     nodeStore.setDomNode(bold, id2);
-    chrome.readingMode.getCurrentTextStartIndex = () => 0;
-    chrome.readingMode.getCurrentTextEndIndex = () =>
-        text1.length + text2.length;
+    const segments = [
+      {node: new AxReadAloudNode(id1), start: 0, length: text1.length},
+      {node: new AxReadAloudNode(id2), start: 0, length: text2.length},
+    ];
+    readAloudModel.setCurrentTextSegments(segments);
 
     highlighter.highlightCurrentGranularity(
-        [new AxReadAloudNode(id1), new AxReadAloudNode(id2)],
+        segments,
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
@@ -125,11 +135,13 @@ suite('Highlighter', () => {
     const text = 'Woke up today, feeling the way I always do. ';
     sentence.appendChild(document.createTextNode(text));
     nodeStore.setDomNode(sentence, id);
-    chrome.readingMode.getCurrentTextStartIndex = () => 0;
-    chrome.readingMode.getCurrentTextEndIndex = () => text.length;
+    const segments =
+        [{node: new AxReadAloudNode(id), start: 0, length: text.length}];
+    readAloudModel.setCurrentTextSegments(segments);
 
     highlighter.highlightCurrentGranularity(
-        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
+        segments,
+        /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
     assertTrue(highlighter.hasCurrentHighlights());
@@ -141,15 +153,16 @@ suite('Highlighter', () => {
         chrome.readingMode.wordHighlighting);
     wordBoundaries.updateBoundary(0);
     const id = 10;
-    chrome.readingMode.getHighlightForCurrentSegmentIndex =
-        () => [{nodeId: id, start: 5, length: 5}];
+    const highlights = [{node: new AxReadAloudNode(id), start: 5, length: 5}];
+    readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
     const sentence = document.createElement('p');
     sentence.appendChild(document.createTextNode(
         'Will your your eyes still smile from your cheeks?'));
     nodeStore.setDomNode(sentence, id);
 
     highlighter.highlightCurrentGranularity(
-        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
+        highlights,
+        /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
     assertTrue(highlighter.hasCurrentHighlights());
@@ -167,21 +180,22 @@ suite('Highlighter', () => {
             chrome.readingMode.wordHighlighting);
         wordBoundaries.updateBoundary(0);
         const id = 10;
-        chrome.readingMode.getHighlightForCurrentSegmentIndex =
-            () => [{nodeId: id, start: 0, length: 3}];
+        const highlights =
+            [{node: new AxReadAloudNode(id), start: 0, length: 3}];
+        readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
         const sentence = document.createElement('p');
         const text = 'Do you believe in life after love?';
         sentence.appendChild(document.createTextNode(text));
         nodeStore.setDomNode(sentence, id);
-        chrome.readingMode.getCurrentText = () => [id];
         chrome.readingMode.getTextContent = () => text;
-        chrome.readingMode.getCurrentTextStartIndex = () => 0;
-        chrome.readingMode.getCurrentTextEndIndex = () => text.length;
-
+        const segments =
+            [{node: new AxReadAloudNode(id), start: 0, length: text.length}];
+        readAloudModel.setCurrentTextSegments(segments);
         highlighter.highlightCurrentGranularity(
-            [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
+            segments,
+            /*scrollIntoView=*/ false,
             /*shouldUpdateSentenceHighlight=*/ true);
-        highlighter.onWillMoveToNextGranularity();
+        highlighter.onWillMoveToNextGranularity(segments);
 
         assertFalse(highlighter.hasCurrentHighlights());
         assertHtml(
@@ -205,17 +219,16 @@ suite('Highlighter', () => {
     sentence.appendChild(document.createTextNode(text2));
     const id1 = 10;
     const id2 = 12;
-    chrome.readingMode.getHighlightForCurrentSegmentIndex = () =>
-        [{nodeId: id1, start: 0, length: 3},
-         {nodeId: id2, start: 0, length: 1}];
+    const highlights = [
+      {node: new AxReadAloudNode(id1), start: 0, length: 3},
+      {node: new AxReadAloudNode(id2), start: 0, length: 1},
+    ];
+    readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
     nodeStore.setDomNode(bold, id1);
     nodeStore.setDomNode(sentence, id2);
-    chrome.readingMode.getCurrentTextStartIndex = () => 0;
-    chrome.readingMode.getCurrentTextEndIndex = () =>
-        text1.length + text2.length;
 
     highlighter.highlightCurrentGranularity(
-        [new AxReadAloudNode(id1), new AxReadAloudNode(id2)],
+        highlights,
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
@@ -236,18 +249,20 @@ suite('Highlighter', () => {
     const punctuation = '.';
 
     // Mock the backend to return a segment for just the punctuation.
-    chrome.readingMode.getHighlightForCurrentSegmentIndex = () => [{
-      nodeId: id,
+    const highlights = [{
+      node: new AxReadAloudNode(id),
       start: sentenceText.length,
       length: 1,
     }];
+    readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
 
     const sentence = document.createElement('p');
     sentence.appendChild(document.createTextNode(sentenceText + punctuation));
     nodeStore.setDomNode(sentence, id);
 
     highlighter.highlightCurrentGranularity(
-        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
+        highlights,
+        /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
     // There should be no "current" highlight on the page.
@@ -264,15 +279,16 @@ suite('Highlighter', () => {
         chrome.readingMode.autoHighlighting);
     wordBoundaries.updateBoundary(0);
     const id = 10;
-    chrome.readingMode.getHighlightForCurrentSegmentIndex =
-        () => [{nodeId: id, start: 12, length: 20}];
+    const highlights = [{node: new AxReadAloudNode(id), start: 12, length: 20}];
+    readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
     const sentence = document.createElement('p');
     sentence.appendChild(document.createTextNode(
         'But darling I will be loving you till we\'re 70.'));
     nodeStore.setDomNode(sentence, id);
 
     highlighter.highlightCurrentGranularity(
-        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
+        highlights,
+        /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
     assertTrue(highlighter.hasCurrentHighlights());
@@ -290,21 +306,22 @@ suite('Highlighter', () => {
             chrome.readingMode.autoHighlighting);
         wordBoundaries.updateBoundary(0);
         const id = 10;
-        chrome.readingMode.getHighlightForCurrentSegmentIndex =
-            () => [{nodeId: id, start: 0, length: 2}];
+        const highlights =
+            [{node: new AxReadAloudNode(id), start: 0, length: 2}];
+        readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
         const sentence = document.createElement('p');
         const text = 'I can feel something inside me say';
         sentence.appendChild(document.createTextNode(text));
         nodeStore.setDomNode(sentence, id);
-        chrome.readingMode.getCurrentText = () => [id];
         chrome.readingMode.getTextContent = () => text;
-        chrome.readingMode.getCurrentTextStartIndex = () => 0;
-        chrome.readingMode.getCurrentTextEndIndex = () => text.length;
-
+        const segments =
+            [{node: new AxReadAloudNode(id), start: 0, length: text.length}];
+        readAloudModel.setCurrentTextSegments(segments);
         highlighter.highlightCurrentGranularity(
-            [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
+            segments,
+            /*scrollIntoView=*/ false,
             /*shouldUpdateSentenceHighlight=*/ true);
-        highlighter.onWillMoveToNextGranularity();
+        highlighter.onWillMoveToNextGranularity(segments);
 
         assertFalse(highlighter.hasCurrentHighlights());
         assertHtml(
@@ -328,12 +345,14 @@ suite('Highlighter', () => {
     bold.appendChild(document.createTextNode(text2));
     nodeStore.setDomNode(sentence, id1);
     nodeStore.setDomNode(bold, id2);
-    chrome.readingMode.getHighlightForCurrentSegmentIndex = () =>
-        [{nodeId: id1, start: 10, length: 9},
-         {nodeId: id2, start: 0, length: 23}];
+    const highlights = [
+      {node: new AxReadAloudNode(id1), start: 10, length: 9},
+      {node: new AxReadAloudNode(id2), start: 0, length: 23},
+    ];
+    readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
 
     highlighter.highlightCurrentGranularity(
-        [new AxReadAloudNode(id1), new AxReadAloudNode(id2)],
+        highlights,
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
@@ -357,15 +376,17 @@ suite('Highlighter', () => {
         chrome.readingMode.onSpeechRateChange(1);
         wordBoundaries.updateBoundary(0);
         const id = 10;
-        chrome.readingMode.getHighlightForCurrentSegmentIndex =
-            () => [{nodeId: id, start: 0, length: 20}];
+        const highlights =
+            [{node: new AxReadAloudNode(id), start: 0, length: 20}];
+        readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
         const sentence = document.createElement('p');
         sentence.appendChild(document.createTextNode(
             'Hungry for something that I can\'t eat. '));
         nodeStore.setDomNode(sentence, id);
 
         highlighter.highlightCurrentGranularity(
-            [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
+            [],
+            /*scrollIntoView=*/ false,
             /*shouldUpdateSentenceHighlight=*/ true);
 
         assertTrue(highlighter.hasCurrentHighlights());
@@ -385,14 +406,18 @@ suite('Highlighter', () => {
     const text2 = ' Maybe just a touch of the hand';
     sentence.appendChild(document.createTextNode(text1 + text2));
     nodeStore.setDomNode(sentence, id);
-    chrome.readingMode.getCurrentTextStartIndex = () => text1.length;
-    chrome.readingMode.getCurrentTextEndIndex = () =>
-        text1.length + text2.length;
+    const segments = [{
+      node: new AxReadAloudNode(id),
+      start: text1.length,
+      length: text1.length + text2.length,
+    }];
+    readAloudModel.setCurrentTextSegments(segments);
 
     highlighter.highlightCurrentGranularity(
-        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
+        segments,
+        /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
-    highlighter.removeCurrentHighlight();
+    highlighter.removeCurrentHighlight(segments);
 
     assertFalse(highlighter.hasCurrentHighlights());
     assertHtmlContains(previousReadHighlightClass, id);
@@ -408,12 +433,16 @@ suite('Highlighter', () => {
     const text2 = ' Maybe just a touch of the hand';
     sentence.appendChild(document.createTextNode(text1 + text2));
     nodeStore.setDomNode(sentence, id);
-    chrome.readingMode.getCurrentTextStartIndex = () => text1.length;
-    chrome.readingMode.getCurrentTextEndIndex = () =>
-        text1.length + text2.length;
+    const segments = [{
+      node: new AxReadAloudNode(id),
+      start: text1.length,
+      length: text1.length + text2.length,
+    }];
+    readAloudModel.setCurrentTextSegments(segments);
 
     highlighter.highlightCurrentGranularity(
-        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
+        segments,
+        /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
     highlighter.resetPreviousHighlight();
 
@@ -431,12 +460,16 @@ suite('Highlighter', () => {
     const text2 = ' Maybe just a touch of the hand';
     sentence.appendChild(document.createTextNode(text1 + text2));
     nodeStore.setDomNode(sentence, id);
-    chrome.readingMode.getCurrentTextStartIndex = () => text1.length;
-    chrome.readingMode.getCurrentTextEndIndex = () =>
-        text1.length + text2.length;
+    const segments = [{
+      node: new AxReadAloudNode(id),
+      start: text1.length,
+      length: text1.length + text2.length,
+    }];
+    readAloudModel.setCurrentTextSegments(segments);
 
     highlighter.highlightCurrentGranularity(
-        [new AxReadAloudNode(id)], /*scrollIntoView=*/ false,
+        segments,
+        /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
     highlighter.clearHighlightFormatting();
 
