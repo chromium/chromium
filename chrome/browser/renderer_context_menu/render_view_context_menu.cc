@@ -1025,9 +1025,6 @@ void RenderViewContextMenu::IssuePreconnectionToUrl(
 ui::IsNewFeatureAtValue RenderViewContextMenu::GetIsNewFeatureAtValue(
     const std::string& feature_name) const {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
-  if (!UserEducationServiceFactory::ProfileAllowsUserEducation(profile)) {
-    return ui::IsNewFeatureAtValue();
-  }
   auto& feature_data =
       UserEducationServiceFactory::GetForBrowserContext(profile)
           ->new_badge_registry()
