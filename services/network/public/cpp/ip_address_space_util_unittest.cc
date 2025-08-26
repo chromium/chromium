@@ -265,19 +265,6 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceNullIP) {
             IPAddressSpace::kLocal);
 }
 
-// Verifies that 0.0.0.0/8 is mapped to the public address space if configured
-// via feature flag.
-TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceNullIPKillSwitch) {
-  base::test::ScopedFeatureList enable{
-      features::kTreatNullIPAsPublicAddressSpace};
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(0, 0, 0, 0)),
-            IPAddressSpace::kPublic);
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(0, 0, 0, 4)),
-            IPAddressSpace::kPublic);
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(0, 255, 255, 255)),
-            IPAddressSpace::kPublic);
-}
-
 // Verifies that the `ip-address-space-overrides` switch can be present and
 // empty, in which case it is ignored.
 TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideEmpty) {

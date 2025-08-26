@@ -280,17 +280,6 @@ const AddressSpaceMap& NonPublicAddressSpaceMap() {
 }  // namespace
 
 IPAddressSpace IPAddressToIPAddressSpace(const IPAddress& address) {
-  // The null IP block (0.0.0.0/8) was previously treated as public, but this
-  // was a loophole in Private Network Access and thus these addresses are now
-  // mapped to the local/private address space instead. This feature is a
-  // killswitch for this behavior to revert these addresses to the public
-  // address space.
-  if (base::FeatureList::IsEnabled(
-          network::features::kTreatNullIPAsPublicAddressSpace) &&
-      address.IsIPv4() &&
-      IPAddressMatchesPrefix(address, IPAddress(0, 0, 0, 0), 8)) {
-    return IPAddressSpace::kPublic;
-  }
   return NonPublicAddressSpaceMap().Apply(address).value_or(
       IPAddressSpace::kPublic);
 }

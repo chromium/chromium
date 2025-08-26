@@ -414,13 +414,6 @@ BASE_FEATURE(kNetworkContextPrefetchUseMatches,
              "NetworkContextPrefetchUseMatches",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This feature enables treating 0.0.0.0/8 as the public address space instead
-// of private or local. This is a killswitch for a tightening of a loophole in
-// Private Network Access. See https://crbug.com/40058874.
-BASE_FEATURE(kTreatNullIPAsPublicAddressSpace,
-             "TreatNullIPAsPublicAddressSpace",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, the CORS URL loader will clone the DevTools connection for a
 // resource request only if the request includes a DevTools request id.
 BASE_FEATURE(kCloneDevToolsConnectionOnlyIfRequested,
