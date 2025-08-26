@@ -91,4 +91,5 @@ struct SpellCheckResult {
   int32 location;
   int32 length;
   array<mojo_base.mojom.String16> replacements;
+  bool should_hide_suggestion_menu;
 };

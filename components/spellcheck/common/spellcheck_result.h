@@ -30,12 +30,14 @@ struct SpellCheckResult {
       Decoration d = SPELLING,
       int loc = 0,
       int len = 0,
-      const std::vector<std::u16string>& rep = std::vector<std::u16string>());
+      const std::vector<std::u16string>& rep = std::vector<std::u16string>(),
+      bool should_hide_suggestion_menu = false);
 
   explicit SpellCheckResult(Decoration d,
                             int loc,
                             int len,
-                            const std::u16string& rep);
+                            const std::u16string& rep,
+                            bool should_hide_suggestion_menu = false);
 
   ~SpellCheckResult();
   SpellCheckResult(const SpellCheckResult&);
@@ -56,6 +58,9 @@ struct SpellCheckResult {
 
   std::vector<std::u16string> replacements;
   bool spelling_service_used = false;
+
+  // Whether to hide the suggestion menu that is rendered by chrome.
+  bool should_hide_suggestion_menu = false;
 };
 
 #endif  // COMPONENTS_SPELLCHECK_COMMON_SPELLCHECK_RESULT_H_

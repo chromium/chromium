@@ -42,7 +42,9 @@ class SpellCheckerSessionBridge {
       const base::android::JavaParamRef<jintArray>& length_array,
       const base::android::JavaParamRef<jobjectArray>& suggestions_array,
       const base::android::JavaParamRef<jintArray>&
-          spellcheck_result_decorations);
+          spellcheck_result_decorations,
+      const base::android::JavaParamRef<jbooleanArray>&
+          hide_suggestion_menu_booleans_array);
 
   // Sets the handle to the Java SpellCheckerSessionBridge object to null,
   // marking the Java object for garbage collection.

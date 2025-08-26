@@ -38,6 +38,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
 
     private long mNativeSpellCheckerSessionBridge;
     private final boolean mAllowGrammarChecks;
+    private final boolean mAllowHideSuggestionMenuAttribute;
     private final @Nullable SpellCheckerSession mSpellCheckerSession;
 
     /**
@@ -45,11 +46,16 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
      *
      * @param nativeSpellCheckerSessionBridge Pointer to the native SpellCheckerSessionBridge.
      * @param allowGrammarChecks Allows grammar errors to be processed.
+     * @param allowHideSuggestionMenuAttribute Allows should_hide_suggestion_menu attribute to be
+     *     processed.
      */
     private SpellCheckerSessionBridge(
-            long nativeSpellCheckerSessionBridge, boolean allowGrammarChecks) {
+            long nativeSpellCheckerSessionBridge,
+            boolean allowGrammarChecks,
+            boolean allowHideSuggestionMenuAttribute) {
         mNativeSpellCheckerSessionBridge = nativeSpellCheckerSessionBridge;
         mAllowGrammarChecks = allowGrammarChecks;
+        mAllowHideSuggestionMenuAttribute = allowHideSuggestionMenuAttribute;
 
         Context context = ContextUtils.getApplicationContext();
         final TextServicesManager textServicesManager =
@@ -71,12 +77,19 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
      *
      * @param nativeSpellCheckerSessionBridge Pointer to the native SpellCheckerSessionBridge.
      * @param allowGrammarChecks Allows grammar errors to be processed.
+     * @param allowHideSuggestionMenuAttribute Allows should_hide_suggestion_menu attribute to be
+     *     processed.
      */
     @CalledByNative
     private static @Nullable SpellCheckerSessionBridge create(
-            long nativeSpellCheckerSessionBridge, boolean allowGrammarChecks) {
+            long nativeSpellCheckerSessionBridge,
+            boolean allowGrammarChecks,
+            boolean allowHideSuggestionMenuAttribute) {
         SpellCheckerSessionBridge bridge =
-                new SpellCheckerSessionBridge(nativeSpellCheckerSessionBridge, allowGrammarChecks);
+                new SpellCheckerSessionBridge(
+                        nativeSpellCheckerSessionBridge,
+                        allowGrammarChecks,
+                        allowHideSuggestionMenuAttribute);
         if (bridge.mSpellCheckerSession == null) {
             return null;
         }
@@ -124,6 +137,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
         ArrayList<Integer> lengths = new ArrayList<Integer>();
         ArrayList<String[]> suggestions = new ArrayList<String[]>();
         ArrayList<Integer> spellcheckResultDecorations = new ArrayList<Integer>();
+        ArrayList<Boolean> hideSuggestionMenuBooleans = new ArrayList<Boolean>();
 
         for (SentenceSuggestionsInfo result : results) {
             if (result == null) {
@@ -140,16 +154,21 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                                 ? SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_GRAMMAR_ERROR
                                 : 0;
 
+                final int dontShowUiBitMask =
+                        mAllowHideSuggestionMenuAttribute
+                                ? SuggestionsInfo.RESULT_ATTR_DONT_SHOW_UI_FOR_SUGGESTIONS
+                                : 0;
+
+                final int attributes = info.getSuggestionsAttributes();
                 // If a word looks like a typo or grammar error, record its offset and length.
-                if ((info.getSuggestionsAttributes()
-                                & (SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_TYPO | grammarBitMask))
+                if ((attributes & (SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_TYPO | grammarBitMask))
                         != 0) {
                     offsets.add(result.getOffsetAt(i));
                     lengths.add(result.getLengthAt(i));
                     // TODO(crbug.com/434080921): Verify which should take precedence if both are
                     // set.
                     final int decoration =
-                            (info.getSuggestionsAttributes() & grammarBitMask) != 0
+                            (attributes & grammarBitMask) != 0
                                     ? SpellCheckResultDecoration.GRAMMAR
                                     : SpellCheckResultDecoration.SPELLING;
                     spellcheckResultDecorations.add(decoration);
@@ -164,16 +183,18 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                     }
                     suggestions.add(
                             suggestions_for_word.toArray(new String[suggestions_for_word.size()]));
+                    hideSuggestionMenuBooleans.add((attributes & dontShowUiBitMask) != 0);
                 }
             }
         }
         SpellCheckerSessionBridgeJni.get()
                 .processSpellCheckResults(
                         mNativeSpellCheckerSessionBridge,
-                        convertListToArray(offsets),
-                        convertListToArray(lengths),
+                        convertIntListToArray(offsets),
+                        convertIntListToArray(lengths),
                         suggestions.toArray(new String[suggestions.size()][]),
-                        convertListToArray(spellcheckResultDecorations));
+                        convertIntListToArray(spellcheckResultDecorations),
+                        convertBoolListToArray(hideSuggestionMenuBooleans));
     }
 
     /**
@@ -182,10 +203,24 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
      *
      * @param list List to be converted to an array.
      */
-    private int[] convertListToArray(ArrayList<Integer> list) {
+    private int[] convertIntListToArray(ArrayList<Integer> list) {
         int[] array = new int[list.size()];
         for (int index = 0; index < array.length; index++) {
             array[index] = list.get(index).intValue();
+        }
+        return array;
+    }
+
+    /**
+     * Helper method to convert an ArrayList of Boolean objects into an array of primitive bools for
+     * easier JNI handling of these objects on the native side.
+     *
+     * @param list List to be converted to an array.
+     */
+    private boolean[] convertBoolListToArray(ArrayList<Boolean> list) {
+        boolean[] array = new boolean[list.size()];
+        for (int index = 0; index < array.length; index++) {
+            array[index] = list.get(index).booleanValue();
         }
         return array;
     }
@@ -200,6 +235,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                 int[] offsets,
                 int[] lengths,
                 String[][] suggestions,
-                int[] spellcheckResultDecorations);
+                int[] spellcheckResultDecorations,
+                boolean[] hideSuggestionMenuBooleans);
     }
 }

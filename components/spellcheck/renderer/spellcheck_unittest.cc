@@ -1249,6 +1249,40 @@ TEST_F(SpellCheckTest, RequestSpellCheckMultipleTimesWithoutInitialization) {
 
 #endif
 
+// Verify that should_hide_suggesiton_window attribute is passed along.
+TEST_F(SpellCheckTest, CreateTextCheckingResultPassesHideSuggestionWindowTrue) {
+  std::u16string text = u"zz";
+  std::vector<SpellCheckResult> spellcheck_results;
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 0, 2, std::u16string(),
+                       /* should_hide_suggestion_menu= */ true));
+
+  std::vector<blink::WebTextCheckingResult> textcheck_results;
+  spell_check()->CreateTextCheckingResults(
+      SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, provider_.GetSpellCheckHost(), 0,
+      text, spellcheck_results, &textcheck_results);
+
+  ASSERT_EQ(textcheck_results.size(), 1u);
+  EXPECT_EQ(textcheck_results[0].should_hide_suggestion_menu, true);
+}
+
+TEST_F(SpellCheckTest,
+       CreateTextCheckingResultPassesHideSuggestionWindowFalse) {
+  std::u16string text = u"zz";
+  std::vector<SpellCheckResult> spellcheck_results;
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 0, 2, std::u16string(),
+                       /* should_hide_suggestion_menu= */ false));
+
+  std::vector<blink::WebTextCheckingResult> textcheck_results;
+  spell_check()->CreateTextCheckingResults(
+      SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, provider_.GetSpellCheckHost(), 0,
+      text, spellcheck_results, &textcheck_results);
+
+  ASSERT_EQ(textcheck_results.size(), 1u);
+  EXPECT_EQ(textcheck_results[0].should_hide_suggestion_menu, false);
+}
+
 // Verify that the SpellCheck class keeps the spelling marker added to a
 // misspelled word "zz".
 TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsMarkers) {

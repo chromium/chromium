@@ -528,7 +528,6 @@ void SpellCheck::CreateTextCheckingResults(
     const std::vector<std::u16string>& replacements =
         spellcheck_result.replacements;
     SpellCheckResult::Decoration decoration = spellcheck_result.decoration;
-
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
     // Ignore words that are in a script not supported by any of the enabled
     // spellcheck languages.
@@ -597,10 +596,10 @@ void SpellCheck::CreateTextCheckingResults(
     }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
-    results.push_back(
-        WebTextCheckingResult(static_cast<WebTextDecorationType>(decoration),
-                              line_offset + spellcheck_result.location,
-                              spellcheck_result.length, replacements_filtered));
+    results.push_back(WebTextCheckingResult(
+        static_cast<WebTextDecorationType>(decoration),
+        line_offset + spellcheck_result.location, spellcheck_result.length,
+        replacements_filtered, spellcheck_result.should_hide_suggestion_menu));
   }
 
   *textcheck_results = std::move(results);
