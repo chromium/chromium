@@ -29,6 +29,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_libc_timezone_override.h"
+#include "base/time/time_override.h"
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -104,30 +106,18 @@ MATCHER_P2(Sample,
 
 }  // namespace
 
-class ColorPaletteControllerTest : public NoSessionAshTestBase {
+class ColorPaletteControllerTestBase : public NoSessionAshTestBase {
  public:
-  void SetUp() override {
-    NoSessionAshTestBase::SetUp();
-    ClearLogin();
-    wallpaper_controller_ = Shell::Get()->wallpaper_controller();
-    color_palette_controller_ = Shell::Get()->color_palette_controller();
-
-    dark_light_mode_controller_ = Shell::Get()->dark_light_mode_controller();
-    // Fix dark mode as off. There must be an active user to do this.
-    SimulateUserLogin(kAccountId);
-    dark_light_mode_controller_->SetDarkModeEnabledForTest(false);
-  }
-
   ColorPaletteController* color_palette_controller() {
-    return color_palette_controller_;
+    return Shell::Get()->color_palette_controller();
   }
 
-  DarkLightModeControllerImpl* dark_light_controller() {
-    return dark_light_mode_controller_;
+  DarkLightModeControllerImpl* dark_light_mode_controller() {
+    return Shell::Get()->dark_light_mode_controller();
   }
 
   WallpaperControllerImpl* wallpaper_controller() {
-    return wallpaper_controller_;
+    return Shell::Get()->wallpaper_controller();
   }
 
   void UpdateWallpaperColor(SkColor color) {
@@ -143,14 +133,17 @@ class ColorPaletteControllerTest : public NoSessionAshTestBase {
             kAccountId);
     pref_service->SetBoolean(prefs::kDynamicColorUseKMeans, value);
   }
+};
 
- private:
-  raw_ptr<DarkLightModeControllerImpl, DanglingUntriaged>
-      dark_light_mode_controller_;  // unowned
-  raw_ptr<WallpaperControllerImpl, DanglingUntriaged>
-      wallpaper_controller_;  // unowned
+class ColorPaletteControllerTest : public ColorPaletteControllerTestBase {
+ public:
+  void SetUp() override {
+    ColorPaletteControllerTestBase::SetUp();
 
-  raw_ptr<ColorPaletteController, DanglingUntriaged> color_palette_controller_;
+    // Fix dark mode as off. There must be an active user to do this.
+    SimulateUserLogin(kAccountId);
+    dark_light_mode_controller()->SetDarkModeEnabledForTest(false);
+  }
 };
 
 TEST_F(ColorPaletteControllerTest, ExpectedEmptyValues) {
@@ -298,7 +291,7 @@ TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {
       WallpaperCalculatedColors(kKMeanColor, SK_ColorWHITE));
 
   // Initialize Dark mode to a known state.
-  dark_light_controller()->SetDarkModeEnabledForTest(false);
+  dark_light_mode_controller()->SetDarkModeEnabledForTest(false);
 
   MockPaletteObserver observer;
   base::ScopedObservation<ColorPaletteController,
@@ -310,12 +303,12 @@ TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {
                             &ColorPaletteSeed::color_mode,
                             ui::ColorProviderKey::ColorMode::kDark)))
       .Times(1);
-  dark_light_controller()->SetDarkModeEnabledForTest(true);
+  dark_light_mode_controller()->SetDarkModeEnabledForTest(true);
 }
 
 TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged) {
   // Set to a known state.
-  dark_light_controller()->SetDarkModeEnabledForTest(true);
+  dark_light_mode_controller()->SetDarkModeEnabledForTest(true);
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.SetCalculatedColors(
       WallpaperCalculatedColors(SK_ColorWHITE, kCelebiColor));
@@ -327,7 +320,7 @@ TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged) {
       &observer);
   observation.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 
-  dark_light_controller()->SetDarkModeEnabledForTest(false);
+  dark_light_mode_controller()->SetDarkModeEnabledForTest(false);
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(1, observer.call_count());
@@ -431,7 +424,7 @@ TEST_F(ColorPaletteControllerTest,
 
 TEST_F(ColorPaletteControllerTest, ExistingUser_UsesKMeansColor) {
   const bool dark_mode = true;
-  dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
+  dark_light_mode_controller()->SetDarkModeEnabledForTest(dark_mode);
 
   base::RunLoop().RunUntilIdle();
   UpdateWallpaperColor(kCelebiColor);
@@ -443,7 +436,7 @@ TEST_F(ColorPaletteControllerTest, ExistingUser_UsesKMeansColor) {
 TEST_F(ColorPaletteControllerTest,
        GetWallpaperColorOrDefault_UseKMeans_TonalSpot_ReturnsKMeans) {
   const bool dark_mode = true;
-  dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
+  dark_light_mode_controller()->SetDarkModeEnabledForTest(dark_mode);
   UpdateWallpaperColor(kCelebiColor);
   color_palette_controller()->SetColorScheme(
       style::mojom::ColorScheme::kTonalSpot, kAccountId, base::DoNothing());
@@ -515,7 +508,7 @@ TEST_F(ColorPaletteControllerTest, WallpaperChanged_TurnsOffKMeans) {
 
 TEST_F(ColorPaletteControllerTest, UseKMeansColor_OnlyTonalSpotUsesKMeans) {
   const bool dark_mode = true;
-  dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
+  dark_light_mode_controller()->SetDarkModeEnabledForTest(dark_mode);
   SetUseKMeansPref(true);
   UpdateWallpaperColor(kCelebiColor);
   base::RunLoop().RunUntilIdle();
@@ -600,7 +593,30 @@ TEST_F(ColorPaletteControllerTest, GetSampleColorSchemes_WithKMeans) {
                                   SkColorSetRGB(0xc8, 0xbf, 0xff))));
 }
 
-TEST_F(ColorPaletteControllerTest, OneNotificationOnActiveUserChange) {
+// The feature depends on executed timezone and the timing when the test is
+// executed. To avoid flakiness, we fix the timezone and time to the specific
+// time (UTC noon on the day).
+class ColorPaletteControllerNotificationTest
+    : public ColorPaletteControllerTestBase {
+ private:
+  // Returns UTC noon of the day, so that DarkMode wouldn't be enabled.
+  static base::Time MockNow() {
+    // Cache the value, to avoid returning different value if the execution
+    // is crossing the mid-night timing.
+    static base::Time time =
+        base::subtle::TimeNowIgnoringOverride().UTCMidnight() + base::Hours(12);
+    return time;
+  }
+
+  base::test::ScopedLibcTimezoneOverride libc_timezone_override_{"UTC"};
+  base::subtle::ScopedTimeClockOverrides time_override{
+      &ColorPaletteControllerNotificationTest::MockNow,
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr};
+};
+
+TEST_F(ColorPaletteControllerNotificationTest,
+       OneNotificationOnActiveUserChange) {
   // A login should trigger a `ColorPaletteController` update, which in turn
   // should trigger a `ui::NativeTheme` notification.
   TestObserver observer;
@@ -608,16 +624,13 @@ TEST_F(ColorPaletteControllerTest, OneNotificationOnActiveUserChange) {
       &observer);
   observation.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   SimulateUserLogin(kAccountId);
-  EXPECT_EQ(1, observer.call_count());
+  // Called twice. Once for wallpaper update, then for active user pref change.
+  EXPECT_EQ(2, observer.call_count());
 }
 
-class ColorPaletteControllerLocalPrefTest : public ColorPaletteControllerTest {
+class ColorPaletteControllerLocalPrefTest
+    : public ColorPaletteControllerTestBase {
  public:
-  void SetUp() override {
-    ColorPaletteControllerTest::SetUp();
-    ClearLogin();
-  }
-
   //  Sets the local ColorScheme to kVibrant. The synced color scheme remains
   //  the default, kTonalSpot.
   void SetUpLocalPrefs() {
@@ -703,9 +716,9 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
        SelectLocalAccount_UseKMeansIsTrue_TonalSpot_UsesKMeansColor) {
-  const bool dark_mode = true;
-  dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
   SimulateUserLogin(kAccountId);
+  const bool dark_mode = true;
+  dark_light_mode_controller()->SetDarkModeEnabledForTest(dark_mode);
   SetUseKMeansLocalPref(true);
   SessionController::Get()->SetClient(nullptr);
   UpdateWallpaperColor(kCelebiColor);
