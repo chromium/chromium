@@ -8,9 +8,6 @@ assert(enterprise_client_certificates)
 assert(is_android)
 
 source_set("browser_binding") {
-  visibility = [
-    "//components/enterprise/client_certificates/android/browser_binding:*",
-  ]
   sources = [
     "browser_key.h",
     "browser_key_android.cc",

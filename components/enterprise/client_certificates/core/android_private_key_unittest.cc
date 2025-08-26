@@ -25,7 +25,7 @@ const std::array<device::PublicKeyCredentialParams::CredentialInfo, 1>
 namespace client_certificates {
 
 TEST(AndroidPrivateKeyTest, SupportedCreateKey) {
-  auto bk_key_store = GetBrowserKeyStoreInstance();
+  auto bk_key_store = CreateBrowserKeyStoreInstance();
   auto android_key = bk_key_store->GetOrCreateBrowserKeyForCredentialId(
       base::ToVector(kManagedProfileAndroidKeyStoreIdentity),
       base::ToVector(kEs256Allowed));
