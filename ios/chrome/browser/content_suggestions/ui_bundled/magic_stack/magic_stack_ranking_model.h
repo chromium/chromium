@@ -15,6 +15,7 @@ namespace segmentation_platform {
 class SegmentationPlatformService;
 }
 
+class AppStoreBundleService;
 class AuthenticationService;
 @class ContentSuggestionsMetricsRecorder;
 enum class ContentSuggestionsModuleType;
@@ -50,6 +51,7 @@ class TipsManagerIOS;
                 moduleMediators:(NSArray*)moduleMediators
                     tipsManager:(TipsManagerIOS*)tipsManager
              templateURLService:(TemplateURLService*)templateURLService
+          appStoreBundleService:(AppStoreBundleService*)appStoreBundleService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

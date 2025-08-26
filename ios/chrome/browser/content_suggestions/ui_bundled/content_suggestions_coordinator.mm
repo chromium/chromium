@@ -35,6 +35,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/app_store_bundle/model/app_store_bundle_service_factory.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
@@ -505,6 +506,8 @@ using segmentation_platform::TipIdentifier;
                       tipsManager:TipsManagerIOSFactory::GetForProfile(
                                       self.profile)
                templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
+                                      self.profile)
+            appStoreBundleService:AppStoreBundleServiceFactory::GetForProfile(
                                       self.profile)];
   _magicStackRankingModel.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;

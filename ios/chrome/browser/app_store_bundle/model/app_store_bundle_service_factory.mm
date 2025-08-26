@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/app_store_bundle/model/app_store_bundle_service_factory.h"
 
+#import "base/feature_list.h"
+#import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/public/provider/chrome/browser/app_store_bundle/app_store_bundle_api.h"
 
@@ -29,7 +31,9 @@ AppStoreBundleServiceFactory::~AppStoreBundleServiceFactory() = default;
 std::unique_ptr<KeyedService>
 AppStoreBundleServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  // TODO(crbug.com/440148910): return
-  // `ios::provider::CreateAppStoreBundleService()`.
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::kAppBundlePromoEphemeralCard)) {
+    return ios::provider::CreateAppStoreBundleService();
+  }
   return nullptr;
 }

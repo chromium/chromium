@@ -33,6 +33,7 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/pref_names.h"
+#import "ios/chrome/browser/app_store_bundle/model/app_store_bundle_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_config.h"
@@ -121,6 +122,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   raw_ptr<segmentation_platform::SegmentationPlatformService>
       _segmentationService;
   raw_ptr<commerce::ShoppingService> _shoppingService;
+  raw_ptr<AppStoreBundleService> _appStoreBundleService;
   raw_ptr<AuthenticationService> _authService;
   raw_ptr<PrefService> _prefService;
   raw_ptr<PrefService> _localState;
@@ -157,11 +159,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                      localState:(PrefService*)localState
                 moduleMediators:(NSArray*)moduleMediators
                     tipsManager:(TipsManagerIOS*)tipsManager
-             templateURLService:(TemplateURLService*)templateURLService {
+             templateURLService:(TemplateURLService*)templateURLService
+          appStoreBundleService:(AppStoreBundleService*)appStoreBundleService {
   self = [super init];
   if (self) {
     _segmentationService = segmentationService;
     _shoppingService = shoppingService;
+    _appStoreBundleService = appStoreBundleService;
     _authService = authenticationService;
     _prefService = prefService;
     _localState = localState;
@@ -506,6 +510,16 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         segmentation_platform::kLensAllowedByEnterprisePolicy,
         segmentation_platform::processing::ProcessedValue::FromFloat(
             [self isLensEnabled]));
+
+    if (base::FeatureList::IsEnabled(
+            segmentation_platform::features::kAppBundlePromoEphemeralCard)) {
+      CHECK(_appStoreBundleService);
+      inputContext->metadata_args.emplace(
+          segmentation_platform::kAppBundleAppsInstalledCount,
+          segmentation_platform::processing::ProcessedValue::FromFloat(
+              static_cast<float>(
+                  _appStoreBundleService->GetInstalledAppCount())));
+    }
   }
 
   __weak MagicStackRankingModel* weakSelf = self;

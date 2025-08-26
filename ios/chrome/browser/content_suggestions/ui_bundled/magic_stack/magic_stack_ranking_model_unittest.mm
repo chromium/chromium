@@ -86,6 +86,7 @@
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/providers/app_store_bundle/test_app_store_bundle_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -337,6 +338,7 @@ class MagicStackRankingModelTest : public PlatformTest {
 
     shopping_service_ = std::make_unique<commerce::MockShoppingService>();
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
+    app_store_bundle_service_ = std::make_unique<TestAppStoreBundleService>();
 
     _tipsMediator = [[TipsMagicStackMediator alloc]
         initWithIdentifier:segmentation_platform::TipIdentifier::kUnknown
@@ -381,7 +383,8 @@ class MagicStackRankingModelTest : public PlatformTest {
                         tipsManager:TipsManagerIOSFactory::GetForProfile(
                                         browser_->GetProfile())
                  templateURLService:ios::TemplateURLServiceFactory::
-                                        GetForProfile(browser_->GetProfile())];
+                                        GetForProfile(browser_->GetProfile())
+              appStoreBundleService:app_store_bundle_service_.get()];
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
         initWithLocalState:GetLocalState()];
@@ -439,6 +442,7 @@ class MagicStackRankingModelTest : public PlatformTest {
   FakeSceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<commerce::MockShoppingService> shopping_service_;
+  std::unique_ptr<TestAppStoreBundleService> app_store_bundle_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   FakeSetUpListMediator* _setUpListMediator;
