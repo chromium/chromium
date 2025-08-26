@@ -30,19 +30,15 @@ namespace favicon_util {
 namespace {
 
 int GetResourceID(int size_in_pixels) {
-  bool is_dark = false;
-  const ui::NativeTheme* native_theme =
-      ui::NativeTheme::GetInstanceForNativeUi();
-  int resource_id = is_dark ? IDR_DEFAULT_FAVICON : IDR_DEFAULT_FAVICON_DARK;
-  is_dark = native_theme && native_theme->ShouldUseDarkColors();
+  const bool is_dark =
+      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors();
   if (size_in_pixels >= 64) {
-    resource_id =
-        is_dark ? IDR_DEFAULT_FAVICON_DARK_64 : IDR_DEFAULT_FAVICON_64;
-  } else if (size_in_pixels >= 32) {
-    resource_id =
-        is_dark ? IDR_DEFAULT_FAVICON_DARK_32 : IDR_DEFAULT_FAVICON_32;
+    return is_dark ? IDR_DEFAULT_FAVICON_DARK_64 : IDR_DEFAULT_FAVICON_64;
   }
-  return resource_id;
+  if (size_in_pixels >= 32) {
+    return is_dark ? IDR_DEFAULT_FAVICON_DARK_32 : IDR_DEFAULT_FAVICON_32;
+  }
+  return is_dark ? IDR_DEFAULT_FAVICON_DARK : IDR_DEFAULT_FAVICON;
 }
 
 void OnFaviconAvailable(FaviconCallback callback,
