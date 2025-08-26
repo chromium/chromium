@@ -70,11 +70,6 @@
 }
 
 - (void)testRollbackWithoutManagedAccounts {
-  // Separate profiles are only available in iOS 17+.
-  if (!@available(iOS 17, *)) {
-    return;
-  }
-
   GREYAssert([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled],
              @"Separate profiles should initially be enabled");
 
@@ -96,11 +91,6 @@
 }
 
 - (void)testRollbackWithoutManagedProfiles {
-  // Separate profiles are only available in iOS 17+.
-  if (!@available(iOS 17, *)) {
-    return;
-  }
-
   GREYAssert([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled],
              @"Separate profiles should initially be enabled");
 
@@ -137,11 +127,6 @@
 #define MAYBE_testRollbackWithManagedProfile testRollbackWithManagedProfile
 #endif
 - (void)MAYBE_testRollbackWithManagedProfile {
-  // Separate profiles are only available in iOS 17+.
-  if (!@available(iOS 17, *)) {
-    return;
-  }
-
   NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
 
   GREYAssert([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled],
@@ -239,11 +224,6 @@
   testRollbackWithManagedProfile_ManagedAccountRemoved
 #endif
 - (void)MAYBE_testRollbackWithManagedProfile_ManagedAccountRemoved {
-  // Separate profiles are only available in iOS 17+.
-  if (!@available(iOS 17, *)) {
-    return;
-  }
-
   NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
 
   GREYAssert([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled],
@@ -338,11 +318,6 @@
   testRollbackWithManagedProfile_KillSwitch
 #endif
 - (void)MAYBE_testRollbackWithManagedProfile_KillSwitch {
-  // Separate profiles are only available in iOS 17+.
-  if (!@available(iOS 17, *)) {
-    return;
-  }
-
   NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
 
   GREYAssert([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled],
