@@ -187,7 +187,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void SetWantsAnimateOnlyBeginFrames();
   void SetAutoNeedsBeginFrame();
   void DidNotProduceFrame(const BeginFrameAck& ack);
-  virtual void SubmitCompositorFrame(
+  void SubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
       std::optional<HitTestRegionList> hit_test_region_list,
@@ -217,7 +217,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // This is called by SubmitCompositorFrame(), which DCHECK-fails on a
   // non-accepted result. Prefer calling SubmitCompositorFrame() instead of this
   // method unless the result value affects what the caller will do next.
-  SubmitResult MaybeSubmitCompositorFrame(
+  virtual SubmitResult MaybeSubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
       std::optional<HitTestRegionList> hit_test_region_list,

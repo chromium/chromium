@@ -50,7 +50,7 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkSupport
         task_runner_provider_(task_runner_provider) {}
   ~TestCompositorFrameSinkSupport() override = default;
 
-  void SubmitCompositorFrame(
+  viz::SubmitResult MaybeSubmitCompositorFrame(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
       std::optional<viz::HitTestRegionList> hit_test_region_list,
@@ -77,13 +77,14 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkSupport
     display_->SetLocalSurfaceId(local_surface_id, frame.device_scale_factor());
     display_->Resize(frame.size_in_pixels());
 
-    viz::CompositorFrameSinkSupport::SubmitCompositorFrame(
+    auto result = viz::CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
         local_surface_id, std::move(frame), hit_test_region_list, submit_time);
 
     if (!display_->has_scheduler()) {
       // In synchronous mode, we manually issue DrawAndSwap.
       display_->DrawAndSwap({base::TimeTicks::Now(), base::TimeTicks::Now()});
     }
+    return result;
   }
 
   void SetParams(viz::mojom::CompositorFrameSinkParamsPtr params) {
