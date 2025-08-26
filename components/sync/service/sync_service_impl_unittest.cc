@@ -61,7 +61,6 @@ using testing::ByMove;
 using testing::ContainerEq;
 using testing::Contains;
 using testing::Eq;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::IsNull;
 using testing::Not;
@@ -1957,8 +1956,8 @@ TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
   bool met_configuring_data_type_manager = false;
   testing::NiceMock<MockSyncServiceObserver> mock_sync_service_observer;
   ON_CALL(mock_sync_service_observer, OnStateChanged)
-      .WillByDefault(Invoke([&met_configuring_data_type_manager](
-                                SyncService* service) {
+      .WillByDefault([&met_configuring_data_type_manager](
+                         SyncService* service) {
         EXPECT_NE(service->GetDownloadStatusFor(syncer::BOOKMARKS),
                   SyncService::DataTypeDownloadStatus::kError);
         if (service->GetTransportState() ==
@@ -1967,7 +1966,7 @@ TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
           EXPECT_EQ(service->GetDownloadStatusFor(syncer::BOOKMARKS),
                     SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
         }
-      }));
+      });
 
   // Observers must be added after initialization has been started.
   ASSERT_THAT(engine(), IsNull());

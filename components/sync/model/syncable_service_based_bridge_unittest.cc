@@ -36,7 +36,6 @@ namespace {
 using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::NotNull;
 using testing::Pair;
@@ -113,8 +112,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
   SyncableServiceBasedBridgeTest()
       : store_(DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     ON_CALL(syncable_service_, WaitUntilReadyToSync)
-        .WillByDefault(
-            Invoke([](base::OnceClosure done) { std::move(done).Run(); }));
+        .WillByDefault([](base::OnceClosure done) { std::move(done).Run(); });
     ON_CALL(syncable_service_, MergeDataAndStartSyncing)
         .WillByDefault(
             [&](DataType type, const SyncDataList& initial_sync_data,
@@ -233,9 +231,9 @@ TEST_F(SyncableServiceBasedBridgeTest,
 TEST_F(SyncableServiceBasedBridgeTest, ShouldWaitUntilModelReadyToSync) {
   base::OnceClosure syncable_service_ready_cb;
   ON_CALL(syncable_service_, WaitUntilReadyToSync)
-      .WillByDefault(Invoke([&](base::OnceClosure done) {
+      .WillByDefault([&](base::OnceClosure done) {
         syncable_service_ready_cb = std::move(done);
-      }));
+      });
 
   EXPECT_CALL(mock_processor_, ModelReadyToSync).Times(0);
   EXPECT_CALL(syncable_service_, WaitUntilReadyToSync).Times(0);
@@ -307,14 +305,14 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
   base::RunLoop loop;
   ON_CALL(syncable_service_, WaitUntilReadyToSync)
-      .WillByDefault(Invoke([&](base::OnceClosure done) {
+      .WillByDefault([&](base::OnceClosure done) {
         // This should mark sync metadata as pending clear on start.
         real_processor_->ClearMetadataIfStopped();
         // Metadata has not been cleared yet.
         ASSERT_THAT(GetAllData(), Not(IsEmpty()));
         std::move(done).Run();
         loop.Quit();
-      }));
+      });
 
   base::HistogramTester histogram_tester;
   EXPECT_CALL(syncable_service_, StayStoppedAndMaybeClearData(kDataType));
@@ -394,10 +392,10 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
   base::RunLoop loop;
   ON_CALL(syncable_service_, WaitUntilReadyToSync)
-      .WillByDefault(Invoke([&](base::OnceClosure done) {
+      .WillByDefault([&](base::OnceClosure done) {
         std::move(done).Run();
         loop.Quit();
-      }));
+      });
   EXPECT_CALL(syncable_service_, StayStoppedAndMaybeClearData(kDataType))
       .Times(0);
   base::HistogramTester histogram_tester;
@@ -790,10 +788,10 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldMeasureSyncableServiceStartTime) {
 
   base::RunLoop loop;
   ON_CALL(syncable_service_, WaitUntilReadyToSync)
-      .WillByDefault(Invoke([&](base::OnceClosure done) {
+      .WillByDefault([&](base::OnceClosure done) {
         std::move(done).Run();
         loop.Quit();
-      }));
+      });
 
   base::HistogramTester histogram_tester;
   EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing);
