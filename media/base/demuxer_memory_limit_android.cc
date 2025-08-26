@@ -11,10 +11,10 @@ namespace media {
 
 namespace {
 
-size_t SelectLimit(size_t default_limit,
-                   size_t medium_limit,
-                   size_t low_limit,
-                   size_t very_low_limit) {
+base::ByteCount SelectLimit(base::ByteCount default_limit,
+                            base::ByteCount medium_limit,
+                            base::ByteCount low_limit,
+                            base::ByteCount very_low_limit) {
   // This is truly for only for low end devices since it will have impacts on
   // the ability to buffer and play HD+ content.
   if (!base::SysInfo::IsLowEndDevice()) {
@@ -33,9 +33,9 @@ size_t SelectLimit(size_t default_limit,
 
 }  // namespace
 
-size_t GetDemuxerStreamAudioMemoryLimit(
+base::ByteCount GetDemuxerStreamAudioMemoryLimit(
     const AudioDecoderConfig* /*audio_config*/) {
-  static const size_t limit =
+  static const base::ByteCount limit =
       SelectLimit(internal::kDemuxerStreamAudioMemoryLimitDefault,
                   internal::kDemuxerStreamAudioMemoryLimitMedium,
                   internal::kDemuxerStreamAudioMemoryLimitLow,
@@ -43,10 +43,10 @@ size_t GetDemuxerStreamAudioMemoryLimit(
   return limit;
 }
 
-size_t GetDemuxerStreamVideoMemoryLimit(
+base::ByteCount GetDemuxerStreamVideoMemoryLimit(
     DemuxerType /*demuxer_type*/,
     const VideoDecoderConfig* /*video_config*/) {
-  static const size_t limit =
+  static const base::ByteCount limit =
       SelectLimit(internal::kDemuxerStreamVideoMemoryLimitDefault,
                   internal::kDemuxerStreamVideoMemoryLimitMedium,
                   internal::kDemuxerStreamVideoMemoryLimitLow,
@@ -54,7 +54,7 @@ size_t GetDemuxerStreamVideoMemoryLimit(
   return limit;
 }
 
-size_t GetDemuxerMemoryLimit(DemuxerType demuxer_type) {
+base::ByteCount GetDemuxerMemoryLimit(DemuxerType demuxer_type) {
   return GetDemuxerStreamAudioMemoryLimit(nullptr) +
          GetDemuxerStreamVideoMemoryLimit(demuxer_type, nullptr);
 }
