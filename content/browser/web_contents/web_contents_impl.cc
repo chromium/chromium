@@ -9160,7 +9160,7 @@ void WebContentsImpl::InnerWebContentsCreated(WebContents* inner_web_contents) {
 
 void WebContentsImpl::InnerWebContentsAttached(
     WebContents* inner_web_contents) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::InnerWebContentsDetached");
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::InnerWebContentsAttached");
   if (inner_web_contents->IsCurrentlyAudible()) {
     OnAudioStateChanged();
   }
@@ -9168,7 +9168,7 @@ void WebContentsImpl::InnerWebContentsAttached(
 
 void WebContentsImpl::InnerWebContentsDetached(
     WebContents* inner_web_contents) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::InnerWebContentsCreated");
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::InnerWebContentsDetached");
   if (!IsBeingDestroyed()) {
     OnAudioStateChanged();
   }
