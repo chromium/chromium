@@ -20,6 +20,10 @@ namespace crypto {
 class SubtlePassKey;
 }  // namespace crypto
 
+namespace chromeos {
+crypto::SubtlePassKey MakeCryptoPassKeyForSharedSessionHandler();
+}
+
 namespace chromeos::onc {
 crypto::SubtlePassKey MakeCryptoPassKey();
 }
@@ -57,6 +61,10 @@ class CRYPTO_EXPORT SubtlePassKey final {
 
   // This class uses custom PBKDF2 parameters - the Nigori spec requires this.
   friend class syncer::Nigori;
+
+  // SharedSessionHandler needs to use the same scrypt parameters to stay
+  // compatible with existing data on disk.
+  friend SubtlePassKey chromeos::MakeCryptoPassKeyForSharedSessionHandler();
 
   // ONC EncryptedConfiguration objects can contain and require us to use
   // arbitrary (possibly attacker-supplied) PBKDF2 parameters.

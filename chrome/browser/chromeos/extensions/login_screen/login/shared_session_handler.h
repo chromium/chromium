@@ -64,12 +64,12 @@ class SharedSessionHandler {
   SharedSessionHandler();
   ~SharedSessionHandler();
 
-  std::optional<std::string> GetHashFromScrypt(const std::string& password,
-                                               const std::string& salt);
+  std::string GetHashFromScrypt(const std::string& password,
+                                const std::string& salt);
 
   void UnlockWithSessionSecret(base::OnceCallback<void(bool)> callback);
 
-  bool CreateAndSetUserSecretHashAndSalt(const std::string& password);
+  void CreateAndSetUserSecretHashAndSalt(const std::string& password);
 
   void OnAuthenticateDone(CallbackWithOptionalError callback,
                           bool auth_success);
