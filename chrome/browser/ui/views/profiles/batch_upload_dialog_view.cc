@@ -128,7 +128,10 @@ BatchUploadDialogView::BatchUploadDialogView(
     BatchUploadService::EntryPoint entry_point,
     BatchUploadSelectedDataTypeItemsCallback complete_callback)
     : complete_callback_(std::move(complete_callback)),
-      entry_point_(entry_point) {
+      entry_point_(entry_point),
+      browser_close_subscription_(browser.RegisterBrowserDidClose(
+          base::BindRepeating(&BatchUploadDialogView::BrowserDidClose,
+                              base::Unretained(this)))) {
   SetModalType(ui::mojom::ModalType::kWindow);
   // No native buttons.
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -296,6 +299,17 @@ void BatchUploadDialogView::CloseWithReason(
     BatchUploadDialogCloseReason reason) {
   close_reason_ = reason;
   GetWidget()->Close();
+}
+
+void BatchUploadDialogView::BrowserDidClose(BrowserWindowInterface* browser) {
+  // In the event the host Browser window closes and the dialog is open the
+  // dialog is dismissed without any explicit action on the dialog.
+  close_reason_ = BatchUploadDialogCloseReason::kWindowClosed;
+  if (GetWidget()) {
+    // Close the dialog synchronously in the event the host Browser window
+    // closes to mitigate the risk of dangling refs.
+    GetWidget()->CloseNow();
+  }
 }
 
 views::WebView* BatchUploadDialogView::GetWebViewForTesting() {
