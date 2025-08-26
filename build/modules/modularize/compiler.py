@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import collections
+import enum
 import functools
 import logging
 import pathlib
@@ -54,18 +55,38 @@ def _maybe_cache(fn):
   return new_fn
 
 
+class Os(str, enum.Enum):
+  Linux = 'linux'
+  Mac = 'mac'
+  Ios = 'ios'
+  Win = 'win'
+  Android = 'android'
+
+  @property
+  def is_apple(self):
+    return self == Os.Mac or self == Os.Ios
+
+
+class Cpu(str, enum.Enum):
+  x86 = 'x86'
+  x64 = 'x64'
+  arm = 'arm'
+  arm64 = 'arm64'
+
+
 class Compiler:
 
   def __init__(self, *, source_root: pathlib.Path, gn_out: pathlib.Path,
-               error_dir: pathlib.Path | None, use_cache: bool):
+               error_dir: pathlib.Path | None, use_cache: bool, os: Os,
+               cpu: Cpu):
     self._error_dir = error_dir
     self._use_cache = use_cache
     self.gn_out = gn_out
     self.source_root = source_root
 
-    self.os = self._get_os()
-    self.cpu = self._get_cpu()
-    self.sysroot_dir = IncludeDir.SysrootModule if self.is_apple else IncludeDir.Sysroot
+    self.os = os
+    self.cpu = cpu
+    self.sysroot_dir = IncludeDir.SysrootModule if self.os.is_apple else IncludeDir.Sysroot
     self.sysroot = None
 
   # __eq__ and __hash__ are required for functools.cache to work correctly.
@@ -74,10 +95,6 @@ class Compiler:
 
   def __hash__(self):
     return hash(self.gn_out)
-
-  @property
-  def is_apple(self):
-    return self.os in ['mac', 'ios']
 
   def _parse_depfile(self, content: str) -> list[pathlib.Path]:
     files = []
@@ -92,50 +109,11 @@ class Compiler:
       files.append(p.resolve())
     return files
 
-  def _get_gn_arg(self, name: str) -> str:
-    content = (self.gn_out / 'args.gn').read_text()
-    # For a platform that's unconfigured for clang modules, this will raise an
-    # error. We add a BUILD.gn to fix this, but this code runs
-    # before that happens.
-    content += '\nuse_clang_modules = false\n'
-    with tempfile.TemporaryDirectory(dir=self.gn_out.parent) as d:
-      d = pathlib.Path(d)
-      (d / 'args.gn').write_text(content)
-      (d / 'build.ninja').touch()
-      ps = subprocess.run(
-          ['gn', 'args', '.', f'--list={name}', '--short'],
-          text=True,
-          check=False,
-          cwd=d,
-          stdout=subprocess.PIPE,
-          stderr=subprocess.DEVNULL,
-      )
-
-      # GN args outputs errors to stdout, so we can't use check=True.
-      if ps.returncode != 0:
-        print(ps.stdout, file=sys.stderr)
-        exit(1)
-
-    # output format: 'target_cpu = "x64"\n'
-    return ps.stdout.rstrip().split(' = ')[1].strip('"')
-
   def _clang_arg(self, arg: str) -> str:
     if self.os == 'win':
       return f'/clang:{arg}'
     else:
       return arg
-
-  @_maybe_cache
-  def _get_cpu(self):
-    # If the target_cpu is not explicitly set, it returns the empty string and
-    # it uses the host_cpu instead.
-    return self._get_gn_arg('target_cpu') or self._get_gn_arg('host_cpu')
-
-  @_maybe_cache
-  def _get_os(self):
-    # If the target_os is not explicitly set, it returns the empty string and
-    # it uses the host_os instead.
-    return self._get_gn_arg('target_os') or self._get_gn_arg('host_os')
 
   def _write_err(self, rel: str, content: bytes):
     if self._error_dir is not None:
@@ -167,7 +145,7 @@ class Compiler:
         [
             'build/modules/modularize/no_modules_compile_command.sh',
             str(self.gn_out),
-            self.os,
+            str(self.os),
         ],
         check=True,
         text=True,
@@ -188,7 +166,7 @@ class Compiler:
         '-o',
         '/dev/null',
     ]
-    cmd.remove('/c' if self.os == 'win' else '-c')
+    cmd.remove('/c' if self.os == Os.Win else '-c')
     # include dir lines both start and end with whitespace
     lines = [
         line.strip() for line in subprocess.run(

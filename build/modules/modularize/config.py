@@ -5,6 +5,8 @@
 import pathlib
 import typing
 
+from compiler import Cpu
+from compiler import Os
 from graph import all_headers
 from graph import calculate_rdeps
 from graph import Header
@@ -55,7 +57,7 @@ def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
   # This does not hold true for stddef.h because of __need_size_t
   add_dep(graph['stddef.h'].next, graph['__stddef_size_t.h'], check=False)
 
-  if compiler.os in ['android', 'win']:
+  if compiler.os in [Os.Android, Os.Win]:
     # include_next behaves differently in module builds and non-module builds.
     # Because of this, module builds include libcxx's wchar.h instead of
     # the sysroot's wchar.h
@@ -64,7 +66,7 @@ def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
     # sysroot/wchar.h by preventing it from defining functions.
     graph['__mbstate_t.h'].kwargs['defines'].append(
         '_LIBCPP_WCHAR_H_HAS_CONST_OVERLOADS')
-  elif compiler.is_apple:
+  elif compiler.os.is_apple:
     # This is shadowed by the builtin iso646, so we don't need to build it.
     graph['iso646.h'].next.textual = True
 
@@ -74,7 +76,7 @@ def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
   for header in all_headers(graph):
     header.direct_deps = header.calculate_direct_deps(graph, sysroot=sysroot)
 
-  if compiler.is_apple:
+  if compiler.os.is_apple:
     # From here on out we're modifying which headers are textual.
     # This isn't relevant to apple since it has a modulemap.
     return
@@ -102,13 +104,13 @@ def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
   # Assert is inherently textual.
   graph['assert.h'].textual = True
 
-  if compiler.os == 'android':
+  if compiler.os == Os.Android:
     graph['android/legacy_stdlib_inlines.h'].textual = True
     graph['android/legacy_threads_inlines.h'].textual = True
     graph['android/legacy_unistd_inlines.h'].textual = True
     graph['bits/threads_inlines.h'].textual = True
 
-  elif compiler.os == 'linux':
+  elif compiler.os == Os.Linux:
     # See https://codebrowser.dev/glibc/glibc/sysdeps/unix/sysv/linux/bits/local_lim.h.html#56
     # if linux/limits.h is non-textual, then limits.h undefs the limits.h defined in the linux/limits.h module.
     # Thus, limits.h exports an undef.
