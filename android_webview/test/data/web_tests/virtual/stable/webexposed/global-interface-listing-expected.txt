@@ -1831,6 +1831,7 @@ interface Document : Node
     getter xmlVersion
     method adoptNode
     method append
+    method ariaNotify
     method captureEvents
     method caretPositionFromPoint
     method caretRangeFromPoint
@@ -2189,6 +2190,7 @@ interface Element : Node
     method after
     method animate
     method append
+    method ariaNotify
     method attachShadow
     method before
     method checkVisibility

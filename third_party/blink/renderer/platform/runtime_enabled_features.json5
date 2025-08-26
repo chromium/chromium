@@ -533,7 +533,7 @@
     },
     {
       name: "AriaNotify",
-      status: {"Android": "experimental", "Win": "experimental", "Mac": "experimental", "Linux": "experimental"},
+      status: {"Android": "stable", "Win": "stable", "Mac": "stable", "Linux": "stable"},
       implied_by: ["AriaNotifyV2"],
     },
     {
