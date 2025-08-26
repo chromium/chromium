@@ -209,8 +209,8 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
   form.set_submission_event(
       mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
 
-  form.set_fields({CreateTestFormField("Email", "email", "",
-                                       FormControlType::kInputEmail)});
+  form.set_fields({CreateTestFormField(
+      "Email", "email", "", FormControlType::kInputEmail, "webauthn")});
   return form;
 }
 

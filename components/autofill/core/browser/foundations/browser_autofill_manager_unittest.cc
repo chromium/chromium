@@ -1908,6 +1908,37 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 TEST_F(BrowserAutofillManagerTest,
+       WebauthnSignInWithAnotherDeviceSuggestion_NonWebauthnField) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {
+          autofill::features::kAutofillAndPasswordsInSameSurface,
+          password_manager::features::
+              kAutofillReintroduceHybridPasskeyDropdownItem,
+      },
+      /*disabled_features=*/{});
+  FormData form = CreateTestHybridSignUpFormData();
+  form.set_fields({CreateTestFormField(
+      "Email", "email", "", FormControlType::kInputEmail, "username")});
+  FormsSeen({form});
+
+  auto password_manager_delegate =
+      std::make_unique<NiceMock<MockPasswordManagerDelegate>>();
+  ON_CALL(*password_manager_delegate,
+          GetWebauthnSignInWithAnotherDeviceSuggestion)
+      .WillByDefault(
+          Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
+  client().set_password_manager_delegate(std::move(password_manager_delegate));
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  EXPECT_THAT(external_delegate()->suggestions(),
+              Not(Contains(Suggestion(
+                  SuggestionType::kWebauthnSignInWithAnotherDevice))));
+}
+
+TEST_F(BrowserAutofillManagerTest,
        WebauthnSignInWithAnotherDeviceSuggestion_NullOpt) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

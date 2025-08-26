@@ -757,6 +757,20 @@ std::optional<Suggestion> GenerateComposeSuggestion(
   return suggestions[0];
 }
 
+bool ShouldShowWebauthnHybridEntryPoint(const FormFieldData& field) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return false;
+#else
+  const std::optional<autofill::AutocompleteParsingResult>& autocomplete =
+      field.parsed_autocomplete();
+  return autocomplete.has_value() &&  // Assume no autcomplete if not parsed.
+         autocomplete->webauthn &&    // Field must have "webauthn" annotation.
+         base::FeatureList::IsEnabled(
+             password_manager::features::
+                 kAutofillReintroduceHybridPasskeyDropdownItem);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}
+
 }  // namespace
 
 BrowserAutofillManager::MetricsState::MetricsState(
@@ -1447,11 +1461,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kAutofillReintroduceHybridPasskeyDropdownItem)) {
-    // TODO: crbug.com/440918921 - restrict to webauthn-annotated fields.
+  if (ShouldShowWebauthnHybridEntryPoint(field)) {
     if (PasswordManagerDelegate* password_delegate =
             client().GetPasswordManagerDelegate(field.global_id())) {
       // If any field **on the page** allows starting the hybrid passkey flow,
@@ -1463,7 +1473,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
       }
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   AutofillAiManager* ai_manager = client().GetAutofillAiManager();
   if (form_structure && autofill_field && ai_manager &&
