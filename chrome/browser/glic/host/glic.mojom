@@ -5,6 +5,7 @@
 module glic.mojom;
 
 import "chrome/browser/glic/host/glic_features.mojom";
+import "chrome/common/actor_webui.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -988,67 +989,9 @@ interface WebClient {
   // Requests the web client to show a dialog to the user to select a credential
   // for actor login. The web client should show the dialog and wait for the
   // user to interact with it.
-  RequestToShowCredentialSelectionDialog(SelectCredentialDialogRequest request)
-      => (SelectCredentialDialogResponse response);
-};
-
- // Describes how long the user grants the actor with the permission to actuate.
- // Used when the actor is to actuate with sensitive data, such as entering
- // payment information or login credentials.
-[Extensible]
-enum UserGrantedPermissionDuration {
-  // The user only grants a one-time permission. The user will be asked again.
-  // This is the default behavior.
-  [Default] kOneTime = 0,
-  // The user grants a permission to always allow the actor to actuate with
-  // sensitive data. The persistence of this permission is defined differently
-  // for different features.
-  kAlwaysAllow = 1,
-};
-
-//
-// Credential selection dialog.
-//
-
-// A credential for actor login. Mapped from actor_login::Credential in
-// components/password_manager/core/browser/actor_login/actor_login_types.h
-struct Credential {
-  int32 id;
-  string username;
-  string source_site_or_app;
-};
-
-struct SelectCredentialDialogRequest {
-  // The task ID that is requesting the credential selection.
-  int32 task_id;
-  // Whether the web client should show a dialog to let the user select a
-  // credential. The web client doesn't have to show the dialog if the user has
-  // granted UserGrantedPermissionDuration.ALWAYS_ALLOW to the actor.
-  bool show_dialog;
-  // The order of `credentials` is based on what the browser believes to be the
-  // best match to use.
-  array<Credential> credentials;
-  // TODO(crbug.com/438710031): Include the optional favicon for the credential.
-};
-
-[Extensible]
-enum SelectCredentialDialogErrorReason {
-  // The hosting WebUI received the request, but the web client has not
-  // subscribed to the request yet. We couldn't show the dialog in this case.
-  [Default] kDialogPromiseNoSubscriber = 0,
-};
-
-struct SelectCredentialDialogResponse {
-  // The response is associated with the request that has the same task ID.
-  int32 task_id;
-  // Encodes the error message. The browser must discard all other fields
-  // (other than the ID) if the error message is set.
-  SelectCredentialDialogErrorReason? error_reason;
-  // Only set if the user changes the permission duration.
-  UserGrantedPermissionDuration? permission_duration;
-  // The ID of the selected credential. Null if the user closed the UI without
-  // making a selection.
-  int32? selected_credential_id;
+  RequestToShowCredentialSelectionDialog(
+    actor.webui.mojom.SelectCredentialDialogRequest request)
+      => (actor.webui.mojom.SelectCredentialDialogResponse response);
 };
 
 // Information extracted from a tab.

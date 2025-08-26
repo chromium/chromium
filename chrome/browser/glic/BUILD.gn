@@ -239,6 +239,8 @@ source_set("impl") {
 }
 
 mojom("mojo_bindings") {
+  disable_variants = true
+
   sources = [
     "host/glic.mojom",
     "host/glic_features.mojom",
@@ -247,6 +249,7 @@ mojom("mojo_bindings") {
 
   public_deps = [
     "//chrome/browser/glic/fre:mojo_bindings",
+    "//chrome/common:actor_webui_mojom",
     "//components/content_settings/core/common:content_settings_types",
     "//components/optimization_guide/content/mojom:mojo_interfaces",
     "//mojo/public/mojom/base",
