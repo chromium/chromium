@@ -647,7 +647,8 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
     WindowOpenDisposition disposition =
         ui::DispositionFromEventFlags(event.flags());
     popup_view_->model()->OpenSelection(selection, event.time_stamp(),
-                                        disposition);
+                                        disposition,
+                                        /*via_keyboard=*/event.IsKeyEvent());
   }
 }
 

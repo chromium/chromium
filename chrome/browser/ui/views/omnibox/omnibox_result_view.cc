@@ -607,7 +607,9 @@ void OmniboxResultView::SetRichSuggestionImage(const gfx::ImageSkia& image) {
 void OmniboxResultView::ButtonPressed(OmniboxPopupSelection::LineState state,
                                       const ui::Event& event) {
   popup_view_->model()->OpenSelection(
-      OmniboxPopupSelection(model_index_, state), event.time_stamp());
+      OmniboxPopupSelection(model_index_, state), event.time_stamp(),
+      WindowOpenDisposition::CURRENT_TAB,
+      /*via_keyboard=*/event.IsKeyEvent());
   if (state == OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
     // The button could be pressed and the deletion successful, but the match
     // may continue to appear with the X button remaining so it looked like it
