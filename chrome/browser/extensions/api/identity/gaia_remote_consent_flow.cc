@@ -8,7 +8,6 @@
 
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,15 +27,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
-
-namespace {
-
-void RecordResultHistogram(GaiaRemoteConsentFlow::Failure failure) {
-  base::UmaHistogramEnumeration("Signin.Extensions.GaiaRemoteConsentFlowResult",
-                                failure);
-}
-
-}  // namespace
 
 GaiaRemoteConsentFlow::Delegate::~Delegate() = default;
 
@@ -90,16 +80,16 @@ void GaiaRemoteConsentFlow::ReactToConsentResult(
   GaiaId gaia_id;
   if (!gaia::ParseOAuth2MintTokenConsentResult(consent_result,
                                                &consent_approved, &gaia_id)) {
-    GaiaRemoteConsentFlowFailed(GaiaRemoteConsentFlow::INVALID_CONSENT_RESULT);
+    delegate_->OnGaiaRemoteConsentFlowFailed(
+        GaiaRemoteConsentFlow::INVALID_CONSENT_RESULT);
     return;
   }
 
   if (!consent_approved) {
-    GaiaRemoteConsentFlowFailed(GaiaRemoteConsentFlow::NO_GRANT);
+    delegate_->OnGaiaRemoteConsentFlowFailed(GaiaRemoteConsentFlow::NO_GRANT);
     return;
   }
 
-  RecordResultHistogram(GaiaRemoteConsentFlow::NONE);
   delegate_->OnGaiaRemoteConsentFlowApproved(consent_result, gaia_id);
 }
 
@@ -121,7 +111,7 @@ void GaiaRemoteConsentFlow::OnAuthFlowFailure(WebAuthFlow::Failure failure) {
       break;
   }
 
-  GaiaRemoteConsentFlowFailed(gaia_failure);
+  delegate_->OnGaiaRemoteConsentFlowFailed(gaia_failure);
 }
 
 network::mojom::CookieManager*
@@ -148,17 +138,12 @@ void GaiaRemoteConsentFlow::OnResolutionDataCookiesSet(
       });
 
   if (cookies_set_failed) {
-    GaiaRemoteConsentFlowFailed(SET_RESOLUTION_COOKIES_FAILED);
+    delegate_->OnGaiaRemoteConsentFlowFailed(SET_RESOLUTION_COOKIES_FAILED);
     return;
   }
 
   web_flow_->Start();
   web_flow_started_ = true;
-}
-
-void GaiaRemoteConsentFlow::GaiaRemoteConsentFlowFailed(Failure failure) {
-  RecordResultHistogram(failure);
-  delegate_->OnGaiaRemoteConsentFlowFailed(failure);
 }
 
 void GaiaRemoteConsentFlow::DetachWebAuthFlow() {

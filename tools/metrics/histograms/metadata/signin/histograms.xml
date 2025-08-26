@@ -1542,16 +1542,6 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.Extensions.GaiaRemoteConsentFlowResult"
-    enum="GaiaRemoteConsentFlowResult" expires_after="2025-06-05">
-  <owner>alexilin@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Result of the browser remote consent flow, which is a part of the
-    chrome.identity.getAuthToken() extension API call. Desktop only.
-  </summary>
-</histogram>
-
 <histogram name="Signin.Extensions.GetAuthTokenResult{GetAuthTokenType}"
     enum="GetAuthTokenResult" expires_after="2026-01-18">
   <owner>alexilin@chromium.org</owner>
