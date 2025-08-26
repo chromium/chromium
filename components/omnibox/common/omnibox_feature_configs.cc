@@ -119,7 +119,7 @@ BASE_FEATURE(ContextualSearch::kSendContextualUrlSuggestParam,
 
 BASE_FEATURE(ContextualSearch::kOmniboxContextualSearchOnFocusSuggestions,
              "OmniboxContextualSearchOnFocusSuggestions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(ContextualSearch::kContextualSearchBoxUsesContextualSearchProvider,
              "ContextualSearchBoxUsesContextualSearchProvider",
@@ -629,7 +629,7 @@ SuggestionAnswerMigration::~SuggestionAnswerMigration() = default;
 
 BASE_FEATURE(OmniboxZpsSuggestionLimit::kOmniboxZpsSuggestionLimit,
              "OmniboxZpsSuggestionLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 OmniboxZpsSuggestionLimit::OmniboxZpsSuggestionLimit() {
   enabled = base::FeatureList::IsEnabled(kOmniboxZpsSuggestionLimit);
   max_suggestions = base::FeatureParam<size_t>(&kOmniboxZpsSuggestionLimit,
@@ -637,11 +637,11 @@ OmniboxZpsSuggestionLimit::OmniboxZpsSuggestionLimit() {
                         .Get();
   max_search_suggestions =
       base::FeatureParam<size_t>(&kOmniboxZpsSuggestionLimit,
-                                 "OmniboxZpsMaxSearchSuggestions", 3)
+                                 "OmniboxZpsMaxSearchSuggestions", 6)
           .Get();
   max_url_suggestions =
       base::FeatureParam<size_t>(&kOmniboxZpsSuggestionLimit,
-                                 "OmniboxZpsMaxUrlSuggestions", 3)
+                                 "OmniboxZpsMaxUrlSuggestions", 0)
           .Get();
 }
 

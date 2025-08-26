@@ -2583,6 +2583,13 @@ TEST_F(AutocompleteResultTest, MaybeCullTailSuggestions) {
 // Tests zps grouping for most visited sites and backfills with different
 // suggestion limits.
 TEST_F(AutocompleteResultTest, Desktop_MostVisitedSitesGrouping) {
+  // Validate grouping logic in isolation from Lens action suggestion (which
+  // would occupy an additional slot in the list of Omnibox suggestions).
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      contextual_search_scoped_config;
+  contextual_search_scoped_config.Get().show_open_lens_action = false;
+
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::OmniboxZpsSuggestionLimit>
       scoped_config;

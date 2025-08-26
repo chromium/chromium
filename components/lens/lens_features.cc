@@ -94,7 +94,7 @@ BASE_FEATURE(kLensSearchSidePanelNewFeedback,
 // experimented with independently.
 BASE_FEATURE(kLensOverlayOmniboxEntryPoint,
              "LensOverlayOmniboxEntryPoint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayUploadChunking,
              "LensOverlayUploadChunking",

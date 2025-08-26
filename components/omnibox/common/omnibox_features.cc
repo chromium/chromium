@@ -82,13 +82,13 @@ BASE_FEATURE(kDisambiguateTabMatchingForEntitySuggestions,
 // suggestions.
 BASE_FEATURE(kFocusTriggersWebAndSRPZeroSuggest,
              "OmniboxFocusTriggersWebAndSRPZeroSuggest",
-             DISABLED);
+             ENABLED);
 
 // If enabled, suggestion group headers in the Omnibox popup will be hidden
 // (e.g. in order to minimize visual clutter in the zero-prefix state).
 BASE_FEATURE(kHideSuggestionGroupHeaders,
              "OmniboxHideSuggestionGroupHeaders",
-             DISABLED);
+             ENABLED);
 
 // Enables local history zero-prefix suggestions in every context in which the
 // remote zero-prefix suggestions are enabled.
@@ -175,7 +175,7 @@ BASE_FEATURE(kDocumentProviderNoSyncRequirement,
 // released.
 BASE_FEATURE(kShowPopupOnMouseReleased,
              "OmniboxShowPopupOnMouseReleased",
-             DISABLED);
+             ENABLED);
 
 // If enabled, makes Most Visited Tiles a Horizontal render group.
 // Horizontal render group decomposes aggregate suggestions (such as old Most
