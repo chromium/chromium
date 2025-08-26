@@ -11,6 +11,3 @@ DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadDirectoryFunction,
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction,
     "developerPrivate.dismissMv2DeprecationNoticeForExtension")
-DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
-    DeveloperPrivateUploadExtensionToAccountFunction,
-    "developerPrivate.uploadExtensionToAccount")

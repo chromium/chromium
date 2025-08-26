@@ -27,16 +27,20 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/extensions/webstore_reinstaller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/common/drop_data.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -1591,7 +1595,7 @@ DeveloperPrivateRemoveMultipleExtensionsFunction::Run() {
     return AlreadyResponded();
   }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/424013333): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   gfx::NativeWindow parent;
   if (!GetSenderWebContents()) {
@@ -2082,6 +2086,118 @@ void DeveloperPrivateRepairExtensionFunction::OnReinstallComplete(
     const std::string& error,
     webstore_install::Result result) {
   Respond(success ? NoArguments() : Error(error));
+}
+
+DeveloperPrivateUploadExtensionToAccountFunction::
+    DeveloperPrivateUploadExtensionToAccountFunction() = default;
+DeveloperPrivateUploadExtensionToAccountFunction::
+    ~DeveloperPrivateUploadExtensionToAccountFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateUploadExtensionToAccountFunction::Run() {
+  auto params = developer::UploadExtensionToAccount::Params::Create(args());
+
+  EXTENSION_FUNCTION_VALIDATE(params);
+  extension_id_ = std::move(params->extension_id);
+  profile_ = Profile::FromBrowserContext(browser_context());
+
+  auto result = VerifyExtensionAndSigninState();
+  if (!result.has_value()) {
+    return RespondNow(Error(result.error()));
+  }
+  const Extension* extension = *result;
+
+  // Return an error if the extension cannot be uploaded for reasons such as:
+  // - syncing extensions in transport mode (signed in but not full sync) is
+  //   disabled.
+  // - the extension is already associated with the signed in user's account.
+  // - the extension is not syncable (for example, if it's unpacked).
+  if (!switches::IsExtensionsExplicitBrowserSigninEnabled() ||
+      !AccountExtensionTracker::Get(profile_)->CanUploadAsAccountExtension(
+          *extension)) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        kCannotUploadExtensionToAccount, extension_id_)));
+  }
+
+  if (accept_bubble_for_testing_.has_value()) {
+    if (*accept_bubble_for_testing_) {
+      OnDialogAccepted();
+    } else {
+      OnDialogCancelled();
+    }
+    return AlreadyResponded();
+  }
+
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error(kCouldNotFindWebContentsError));
+  }
+
+// TODO(crbug.com/424013333): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  if (!browser) {
+    return RespondNow(Error(kCouldNotFindWebContentsError));
+  }
+
+  ShowUploadExtensionToAccountDialog(
+      browser, *extension,
+      base::BindOnce(
+          &DeveloperPrivateUploadExtensionToAccountFunction::OnDialogAccepted,
+          this),
+      base::BindOnce(
+          &DeveloperPrivateUploadExtensionToAccountFunction::OnDialogCancelled,
+          this));
+  return RespondLater();
+#else
+  OnDialogAccepted();
+  return AlreadyResponded();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
+
+base::expected<const Extension*, std::string>
+DeveloperPrivateUploadExtensionToAccountFunction::
+    VerifyExtensionAndSigninState() {
+  const Extension* extension =
+      ExtensionRegistry::Get(browser_context())
+          ->GetExtensionById(extension_id_, ExtensionRegistry::EVERYTHING);
+  if (!extension) {
+    return base::unexpected(
+        ErrorUtils::FormatErrorMessage(kNoExtensionError, extension_id_));
+  }
+
+  // Return an error if there is no signed in user.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  if (account_info.IsEmpty()) {
+    return base::unexpected(kUserNotSignedIn);
+  }
+
+  return base::ok(extension);
+}
+
+void DeveloperPrivateUploadExtensionToAccountFunction::OnDialogAccepted() {
+  // We cannot proceed if the `browser_context` is not valid as the relevant
+  // classes needed to upload the extension will not exist.
+  if (!browser_context()) {
+    return;
+  }
+
+  auto result = VerifyExtensionAndSigninState();
+  if (!result.has_value()) {
+    Respond(Error(result.error()));
+    return;
+  }
+  const Extension* extension = *result;
+
+  sync_util::UploadExtensionToAccount(profile_, *extension);
+  Respond(WithArguments(true));
+}
+
+void DeveloperPrivateUploadExtensionToAccountFunction::OnDialogCancelled() {
+  Respond(WithArguments(false));
 }
 
 }  // namespace api
