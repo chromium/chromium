@@ -956,15 +956,11 @@ void GlicWindowControllerImpl::Detach() {
   if (state_ != State::kOpen || !attached_browser_ || AlwaysDetached()) {
     return;
   }
+  SetWindowState(State::kDetaching);
 
   // Close the existing side panel.
-  SetWindowState(State::kDetaching);
-  attached_browser_->GetFeatures().side_panel_coordinator()->Close();
   auto current_browser = attached_browser_;
-  attached_browser_ = nullptr;
-  glic_view_ = nullptr;
-  browser_close_subscription_.reset();
-  window_event_observer_.reset();
+  ResetAndHidePanel();
 
   // Open the panel detached.
   SetupAndShowGlicWidget(current_browser);
@@ -976,35 +972,19 @@ void GlicWindowControllerImpl::Detach() {
 void GlicWindowControllerImpl::AttachToBrowser(Browser& browser,
                                                AttachChangeReason reason) {
   CHECK(!AlwaysDetached());
-
   glic_service_->metrics()->OnAttachedToBrowser(reason);
 
-  browser_close_subscription_ = browser.RegisterBrowserDidClose(
+  ResetAndHidePanel();
+
+  attached_browser_ = &browser;
+  user_resizing_ = true;
+  browser_close_subscription_ = attached_browser_->RegisterBrowserDidClose(
       base::BindRepeating(&GlicWindowControllerImpl::AttachedBrowserDidClose,
                           base::Unretained(this)));
 
-  if (attached_browser_) {
-    attached_browser_->GetFeatures().side_panel_coordinator()->Close();
-  } else if (IsDetached()) {
-    modal_dialog_host_observers_.Notify(
-        &web_modal::ModalDialogHostObserver::OnHostDestroying);
-    web_modal::WebContentsModalDialogManager::FromWebContents(
-        host().webui_contents())
-        ->SetDelegate(nullptr);
-  }
-
-  // Ensure an open widget is closed.
-  SaveWidgetPosition(/*user_modified=*/false);
-  draggable_area_ = std::nullopt;
-  window_event_observer_.reset();
-  glic_widget_observation_.Reset();
-  glic_widget_.reset();
-  user_resizing_ = true;
-
-  attached_browser_ = &browser;
-
   auto* side_panel_coordinator = browser.GetFeatures().side_panel_coordinator();
   side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
+
   SetWindowState(State::kOpen);
   NotifyIfPanelStateChanged();
 
@@ -1163,42 +1143,21 @@ void GlicWindowControllerImpl::CloseInternal(
   CHECK(!should_reopen_detached || reopen_detached_source.has_value());
 
   window_config_.SetLastCloseTime();
-  glic_window_animator_.reset();
 
   if (IsDetached()) {
-    // Save the widge position on close so we can restore in the same position.
-    SaveWidgetPosition(/*user_modified=*/false);
-
     std::optional<display::Display> display =
         GetGlicWidget()->GetNearestDisplay();
     glic_service_->metrics()->OnGlicWindowClose(
         BrowserList::GetInstance()->GetLastActive(), display,
         GetGlicWidget()->GetWindowBoundsInScreen());
   }
-
   base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState2",
                                 host().GetPrimaryWebUiState());
 
-  if (IsAttached()) {
-    attached_browser_->GetFeatures().side_panel_coordinator()->Close();
-  } else if (IsDetached()) {
-    modal_dialog_host_observers_.Notify(
-        &web_modal::ModalDialogHostObserver::OnHostDestroying);
-    web_modal::WebContentsModalDialogManager::FromWebContents(
-        host().webui_contents())
-        ->SetDelegate(nullptr);
-  }
+  ResetAndHidePanel();
 
   SetWindowState(State::kClosed);
-  attached_browser_ = nullptr;
-  draggable_area_ = std::nullopt;
-  window_event_observer_.reset();
-  browser_close_subscription_.reset();
   glic_panel_hotkey_manager_.reset();
-  glic_widget_observation_.Reset();
-  glic_widget_.reset();
-  glic_view_ = nullptr;
-  scoped_glic_button_indicator_.reset();
   user_resizing_ = false;
   window_activation_callback_list_.Notify(false);
   NotifyIfPanelStateChanged();
@@ -1207,6 +1166,43 @@ void GlicWindowControllerImpl::CloseInternal(
   if (base::FeatureList::IsEnabled(features::kGlicUnloadOnClose)) {
     host().Shutdown();
   }
+}
+
+void GlicWindowControllerImpl::ResetAndHidePanel() {
+  if (IsDetached()) {
+    SaveWidgetPosition(/*user_modified=*/false);
+
+    modal_dialog_host_observers_.Notify(
+        &web_modal::ModalDialogHostObserver::OnHostDestroying);
+    web_modal::WebContentsModalDialogManager::FromWebContents(
+        host().webui_contents())
+        ->SetDelegate(nullptr);
+  } else if (IsAttached()) {
+    // Closing the side panel destroys its WebView which hides its webcontents.
+    // This creates a race where the webcontents might be hidden when showing
+    // again after the side panel closes. Prevent this by unsetting the
+    // webcontents first.
+    if (glic_view_) {
+      glic_view_->SetWebContents(nullptr);
+    }
+    attached_browser_->GetFeatures().side_panel_coordinator()->Close();
+  }
+
+  // The following state is always safe to reset regardless of if the panel is
+  // detached, attached or currently closed.
+
+  // Floating Panel State
+  draggable_area_ = std::nullopt;
+  window_event_observer_.reset();
+  glic_window_animator_.reset();
+  glic_widget_observation_.Reset();
+  glic_widget_.reset();
+  scoped_glic_button_indicator_.reset();
+
+  // Attached Side Panel State.
+  attached_browser_ = nullptr;
+  glic_view_ = nullptr;
+  browser_close_subscription_.reset();
 }
 
 void GlicWindowControllerImpl::SaveWidgetPosition(bool user_modified) {
