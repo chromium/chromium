@@ -83,8 +83,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   void Init(IPC::ChannelHandle channel_handle,
             base::WaitableEvent* shutdown_event);
 
-  void InitForTesting(IPC::Channel* channel);
-
   base::WeakPtr<GpuChannel> AsWeakPtr();
 
   // Get the GpuChannelManager that owns this channel.
