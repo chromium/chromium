@@ -140,7 +140,9 @@ void KioskAppMenuController::SendKioskApps() {
   }
 
   // Clear any old pending Kiosk launch errors
-  KioskAppLaunchError::RecordMetricAndClear();
+  // TODO(crbug.com/404133029): Remove g_browser_process usage.
+  KioskAppLaunchError::RecordMetricAndClear(
+      CHECK_DEREF(g_browser_process->local_state()));
 
   LoginScreen::Get()->ShowKioskAppError(
       KioskAppLaunchError::GetErrorMessage(error));
