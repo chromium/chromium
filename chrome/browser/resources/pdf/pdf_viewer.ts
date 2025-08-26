@@ -1096,7 +1096,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     if (streamUrl !== this.browserApi!.getStreamInfo().streamUrl) {
       return;
     }
-    // TODO(crbug.com/424208776): Implement the progress update.
     this.saveToDriveUploadedBytes_ = progress.uploadedBytes ?? 0;
     this.saveToDriveFileSizeBytes_ = progress.fileSizeBytes ?? 0;
     this.saveToDriveState_ =
@@ -1281,7 +1280,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     if (!this.isSaveToDriveUploading_()) {
       return 0;
     }
-    assert(this.saveToDriveFileSizeBytes_ > 0);
+    assert(
+        this.saveToDriveFileSizeBytes_ > 0,
+        'Invalid file size for save to Drive');
     return Math.round(
         (this.saveToDriveUploadedBytes_ / this.saveToDriveFileSizeBytes_) *
         100);
@@ -1293,14 +1294,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   protected onSaveToDrive_(e: CustomEvent<SaveRequestType>) {
     PdfViewerPrivateProxyImpl.getInstance().saveToDrive(e.detail);
-    // TODO(crbug.com/427449996): Implement the save PDF to drive logics. This
-    // includes initiating the upload, showing the bubble if upload in progress,
-    // cancel upload, open Drive, manage storage, and retry if error.
+    if (this.saveToDriveState_ === SaveToDriveState.UNINITIALIZED) {
+      return;
+    }
     const bubble =
         this.shadowRoot.querySelector<ViewerSaveToDriveBubbleElement>(
             'viewer-save-to-drive-bubble');
     assert(bubble);
-    bubble.state = SaveToDriveState.UPLOADING;
     bubble.showAt(this.$.toolbar.getSaveToDriveBubbleAnchor());
   }
 
