@@ -15,7 +15,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertNotStyle, assertStyle, createElement, initNullModule, installMock} from '../../test_support.js';
+import {assertNotStyle, assertStyle, createElement, initNullModule, installMock} from '../test_support.js';
 
 const SAMPLE_SCREEN_WIDTH = 1080;
 const MAX_COLUMN_COUNT = 5;

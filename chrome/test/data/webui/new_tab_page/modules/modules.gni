@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("./v2/authentication/authentication.gni")
-import("./v2/calendar/calendar.gni")
-import("./v2/file_suggestion/file_suggestion.gni")
-import("./v2/most_relevant_tab_resumption/most_relevant_tab_resumption.gni")
-import("./v2/tab_groups/tab_groups.gni")
+import("./authentication/authentication.gni")
+import("./calendar/calendar.gni")
+import("./file_suggestion/file_suggestion.gni")
+import("./most_relevant_tab_resumption/most_relevant_tab_resumption.gni")
+import("./tab_groups/tab_groups.gni")
 
 if (!is_official_build) {
-  import("./v2/dummy/dummy.gni")
+  import("./dummy/dummy.gni")
 }
 
 modules_test_files =
@@ -18,12 +18,12 @@ modules_test_files =
       "modules/module_descriptor_test.ts",
       "modules/module_registry_test.ts",
       "modules/module_wrapper_test.ts",
-      "modules/v2/modules_test.ts",
-      "modules/v2/module_header_test.ts",
-    ] + authentication_test_files + calendar_v2_test_files +
-    file_suggestion_v2_test_files + most_relevant_tab_resumption_test_files +
+      "modules/modules_test.ts",
+      "modules/module_header_test.ts",
+    ] + authentication_test_files + calendar_test_files +
+    file_suggestion_test_files + most_relevant_tab_resumption_test_files +
     tab_groups_test_files
 
 if (!is_official_build) {
-  modules_test_files += dummy_v2_test_files
+  modules_test_files += dummy_test_files
 }

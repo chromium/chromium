@@ -90,11 +90,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleWrapper) {
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModulesV2) {
-  RunTest("new_tab_page/modules/v2/modules_test.js", "mocha.run()");
+  RunTest("new_tab_page/modules/modules_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleHeaderV2) {
-  RunTest("new_tab_page/modules/v2/module_header_test.js", "mocha.run()");
+  RunTest("new_tab_page/modules/module_header_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleDescriptor) {
@@ -112,64 +112,62 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, InfoDialog) {
 #if !defined(OFFICIAL_BUILD)
 // The dummy module is not available in official builds.
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DummyModule) {
-  RunTest("new_tab_page/modules/v2/dummy/module_test.js", "mocha.run()");
+  RunTest("new_tab_page/modules/dummy/module_test.js", "mocha.run()");
 }
 #endif  // !defined(OFFICIAL_BUILD)
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, Calendar) {
-  RunTest("new_tab_page/modules/v2/calendar/calendar_test.js",
+  RunTest("new_tab_page/modules/calendar/calendar_test.js",
           "runMochaSuite('NewTabPageModulesCalendarTest general')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarMetrics) {
-  RunTest("new_tab_page/modules/v2/calendar/calendar_test.js",
+  RunTest("new_tab_page/modules/calendar/calendar_test.js",
           "runMochaSuite('NewTabPageModulesCalendarTest metrics')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarEvent) {
-  RunTest("new_tab_page/modules/v2/calendar/calendar_event_test.js",
+  RunTest("new_tab_page/modules/calendar/calendar_event_test.js",
           "runMochaSuite('NewTabPageModulesCalendarEventTest general')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarEventMetrics) {
-  RunTest("new_tab_page/modules/v2/calendar/calendar_event_test.js",
+  RunTest("new_tab_page/modules/calendar/calendar_event_test.js",
           "runMochaSuite('NewTabPageModulesCalendarEventTest metrics')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, GoogleCalendarModule) {
-  RunTest("new_tab_page/modules/v2/calendar/google_calendar_module_test.js",
+  RunTest("new_tab_page/modules/calendar/google_calendar_module_test.js",
           "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, OutlookCalendarModule) {
-  RunTest("new_tab_page/modules/v2/calendar/outlook_calendar_module_test.js",
+  RunTest("new_tab_page/modules/calendar/outlook_calendar_module_test.js",
           "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DriveModuleV2) {
-  RunTest("new_tab_page/modules/v2/file_suggestion/drive_module_test.js",
+  RunTest("new_tab_page/modules/file_suggestion/drive_module_test.js",
           "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FileSuggestion) {
-  RunTest("new_tab_page/modules/v2/file_suggestion/file_suggestion_test.js",
+  RunTest("new_tab_page/modules/file_suggestion/file_suggestion_test.js",
           "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, MicrosoftFilesModule) {
-  RunTest(
-      "new_tab_page/modules/v2/file_suggestion/microsoft_files_module_test.js",
-      "mocha.run()");
+  RunTest("new_tab_page/modules/file_suggestion/microsoft_files_module_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, MicrosoftAuthModule) {
-  RunTest(
-      "new_tab_page/modules/v2/authentication/microsoft_auth_module_test.js",
-      "mocha.run()");
+  RunTest("new_tab_page/modules/authentication/microsoft_auth_module_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, TabGroupsModule) {
-  RunTest("new_tab_page/modules/v2/tab_groups/module_test.js", "mocha.run()");
+  RunTest("new_tab_page/modules/tab_groups/module_test.js", "mocha.run()");
 }
 
 using NewTabPageAppTest = NewTabPageBrowserTest;
@@ -265,7 +263,7 @@ class NewTabPageModulesMostRelevantTabResumptionModuleTest
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesMostRelevantTabResumptionModuleTest,
                        Core) {
-  RunTest("new_tab_page/modules/v2/most_relevant_tab_resumption/module_test.js",
+  RunTest("new_tab_page/modules/most_relevant_tab_resumption/module_test.js",
           "runMochaSuite('NewTabPageModulesMostRelevantTabResumptionModuleTest "
           "Core')");
 }

@@ -3,4 +3,4 @@
 # found in the LICENSE file.
 
 most_relevant_tab_resumption_test_files =
-    [ "modules/v2/most_relevant_tab_resumption/module_test.ts" ]
+    [ "modules/most_relevant_tab_resumption/module_test.ts" ]

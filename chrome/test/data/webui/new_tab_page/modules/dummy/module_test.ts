@@ -11,7 +11,7 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {installMock} from '../../../test_support.js';
+import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesDummyModuleTest', () => {
   let handler: TestMock<FooHandlerRemote>;

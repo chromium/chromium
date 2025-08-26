@@ -15,7 +15,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {installMock} from '../../../test_support.js';
+import {installMock} from '../../test_support.js';
 
 suite('MicrosoftFilesModule', () => {
   let childDocument: TestMock<MicrosoftAuthUntrustedDocumentRemote>;

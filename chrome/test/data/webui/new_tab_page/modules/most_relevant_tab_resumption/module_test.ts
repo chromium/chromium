@@ -16,7 +16,7 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {installMock} from '../../../test_support.js';
+import {installMock} from '../../test_support.js';
 
 function createSampleURLVisits(count: number): URLVisit[] {
   return new Array(count).fill(0).map(
