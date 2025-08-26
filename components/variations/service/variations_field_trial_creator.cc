@@ -174,18 +174,6 @@ void MaybeExtendVariationsSafeMode(
       /*has_session_shutdown_cleanly=*/false,
       /*is_extended_safe_mode=*/true);
 }
-}  // namespace
-
-BASE_FEATURE(kForceFieldTrialSetupCrashForTesting,
-             "ForceFieldTrialSetupCrashForTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool CreateTrialsResult::AppliedSeedHasActiveLimitedLayer() const {
-  if (!applied_seed) {
-    return false;
-  }
-  return seed_has_active_limited_layer.value_or(false);
-}
 
 Study::Channel ConvertProductChannelToStudyChannel(
     version_info::Channel product_channel) {
@@ -202,6 +190,19 @@ Study::Channel ConvertProductChannelToStudyChannel(
       return Study::UNKNOWN;
   }
   NOTREACHED();
+}
+
+}  // namespace
+
+BASE_FEATURE(kForceFieldTrialSetupCrashForTesting,
+             "ForceFieldTrialSetupCrashForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool CreateTrialsResult::AppliedSeedHasActiveLimitedLayer() const {
+  if (!applied_seed) {
+    return false;
+  }
+  return seed_has_active_limited_layer.value_or(false);
 }
 
 VariationsFieldTrialCreator::VariationsFieldTrialCreator(

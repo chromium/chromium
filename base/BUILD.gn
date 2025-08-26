@@ -448,6 +448,8 @@ component("base") {
     "metrics/dummy_histogram.h",
     "metrics/field_trial.cc",
     "metrics/field_trial.h",
+    "metrics/field_trial_entry.cc",
+    "metrics/field_trial_entry.h",
     "metrics/field_trial_list_including_low_anonymity.cc",
     "metrics/field_trial_list_including_low_anonymity.h",
     "metrics/field_trial_param_associator.cc",

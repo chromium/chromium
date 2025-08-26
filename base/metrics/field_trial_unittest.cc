@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/field_trial_entry.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/rand_util.h"
@@ -1115,13 +1116,14 @@ TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
 
   // Dump and subsequently retrieve the field trial to |allocator|.
   FieldTrialList::DumpAllFieldTrialsToPersistentAllocator(&allocator);
-  std::vector<const FieldTrial::FieldTrialEntry*> entries =
-      FieldTrialList::GetAllFieldTrialsFromPersistentAllocator(allocator);
+  std::vector<const internal::FieldTrialEntry*> entries =
+      internal::FieldTrialEntry::GetAllFieldTrialsFromPersistentAllocator(
+          allocator);
 
   // Check that we have the entry we put in.
   EXPECT_EQ(2u, entries.size());
-  const FieldTrial::FieldTrialEntry* entry1 = entries[0];
-  const FieldTrial::FieldTrialEntry* entry2 = entries[1];
+  const internal::FieldTrialEntry* entry1 = entries[0];
+  const internal::FieldTrialEntry* entry2 = entries[1];
 
   // Check that the trial information matches.
   std::string_view shm_trial_name;

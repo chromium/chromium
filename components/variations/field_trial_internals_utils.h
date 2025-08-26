@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/metrics/field_trial.h"
 #include "base/time/time.h"
