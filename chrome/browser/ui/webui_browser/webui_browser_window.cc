@@ -621,11 +621,6 @@ WebUIBrowserWindow::ShowSendTabToSelfPromoBubble(content::WebContents* contents,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-views::Button* WebUIBrowserWindow::GetSharingHubIconButton() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 void WebUIBrowserWindow::ToggleMultitaskMenu() const {
   NOTIMPLEMENTED();
 }
