@@ -36,7 +36,6 @@ namespace {
 
 using testing::_;
 using testing::Field;
-using testing::Invoke;
 using testing::Property;
 
 // Will be used to verify the sequence of expected function calls.
@@ -119,13 +118,13 @@ TEST_F(AggregatableReportSchedulerTest,
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_callback_, Run)
         .WillOnce(
-            Invoke([&expected_request](
-                       std::vector<AggregationServiceStorage::RequestAndId>
-                           requests_and_ids) {
+            [&expected_request](
+                std::vector<AggregationServiceStorage::RequestAndId>
+                    requests_and_ids) {
               ASSERT_EQ(requests_and_ids.size(), 1u);
               EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
                   requests_and_ids[0].request, expected_request));
-            }));
+            });
   }
 
   scheduler_->ScheduleRequest(
@@ -410,8 +409,8 @@ TEST_F(AggregatableReportSchedulerTest,
     EXPECT_CALL(mock_callback_, Run).Times(0);
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_callback_, Run)
-        .WillOnce(Invoke([](std::vector<AggregationServiceStorage::RequestAndId>
-                                requests_and_ids) {
+        .WillOnce([](std::vector<AggregationServiceStorage::RequestAndId>
+                         requests_and_ids) {
           ASSERT_EQ(requests_and_ids.size(), 2u);
 
           // Ignore request ordering. Storage IDs should be incremented from 1
@@ -420,15 +419,15 @@ TEST_F(AggregatableReportSchedulerTest,
                     base::flat_set<AggregationServiceStorage::RequestId>(
                         {AggregationServiceStorage::RequestId(1),
                          AggregationServiceStorage::RequestId(2)}));
-        }));
+        });
     EXPECT_CALL(checkpoint, Call(2));
     EXPECT_CALL(mock_callback_, Run)
-        .WillOnce(Invoke([](std::vector<AggregationServiceStorage::RequestAndId>
-                                requests_and_ids) {
+        .WillOnce([](std::vector<AggregationServiceStorage::RequestAndId>
+                         requests_and_ids) {
           ASSERT_EQ(requests_and_ids.size(), 1u);
           EXPECT_EQ(requests_and_ids[0].id,
                     AggregationServiceStorage::RequestId(3));
-        }));
+        });
   }
 
   for (base::Time scheduled_report_time : scheduled_report_times) {
@@ -486,8 +485,8 @@ TEST_F(AggregatableReportSchedulerTest,
     EXPECT_CALL(mock_callback_, Run).Times(0);
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_callback_, Run)
-        .WillOnce(Invoke([](std::vector<AggregationServiceStorage::RequestAndId>
-                                requests_and_ids) {
+        .WillOnce([](std::vector<AggregationServiceStorage::RequestAndId>
+                         requests_and_ids) {
           ASSERT_EQ(requests_and_ids.size(), 2u);
 
           // Ordered correctly. Storage IDs should be incremented from 1.
@@ -495,11 +494,11 @@ TEST_F(AggregatableReportSchedulerTest,
                     AggregationServiceStorage::RequestId(1));
           EXPECT_EQ(requests_and_ids[1].id,
                     AggregationServiceStorage::RequestId(3));
-        }));
+        });
     EXPECT_CALL(checkpoint, Call(2));
     EXPECT_CALL(mock_callback_, Run)
-        .WillOnce(Invoke([](std::vector<AggregationServiceStorage::RequestAndId>
-                                requests_and_ids) {
+        .WillOnce([](std::vector<AggregationServiceStorage::RequestAndId>
+                         requests_and_ids) {
           ASSERT_EQ(requests_and_ids.size(), 2u);
 
           // Ordered correctly. Storage IDs should be incremented from 1.
@@ -507,7 +506,7 @@ TEST_F(AggregatableReportSchedulerTest,
                     AggregationServiceStorage::RequestId(4));
           EXPECT_EQ(requests_and_ids[1].id,
                     AggregationServiceStorage::RequestId(2));
-        }));
+        });
   }
 
   for (base::Time scheduled_report_time : scheduled_report_times) {

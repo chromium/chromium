@@ -23,7 +23,6 @@ namespace {
 
 using testing::_;
 using testing::Assign;
-using testing::Invoke;
 
 int observer_calls = 0;
 int task_count = 0;

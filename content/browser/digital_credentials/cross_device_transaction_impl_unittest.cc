@@ -23,7 +23,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 
@@ -156,10 +155,10 @@ TEST_P(DigitalIdentityCrossDeviceTransactionTest, NeedPermissionThenDenied) {
 
   device::BluetoothAdapter::RequestSystemPermissionCallback permission_callback;
   EXPECT_CALL(*mock_adapter_, RequestSystemPermission)
-      .WillOnce(Invoke(
+      .WillOnce(
           [&permission_callback](
               device::BluetoothAdapter::RequestSystemPermissionCallback
-                  callback) { permission_callback = std::move(callback); }));
+                  callback) { permission_callback = std::move(callback); });
 
   std::unique_ptr<Transaction> transaction = Transaction::New(
       RequestInfo(request_type(), origin(), request()), qr_generator_key(),
@@ -183,10 +182,10 @@ TEST_P(DigitalIdentityCrossDeviceTransactionTest, NeedPermissionThenGranted) {
 
   device::BluetoothAdapter::RequestSystemPermissionCallback permission_callback;
   EXPECT_CALL(*mock_adapter_, RequestSystemPermission)
-      .WillOnce(Invoke(
+      .WillOnce(
           [&permission_callback](
               device::BluetoothAdapter::RequestSystemPermissionCallback
-                  callback) { permission_callback = std::move(callback); }));
+                  callback) { permission_callback = std::move(callback); });
 
   std::unique_ptr<Transaction> transaction = Transaction::New(
       RequestInfo(request_type(), origin(), request()), qr_generator_key(),

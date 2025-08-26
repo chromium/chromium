@@ -9910,7 +9910,7 @@ function scoreAd(
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_private_aggregation_cb_, Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -9935,7 +9935,7 @@ function scoreAd(
                 null_report_behavior,
                 PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             run_loop.Quit();
-          }));
+          });
 
   std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   EXPECT_NE(auction_result, std::nullopt);
@@ -14335,7 +14335,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_private_aggregation_cb_, Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -14353,7 +14353,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
                         /*filtering_id=*/std::nullopt)));
             EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
             run_loop.Quit();
-          }));
+          });
 
   std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
@@ -14498,7 +14498,7 @@ function reportResult(auctionConfig, browserSignals) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_private_aggregation_cb_, Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -14519,7 +14519,7 @@ function reportResult(auctionConfig, browserSignals) {
                         /*filtering_id=*/std::nullopt)));
             EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
             run_loop.Quit();
-          }));
+          });
 
   std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
@@ -14631,7 +14631,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_private_aggregation_cb_, Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -14652,7 +14652,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
                         /*filtering_id=*/std::nullopt)));
             EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
             run_loop.Quit();
-          }));
+          });
 
   std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
@@ -18727,7 +18727,7 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
   base::RunLoop run_loop;
   if (GetParam() == KAnonState::kEnforceOnDeviceEnforceOnServer) {
     EXPECT_CALL(mock_private_aggregation_cb_, Run)
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [&](PrivateAggregationHost::ReportRequestGenerator generator,
                 PrivateAggregationPendingContributions::Wrapper contributions,
                 PrivateAggregationBudgetKey budget_key,
@@ -18743,7 +18743,7 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
                           /*filtering_id=*/std::nullopt)));
               EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
               run_loop.Quit();
-            }));
+            });
   }
 
   blink::AuctionConfig auction_config;

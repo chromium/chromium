@@ -80,7 +80,6 @@ using base::test::RunOnceClosure;
 using testing::_;
 using testing::ByRef;
 using testing::Eq;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::MakeMatcher;
 using testing::Matcher;

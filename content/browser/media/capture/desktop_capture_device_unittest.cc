@@ -305,13 +305,12 @@ class DesktopCaptureDeviceTest : public testing::Test {
     auto result =
         std::make_unique<NiceMock<media::MockVideoCaptureDeviceClient>>();
     ON_CALL(*result, ReserveOutputBuffer(_, _, _, _, _, _))
-        .WillByDefault(Invoke([](const gfx::Size&,
-                                 media::VideoPixelFormat format, int,
-                                 media::VideoCaptureDevice::Client::Buffer*,
-                                 int*, int*) {
+        .WillByDefault([](const gfx::Size&, media::VideoPixelFormat format, int,
+                          media::VideoCaptureDevice::Client::Buffer*, int*,
+                          int*) {
           EXPECT_TRUE(format == media::PIXEL_FORMAT_I420);
           return media::VideoCaptureDevice::Client::ReserveResult::kSucceeded;
-        }));
+        });
     return result;
   }
 
@@ -871,9 +870,8 @@ class DesktopCaptureDeviceThrottledTest : public DesktopCaptureDeviceTest {
         .WillRepeatedly(DoAll(
             WithArg<2>(
                 Invoke(&format_checker, &FormatChecker::ExpectAcceptableSize)),
-            WithArg<7>(Invoke([&done_event, &nb_frames, &task_runner,
-                               &message_loop_task_runner](
-                                  base::TimeDelta timestamp) {
+            WithArg<7>([&done_event, &nb_frames, &task_runner,
+                        &message_loop_task_runner](base::TimeDelta timestamp) {
               ++nb_frames;
 
               // Simulate real device capture time. Indeed the time spent
@@ -903,7 +901,7 @@ class DesktopCaptureDeviceThrottledTest : public DesktopCaptureDeviceTest {
                         },
                         task_runner));
               }
-            }))));
+            })));
     media::VideoCaptureParams capture_params;
     capture_params.requested_format.frame_size.SetSize(kTestFrameWidth3,
                                                        kTestFrameHeight3);

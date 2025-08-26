@@ -9436,7 +9436,7 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
     // but we register it beforehand so that it is guaranteed to detect when the
     // private aggregation event is sent.
     EXPECT_CALL(mock_private_aggregation_cb_, Run)
-        .WillRepeatedly(testing::Invoke(
+        .WillRepeatedly(
             [=, this](
                 PrivateAggregationHost::ReportRequestGenerator generator,
                 PrivateAggregationPendingContributions::Wrapper contributions,
@@ -9462,7 +9462,7 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
                   null_report_behavior,
                   PrivateAggregationHost::NullReportBehavior::kDontSendReport);
               run_loop_->Quit();
-            }));
+            });
   }
 
   void ExpectNoPrivateAggregationCall() {
@@ -9742,7 +9742,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
   std::optional<AggregatableReportRequest> request_returned;
 
   EXPECT_CALL(mock_private_aggregation_cb_, Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -9758,7 +9758,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
                 PrivateAggregationHost::NullReportBehavior::kDontSendReport);
 
             run_loop.Quit();
-          }));
+          });
 
   RunAuctionAndWaitForURLAndNavigateIframe(
       JsReplace(
@@ -21209,7 +21209,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   // so that it is guaranteed to detect when the private aggregation event is
   // sent.
   EXPECT_CALL(mock_callback, Run)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -21227,7 +21227,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                 null_report_behavior,
                 PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             run_loop.Quit();
-          }));
+          });
 
   GURL ad_url = embedded_https_test_server().GetURL(
       "c.test",

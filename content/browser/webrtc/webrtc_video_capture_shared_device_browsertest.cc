@@ -31,7 +31,6 @@
 
 using testing::_;
 using testing::AtLeast;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::Return;
 
@@ -165,11 +164,11 @@ IN_PROC_BROWSER_TEST_F(
   auto expected_buffer_handle_tag =
       media::mojom::VideoBufferHandle::Tag::kUnsafeShmemRegion;
   ON_CALL(*mock_video_frame_handler_, DoOnNewBuffer(_, _))
-      .WillByDefault(Invoke(
+      .WillByDefault(
           [expected_buffer_handle_tag](
               int32_t, media::mojom::VideoBufferHandlePtr* buffer_handle) {
             ASSERT_EQ(expected_buffer_handle_tag, (*buffer_handle)->which());
-          }));
+          });
   EXPECT_CALL(*mock_video_frame_handler_, DoOnFrameReadyInBuffer(_, _, _))
       .WillOnce(InvokeWithoutArgs([&receive_frame_from_service_wait_loop]() {
         receive_frame_from_service_wait_loop.Quit();
@@ -198,11 +197,11 @@ IN_PROC_BROWSER_TEST_F(
   auto expected_buffer_handle_tag =
       media::mojom::VideoBufferHandle::Tag::kUnsafeShmemRegion;
   ON_CALL(*mock_video_frame_handler_, DoOnNewBuffer(_, _))
-      .WillByDefault(Invoke(
+      .WillByDefault(
           [expected_buffer_handle_tag](
               int32_t, media::mojom::VideoBufferHandlePtr* buffer_handle) {
             ASSERT_EQ(expected_buffer_handle_tag, (*buffer_handle)->which());
-          }));
+          });
   EXPECT_CALL(*mock_video_frame_handler_, DoOnFrameReadyInBuffer(_, _, _))
       .WillOnce(InvokeWithoutArgs([&receive_frame_from_service_wait_loop]() {
         receive_frame_from_service_wait_loop.Quit();

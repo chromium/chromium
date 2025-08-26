@@ -59,7 +59,6 @@ namespace {
 using NullReportBehavior = PrivateAggregationHost::NullReportBehavior;
 
 using testing::_;
-using testing::Invoke;
 using testing::Property;
 
 auto GenerateAndSaveReportRequest(
@@ -534,7 +533,7 @@ TEST_P(PrivateAggregationHostTest,
                   Property(&PrivateAggregationBudgetKey::caller_api,
                            PrivateAggregationCallerApi::kProtectedAudience),
                   NullReportBehavior::kDontSendReport))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&kExampleOriginB](
               PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
@@ -546,14 +545,14 @@ TEST_P(PrivateAggregationHostTest,
             EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
             EXPECT_EQ(budget_key.origin(), kExampleOriginB);
             EXPECT_EQ(request.shared_info().reporting_origin, kExampleOriginB);
-          }));
+          });
 
   EXPECT_CALL(mock_callback_,
               Run(_, _,
                   Property(&PrivateAggregationBudgetKey::caller_api,
                            PrivateAggregationCallerApi::kSharedStorage),
                   NullReportBehavior::kDontSendReport))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&kExampleOriginA](
               PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
@@ -565,7 +564,7 @@ TEST_P(PrivateAggregationHostTest,
             EXPECT_EQ(request.payload_contents().contributions[0].bucket, 2);
             EXPECT_EQ(request.shared_info().reporting_origin, kExampleOriginA);
             EXPECT_EQ(budget_key.origin(), kExampleOriginA);
-          }));
+          });
 
   {
     std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
@@ -2344,7 +2343,7 @@ TEST_P(PrivateAggregationHostTest, TimeoutBeforeDisconnect) {
 
   bool received_request = false;
   EXPECT_CALL(mock_callback_, Run)
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -2375,7 +2374,7 @@ TEST_P(PrivateAggregationHostTest, TimeoutBeforeDisconnect) {
                           PrivateAggregationHost::kTimeForLocalProcessing);
             EXPECT_EQ(budget_key.time_window().start_time(),
                       on_the_minute_start_time + base::Minutes(1));
-          }));
+          });
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
   EXPECT_TRUE(host_->BindNewReceiver(
@@ -2422,7 +2421,7 @@ TEST_P(PrivateAggregationHostTest, TimeoutAfterDisconnect) {
 
   bool received_request = false;
   EXPECT_CALL(mock_callback_, Run)
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -2459,7 +2458,7 @@ TEST_P(PrivateAggregationHostTest, TimeoutAfterDisconnect) {
             // time, instead of the desired timeout time.
             EXPECT_EQ(budget_key.time_window().start_time(),
                       on_the_minute_start_time);
-          }));
+          });
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
   EXPECT_TRUE(host_->BindNewReceiver(
@@ -2513,7 +2512,7 @@ TEST_P(PrivateAggregationHostTest,
 
   bool received_request = false;
   EXPECT_CALL(mock_callback_, Run)
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -2542,7 +2541,7 @@ TEST_P(PrivateAggregationHostTest,
             // time, instead of the desired timeout time.
             EXPECT_EQ(budget_key.time_window().start_time(),
                       base::Time::Now() - base::Seconds(1));
-          }));
+          });
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
   EXPECT_TRUE(host_->BindNewReceiver(

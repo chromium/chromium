@@ -13,7 +13,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 
 namespace content {
 
@@ -67,7 +66,7 @@ TEST_F(FileChooserImplTest, DefaultFileNameClearedWhenModeIsNotSave) {
 
   blink::mojom::FileChooserParamsPtr captured_params;
   EXPECT_CALL(*mock_web_contents_delegate_, RunFileChooser(_, _, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](RenderFrameHost* rfh, scoped_refptr<FileSelectListener> listener,
               const blink::mojom::FileChooserParams& passed_params) {
             // Capture the arguments for later inspection.
@@ -77,7 +76,7 @@ TEST_F(FileChooserImplTest, DefaultFileNameClearedWhenModeIsNotSave) {
             static_cast<FileChooserImpl::FileSelectListenerImpl*>(
                 listener.get())
                 ->SetListenerFunctionCalledTrueForTesting();
-          }));
+          });
 
   file_chooser_impl->OpenFileChooser(std::move(params), base::DoNothing());
 
@@ -100,7 +99,7 @@ TEST_F(FileChooserImplTest, DefaultFileNamePreservedWhenModeIsSave) {
 
   blink::mojom::FileChooserParamsPtr captured_params;
   EXPECT_CALL(*mock_web_contents_delegate_, RunFileChooser(_, _, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](RenderFrameHost* rfh, scoped_refptr<FileSelectListener> listener,
               const blink::mojom::FileChooserParams& passed_params) {
             // Capture the arguments for later inspection.
@@ -110,7 +109,7 @@ TEST_F(FileChooserImplTest, DefaultFileNamePreservedWhenModeIsSave) {
             static_cast<FileChooserImpl::FileSelectListenerImpl*>(
                 listener.get())
                 ->SetListenerFunctionCalledTrueForTesting();
-          }));
+          });
 
   file_chooser_impl->OpenFileChooser(std::move(params), base::DoNothing());
 

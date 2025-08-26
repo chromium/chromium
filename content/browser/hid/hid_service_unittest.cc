@@ -55,7 +55,6 @@ using ::testing::_;
 using ::testing::ByMove;
 using ::testing::ElementsAre;
 using ::testing::Expectation;
-using ::testing::Invoke;
 using ::testing::Return;
 
 enum HidServiceCreationType {

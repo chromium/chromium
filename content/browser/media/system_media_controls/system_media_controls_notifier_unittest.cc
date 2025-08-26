@@ -390,10 +390,10 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyDebouncesImage) {
   constexpr int kDroppedIconSize = 1;
   constexpr int kIconSize = 2;
   EXPECT_CALL(mock_system_media_controls(), SetThumbnail(_))
-      .WillOnce(testing::Invoke([kIconSize](const SkBitmap& bitmap) {
+      .WillOnce([kIconSize](const SkBitmap& bitmap) {
         EXPECT_EQ(bitmap.width(), kIconSize);
         EXPECT_EQ(bitmap.height(), kIconSize);
-      }));
+      });
 
   SimulateImageChanged(kDroppedIconSize);
   SimulateImageChanged(kIconSize);
@@ -449,10 +449,10 @@ TEST_F(SystemMediaControlsNotifierTest, DontHideMediaMetadataIfNotNeeded) {
   int thumbnail_size = 1;
 
   EXPECT_CALL(mock_system_media_controls(), SetThumbnail(_))
-      .WillOnce(testing::Invoke([thumbnail_size](const SkBitmap& bitmap) {
+      .WillOnce([thumbnail_size](const SkBitmap& bitmap) {
         EXPECT_EQ(bitmap.width(), thumbnail_size);
         EXPECT_EQ(bitmap.height(), thumbnail_size);
-      }));
+      });
 
   EXPECT_CALL(mock_system_media_controls(), SetTitle(title));
   EXPECT_CALL(mock_system_media_controls(), SetArtist(artist));
@@ -474,11 +474,11 @@ TEST_F(SystemMediaControlsNotifierTest, HideMediaMetadataIfNeeded) {
   std::u16string album = u"original_album";
 
   EXPECT_CALL(mock_system_media_controls(), SetThumbnail(_))
-      .WillOnce(testing::Invoke([this](const SkBitmap& bitmap) {
+      .WillOnce([this](const SkBitmap& bitmap) {
         SkBitmap placeholder_bitmap = client_.GetThumbnailPlaceholder();
         EXPECT_EQ(bitmap.width(), placeholder_bitmap.width());
         EXPECT_EQ(bitmap.height(), placeholder_bitmap.height());
-      }));
+      });
 
   EXPECT_CALL(mock_system_media_controls(),
               SetTitle(client_.GetTitlePlaceholder()));
@@ -497,11 +497,11 @@ TEST_F(SystemMediaControlsNotifierTest, HideMediaImageIfNeeded) {
   int thumbnail_size = 1;
 
   EXPECT_CALL(mock_system_media_controls(), SetThumbnail(_))
-      .WillOnce(testing::Invoke([this](const SkBitmap& bitmap) {
+      .WillOnce([this](const SkBitmap& bitmap) {
         SkBitmap placeholder_bitmap = client_.GetThumbnailPlaceholder();
         EXPECT_EQ(bitmap.width(), placeholder_bitmap.width());
         EXPECT_EQ(bitmap.height(), placeholder_bitmap.height());
-      }));
+      });
 
   SimulateHidden();
   SimulateImageChanged(thumbnail_size);

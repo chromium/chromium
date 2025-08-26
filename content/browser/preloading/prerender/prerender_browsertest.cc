@@ -8985,9 +8985,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TitleWasSetWithPrerendering) {
     testing::NiceMock<MockWebContentsObserver> mock_observer(
         shell()->web_contents());
     EXPECT_CALL(mock_observer, TitleWasSet(testing::_))
-        .WillOnce(testing::Invoke([kPrerenderingTitle](NavigationEntry* entry) {
+        .WillOnce([kPrerenderingTitle](NavigationEntry* entry) {
           EXPECT_EQ(entry->GetTitleForDisplay(), kPrerenderingTitle);
-        }));
+        });
     NavigatePrimaryPage(kPrerenderingUrlWithTitle);
   }
 
@@ -9898,9 +9898,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Finalize the response for the activated page. This should result in
   // invoking DidStopLoading.
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, DidStopLoading()).WillOnce(testing::Invoke([&]() {
-    run_loop.Quit();
-  }));
+  EXPECT_CALL(observer, DidStopLoading()).WillOnce([&]() { run_loop.Quit(); });
   response.Send("0\r\n");
   response.Send("\r\n");
   response.Done();

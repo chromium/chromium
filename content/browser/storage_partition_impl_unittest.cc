@@ -119,7 +119,6 @@ using CookieDeletionFilterPtr = network::mojom::CookieDeletionFilterPtr;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::SaveArgPointee;
 using ::testing::WithArg;
 
@@ -2093,7 +2092,7 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
           testing::AllOf(testing::Truly(is_test_origin_valid),
                          testing::Not(testing::Truly(is_other_origin_valid))),
           testing::_))
-      .WillOnce(testing::Invoke(invoke_callback));
+      .WillOnce(invoke_callback);
   {
     base::RunLoop run_loop;
     partition->ClearData(
@@ -2111,7 +2110,7 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
           testing::AllOf(testing::Truly(is_test_origin_valid),
                          testing::Not(testing::Truly(is_other_origin_valid))),
           testing::_))
-      .WillOnce(testing::Invoke(invoke_callback));
+      .WillOnce(invoke_callback);
   {
     base::RunLoop run_loop;
     partition->ClearData(
@@ -2136,7 +2135,7 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
           testing::AllOf(testing::Truly(is_test_origin_valid),
                          testing::Not(testing::Truly(is_other_origin_valid))),
           testing::_))
-      .WillOnce(testing::Invoke(invoke_callback));
+      .WillOnce(invoke_callback);
   {
     base::RunLoop run_loop;
     auto filter_builder = BrowsingDataFilterBuilder::Create(
@@ -2155,7 +2154,7 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
   EXPECT_CALL(*aggregation_service_ptr,
               ClearData(kBeginTime, kEndTime, testing::Truly(is_filter_null),
                         testing::_))
-      .WillOnce(testing::Invoke(invoke_callback));
+      .WillOnce(invoke_callback);
   {
     base::RunLoop run_loop;
     partition->ClearData(kTestClearMask, kTestQuotaClearMask,
@@ -2229,7 +2228,7 @@ TEST_F(StoragePartitionImplTest, RemovePrivateAggregationData) {
           testing::AllOf(testing::Truly(is_test_origin_valid),
                          testing::Not(testing::Truly(is_other_origin_valid))),
           testing::_))
-      .WillOnce(testing::Invoke(invoke_callback));
+      .WillOnce(invoke_callback);
   {
     base::RunLoop run_loop;
     partition->ClearData(
@@ -2247,7 +2246,7 @@ TEST_F(StoragePartitionImplTest, RemovePrivateAggregationData) {
           testing::AllOf(testing::Truly(is_test_origin_valid),
                          testing::Not(testing::Truly(is_other_origin_valid))),
           testing::_))
-      .WillOnce(testing::Invoke(invoke_callback));
+      .WillOnce(invoke_callback);
   {
     base::RunLoop run_loop;
     partition->ClearData(
@@ -2268,7 +2267,7 @@ TEST_F(StoragePartitionImplTest, RemovePrivateAggregationData) {
   EXPECT_CALL(*private_aggregation_manager_ptr,
               ClearBudgetData(kBeginTime, kEndTime,
                               testing::Truly(is_filter_null), testing::_))
-      .WillOnce(testing::Invoke(invoke_callback));
+      .WillOnce(invoke_callback);
   {
     base::RunLoop run_loop;
     partition->ClearData(kTestClearMask, kTestQuotaClearMask,
@@ -2743,9 +2742,9 @@ TEST_F(StoragePartitionImplShaderCacheTest,
 
   EXPECT_CALL(mock_gpu_disk_cache_factory_, ClearByPath(_, _, _, _))
       .Times(gpu::kGpuDiskCacheTypes.size())
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [](const base::FilePath&, base::Time, base::Time,
-             base::OnceClosure callback) { std::move(callback).Run(); }));
+             base::OnceClosure callback) { std::move(callback).Run(); });
 
   base::RunLoop run_loop;
   storage_partition()->ClearData(
@@ -2766,9 +2765,9 @@ TEST_F(StoragePartitionImplShaderCacheTest,
 
   EXPECT_CALL(mock_gpu_disk_cache_factory_, ClearByPath(_, _, _, _))
       .Times(gpu::kGpuDiskCacheTypes.size())
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [](const base::FilePath&, base::Time, base::Time,
-             base::OnceClosure callback) { std::move(callback).Run(); }));
+             base::OnceClosure callback) { std::move(callback).Run(); });
 
   base::RunLoop run_loop;
   storage_partition()->ClearData(

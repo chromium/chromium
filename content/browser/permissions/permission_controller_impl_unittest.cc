@@ -329,7 +329,7 @@ TEST_F(PermissionControllerImplTest,
                                 test_case.delegated_permissions),
                         /*user_gesture*/ true, GURL(kTestUrl)),
                     testing::_))
-            .WillByDefault(testing::Invoke(forward_callbacks));
+            .WillByDefault(forward_callbacks);
       } else {
         EXPECT_CALL(*mock_manager(),
                     RequestPermissionsFromCurrentDocument(
@@ -340,7 +340,7 @@ TEST_F(PermissionControllerImplTest,
                                     test_case.delegated_permissions),
                             /*user_gesture*/ true, GURL(kTestUrl)),
                         testing::_))
-            .WillOnce(testing::Invoke(forward_callbacks));
+            .WillOnce(forward_callbacks);
       }
     } else {
       // There should be no call to delegate if all overrides are defined.
@@ -427,7 +427,7 @@ TEST_F(PermissionControllerImplTest,
                                 test_case.delegated_permissions),
                         /*user_gesture*/ true, GURL(kTestUrl)),
                     testing::_))
-            .WillByDefault(testing::Invoke(forward_callbacks));
+            .WillByDefault(forward_callbacks);
       } else {
         EXPECT_CALL(*mock_manager(),
                     RequestPermissions(
@@ -438,7 +438,7 @@ TEST_F(PermissionControllerImplTest,
                                     test_case.delegated_permissions),
                             /*user_gesture*/ true, GURL(kTestUrl)),
                         testing::_))
-            .WillOnce(testing::Invoke(forward_callbacks));
+            .WillOnce(forward_callbacks);
       }
     } else {
       // There should be no call to delegate if all overrides are defined.

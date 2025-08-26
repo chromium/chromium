@@ -24,7 +24,6 @@ namespace {
 
 using testing::_;
 using testing::InSequence;
-using testing::Invoke;
 
 using Checkpoint = testing::MockFunction<void(int step)>;
 

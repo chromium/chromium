@@ -28,7 +28,6 @@
 namespace content {
 
 using testing::_;
-using testing::Invoke;
 
 namespace {
 
@@ -640,10 +639,10 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
   // `SeekTo()` should properly seek the video and give the updated media
   // position to the overlay window.
   EXPECT_CALL(*overlay_window(), SetMediaPosition(_))
-      .WillOnce(Invoke([](const media_session::MediaPosition& position) {
+      .WillOnce([](const media_session::MediaPosition& position) {
         EXPECT_EQ(position.GetPosition(), base::Seconds(2));
         EXPECT_EQ(position.playback_rate(), 0);
-      }));
+      });
   window_controller()->SeekTo(base::Seconds(2));
   WaitForTitle(u"seekto 2");
   testing::Mock::VerifyAndClearExpectations(overlay_window());
@@ -651,10 +650,10 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
   // If the website seeks without going through the controller, it should still
   // give the updated media position to the overlay window.
   EXPECT_CALL(*overlay_window(), SetMediaPosition(_))
-      .WillOnce(Invoke([](const media_session::MediaPosition& position) {
+      .WillOnce([](const media_session::MediaPosition& position) {
         EXPECT_EQ(position.GetPosition(), base::Seconds(4));
         EXPECT_EQ(position.playback_rate(), 0);
-      }));
+      });
   ASSERT_TRUE(ExecJs(shell()->web_contents(), "video.currentTime = 4;"));
   testing::Mock::VerifyAndClearExpectations(overlay_window());
 }
@@ -673,10 +672,10 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
   // position to the overlay window, even if no media session seekto action
   // handler is set (it should instead update the media player directly).
   EXPECT_CALL(*overlay_window(), SetMediaPosition(_))
-      .WillOnce(Invoke([](const media_session::MediaPosition& position) {
+      .WillOnce([](const media_session::MediaPosition& position) {
         EXPECT_EQ(position.GetPosition(), base::Seconds(2));
         EXPECT_EQ(position.playback_rate(), 0);
-      }));
+      });
   window_controller()->SeekTo(base::Seconds(2));
 
   // We need to wait until the currentTime has actually updated.
@@ -712,14 +711,13 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
   // If the favicon changes, then the overlay window should receive the new
   // favicon image.
   EXPECT_CALL(*overlay_window(), OnSetFaviconImages(_))
-      .WillOnce(
-          Invoke([](const std::vector<media_session::MediaImage>& images) {
-            ASSERT_EQ(images.size(), 1u);
-            const std::string icon_src = images[0].src.spec();
-            EXPECT_TRUE(base::Contains(icon_src, "new.ico"))
-                << "The icon source: \"" << icon_src
-                << "\" should contain \"new.ico\"";
-          }));
+      .WillOnce([](const std::vector<media_session::MediaImage>& images) {
+        ASSERT_EQ(images.size(), 1u);
+        const std::string icon_src = images[0].src.spec();
+        EXPECT_TRUE(base::Contains(icon_src, "new.ico"))
+            << "The icon source: \"" << icon_src
+            << "\" should contain \"new.ico\"";
+      });
   ASSERT_TRUE(ExecJs(shell()->web_contents(), "updateFaviconSrc('/new.ico');"));
 }
 

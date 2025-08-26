@@ -3420,7 +3420,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   ::testing::NiceMock<MockWebContentsObserver> observer(shell->web_contents());
   EXPECT_CALL(observer, DidFinishNavigation(_))
-      .WillOnce(::testing::Invoke([](NavigationHandle* handle) {
+      .WillOnce([](NavigationHandle* handle) {
         EXPECT_FALSE(handle->HasCommitted());
         EXPECT_TRUE(handle->IsServedFromBackForwardCache());
         // This call checks that |rfh_restored_from_back_forward_cache| is not
@@ -3428,7 +3428,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
         EXPECT_TRUE(NavigationRequest::From(handle)
                         ->GetRenderFrameHostRestoredFromBackForwardCache()
                         ->GetRoutingID());
-      }));
+      });
 
   shell->Close();
 }

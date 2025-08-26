@@ -26,7 +26,6 @@ using performance_manager::mojom::ChildProcessCoordinationUnit;
 using performance_scenarios::PerformanceScenarioTestHelper;
 using performance_scenarios::ScenarioScope;
 using ::testing::_;
-using ::testing::Invoke;
 
 using InitializeChildProcessCoordinationCallback =
     ChildProcessCoordinationUnit::InitializeChildProcessCoordinationCallback;
@@ -67,7 +66,7 @@ class ChildPerformanceCoordinatorTest : public ::testing::Test {
     StrictMockChildProcessCoordinationUnit mock_coordination_unit;
     EXPECT_CALL(mock_coordination_unit,
                 InitializeChildProcessCoordination(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [&](uint64_t, InitializeChildProcessCoordinationCallback callback) {
               std::move(callback).Run(std::move(global_region),
                                       std::move(process_region));
@@ -75,7 +74,7 @@ class ChildPerformanceCoordinatorTest : public ::testing::Test {
               // runloop after the posted task.
               task_env_.GetMainThreadTaskRunner()->PostTask(
                   FROM_HERE, std::move(quit_closure));
-            }));
+            });
     mock_coordination_unit.Bind(coordinator_.InitializeAndPassReceiver());
     task_env_.RunUntilQuit();
   }

@@ -33,7 +33,6 @@ namespace {
 using ::base::test::InvokeFuture;
 using ::base::test::TestFuture;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 const char kTestUrl[] = "https://www.google.com";
@@ -618,13 +617,13 @@ TEST_F(SerialTest, OpenTwoPortsAndRevokePermission) {
       .WillOnce(Return(port_info2.get()));
   EXPECT_CALL(delegate(), HasPortPermission(_, _))
       .Times(2)
-      .WillRepeatedly(testing::Invoke([&](auto rfh, auto port_info) {
+      .WillRepeatedly([&](auto rfh, auto port_info) {
         if (port_info.token == port_info1->token) {
           return false;
         } else {
           return true;
         }
-      }));
+      });
 
   ASSERT_TRUE(observer());
   url::Origin origin = url::Origin::Create(GURL(kTestUrl));
