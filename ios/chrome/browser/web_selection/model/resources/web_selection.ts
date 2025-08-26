@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -58,8 +58,6 @@ function getSelectedTextWithOffset(offsetX: number, offsetY: number) {
   });
 }
 
-gCrWebLegacy.webSelection = {getSelectedText};
-
 window.addEventListener('message', function(message) {
   const payload = message.data;
   if (!payload ||
@@ -74,3 +72,9 @@ window.addEventListener('message', function(message) {
   const y = payload.offsetY;
   getSelectedTextWithOffset(x, y);
 });
+
+const webSelection = new CrWebApi();
+
+webSelection.addFunction('getSelectedText', getSelectedText);
+
+gCrWeb.registerApi('webSelection', webSelection);
