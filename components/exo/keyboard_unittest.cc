@@ -1230,7 +1230,7 @@ TEST_F(KeyboardTest, KeyRepeatSettingsUpdateOnProfileChange) {
   // Switching user should load new prefs.
   EXPECT_CALL(*delegate_ptr,
               OnKeyRepeatSettingsChanged(true, kDelta1000Ms, kDelta1000Ms));
-  SimulateUserLogin({email});
+  SwitchActiveUser(inactive_account_id);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
