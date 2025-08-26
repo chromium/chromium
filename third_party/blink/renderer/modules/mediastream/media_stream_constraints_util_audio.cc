@@ -762,12 +762,16 @@ class ProcessingBasedContainer {
       bool is_reconfiguration_allowed) {
     Vector<EchoCancellationMode> echo_cancellation_modes;
     echo_cancellation_modes.push_back(EchoCancellationMode::kBrowserDecides);
-// kRemoteOnly is not supported on mobile platforms.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     if (ShouldSupportExtendedEchoCancellationModes(is_device_capture)) {
+      // kRemoteOnly is not supported on mobile platforms.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       echo_cancellation_modes.push_back(EchoCancellationMode::kRemoteOnly);
-    }
 #endif
+      if (EchoCanceller::IsSystemWideAecAvailable(
+              device_parameters.effects())) {
+        echo_cancellation_modes.push_back(EchoCancellationMode::kAll);
+      }
+    }
     echo_cancellation_modes.push_back(EchoCancellationMode::kDisabled);
     return ProcessingBasedContainer(
         ProcessingType::kApmProcessed, std::move(echo_cancellation_modes),
@@ -989,14 +993,15 @@ class ProcessingBasedContainer {
             GetAllowedLatency(processing_type, device_parameters)) {
     // If the device parameters indicate that system echo cancellation is
     // available, add support for it to `echo_cancellation_modes`.
-    CHECK(!base::Contains(echo_cancellation_modes, EchoCancellationMode::kAll));
-    if (EchoCanceller::IsSystemWideAecAvailable(device_parameters.effects())) {
+    if (EchoCanceller::IsPlatformAecAvailable(device_parameters.effects())) {
       if (!base::Contains(echo_cancellation_modes,
                           EchoCancellationMode::kBrowserDecides)) {
         echo_cancellation_modes.push_back(
             EchoCancellationMode::kBrowserDecides);
       }
-      if (ShouldSupportExtendedEchoCancellationModes(is_device_capture)) {
+      if (ShouldSupportExtendedEchoCancellationModes(is_device_capture) &&
+          !base::Contains(echo_cancellation_modes,
+                          EchoCancellationMode::kAll)) {
         echo_cancellation_modes.push_back(EchoCancellationMode::kAll);
       }
     }

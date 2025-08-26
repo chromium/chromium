@@ -68,6 +68,8 @@ class PLATFORM_EXPORT EchoCanceller {
 
   static bool IsSystemWideAecAvailable(int available_platform_effects);
 
+  static bool IsPlatformAecAvailable(int available_platform_effects);
+
   static EchoCanceller From(const AudioProcessingProperties& properties,
                             int available_platform_effects);
 
@@ -100,7 +102,6 @@ class PLATFORM_EXPORT EchoCanceller {
 
   static Type GetPreferredAec(int available_platform_effects);
   static Type GetSystemWideAec(int available_platform_effects);
-  static bool IsPlatformAecAvailable(int available_platform_effects);
 
   const Type type_ = Type::kNone;
 };

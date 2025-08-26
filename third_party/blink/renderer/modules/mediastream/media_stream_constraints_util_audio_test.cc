@@ -2051,6 +2051,30 @@ TEST_F(MediaStreamConstraintsEchoCancellationModeTest, ExactTrue) {
             EchoCancellationMode::kBrowserDecides);
 }
 
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest,
+       AecRequiresApmOrSystemAec) {
+  // Enable system loopback as AEC reference, to simulate the conditions of
+  // http://crbug.com/441029775
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media::kSystemLoopbackAsAecReference);
+  constraint_factory_.Reset();
+  // APM does not support this sample rate, so this rules out APM.
+  constraint_factory_.basic().sample_rate.SetExact(
+      media::AudioParameters::kAudioCDSampleRate);
+  // Delete the device that supports system AEC. It is no longer possible to
+  // provide AEC, because both system AEC and APM are ruled out.
+  capabilities_.pop_back();
+  // Demand AEC.
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  // We have demanded an impossible combination of sample rate and AEC, so
+  // constraint matching will fail.
+  EXPECT_FALSE(settings.HasValue());
+}
+#endif  // BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+
 TEST_F(MediaStreamConstraintsEchoCancellationModeTest, IdealTrue) {
   constraint_factory_.Reset();
   constraint_factory_.basic().echo_cancellation.SetIdealBoolean(true);
