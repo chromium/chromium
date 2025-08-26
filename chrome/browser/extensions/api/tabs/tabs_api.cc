@@ -79,17 +79,19 @@ namespace {
 BrowserWindowInterface* GetLastActiveBrowserWithProfile(
     Profile* profile,
     bool include_incognito_information) {
-  std::vector<BrowserWindowInterface*> all_browsers =
-      GetBrowserWindowInterfacesOrderedByActivation();
-  for (auto* browser : all_browsers) {
-    if (browser->GetProfile() == profile ||
-        (include_incognito_information &&
-         profile->IsSameOrParent(browser->GetProfile()))) {
-      return browser;
-    }
-  }
+  BrowserWindowInterface* last_active_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() == profile ||
+            (include_incognito_information &&
+             profile->IsSameOrParent(browser->GetProfile()))) {
+          last_active_browser = browser;
+          return false;  // Stop iterating.
+        }
+        return true;  // Continue iterating.
+      });
 
-  return nullptr;
+  return last_active_browser;
 }
 
 // Returns true if either |boolean| is disengaged, or if |boolean| and
@@ -307,16 +309,16 @@ ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
       extractor(params);
 
   BrowserWindowInterface* last_focused_browser = nullptr;
-  std::vector<BrowserWindowInterface*> browsers_by_activation =
-      GetBrowserWindowInterfacesOrderedByActivation();
-  for (BrowserWindowInterface* browser : browsers_by_activation) {
-    if (windows_util::CanOperateOnWindow(
-            this, BrowserExtensionWindowController::From(browser),
-            extractor.type_filters())) {
-      last_focused_browser = browser;
-      break;
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (windows_util::CanOperateOnWindow(
+                this, BrowserExtensionWindowController::From(browser),
+                extractor.type_filters())) {
+          last_focused_browser = browser;
+          return false;  // Stop iterating.
+        }
+        return true;  // Continue iterating.
+      });
   if (!last_focused_browser) {
     return RespondNow(Error(tabs_constants::kNoLastFocusedWindowError));
   }
