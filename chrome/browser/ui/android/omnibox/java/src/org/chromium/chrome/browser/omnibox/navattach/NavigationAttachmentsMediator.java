@@ -6,17 +6,23 @@ package org.chromium.chrome.browser.omnibox.navattach;
 
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,20 +30,26 @@ import java.util.List;
 /** Mediator for the Navigation Attachments component. */
 @NullMarked
 class NavigationAttachmentsMediator {
-    private static final String TAG = "NavAttachMediator";
-
+    private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final PropertyModel mModel;
     private final NavigationAttachmentsPopup mPopup;
+    private final ModelList mModelList;
+    private final Drawable mFallbackDrawable;
 
     NavigationAttachmentsMediator(
+            Context context,
             WindowAndroid windowAndroid,
             PropertyModel model,
             NavigationAttachmentsViewHolder viewHolder,
             ModelList modelList) {
+        mContext = context;
         mWindowAndroid = windowAndroid;
         mModel = model;
         mPopup = viewHolder.popup;
+        mModelList = modelList;
+        mFallbackDrawable =
+                AppCompatResources.getDrawable(mContext, R.drawable.ic_attach_file_24dp);
 
         mModel.set(
                 NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
@@ -82,10 +94,7 @@ class NavigationAttachmentsMediator {
 
                     var bitmap = (Bitmap) data.getExtras().get("data");
                     if (bitmap == null) return;
-                    Log.i(
-                            TAG,
-                            String.format(
-                                    "Photo Bitmap: %dx%d", bitmap.getWidth(), bitmap.getHeight()));
+                    addAttachment(new BitmapDrawable(mContext.getResources(), bitmap));
                 },
                 R.string.low_memory_error);
     }
@@ -105,8 +114,8 @@ class NavigationAttachmentsMediator {
                     if (resultCode != Activity.RESULT_OK || data == null) return;
 
                     var uris = extractUrisFromResult(data);
-                    for (var uri : uris) {
-                        Log.i(TAG, "Photo URI: " + uri);
+                    for (var unused : uris) {
+                        addAttachment(null);
                     }
                 },
                 R.string.low_memory_error);
@@ -130,11 +139,28 @@ class NavigationAttachmentsMediator {
                     if (resultCode != Activity.RESULT_OK || data == null) return;
 
                     var uris = extractUrisFromResult(data);
-                    for (var uri : uris) {
-                        Log.i(TAG, "Photo URI: " + uri);
+                    for (var unused : uris) {
+                        addAttachment(null);
                     }
                 },
-                R.string.low_memory_error);
+                /* errorId= */ android.R.string.cancel);
+    }
+
+    /* package */ void addAttachment(@Nullable Drawable thumbnail) {
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
+        PropertyModel model =
+                new PropertyModel.Builder(NavigationAttachmentItemProperties.ALL_KEYS)
+                        .with(
+                                NavigationAttachmentItemProperties.THUMBNAIL,
+                                thumbnail != null ? thumbnail : mFallbackDrawable)
+                        .with(NavigationAttachmentItemProperties.TITLE, "Attachment")
+                        .with(NavigationAttachmentItemProperties.DESCRIPTION, "Description")
+                        .build();
+        mModelList.add(
+                new SimpleRecyclerViewAdapter.ListItem(
+                        NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType
+                                .ATTACHMENT_ITEM,
+                        model));
     }
 
     // Parse GET_CONTENT response, extracting single- or multiple image selections.

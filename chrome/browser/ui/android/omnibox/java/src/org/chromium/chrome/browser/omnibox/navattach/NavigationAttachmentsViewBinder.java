@@ -20,6 +20,11 @@ class NavigationAttachmentsViewBinder {
             PropertyModel model, NavigationAttachmentsViewHolder view, PropertyKey propertyKey) {
         if (propertyKey == NavigationAttachmentsProperties.ADAPTER) {
             view.attachmentsView.setAdapter(model.get(NavigationAttachmentsProperties.ADAPTER));
+        } else if (propertyKey == NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE) {
+            view.attachmentsView.setVisibility(
+                    model.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         } else if (propertyKey == NavigationAttachmentsProperties.BUTTON_ADD_CLICKED) {
             view.addButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run());

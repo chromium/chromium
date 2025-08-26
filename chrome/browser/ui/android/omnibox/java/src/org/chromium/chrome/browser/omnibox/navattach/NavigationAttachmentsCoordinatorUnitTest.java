@@ -79,6 +79,15 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testAdapter_isSet() {
+        mCoordinator = new NavigationAttachmentsCoordinator(mActivity, mWindowAndroid, mParent);
+        NavigationAttachmentsViewHolder viewHolder = mCoordinator.getViewHolderForTesting();
+        assertNotNull(viewHolder);
+        assertNotNull(viewHolder.attachmentsView.getAdapter());
+    }
+
+    @Test
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureDisabled() {
         mCoordinator = new NavigationAttachmentsCoordinator(mActivity, mWindowAndroid, mParent);

@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
 import android.content.Intent;
 import android.provider.MediaStore;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.WindowAndroid;
@@ -39,16 +41,18 @@ public class NavigationAttachmentsMediatorUnitTest {
     private @Mock NavigationAttachmentsPopup mPopup;
     private @Mock WindowAndroid mWindowAndroid;
 
+    private Context mContext;
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
 
     @Before
     public void setUp() {
+        mContext = RuntimeEnvironment.application;
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mViewGroup, mPopup);
         mMediator =
                 new NavigationAttachmentsMediator(
-                        mWindowAndroid, mModel, mViewHolder, new ModelList());
+                        mContext, mWindowAndroid, mModel, mViewHolder, new ModelList());
     }
 
     @Test
@@ -138,5 +142,11 @@ public class NavigationAttachmentsMediatorUnitTest {
         assertTrue(intent.hasCategory(Intent.CATEGORY_OPENABLE));
         assertEquals("*/*", intent.getType());
         assertTrue(intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false));
+    }
+
+    @Test
+    public void addAttachment_setsAttachmentsVisible() {
+        mMediator.addAttachment(null);
+        assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
     }
 }

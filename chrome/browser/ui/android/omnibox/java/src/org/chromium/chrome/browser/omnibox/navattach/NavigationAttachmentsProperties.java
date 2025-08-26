@@ -17,6 +17,10 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<SimpleRecyclerViewAdapter> ADAPTER =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the attachments RecyclerView is visible. */
+    public static final WritableBooleanPropertyKey ATTACHMENTS_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /** Action to perform when the user clicks the Add button. */
     public static final WritableObjectPropertyKey<Runnable> BUTTON_ADD_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -39,6 +43,7 @@ class NavigationAttachmentsProperties {
 
     public static final PropertyKey[] ALL_KEYS = {
         ADAPTER,
+        ATTACHMENTS_VISIBLE,
         BUTTON_ADD_CLICKED,
         POPUP_CAMERA_CLICKED,
         POPUP_FILE_CLICKED,

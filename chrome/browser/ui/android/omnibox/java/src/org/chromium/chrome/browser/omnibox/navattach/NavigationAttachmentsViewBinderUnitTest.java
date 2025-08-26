@@ -71,6 +71,15 @@ public class NavigationAttachmentsViewBinderUnitTest {
     }
 
     @Test
+    public void attachmentsVisible_setsVisibility() {
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
+        verify(mRecyclerView).setVisibility(View.VISIBLE);
+
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, false);
+        verify(mRecyclerView).setVisibility(View.GONE);
+    }
+
+    @Test
     public void adapter_isSet() {
         SimpleRecyclerViewAdapter adapter = mock(SimpleRecyclerViewAdapter.class);
         mModel.set(NavigationAttachmentsProperties.ADAPTER, adapter);

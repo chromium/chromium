@@ -41,6 +41,7 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
 
         var modelList = new ModelList();
         var adapter = new NavigationAttachmentsRecyclerViewAdapter(modelList);
+        mViewHolder.attachmentsView.setAdapter(adapter);
 
         PropertyModel model =
                 new PropertyModel.Builder(NavigationAttachmentsProperties.ALL_KEYS)
@@ -49,7 +50,9 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
                         .build();
         PropertyModelChangeProcessor.create(
                 model, mViewHolder, NavigationAttachmentsViewBinder::bind);
-        mMediator = new NavigationAttachmentsMediator(windowAndroid, model, mViewHolder, modelList);
+        mMediator =
+                new NavigationAttachmentsMediator(
+                        context, windowAndroid, model, mViewHolder, modelList);
     }
 
     public void destroy() {

@@ -4,14 +4,36 @@
 
 package org.chromium.chrome.browser.omnibox.navattach;
 
+import androidx.annotation.IntDef;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** ModelListAdapter for NavigationAttachments component. */
 @NullMarked
 class NavigationAttachmentsRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
+    @IntDef({NavigationAttachmentItemType.ATTACHMENT_ITEM})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NavigationAttachmentItemType {
+        int ATTACHMENT_ITEM = 0;
+    }
+
     NavigationAttachmentsRecyclerViewAdapter(ModelList data) {
         super(data);
+        registerType(
+                NavigationAttachmentItemType.ATTACHMENT_ITEM,
+                (parent) -> {
+                    return (ConstraintLayout)
+                            parent.getContext()
+                                    .getSystemService(android.view.LayoutInflater.class)
+                                    .inflate(R.layout.navigation_attachment_item, parent, false);
+                },
+                NavigationAttachmentItemViewBinder::bind);
     }
 }
