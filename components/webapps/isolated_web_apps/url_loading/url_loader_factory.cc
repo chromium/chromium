@@ -33,6 +33,8 @@
 #include "components/webapps/isolated_web_apps/reading/response_reader.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_registry.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_registry_factory.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/url_loading_types.h"
@@ -64,7 +66,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
-#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -311,8 +312,7 @@ class IsolatedWebAppURLLoaderFactoryImpl
         app_origin_(std::move(app_origin)),
         frame_tree_node_id_(frame_tree_node_id) {
     CHECK(!app_origin_.has_value() ||
-          blink::CommonSchemeRegistry::IsIsolatedAppScheme(
-              app_origin_->scheme()));
+          app_origin_->scheme() == webapps::kIsolatedAppScheme);
     // TODO(crbug.com/432676258): Do not create the factory for inelibigle
     // contexts at all.
     if (browser_context_) {
@@ -351,8 +351,7 @@ class IsolatedWebAppURLLoaderFactoryImpl
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    CHECK(blink::CommonSchemeRegistry::IsIsolatedAppScheme(
-        resource_request.url.scheme()));
+    CHECK(resource_request.url.SchemeIs(webapps::kIsolatedAppScheme));
     DCHECK(resource_request.url.IsStandard());
 
     if (resource_request.headers.GetHeader("Service-Worker") == "script") {
@@ -401,8 +400,10 @@ class IsolatedWebAppURLLoaderFactoryImpl
     }
 
     ASSIGN_OR_RETURN(web_package::SignedWebBundleId web_bundle_id,
-                     IwaClient::GetInstance()->CreateWebBundleIdFromURL(
-                         resource_request.url),
+                     IwaOrigin::Create(resource_request.url)
+                         .transform([](const auto& iwa_origin) {
+                           return iwa_origin.web_bundle_id();
+                         }),
                      [&](const std::string& error) {
                        LogErrorAndFail(std::move(error),
                                        std::move(loader_client));

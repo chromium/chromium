@@ -19,12 +19,12 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
-#include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 #include "components/webapps/isolated_web_apps/reading/validator.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 
 namespace web_app {
 
@@ -101,9 +101,7 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReaderImpl(
   DCHECK(!web_bundle_id.is_for_proxy_mode());
 
   SignedWebBundleReader::Create(
-      web_bundle_path,
-      web_app::IwaClient::GetInstance()->CreateBaseURLForWebBundleId(
-          web_bundle_id),
+      web_bundle_path, IwaOrigin(web_bundle_id).origin().GetURL(),
       /*verify_signatures=*/!flags.Has(Flag::kSkipSignatureVerification),
       base::BindOnce(&IsolatedWebAppResponseReaderFactory::OnReaderCreated,
                      weak_ptr_factory_.GetWeakPtr(), web_bundle_path,

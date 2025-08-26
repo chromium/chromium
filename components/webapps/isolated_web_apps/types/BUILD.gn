@@ -4,6 +4,8 @@
 
 source_set("types") {
   sources = [
+    "iwa_origin.cc",
+    "iwa_origin.h",
     "iwa_version.cc",
     "iwa_version.h",
     "source.cc",
@@ -14,6 +16,8 @@ source_set("types") {
     "update_channel.h",
     "url_loading_types.h",
   ]
+
+  deps = [ "//components/webapps/isolated_web_apps:scheme" ]
 
   public_deps = [
     "//base",

@@ -22,6 +22,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -61,37 +62,14 @@ void GetSignedWebBundleIdByPath(
 // static
 base::expected<IsolatedWebAppUrlInfo, std::string>
 IsolatedWebAppUrlInfo::Create(const GURL& url) {
-  if (!url.is_valid()) {
-    return base::unexpected("Invalid URL");
-  }
-  if (!url.SchemeIs(chrome::kIsolatedAppScheme)) {
-    return base::unexpected(
-        base::StrCat({"The URL scheme must be ", chrome::kIsolatedAppScheme,
-                      ", but was ", url.scheme()}));
-  }
-
-  // Valid isolated-app:// `GURL`s can never include credentials or ports, since
-  // the scheme is configured as `url::SCHEME_WITH_HOST`. The `DCHECK` is here
-  // just in case, but should never trigger as long as the scheme is configured
-  // correctly.
-  DCHECK(!url.has_username() && !url.has_password() && !url.has_port() &&
-         url.IsStandard());
-
-  auto web_bundle_id = web_package::SignedWebBundleId::Create(url.host());
-  if (!web_bundle_id.has_value()) {
-    return base::unexpected(
-        base::StrCat({"The host of isolated-app:// URLs must be a valid Signed "
-                      "Web Bundle ID (got ",
-                      url.host(), "): ", web_bundle_id.error()}));
-  }
-
-  return IsolatedWebAppUrlInfo(*web_bundle_id);
+  return IwaOrigin::Create(url).transform(
+      [](const auto& iwa_origin) { return IsolatedWebAppUrlInfo(iwa_origin); });
 }
 
 // static
 IsolatedWebAppUrlInfo IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
     const web_package::SignedWebBundleId& web_bundle_id) {
-  return IsolatedWebAppUrlInfo(web_bundle_id);
+  return IsolatedWebAppUrlInfo(IwaOrigin(web_bundle_id));
 }
 
 // static
@@ -121,21 +99,18 @@ void IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
       source.variant());
 }
 
-IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(
-    const web_package::SignedWebBundleId& web_bundle_id)
-    : origin_(url::Origin::CreateFromNormalizedTuple(chrome::kIsolatedAppScheme,
-                                                     web_bundle_id.id(),
-                                                     /*port=*/0)),
+IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(const IwaOrigin& iwa_origin)
+    : iwa_origin_(iwa_origin),
       // The manifest id of Isolated Web Apps must resolve to the app's origin.
       // The manifest parser will resolve "id" relative the origin of the app's
       // start_url, and then sets Manifest::id to the path of this resolved URL,
       // not including a leading slash. Because of this, the resolved manifest
       // id will always be empty string.
-      app_id_(GenerateAppId(/*manifest_id=*/"", origin_.GetURL())),
-      web_bundle_id_(web_bundle_id) {}
+      app_id_(
+          GenerateAppId(/*manifest_id=*/"", iwa_origin_.origin().GetURL())) {}
 
 const url::Origin& IsolatedWebAppUrlInfo::origin() const {
-  return origin_;
+  return iwa_origin_.origin();
 }
 
 const webapps::AppId& IsolatedWebAppUrlInfo::app_id() const {
@@ -144,7 +119,7 @@ const webapps::AppId& IsolatedWebAppUrlInfo::app_id() const {
 
 const web_package::SignedWebBundleId& IsolatedWebAppUrlInfo::web_bundle_id()
     const {
-  return web_bundle_id_;
+  return iwa_origin_.web_bundle_id();
 }
 
 content::StoragePartitionConfig IsolatedWebAppUrlInfo::storage_partition_config(
@@ -165,12 +140,6 @@ IsolatedWebAppUrlInfo::GetStoragePartitionConfigForControlledFrame(
   DCHECK(!partition_name.empty() || in_memory);
   return content::StoragePartitionConfig::Create(
       browser_context, partition_domain(), partition_name, in_memory);
-}
-
-bool IsolatedWebAppUrlInfo::operator==(
-    const IsolatedWebAppUrlInfo& other) const {
-  return origin_ == other.origin_ && app_id_ == other.app_id_ &&
-         web_bundle_id_ == other.web_bundle_id_;
 }
 
 std::string IsolatedWebAppUrlInfo::partition_domain() const {

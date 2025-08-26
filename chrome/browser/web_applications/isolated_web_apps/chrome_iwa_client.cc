@@ -141,19 +141,6 @@ base::expected<void, std::string> ChromeIwaClient::ValidateTrust(
       *Profile::FromBrowserContext(browser_context), web_bundle_id, dev_mode);
 }
 
-base::expected<web_package::SignedWebBundleId, std::string>
-ChromeIwaClient::CreateWebBundleIdFromURL(const GURL& url) {
-  return IsolatedWebAppUrlInfo::Create(url).transform(
-      [](const auto& url_info) { return url_info.web_bundle_id(); });
-}
-
-GURL ChromeIwaClient::CreateBaseURLForWebBundleId(
-    const web_package::SignedWebBundleId& web_bundle_id) {
-  return GURL(
-      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-                    web_bundle_id.id()}));
-}
-
 void ChromeIwaClient::RunWhenAppCloses(
     content::BrowserContext* browser_context,
     const web_package::SignedWebBundleId& web_bundle_id,

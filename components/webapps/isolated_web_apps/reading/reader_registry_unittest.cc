@@ -41,6 +41,7 @@
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/test_support/test_iwa_client.h"
 #include "components/webapps/isolated_web_apps/test_support/test_signed_web_bundle_builder.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -225,7 +226,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
                        read_response_future.Take());
   EXPECT_EQ(response.head()->response_code, 200);
 
-  EXPECT_EQ(iwa_client().CreateBaseURLForWebBundleId(kWebBundleId),
+  EXPECT_EQ(IwaOrigin(kWebBundleId).origin().GetURL(),
             on_create_parser_future_.Take());
 
   histogram_tester.ExpectBucketCount(

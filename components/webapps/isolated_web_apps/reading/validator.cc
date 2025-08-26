@@ -17,6 +17,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -70,11 +71,14 @@ base::expected<void, std::string> ValidateMetadataImpl(
   // Signed Web Bundle ID as their host.
   for (const GURL& entry : entries) {
     ASSIGN_OR_RETURN(web_package::SignedWebBundleId entry_web_bundle_id,
-                     IwaClient::GetInstance()->CreateWebBundleIdFromURL(entry),
-                     [](std::string error) {
-                       return "The URL of an exchange is invalid: " +
-                              std::move(error);
-                     });
+                     IwaOrigin::Create(entry)
+                         .transform([](const auto& iwa_origin) {
+                           return iwa_origin.web_bundle_id();
+                         })
+                         .transform_error([](std::string error) {
+                           return "The URL of an exchange is invalid: " +
+                                  std::move(error);
+                         }));
     if (entry_web_bundle_id != web_bundle_id) {
       return base::unexpected(
           "The URL of an exchange contains the wrong Signed Web Bundle ID: " +

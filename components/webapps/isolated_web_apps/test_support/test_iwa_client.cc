@@ -9,20 +9,6 @@
 
 namespace web_app::test {
 
-base::expected<web_package::SignedWebBundleId, std::string>
-TestIwaClient::CreateWebBundleIdFromURL(const GURL& url) {
-  if (url.SchemeIs("isolated-app")) {
-    return web_package::SignedWebBundleId::Create(url.host_piece());
-  }
-  return base::unexpected("Wrong scheme.");
-}
-
-GURL TestIwaClient::CreateBaseURLForWebBundleId(
-    const web_package::SignedWebBundleId& web_bundle_id) {
-  return GURL(base::StrCat(
-      {"isolated-app", url::kStandardSchemeSeparator, web_bundle_id.id()}));
-}
-
 void TestIwaClient::RunWhenAppCloses(
     content::BrowserContext* browser_context,
     const web_package::SignedWebBundleId& web_bundle_id,

@@ -22,12 +22,6 @@ class ChromeIwaClient : public IwaClient {
       const web_package::SignedWebBundleId& web_bundle_id,
       bool dev_mode) override;
 
-  base::expected<web_package::SignedWebBundleId, std::string>
-  CreateWebBundleIdFromURL(const GURL& url) override;
-
-  GURL CreateBaseURLForWebBundleId(
-      const web_package::SignedWebBundleId& web_bundle_id) override;
-
   void RunWhenAppCloses(content::BrowserContext* browser_context,
                         const web_package::SignedWebBundleId& web_bundle_id,
                         base::OnceClosure callback) override;
