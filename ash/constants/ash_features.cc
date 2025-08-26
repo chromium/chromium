@@ -583,10 +583,6 @@ BASE_FEATURE(EnableKeyboardRewriterFix, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables OAuth support when printing via the IPP protocol.
 BASE_FEATURE(EnableOAuthIpp, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables all registered system web apps, regardless of their respective
-// feature flags.
-BASE_FEATURE(EnableAllSystemWebApps, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables RFC8925 (prefer IPv6-only on an IPv6-only-capable network).
 BASE_FEATURE(EnableRFC8925, base::FEATURE_ENABLED_BY_DEFAULT);
 
