@@ -818,6 +818,8 @@ void HTMLFrameOwnerElement::ParseAttribute(
   }
 }
 
+void HTMLFrameOwnerElement::DidSetAdStatus() {}
+
 bool HTMLFrameOwnerElement::IsAdRelated() const {
   if (!content_frame_)
     return false;

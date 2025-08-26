@@ -625,6 +625,14 @@ bool RemoteFrame::IsAdFrame() const {
 void RemoteFrame::SetReplicatedIsAdFrame(bool is_ad_frame) {
   TRACE_EVENT("navigation", "RemoteFrame::SetReplicatedIsAdFrame");
   is_ad_frame_ = is_ad_frame;
+
+  FrameOwner* owner = Owner();
+  HTMLFrameOwnerElement* owner_element =
+      DynamicTo<HTMLFrameOwnerElement>(owner);
+
+  if (owner_element) {
+    owner_element->DidSetAdStatus();
+  }
 }
 
 void RemoteFrame::SetReplicatedName(const String& name,

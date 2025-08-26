@@ -154,6 +154,8 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   void ParseAttribute(const AttributeModificationParams&) override;
 
+  void DidSetAdStatus();
+
   // Element overrides:
   bool IsAdRelated() const override;
 
