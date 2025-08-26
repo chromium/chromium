@@ -10,7 +10,10 @@ component("auto_sign_out") {
     "auto_sign_out_service.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/sync_device_info",
+  ]
 }
 
 source_set("unit_tests") {
@@ -20,6 +23,8 @@ source_set("unit_tests") {
 
   deps = [
     ":auto_sign_out",
+    "//components/sync_device_info",
+    "//components/sync_device_info:test_support",
     "//testing/gtest",
   ]
 }

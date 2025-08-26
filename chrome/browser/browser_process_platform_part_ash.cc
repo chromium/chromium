@@ -45,6 +45,7 @@
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_utils.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -101,7 +102,9 @@ class PrimaryProfileServicesShutdownNotifierFactory
 
   PrimaryProfileServicesShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(
-            "PrimaryProfileServices") {}
+            "PrimaryProfileServices") {
+    DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  }
   ~PrimaryProfileServicesShutdownNotifierFactory() override = default;
 };
 
@@ -316,11 +319,13 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
       primary_profile->GetProfilePolicyConnector()->IsManaged());
 
   if (ash::features::IsAutoSignOutEnabled()) {
-    auto_sign_out_service_ = std::make_unique<ash::AutoSignOutService>();
+    auto_sign_out_service_ = std::make_unique<ash::AutoSignOutService>(
+        DeviceInfoSyncServiceFactory::GetForProfile(primary_profile));
   }
 }
 
 void BrowserProcessPlatformPart::ShutdownPrimaryProfileServices() {
+  auto_sign_out_service_.reset();
   secure_dns_manager_.reset();
   if (ash::SystemProxyManager::Get())
     ash::SystemProxyManager::Get()->StopObservingPrimaryProfilePrefs();
