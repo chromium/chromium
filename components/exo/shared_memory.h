@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "ui/gfx/buffer_types.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace exo {
@@ -32,7 +32,7 @@ class SharedMemory {
   // beginning of the next. The format is the pixel format of the buffer and
   // must be one of RGBX_8888, RGBA_8888, BGRX_8888, BGRA_8888.
   std::unique_ptr<Buffer> CreateBuffer(const gfx::Size& size,
-                                       gfx::BufferFormat format,
+                                       viz::SharedImageFormat format,
                                        unsigned offset,
                                        uint32_t stride);
 

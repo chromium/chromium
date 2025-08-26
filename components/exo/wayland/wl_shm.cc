@@ -13,6 +13,7 @@
 #include "components/exo/display.h"
 #include "components/exo/shared_memory.h"
 #include "components/exo/wayland/server_util.h"
+#include "components/viz/common/resources/shared_image_format.h"
 
 namespace exo {
 namespace wayland {
@@ -31,12 +32,12 @@ void HandleBufferReleaseCallback(wl_resource* resource) {
 
 const struct shm_supported_format {
   uint32_t shm_format;
-  gfx::BufferFormat buffer_format;
+  viz::SharedImageFormat si_format;
 } shm_supported_formats[] = {
-    {WL_SHM_FORMAT_XBGR8888, gfx::BufferFormat::RGBX_8888},
-    {WL_SHM_FORMAT_ABGR8888, gfx::BufferFormat::RGBA_8888},
-    {WL_SHM_FORMAT_XRGB8888, gfx::BufferFormat::BGRX_8888},
-    {WL_SHM_FORMAT_ARGB8888, gfx::BufferFormat::BGRA_8888}};
+    {WL_SHM_FORMAT_XBGR8888, viz::SinglePlaneFormat::kRGBX_8888},
+    {WL_SHM_FORMAT_ABGR8888, viz::SinglePlaneFormat::kRGBA_8888},
+    {WL_SHM_FORMAT_XRGB8888, viz::SinglePlaneFormat::kBGRX_8888},
+    {WL_SHM_FORMAT_ARGB8888, viz::SinglePlaneFormat::kBGRA_8888}};
 
 void shm_pool_create_buffer(wl_client* client,
                             wl_resource* resource,
@@ -62,7 +63,7 @@ void shm_pool_create_buffer(wl_client* client,
 
   std::unique_ptr<Buffer> buffer =
       GetUserDataAs<SharedMemory>(resource)->CreateBuffer(
-          gfx::Size(width, height), supported_format->buffer_format, offset,
+          gfx::Size(width, height), supported_format->si_format, offset,
           stride);
   if (!buffer) {
     wl_resource_post_no_memory(resource);
