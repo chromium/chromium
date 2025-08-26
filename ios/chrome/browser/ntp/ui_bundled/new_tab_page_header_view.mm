@@ -989,6 +989,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   if (hasBlurredBackground) {
     _fakeLocationBarGradientView.hidden = YES;
     _fakeLocationBarBlurEffectView.hidden = NO;
+    _miaAnimationView.hidden = YES;
     return;
   }
 
@@ -1355,9 +1356,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   _miaAnimationView = [self createMIAAnimationView];
   _miaAnimationView.userInteractionEnabled = NO;
-  // Hide the view when there is a color palette.
+  // Hide the view when there is a color palette or image background.
   _miaAnimationView.hidden =
-      [self.traitCollection objectForNewTabPageTrait] != nil;
+      [self.traitCollection objectForNewTabPageTrait] != nil ||
+      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
   _miaAnimationView.alpha =
       MIAAnimationOpacityForScrollProgress(_lastAnimationPercent);
   [_miaAnimation play];
