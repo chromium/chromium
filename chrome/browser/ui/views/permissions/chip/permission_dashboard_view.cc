@@ -190,9 +190,7 @@ gfx::Size PermissionDashboardView::CalculatePreferredSize(
 
 views::View::Views PermissionDashboardView::GetChildrenInZOrder() {
   View::Views paint_order = View::GetChildrenInZOrder();
-
-  std::reverse(paint_order.begin(), paint_order.end());
-
+  std::ranges::reverse(paint_order);
   return paint_order;
 }
 

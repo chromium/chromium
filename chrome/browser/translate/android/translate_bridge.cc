@@ -300,7 +300,7 @@ void TranslateBridge::PrependToAcceptLanguagesIfNecessary(
       output_list.push_back(language_code + "-" + country_code);
   }
 
-  std::reverse(output_list.begin(), output_list.end());
+  std::ranges::reverse(output_list);
   *accept_languages = base::JoinString(output_list, ",");
 }
 

@@ -103,7 +103,7 @@ void ChromeOsAppsIntentPickerDelegate::FindAllAppsForUrl(
   }
   // Reverse to keep old behavior of ordering (even though it was arbitrary, it
   // was at least deterministic).
-  std::reverse(apps.begin(), apps.end());
+  std::ranges::reverse(apps);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(apps_callback), std::move(apps)));

@@ -57,6 +57,6 @@ std::u16string CredentialComparator::ETLDPlus1(const std::string& rp_id) {
 std::u16string CredentialComparator::LabelReverse(const std::string& rp_id) {
   std::vector<std::string_view> parts = base::SplitStringPiece(
       rp_id, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::reverse(parts.begin(), parts.end());
+  std::ranges::reverse(parts);
   return base::UTF8ToUTF16(base::JoinString(parts, "."));
 }

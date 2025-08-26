@@ -212,8 +212,7 @@ void TabStripServiceImpl::CloseTabs(const std::vector<tabs_api::NodeId>& ids,
 
   // Close from last to first, that way the removals won't change the index of
   // the next target.
-  std::sort(tab_strip_indices.begin(), tab_strip_indices.end());
-  std::reverse(tab_strip_indices.begin(), tab_strip_indices.end());
+  std::ranges::sort(tab_strip_indices, std::ranges::greater());
   for (auto idx : tab_strip_indices) {
     tab_strip_model_adapter_->CloseTab(idx);
   }

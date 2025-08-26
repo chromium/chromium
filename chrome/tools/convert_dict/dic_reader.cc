@@ -179,8 +179,7 @@ bool DicReader::Read(AffReader* aff_reader) {
 
     // Double check that the affixes are sorted. This isn't strictly necessary
     // but it's nice for the file to have a fixed layout.
-    std::sort(affixes.begin(), affixes.end());
-    std::reverse(affixes.begin(), affixes.end());
+    std::ranges::sort(affixes, std::ranges::greater());
     words_.push_back(std::make_pair(word->first, affixes));
   }
 

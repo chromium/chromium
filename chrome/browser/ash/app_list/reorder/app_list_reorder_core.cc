@@ -171,7 +171,7 @@ std::vector<int> SortAndGetLis(
   // Note that before reversal the elements in `lis` are in reverse order.
   // Although reversal isn't necessary, `lis` is reversed to make coding
   // easier.
-  std::reverse(lis.begin(), lis.end());
+  std::ranges::reverse(lis);
 
   return lis;
 }

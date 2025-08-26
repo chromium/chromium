@@ -217,7 +217,7 @@ ReadWriteCardsUiController::GetTraversableViewsByUpDownKeys() {
   }
 
   if (!widget_above_context_menu_) {
-    std::reverse(views.begin(), views.end());
+    std::ranges::reverse(views);
   }
 
   return views;

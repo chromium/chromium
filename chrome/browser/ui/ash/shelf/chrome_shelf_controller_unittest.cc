@@ -3578,7 +3578,7 @@ TEST_F(ChromeShelfControllerTest, SyncUpdates) {
   InsertUpdatePinChange(&sync_list, 1, ash::kGmailAppId);
   InsertUpdatePinChange(&sync_list, 2, extension2_->id());
   SendPinChanges(sync_list, false);
-  std::reverse(expected_pinned_apps.begin(), expected_pinned_apps.end());
+  std::ranges::reverse(expected_pinned_apps);
   GetPinnedAppIds(shelf_controller_.get(), &actual_pinned_apps);
   EXPECT_EQ(expected_pinned_apps, actual_pinned_apps);
 
