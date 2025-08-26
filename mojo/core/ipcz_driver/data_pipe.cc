@@ -501,12 +501,12 @@ bool DataPipe::Serialize(Transport& transmitter,
   // in core_ipcz.cc. Here we only serialize the header and the backing
   // SharedBuffer object.
   DCHECK_GE(data.size(), sizeof(DataPipeHeader));
-  auto& header = *reinterpret_cast<DataPipeHeader*>(data.data());
-  UNSAFE_TODO(memset(&header, 0, sizeof(header)));
-  header.size = sizeof(header);
-  header.endpoint_type = endpoint_type_;
-  header.element_size = base::checked_cast<uint32_t>(element_size_);
-  data_.Serialize(header.ring_buffer_state);
+  DataPipeHeader* header = new (data.data()) DataPipeHeader{
+      .size = sizeof(DataPipeHeader),
+      .endpoint_type = endpoint_type_,
+      .element_size = base::checked_cast<uint32_t>(element_size_),
+  };
+  data_.Serialize(header->ring_buffer_state);
 
   auto buffer_data = data.subspan(sizeof(DataPipeHeader));
   if (!buffer_->Serialize(transmitter, buffer_data, handles)) {
