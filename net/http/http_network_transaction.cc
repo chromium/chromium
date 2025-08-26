@@ -334,6 +334,15 @@ HttpNetworkTransaction::~HttpNetworkTransaction() {
   GenerateNetworkErrorLoggingReport(ERR_ABORTED);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+  // If there's a live stream request and DoCreateStreamComplete() has not set
+  // `create_stream_end_time_` yet, record this as an abort, so metrics include
+  // users cancelling requests that take too long.
+  if (stream_request_ && !create_stream_start_time_.is_null() &&
+      create_stream_end_time_.is_null()) {
+    create_stream_end_time_ = base::TimeTicks::Now();
+    RecordStreamRequestResult(ERR_ABORTED);
+  }
+
   if (stream_.get()) {
     // TODO(mbelshe): The stream_ should be able to compute whether or not the
     //                stream should be kept alive.  No reason to compute here
@@ -2426,7 +2435,7 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - start_timeticks_;
     base::UmaHistogramTimes(
         base::StrCat(
-            {"Net.NetworkTransaction.StreamRequestCompleteTime.",
+            {"Net.NetworkTransaction.StreamRequestCompleteTime2.",
              IsGoogleHostWithAlpnH3(url_.host_piece()) ? "GoogleHost." : "",
              result == OK ? "Success" : "Failure"}),
         elapsed);
@@ -2477,7 +2486,7 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
               reset_connection_and_request_for_resend_start_time_);
     }
   } else {
-    base::UmaHistogramSparse("Net.NetworkTransaction.StreamRequestErrorCode",
+    base::UmaHistogramSparse("Net.NetworkTransaction.StreamRequestErrorCode2",
                              -result);
   }
 }

@@ -189,11 +189,11 @@ const char kAlternativeServiceHttpHeader[] =
     "Alt-Svc: h2=\"mail.example.org:443\"\r\n";
 
 constexpr char kStreamRequestSuccessHistogram[] =
-    "Net.NetworkTransaction.StreamRequestCompleteTime.Success";
+    "Net.NetworkTransaction.StreamRequestCompleteTime2.Success";
 constexpr char kStreamRequestFailureHistogram[] =
-    "Net.NetworkTransaction.StreamRequestCompleteTime.Failure";
+    "Net.NetworkTransaction.StreamRequestCompleteTime2.Failure";
 constexpr char kStreamRequestH3SuccessHistogram[] =
-    "Net.NetworkTransaction.StreamRequestCompleteTime.GoogleHost.Success";
+    "Net.NetworkTransaction.StreamRequestCompleteTime2.GoogleHost.Success";
 
 int GetIdleSocketCountInTransportSocketPool(HttpNetworkSession* session) {
   if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
@@ -1301,6 +1301,27 @@ TEST_P(HttpNetworkTransactionTest, ConnectedCallbackCalledAsyncError) {
 
   EXPECT_THAT(connected_handler.transports(),
               ElementsAre(EmbeddedHttpServerTransportInfo()));
+}
+
+// Test the case that the HttpNetworkTransaction is destroyed while requesting a
+// stream, it will log to the failure histogram.
+TEST_P(HttpNetworkTransactionTest, DeleteDuringStreamRequest) {
+  session_deps_.host_resolver = std::make_unique<MockHostResolver>();
+  session_deps_.host_resolver->set_ondemand_mode(true);
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+
+  auto request = DefaultRequestInfo();
+  auto transaction =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  TestCompletionCallback callback;
+  EXPECT_THAT(
+      transaction->Start(&request, callback.callback(), NetLogWithSource()),
+      IsError(ERR_IO_PENDING));
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectTotalCount(kStreamRequestFailureHistogram, 0);
+
+  transaction.reset();
+  histogram_tester_.ExpectTotalCount(kStreamRequestFailureHistogram, 1);
 }
 
 // Allow up to 4 bytes of junk to precede status line.
