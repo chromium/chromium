@@ -5,13 +5,17 @@
 #include "remoting/host/linux/ei_keymap.h"
 
 #include <string_view>
+#include <xkbcommon/xkbcommon.h>
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/utf_string_conversion_utils.h"
+#include "remoting/host/linux/keyboard_layout_monitor_utils.h"
 #include "remoting/proto/control.pb.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace remoting {
 
@@ -56,6 +60,10 @@ xkb_keymap* EiKeymap::Get() {
   return keymap_.get();
 }
 
+const protocol::KeyboardLayout& EiKeymap::GetLayoutProto() const {
+  return layout_proto_;
+}
+
 void EiKeymap::OnKeymapLoaded(base::OnceClosure callback,
                               base::expected<std::string, Loggable> result) {
   base::ScopedClosureRunner closure_runner(std::move(callback));
@@ -73,6 +81,72 @@ void EiKeymap::OnKeymapLoaded(base::OnceClosure callback,
   keymap_.reset(xkb_keymap_new_from_string(ctx.get(), result.value().c_str(),
                                            XKB_KEYMAP_FORMAT_TEXT_V1,
                                            XKB_KEYMAP_COMPILE_NO_FLAGS));
+  auto numlock_index = xkb_keymap_mod_get_index(keymap_.get(), "NumLock");
+  auto numlock_mask = (numlock_index == XKB_MOD_INVALID) ? 0 : 1 << numlock_index;
+  auto shift_index = xkb_keymap_mod_get_index(keymap_.get(), "Shift");
+  auto shift_mask = (shift_index == XKB_MOD_INVALID) ? 0 : 1 << shift_index;
+  auto altgr_index = xkb_keymap_mod_get_index(keymap_.get(), "Mod5");
+  auto altgr_mask = (altgr_index == XKB_MOD_INVALID) ? 0 : 1 << altgr_index;
+  shift_level_to_mask_[0] = numlock_mask;
+  shift_level_to_mask_[1] = shift_mask | numlock_mask;
+  if (altgr_mask) {
+    shift_level_to_mask_[2] = altgr_mask | numlock_mask;
+    shift_level_to_mask_[3] = shift_mask | altgr_mask | numlock_mask;
+  }
+  xkb_state_.reset(xkb_state_new(keymap_.get()));
+  layout_proto_ = protocol::KeyboardLayout();
+  xkb_keymap_key_for_each(keymap_.get(), &EiKeymap::ProcessKey, this);
+}
+
+void EiKeymap::ProcessKey(xkb_keymap* keymap,
+                          xkb_keycode_t keycode,
+                          void* data) {
+  auto* self = static_cast<EiKeymap*>(data);
+  for (auto [level, mask] : self->shift_level_to_mask_) {
+    xkb_state_update_mask(self->xkb_state_.get(), mask, 0, 0, 0, 0, 0);
+    auto keysym = xkb_state_key_get_one_sym(self->xkb_state_.get(), keycode);
+    if (keysym == XKB_KEY_NoSymbol) {
+      // Keys with no symbols are fairly common, and should be ignored. In
+      // theory, keys with multiple symbols might exist, and could perhaps
+      // be supported (for example, if all symbols correspond to characters
+      // then they could be concatenated), but it seems to be very uncommon
+      // so they are ignored for now.
+      continue;
+    }
+    if (keysym == XKB_KEY_Num_Lock || keysym == XKB_KEY_Caps_Lock) {
+      // Don't include Num Lock or Caps Lock because the client keyboard
+      // doesn't support them.
+      continue;
+    }
+    auto usb_keycode = ui::KeycodeConverter::NativeKeycodeToUsbKeycode(keycode);
+    auto& actions =
+        *(*self->layout_proto_.mutable_keys())[usb_keycode].mutable_actions();
+    // See if this is a function key.
+    auto function = KeyvalToFunction(keysym);
+    if (function != protocol::LayoutKeyFunction::UNKNOWN) {
+      actions[level].set_function(function);
+      continue;
+    }
+    // See if this is a character key.
+    auto codepoint = xkb_keysym_to_utf32(keysym);
+    if (codepoint) {
+      std::string utf8;
+      base::WriteUnicodeCharacter(codepoint, &utf8);
+      actions[level].set_character(utf8);
+      continue;
+    }
+    // See if this is a dead key.
+    const char* utf8 = DeadKeyToUtf8String(keysym);
+    if (utf8) {
+      actions[level].set_character(utf8);
+      continue;
+    }
+    // Delete the entry that was implicitly added by the []-operator if
+    // there are no actions.
+    if (actions.empty()) {
+      self->layout_proto_.mutable_keys()->erase(usb_keycode);
+    }
+  }
 }
 
 }  // namespace remoting

@@ -164,7 +164,7 @@ void EiSenderSession::SetKeyboardLayoutMonitor(
     base::WeakPtr<GnomeKeyboardLayoutMonitor> monitor) {
   keyboard_layout_monitor_ = monitor;
   keyboard_layout_monitor_->OnKeymapChanged(
-      keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back())->Get());
+      keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back()).get());
 }
 
 void EiSenderSession::InjectKeyEvent(std::uint32_t usb_keycode, bool is_press) {
@@ -448,7 +448,7 @@ void EiSenderSession::OnDeviceRemoved(EiDevicePtr device) {
     });
     if (is_current && keyboard_layout_monitor_) {
       keyboard_layout_monitor_->OnKeymapChanged(
-          keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back())->Get());
+          keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back()).get());
     }
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_POINTER)) {
@@ -496,7 +496,7 @@ void EiSenderSession::OnKeymapLoaded(EiDevicePtr keyboard) {
   if (!keyboards_.empty()) {
     auto& [most_recent_keyboard, keymap] = keyboards_.back();
     if (keyboard == most_recent_keyboard && keyboard_layout_monitor_) {
-      keyboard_layout_monitor_->OnKeymapChanged(keymap->Get());
+      keyboard_layout_monitor_->OnKeymapChanged(keymap.get());
     }
   }
 }

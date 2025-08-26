@@ -14,6 +14,7 @@
 #include "base/types/expected.h"
 #include "remoting/host/base/pointer_utils.h"
 #include "remoting/host/linux/fd_string_reader.h"
+#include "remoting/proto/control.pb.h"
 #include "third_party/libei/cipd/include/libei-1.0/libei.h"
 #include "ui/events/keycodes/scoped_xkb.h"
 
@@ -38,13 +39,21 @@ class EiKeymap {
   bool IsValid() const;
   xkb_keymap* Get();
 
+  const protocol::KeyboardLayout& GetLayoutProto() const;
+
  private:
   void OnKeymapLoaded(base::OnceClosure callback,
                       base::expected<std::string, Loggable> result);
+  static void ProcessKey(xkb_keymap* keymap,
+                         xkb_keycode_t keycode,
+                         void* data);
 
   EiDevicePtr keyboard_;
   std::unique_ptr<FdStringReader> reader_;
   std::unique_ptr<xkb_keymap, ui::XkbKeymapDeleter> keymap_;
+  std::unique_ptr<xkb_state, ui::XkbStateDeleter> xkb_state_;
+  protocol::KeyboardLayout layout_proto_;
+  std::map<int, int> shift_level_to_mask_;
 };
 
 }  // namespace remoting

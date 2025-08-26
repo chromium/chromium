@@ -14,6 +14,8 @@
 
 namespace remoting {
 
+class EiKeymap;
+
 class GnomeKeyboardLayoutMonitor : public KeyboardLayoutMonitor {
  public:
   explicit GnomeKeyboardLayoutMonitor(
@@ -25,7 +27,7 @@ class GnomeKeyboardLayoutMonitor : public KeyboardLayoutMonitor {
 
   // Send the new layout to the client. If `keymap` is nullptr then send an
   // empty layout.
-  void OnKeymapChanged(xkb_keymap* keymap);
+  void OnKeymapChanged(EiKeymap* keymap);
 
   base::WeakPtr<GnomeKeyboardLayoutMonitor> GetWeakPtr();
 
