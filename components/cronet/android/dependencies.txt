@@ -14,6 +14,7 @@
 //build/android
 //build/config
 //build/config/compiler
+//build/modules/linux-x64
 //build/rust
 //build/rust/allocator
 //build/rust/chromium_prelude
