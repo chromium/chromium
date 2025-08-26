@@ -159,7 +159,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(Params(State::STATE_STARTED,
                            /*pages=*/1,
                            CupsJob::COMPLETED,
-                           std::vector<CupsJob::JobStateReason>(),
+                           std::vector<CupsJob::JobStateReason>{
+                               CupsJob::JobStateReason::kJobCanceledAtDevice},
                            /*job_pages=*/1,
                            State::STATE_CANCELLED,
                            /*expected_pages=*/1)));

@@ -147,14 +147,27 @@ void UpdateProcessingJob(const ::printing::PrinterStatus& printer_status,
 void UpdateCompletedJob(const ::printing::PrinterStatus& printer_status,
                         const ::printing::CupsJob& job,
                         CupsPrintJob* print_job) {
-  if (job.current_pages >= print_job->total_page_number()) {
-    print_job->set_error_code(PrinterErrorCode::NO_ERROR);
-    print_job->set_state(CupsPrintJob::State::STATE_DOCUMENT_DONE);
-  } else {
+  if (job.ContainsStateReason(
+          ::printing::CupsJob::JobStateReason::kJobCanceledByUser) ||
+      job.ContainsStateReason(
+          ::printing::CupsJob::JobStateReason::kJobCanceledByOperator) ||
+      job.ContainsStateReason(
+          ::printing::CupsJob::JobStateReason::kJobCanceledAtDevice)) {
     print_job->set_error_code(
         PrinterErrorCodeFromPrinterStatusReasons(printer_status));
     print_job->set_state(CupsPrintJob::State::STATE_CANCELLED);
+    return;
   }
+
+  if (job.current_pages < print_job->total_page_number() &&
+      !job.ContainsStateReason(
+          ::printing::CupsJob::JobStateReason::kJobCompletedSuccessfully)) {
+    PRINTER_LOG(ERROR) << base::StringPrintf(
+        "%s: job %d finished without completing all pages: %s", job.printer_id,
+        job.id, job.state_message);
+  }
+  print_job->set_error_code(PrinterErrorCode::NO_ERROR);
+  print_job->set_state(CupsPrintJob::State::STATE_DOCUMENT_DONE);
 }
 
 void UpdateStoppedJob(const ::printing::CupsJob& job, CupsPrintJob* print_job) {
