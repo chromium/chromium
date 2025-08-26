@@ -56,8 +56,8 @@ enum StreamType {
   //  kStreamTypeEAC3WithSampleAES = 0xc2,
 };
 
-constexpr int64_t kSampleAESPrivateDataIndicatorAVC = 0x7a617663;
-constexpr int64_t kSampleAESPrivateDataIndicatorAAC = 0x61616364;
+constexpr uint32_t kSampleAESPrivateDataIndicatorAVC = 0x7a617663;
+constexpr uint32_t kSampleAESPrivateDataIndicatorAAC = 0x61616364;
 // TODO(dougsteed). Consider adding support for the following:
 // const int64_t kSampleAESPrivateDataIndicatorAC3 = 0x61633364;
 // const int64_t kSampleAESPrivateDataIndicatorEAC3 = 0x65633364;
@@ -143,13 +143,13 @@ class PidState {
  private:
   void ResetState();
 
-  int pid_;
+  uint32_t pid_;
   PidType pid_type_;
   std::unique_ptr<TsSection> section_parser_;
 
-  bool enable_;
+  bool enable_ = false;
 
-  int continuity_counter_;
+  std::optional<uint32_t> continuity_counter_;
 };
 
 PidState::PidState(int pid,
@@ -157,9 +157,7 @@ PidState::PidState(int pid,
                    std::unique_ptr<TsSection> section_parser)
     : pid_(pid),
       pid_type_(pid_type),
-      section_parser_(std::move(section_parser)),
-      enable_(false),
-      continuity_counter_(-1) {
+      section_parser_(std::move(section_parser)) {
   DCHECK(section_parser_);
 }
 
@@ -171,11 +169,12 @@ bool PidState::PushTsPacket(const TsPacket& ts_packet) {
   if (!enable_)
     return true;
 
-  int expected_continuity_counter = (continuity_counter_ + 1) % 16;
-  if (continuity_counter_ >= 0 &&
-      ts_packet.continuity_counter() != expected_continuity_counter) {
-    DVLOG(1) << "TS discontinuity detected for pid: " << pid_;
-    return false;
+  if (continuity_counter_) {
+    uint32_t expected_continuity_counter = (*continuity_counter_ + 1) % 16;
+    if (ts_packet.continuity_counter() != expected_continuity_counter) {
+      DVLOG(1) << "TS discontinuity detected for pid: " << pid_;
+      return false;
+    }
   }
 
   bool status = section_parser_->Parse(ts_packet.payload_unit_start_indicator(),
@@ -214,7 +213,7 @@ bool PidState::IsEnabled() const {
 
 void PidState::ResetState() {
   section_parser_->Reset();
-  continuity_counter_ = -1;
+  continuity_counter_ = std::nullopt;
 }
 
 Mp2tStreamParser::BufferQueueWithConfig::BufferQueueWithConfig(

@@ -53,13 +53,13 @@ bool AC3::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
   // skip fscod, bsid, bsmod
   RCHECK(reader.SkipBits(2 + 5 + 3));
 
-  int acmod;
+  uint8_t acmod;
   RCHECK(reader.ReadBits(3, &acmod));
   if (acmod >= kAC3AudioCodingModeSize) {
     return false;
   }
 
-  int lfeon;
+  uint8_t lfeon;
   RCHECK(reader.ReadBits(1, &lfeon));
 
   channel_layout_ = kAC3AudioCodingModeTable[lfeon][acmod];

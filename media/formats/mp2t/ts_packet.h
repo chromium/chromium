@@ -38,8 +38,8 @@ class TsPacket {
   bool payload_unit_start_indicator() const {
     return payload_unit_start_indicator_;
   }
-  int pid() const { return pid_; }
-  int continuity_counter() const { return continuity_counter_; }
+  uint32_t pid() const { return pid_; }
+  uint32_t continuity_counter() const { return continuity_counter_; }
   bool discontinuity_indicator() const { return discontinuity_indicator_; }
   bool random_access_indicator() const { return random_access_indicator_; }
 
@@ -60,8 +60,8 @@ class TsPacket {
 
   // TS header.
   bool payload_unit_start_indicator_;
-  int pid_;
-  int continuity_counter_;
+  uint32_t pid_;
+  uint32_t continuity_counter_;
 
   // Params from the adaptation field.
   bool discontinuity_indicator_;

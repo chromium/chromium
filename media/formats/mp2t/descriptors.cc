@@ -26,7 +26,7 @@ enum DescriptorTag {
   DESCRIPTOR_TAG_PRIVATE_DATA_INDICATOR = 15,
 };
 
-const int kCASystemIdCenc = 0x6365;       // 'ce'
+const uint16_t kCASystemIdCenc = 0x6365;  // 'ce'
 const uint32_t kFourccCbcs = 0x63626373;  // 'cbcs'
 
 }  // namespace
@@ -53,7 +53,7 @@ bool Descriptors::Read(BitReader* reader, int size) {
   }
   bits_available = size_in_bits;
   do {
-    int tag;
+    uint8_t tag;
     size_t length;
     RCHECK(reader->ReadBits(8, &tag));
     RCHECK(reader->ReadBits(8, &length));
@@ -66,7 +66,7 @@ bool Descriptors::Read(BitReader* reader, int size) {
 }
 
 bool Descriptors::HasRegistrationDescriptor(
-    int64_t* format_identifier,
+    uint32_t* format_identifier,
     std::vector<uint8_t>* additional_info) const {
   DCHECK(format_identifier);
   DCHECK(additional_info);
@@ -85,8 +85,8 @@ bool Descriptors::HasRegistrationDescriptor(
   return true;
 }
 
-bool Descriptors::HasCADescriptor(int* system_id,
-                                  int* pid,
+bool Descriptors::HasCADescriptor(uint16_t* system_id,
+                                  uint16_t* pid,
                                   std::vector<uint8_t>* private_data) const {
   DCHECK(system_id);
   DCHECK(pid);
@@ -110,12 +110,12 @@ bool Descriptors::HasCADescriptor(int* system_id,
   return true;
 }
 
-bool Descriptors::HasCADescriptorCenc(int* ca_pid,
-                                      int* pssh_pid,
+bool Descriptors::HasCADescriptorCenc(uint16_t* ca_pid,
+                                      uint16_t* pssh_pid,
                                       EncryptionScheme* scheme) const {
   DCHECK(ca_pid);
   DCHECK(pssh_pid);
-  int system_id;
+  uint16_t system_id;
   std::vector<uint8_t> private_data;
   if (!HasCADescriptor(&system_id, ca_pid, &private_data)) {
     return false;
@@ -126,8 +126,8 @@ bool Descriptors::HasCADescriptorCenc(int* ca_pid,
   BitReader reader(private_data);
   uint32_t scheme_type;
   uint32_t scheme_version;
-  int num_systems;
-  int encryption_algorithm;
+  uint8_t num_systems;
+  uint32_t encryption_algorithm;
   std::array<uint8_t, 16> pssh_system_id;
   // TODO(dougsteed). Currently we don't check many of the following values,
   // and we only support the 'cbcs' scheme (which involves AES-CBC encryption).
@@ -148,8 +148,8 @@ bool Descriptors::HasCADescriptorCenc(int* ca_pid,
   return true;
 }
 
-bool Descriptors::HasPrivateDataIndicator(int64_t value) const {
-  int64_t private_data_indicator;
+bool Descriptors::HasPrivateDataIndicator(uint32_t value) const {
+  uint32_t private_data_indicator;
   auto search = descriptors_.find(DESCRIPTOR_TAG_PRIVATE_DATA_INDICATOR);
   if (search == descriptors_.end()) {
     return false;

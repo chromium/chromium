@@ -113,16 +113,16 @@ TEST(BitReaderTest, VariableSkipBitsTest) {
   EXPECT_EQ(bit_reader.bits_available(), sizeof(buffer) * 8);
   for (auto [read_bit_count, skip_bit_count] : pattern_read_skip) {
     if (read_bit_count > 0) {
-      int value;
+      uint32_t value;
       EXPECT_TRUE(bit_reader.ReadBits(read_bit_count, &value));
-      EXPECT_EQ(value, 1 | (1 << (read_bit_count - 1)));
+      EXPECT_EQ(value, 1u | (1 << (read_bit_count - 1)));
     }
     EXPECT_TRUE(bit_reader.SkipBits(skip_bit_count));
   }
 }
 
 TEST(BitReaderTest, BitsReadTest) {
-  int value;
+  uint32_t value;
   bool flag;
   uint8_t buffer[] = {0x0a, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
   BitReader reader1(buffer);

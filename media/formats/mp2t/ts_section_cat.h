@@ -5,12 +5,13 @@
 #ifndef MEDIA_FORMATS_MP2T_TS_SECTION_CAT_H_
 #define MEDIA_FORMATS_MP2T_TS_SECTION_CAT_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "media/base/encryption_scheme.h"
 #include "media/formats/mp2t/ts_section_psi.h"
 
-namespace media {
-namespace mp2t {
+namespace media::mp2t {
 
 class TsSectionCat : public TsSectionPsi {
  public:
@@ -36,10 +37,9 @@ class TsSectionCat : public TsSectionPsi {
   RegisterEncryptionSchemeCB register_encryption_scheme_cb_;
 
   // Parameters from the CAT.
-  int version_number_;
+  std::optional<uint32_t> version_number_;
 };
 
-}  // namespace mp2t
-}  // namespace media
+}  // namespace media::mp2t
 
 #endif  // MEDIA_FORMATS_MP2T_TS_SECTION_CAT_H_

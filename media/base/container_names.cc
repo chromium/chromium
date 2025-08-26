@@ -476,7 +476,7 @@ static bool CheckH261(const uint8_t* buffer, int buffer_size) {
 
     // Skip any extra insertion information. Since this is open-ended, if we run
     // out of bits assume that the buffer is correctly formatted.
-    int extra = ReadBits(&reader, 1);
+    uint8_t extra = ReadBits(&reader, 1);
     while (extra == 1) {
       if (!reader.SkipBits(8))
         return seen_start_code;
@@ -487,7 +487,7 @@ static bool CheckH261(const uint8_t* buffer, int buffer_size) {
     // Next should be a Group of Blocks start code. Again, if we run out of
     // bits, then assume that the buffer up to here is correct, and the buffer
     // just happened to end in the middle of a header.
-    int next;
+    uint16_t next;
     if (!reader.ReadBits(16, &next))
       return seen_start_code;
     RCHECK(next == 1);

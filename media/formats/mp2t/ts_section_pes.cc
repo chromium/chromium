@@ -137,8 +137,8 @@ bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
   BitReader bit_reader(raw_pes, raw_pes_size);
 
   // Read up to the pes_packet_length (6 bytes).
-  int packet_start_code_prefix;
-  int stream_id;
+  uint32_t packet_start_code_prefix;
+  uint8_t stream_id;
   size_t pes_packet_length;
   RCHECK(bit_reader.ReadBits(24, &packet_start_code_prefix));
   RCHECK(bit_reader.ReadBits(8, &stream_id));
@@ -164,20 +164,20 @@ bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
   }
 
   // Read up to "pes_header_data_length".
-  int dummy_2;
-  int PES_scrambling_control;
-  int PES_priority;
-  int data_alignment_indicator;
-  int copyright;
-  int original_or_copy;
-  int pts_dts_flags;
-  int escr_flag;
-  int es_rate_flag;
-  int dsm_trick_mode_flag;
-  int additional_copy_info_flag;
-  int pes_crc_flag;
-  int pes_extension_flag;
-  int pes_header_data_length;
+  uint8_t dummy_2;
+  uint8_t PES_scrambling_control;
+  uint8_t PES_priority;
+  uint8_t data_alignment_indicator;
+  uint8_t copyright;
+  uint8_t original_or_copy;
+  uint8_t pts_dts_flags;
+  uint8_t escr_flag;
+  uint8_t es_rate_flag;
+  uint8_t dsm_trick_mode_flag;
+  uint8_t additional_copy_info_flag;
+  uint8_t pes_crc_flag;
+  uint8_t pes_extension_flag;
+  uint32_t pes_header_data_length;
   RCHECK(bit_reader.ReadBits(2, &dummy_2));
   RCHECK(dummy_2 == 0x2);
   RCHECK(bit_reader.ReadBits(2, &PES_scrambling_control));
@@ -206,8 +206,8 @@ bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
   // Read the timing information section.
   bool is_pts_valid = false;
   bool is_dts_valid = false;
-  int64_t pts_section = 0;
-  int64_t dts_section = 0;
+  uint64_t pts_section = 0;
+  uint64_t dts_section = 0;
   if (pts_dts_flags == 0x2) {
     RCHECK(bit_reader.ReadBits(40, &pts_section));
     RCHECK((((pts_section >> 36) & 0xf) == 0x2) &&

@@ -81,16 +81,16 @@ bool MPEG1AudioStreamParser::ParseHeader(MediaLog* media_log,
                                          const uint8_t* data,
                                          Header* header) {
   BitReader reader(data, kHeaderSize);
-  int sync;
-  int version;
-  int layer;
-  int is_protected;
-  int bitrate_index;
-  int sample_rate_index;
-  int has_padding;
-  int is_private;
-  int channel_mode;
-  int other_flags;
+  uint16_t sync;
+  uint8_t version;
+  uint8_t layer;
+  uint8_t is_protected;
+  uint8_t bitrate_index;
+  uint8_t sample_rate_index;
+  uint8_t has_padding;
+  uint8_t is_private;
+  uint8_t channel_mode;
+  uint8_t other_flags;
 
   if (!reader.ReadBits(11, &sync) || !reader.ReadBits(2, &version) ||
       !reader.ReadBits(2, &layer) || !reader.ReadBits(1, &is_protected) ||

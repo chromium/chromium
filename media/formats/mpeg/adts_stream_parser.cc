@@ -35,16 +35,16 @@ int ADTSStreamParser::ParseFrameHeader(const uint8_t* data,
     return 0;
 
   BitReader reader(data, size);
-  int sync;
-  int version;
-  int layer;
-  int protection_absent;
-  int profile;
+  uint16_t sync;
+  uint8_t version;
+  uint8_t layer;
+  uint8_t protection_absent;
+  uint8_t profile;
   size_t sample_rate_index;
   size_t channel_layout_index;
   size_t frame_length;
   size_t num_data_blocks;
-  int unused;
+  uint16_t unused;
 
   if (!reader.ReadBits(12, &sync) ||
       !reader.ReadBits(1, &version) ||

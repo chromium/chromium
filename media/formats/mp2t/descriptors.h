@@ -36,27 +36,27 @@ class Descriptors {
   // Indicates whether a Registration descriptor is present. If so, the
   // |format_identifier| and |additional_info| values are populated with the
   // contents of the descriptor.
-  bool HasRegistrationDescriptor(int64_t* format_identifier,
+  bool HasRegistrationDescriptor(uint32_t* format_identifier,
                                  std::vector<uint8_t>* additional_info) const;
 
   // Indicates whether a CA descriptor is present. If so, the |system_id|,
   // |pid|, and |private_data| values are populated with the contents of the
   // descriptor.
-  bool HasCADescriptor(int* system_id,
-                       int* pid,
+  bool HasCADescriptor(uint16_t* system_id,
+                       uint16_t* pid,
                        std::vector<uint8_t>* private_data) const;
 
   // Indicates whether a CA descriptor is present, and if so, whether it is
   // of the type defined by ISO/IEC 23001-9:2014 (i.e. with a specific
   // system_id value and layout of the private_data). If so, the |ca_pid|,
   // |pssh_pid| and |mode| are populated with the contents of the descriptor.
-  bool HasCADescriptorCenc(int* ca_pid,
-                           int* pssh_pid,
+  bool HasCADescriptorCenc(uint16_t* ca_pid,
+                           uint16_t* pssh_pid,
                            EncryptionScheme* scheme) const;
 
   // Indicates whether a Private Data Indicator descriptor is present with a
   // particular |value|.
-  bool HasPrivateDataIndicator(int64_t value) const;
+  bool HasPrivateDataIndicator(uint32_t value) const;
 
  private:
   using Descriptor = std::pair<int, std::vector<uint8_t>>;

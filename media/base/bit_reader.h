@@ -11,6 +11,7 @@
 #include <string>
 #include <type_traits>
 
+#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -51,7 +52,7 @@ class MEDIA_EXPORT BitReader {
   // return false unless `num_bits` is 0. The type `T` has to be a primitive
   // integer type.
   template <typename T>
-    requires std::integral<T>
+    requires base::bits::UnsignedInteger<T>
   [[nodiscard]] bool ReadBits(size_t num_bits, T* out) {
     DCHECK_LE(num_bits, sizeof(T) * 8);
     uint64_t temp = 0;

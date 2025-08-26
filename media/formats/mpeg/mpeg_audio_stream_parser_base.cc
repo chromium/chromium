@@ -374,8 +374,8 @@ int MPEGAudioStreamParserBase::ParseID3v2(const uint8_t* data, int size) {
     return 0;
 
   BitReader reader(data, size);
-  int32_t id;
-  int version;
+  uint32_t id;
+  uint16_t version;
   uint8_t flags;
   int32_t id3_size;
 

@@ -22,16 +22,16 @@ TsSectionPmt::~TsSectionPmt() {
 
 bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   // Read up to |last_section_number|.
-  int table_id;
-  int section_syntax_indicator;
-  int dummy_zero;
-  int reserved;
+  uint8_t table_id;
+  uint8_t section_syntax_indicator;
+  uint8_t dummy_zero;
+  uint8_t reserved;
   size_t section_length;
-  int program_number;
-  int version_number;
-  int current_next_indicator;
-  int section_number;
-  int last_section_number;
+  uint16_t program_number;
+  uint8_t version_number;
+  uint8_t current_next_indicator;
+  uint8_t section_number;
+  uint8_t last_section_number;
   RCHECK(bit_reader->ReadBits(8, &table_id));
   RCHECK(bit_reader->ReadBits(1, &section_syntax_indicator));
   RCHECK(bit_reader->ReadBits(1, &dummy_zero));
@@ -62,8 +62,8 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   // and the program number that was provided in a PAT for the current PMT.
 
   // Read the end of the fixed length section.
-  int pcr_pid;
-  int program_info_length;
+  uint16_t pcr_pid;
+  uint16_t program_info_length;
   RCHECK(bit_reader->ReadBits(3, &reserved));
   RCHECK(bit_reader->ReadBits(13, &pcr_pid));
   RCHECK(bit_reader->ReadBits(4, &reserved));
@@ -81,12 +81,12 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   const size_t pid_map_end_marker =
       base::CheckAdd(base::CheckSub(section_start_marker, section_length), 4u)
           .ValueOrDie();
-  using PidMapValue = std::pair<int, Descriptors>;
-  std::map<int, PidMapValue> pid_map;
+  using PidMapValue = std::pair<uint8_t, Descriptors>;
+  std::map<uint16_t, PidMapValue> pid_map;
   while (bit_reader->bits_available() > 8 * pid_map_end_marker) {
-    int stream_type;
-    int pid_es;
-    int es_info_length;
+    uint8_t stream_type;
+    uint16_t pid_es;
+    uint16_t es_info_length;
     RCHECK(bit_reader->ReadBits(8, &stream_type));
     RCHECK(bit_reader->ReadBits(3, &reserved));
     RCHECK(bit_reader->ReadBits(13, &pid_es));

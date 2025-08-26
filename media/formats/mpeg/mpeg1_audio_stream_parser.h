@@ -22,14 +22,14 @@ class MEDIA_EXPORT MPEG1AudioStreamParser : public MPEGAudioStreamParserBase {
   static constexpr int kHeaderSize = 4;
 
   // Versions and layers as defined in ISO/IEC 11172-3.
-  enum Version {
+  enum Version : uint8_t {
     kVersion1 = 3,
     kVersion2 = 2,
     kVersionReserved = 1,
     kVersion2_5 = 0,
   };
 
-  enum Layer {
+  enum Layer : uint8_t {
     kLayer1 = 3,
     kLayer2 = 2,
     kLayer3 = 1,
