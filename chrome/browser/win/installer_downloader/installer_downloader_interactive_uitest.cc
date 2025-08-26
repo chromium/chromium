@@ -130,9 +130,9 @@ IN_PROC_BROWSER_TEST_F(InstallerDownloaderInteractiveUiTest,
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 
   histograms.ExpectUniqueSample("Windows.InstallerDownloader.InfobarShown",
-                                /*sample=*/1, /*expected_count=*/1);
+                                /*sample=*/1, /*expected_bucket_count=*/1);
   histograms.ExpectUniqueSample("Windows.InstallerDownloader.RequestAccepted",
-                                /*sample=*/1, /*expected_count=*/1);
+                                /*sample=*/1, /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(InstallerDownloaderInteractiveUiTest,
@@ -145,9 +145,9 @@ IN_PROC_BROWSER_TEST_F(InstallerDownloaderInteractiveUiTest,
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 
   histograms.ExpectUniqueSample("Windows.InstallerDownloader.InfobarShown",
-                                /*sample=*/1, /*expected_count=*/1);
+                                /*sample=*/1, /*expected_bucket_count=*/1);
   histograms.ExpectUniqueSample("Windows.InstallerDownloader.RequestAccepted",
-                                /*sample=*/0, /*expected_count=*/1);
+                                /*sample=*/0, /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(InstallerDownloaderInteractiveUiTest,
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(InstallerDownloaderInteractiveUiTest,
                   VerifyNoInfobarInAnyContext());
 
   histograms.ExpectUniqueSample("Windows.InstallerDownloader.InfobarShown",
-                                /*sample=*/1, /*expected_count=*/1);
+                                /*sample=*/1, /*expected_bucket_count=*/1);
 }
 
 }  // namespace

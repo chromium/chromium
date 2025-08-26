@@ -244,7 +244,7 @@ void InstallerDownloaderController::OnEligibilityReady(
   if (visible_infobars_web_contents_.size() == 1u) {
     model_->IncrementShowCount();
     base::UmaHistogramBoolean("Windows.InstallerDownloader.InfobarShown",
-                              /*shown=*/true);
+                              /*sample=*/true);
   }
 }
 
