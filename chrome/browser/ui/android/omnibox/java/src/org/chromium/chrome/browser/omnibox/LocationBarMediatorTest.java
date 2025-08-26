@@ -1750,4 +1750,11 @@ public class LocationBarMediatorTest {
         mMediator.onInstallabilityUpdated(mAppBannerManager);
         verify(mLocationBarLayout).setInstallButtonVisibility(false);
     }
+
+    @Test
+    public void testHintZeroSuggestRefresh_nullTab() {
+        doReturn(null).when(mLocationBarDataProvider).getTab();
+        mMediator.hintZeroSuggestRefresh();
+        verify(mAutocompleteCoordinator).prefetchZeroSuggestResults(null);
+    }
 }

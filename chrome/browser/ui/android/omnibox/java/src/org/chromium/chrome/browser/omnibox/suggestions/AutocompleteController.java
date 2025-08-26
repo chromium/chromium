@@ -126,14 +126,16 @@ public class AutocompleteController {
      * that yields no results.
      *
      * @param input The AutocompleteInput containing page URL and classification.
+     * @param webContents The WebContents for the current tab.
      */
-    void startPrefetch(AutocompleteInput input) {
+    void startPrefetch(AutocompleteInput input, @Nullable WebContents webContents) {
         if (mNativeController == 0) return;
         AutocompleteControllerJni.get()
                 .startPrefetch(
                         mNativeController,
                         input.getPageUrl().getSpec(),
-                        input.getPageClassification());
+                        input.getPageClassification(),
+                        webContents);
     }
 
     /**
@@ -504,7 +506,8 @@ public class AutocompleteController {
         void startPrefetch(
                 long nativeAutocompleteControllerAndroid,
                 String currentUrl,
-                int pageClassification);
+                int pageClassification,
+                @Nullable WebContents webContents);
 
         // Create a navigation observser.
         void createNavigationObserver(

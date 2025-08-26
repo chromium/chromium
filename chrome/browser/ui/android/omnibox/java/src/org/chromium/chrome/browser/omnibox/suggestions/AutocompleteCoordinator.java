@@ -430,9 +430,13 @@ public class AutocompleteCoordinator
                 .orElse(null);
     }
 
-    /** Sends a zero suggest request to the server in order to pre-populate the result cache. */
-    public void prefetchZeroSuggestResults() {
-        mMediator.startPrefetch();
+    /**
+     * Sends a zero suggest request to the server in order to pre-populate the result cache.
+     *
+     * @param tab The current tab.
+     */
+    public void prefetchZeroSuggestResults(@Nullable Tab tab) {
+        mMediator.startPrefetch(tab != null ? tab.getWebContents() : null);
     }
 
     /**

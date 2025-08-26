@@ -37,6 +37,7 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service_factory.h"
@@ -184,7 +185,8 @@ void AutocompleteControllerAndroid::Start(JNIEnv* env,
 void AutocompleteControllerAndroid::StartPrefetch(
     JNIEnv* env,
     const JavaRef<jstring>& j_current_url,
-    jint j_page_classification) {
+    jint j_page_classification,
+    const JavaParamRef<jobject>& j_web_contents) {
   auto page_classification =
       OmniboxEventProto::PageClassification(j_page_classification);
 
@@ -198,6 +200,18 @@ void AutocompleteControllerAndroid::StartPrefetch(
     auto_complete_text = omnibox::IsNTPPage(page_classification)
                              ? u""
                              : ConvertJavaStringToUTF16(env, j_current_url);
+  }
+
+  // If the Prewarm feature is enabled, we trigger them from the omnibox focus,
+  // so we check them here.
+  if (features::kPrewarmZeroSuggestTrigger.Get()) {
+    if (auto* web_contents =
+            content::WebContents::FromJavaWebContents(j_web_contents)) {
+      auto* prerender_manager =
+          PrerenderManager::GetOrCreateForWebContents(web_contents);
+      CHECK(prerender_manager);
+      prerender_manager->MaybeStartPrewarmSearchResult();
+    }
   }
 
   AutocompleteInput input(auto_complete_text, page_classification,

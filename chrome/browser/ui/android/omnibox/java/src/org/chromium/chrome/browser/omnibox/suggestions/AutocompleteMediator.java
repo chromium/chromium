@@ -1093,10 +1093,16 @@ class AutocompleteMediator
         }
     }
 
-    /** Sends a zero suggest request to the server in order to pre-populate the result cache. */
-    /* package */ void startPrefetch() {
+    /**
+     * Sends a zero suggest request to the server in order to pre-populate the result cache.
+     *
+     * @param webContents The WebContents for the current tab.
+     */
+    /* package */ void startPrefetch(@Nullable WebContents webContents) {
         postAutocompleteRequest(
-                () -> mAutocomplete.ifPresent(a -> a.startPrefetch(mAutocompleteInput)),
+                () ->
+                        mAutocomplete.ifPresent(
+                                a -> a.startPrefetch(mAutocompleteInput, webContents)),
                 SCHEDULE_FOR_IMMEDIATE_EXECUTION);
     }
 

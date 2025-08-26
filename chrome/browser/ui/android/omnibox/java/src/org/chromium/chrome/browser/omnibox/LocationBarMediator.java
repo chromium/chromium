@@ -351,6 +351,7 @@ class LocationBarMediator
                                     mProfileSupplier.get(), templateUrlService);
                         });
             }
+            hintZeroSuggestRefresh();
         } // Focus change caused by a closed tab may result in there not being an active tab.
         if (!hasFocus && mLocationBarDataProvider.hasTab()) {
             setUrl(
@@ -1544,7 +1545,7 @@ class LocationBarMediator
 
     @Override
     public void hintZeroSuggestRefresh() {
-        mAutocompleteCoordinator.prefetchZeroSuggestResults();
+        mAutocompleteCoordinator.prefetchZeroSuggestResults(mLocationBarDataProvider.getTab());
     }
 
     // TemplateUrlService.TemplateUrlServiceObserver implementation

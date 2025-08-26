@@ -684,7 +684,8 @@ public class LocationBarCoordinator
     /** Initiates a pre-fetch of autocomplete suggestions. */
     public void startAutocompletePrefetch() {
         if (!mNativeInitialized) return;
-        mAutocompleteCoordinator.prefetchZeroSuggestResults();
+        mAutocompleteCoordinator.prefetchZeroSuggestResults(
+                mLocationBarMediator.getLocationBarDataProvider().getTab());
     }
 
     /**
