@@ -22,7 +22,8 @@ import java.util.Set;
 
 /**
  * Helper class to handle persistence of tab group metadata. This includes the title, color, and
- * collapsed state.
+ * collapsed state. This is not intended to be used directly. All access should route through the
+ * {@link TabGroupModelFilter}.
  */
 @NullMarked
 public class TabGroupVisualDataStore {

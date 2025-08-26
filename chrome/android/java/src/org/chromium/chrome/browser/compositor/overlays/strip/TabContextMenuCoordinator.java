@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.text.TextUtils;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.ColorInt;
@@ -54,12 +53,12 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.TabWindowManagerUtils;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.tasks.tab_management.GroupWindowChecker;
 import org.chromium.chrome.browser.tasks.tab_management.GroupWindowState;
@@ -482,10 +481,15 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
 
             @Nullable Integer firstTabInGroupTabId = tabGroup.savedTabs.get(0).localId;
             assert firstTabInGroupTabId != null : "Tab groups shouldn't be empty";
-            String fallbackLabel =
-                    TabGroupTitleUtils.getDefaultTitle(
-                            mContext, mTabGroupModelFilter.getTabCountForGroup(groupId));
-            String label = TextUtils.isEmpty(tabGroup.title) ? fallbackLabel : tabGroup.title;
+            String label =
+                    TabWindowManagerUtils.getTabGroupTitleInAnyWindow(
+                            mContext, tabWindowManager, groupId, /* isIncognito= */ false);
+            // If no title could be found nor could a default be generated, skip the group
+            if (label == null) continue;
+            @TabGroupColorId
+            int colorId =
+                    TabWindowManagerUtils.getTabGroupColorInAnyWindow(
+                            tabWindowManager, groupId, /* isIncognito= */ false);
             OnClickListener clickListener =
                     (v) -> {
                         recordMenuAction(R.id.add_to_group_sub_menu_id, tabs.size() > 1);
@@ -509,7 +513,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
                                     .with(TITLE, label)
                                     .with(ENABLED, true)
                                     .with(CLICK_LISTENER, clickListener)
-                                    .with(START_ICON_DRAWABLE, getCircleDrawable(tabGroup.color))
+                                    .with(START_ICON_DRAWABLE, getCircleDrawable(colorId))
                                     .build()));
         }
         return result;
