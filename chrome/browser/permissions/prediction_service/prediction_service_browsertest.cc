@@ -1629,7 +1629,8 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
           ? kAiv4NotificationsPermissionRequestRelevanceHistogram
           : kAiv4GeolocationPermissionRequestRelevanceHistogram,
       /*sample=*/test_case.expected_relevance,
-      /*expected_bucket_count=*/test_case.success_count_model_execution);
+      // The permission request relevance is always logged.
+      /*expected_bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
       kAiv4ComputeEmbeddingsStatusHistogram,

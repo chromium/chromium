@@ -284,15 +284,15 @@ void PredictionBasedPermissionUiSelector::
     VLOG(1) << "[PermissionsAI]: PermissionRequest has a relevance of "
             << static_cast<int>(relevance.value());
     last_permission_request_relevance_ = relevance.value();
-    features.permission_relevance = relevance.value();
-
-    PermissionUmaUtil::RecordPermissionRequestRelevance(
-        request_metadata.request_type, features.permission_relevance,
-        model_type);
   } else {
     last_permission_request_relevance_ =
         PermissionRequestRelevance::kUnspecified;
   }
+
+  features.permission_relevance = last_permission_request_relevance_.value();
+
+  PermissionUmaUtil::RecordPermissionRequestRelevance(
+      request_metadata.request_type, features.permission_relevance, model_type);
 
   InquireServerModel(features, std::move(request_metadata));
 }
@@ -739,8 +739,7 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
     // AIvX models take priority over each other in the following order:
     // AIv4, AIv3, AIv1
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    if (PredictionModelHandlerProvider::IsAiv4ModelAvailable() &&
-        PredictionModelHandlerProviderFactory::GetForBrowserContext(profile_)) {
+    if (PredictionModelHandlerProvider::IsAiv4ModelAvailable()) {
       VLOG(1) << "[CPSS] GetPredictionTypeToUse AIv4";
       return PredictionSource::kOnDeviceAiv4AndServerSideModel;
     }
