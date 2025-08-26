@@ -342,7 +342,6 @@
     "linux-blink-wpt-3pcd-fyi-rel": "ci/linux-blink-wpt-3pcd-fyi-rel/gn-args.json",
     "linux-blink-wpt-reset-rel": "ci/linux-blink-wpt-reset-rel/gn-args.json",
     "linux-chromeos-annotator-rel": "ci/linux-chromeos-annotator-rel/gn-args.json",
-    "linux-chromeos-dbg-oslogin": "ci/linux-chromeos-dbg-oslogin/gn-args.json",
     "linux-crossbench": "ci/linux-crossbench/gn-args.json",
     "linux-fieldtrial-rel": "ci/linux-fieldtrial-rel/gn-args.json",
     "linux-headless-shell-rel": "ci/linux-headless-shell-rel/gn-args.json",
@@ -675,7 +674,6 @@
     "linux-chromeos-annotator-rel": "try/linux-chromeos-annotator-rel/gn-args.json",
     "linux-chromeos-compile-dbg": "try/linux-chromeos-compile-dbg/gn-args.json",
     "linux-chromeos-dbg": "try/linux-chromeos-dbg/gn-args.json",
-    "linux-chromeos-dbg-oslogin": "try/linux-chromeos-dbg-oslogin/gn-args.json",
     "linux-chromeos-rel": "try/linux-chromeos-rel/gn-args.json"
   },
   "tryserver.chromium.codesearch": {
