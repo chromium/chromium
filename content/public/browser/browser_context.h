@@ -27,7 +27,6 @@
 #include "content/public/browser/zoom_level_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
@@ -52,6 +51,10 @@ namespace media {
 class VideoDecodePerfHistory;
 class WebrtcVideoPerfHistory;
 }  // namespace media
+
+namespace net {
+class HttpNoVarySearchData;
+}  // namespace net
 
 namespace storage {
 class BlobStorageContext;

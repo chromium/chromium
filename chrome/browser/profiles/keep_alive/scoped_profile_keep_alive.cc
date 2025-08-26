@@ -4,6 +4,8 @@
 
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 
+#include <sstream>
+
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"

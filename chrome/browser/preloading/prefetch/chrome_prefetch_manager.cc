@@ -8,6 +8,7 @@
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/common/content_features.h"
+#include "net/http/http_no_vary_search_data.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
