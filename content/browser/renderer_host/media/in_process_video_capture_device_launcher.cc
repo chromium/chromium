@@ -201,7 +201,9 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
   if ((device_out = CreateDesktopCaptureDeviceMac(desktop_id))) {
     return kDesktopCaptureDeviceMac;
   }
-#elif !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_MAC)
+
+#if !BUILDFLAG(IS_IOS)
   if ((device_out = DesktopCaptureDevice::Create(desktop_id))) {
     return kLegacyDesktopCaptureDevice;
   }
