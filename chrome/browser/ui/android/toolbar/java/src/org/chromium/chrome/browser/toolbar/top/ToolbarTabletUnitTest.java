@@ -3,27 +3,38 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.toolbar.top;
 
+import static android.view.View.MeasureSpec.EXACTLY;
+import static android.view.View.MeasureSpec.UNSPECIFIED;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalMatchers.geq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.BACK;
+import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.FORWARD;
+import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.RELOAD;
+
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.ImageButton;
@@ -78,6 +89,7 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
+import org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -87,6 +99,7 @@ import org.chromium.ui.widget.ToastManager;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** Unit tests for @{@link ToolbarTablet} */
@@ -130,6 +143,12 @@ public final class ToolbarTabletUnitTest {
                 observer.onIncognitoStateChanged(/* isIncognito */ true);
                 return null;
             };
+
+    private static final Map<Integer, String> TOOLBAR_COMPONENT_NAMES =
+            Map.of(
+                    ToolbarComponentId.BACK, "BACK",
+                    ToolbarComponentId.FORWARD, "FORWARD",
+                    ToolbarComponentId.RELOAD, "RELOAD");
 
     @Before
     public void setUp() {
@@ -185,6 +204,14 @@ public final class ToolbarTabletUnitTest {
                 .thenReturn(ObjectAnimator.ofFloat(mReloadingButton, View.ALPHA, 0.f));
         when(mBackButtonCoordinator.getFadeAnimator(true))
                 .thenReturn(ObjectAnimator.ofFloat(mReloadingButton, View.ALPHA, 1.f));
+
+        int buttonWidth =
+                mToolbarTablet
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_button_width);
+        doReturn(buttonWidth).when(mReloadButtonCoordinator).updateVisibility(anyInt());
+        doReturn(buttonWidth).when(mBackButtonCoordinator).updateVisibility(anyInt());
 
         mForwardButtonCoordinator =
                 new ForwardButtonCoordinator(
@@ -793,6 +820,90 @@ public final class ToolbarTabletUnitTest {
 
         // Verify the icon tints for the unfocused activity.
         verifyToolbarIconTints(tint, unfocusedTint);
+    }
+
+    @SuppressLint("WrongCall")
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testResizeTabletToolbar_buttonsShowInRankedOrder() {
+        int widthForStaticComponents = mToolbarTablet.getWidthForStaticComponents();
+        int buttonWidth =
+                mToolbarTablet
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_button_width);
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(widthForStaticComponents, EXACTLY), UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of());
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of(BACK));
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(2 * buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of(BACK, RELOAD));
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(3 * buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of(BACK, FORWARD, RELOAD));
+    }
+
+    @SuppressLint("WrongCall")
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testResizeTabletToolbar_buttonsHideInRankedOrder() {
+        int widthForStaticComponents = mToolbarTablet.getWidthForStaticComponents();
+        int buttonWidth =
+                mToolbarTablet
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_button_width);
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(3 * buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of(BACK, FORWARD, RELOAD));
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(2 * buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of(BACK, RELOAD));
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of(BACK));
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(widthForStaticComponents, EXACTLY), UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(Set.of());
+    }
+
+    private void assertToolbarComponentsReceivedWidth(
+            @ToolbarComponentId Set<Integer> visibleComponents) {
+        int buttonWidth =
+                mToolbarTablet
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_button_width);
+
+        verify(mBackButtonCoordinator, visibleComponents.contains(BACK) ? atLeastOnce() : never())
+                .updateVisibility(geq(buttonWidth));
+        verify(
+                        mReloadButtonCoordinator,
+                        visibleComponents.contains(RELOAD) ? atLeastOnce() : never())
+                .updateVisibility(geq(buttonWidth));
+        Mockito.clearInvocations(mBackButtonCoordinator, mReloadButtonCoordinator);
+
+        // Replace with a mock when the ForwardButtonCoordinator has its own unit tests.
+        assertEquals(
+                visibleComponents.contains(FORWARD) ? View.VISIBLE : View.GONE,
+                mForwardButtonCoordinator.getButton().getVisibility());
     }
 
     private void verifyToolbarIconTints(ColorStateList tint, ColorStateList activityFocusTint) {
