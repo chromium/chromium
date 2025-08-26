@@ -90,12 +90,13 @@ double GetGoogleWebEntropyLimitInBits();
 // seed.
 //
 // The returned object's seed_has_active_limited_layer field is true if the seed
-// contains any studies that (A) apply to the client's platform, channel, and
-// version and (B) are constrained to a limited-entropy-mode layer.
+// contains any studies that (A) apply to the client's platform, channel, form
+// factor, and version and (B) are constrained to a limited-entropy-mode layer.
 //
 // The returned object's seed_has_active_low_layer field is true if the seed
 // contains any *web-visible* studies that (A) apply to the client's platform,
-// channel, and version and (B) are constrained to a low-entropy-mode layer.
+// channel, form factor, and version and (B) are constrained to a
+// low-entropy-mode layer.
 //
 // * client_state: The client state to use for filtering studies.
 // * seed: The seed to check for misconfigured entropy.

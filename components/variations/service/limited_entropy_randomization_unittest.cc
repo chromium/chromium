@@ -708,4 +708,62 @@ TEST_F(LimitedEntropyRandomizationTest,
   histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
 }
 
+TEST_F(LimitedEntropyRandomizationTest,
+       SimultaneousLowAndLimitedLayers_DifferentFormFactors) {
+  client_state_.form_factor = Study_FormFactor_DESKTOP;
+
+  std::vector<Layer> test_layers;
+  std::vector<Study> test_studies;
+  // Create LOW and LIMITED entropy layers.
+  test_layers.push_back(CreateLayer(
+      kLowEntropyLayerId, /*num_slots=*/100,
+      /*entropy_mode=*/Layer::LOW,
+      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})}));
+  test_layers.push_back(CreateLayer(
+      kLimitedEntropyLayerId, /*num_slots=*/100,
+      /*entropy_mode=*/Layer::LIMITED,
+      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})}));
+
+  // Create a DESKTOP-only entropy-consuming study that refers to the LOW
+  // entropy layer.
+  {
+    auto study = CreateTestStudy(
+        CreateExperimentsWithTwoBitsOfEntropy(),
+        CreateLayerMemberReference(kLowEntropyLayerId, {kTestLayerMemberId}));
+    study.mutable_filter()->add_form_factor(Study_FormFactor_DESKTOP);
+    test_studies.push_back(std::move(study));
+  }
+
+  // Create a PHONE-only entropy-consuming study that refers to the LIMITED
+  // entropy layer.
+  {
+    auto study = CreateTestStudy(
+        CreateExperimentsWithTwoBitsOfEntropy(),
+        CreateLayerMemberReference(kLimitedEntropyLayerId,
+                                   {kTestLayerMemberId}));
+    study.mutable_filter()->add_form_factor(Study_FormFactor_PHONE);
+    test_studies.push_back(std::move(study));
+  }
+
+  // Verify that the seed is not rejected for a client with either form factor,
+  // since the study targeting the other form factor does not apply. Similarly,
+  // a client with neither form factor has no active layers and should not
+  // reject the seed.
+  for (auto form_factor : {Study_FormFactor_DESKTOP, Study_FormFactor_PHONE,
+                           Study_FormFactor_TABLET}) {
+    client_state_.form_factor = form_factor;
+    auto test_seed = CreateTestSeed(test_layers, test_studies);
+    auto result = SeedHasMisconfiguredEntropy(client_state_, test_seed,
+                                              kEntropyLimit_10bits);
+    EXPECT_FALSE(result.is_misconfigured);
+    ASSERT_TRUE(result.seed_has_active_low_layer.has_value());
+    EXPECT_EQ(result.seed_has_active_low_layer.value(),
+              form_factor == Study_FormFactor_DESKTOP);
+    EXPECT_TRUE(result.seed_has_active_limited_layer.has_value());
+    EXPECT_EQ(result.seed_has_active_limited_layer.value(),
+             form_factor == Study_FormFactor_PHONE);
+    histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
+  }
+}
+
 }  // namespace variations

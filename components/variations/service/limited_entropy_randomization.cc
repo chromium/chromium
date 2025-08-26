@@ -146,6 +146,14 @@ bool AppliesToClientVersion(const Study& study,
   return internal::CheckStudyVersion(study.filter(), client_state.version);
 }
 
+// Returns true if the study applies to the client's form factor.
+bool AppliesToClientFormFactor(
+    const Study& study,
+    const ClientFilterableState& client_state) {
+  return internal::CheckStudyFormFactor(study.filter(),
+                                        client_state.form_factor);
+}
+
 }  // namespace
 
 double GetGoogleWebEntropyLimitInBits() {
@@ -182,7 +190,8 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
     }
     if (!AppliesToClientPlatform(study, client_state) ||
         !AppliesToClientChannel(study, client_state) ||
-        !AppliesToClientVersion(study, client_state)) {
+        !AppliesToClientVersion(study, client_state) ||
+        !AppliesToClientFormFactor(study, client_state)) {
       continue;
     }
 
