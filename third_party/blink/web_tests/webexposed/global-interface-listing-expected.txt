@@ -1295,6 +1295,7 @@ interface CanvasRenderingContext2D
     method createRadialGradient
     method drawElement
     method drawFocusIfNeeded
+    method drawHTMLElement
     method drawImage
     method drawMesh
     method ellipse
@@ -11605,6 +11606,7 @@ interface WebGL2RenderingContext
     method stencilOp
     method stencilOpSeparate
     method texElement2D
+    method texHTMLElement2D
     method texImage2D
     method texImage3D
     method texParameterf
@@ -12109,6 +12111,7 @@ interface WebGLRenderingContext
     method stencilOp
     method stencilOpSeparate
     method texElement2D
+    method texHTMLElement2D
     method texImage2D
     method texParameterf
     method texParameteri

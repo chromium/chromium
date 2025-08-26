@@ -734,6 +734,27 @@ void CanvasRenderingContext2D::drawElement(Element* element,
   DrawElementInternal(element, x, y, dwidth, dheight, options, exception_state);
 }
 
+void CanvasRenderingContext2D::drawHTMLElement(
+    Element* element,
+    double x,
+    double y,
+    Canvas2DDrawElementOption* options,
+    ExceptionState& exception_state) {
+  DrawElementInternal(element, x, y, std::nullopt, std::nullopt, options,
+                      exception_state);
+}
+
+void CanvasRenderingContext2D::drawHTMLElement(
+    Element* element,
+    double x,
+    double y,
+    double dwidth,
+    double dheight,
+    Canvas2DDrawElementOption* options,
+    ExceptionState& exception_state) {
+  DrawElementInternal(element, x, y, dwidth, dheight, options, exception_state);
+}
+
 void CanvasRenderingContext2D::setHitTestRegions(
     VectorOf<CanvasElementHitTestRegion> hit_test_regions,
     ExceptionState& exception_state) {
@@ -774,7 +795,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
     return;
   }
 
-  if (!IsDrawElementEligible(element, "drawElement()", exception_state)) {
+  if (!IsDrawElementEligible(element, "drawHTMLElement()", exception_state)) {
     return;
   }
 

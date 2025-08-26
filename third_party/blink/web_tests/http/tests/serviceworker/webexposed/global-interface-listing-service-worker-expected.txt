@@ -2880,6 +2880,7 @@ interface WebGL2RenderingContext
     method stencilOp
     method stencilOpSeparate
     method texElement2D
+    method texHTMLElement2D
     method texImage2D
     method texImage3D
     method texParameterf
@@ -3384,6 +3385,7 @@ interface WebGLRenderingContext
     method stencilOp
     method stencilOpSeparate
     method texElement2D
+    method texHTMLElement2D
     method texImage2D
     method texParameterf
     method texParameteri

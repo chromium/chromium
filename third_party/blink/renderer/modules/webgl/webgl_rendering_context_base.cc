@@ -6824,6 +6824,18 @@ void WebGLRenderingContextBase::texElement2D(GLenum target,
                                              GLenum type,
                                              Element* element,
                                              ExceptionState& exception_state) {
+  texHTMLElement2D(target, level, internalformat, format, type, element,
+                   exception_state);
+}
+
+void WebGLRenderingContextBase::texHTMLElement2D(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
   if (isContextLost()) {
     return;
@@ -6833,7 +6845,7 @@ void WebGLRenderingContextBase::texElement2D(GLenum target,
     return;
   }
 
-  if (!IsDrawElementEligible(element, "texElement2D()", exception_state)) {
+  if (!IsDrawElementEligible(element, "texHTMLElement2D()", exception_state)) {
     return;
   }
 

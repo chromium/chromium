@@ -428,6 +428,14 @@ class MODULES_EXPORT WebGLRenderingContextBase
                     Element* element,
                     ExceptionState& exception_state);
 
+  void texHTMLElement2D(GLenum target,
+                        GLint level,
+                        GLint internalformat,
+                        GLenum format,
+                        GLenum type,
+                        Element* element,
+                        ExceptionState& exception_state);
+
   void setHitTestRegions(VectorOf<CanvasElementHitTestRegion> hit_test_regions,
                          ExceptionState& exception_state);
 
