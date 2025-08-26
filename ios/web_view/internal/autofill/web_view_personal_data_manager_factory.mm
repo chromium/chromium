@@ -65,7 +65,7 @@ WebViewPersonalDataManagerFactory::BuildServiceInstanceFor(
       /*history_service=*/nullptr, sync_service, /*strike_database=*/nullptr,
       /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr,
       ApplicationContext::GetInstance()->GetApplicationLocale(),
-      /*country_code=*/"");
+      /*country_code=*/"", /*autofill_optimization_guide=*/nullptr);
 }
 
 }  // namespace ios_web_view

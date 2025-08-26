@@ -87,7 +87,8 @@ class PersonalDataManager : public KeyedService,
       AutofillImageFetcherBase* image_fetcher,
       std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
       std::string app_locale,
-      std::string country_code);
+      std::string country_code,
+      AutofillOptimizationGuide* autofill_optimization_guide);
   PersonalDataManager(const PersonalDataManager&) = delete;
   PersonalDataManager& operator=(const PersonalDataManager&) = delete;
   ~PersonalDataManager() override;

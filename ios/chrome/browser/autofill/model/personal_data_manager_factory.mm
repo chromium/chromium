@@ -92,7 +92,7 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
       sync_service, strike_database, autofill_image_fetcher,
       /*shared_storage_handler=*/nullptr,
       GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
-      GetCountryCodeFromVariations());
+      GetCountryCodeFromVariations(), /*autofill_optimization_guide=*/nullptr);
 }
 
 }  // namespace autofill

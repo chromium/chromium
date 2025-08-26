@@ -20,10 +20,13 @@ TestPaymentsDataManager::TestPaymentsDataManager(const std::string& app_locale)
                           /*sync_service=*/nullptr,
                           /*identity_manager=*/nullptr,
                           /*variations_country_code=*/GeoIpCountryCode("US"),
-                          app_locale) {
+                          app_locale,
+                          /*autofill_optimization_guide=*/nullptr) {
   is_payments_data_loaded_ = true;
   owned_image_fetcher_ = std::make_unique<TestAutofillImageFetcher>();
   image_fetcher_ = owned_image_fetcher_.get();
+  autofill_optimization_guide_ =
+      std::make_unique<testing::NiceMock<MockAutofillOptimizationGuide>>();
 }
 
 TestPaymentsDataManager::~TestPaymentsDataManager() {

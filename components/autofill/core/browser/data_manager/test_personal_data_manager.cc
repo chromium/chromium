@@ -26,7 +26,8 @@ TestPersonalDataManager::TestPersonalDataManager()
           /*image_fetcher=*/nullptr,
           /*shared_storage_handler=*/nullptr,
           "en-US",
-          "US") {
+          "US",
+          /*autofill_optimization_guide=*/nullptr) {
   set_address_data_manager(std::make_unique<TestAddressDataManager>("en-US"));
   set_payments_data_manager(std::make_unique<TestPaymentsDataManager>("en-US"));
 }

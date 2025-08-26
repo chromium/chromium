@@ -50,7 +50,7 @@ class AutofillSettingsMetricsTest : public AutofillMetricsBaseTest,
                         /*sync_service=*/nullptr,
                         /*identity_manager=*/nullptr,
                         /*variations_country_code=*/GeoIpCountryCode("US"),
-                        "en-US");
+                        "en-US", /*autofill_optimization_guide=*/nullptr);
   }
 
  protected:

@@ -31,7 +31,8 @@ PersonalDataManager::PersonalDataManager(
     AutofillImageFetcherBase* image_fetcher,
     std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
     std::string app_locale,
-    std::string variations_country_code)
+    std::string variations_country_code,
+    AutofillOptimizationGuide* autofill_optimization_guide)
     : pref_service_(pref_service) {
   address_data_manager_ = std::make_unique<AddressDataManager>(
       profile_database, pref_service, local_state, sync_service,
@@ -41,7 +42,7 @@ PersonalDataManager::PersonalDataManager(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
       identity_manager, GeoIpCountryCode(std::move(variations_country_code)),
-      std::move(app_locale));
+      std::move(app_locale), autofill_optimization_guide);
   address_data_manager_observation_.Observe(address_data_manager_.get());
   payments_data_manager_observation_.Observe(payments_data_manager_.get());
 

@@ -239,8 +239,10 @@ PaymentsDataManager::PaymentsDataManager(
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     GeoIpCountryCode variations_country_code,
-    std::string app_locale)
+    std::string app_locale,
+    AutofillOptimizationGuide* autofill_optimization_guide)
     : image_fetcher_(image_fetcher),
+      autofill_optimization_guide_(autofill_optimization_guide),
       shared_storage_handler_(std::move(shared_storage_handler)),
       sync_service_(sync_service),
       identity_manager_(identity_manager),

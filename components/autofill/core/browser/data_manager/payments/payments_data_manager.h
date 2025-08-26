@@ -90,7 +90,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       syncer::SyncService* sync_service,
       signin::IdentityManager* identity_manager,
       GeoIpCountryCode variations_country_code,
-      std::string app_locale);
+      std::string app_locale,
+      AutofillOptimizationGuide* autofill_optimization_guide);
 
   PaymentsDataManager(const PaymentsDataManager&) = delete;
   PaymentsDataManager& operator=(const PaymentsDataManager&) = delete;
@@ -649,6 +650,12 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // The image fetcher to fetch customized images for Autofill data.
   raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;
+
+  // Pointer to AutofillOptimizationGuide, used for allowlists and blocklists
+  // checks.
+  // Note: AutofillOptimizationGuide is a KeyedService associated with
+  // Profiles, so only one instance exists per profile.
+  raw_ptr<AutofillOptimizationGuide> autofill_optimization_guide_ = nullptr;
 
  private:
   // Check if credit card benefits sync flag is enabled.
