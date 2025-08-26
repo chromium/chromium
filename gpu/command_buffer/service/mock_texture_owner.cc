@@ -9,7 +9,6 @@
 namespace gpu {
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 
 MockTextureOwner::MockTextureOwner(GLuint fake_texture_id,
@@ -25,7 +24,7 @@ MockTextureOwner::MockTextureOwner(GLuint fake_texture_id,
   ON_CALL(*this, GetContext()).WillByDefault(Return(fake_context));
   ON_CALL(*this, GetSurface()).WillByDefault(Return(fake_surface));
   ON_CALL(*this, RunWhenBufferIsAvailable(_))
-      .WillByDefault(Invoke([](base::OnceClosure cb) { std::move(cb).Run(); }));
+      .WillByDefault([](base::OnceClosure cb) { std::move(cb).Run(); });
 }
 
 MockTextureOwner::~MockTextureOwner() {}

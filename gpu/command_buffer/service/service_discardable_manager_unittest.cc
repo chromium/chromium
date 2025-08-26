@@ -23,7 +23,6 @@
 
 using ::testing::Pointee;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::InSequence;
 
@@ -120,7 +119,7 @@ class ServiceDiscardableManagerTest : public GpuServiceTest {
     EXPECT_NE(nullptr, ref);
     ref->AddObserver();
     EXPECT_CALL(destruction_observer_, OnTextureRefDestroying(ref))
-        .WillOnce(Invoke([](TextureRef* ref) { ref->RemoveObserver(); }));
+        .WillOnce([](TextureRef* ref) { ref->RemoveObserver(); });
     EXPECT_CALL(*gl_, DeleteTextures(1, Pointee(ref->service_id())))
         .RetiresOnSaturation();
   }
