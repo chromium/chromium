@@ -735,6 +735,10 @@ class TokenPreloadScanner::StartTagScanner {
           // TODO(crbug.com/922212): External import maps are not yet supported.
           return false;
 
+        case ScriptLoader::ScriptTypeAtPrepare::kRouteMap:
+          // TODO(crbug.com/436805487): Support external route maps?
+          return false;
+
         case ScriptLoader::ScriptTypeAtPrepare::kSpeculationRules:
           // TODO(crbug.com/1182803): External speculation rules are not yet
           // supported.

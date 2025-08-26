@@ -7,6 +7,7 @@
   data: [
     "classic",
     "importmap",
+    "routemap",
     "module",
     "speculationrules",
     "webbundle",

@@ -4085,6 +4085,14 @@
       name: "RootScrollbarFollowsBrowserTheme",
       status: {"Linux": "test", "Win": "test"},
     },
+    // Route matching, @route CSS rule, script type="routemap".
+    // https://chromestatus.com/feature/4771962874363904
+    {
+      name: "RouteMatching",
+      status: {
+        "default": "test",
+      },
+    },
     {
       name: "RtcAudioJitterBufferMaxPackets",
       origin_trial_feature_name: "RtcAudioJitterBufferMaxPackets",

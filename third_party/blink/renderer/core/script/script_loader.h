@@ -61,6 +61,7 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
     kClassic,
     kModule,
     kImportMap,
+    kRouteMap,
     kSpeculationRules,
     kWebBundle,
     kInvalid
