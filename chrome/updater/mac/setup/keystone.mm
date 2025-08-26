@@ -187,39 +187,46 @@ bool CreateKeystoneLaunchCtlPlistFiles(UpdaterScope scope) {
   // created here make legacy Keystone installer believe that a healthy newer
   // version updater already exists and thus won't over-install.
   if (IsSystemInstall(scope) &&
-      !CreateEmptyPlistFile(
-          GetLibraryFolderPath(scope)
-              ->Append("LaunchDaemons")
-              .Append(base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID
-                                         ".daemon.plist")))) {
+      !CreateLegacyPlistFile(scope, "LaunchDaemons", ".daemon.plist")) {
     return false;
   }
 
-  base::FilePath launch_agent_dir =
-      GetLibraryFolderPath(scope)->Append("LaunchAgents");
-  return CreateEmptyPlistFile(launch_agent_dir.Append(
-             base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID ".agent.plist"))) &&
-         CreateEmptyPlistFile(launch_agent_dir.Append(base::ToLowerASCII(
-             LEGACY_GOOGLE_UPDATE_APPID ".xpcservice.plist")));
+  return CreateLegacyPlistFile(scope, "LaunchAgents", ".agent.plist") &&
+         CreateLegacyPlistFile(scope, "LaunchAgents", ".xpcservice.plist");
 }
 
-}  // namespace
-
-bool CreateEmptyPlistFile(const base::FilePath& file_path) {
+bool CreateLegacyPlistFile(UpdaterScope scope,
+                           std::optional<base::FilePath> library_dir,
+                           const std::string& library_subdir,
+                           const std::string& file_suffix) {
   static constexpr int kPermissionsMask = base::FILE_PERMISSION_READ_BY_USER |
                                           base::FILE_PERMISSION_WRITE_BY_USER |
                                           base::FILE_PERMISSION_READ_BY_GROUP |
                                           base::FILE_PERMISSION_READ_BY_OTHERS;
-  const base::FilePath dir = file_path.DirName();
+  if (!library_dir) {
+    LOG(ERROR) << "No library directory provided.";
+    return false;
+  }
+  const base::FilePath dir = library_dir->Append(library_subdir);
   if (!base::PathExists(dir)) {
+    int dir_permissions = kPermissionsMask;
+    if (!IsSystemInstall(scope)) {
+      // The file creation further below fails if the directory is not
+      // executable by the user. This does not affect system installs. The
+      // reason for this is probably that they run as root.
+      dir_permissions |= base::FILE_PERMISSION_EXECUTE_BY_USER;
+    }
     base::File::Error error;
     if (!base::CreateDirectoryAndGetError(dir, &error) ||
-        !base::SetPosixFilePermissions(dir, kPermissionsMask)) {
+        !base::SetPosixFilePermissions(dir, dir_permissions)) {
       LOG(ERROR) << "Failed to create '" << dir.value().c_str()
                  << "': " << base::File::ErrorToString(error);
       return false;
     }
   }
+
+  const base::FilePath file_path =
+      dir.Append(base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID + file_suffix));
 
   @autoreleasepool {
     NSURL* const url = base::apple::FilePathToNSURL(file_path);
@@ -247,6 +254,23 @@ bool CreateEmptyPlistFile(const base::FilePath& file_path) {
   }
 
   return true;
+}
+
+}  // namespace
+
+bool CreateLegacyPlistFile(UpdaterScope scope,
+                           const std::string& library_subdir,
+                           const std::string& file_suffix) {
+  return CreateLegacyPlistFile(scope, GetLibraryFolderPath(scope),
+                               library_subdir, file_suffix);
+}
+
+bool CreateLegacyPlistFileForTesting(UpdaterScope scope,
+                                     const base::FilePath& library_dir,
+                                     const std::string& library_subdir,
+                                     const std::string& file_suffix) {
+  return CreateLegacyPlistFile(scope, std::make_optional(library_dir),
+                               library_subdir, file_suffix);
 }
 
 bool InstallKeystone(UpdaterScope scope) {

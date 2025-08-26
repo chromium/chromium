@@ -5,6 +5,9 @@
 #ifndef CHROME_UPDATER_MAC_SETUP_KEYSTONE_H_
 #define CHROME_UPDATER_MAC_SETUP_KEYSTONE_H_
 
+#include <string>
+
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/updater/updater_scope.h"
 
@@ -16,8 +19,15 @@ namespace updater {
 
 struct RegistrationRequest;
 
-// Create a plist file with an empty dictionary.
-bool CreateEmptyPlistFile(const base::FilePath& file_path);
+// Create a plist file that makes legacy Keystone installer believe that a
+// healthy newer version updater already exists and thus won't over-install.
+bool CreateLegacyPlistFile(UpdaterScope scope,
+                           const std::string& library_subdir,
+                           const std::string& file_suffix);
+bool CreateLegacyPlistFileForTesting(UpdaterScope scope,
+                                     const base::FilePath& library_dir,
+                                     const std::string& library_subdir,
+                                     const std::string& file_suffix);
 
 // Installs Keystone and the necessary supporting files.
 bool InstallKeystone(UpdaterScope scope);
