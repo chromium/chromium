@@ -596,8 +596,11 @@ const LayoutBlock* LayoutBlock::FirstLineStyleParentBlock() const {
   // If we are not the first in-flow child of our parent, we cannot get
   // ::first-line style from our ancestors.
   const LayoutObject* first_child = parent_layout_block->FirstChild();
-  while (first_child->IsFloatingOrOutOfFlowPositioned())
+  while (first_child->IsFloatingOrOutOfFlowPositioned() ||
+         (RuntimeEnabledFeatures::FirstLineOnListItemEnabled() &&
+          first_child->IsListMarker())) {
     first_child = first_child->NextSibling();
+  }
   if (first_child != first_line_block)
     return nullptr;
 

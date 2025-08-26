@@ -2267,6 +2267,10 @@
       status: "stable",
     },
     {
+      name: "FirstLineOnListItem",
+      status: "stable",
+    },
+    {
       name: "FirstLineTextMetrics",
       status: "stable",
     },
