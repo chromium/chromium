@@ -11,34 +11,20 @@ source_set("browser_binding") {
   visibility = [
     "//components/enterprise/client_certificates/android/browser_binding:*",
   ]
-  public_deps = [ ":interface" ]
-  deps = [ ":android" ]
-}
-
-source_set("interface") {
   sources = [
     "browser_key.h",
+    "browser_key_android.cc",
+    "browser_key_android.h",
     "browser_key_store.h",
+    "browser_key_store_android.cc",
+    "browser_key_store_android.h",
   ]
   public_deps = [
     "//base",
     "//device/fido",
   ]
-}
-
-source_set("android") {
-  visibility = [ ":*" ]
-  sources = [
-    "browser_key_android.cc",
-    "browser_key_android.h",
-    "browser_key_store_android.cc",
-    "browser_key_store_android.h",
-  ]
   deps = [
-    ":interface",
-    "//base",
     "//components/enterprise/client_certificates/android:browser_binding_jni",
-    "//device/fido",
     "//net",
     "//third_party/boringssl",
     "//third_party/jni_zero",
@@ -49,10 +35,7 @@ source_set("android_unittests") {
   testonly = true
   sources = [ "browser_key_store_android_unittest.cc" ]
   deps = [
-    ":android",
-    ":interface",
-    "//base",
-    "//components/enterprise/client_certificates/android:browser_binding_jni",
+    ":browser_binding",
     "//testing/gmock",
     "//testing/gtest",
   ]
