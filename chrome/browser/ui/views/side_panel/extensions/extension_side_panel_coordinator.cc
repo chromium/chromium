@@ -57,34 +57,6 @@ GURL GetSidePanelURL(const Extension& extension,
 
 }  // namespace
 
-// Helper class that handles observing the WebContents of the extension side
-// panel. When the WebContents is destroyed, this object is destroyed, which
-// notifies the ExtensionSidePanelCoordinator.
-class ExtensionSidePanelCoordinator::WebContentsLifetimeHelper
-    : public content::WebContentsUserData<
-          ExtensionSidePanelCoordinator::WebContentsLifetimeHelper> {
- public:
-  ~WebContentsLifetimeHelper() override { coordinator_->OnWebContentsClosed(); }
-
- private:
-  friend class content::WebContentsUserData<WebContentsLifetimeHelper>;
-
-  WebContentsLifetimeHelper(content::WebContents* contents,
-                            ExtensionSidePanelCoordinator* coordinator)
-      : content::WebContentsUserData<WebContentsLifetimeHelper>(*contents),
-        coordinator_(coordinator) {}
-
-  // The coordinator owns the SidePanelEntry, which owns the ExtensionView,
-  // which owns the WebContents this object is attached to. Therefore, the
-  // coordinator will always outlive this helper object.
-  raw_ptr<ExtensionSidePanelCoordinator> coordinator_ = nullptr;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(
-    ExtensionSidePanelCoordinator::WebContentsLifetimeHelper);
-
 ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
     Profile* profile,
     BrowserWindowInterface* browser,
@@ -269,12 +241,6 @@ std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView(
     return std::make_unique<views::WebView>(/*browser_context=*/nullptr);
   }
 
-  content::WebContents* web_contents = host_->host_contents();
-  DCHECK(web_contents);
-  // Use a helper class to observe the WebContents destruction, as using
-  // WebContentsObserver is unreliable for this during tab closing.
-  WebContentsLifetimeHelper::CreateForWebContents(web_contents, this);
-
   // Handle the containing view calling window.close();
   // The base::Unretained() below is safe because this object owns `host_`, so
   // the callback will never fire if `this` is deleted.
@@ -302,18 +268,8 @@ void ExtensionSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
     OnOpened();
     is_panel_active_ = true;
   }
-
-  // Store the current `window_id_`. if the window later closes, the browser may
-  // no longer be retrievable.
-  window_id_ = ExtensionTabUtil::GetWindowId(GetBrowser());
 }
 
-// There are three scenarios that trigger OnClosed():
-//   1. The panel is closed on the tab.
-//   2. The panel is replaced by another panel.
-//   3. The tab itself is closed.
-// OnEntryWillHide() handles scenarios 1 and 2, whereas OnWebContentsClosed()
-// handles scenario 3.
 void ExtensionSidePanelCoordinator::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
@@ -322,19 +278,7 @@ void ExtensionSidePanelCoordinator::OnEntryWillHide(
   }
 
   // Reset the panel state to inactive.
-  if (is_panel_active_) {
-    OnClosed();
-    is_panel_active_ = false;
-  }
-}
-
-void ExtensionSidePanelCoordinator::OnWebContentsClosed() {
-  // If the panel is active, dispatch the close event and reset the state to
-  // inactive.
-  if (is_panel_active_) {
-    OnClosed();
-    is_panel_active_ = false;
-  }
+  is_panel_active_ = false;
 }
 
 void ExtensionSidePanelCoordinator::OnOpened() {
@@ -352,22 +296,6 @@ void ExtensionSidePanelCoordinator::OnOpened() {
   service->DispatchOnOpenedEvent(extension_id,
                                  ExtensionTabUtil::GetWindowId(GetBrowser()),
                                  tab_id, side_panel_url_.path());
-}
-
-void ExtensionSidePanelCoordinator::OnClosed() {
-  auto* service = SidePanelService::Get(profile_);
-  const ExtensionId& extension_id = extension_->id();
-
-  // Retrieve the `tab_id` if this is a contextual panel. Global panels can
-  // ignore this field.
-  std::optional<int> tab_id;
-  if (for_tab_ && tab_interface_) {
-    tab_id = ExtensionTabUtil::GetTabId(tab_interface_->GetContents());
-  }
-
-  // Dispatch all arguments to reach the router listener.
-  service->DispatchOnClosedEvent(extension_id, window_id_, tab_id,
-                                 side_panel_url_.path());
 }
 
 void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
