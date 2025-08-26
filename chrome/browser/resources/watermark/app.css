@@ -54,10 +54,14 @@
 }
 
 .control-row {
-  align-items: center;
+  align-items: baseline;
   display: flex;
   height: 40px;
   justify-content: space-between;
+}
+
+.control-row:has(cr-slider) {
+  align-items: center;
 }
 
 .control-row > span {
