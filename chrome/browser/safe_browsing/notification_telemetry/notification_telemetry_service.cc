@@ -210,7 +210,7 @@ void NotificationTelemetryService::OnPushEventFinished(
   }
   // Store the network request.
   if (telemetry_store_) {
-    telemetry_store_->AddServiceWorkerBehavior(
+    telemetry_store_->AddServiceWorkerPushBehavior(
         script_url, requested_urls.value(),
         base::BindOnce(
             &NotificationTelemetryService::OnAddServiceWorkerBehavior,
@@ -289,7 +289,21 @@ void NotificationTelemetryService::OnNewNotificationServiceWorkerSubscription(
   ServiceWorkerTelemetryInfo report_data = std::move(*it);
   service_worker_infos_.erase(it);
 
+  // Store `import_script_url` to be sent as ServiceWorkerBehavior in
+  // ClientSafeBrowsingReportRequest.
+  if (base::FeatureList::IsEnabled(safe_browsing::kNotificationTelemetrySwb) &&
+      telemetry_store_) {
+    telemetry_store_->AddServiceWorkerRegistrationBehavior(
+        report_data.scope, report_data.resources,
+        base::BindOnce(
+            &NotificationTelemetryService::OnAddServiceWorkerBehavior,
+            weak_factory_.GetWeakPtr()));
+  }
   // Generate a telemetry report with the matched data.
+  // ClientIncidentReports will continue to be sent for the same events with
+  // ServiceWorkerBehavior reports during kNotificationTelemetrySwb launch.
+  // TODO(crbug.com/424167989): Turn down sending of ClientIncidentReports once
+  // `kNotificationTelemetrySwb` is fully launched and verified.
   std::unique_ptr<ClientIncidentReport_IncidentData> incident_data =
       std::make_unique<ClientIncidentReport_IncidentData>();
   ClientIncidentReport_IncidentData_ServiceWorkerRegistrationIncident*
@@ -364,14 +378,19 @@ void NotificationTelemetryService::OnGetServiceWorkerBehaviors(
   report->set_type(CSBRR::SERVICE_WORKER_BEHAVIOR);
   base::flat_map<std::string, CSBRR::ServiceWorkerBehavior*> messages;
   for (const auto& entry : *entries) {
-    if (messages.contains(entry.scope_url())) {
-      messages[entry.scope_url()]->MergeFrom(entry);
+    if (messages.contains(entry.script_url())) {
+      messages[entry.script_url()]->MergeFrom(entry);
       continue;
     }
     CSBRR::ServiceWorkerBehavior* service_worker_behavior =
         report->add_service_worker_behaviors();
     service_worker_behavior->CopyFrom(entry);
-    messages.emplace(entry.scope_url(), service_worker_behavior);
+    // Aggregate ServiceWorkerBehavior reports by `script_url`. Note that
+    // ServiceWorkerBehavior reports from registration events do not contain
+    // `script_url`.
+    if (entry.has_script_url()) {
+      messages.emplace(entry.script_url(), service_worker_behavior);
+    }
   }
   std::string serialized_report;
   if (report->SerializeToString(&serialized_report)) {

@@ -17,16 +17,32 @@
 using base::test::EqualsProto;
 using leveldb_proto::test::FakeDB;
 using ::testing::_;
+using ::testing::UnorderedPointwise;
 
 namespace safe_browsing {
 
 namespace {
-CSBRR::ServiceWorkerBehavior MakeServiceWorkerBehavior(
+CSBRR::ServiceWorkerBehavior MakeServiceWorkerRegistrationBehavior(
     const GURL& scope_url,
+    const std::vector<GURL>& import_script_urls) {
+  std::unique_ptr<CSBRR::ServiceWorkerBehavior> service_worker_behavior =
+      std::make_unique<CSBRR::ServiceWorkerBehavior>();
+
+  service_worker_behavior->set_scope_url(scope_url.spec());
+
+  for (const GURL& import_script_url : import_script_urls) {
+    service_worker_behavior->add_import_script_urls(import_script_url.spec());
+  }
+  return *service_worker_behavior;
+}
+CSBRR::ServiceWorkerBehavior MakeServiceWorkerPushBehavior(
+    const GURL& script_url,
     const std::vector<GURL>& requested_urls) {
   std::unique_ptr<CSBRR::ServiceWorkerBehavior> service_worker_behavior =
       std::make_unique<CSBRR::ServiceWorkerBehavior>();
-  service_worker_behavior->set_scope_url(scope_url.spec());
+
+  service_worker_behavior->set_script_url(script_url.spec());
+
   for (const GURL& requested_url : requested_urls) {
     service_worker_behavior->add_requested_urls(requested_url.spec());
   }
@@ -78,12 +94,13 @@ class NotificationTelemetryStoreTest : public testing::Test {
       bool success,
       std::unique_ptr<std::vector<CSBRR::ServiceWorkerBehavior>>
           service_worker_behaviors) {
-    ASSERT_EQ(expected_service_worker_behaviors.size(),
-              service_worker_behaviors->size());
-    for (size_t i = 0; i < expected_service_worker_behaviors.size(); i++) {
-      EXPECT_THAT((*service_worker_behaviors)[i],
-                  EqualsProto(expected_service_worker_behaviors[i]));
-    }
+    // Ignore ordering of `ServiceWorkerBehavior`.
+    // `fake_db_entries` is expected to preserve ordering by insertion
+    // time (key) but without ignoring the order, the test is flaky on some
+    // builds.
+    EXPECT_THAT(
+        *service_worker_behaviors,
+        UnorderedPointwise(EqualsProto(), expected_service_worker_behaviors));
   }
   MOCK_METHOD1(OnIsEmpty, void(bool));
   MOCK_METHOD1(OnDone, void(bool));
@@ -106,14 +123,14 @@ TEST_F(NotificationTelemetryStoreTest, AddServiceWorkerBehaviorsToDb) {
   ASSERT_EQ(static_cast<size_t>(0), fake_db_entries().size());
 
   // Validate SuccessCallback is called when updating the database.
-  notification_telemetry_store()->AddServiceWorkerBehavior(
-      GURL("http://scope1.com"), requested_urls,
+  notification_telemetry_store()->AddServiceWorkerPushBehavior(
+      GURL("http://script1.com"), requested_urls,
       base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
                      base::Unretained(this)));
   EXPECT_CALL(*this, OnDone(true));
   fake_service_worker_behavior_db()->UpdateCallback(true);
-  notification_telemetry_store()->AddServiceWorkerBehavior(
-      GURL("http://scope2.com"), requested_urls,
+  notification_telemetry_store()->AddServiceWorkerPushBehavior(
+      GURL("http://script2.com"), requested_urls,
       base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
                      base::Unretained(this)));
   EXPECT_CALL(*this, OnDone(true));
@@ -123,28 +140,66 @@ TEST_F(NotificationTelemetryStoreTest, AddServiceWorkerBehaviorsToDb) {
   ASSERT_EQ(static_cast<size_t>(2), fake_db_entries().size());
 }
 
-TEST_F(NotificationTelemetryStoreTest, VerifyAddedServiceWorkerBehaviors) {
+TEST_F(NotificationTelemetryStoreTest, VerifyAddedServiceWorkerPushBehaviors) {
   fake_service_worker_behavior_db()->InitStatusCallback(
       leveldb_proto::Enums::InitStatus::kOK);
   GURL requested_url = GURL("http://dest.com");
-  GURL scope_url_1 = GURL("http://scope1.com");
-  GURL scope_url_2 = GURL("http://scope2.com");
+  GURL script_url_1 = GURL("http://script1.com");
+  GURL script_url_2 = GURL("http://script2.com");
   std::vector<GURL> requested_urls = {requested_url};
   std::vector<CSBRR::ServiceWorkerBehavior> expected_service_worker_behaviors =
-      {MakeServiceWorkerBehavior(scope_url_1, requested_urls),
-       MakeServiceWorkerBehavior(scope_url_2, requested_urls)};
+      {MakeServiceWorkerPushBehavior(script_url_1, requested_urls),
+       MakeServiceWorkerPushBehavior(script_url_2, requested_urls)};
 
   // Validate the database is empty to begin with.
   ASSERT_EQ(static_cast<size_t>(0), fake_db_entries().size());
 
   // Add entries to the database.
-  notification_telemetry_store()->AddServiceWorkerBehavior(
-      scope_url_1, requested_urls,
+  notification_telemetry_store()->AddServiceWorkerPushBehavior(
+      script_url_1, requested_urls,
       base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
                      base::Unretained(this)));
   fake_service_worker_behavior_db()->UpdateCallback(true);
-  notification_telemetry_store()->AddServiceWorkerBehavior(
-      scope_url_2, requested_urls,
+  notification_telemetry_store()->AddServiceWorkerPushBehavior(
+      script_url_2, requested_urls,
+      base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
+                     base::Unretained(this)));
+  fake_service_worker_behavior_db()->UpdateCallback(true);
+
+  // Validate the entries are as expected.
+  notification_telemetry_store()->GetServiceWorkerBehaviors(
+      base::BindOnce(
+          &NotificationTelemetryStoreTest::VerifyServiceWorkerBehaviors,
+          base::Unretained(this), std::move(expected_service_worker_behaviors)),
+      base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
+                     base::Unretained(this)));
+  EXPECT_CALL(*this, OnDone(true));
+  fake_service_worker_behavior_db()->LoadCallback(true);
+}
+
+TEST_F(NotificationTelemetryStoreTest,
+       VerifyAddedServiceWorkerRegistrationBehaviors) {
+  fake_service_worker_behavior_db()->InitStatusCallback(
+      leveldb_proto::Enums::InitStatus::kOK);
+  GURL scope_url_1 = GURL("http://scope1.com");
+  GURL scope_url_2 = GURL("http://scope2.com");
+  std::vector<GURL> import_script_urls = {GURL("http://dest1.com"),
+                                          GURL("http://dest2.com")};
+  std::vector<CSBRR::ServiceWorkerBehavior> expected_service_worker_behaviors =
+      {MakeServiceWorkerRegistrationBehavior(scope_url_1, import_script_urls),
+       MakeServiceWorkerRegistrationBehavior(scope_url_2, import_script_urls)};
+
+  // Validate the database is empty to begin with.
+  ASSERT_EQ(static_cast<size_t>(0), fake_db_entries().size());
+
+  // Add entries to the database.
+  notification_telemetry_store()->AddServiceWorkerRegistrationBehavior(
+      scope_url_1, import_script_urls,
+      base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
+                     base::Unretained(this)));
+  fake_service_worker_behavior_db()->UpdateCallback(true);
+  notification_telemetry_store()->AddServiceWorkerRegistrationBehavior(
+      scope_url_2, import_script_urls,
       base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
                      base::Unretained(this)));
   fake_service_worker_behavior_db()->UpdateCallback(true);
@@ -169,13 +224,14 @@ TEST_F(NotificationTelemetryStoreTest, GetAllEntries) {
   ASSERT_EQ(static_cast<size_t>(0), fake_db_entries().size());
 
   // Populate the database.
-  notification_telemetry_store()->AddServiceWorkerBehavior(
-      GURL("http://scope1.com"), requested_urls,
+  notification_telemetry_store()->AddServiceWorkerPushBehavior(
+      GURL("http://script1.com"), requested_urls,
       base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
                      base::Unretained(this)));
   fake_service_worker_behavior_db()->UpdateCallback(true);
-  notification_telemetry_store()->AddServiceWorkerBehavior(
-      GURL("http://scope2.com"), requested_urls,
+  notification_telemetry_store()->AddServiceWorkerPushBehavior(
+      GURL("http://scirpt2.com"), requested_urls,
+
       base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
                      base::Unretained(this)));
   fake_service_worker_behavior_db()->UpdateCallback(true);
@@ -204,13 +260,13 @@ TEST_F(NotificationTelemetryStoreTest, DeleteAllEntries) {
   ASSERT_EQ(static_cast<size_t>(0), fake_db_entries().size());
 
   // Populate the database.
-  notification_telemetry_store()->AddServiceWorkerBehavior(
-      GURL("http://scope1.com"), requested_urls,
+  notification_telemetry_store()->AddServiceWorkerPushBehavior(
+      GURL("http://script1.com"), requested_urls,
       base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
                      base::Unretained(this)));
   fake_service_worker_behavior_db()->UpdateCallback(true);
-  notification_telemetry_store()->AddServiceWorkerBehavior(
-      GURL("http://scope2.com"), requested_urls,
+  notification_telemetry_store()->AddServiceWorkerPushBehavior(
+      GURL("http://script2.com"), requested_urls,
       base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
                      base::Unretained(this)));
   fake_service_worker_behavior_db()->UpdateCallback(true);
@@ -237,8 +293,8 @@ TEST_F(NotificationTelemetryStoreTest, FailedInitialization) {
 
   // Attempt to populate the database but fail to because it is not initialized.
   std::vector<GURL> requested_urls = {GURL("http://dest.com")};
-  notification_telemetry_store()->AddServiceWorkerBehavior(
-      GURL("http://scope1.com"), requested_urls,
+  notification_telemetry_store()->AddServiceWorkerPushBehavior(
+      GURL("http://script1.com"), requested_urls,
       base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
                      base::Unretained(this)));
 }

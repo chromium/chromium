@@ -46,34 +46,32 @@ NotificationTelemetryStore::NotificationTelemetryStore(Profile* profile) {
 
 NotificationTelemetryStore::~NotificationTelemetryStore() = default;
 
-void NotificationTelemetryStore::AddServiceWorkerBehavior(
+void NotificationTelemetryStore::AddServiceWorkerRegistrationBehavior(
+    const GURL& scope_url,
+    const std::vector<GURL>& import_script_urls,
+    SuccessCallback success_callback) {
+  std::unique_ptr<CSBRR::ServiceWorkerBehavior> service_worker_behavior =
+      std::make_unique<CSBRR::ServiceWorkerBehavior>();
+  service_worker_behavior->set_scope_url(scope_url.spec());
+  for (const GURL& import_script_url : import_script_urls) {
+    service_worker_behavior->add_import_script_urls(import_script_url.spec());
+  }
+  AddServiceWorkerBehavior(std::move(service_worker_behavior),
+                           std::move(success_callback));
+}
+
+void NotificationTelemetryStore::AddServiceWorkerPushBehavior(
     const GURL& script_url,
     const std::vector<GURL>& requested_urls,
     SuccessCallback success_callback) {
-  // If not initialized queue the call and return early.
-  if (!initialized_) {
-    queued_db_callbacks_.emplace(
-        base::BindOnce(&NotificationTelemetryStore::AddServiceWorkerBehavior,
-                       weak_ptr_factory_.GetWeakPtr(), script_url,
-                       requested_urls, std::move(success_callback)));
-    return;
-  }
   std::unique_ptr<CSBRR::ServiceWorkerBehavior> service_worker_behavior =
       std::make_unique<CSBRR::ServiceWorkerBehavior>();
-  service_worker_behavior->set_scope_url(script_url.spec());
+  service_worker_behavior->set_script_url(script_url.spec());
   for (const GURL& requested_url : requested_urls) {
     service_worker_behavior->add_requested_urls(requested_url.spec());
   }
-  auto entries = std::make_unique<
-      ProtoDatabase<CSBRR::ServiceWorkerBehavior>::KeyEntryVector>();
-  entries->emplace_back(
-      base::NumberToString(base::Time::Now().InMillisecondsFSinceUnixEpoch()),
-      *std::move(service_worker_behavior));
-  service_worker_behavior_db_->UpdateEntries(
-      std::move(entries), std::make_unique<std::vector<std::string>>(),
-      base::BindOnce(&NotificationTelemetryStore::OnUpdateEntries,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(success_callback)));
+  AddServiceWorkerBehavior(std::move(service_worker_behavior),
+                           std::move(success_callback));
 }
 
 void NotificationTelemetryStore::GetServiceWorkerBehaviors(
@@ -135,6 +133,28 @@ void NotificationTelemetryStore::OnLoadEntries(
     std::unique_ptr<std::vector<CSBRR::ServiceWorkerBehavior>> entries) {
   std::move(callback).Run(success, std::move(entries));
   std::move(success_callback).Run(success);
+}
+
+void NotificationTelemetryStore::AddServiceWorkerBehavior(
+    std::unique_ptr<CSBRR::ServiceWorkerBehavior> service_worker_behavior,
+    SuccessCallback success_callback) {
+  if (!initialized_) {
+    queued_db_callbacks_.emplace(base::BindOnce(
+        &NotificationTelemetryStore::AddServiceWorkerBehavior,
+        weak_ptr_factory_.GetWeakPtr(), std::move(service_worker_behavior),
+        std::move(success_callback)));
+    return;
+  }
+  auto entries = std::make_unique<
+      ProtoDatabase<CSBRR::ServiceWorkerBehavior>::KeyEntryVector>();
+  entries->emplace_back(
+      base::NumberToString(base::Time::Now().InMillisecondsFSinceUnixEpoch()),
+      *std::move(service_worker_behavior));
+  service_worker_behavior_db_->UpdateEntries(
+      std::move(entries), std::make_unique<std::vector<std::string>>(),
+      base::BindOnce(&NotificationTelemetryStore::OnUpdateEntries,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(success_callback)));
 }
 
 }  // namespace safe_browsing

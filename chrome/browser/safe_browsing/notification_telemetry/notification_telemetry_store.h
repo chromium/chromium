@@ -25,9 +25,15 @@ class NotificationTelemetryStore : public NotificationTelemetryStoreInterface {
   NotificationTelemetryStore& operator=(const NotificationTelemetryStore&) =
       delete;
 
-  void AddServiceWorkerBehavior(const GURL& script_url,
-                                const std::vector<GURL>& requested_urls,
-                                SuccessCallback success_callback) override;
+  void AddServiceWorkerRegistrationBehavior(
+      const GURL& scope_url,
+      const std::vector<GURL>& import_script_urls,
+      SuccessCallback success_callback) override;
+
+  void AddServiceWorkerPushBehavior(const GURL& script_url,
+                                    const std::vector<GURL>& requested_urls,
+                                    SuccessCallback success_callback) override;
+
   void GetServiceWorkerBehaviors(LoadEntriesCallback load_entries_callback,
                                  SuccessCallback success_callback) override;
   void DeleteAll(SuccessCallback success_callback) override;
@@ -53,6 +59,11 @@ class NotificationTelemetryStore : public NotificationTelemetryStoreInterface {
       SuccessCallback success_callback,
       bool success,
       std::unique_ptr<std::vector<CSBRR::ServiceWorkerBehavior>> entries);
+
+  // Add ServiceWorkerBehavior into the ProtoDatabase.
+  void AddServiceWorkerBehavior(
+      std::unique_ptr<CSBRR::ServiceWorkerBehavior> service_worker_behavior,
+      SuccessCallback success_callback);
 
   // Manages the persistence of ServiceWorkerBehavior messages.
   std::unique_ptr<ProtoDatabase<CSBRR::ServiceWorkerBehavior>>

@@ -28,9 +28,16 @@ class NotificationTelemetryStoreInterface {
   NotificationTelemetryStoreInterface& operator=(
       const NotificationTelemetryStoreInterface&) = delete;
 
-  virtual void AddServiceWorkerBehavior(const GURL& script_url,
-                                        const std::vector<GURL>& requested_urls,
-                                        SuccessCallback success_callback) = 0;
+  virtual void AddServiceWorkerRegistrationBehavior(
+      const GURL& scope_url,
+      const std::vector<GURL>& import_script_urls,
+      SuccessCallback success_callback) = 0;
+
+  virtual void AddServiceWorkerPushBehavior(
+      const GURL& script_url,
+      const std::vector<GURL>& requested_urls,
+      SuccessCallback success_callback) = 0;
+
   virtual void GetServiceWorkerBehaviors(
       LoadEntriesCallback load_entries_callback,
       SuccessCallback success_callback) = 0;

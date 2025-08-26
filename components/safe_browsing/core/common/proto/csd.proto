@@ -2225,11 +2225,21 @@ message ClientSafeBrowsingReportRequest {
   optional UrlRealTimeAndHashRealTimeDiscrepancyInfo
       url_real_time_and_hash_real_time_discrepancy_info = 36;
 
+  // ServiceWorkerBehavior reports are sent for service worker registration
+  // events (i.e. `scope_url`, `import_script_urls`) and notification push
+  // events (i.e. `script_url`, `requested_urls`). Push event `requested_urls`
+  // are aggregated by `script_url` but registration event `import_script_urls`
+  // are not aggregated.
   message ServiceWorkerBehavior {
-    // The registered scope URL of the service worker.
+    // The registered scope URL of the service worker. This is a URL path prefix
+    // that defines the subset of origins the service worker can control.
     optional string scope_url = 1;
     // The URLs requested by the service worker during a push event.
     repeated string requested_urls = 2;
+    // The URLs used to import scripts by the service worker.
+    repeated string import_script_urls = 3;
+    // The URL path to the service worker script recorded during the push event.
+    optional string script_url = 4;
   }
   repeated ServiceWorkerBehavior service_worker_behaviors = 37;
 }

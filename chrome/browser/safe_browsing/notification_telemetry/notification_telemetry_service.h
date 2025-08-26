@@ -92,9 +92,14 @@ class NotificationTelemetryService
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NotificationTelemetryServiceTest,
+                           OnGetServiceWorkerBehaviors);
+  FRIEND_TEST_ALL_PREFIXES(NotificationTelemetryServiceTest,
                            SendsTelemetryReport);
   FRIEND_TEST_ALL_PREFIXES(NotificationTelemetryServiceTest,
                            EnforcesServiceWorkerInfoCacheSize);
+  FRIEND_TEST_ALL_PREFIXES(
+      NotificationTelemetryServiceTest,
+      ServiceWorkerSubscriptionRecordsServiceWorkerBehavior);
   // TODO(crbug.com/433543634): Clean up post
   // GlobalCacheListForGatingNotificationProtections launch.
   FRIEND_TEST_ALL_PREFIXES(
