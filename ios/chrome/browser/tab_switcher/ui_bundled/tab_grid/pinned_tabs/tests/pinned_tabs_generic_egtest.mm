@@ -556,8 +556,9 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// TODO(crbug.com/441313129): This test is disabled because of its flakiness.
 // Tests scrolling of the pinned tabs collection.
-- (void)testPinnedTabsScrolling {
+- (void)DISABLED_testPinnedTabsScrolling {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
