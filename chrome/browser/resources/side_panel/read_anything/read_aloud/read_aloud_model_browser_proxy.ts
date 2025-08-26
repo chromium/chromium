@@ -44,11 +44,9 @@ export interface ReadAloudModelBrowserProxy {
   moveSpeechForward(): void;
   moveSpeechBackwards(): void;
 
-  // TODO: crbug.com/440400392- isSpeechTreeInitialized and onFirstTextNode
-  // are tied to the V8 implementation. Investigation how these could be
-  // tied into other more generic methods instead.
-  isSpeechTreeInitialized(): boolean;
-  onFirstTextNode(textNode: ReadAloudNode): void;
+  // Handle initialization.
+  isInitialized(): boolean;
+  init(context: ReadAloudNode|string): void;
 }
 
 class V8ModelImpl implements ReadAloudModelBrowserProxy {
@@ -87,11 +85,11 @@ class V8ModelImpl implements ReadAloudModelBrowserProxy {
     return chrome.readingMode.getAccessibleBoundary(text, maxSpeechLength);
   }
 
-  isSpeechTreeInitialized(): boolean {
+  isInitialized(): boolean {
     return chrome.readingMode.isSpeechTreeInitialized;
   }
 
-  onFirstTextNode(textNode: ReadAloudNode) {
+  init(textNode: ReadAloudNode) {
     if (!(textNode instanceof AxReadAloudNode)) {
       return;
     }

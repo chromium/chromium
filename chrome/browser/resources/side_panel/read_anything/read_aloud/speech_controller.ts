@@ -121,7 +121,7 @@ export class SpeechController {
   }
 
   isSpeechTreeInitialized(): boolean {
-    return this.readAloudModel_.isSpeechTreeInitialized();
+    return this.readAloudModel_.isInitialized();
   }
 
   isPausedFromButton(): boolean {
@@ -174,7 +174,7 @@ export class SpeechController {
 
     // TODO: crbug.com/40927698 - This step should be skipped on migrating to
     // a non-AXPosition-based text segmentation strategy.
-    this.readAloudModel_.onFirstTextNode(new AxReadAloudNode(firstTextNode));
+    this.readAloudModel_.init(new AxReadAloudNode(firstTextNode));
   }
 
   onSelectionChange() {
