@@ -85,7 +85,7 @@ SyncedTabDelegateAndroid::ReadPlaceholderTabSnapshotIfItShouldSync(
     }
   }
 
-  const TabModel* tab_model = TabModelList::FindTabModelWithId(
+  const TabModel* tab_model = TabModelList::FindTabModelWithWindowSessionId(
       tab_android_data_provider_->GetWindowId());
   DCHECK(tab_model);
   Profile* profile = tab_model->GetProfile();
