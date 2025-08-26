@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISMISS_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
@@ -77,6 +78,8 @@ class KeyboardAccessoryViewBinder {
                 return new BarItemTextViewHolder(parent, R.layout.keyboard_accessory_action);
             case BarItem.Type.ACTION_CHIP:
                 return new BarItemActionChipViewHolder(parent);
+            case BarItem.Type.DISMISS_CHIP:
+                return new BarItemTextViewHolder(parent, R.layout.keyboard_accessory_dismiss);
         }
         assert false : "Action type " + viewType + " was not handled!";
         return null;
@@ -241,6 +244,7 @@ class KeyboardAccessoryViewBinder {
                             ? R.style.KeyboardAccessoryLargeChip
                             : R.style.KeyboardAccessoryChip;
                 case BarItem.Type.ACTION_CHIP:
+                case BarItem.Type.DISMISS_CHIP:
                 case BarItem.Type.TAB_LAYOUT:
                 case BarItem.Type.ACTION_BUTTON:
                 default:
@@ -344,7 +348,7 @@ class KeyboardAccessoryViewBinder {
             view.setAccessibilityMessage(model.get(HAS_SUGGESTIONS));
         } else if (propertyKey == HAS_STICKY_LAST_ITEM) {
             view.setHasStickyLastItem(model.get(HAS_STICKY_LAST_ITEM));
-        } else if (propertyKey == SHEET_OPENER_ITEM) {
+        } else if (propertyKey == SHEET_OPENER_ITEM || propertyKey == DISMISS_ITEM) {
             // No binding required.
         } else {
             assert false : "Every possible property update needs to be handled!";

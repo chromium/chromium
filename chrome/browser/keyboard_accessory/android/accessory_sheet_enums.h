@@ -94,6 +94,7 @@ enum class AccessoryAction {
   MANAGE_LOYALTY_CARDS = 16,
   RETRIEVE_TRUSTED_VAULT_KEY = 17,
   AUTOFILL_SUGGESTION_FROM_ACCESSORY_SHEET = 18,
+  DISMISS = 19,
   COUNT,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml)

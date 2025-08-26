@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertFalse;
@@ -48,6 +49,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -59,6 +61,8 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecord
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DismissBarItem;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
@@ -107,6 +111,8 @@ public class KeyboardAccessoryControllerTest {
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private InsetObserver mInsetObserver;
     @Mock private FillingProductBridgeJni mMockFillingProductBridgeJni;
+    @Mock private Supplier<Boolean> mMockIsLargeFormFactorSupplier;
+    @Mock private Runnable mMockDismissRunnable;
 
     private final KeyboardAccessoryData.Tab mTestTab =
             new KeyboardAccessoryData.Tab("Passwords", null, null, 0, 0, null);
@@ -122,6 +128,7 @@ public class KeyboardAccessoryControllerTest {
         FillingProductBridgeJni.setInstanceForTesting(mMockFillingProductBridgeJni);
         PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
         mEdgeToEdgeControllerSupplier = new ObservableSupplierImpl<>(mEdgeToEdgeController);
+        when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
 
         mCoordinator =
                 new KeyboardAccessoryCoordinator(
@@ -132,7 +139,9 @@ public class KeyboardAccessoryControllerTest {
                         mMockSheetVisibilityDelegate,
                         mEdgeToEdgeControllerSupplier,
                         mInsetObserver,
-                        new FakeViewProvider<>(mMockView));
+                        new FakeViewProvider<>(mMockView),
+                        mMockIsLargeFormFactorSupplier,
+                        mMockDismissRunnable);
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mMediator.getModelForTesting();
     }
@@ -649,6 +658,24 @@ public class KeyboardAccessoryControllerTest {
 
         mCoordinator.setHasStickyLastItem(false);
         assertFalse(mModel.get(HAS_STICKY_LAST_ITEM));
+    }
+
+    @Test
+    public void testLargeFormFactorHasDismissButton() {
+        when(mMockIsLargeFormFactorSupplier.get()).thenReturn(true);
+        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+
+        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
+        autofillSuggestionProvider.notifyObservers(List.of(mock(AutofillSuggestion.class)));
+
+        assertThat(mModel.get(BAR_ITEMS).size(), is(3));
+        assertThat(
+                mModel.get(BAR_ITEMS),
+                contains(
+                        instanceOf(AutofillBarItem.class),
+                        instanceOf(SheetOpenerBarItem.class),
+                        instanceOf(DismissBarItem.class)));
     }
 
     private int getGenerationImpressionCount() {

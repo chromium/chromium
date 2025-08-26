@@ -205,6 +205,9 @@
       <message name="IDS_KEYBOARD_ACCESSORY_SHEET_HIDE" desc="Description for the active icon button that closes an accessory sheet and brings back the keyboard.">
         Show keyboard
       </message>
+      <message name="IDS_KEYBOARD_ACCESSORY_DISMISS_BUTTON" desc="Title of the button that closes the keyboard accessory.">
+        Dismiss
+      </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_FILL_WITH_CHROME" desc="Text in In-Product-Help bubble suggesting to use an autofill suggestion provided by Chrome.">
         Use Chrome autofill suggestion
       </message>

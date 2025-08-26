@@ -51,6 +51,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="'Manage loyalty cards' link"/>
   <int value="17" label="'Verify it's you' link"/>
   <int value="18" label="'Autofill suggestion from accessory sheet"/>
+  <int value="19" label="'Dismiss' keyboard accessory"/>
 </enum>
 
 <enum name="AccessorySheetTrigger">

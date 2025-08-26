@@ -141,6 +141,9 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
      * @param edgeToEdgeControllerSupplier A {@link Supplier<EdgeToEdgeController>}.
      * @param insetObserver An {@link InsetObserver}.
      * @param barStub A {@link AsyncViewStub} for the accessory bar layout.
+     * @param isLargeFormFactorSupplier A {@link Supplier} that checks whether the device is in
+     *     Large Form Factor mode.
+     * @param dismissRunnable A {@link Runnable} used to dismiss the Keyboard Accessory bar.
      */
     public KeyboardAccessoryCoordinator(
             Profile profile,
@@ -148,7 +151,9 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             InsetObserver insetObserver,
-            AsyncViewStub barStub) {
+            AsyncViewStub barStub,
+            Supplier<Boolean> isLargeFormFactorSupplier,
+            Runnable dismissRunnable) {
         this(
                 barStub.getContext(),
                 profile,
@@ -157,7 +162,9 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
                 sheetVisibilityDelegate,
                 edgeToEdgeControllerSupplier,
                 insetObserver,
-                AsyncViewProvider.of(barStub, R.id.keyboard_accessory));
+                AsyncViewProvider.of(barStub, R.id.keyboard_accessory),
+                isLargeFormFactorSupplier,
+                dismissRunnable);
     }
 
     /**
@@ -168,6 +175,9 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
      * @param viewProvider A provider for the accessory.
      * @param edgeToEdgeControllerSupplier A {@link Supplier<EdgeToEdgeController>}.
      * @param insetObserver An {@link InsetObserver}.
+     * @param isLargeFormFactorSupplier A {@link Supplier} that checks whether the device is in
+     *     Large Form Factor mode.
+     * @param dismissRunnable A {@link Runnable} used to dismiss the Keyboard Accessory bar.
      */
     @VisibleForTesting
     public KeyboardAccessoryCoordinator(
@@ -178,7 +188,9 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             InsetObserver insetObserver,
-            ViewProvider<KeyboardAccessoryView> viewProvider) {
+            ViewProvider<KeyboardAccessoryView> viewProvider,
+            Supplier<Boolean> isLargeFormFactorSupplier,
+            Runnable dismissRunnable) {
         mButtonGroup = buttonGroup;
         mModel = KeyboardAccessoryProperties.defaultModelBuilder().build();
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
@@ -191,7 +203,9 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
                         sheetVisibilityDelegate,
                         mButtonGroup.getTabSwitchingDelegate(),
                         mButtonGroup.getSheetOpenerCallbacks(),
-                        () -> SemanticColorUtils.getDefaultBgColor(context));
+                        () -> SemanticColorUtils.getDefaultBgColor(context),
+                        isLargeFormFactorSupplier,
+                        dismissRunnable);
         viewProvider.whenLoaded(
                 view -> {
                     mView = view;

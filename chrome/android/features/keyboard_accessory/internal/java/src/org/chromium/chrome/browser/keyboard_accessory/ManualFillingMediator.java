@@ -604,7 +604,7 @@ class ManualFillingMediator
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP));
     }
 
-    private boolean isLargeFormFactor() {
+    public boolean isLargeFormFactor() {
         int windowWidthDp = mActivity.getResources().getConfiguration().screenWidthDp;
         int windowHeightDp = mActivity.getResources().getConfiguration().screenHeightDp;
         boolean isPhysicalKeyboardConnected =

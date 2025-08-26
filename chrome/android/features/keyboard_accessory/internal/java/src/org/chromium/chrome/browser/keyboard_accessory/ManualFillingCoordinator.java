@@ -77,7 +77,9 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                         mMediator,
                         edgeToEdgeControllerSupplier,
                         insetObserver,
-                        barStub);
+                        barStub,
+                        mMediator::isLargeFormFactor,
+                        this::dismiss);
         BrowserControlsManager browserControlsManager =
                 BrowserControlsManagerSupplier.getValueOrNullFrom(windowAndroid);
 

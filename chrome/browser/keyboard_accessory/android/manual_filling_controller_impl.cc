@@ -479,6 +479,7 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::MANAGE_LOYALTY_CARDS:
       return payment_method_controller_.get();
     case AccessoryAction::AUTOFILL_SUGGESTION:
+    case AccessoryAction::DISMISS:
     case AccessoryAction::AUTOFILL_SUGGESTION_FROM_ACCESSORY_SHEET:
     case AccessoryAction::COUNT:
       NOTREACHED() << "Controller not defined for action: "

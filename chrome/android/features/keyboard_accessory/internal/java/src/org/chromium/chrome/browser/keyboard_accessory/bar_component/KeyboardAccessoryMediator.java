@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISMISS_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
@@ -26,6 +27,7 @@ import androidx.annotation.StringRes;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator.TabSwitchingDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DismissBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -70,6 +73,7 @@ class KeyboardAccessoryMediator
     private final AccessorySheetCoordinator.SheetVisibilityDelegate mSheetVisibilityDelegate;
     private final TabSwitchingDelegate mTabSwitcher;
     private final Supplier<Integer> mBackgroundColorSupplier;
+    private final Supplier<Boolean> mIsLargeFormFactorSupplier;
     private final Profile mProfile;
     private Optional<Boolean> mHasFilteredTouchEvent = Optional.empty();
     private final ObserverList<KeyboardAccessoryVisualStateProvider.Observer> mVisualObservers =
@@ -82,18 +86,22 @@ class KeyboardAccessoryMediator
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
             TabSwitchingDelegate tabSwitcher,
             KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks sheetOpenerCallbacks,
-            Supplier<Integer> backgroundColorSupplier) {
+            Supplier<Integer> backgroundColorSupplier,
+            Supplier<Boolean> isLargeFormFactorSupplier,
+            Runnable dismissRunnable) {
         mModel = model;
         mProfile = profile;
         mBarVisibilityDelegate = barVisibilityDelegate;
         mSheetVisibilityDelegate = sheetVisibilityDelegate;
         mTabSwitcher = tabSwitcher;
         mBackgroundColorSupplier = backgroundColorSupplier;
+        mIsLargeFormFactorSupplier = isLargeFormFactorSupplier;
 
         // Add mediator as observer so it can use model changes as signal for accessory visibility.
         mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, this::onSuggestionObfuscatedAt);
         mModel.set(ON_TOUCH_EVENT_CALLBACK, this::onTouchEvent);
         mModel.set(SHEET_OPENER_ITEM, new SheetOpenerBarItem(sheetOpenerCallbacks));
+        mModel.set(DISMISS_ITEM, new DismissBarItem(dismissRunnable));
         mModel.set(ANIMATION_LISTENER, mBarVisibilityDelegate::onBarFadeInAnimationEnd);
         mModel.get(BAR_ITEMS).add(mModel.get(SHEET_OPENER_ITEM));
         mModel.addObserver(this);
@@ -115,6 +123,12 @@ class KeyboardAccessoryMediator
             List<BarItem> retainedItems = collectItemsToRetain(AccessoryAction.AUTOFILL_SUGGESTION);
             retainedItems.addAll(toBarItems(suggestions, delegate));
             retainedItems.add(retainedItems.size(), mModel.get(SHEET_OPENER_ITEM));
+            // TODO(crbug.com/441006939): Show dismiss on first launch too.
+            if (mIsLargeFormFactorSupplier.get()
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP)) {
+                retainedItems.add(retainedItems.size(), mModel.get(DISMISS_ITEM));
+            }
             mModel.get(BAR_ITEMS).set(retainedItems);
             mModel.set(HAS_SUGGESTIONS, barHasSuggestions());
         };
@@ -142,6 +156,11 @@ class KeyboardAccessoryMediator
                 typeId == AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY ? retainedItems.size() : 0,
                 toBarItems(actions));
         retainedItems.add(retainedItems.size(), mModel.get(SHEET_OPENER_ITEM));
+        if (mIsLargeFormFactorSupplier.get()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP)) {
+            retainedItems.add(mModel.get(DISMISS_ITEM));
+        }
         mModel.get(BAR_ITEMS).set(retainedItems);
         mModel.set(HAS_SUGGESTIONS, barHasSuggestions());
         TraceEvent.end("KeyboardAccessoryMediator#onItemAvailable");
@@ -151,6 +170,7 @@ class KeyboardAccessoryMediator
         List<BarItem> retainedItems = new ArrayList<>();
         for (BarItem item : mModel.get(BAR_ITEMS)) {
             if (item.getAction() == null) continue;
+            if (item.getAction().getActionType() == AccessoryAction.DISMISS) continue;
             if (item.getAction().getActionType() == actionType) continue;
             retainedItems.add(item);
         }
@@ -300,6 +320,7 @@ class KeyboardAccessoryMediator
         }
         if (propertyKey == OFFSET_AND_GRAVITY
                 || propertyKey == SHEET_OPENER_ITEM
+                || propertyKey == DISMISS_ITEM
                 || propertyKey == SKIP_CLOSING_ANIMATION
                 || propertyKey == DISABLE_ANIMATIONS_FOR_TESTING
                 || propertyKey == OBFUSCATED_CHILD_AT_CALLBACK

@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
+import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -51,6 +53,8 @@ class KeyboardAccessoryProperties {
             new WritableBooleanPropertyKey("skip_closing_animation");
     static final WritableObjectPropertyKey<SheetOpenerBarItem> SHEET_OPENER_ITEM =
             new WritableObjectPropertyKey<>("sheet_opener_item");
+    static final WritableObjectPropertyKey<DismissBarItem> DISMISS_ITEM =
+            new WritableObjectPropertyKey<>("dismiss_item");
     static final ReadableBooleanPropertyKey DISABLE_ANIMATIONS_FOR_TESTING =
             new ReadableBooleanPropertyKey("skip_all_animations_for_testing");
     static final WritableObjectPropertyKey<Pair<Integer, Integer>> OFFSET_AND_GRAVITY =
@@ -78,6 +82,7 @@ class KeyboardAccessoryProperties {
                         SKIP_CLOSING_ANIMATION,
                         OFFSET_AND_GRAVITY,
                         SHEET_OPENER_ITEM,
+                        DISMISS_ITEM,
                         OBFUSCATED_CHILD_AT_CALLBACK,
                         ON_TOUCH_EVENT_CALLBACK,
                         SHOW_SWIPING_IPH,
@@ -104,7 +109,8 @@ class KeyboardAccessoryProperties {
             Type.LOYALTY_CARD_SUGGESTION,
             Type.HOME_AND_WORK_SUGGESTION,
             Type.TAB_LAYOUT,
-            Type.ACTION_CHIP
+            Type.ACTION_CHIP,
+            Type.DISMISS_CHIP
         })
         @Retention(RetentionPolicy.SOURCE)
         @interface Type {
@@ -114,6 +120,7 @@ class KeyboardAccessoryProperties {
             int HOME_AND_WORK_SUGGESTION = 3;
             int TAB_LAYOUT = 4;
             int ACTION_CHIP = 5;
+            int DISMISS_CHIP = 6;
         }
 
         private final @Type int mType;
@@ -176,6 +183,9 @@ class KeyboardAccessoryProperties {
                     break;
                 case Type.ACTION_CHIP:
                     typeName = "ACTION_CHIP";
+                    break;
+                case Type.DISMISS_CHIP:
+                    typeName = "DISMISS_CHIP";
                     break;
             }
             return typeName + ": " + mAction;
@@ -267,6 +277,25 @@ class KeyboardAccessoryProperties {
 
         void notifyAboutViewDestruction(View view) {
             mSheetOpenerCallbacks.onViewUnbound(view);
+        }
+    }
+
+    /**
+     * A {@link BarItem} that represents a "Dismiss" button.
+     *
+     * <p>This item triggers the provided runnable, which handles the logic for closing the
+     * associated keyboard accessory.
+     */
+    static final class DismissBarItem extends BarItem {
+        DismissBarItem(Runnable dismissRunnable) {
+            super(
+                    Type.DISMISS_CHIP,
+                    new Action(
+                            AccessoryAction.DISMISS,
+                            unused -> {
+                                dismissRunnable.run();
+                            }),
+                    R.string.keyboard_accessory_dismiss_button);
         }
     }
 
