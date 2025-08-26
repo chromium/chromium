@@ -793,6 +793,6 @@ OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
 
   // Reverse the predictions vector as it shall be returned in the descending
   // order of probability.
-  std::reverse(predictions.begin(), predictions.end());
+  std::ranges::reverse(predictions);
   return predictions;
 }

@@ -216,7 +216,7 @@ void Blur::Run(double sigma_x,
 
       // Restore blur surfaces for next frame.
       std::swap(content_surfaces, blur_surfaces);
-      std::reverse(blur_surfaces.begin(), blur_surfaces.end());
+      std::ranges::reverse(blur_surfaces);
     } else {  // !blur_filter
       SkCanvas* canvas = buffer->sk_surface->getCanvas();
       DrawContents(grid_image_.get(), cell_size, elapsed_time, canvas);

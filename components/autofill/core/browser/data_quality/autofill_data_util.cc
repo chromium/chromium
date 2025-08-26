@@ -483,7 +483,7 @@ std::u16string JoinNameParts(std::u16string_view given,
   const char* separator = " ";
   if (IsCJKName(given) && IsCJKName(family) && middle.empty()) {
     // LastFirst
-    std::reverse(full_name.begin(), full_name.end());
+    std::ranges::reverse(full_name);
     separator = "";
   }
 

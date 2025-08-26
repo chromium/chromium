@@ -78,11 +78,8 @@ bool DependencyGraph::GetDestructionOrder(
   if (construction_order_.empty() && !BuildConstructionOrder())
     return false;
 
-  *order = construction_order_;
-
   // Destroy nodes in reverse order.
-  std::reverse(order->begin(), order->end());
-
+  *order = {construction_order_.rbegin(), construction_order_.rend()};
   return true;
 }
 

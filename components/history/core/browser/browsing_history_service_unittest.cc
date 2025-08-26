@@ -145,7 +145,7 @@ class ReversedWebHistoryService : public TestWebHistoryService {
       bool* more_results_left) override {
     auto result = FakeWebHistoryService::GetVisitsBetween(begin, end, count,
                                                           more_results_left);
-    std::reverse(result.begin(), result.end());
+    std::ranges::reverse(result);
     return result;
   }
 };

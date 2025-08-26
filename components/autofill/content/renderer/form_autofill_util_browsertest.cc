@@ -2014,7 +2014,7 @@ TEST_F(FormAutofillUtilsTest, NextWebNode_Backward) {
     </html>)");
   std::vector<WebNode> expected_elements;
   PrefixTraverseAndAppend(GetDocument(), expected_elements);
-  std::reverse(expected_elements.begin(), expected_elements.end());
+  std::ranges::reverse(expected_elements);
 
   std::vector<WebNode> found_elements;
   for (WebNode node = expected_elements[0]; node;

@@ -104,9 +104,9 @@ void AddSerializedNavigationEntries(
   }
   // Iteration for `kCurrentAndPreceedingEntries` happens in descending order.
   // This results in the entries being added in reverse order. Use
-  // std::reverse() so the entries end up in ascending order.
+  // std::ranges::reverse() so the entries end up in ascending order.
   if (behavior == AddBehavior::kCurrentAndPreceedingEntries) {
-    std::reverse(navigations.begin(), navigations.end());
+    std::ranges::reverse(navigations);
   }
 }
 

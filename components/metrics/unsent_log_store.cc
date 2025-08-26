@@ -101,7 +101,7 @@ class LogsPrefWriter {
   void Finish() {
     DCHECK(!finished_);
     finished_ = true;
-    std::reverse(list_value_->begin(), list_value_->end());
+    std::ranges::reverse(*list_value_);
   }
 
   base::HistogramBase::Count32 unsent_samples_count() const {
@@ -338,7 +338,7 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
   if (overwrite_in_memory_store) {
     // We went in reverse order, but appended entries. So reverse list to
     // correct.
-    std::reverse(trimmed_list.begin(), trimmed_list.end());
+    std::ranges::reverse(trimmed_list);
 
     size_t dropped_logs_count = list_.size() - trimmed_list.size();
     if (dropped_logs_count > 0) {

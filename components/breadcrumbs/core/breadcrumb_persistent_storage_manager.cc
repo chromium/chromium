@@ -100,7 +100,7 @@ std::string GetEvents() {
     breadcrumbs.push_back(event);
   }
 
-  std::reverse(breadcrumbs.begin(), breadcrumbs.end());
+  std::ranges::reverse(breadcrumbs);
   return base::JoinString(breadcrumbs, kEventSeparator) + kEventSeparator;
 }
 

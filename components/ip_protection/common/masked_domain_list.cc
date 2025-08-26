@@ -27,7 +27,7 @@ using ::masked_domain_list::ResourceOwner;
 std::vector<std::string_view> ReversedAtoms(const std::string& domain) {
   std::vector<std::string_view> atoms = base::SplitStringPiece(
       domain, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::reverse(atoms.begin(), atoms.end());
+  std::ranges::reverse(atoms);
   return atoms;
 }
 

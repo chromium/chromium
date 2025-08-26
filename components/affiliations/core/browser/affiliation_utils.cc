@@ -330,7 +330,7 @@ std::string FacetURI::GetAndroidPackageDisplayName() const {
   CHECK(IsValidAndroidFacetURI());
   std::vector<std::string> parts = base::SplitString(
       android_package_name(), ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::reverse(parts.begin(), parts.end());
+  std::ranges::reverse(parts);
   return base::JoinString(parts, ".");
 }
 

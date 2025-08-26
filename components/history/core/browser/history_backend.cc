@@ -2628,7 +2628,7 @@ VisitVector HistoryBackend::GetRedirectChain(VisitRow visit) {
       visit = referring_visit;
     }
   }
-  std::reverse(result.begin(), result.end());
+  std::ranges::reverse(result);
   return result;
 }
 

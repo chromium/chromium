@@ -1835,7 +1835,7 @@ TEST_F(AutofillAcrossIframesTest, FrameAndFormIdsDontMatch) {
     web::WebFrame* main_frame = WaitForMainFrame();
     std::string new_frame_id = main_frame->GetFrameId();
     // Reverse the main frame id to make it a brand new id.
-    std::reverse(new_frame_id.begin(), new_frame_id.end());
+    std::ranges::reverse(new_frame_id);
 
     // Change the frame ID provided by getFrameId() to simulate a different
     // frame receiving the forms extraction request.

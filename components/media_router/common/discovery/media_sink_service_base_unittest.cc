@@ -95,7 +95,7 @@ TEST_F(MediaSinkServiceBaseTest,
        TestOnDiscoveryComplete_SameSinkDifferentOrders) {
   std::vector<MediaSinkInternal> old_sinks = CreateDialMediaSinks();
   std::vector<MediaSinkInternal> new_sinks = CreateDialMediaSinks();
-  std::reverse(new_sinks.begin(), new_sinks.end());
+  std::ranges::reverse(new_sinks);
 
   PopulateSinks(old_sinks, new_sinks);
   EXPECT_CALL(mock_sink_discovered_cb_, Run(new_sinks)).Times(0);

@@ -174,7 +174,7 @@ VisitVector TestHistoryBackendForSync::GetRedirectChain(VisitRow visit) {
     }
     result.push_back(visit);
   }
-  std::reverse(result.begin(), result.end());
+  std::ranges::reverse(result);
   return result;
 }
 
