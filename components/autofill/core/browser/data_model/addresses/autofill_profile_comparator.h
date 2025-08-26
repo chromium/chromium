@@ -97,28 +97,8 @@ class AutofillProfileComparator {
   //
   // Note that mergeability is non-directional; merging two profiles will likely
   // incorporate data from both profiles.
+  // TODO(crbug.com/359768803): Move this function to AutofillProfile.
   bool AreMergeable(const AutofillProfile& p1, const AutofillProfile& p2) const;
-
-  // Populates `name_info` with the result of merging the names in `new_profile`
-  // and `old_profile`. Returns true if successful. Expects that `new_profile`
-  // and `old_profile` have already been found to be mergeable. Regular names
-  // are merged first, after they are done, merging of alternative names starts.
-  bool MergeNames(const AutofillProfile& new_profile,
-                  const AutofillProfile& old_profile,
-                  NameInfo& name_info) const;
-
-  // Returns true if `full_name_2` is a variant of `full_name_1`.
-  //
-  // This function generates all variations of `full_name_1` and returns true if
-  // one of these variants is equal to `full_name_2`. For example, this function
-  // will return true if `full_name_2` is "john q public" and `full_name_1` is
-  // "john quincy public" because `full_name_2` can be derived from
-  // `full_name_1` by using the middle initial. Note that the reverse is not
-  // true, "john quincy public" is not a name variant of "john q public".
-  //
-  // Note: Expects that `full_name` is already normalized for comparison.
-  bool IsNameVariantOf(const std::u16string& full_name_1,
-                       const std::u16string& full_name_2) const;
 
   // Populates `email_info` with the result of merging the email addresses in
   // `new_profile` and `old_profile`. Returns true if successful. Expects that
@@ -206,40 +186,6 @@ class AutofillProfileComparator {
                                const AutofillProfile& p2,
                                AutofillType t) const;
 
-  // Generate the set of full/initial variants for `name_part`, where
-  // `name_part` is the user's first or middle name. For example, given "jean
-  // francois" (the normalized for comparison form of "Jean-François") this
-  // function returns the set:
-  //
-  //   { "", "f", "francois,
-  //     "j", "j f", "j francois",
-  //     "jean", "jean f", "jean francois", "jf" }
-  //
-  // Note: Expects that `name` is already normalized for comparison.
-  static std::set<std::u16string> GetNamePartVariants(
-      const std::u16string& name_part);
-
-  // Returns true if `p1` and `p2` have names which are equivalent for the
-  // purposes of merging the two profiles. This means one of the names is empty,
-  // the names are the same, or one name is a variation of the other. The name
-  // comparison is insensitive to case, punctuation and diacritics.
-  //
-  // Note that this method does not provide any guidance on actually merging
-  // the names.
-  bool HaveMergeableNames(const AutofillProfile& p1,
-                          const AutofillProfile& p2) const;
-
-  // Returns true if `p1` and `p2` have alternative names which are equivalent
-  // for the purposes of merging the two profiles. This means one of the
-  // alternative names is empty, the names are the same, or one name is a
-  // variation of the other. The alternative name comparison is insensitive to
-  // case, punctuation and diacritics.
-  //
-  // Note that this method does not provide any guidance on actually merging
-  // the alternative names.
-  bool HaveMergeableAlternativeNames(const AutofillProfile& p1,
-                                     const AutofillProfile& p2) const;
-
   // Returns true if `p1` and `p2` have email addresses which are equivalent
   // for the purposes of merging the two profiles. This means one of the email
   // addresses is empty, or the email addresses are the same (modulo case).
@@ -286,33 +232,6 @@ class AutofillProfileComparator {
                               const AutofillProfile& p2) const;
 
  private:
-  // Returns true if `full_name_1` and `full_name_2` are equivalent for the
-  // purposes of merging two profiles. This means one of the names is
-  // empty, the names are the same, or one name is a variation of the other.
-  // The name comparison is insensitive to case, punctuation and diacritics.
-  // Can be used for both regular and alternative (e.g. phonetic) names.
-  // This method contains the shared logic between `HaveMergeableNames` and
-  // `HaveMergeableAlternativeNames`.
-  //
-  // Note that this method does not provide any guidance on actually merging
-  // the names.
-  bool AreNamesMergeable(const AutofillProfile& p1,
-                         const AutofillProfile& p2,
-                         FieldType name_type) const;
-
-  // Populates `name_info` with the result of merging the `name_type` names in
-  // `new_profile` and `old_profile`. Returns true if successful. Expects that
-  // `new_profile` and `old_profile` have already been found to be mergeable.
-  //
-  // Heuristic: If one regular name is empty, select the other; otherwise,
-  // attempt to parse the names in each profile and determine if one
-  // name can be derived from the other. For example, J Smith can be derived
-  // from John Smith, so prefer the latter.
-  void MergeNamesImpl(const AutofillProfile& new_profile,
-                      const AutofillProfile& old_profile,
-                      FieldType name_type,
-                      AddressComponent& name_component) const;
-
   const std::string app_locale_;
 };
 

@@ -658,10 +658,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
         return false;
       }
     } else if (type == NAME_FULL) {
-      if (!comparator.IsNameVariantOf(
-              normalization::NormalizeForComparison(
-                  profile.GetInfo(NAME_FULL, app_locale)),
-              normalization::NormalizeForComparison(value))) {
+      if (!profile.GetNameInfo().IsNameVariantOf(value, app_locale)) {
         // Check whether the full name of |this| can be derived from the full
         // name of |profile| if the form contains a full name field.
         //
@@ -786,7 +783,9 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
   // accepting updates instead of preserving the original data. I.e., passing
   // the incoming profile first accepts case and diacritic changes, for example,
   // the other ways does not.
-  if (!comparator.MergeNames(profile, *this, name) ||
+  if (!NameInfo::MergeNames(profile.GetNameInfo(),
+                            profile.GetAddressCountryCode(), GetNameInfo(),
+                            GetAddressCountryCode(), name) ||
       !comparator.MergeEmailAddresses(profile, *this, email) ||
       !comparator.MergeCompanyNames(profile, *this, company) ||
       !comparator.MergePhoneNumbers(profile, *this, phone_number) ||

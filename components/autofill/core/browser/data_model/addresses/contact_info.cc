@@ -13,10 +13,13 @@
 #include "base/check_op.h"
 #include "base/i18n/char_iterator.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
@@ -34,6 +37,8 @@
 
 namespace autofill {
 namespace {
+
+constexpr std::u16string_view kSpace = u" ";
 
 // Finalizes the structure of `component` and returns the result of the
 // finalization. If the `component` could not be completed, it is possible
@@ -58,6 +63,230 @@ bool FinalizeNameAddressComponent(AddressComponent* component) {
     }
   }
   return result;
+}
+
+std::u16string GetNameForComparison(
+    const NameInfo& name_info,
+    const AddressCountryCode& common_country_code,
+    const FieldType name_type) {
+  switch (name_type) {
+    case ALTERNATIVE_FULL_NAME:
+      return name_info.GetValueForComparisonForType(name_type,
+                                                    common_country_code);
+    case NAME_FULL:
+      // Using GetValue() directly to prevent normalization that would remove
+      // diacritics. Normalization happens in
+      // `AutofillProfileComparator::Compare()`.
+      return name_info.GetRawInfo(name_type);
+    default:
+      NOTREACHED();
+  }
+}
+
+// Generate the set of full/initial variants for `name_part`, where
+// `name_part` is the user's first or middle name. For example, given "jean
+// francois" (the normalized for comparison form of "Jean-François") this
+// function returns the set:
+//
+//   { "", "f", "francois,
+//     "j", "j f", "j francois",
+//     "jean", "jean f", "jean francois", "jf" }
+//
+// Note: Expects that `name` is already normalized for comparison.
+std::set<std::u16string> GetNamePartVariants(const std::u16string& name_part) {
+  static constexpr size_t kMaxSupportedSubNames = 8;
+
+  std::vector<std::u16string_view> sub_names = base::SplitStringPiece(
+      name_part, kSpace, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  // Limit the number of sub-names we support (to constrain memory usage);
+  if (sub_names.size() > kMaxSupportedSubNames) {
+    return {name_part};
+  }
+
+  // Start with the empty string as a variant.
+  std::set<std::u16string> variants = {{}};
+
+  // For each sub-name, add a variant of all the already existing variants that
+  // appends this sub-name and one that appends the initial of this sub-name.
+  // Duplicates will be discarded when they're added to the variants set.
+  for (const auto& sub_name : sub_names) {
+    if (sub_name.empty()) {
+      continue;
+    }
+    std::vector<std::u16string> new_variants;
+    for (const std::u16string& variant : variants) {
+      new_variants.push_back(base::CollapseWhitespace(
+          base::JoinString({variant, sub_name}, kSpace), true));
+      new_variants.push_back(base::CollapseWhitespace(
+          base::JoinString({variant, sub_name.substr(0, 1)}, kSpace), true));
+    }
+    variants.insert(new_variants.begin(), new_variants.end());
+  }
+
+  // As a common case, also add the variant that just concatenates all of the
+  // initials.
+  std::u16string initials;
+  for (const auto& sub_name : sub_names) {
+    if (sub_name.empty()) {
+      continue;
+    }
+    initials.push_back(sub_name[0]);
+  }
+  variants.insert(initials);
+
+  // And, we're done.
+  return variants;
+}
+
+// Returns true if `full_name_2` is a variant of `full_name_1`.
+//
+// This function generates all variations of `full_name_1` and returns true if
+// one of these variants is equal to `full_name_2`. For example, this function
+// will return true if `full_name_2` is "john q public" and `full_name_1` is
+// "john quincy public" because `full_name_2` can be derived from
+// `full_name_1` by using the middle initial. Note that the reverse is not
+// true, "john quincy public" is not a name variant of "john q public".
+//
+// Note: Expects that `full_name` is already normalized for comparison.
+bool IsNormalizedNameVariantOf(const std::u16string& full_name_1,
+                               const std::u16string& full_name_2) {
+  data_util::NameParts name_1_parts = data_util::SplitName(full_name_1);
+
+  // Build the variants of full_name_1`s given, middle and family names.
+  //
+  // TODO(rogerm): Figure out whether or not we should break apart a compound
+  // family name into variants (crbug.com/619051)
+  const std::set<std::u16string> given_name_variants =
+      GetNamePartVariants(name_1_parts.given);
+  const std::set<std::u16string> middle_name_variants =
+      GetNamePartVariants(name_1_parts.middle);
+  const std::set<std::u16string> family_name_variants = {name_1_parts.family,
+                                                         u""};
+
+  // Iterate over all full name variants of profile 1 and see if any of them
+  // match the full name from profile 2.
+  for (const std::u16string& given_name : given_name_variants) {
+    for (const std::u16string& middle_name : middle_name_variants) {
+      for (const std::u16string& family_name : family_name_variants) {
+        std::u16string candidate = base::CollapseWhitespace(
+            base::JoinString({given_name, middle_name, family_name}, kSpace),
+            true);
+        if (candidate == full_name_2) {
+          return true;
+        }
+      }
+    }
+  }
+
+  // Also check if the name is just composed of the user's initials. For
+  // example, "thomas jefferson miller" could be composed as "tj miller".
+  if (!name_1_parts.given.empty() && !name_1_parts.middle.empty()) {
+    std::u16string initials;
+    initials.push_back(name_1_parts.given[0]);
+    initials.push_back(name_1_parts.middle[0]);
+    std::u16string candidate = base::CollapseWhitespace(
+        base::JoinString({initials, name_1_parts.family}, kSpace), true);
+    if (candidate == full_name_2) {
+      return true;
+    }
+  }
+
+  // There was no match found.
+  return false;
+}
+
+bool AreNameComponentsMergeable(const NameInfo& name_1,
+                                const AddressCountryCode country_code_1,
+                                const NameInfo& name_2,
+                                const AddressCountryCode country_code_2,
+                                const FieldType name_type) {
+  DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
+  const AddressCountryCode common_country_code =
+      AddressComponent::GetCommonCountry(country_code_1, country_code_2);
+  const std::u16string comparison_name_1 =
+      GetNameForComparison(name_1, common_country_code, name_type);
+  const std::u16string comparison_name_2 =
+      GetNameForComparison(name_2, common_country_code, name_type);
+
+  if (normalization::HasOnlySkippableCharacters(comparison_name_1) ||
+      normalization::HasOnlySkippableCharacters(comparison_name_2) ||
+      AutofillProfileComparator::Compare(
+          comparison_name_1, comparison_name_2,
+          normalization::WhitespaceSpec::kDiscard, name_type, country_code_1,
+          country_code_2)) {
+    return true;
+  }
+
+  // If the two names are just a permutation of each other, they are mergeable
+  // for structured names.
+  if (AreStringTokenEquivalent(comparison_name_1, comparison_name_2)) {
+    return true;
+  }
+
+  std::u16string canon_full_name_1 = NormalizeForComparison(
+      comparison_name_1, normalization::WhitespaceSpec::kRetain,
+      country_code_1);
+  std::u16string canon_full_name_2 = NormalizeForComparison(
+      comparison_name_2, normalization::WhitespaceSpec::kRetain,
+      country_code_2);
+
+  // Is it reasonable to merge the names from `p1` and `p2`?
+  bool result =
+      IsNormalizedNameVariantOf(canon_full_name_1, canon_full_name_2) ||
+      IsNormalizedNameVariantOf(canon_full_name_2, canon_full_name_1);
+  return result;
+}
+
+void MergeNameComponents(const NameInfo& new_name_info,
+                         const AddressCountryCode new_country_code,
+                         const NameInfo& old_name_info,
+                         const AddressCountryCode old_country_code,
+                         const FieldType name_type,
+                         AddressComponent& name_component) {
+  DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
+
+  const AddressCountryCode common_country_code =
+      AddressComponent::GetCommonCountry(new_country_code, old_country_code);
+  const std::u16string name_new = NormalizeForComparison(
+      GetNameForComparison(new_name_info, common_country_code, name_type),
+      normalization::WhitespaceSpec::kRetain, new_country_code);
+  const std::u16string name_old = NormalizeForComparison(
+      GetNameForComparison(old_name_info, common_country_code, name_type),
+      normalization::WhitespaceSpec::kRetain, old_country_code);
+
+  // At this state it is already determined that the two names are mergeable.
+  // This can mean of of the following things:
+  // * One name is empty. In this scenario the non-empty name is used.
+  // * The names are token equivalent: In this scenario a merge of the tree
+  // structure should be possible.
+  // * One name is a variant of the other. In this scenario, use the non-variant
+  // name.
+  // First, set info to the original profile.
+  name_component.CopyFrom(*old_name_info.GetRootForType(name_type));
+  // If the name of the `new_profile` is empty, just keep the state of
+  // `old_profile`.
+  if (normalization::HasOnlySkippableCharacters(name_new)) {
+    return;
+  }
+  // Vice versa set name to the one of `new_profile` if `old_profile` has an
+  // empty name
+  if (normalization::HasOnlySkippableCharacters(name_old)) {
+    name_component.CopyFrom(*new_name_info.GetRootForType(name_type));
+    return;
+  }
+  // Try to apply a direct merging.
+  if (name_component.MergeWithComponent(
+          *new_name_info.GetRootForType(name_type))) {
+    return;
+  }
+  // If the name in `old_profile` is a variant of `new_profile` use the one in
+  // `new_profile`.
+  if (IsNormalizedNameVariantOf(name_new, name_old)) {
+    name_component.CopyFrom(*new_name_info.GetRootForType(name_type));
+  } else {
+    name_component.CopyFrom(*old_name_info.GetRootForType(name_type));
+  }
 }
 
 }  // namespace
@@ -86,6 +315,56 @@ NameInfo& NameInfo::operator=(const NameInfo& info) {
 
 NameInfo::~NameInfo() = default;
 
+bool NameInfo::MergeNames(const NameInfo& new_name_info,
+                          const AddressCountryCode new_country_code,
+                          const NameInfo& old_name_info,
+                          const AddressCountryCode old_country_code,
+                          NameInfo& result_name_info) {
+  DCHECK(AreNamesMergeable(new_name_info, new_country_code, old_name_info,
+                           old_country_code));
+  DCHECK(AreAlternativeNamesMergeable(new_name_info, new_country_code,
+                                      old_name_info, old_country_code));
+
+  auto name_full = std::make_unique<NameFull>();
+  auto alternative_full_name = std::make_unique<AlternativeFullName>();
+
+  // TODO(crbug.com/375383124): Update `MergeNames` to provide meaningful
+  // return values.
+  MergeNameComponents(new_name_info, new_country_code, old_name_info,
+                      old_country_code, NAME_FULL, *name_full);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    MergeNameComponents(new_name_info, new_country_code, old_name_info,
+                        old_country_code, ALTERNATIVE_FULL_NAME,
+                        *alternative_full_name);
+  }
+  result_name_info =
+      NameInfo(std::move(name_full), std::move(alternative_full_name));
+  return true;
+}
+
+bool NameInfo::AreNamesMergeable(const NameInfo& name_info_1,
+                                 const AddressCountryCode country_code_1,
+                                 const NameInfo& name_info_2,
+                                 const AddressCountryCode country_code_2) {
+  return AreNameComponentsMergeable(name_info_1, country_code_1, name_info_2,
+                                    country_code_2, NAME_FULL);
+}
+
+bool NameInfo::AreAlternativeNamesMergeable(
+    const NameInfo& name_info_1,
+    const AddressCountryCode country_code_1,
+    const NameInfo& name_info_2,
+    const AddressCountryCode country_code_2) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    return true;
+  }
+
+  return AreNameComponentsMergeable(name_info_1, country_code_1, name_info_2,
+                                    country_code_2, ALTERNATIVE_FULL_NAME);
+}
+
 bool NameInfo::MergeStructuredName(const NameInfo& newer) {
   if (name_->MergeWithComponent(newer.GetStructuredName())) {
     if (base::FeatureList::IsEnabled(
@@ -105,6 +384,13 @@ void NameInfo::MergeStructuredNameValidationStatuses(const NameInfo& newer) {
     alternative_name_->MergeVerificationStatuses(
         newer.GetStructuredAlternativeName());
   }
+}
+
+bool NameInfo::IsNameVariantOf(const std::u16string& value,
+                               const std::string& app_locale) const {
+  return IsNormalizedNameVariantOf(
+      normalization::NormalizeForComparison(GetInfo(NAME_FULL, app_locale)),
+      normalization::NormalizeForComparison(value));
 }
 
 bool NameInfo::HasNameEligibleForPhoneticNameMigration() const {
@@ -163,6 +449,13 @@ void NameInfo::MigrateRegularNameToPhoneticName() {
                                      VerificationStatus::kNoStatus);
 
   name_->UnsetAddressComponentAndItsSubcomponents();
+}
+
+std::u16string NameInfo::GetValueForComparisonForType(
+    FieldType field_type,
+    const AddressCountryCode& common_country_code) const {
+  return GetRootForType(field_type)
+      ->GetValueForComparisonForType(field_type, common_country_code);
 }
 
 bool NameInfo::IsStructuredNameMergeable(const NameInfo& newer) const {
