@@ -518,9 +518,6 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows the app menu (for accessibility).
   virtual void ShowAppMenu() = 0;
 
-  // Allows the BrowserWindow object to handle the specified mouse event
-  // before sending it to the renderer.
-  virtual bool PreHandleMouseEvent(const blink::WebMouseEvent& event) = 0;
   // Allows the BrowserWindow object to handle a mouse drag update
   // before sending it to the renderer.
   // `point` is relative to the content view.

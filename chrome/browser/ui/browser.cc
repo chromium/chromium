@@ -1819,11 +1819,6 @@ void Browser::SetFocusToLocationBar() {
   window_->SetFocusToLocationBar(false);
 }
 
-bool Browser::PreHandleMouseEvent(content::WebContents* source,
-                                  const blink::WebMouseEvent& event) {
-  return window()->PreHandleMouseEvent(event);
-}
-
 void Browser::PreHandleDragUpdate(const content::DropData& drop_data,
                                   const gfx::PointF& client_pt) {
   window()->PreHandleDragUpdate(drop_data, client_pt);

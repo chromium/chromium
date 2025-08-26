@@ -3454,10 +3454,6 @@ void BrowserView::ShowAppMenu() {
       ->Activate(nullptr);
 }
 
-bool BrowserView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
-  return false;
-}
-
 content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
     const NativeWebKeyboardEvent& event) {
   if ((event.GetType() != blink::WebInputEvent::Type::kRawKeyDown) &&

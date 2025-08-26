@@ -89,7 +89,6 @@ class Origin;
 
 namespace blink {
 class WebGestureEvent;
-class WebMouseEvent;
 enum class ProtocolHandlerSecurityLevel;
 }
 
@@ -305,12 +304,10 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual bool HandleContextMenu(RenderFrameHost& render_frame_host,
                                  const ContextMenuParams& params);
 
-  // Allows delegates to handle mouse events before sending to the renderer.
-  // Returns true if the event was handled, false otherwise. A true value means
-  // no more processing should happen on the event. The default return value is
-  // false.
-  virtual bool PreHandleMouseEvent(WebContents* source,
-                                   const blink::WebMouseEvent& event);
+  // Allows delegates to handle mouse drag events before sending to the
+  // renderer. Returns true if the event was handled, false otherwise. A true
+  // value means no more processing should happen on the event. The default
+  // return value is false.
   virtual void PreHandleDragUpdate(const DropData& drop_data,
                                    const gfx::PointF& client_pt) {}
   virtual void PreHandleDragExit() {}

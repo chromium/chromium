@@ -1591,10 +1591,6 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
   CHECK_GE(mouse_event.GetType(), WebInputEvent::Type::kMouseTypeFirst);
   CHECK_LE(mouse_event.GetType(), WebInputEvent::Type::kMouseTypeLast);
 
-  if (delegate_ && delegate_->PreHandleMouseEvent(mouse_event)) {
-    return;
-  }
-
   for (auto& mouse_event_callback : mouse_event_callbacks_) {
     if (mouse_event_callback.Run(mouse_event)) {
       return;

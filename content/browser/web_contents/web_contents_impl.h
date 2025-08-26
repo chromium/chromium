@@ -1106,7 +1106,6 @@ class CONTENT_EXPORT WebContentsImpl
 
   double GetPendingZoomLevel(RenderWidgetHostImpl* rwh) override;
 
-  bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override;
   void PreHandleDragUpdate(const DropData& drop_data,
                            const gfx::PointF& client_pt);
   void PreHandleDragExit();

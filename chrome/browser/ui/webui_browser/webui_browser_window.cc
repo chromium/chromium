@@ -693,12 +693,6 @@ void WebUIBrowserWindow::ShowAppMenu() {
   NOTIMPLEMENTED();
 }
 
-bool WebUIBrowserWindow::PreHandleMouseEvent(
-    const blink::WebMouseEvent& event) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 void WebUIBrowserWindow::PreHandleDragUpdate(const content::DropData& drop_data,
                                              const gfx::PointF& point) {
   NOTIMPLEMENTED();

@@ -4418,12 +4418,6 @@ void WebContentsImpl::RenderWidgetWasResized(
                              width_changed);
 }
 
-bool WebContentsImpl::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
-  OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
-                        "WebContentsImpl::PreHandleMouseEvent");
-  return delegate_ ? delegate_->PreHandleMouseEvent(this, event) : false;
-}
-
 void WebContentsImpl::PreHandleDragUpdate(const DropData& drop_data,
                                           const gfx::PointF& client_pt) {
   if (delegate_) {
