@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/types/expected.h"
+#include "remoting/host/base/loggable.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
@@ -112,6 +113,16 @@ class PipewireCaptureStreamManager final {
     AddStreamCallback callback;
   };
 
+  struct StreamInfo {
+    StreamInfo();
+    StreamInfo(StreamInfo&&);
+    StreamInfo& operator=(StreamInfo&&);
+    ~StreamInfo();
+
+    std::unique_ptr<PipewireCaptureStream> stream;
+    gvariant::ObjectPath stream_path;
+  };
+
   template <typename SuccessType, typename String>
   GDBusConnectionRef::CallCallback<SuccessType> CheckAddStreamResultAndContinue(
       void (PipewireCaptureStreamManager::*success_method)(SuccessType),
@@ -132,6 +143,8 @@ class PipewireCaptureStreamManager final {
   void OnStreamCreated(std::tuple<gvariant::ObjectPath> args);
   void OnStreamParameters(GVariantRef<"a{sv}"> parameters);
   void OnStreamStarted(std::tuple<> args);
+  void OnStreamStopped(webrtc::ScreenId screen_id,
+                       base::expected<std::tuple<>, Loggable> result);
   void OnPipeWireStreamAdded(std::string mapping_id,
                              std::tuple<std::uint32_t> args);
   void QueryDisplayInfo();
@@ -155,8 +168,8 @@ class PipewireCaptureStreamManager final {
   // nullopt if not display config has been loaded yet.
   std::optional<GnomeDisplayConfig> last_seen_display_config_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::flat_map<webrtc::ScreenId, std::unique_ptr<PipewireCaptureStream>>
-      streams_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_map<webrtc::ScreenId, StreamInfo> streams_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Queue to allow streams to be added one at a time, which is crucial to
   // ensure the stream is associated with the correct screen ID.

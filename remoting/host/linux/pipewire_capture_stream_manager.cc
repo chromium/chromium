@@ -38,6 +38,12 @@ PipewireCaptureStreamManager::AddStreamRequest::AddStreamRequest(
     : initial_resolution(initial_resolution), callback(std::move(callback)) {}
 PipewireCaptureStreamManager::AddStreamRequest::~AddStreamRequest() = default;
 
+PipewireCaptureStreamManager::StreamInfo::StreamInfo() = default;
+PipewireCaptureStreamManager::StreamInfo::StreamInfo(StreamInfo&&) = default;
+PipewireCaptureStreamManager::StreamInfo&
+PipewireCaptureStreamManager::StreamInfo::operator=(StreamInfo&&) = default;
+PipewireCaptureStreamManager::StreamInfo::~StreamInfo() = default;
+
 PipewireCaptureStreamManager::PipewireCaptureStreamManager() = default;
 PipewireCaptureStreamManager::~PipewireCaptureStreamManager() = default;
 
@@ -77,7 +83,7 @@ base::WeakPtr<PipewireCaptureStream> PipewireCaptureStreamManager::GetStream(
   if (it == streams_.end()) {
     return nullptr;
   }
-  return it->second->GetWeakPtr();
+  return it->second.stream->GetWeakPtr();
 }
 
 void PipewireCaptureStreamManager::AddStream(
@@ -101,9 +107,17 @@ void PipewireCaptureStreamManager::AddStream(
 
 void PipewireCaptureStreamManager::RemoveStream(webrtc::ScreenId screen_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (streams_.erase(screen_id) > 0) {
-    observers_.Notify(&Observer::OnPipewireCaptureStreamRemoved, screen_id);
+  auto it = streams_.find(screen_id);
+  if (it == streams_.end()) {
+    LOG(ERROR) << "Cannot find stream for screen ID: " << screen_id;
+    return;
   }
+  // The virtual monitor will not be removed until the screencast Stop() method
+  // is called.
+  connection_->Call<org_gnome_Mutter_ScreenCast_Stream::Stop>(
+      kScreenCastBusName, it->second.stream_path, std::tuple(),
+      base::BindOnce(&PipewireCaptureStreamManager::OnStreamStopped,
+                     GetWeakPtr(), screen_id));
 }
 
 base::flat_map<webrtc::ScreenId, base::WeakPtr<PipewireCaptureStream>>
@@ -111,8 +125,8 @@ PipewireCaptureStreamManager::GetActiveStreams() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::flat_map<webrtc::ScreenId, base::WeakPtr<PipewireCaptureStream>> output;
-  for (const auto& [screen_id, stream] : streams_) {
-    output[screen_id] = stream->GetWeakPtr();
+  for (const auto& [screen_id, stream_info] : streams_) {
+    output[screen_id] = stream_info.stream->GetWeakPtr();
   }
   return output;
 }
@@ -253,6 +267,19 @@ void PipewireCaptureStreamManager::OnStreamStarted(std::tuple<> args) {
   // Do nothing. Still need to wait for PipeWire-stream-added signal.
 }
 
+void PipewireCaptureStreamManager::OnStreamStopped(
+    webrtc::ScreenId screen_id,
+    base::expected<std::tuple<>, Loggable> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!result.has_value()) {
+    LOG(ERROR) << "Failed to stop stream: " << result.error();
+    return;
+  }
+  if (streams_.erase(screen_id) != 0) {
+    observers_.Notify(&Observer::OnPipewireCaptureStreamRemoved, screen_id);
+  }
+}
+
 void PipewireCaptureStreamManager::OnPipeWireStreamAdded(
     std::string mapping_id,
     std::tuple<std::uint32_t> args) {
@@ -339,7 +366,10 @@ void PipewireCaptureStreamManager::AssociatePendingStream(
   HOST_LOG << "Associating pending stream with screen ID " << screen_id;
   pending_stream_->set_screen_id(screen_id);
   auto weak_ptr = pending_stream_->GetWeakPtr();
-  streams_[screen_id] = std::move(pending_stream_);
+  StreamInfo info;
+  info.stream = std::move(pending_stream_);
+  info.stream_path = std::move(pending_stream_path_);
+  streams_[screen_id] = std::move(info);
 
   SetUseDamageRegion();
   RunCurrentAddStreamCallback(base::ok(weak_ptr));
@@ -348,7 +378,7 @@ void PipewireCaptureStreamManager::AssociatePendingStream(
 void PipewireCaptureStreamManager::SetUseDamageRegion() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (auto& [screen_id, stream] : streams_) {
+  for (auto& [screen_id, stream_info] : streams_) {
     const auto monitor_it = last_seen_display_config_->FindMonitor(screen_id);
     if (monitor_it == last_seen_display_config_->monitors.end()) {
       LOG(ERROR) << "Cannot find monitor for screen ID " << screen_id;
@@ -361,7 +391,7 @@ void PipewireCaptureStreamManager::SetUseDamageRegion() {
     bool use_damage_region = monitor_it->second.x == 0 &&
                              monitor_it->second.y == 0 &&
                              monitor_it->second.scale == 1.0;
-    stream->SetUseDamageRegion(use_damage_region);
+    stream_info.stream->SetUseDamageRegion(use_damage_region);
   }
 }
 

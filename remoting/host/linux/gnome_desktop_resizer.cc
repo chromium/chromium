@@ -4,7 +4,10 @@
 
 #include "remoting/host/linux/gnome_desktop_resizer.h"
 
+#include <functional>
+
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -19,6 +22,7 @@
 #include "remoting/host/linux/gnome_interaction_strategy.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
 #include "remoting/host/linux/pipewire_capture_stream_manager.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/base/glib/gsettings.h"
 
@@ -134,13 +138,24 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
   if (!stream_manager_) {
     return;
   }
+  // TODO: crbug.com/432217140 - Implement support for change of primary
+  // display, monitor offsets and scales.
+  auto unseen_screen_ids = base::MakeFlatSet<webrtc::ScreenId>(
+      stream_manager_->GetActiveStreams(), std::less<>(),
+      [](const auto& kv) { return kv.first; });
   for (const auto& track : layout.video_track()) {
     if (!track.has_screen_id()) {
       stream_manager_->AddStream(
           {{track.width(), track.height()}, {track.x_dpi(), track.y_dpi()}},
           base::BindOnce(&GnomeDesktopResizer::OnAddStreamResult,
                          weak_ptr_factory_.GetWeakPtr()));
+    } else if (unseen_screen_ids.erase(track.screen_id()) == 0) {
+      LOG(ERROR) << "Found unexpected screen ID: " << track.screen_id();
     }
+  }
+  // Remove pipewire streams that are no longer in the video layout.
+  for (const auto& screen_id : unseen_screen_ids) {
+    stream_manager_->RemoveStream(screen_id);
   }
 }
 
