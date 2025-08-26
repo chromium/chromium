@@ -106,10 +106,13 @@ class PaintPreviewRecorderRenderViewTest
         mojom::PaintPreviewCaptureParams::New();
     auto token = base::UnguessableToken::Create();
     params->guid = token;
-    params->clip_rect = clip_rect;
-    params->clip_x_coord_override = clip_x_coord_override;
-    params->clip_y_coord_override = clip_y_coord_override;
-    params->clip_rect_is_hint = false;
+    params->geometry_metadata_params = mojom::GeometryMetadataParams::New();
+    params->geometry_metadata_params->clip_rect = clip_rect;
+    params->geometry_metadata_params->clip_x_coord_override =
+        clip_x_coord_override;
+    params->geometry_metadata_params->clip_y_coord_override =
+        clip_y_coord_override;
+    params->geometry_metadata_params->clip_rect_is_hint = false;
     params->is_main_frame = is_main_frame;
     params->capture_links = true;
     base::File skp_file(
@@ -272,12 +275,14 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
 
   // Scroll offset should be within the [0, 500] bounds.
-  EXPECT_THAT(out_response->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
-  EXPECT_THAT(out_response->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
+  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.x(),
+              AllOf(Gt(0), Lt(500)));
+  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.x(),
+              AllOf(Gt(0), Lt(500)));
 
   // Both frame offsets should be > 0 in this case.
-  EXPECT_GT(out_response->frame_offsets.x(), 0);
-  EXPECT_GT(out_response->frame_offsets.y(), 0);
+  EXPECT_GT(out_response->geometry_metadata->frame_offsets.x(), 0);
+  EXPECT_GT(out_response->geometry_metadata->frame_offsets.y(), 0);
 
   // Relaxed checks on dimensions and no checks on positions. This is not
   // intended to intensively test the rendering behavior of the page.
@@ -328,12 +333,14 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
 
   // Scroll offset should be within the [0, 500] bounds.
-  EXPECT_THAT(out_response->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
-  EXPECT_THAT(out_response->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
+  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.x(),
+              AllOf(Gt(0), Lt(500)));
+  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.x(),
+              AllOf(Gt(0), Lt(500)));
 
   // Only Y frame offset should be > 0 in this case.
-  EXPECT_EQ(out_response->frame_offsets.x(), 0);
-  EXPECT_GT(out_response->frame_offsets.y(), 0);
+  EXPECT_EQ(out_response->geometry_metadata->frame_offsets.x(), 0);
+  EXPECT_GT(out_response->geometry_metadata->frame_offsets.y(), 0);
 
   // Relaxed checks on dimensions and no checks on positions. This is not
   // intended to intensively test the rendering behavior of the page.
@@ -385,12 +392,14 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
 
   // Scroll offset should be within the [0, 500] bounds.
-  EXPECT_THAT(out_response->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
-  EXPECT_THAT(out_response->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
+  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.x(),
+              AllOf(Gt(0), Lt(500)));
+  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.x(),
+              AllOf(Gt(0), Lt(500)));
 
   // Only X frame offset should be > 0 in this case.
-  EXPECT_GT(out_response->frame_offsets.x(), 0);
-  EXPECT_EQ(out_response->frame_offsets.y(), 0);
+  EXPECT_GT(out_response->geometry_metadata->frame_offsets.x(), 0);
+  EXPECT_EQ(out_response->geometry_metadata->frame_offsets.y(), 0);
 
   // Relaxed checks on dimensions and no checks on positions. This is not
   // intended to intensively test the rendering behavior of the page.
@@ -441,10 +450,11 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
 
   // Scroll offset should be within the [0, 2000] bounds and closer to the
   // bottom as it was clamped.
-  EXPECT_THAT(out_response->scroll_offsets.y(), AllOf(Gt(1100), Lt(2000)));
+  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.y(),
+              AllOf(Gt(1100), Lt(2000)));
 
   // Frame offset should be > 0 in this case.
-  EXPECT_GT(out_response->frame_offsets.y(), 0);
+  EXPECT_GT(out_response->geometry_metadata->frame_offsets.y(), 0);
 
   // Relaxed checks on dimensions and no checks on positions. This is not
   // intended to intensively test the rendering behavior of the page.
@@ -495,11 +505,11 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
             out_response->embedding_token.value());
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
 
-  EXPECT_GT(out_response->scroll_offsets.y(), 0);
+  EXPECT_GT(out_response->geometry_metadata->scroll_offsets.y(), 0);
 
   // Frame offset should be 0 in this case.
-  EXPECT_EQ(out_response->frame_offsets.x(), 0);
-  EXPECT_EQ(out_response->frame_offsets.y(), 0);
+  EXPECT_EQ(out_response->geometry_metadata->frame_offsets.x(), 0);
+  EXPECT_EQ(out_response->geometry_metadata->frame_offsets.y(), 0);
 
   // Relaxed checks on dimensions and no checks on positions. This is not
   // intended to intensively test the rendering behavior of the page.
@@ -548,13 +558,14 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
 
   // The capture origin is positioned *at* the scroll offsets.
-  EXPECT_EQ(out_response->scroll_offsets.x(), 0);
-  EXPECT_EQ(out_response->scroll_offsets.y(), 0);
+  EXPECT_EQ(out_response->geometry_metadata->scroll_offsets.x(), 0);
+  EXPECT_EQ(out_response->geometry_metadata->scroll_offsets.y(), 0);
 
   // The capture origin is exactly halfway down each dimension (since we
   // scrolled halfway in each direction).
-  EXPECT_EQ(out_response->frame_offsets.x(), 5000 / 2);
-  EXPECT_EQ(out_response->frame_offsets.y(), (200 + 5000) / 2);
+  EXPECT_EQ(out_response->geometry_metadata->frame_offsets.x(), 5000 / 2);
+  EXPECT_EQ(out_response->geometry_metadata->frame_offsets.y(),
+            (200 + 5000) / 2);
 
   // Relaxed checks on dimensions and no checks on positions. This is not
   // intended to intensively test the rendering behavior of the page.
@@ -601,12 +612,12 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
 
   // The capture origin is positioned *at* the scroll offsets.
-  EXPECT_EQ(out_response->scroll_offsets.x(), 0);
-  EXPECT_EQ(out_response->scroll_offsets.y(), 0);
+  EXPECT_EQ(out_response->geometry_metadata->scroll_offsets.x(), 0);
+  EXPECT_EQ(out_response->geometry_metadata->scroll_offsets.y(), 0);
 
   // The frame offsets are the same as the window's scroll offsets.
-  EXPECT_EQ(out_response->frame_offsets.x(), 0);
-  EXPECT_EQ(out_response->frame_offsets.y(), 200);
+  EXPECT_EQ(out_response->geometry_metadata->frame_offsets.x(), 0);
+  EXPECT_EQ(out_response->geometry_metadata->frame_offsets.y(), 200);
 
   sk_sp<SkPicture> pic;
   {
@@ -654,13 +665,14 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
 
   // The capture origin is positioned *at* the scroll offsets.
-  EXPECT_EQ(out_response->scroll_offsets.x(), 0);
-  EXPECT_EQ(out_response->scroll_offsets.y(), 0);
+  EXPECT_EQ(out_response->geometry_metadata->scroll_offsets.x(), 0);
+  EXPECT_EQ(out_response->geometry_metadata->scroll_offsets.y(), 0);
 
   // The capture origin is more than halfway scrolled in each dimension. The
   // exact placement depends on the size of the viewport.
-  EXPECT_THAT(out_response->frame_offsets.x(), AllOf(Gt(5000 / 2), Lt(5000)));
-  EXPECT_THAT(out_response->frame_offsets.y(),
+  EXPECT_THAT(out_response->geometry_metadata->frame_offsets.x(),
+              AllOf(Gt(5000 / 2), Lt(5000)));
+  EXPECT_THAT(out_response->geometry_metadata->frame_offsets.y(),
               AllOf(Gt((200 + 5000) / 2), Lt(200 + 5000)));
 
   // Relaxed checks on dimensions and no checks on positions. This is not
@@ -716,7 +728,8 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidFile) {
       mojom::PaintPreviewCaptureParams::New();
   auto token = base::UnguessableToken::Create();
   params->guid = token;
-  params->clip_rect = gfx::Rect();
+  params->geometry_metadata_params = mojom::GeometryMetadataParams::New();
+  params->geometry_metadata_params->clip_rect = gfx::Rect();
   params->is_main_frame = true;
   params->capture_links = true;
   params->max_capture_size = 0;
@@ -739,7 +752,9 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidXYClip) {
       mojom::PaintPreviewCaptureParams::New();
   auto token = base::UnguessableToken::Create();
   params->guid = token;
-  params->clip_rect = gfx::Rect(1000000, 1000000, 10, 10);
+  params->geometry_metadata_params = mojom::GeometryMetadataParams::New();
+  params->geometry_metadata_params->clip_rect =
+      gfx::Rect(1000000, 1000000, 10, 10);
   params->is_main_frame = true;
   params->capture_links = true;
   params->max_capture_size = 0;

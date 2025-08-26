@@ -85,16 +85,19 @@ class NoGuidMockPaintPreviewRecorder : public MockPaintPreviewRecorder {
       const mojom::PaintPreviewCaptureParamsPtr& input_params) override {
     // Ignore GUID and File as this is internal information not known by the
     // Keyed Service API.
-    EXPECT_EQ(input_params->clip_rect, expected_params_->clip_rect);
+    EXPECT_EQ(input_params->geometry_metadata_params->clip_rect,
+              expected_params_->geometry_metadata_params->clip_rect);
     if (input_params->is_main_frame) {
-      EXPECT_EQ(input_params->clip_x_coord_override,
-                expected_params_->clip_x_coord_override);
-      EXPECT_EQ(input_params->clip_y_coord_override,
-                expected_params_->clip_y_coord_override);
+      EXPECT_EQ(
+          input_params->geometry_metadata_params->clip_x_coord_override,
+          expected_params_->geometry_metadata_params->clip_x_coord_override);
+      EXPECT_EQ(
+          input_params->geometry_metadata_params->clip_y_coord_override,
+          expected_params_->geometry_metadata_params->clip_y_coord_override);
     } else {
-      EXPECT_EQ(input_params->clip_x_coord_override,
+      EXPECT_EQ(input_params->geometry_metadata_params->clip_x_coord_override,
                 mojom::ClipCoordOverride::kNone);
-      EXPECT_EQ(input_params->clip_y_coord_override,
+      EXPECT_EQ(input_params->geometry_metadata_params->clip_y_coord_override,
                 mojom::ClipCoordOverride::kNone);
     }
     EXPECT_EQ(input_params->is_main_frame, expected_params_->is_main_frame);
@@ -179,15 +182,18 @@ class PaintPreviewBaseServiceTest
 TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
   NoGuidMockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
-  params->clip_rect = gfx::Rect(0, 0, 0, 0);
-  params->clip_x_coord_override =
+  params->geometry_metadata_params = mojom::GeometryMetadataParams::New();
+  params->geometry_metadata_params->clip_rect = gfx::Rect(0, 0, 0, 0);
+  params->geometry_metadata_params->clip_x_coord_override =
       mojom::ClipCoordOverride::kCenterOnScrollOffset;
-  params->clip_y_coord_override = mojom::ClipCoordOverride::kScrollOffset;
+  params->geometry_metadata_params->clip_y_coord_override =
+      mojom::ClipCoordOverride::kScrollOffset;
   params->is_main_frame = true;
   params->max_capture_size = 50;
   params->max_decoded_image_size_bytes = 1000;
   recorder.SetExpectedParams(std::move(params));
   auto response = mojom::PaintPreviewCaptureResponse::New();
+  response->geometry_metadata = mojom::GeometryMetadataResponse::New();
   response->embedding_token = std::nullopt;
   if (GetParam() == RecordingPersistence::kMemoryBuffer) {
     response->skp.emplace(mojo_base::BigBuffer());
@@ -250,14 +256,17 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
 TEST_P(PaintPreviewBaseServiceTest, CaptureFailed) {
   NoGuidMockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
-  params->clip_rect = gfx::Rect(0, 0, 0, 0);
-  params->clip_x_coord_override =
+  params->geometry_metadata_params = mojom::GeometryMetadataParams::New();
+  params->geometry_metadata_params->clip_rect = gfx::Rect(0, 0, 0, 0);
+  params->geometry_metadata_params->clip_x_coord_override =
       mojom::ClipCoordOverride::kCenterOnScrollOffset;
-  params->clip_y_coord_override = mojom::ClipCoordOverride::kScrollOffset;
+  params->geometry_metadata_params->clip_y_coord_override =
+      mojom::ClipCoordOverride::kScrollOffset;
   params->is_main_frame = true;
   params->max_capture_size = 0;
   recorder.SetExpectedParams(std::move(params));
   auto response = mojom::PaintPreviewCaptureResponse::New();
+  response->geometry_metadata = mojom::GeometryMetadataResponse::New();
   response->embedding_token = std::nullopt;
   recorder.SetResponse(mojom::PaintPreviewStatus::kFailed, std::move(response));
   OverrideInterface(&recorder);
@@ -289,14 +298,17 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureFailed) {
 TEST_P(PaintPreviewBaseServiceTest, CaptureDisallowed) {
   NoGuidMockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
-  params->clip_rect = gfx::Rect(0, 0, 0, 0);
-  params->clip_x_coord_override =
+  params->geometry_metadata_params = mojom::GeometryMetadataParams::New();
+  params->geometry_metadata_params->clip_rect = gfx::Rect(0, 0, 0, 0);
+  params->geometry_metadata_params->clip_x_coord_override =
       mojom::ClipCoordOverride::kCenterOnScrollOffset;
-  params->clip_y_coord_override = mojom::ClipCoordOverride::kScrollOffset;
+  params->geometry_metadata_params->clip_y_coord_override =
+      mojom::ClipCoordOverride::kScrollOffset;
   params->is_main_frame = true;
   params->max_capture_size = 0;
   recorder.SetExpectedParams(std::move(params));
   auto response = mojom::PaintPreviewCaptureResponse::New();
+  response->geometry_metadata = mojom::GeometryMetadataResponse::New();
   response->embedding_token = std::nullopt;
   recorder.SetResponse(mojom::PaintPreviewStatus::kFailed, std::move(response));
   OverrideInterface(&recorder);

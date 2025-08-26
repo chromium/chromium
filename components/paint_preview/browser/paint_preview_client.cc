@@ -21,7 +21,7 @@
 #include "base/unguessable_token.h"
 #include "base/version.h"
 #include "components/paint_preview/common/capture_result.h"
-#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
+#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/common/proto_validator.h"
 #include "components/paint_preview/common/serialized_recording.h"
@@ -60,10 +60,10 @@ PaintPreviewCaptureResponseToPaintPreviewFrameProto(
     PaintPreviewFrameProto* proto) {
   proto->set_embedding_token_high(frame_guid.GetHighForSerialization());
   proto->set_embedding_token_low(frame_guid.GetLowForSerialization());
-  proto->set_scroll_offset_x(response->scroll_offsets.x());
-  proto->set_scroll_offset_y(response->scroll_offsets.y());
-  proto->set_frame_offset_x(response->frame_offsets.x());
-  proto->set_frame_offset_y(response->frame_offsets.y());
+  proto->set_scroll_offset_x(response->geometry_metadata->scroll_offsets.x());
+  proto->set_scroll_offset_y(response->geometry_metadata->scroll_offsets.y());
+  proto->set_frame_offset_x(response->geometry_metadata->frame_offsets.x());
+  proto->set_frame_offset_y(response->geometry_metadata->frame_offsets.y());
 
   std::vector<base::UnguessableToken> frame_guids;
   for (const auto& id_pair : response->content_id_to_embedding_token) {
@@ -122,12 +122,15 @@ mojom::PaintPreviewCaptureParamsPtr CreateRecordingRequestParams(
   mojo_params->persistence = persistence;
   mojo_params->capture_links = capture_params.capture_links;
   mojo_params->guid = capture_params.document_guid;
-  mojo_params->clip_rect = capture_params.clip_rect;
-  mojo_params->clip_x_coord_override = capture_params.clip_x_coord_override;
-  mojo_params->clip_y_coord_override = capture_params.clip_y_coord_override;
+  mojo_params->geometry_metadata_params = mojom::GeometryMetadataParams::New();
+  mojo_params->geometry_metadata_params->clip_rect = capture_params.clip_rect;
+  mojo_params->geometry_metadata_params->clip_x_coord_override =
+      capture_params.clip_x_coord_override;
+  mojo_params->geometry_metadata_params->clip_y_coord_override =
+      capture_params.clip_y_coord_override;
   // For now treat all clip rects as hints only. This API should be exposed
   // when clip_rects are used intentionally to limit capture time.
-  mojo_params->clip_rect_is_hint = true;
+  mojo_params->geometry_metadata_params->clip_rect_is_hint = true;
   mojo_params->is_main_frame = capture_params.is_main_frame;
   mojo_params->skip_accelerated_content =
       capture_params.skip_accelerated_content;
@@ -561,7 +564,7 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
 
   // For the main frame, apply a clip rect if one is provided.
   if (params.is_main_frame) {
-    capture_params->clip_rect_is_hint = false;
+    capture_params->geometry_metadata_params->clip_rect_is_hint = false;
   }
 
   interface_it->second->CapturePaintPreview(

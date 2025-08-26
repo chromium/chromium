@@ -64,27 +64,32 @@ void MockPaintPreviewRecorder::BindRequest(
 
 // static
 mojom::PaintPreviewCaptureResponsePtr MockPaintPreviewRecorder::NewResponse() {
-  return mojom::PaintPreviewCaptureResponse::New();
+  auto response = mojom::PaintPreviewCaptureResponse::New();
+  response->geometry_metadata = mojom::GeometryMetadataResponse::New();
+  return response;
 }
 
 void MockPaintPreviewRecorder::CheckParams(
     const mojom::PaintPreviewCaptureParamsPtr& input_params) {
   ASSERT_TRUE(expected_params_) << "SetExpectedParams() not called";
   EXPECT_EQ(input_params->guid, expected_params_->guid);
-  EXPECT_EQ(input_params->clip_rect, expected_params_->clip_rect);
+  EXPECT_EQ(input_params->geometry_metadata_params->clip_rect,
+            expected_params_->geometry_metadata_params->clip_rect);
   EXPECT_EQ(input_params->is_main_frame, expected_params_->is_main_frame);
   if (expected_params_->is_main_frame) {
-    EXPECT_FALSE(input_params->clip_rect_is_hint);
+    EXPECT_FALSE(input_params->geometry_metadata_params->clip_rect_is_hint);
   }
   if (input_params->is_main_frame) {
-    EXPECT_EQ(input_params->clip_x_coord_override,
-              expected_params_->clip_x_coord_override);
-    EXPECT_EQ(input_params->clip_y_coord_override,
-              expected_params_->clip_y_coord_override);
+    EXPECT_EQ(
+        input_params->geometry_metadata_params->clip_x_coord_override,
+        expected_params_->geometry_metadata_params->clip_x_coord_override);
+    EXPECT_EQ(
+        input_params->geometry_metadata_params->clip_y_coord_override,
+        expected_params_->geometry_metadata_params->clip_y_coord_override);
   } else {
-    EXPECT_EQ(input_params->clip_x_coord_override,
+    EXPECT_EQ(input_params->geometry_metadata_params->clip_x_coord_override,
               mojom::ClipCoordOverride::kNone);
-    EXPECT_EQ(input_params->clip_y_coord_override,
+    EXPECT_EQ(input_params->geometry_metadata_params->clip_y_coord_override,
               mojom::ClipCoordOverride::kNone);
   }
 }

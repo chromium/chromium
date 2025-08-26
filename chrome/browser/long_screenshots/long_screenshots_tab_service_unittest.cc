@@ -152,6 +152,8 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabInMemory) {
   LaxMockPaintPreviewRecorder recorder;
   paint_preview::mojom::PaintPreviewCaptureResponsePtr response =
       paint_preview::mojom::PaintPreviewCaptureResponse::New();
+  response->geometry_metadata =
+      paint_preview::mojom::GeometryMetadataResponse::New();
   response->skp.emplace(mojo_base::BigBuffer());
   recorder.SetResponse(paint_preview::mojom::PaintPreviewStatus::kOk,
                        std::move(response));

@@ -368,18 +368,21 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
 
   ASSIGN_OR_RETURN(
       const CaptureGeometry geometry,
-      ComputeCaptureGeometry(frame->GetScrollOffset(), frame->DocumentSize(),
-                             params->clip_rect, params->clip_x_coord_override,
-                             params->clip_y_coord_override,
-                             params->clip_rect_is_hint),
+      ComputeCaptureGeometry(
+          frame->GetScrollOffset(), frame->DocumentSize(),
+          params->geometry_metadata_params->clip_rect,
+          params->geometry_metadata_params->clip_x_coord_override,
+          params->geometry_metadata_params->clip_y_coord_override,
+          params->geometry_metadata_params->clip_rect_is_hint),
       [&] {
         std::move(callback).Run(mojom::PaintPreviewStatus::kCaptureFailed,
                                 std::move(response));
         return;
       });
 
-  response->scroll_offsets = geometry.scroll_offsets;
-  response->frame_offsets = geometry.frame_offsets;
+  response->geometry_metadata = mojom::GeometryMetadataResponse::New();
+  response->geometry_metadata->scroll_offsets = geometry.scroll_offsets;
+  response->geometry_metadata->frame_offsets = geometry.frame_offsets;
 
   auto tracker = std::make_unique<PaintPreviewTracker>(
       params->guid, frame->GetEmbeddingToken(), is_main_frame_);

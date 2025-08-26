@@ -60,7 +60,8 @@ mojom::PaintPreviewCaptureParamsPtr ToMojoParams(
   params_ptr->persistence = params.persistence;
   params_ptr->guid = params.inner.document_guid;
   params_ptr->is_main_frame = params.inner.is_main_frame;
-  params_ptr->clip_rect = params.inner.clip_rect;
+  params_ptr->geometry_metadata_params = mojom::GeometryMetadataParams::New();
+  params_ptr->geometry_metadata_params->clip_rect = params.inner.clip_rect;
   params_ptr->skip_accelerated_content = params.inner.skip_accelerated_content;
   return params_ptr;
 }
@@ -147,6 +148,7 @@ class PaintPreviewClientRenderViewHostTest
   mojo::StructPtr<mojom::PaintPreviewCaptureResponse>
   NewMockPaintPreviewCaptureResponse() {
     auto response = mojom::PaintPreviewCaptureResponse::New();
+    response->geometry_metadata = mojom::GeometryMetadataResponse::New();
     if (GetParam() == RecordingPersistence::kMemoryBuffer) {
       response->skp = {mojo_base::BigBuffer()};
     }
@@ -166,8 +168,8 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
 
   auto response = NewMockPaintPreviewCaptureResponse();
   response->embedding_token = std::nullopt;
-  response->scroll_offsets = gfx::Point(5, 10);
-  response->frame_offsets = gfx::Point(20, 30);
+  response->geometry_metadata->scroll_offsets = gfx::Point(5, 10);
+  response->geometry_metadata->frame_offsets = gfx::Point(20, 30);
 
   PaintPreviewProto expected_proto;
   auto* metadata = expected_proto.mutable_metadata();
@@ -274,6 +276,7 @@ TEST_F(PaintPreviewClientRenderViewHostTestBase, SubframeFileCreationFails) {
   params.inner.is_main_frame = true;
 
   auto response = mojom::PaintPreviewCaptureResponse::New();
+  response->geometry_metadata = mojom::GeometryMetadataResponse::New();
 
   MockPaintPreviewRecorder recorder;
   recorder.SetExpectedParams(ToMojoParams(params));
@@ -388,6 +391,7 @@ class PaintPreviewClientRenderViewHostResponseOrderingTest
   mojo::StructPtr<mojom::PaintPreviewCaptureResponse>
   NewMockPaintPreviewCaptureResponse() {
     auto response = mojom::PaintPreviewCaptureResponse::New();
+    response->geometry_metadata = mojom::GeometryMetadataResponse::New();
     if (persistence() == RecordingPersistence::kMemoryBuffer) {
       response->skp = {mojo_base::BigBuffer()};
     }
@@ -415,13 +419,13 @@ TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
 
   auto main_frame_response = NewMockPaintPreviewCaptureResponse();
   main_frame_response->embedding_token = std::nullopt;
-  main_frame_response->scroll_offsets = gfx::Point(5, 10);
-  main_frame_response->frame_offsets = gfx::Point(20, 30);
+  main_frame_response->geometry_metadata->scroll_offsets = gfx::Point(5, 10);
+  main_frame_response->geometry_metadata->frame_offsets = gfx::Point(20, 30);
 
   auto subframe_response = NewMockPaintPreviewCaptureResponse();
   subframe_response->embedding_token = std::nullopt;
-  subframe_response->scroll_offsets = gfx::Point(5, 10);
-  subframe_response->frame_offsets = gfx::Point(20, 30);
+  subframe_response->geometry_metadata->scroll_offsets = gfx::Point(5, 10);
+  subframe_response->geometry_metadata->frame_offsets = gfx::Point(20, 30);
 
   MockPaintPreviewRecorder main_frame_recorder;
   main_frame_recorder.SetExpectedParams(ToMojoParams(main_frame_params));
