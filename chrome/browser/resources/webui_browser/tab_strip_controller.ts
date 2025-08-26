@@ -12,23 +12,26 @@ import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
 import type {ContentRegion} from './content_region.js';
 import type {TabStrip} from './tab_strip.js';
 
-export interface LayoutManager {
+export interface TabStripControllerDelegate {
   // Notifies the layout manager to recompute its layout, because the tab strip
   // might have changed.
   refreshLayout: () => void;
+
+  // Notifies that the active tab has updated.
+  activeTabUpdated: (tabData: Tab) => void;
 }
 
 export class TabStripController {
-  private readonly layoutManager_: LayoutManager;
+  private readonly tabStripControllerDelegate_: TabStripControllerDelegate;
   private readonly tabStripService_: TabStripServiceRemote;
   private readonly tabStripObservation_: TabStripObservation;
   private tabStrip_: TabStrip;
   private contentRegion_: ContentRegion;
 
   constructor(
-      layoutManager: LayoutManager, tabStrip: TabStrip,
-      contentRegion: ContentRegion) {
-    this.layoutManager_ = layoutManager;
+      tabStripControllerDelegate: TabStripControllerDelegate,
+      tabStrip: TabStrip, contentRegion: ContentRegion) {
+    this.tabStripControllerDelegate_ = tabStripControllerDelegate;
     this.tabStripService_ = TabStripService.getRemote();
     this.tabStripObservation_ = new TabStripObservation();
     this.tabStrip_ = tabStrip;
@@ -124,7 +127,7 @@ export class TabStripController {
       this.tabStrip_.activateTab(tab.id);
     }
     this.contentRegion_.createWebView(tab.id, tab.isActive);
-    this.layoutManager_.refreshLayout();
+    this.tabStripControllerDelegate_.refreshLayout();
   }
 
   // tab_strip::mojom::Page implementation:
@@ -146,8 +149,10 @@ export class TabStripController {
     if (onTabDataChangedEvent.tab.isActive) {
       this.tabStrip_.activateTab(onTabDataChangedEvent.tab.id);
       this.contentRegion_.activateTab(onTabDataChangedEvent.tab.id);
+      this.tabStripControllerDelegate_.activeTabUpdated(
+          onTabDataChangedEvent.tab);
     }
-    this.layoutManager_.refreshLayout();
+    this.tabStripControllerDelegate_.refreshLayout();
   }
 
   private onTabGroupVisualsChanged_(event: OnTabGroupVisualsChangedEvent) {

@@ -10,6 +10,7 @@ import './tab_strip.js';
 import './webview.js';
 import 'chrome://resources/cr_components/searchbox/searchbox.js';
 
+import type {Tab} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -21,7 +22,7 @@ import {BookmarkBarController} from './bookmark_bar_controller.js';
 import {BrowserProxy} from './browser_proxy.js';
 import type {ContentRegion} from './content_region.js';
 import {TabStrip} from './tab_strip.js';
-import type {LayoutManager} from './tab_strip_controller.js';
+import type {TabStripControllerDelegate} from './tab_strip_controller.js';
 import {TabStripController} from './tab_strip_controller.js';
 
 export interface WebuiBrowserAppElement {
@@ -36,7 +37,7 @@ export interface WebuiBrowserAppElement {
 }
 
 export class WebuiBrowserAppElement extends CrLitElement implements
-    LayoutManager {
+    TabStripControllerDelegate {
   static get is() {
     return 'webui-browser-app';
   }
@@ -81,9 +82,24 @@ export class WebuiBrowserAppElement extends CrLitElement implements
         this.$.avatarButton, 'kToolbarAvatarButtonElementId');
   }
 
-  // LayoutManager:
+  // TabStripControllerDelegate:
   refreshLayout() {
     this.updateToolbarButtons_();
+  }
+
+  activeTabUpdated(tabData: Tab) {
+    let displayUrl = '';
+    const activeTabUrl = tabData.url.url;
+    // TODO(webium): Should match
+    // ChromeLocationBarModelDelegate::ShouldDisplayURL and
+    // LocationBarModelImpl::GetFormattedURL logic.
+    //
+    // There are also likely some subtleties about what happens when the user
+    // is typing and the tab navigates.
+    if (!activeTabUrl.startsWith('chrome://newtab')) {
+      displayUrl = activeTabUrl;
+    }
+    this.$.address.setInputText(displayUrl);
   }
 
   protected onLaunchDevtoolsClick_(_: Event) {
