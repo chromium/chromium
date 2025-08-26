@@ -44,7 +44,6 @@
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -318,7 +317,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
   void CheckLaunchError(KioskAppLaunchError::Error error) {
     const base::Value::Dict& dict =
-        g_browser_process->local_state()->GetDict("kiosk");
+        TestingBrowserProcess::GetGlobal()->local_state()->GetDict("kiosk");
     EXPECT_THAT(dict.FindInt("launch_error"), Eq(static_cast<int>(error)));
   }
 
@@ -350,12 +349,12 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   }
 
   LoadProfileCallback FakeLoadProfileCallback() {
-    return base::BindLambdaForTesting([&](const AccountId& app_account_id,
-                                          KioskAppType app_type,
-                                          LoadProfileResultCallback on_done) {
-      on_profile_loaded_callback_ = std::move(on_done);
-      return std::unique_ptr<CancellableJob>{};
-    });
+    return base::BindLambdaForTesting(
+        [&](PrefService* local_state, const AccountId& app_account_id,
+            KioskAppType app_type, LoadProfileResultCallback on_done) {
+          on_profile_loaded_callback_ = std::move(on_done);
+          return std::unique_ptr<CancellableJob>{};
+        });
   }
 
   TestingProfile profile_;

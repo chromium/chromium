@@ -102,9 +102,9 @@ void KioskAppLaunchError::Save(PrefService& local_state,
 
 // static
 void KioskAppLaunchError::SaveCryptohomeFailure(
+    PrefService& local_state,
     const AuthFailure& auth_failure) {
-  PrefService* local_state = g_browser_process->local_state();
-  ScopedDictPrefUpdate dict_update(local_state,
+  ScopedDictPrefUpdate dict_update(&local_state,
                                    KioskChromeAppManager::kKioskDictionaryName);
   dict_update->SetByDottedPath(kKeyCryptohomeFailure, auth_failure.reason());
 }

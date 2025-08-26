@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -91,8 +92,8 @@ TEST_F(LoadProfileTest, ReturnsProfileOnSuccess) {
     return NewCancellableJob();
   };
 
-  auto fake_signin = [](KioskAppType app_type, AccountId id,
-                        PerformSigninResultCallback cb) {
+  auto fake_signin = [](PrefService* local_state, KioskAppType app_type,
+                        AccountId id, PerformSigninResultCallback cb) {
     PostTask(base::BindOnce(std::move(cb), TestUserContext()));
     return NewCancellableJob();
   };
@@ -105,7 +106,8 @@ TEST_F(LoadProfileTest, ReturnsProfileOnSuccess) {
 
   TestFuture<LoadProfileResult> future;
   auto handle = LoadProfileWithCallbacks(
-      TestAccountId(), kTestAppType, base::BindOnce(fake_check_cryptohome),
+      TestingBrowserProcess::GetGlobal()->local_state(), TestAccountId(),
+      kTestAppType, base::BindOnce(fake_check_cryptohome),
       base::BindOnce(fake_signin),
       base::BindLambdaForTesting(fake_start_session), future.GetCallback());
 
@@ -126,8 +128,8 @@ TEST_F(LoadProfileTest, ForwardsResultsBetweenStepsCorrectly) {
     PostTask(base::BindOnce(std::move(cb), CryptohomeMountState::kNotMounted));
     return NewCancellableJob();
   };
-  auto fake_signin = [&](KioskAppType app_type, AccountId id,
-                         PerformSigninResultCallback cb) {
+  auto fake_signin = [&](PrefService* local_state, KioskAppType app_type,
+                         AccountId id, PerformSigninResultCallback cb) {
     seen_app_type = app_type;
     seen_account_id = TestAccountId();
     PostTask(base::BindOnce(std::move(cb), TestUserContext()));
@@ -142,7 +144,8 @@ TEST_F(LoadProfileTest, ForwardsResultsBetweenStepsCorrectly) {
 
   TestFuture<LoadProfileResult> future;
   auto handle = LoadProfileWithCallbacks(
-      TestAccountId(), kTestAppType, base::BindOnce(fake_check_cryptohome),
+      TestingBrowserProcess::GetGlobal()->local_state(), TestAccountId(),
+      kTestAppType, base::BindOnce(fake_check_cryptohome),
       base::BindLambdaForTesting(fake_signin),
       base::BindLambdaForTesting(fake_start_session), future.GetCallback());
 
@@ -161,8 +164,8 @@ TEST_F(LoadProfileTest, ReturnsCryptohomeCheckError) {
     PostTask(base::BindOnce(std::move(cb), CryptohomeMountState::kMounted));
     return NewCancellableJob();
   };
-  auto fake_signin = [&](KioskAppType app_type, AccountId id,
-                         PerformSigninResultCallback cb) {
+  auto fake_signin = [&](PrefService* local_state, KioskAppType app_type,
+                         AccountId id, PerformSigninResultCallback cb) {
     did_call_jobs_after_failure = true;
     return NewCancellableJob();
   };
@@ -174,7 +177,8 @@ TEST_F(LoadProfileTest, ReturnsCryptohomeCheckError) {
 
   TestFuture<LoadProfileResult> future;
   auto handle = LoadProfileWithCallbacks(
-      TestAccountId(), kTestAppType, base::BindOnce(fake_check_cryptohome),
+      TestingBrowserProcess::GetGlobal()->local_state(), TestAccountId(),
+      kTestAppType, base::BindOnce(fake_check_cryptohome),
       base::BindLambdaForTesting(fake_signin),
       base::BindLambdaForTesting(fake_start_session), future.GetCallback());
 
@@ -191,8 +195,8 @@ TEST_F(LoadProfileTest, ReturnsSigninError) {
     PostTask(base::BindOnce(std::move(cb), CryptohomeMountState::kNotMounted));
     return NewCancellableJob();
   };
-  auto fake_signin = [](KioskAppType app_type, AccountId id,
-                        PerformSigninResultCallback cb) {
+  auto fake_signin = [](PrefService* local_state, KioskAppType app_type,
+                        AccountId id, PerformSigninResultCallback cb) {
     PostTask(base::BindOnce(
         std::move(cb),
         base::unexpected(AuthFailure(AuthFailure::UNRECOVERABLE_CRYPTOHOME))));
@@ -206,7 +210,8 @@ TEST_F(LoadProfileTest, ReturnsSigninError) {
 
   TestFuture<LoadProfileResult> future;
   auto handle = LoadProfileWithCallbacks(
-      TestAccountId(), kTestAppType, base::BindOnce(fake_check_cryptohome),
+      TestingBrowserProcess::GetGlobal()->local_state(), TestAccountId(),
+      kTestAppType, base::BindOnce(fake_check_cryptohome),
       base::BindOnce(fake_signin),
       base::BindLambdaForTesting(fake_start_session), future.GetCallback());
 
@@ -228,8 +233,8 @@ TEST_F(LoadProfileTest, StopsWhenHandleIsCancelled) {
     return NewCancellableJob();
   };
 
-  auto fake_signin = [&](KioskAppType app_type, AccountId id,
-                         PerformSigninResultCallback cb) {
+  auto fake_signin = [&](PrefService* local_state, KioskAppType app_type,
+                         AccountId id, PerformSigninResultCallback cb) {
     signin_future.SetValue();
     PostTask(base::BindOnce(std::move(cb), TestUserContext()));
     return NewCancellableJob();
@@ -244,7 +249,8 @@ TEST_F(LoadProfileTest, StopsWhenHandleIsCancelled) {
 
   TestFuture<LoadProfileResult> future;
   auto handle = LoadProfileWithCallbacks(
-      TestAccountId(), kTestAppType, base::BindOnce(fake_check_cryptohome),
+      TestingBrowserProcess::GetGlobal()->local_state(), TestAccountId(),
+      kTestAppType, base::BindOnce(fake_check_cryptohome),
       base::BindLambdaForTesting(fake_signin),
       base::BindLambdaForTesting(fake_start_session), future.GetCallback());
 

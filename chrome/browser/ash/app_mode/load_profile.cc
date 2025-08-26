@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -114,10 +115,12 @@ std::unique_ptr<CancellableJob> CheckCryptohome(
 class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
  public:
   static std::unique_ptr<CancellableJob> Run(
+      PrefService* local_state,
       KioskAppType app_type,
       AccountId account_id,
       PerformSigninResultCallback on_done) {
-    auto handle = base::WrapUnique(new SigninPerformer(std::move(on_done)));
+    auto handle =
+        base::WrapUnique(new SigninPerformer(local_state, std::move(on_done)));
 
     switch (app_type) {
       case KioskAppType::kChromeApp:
@@ -142,8 +145,10 @@ class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
   ~SigninPerformer() override = default;
 
  private:
-  explicit SigninPerformer(PerformSigninResultCallback on_done)
-      : on_done_(std::move(on_done)),
+  // `local_state` must be non-null, and must outlive `this`.
+  SigninPerformer(PrefService* local_state, PerformSigninResultCallback on_done)
+      : local_state_(CHECK_DEREF(local_state)),
+        on_done_(std::move(on_done)),
         login_performer_(std::make_unique<ChromeLoginPerformer>(
             this,
             AuthEventsRecorder::Get())) {}
@@ -157,7 +162,7 @@ class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
     std::move(on_done_).Run(user_context);
   }
   void OnAuthFailure(const AuthFailure& auth_error) override {
-    KioskAppLaunchError::SaveCryptohomeFailure(auth_error);
+    KioskAppLaunchError::SaveCryptohomeFailure(local_state_.get(), auth_error);
     std::move(on_done_).Run(base::unexpected(auth_error));
   }
   void PolicyLoadFailed() override {
@@ -173,6 +178,7 @@ class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
     NOTREACHED();
   }
 
+  const raw_ref<PrefService> local_state_;
   PerformSigninResultCallback on_done_;
   std::unique_ptr<LoginPerformer> login_performer_;
 };
@@ -189,19 +195,21 @@ bool IsRetriableError(const PerformSigninResult& result) {
   return false;
 }
 
-std::unique_ptr<CancellableJob> Signin(KioskAppType app_type,
+std::unique_ptr<CancellableJob> Signin(PrefService* local_state,
+                                       KioskAppType app_type,
                                        AccountId account_id,
                                        PerformSigninResultCallback on_done) {
   return RunUpToNTimes<PerformSigninResult>(
       /*n=*/3,
       /*job=*/
       base::BindRepeating(
-          [](KioskAppType app_type, AccountId account_id,
+          [](PrefService* local_state, KioskAppType app_type,
+             AccountId account_id,
              RetryResultCallback<PerformSigninResult> on_result) {
-            return SigninPerformer::Run(app_type, account_id,
+            return SigninPerformer::Run(local_state, app_type, account_id,
                                         std::move(on_result));
           },
-          app_type, account_id),
+          local_state, app_type, account_id),
       /*should_retry=*/base::BindRepeating(&IsRetriableError),
       /*on_done=*/
       std::move(on_done));
@@ -274,6 +282,7 @@ void LogErrorToSyslog(KioskAppLaunchError::Error error) {
 class ProfileLoader : public CancellableJob {
  public:
   static std::unique_ptr<CancellableJob> Run(
+      PrefService* local_state,
       const AccountId& app_account_id,
       KioskAppType app_type,
       CheckCryptohomeCallback check_cryptohome,
@@ -286,7 +295,9 @@ class ProfileLoader : public CancellableJob {
   ~ProfileLoader() override;
 
  private:
-  ProfileLoader(const AccountId& app_account_id,
+  // `local_state` must be non-null, and must outlive `this`.
+  ProfileLoader(PrefService* local_state,
+                const AccountId& app_account_id,
                 KioskAppType app_type,
                 CheckCryptohomeCallback check_cryptohome,
                 PerformSigninCallback perform_signin,
@@ -301,6 +312,7 @@ class ProfileLoader : public CancellableJob {
   void ReturnSuccess(Profile& profile);
   void ReturnError(KioskAppLaunchError::Error result);
 
+  const raw_ref<PrefService> local_state_;
   const AccountId account_id_;
   const KioskAppType app_type_;
 
@@ -319,6 +331,7 @@ class ProfileLoader : public CancellableJob {
 };
 
 std::unique_ptr<CancellableJob> ProfileLoader::Run(
+    PrefService* local_state,
     const AccountId& app_account_id,
     KioskAppType app_type,
     CheckCryptohomeCallback check_cryptohome,
@@ -326,19 +339,21 @@ std::unique_ptr<CancellableJob> ProfileLoader::Run(
     StartSessionCallback start_session,
     LoadProfileResultCallback on_done) {
   auto loader = base::WrapUnique(new ProfileLoader(
-      app_account_id, app_type, std::move(check_cryptohome),
+      local_state, app_account_id, app_type, std::move(check_cryptohome),
       std::move(perform_signin), std::move(start_session), std::move(on_done)));
   loader->CheckCryptohomeIsNotMounted();
   return loader;
 }
 
-ProfileLoader::ProfileLoader(const AccountId& app_account_id,
+ProfileLoader::ProfileLoader(PrefService* local_state,
+                             const AccountId& app_account_id,
                              KioskAppType app_type,
                              CheckCryptohomeCallback check_cryptohome,
                              PerformSigninCallback perform_signin,
                              StartSessionCallback start_session,
                              LoadProfileResultCallback on_done)
-    : account_id_(app_account_id),
+    : local_state_(CHECK_DEREF(local_state)),
+      account_id_(app_account_id),
       app_type_(app_type),
       check_cryptohome_(std::move(check_cryptohome)),
       perform_signin_(std::move(perform_signin)),
@@ -372,7 +387,7 @@ void ProfileLoader::LoginAsKioskAccount() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_ =
       std::move(perform_signin_)
-          .Run(app_type_, account_id_,
+          .Run(&local_state_.get(), app_type_, account_id_,
                /*on_done=*/
                base::BindOnce(&ProfileLoader::DidLoginAsKioskAccount,
                               weak_ptr_factory_.GetWeakPtr()));
@@ -414,16 +429,18 @@ void ProfileLoader::ReturnError(KioskAppLaunchError::Error result) {
 
 }  // namespace
 
-std::unique_ptr<CancellableJob> LoadProfile(const AccountId& app_account_id,
+std::unique_ptr<CancellableJob> LoadProfile(PrefService* local_state,
+                                            const AccountId& app_account_id,
                                             KioskAppType app_type,
                                             LoadProfileResultCallback on_done) {
   return LoadProfileWithCallbacks(
-      app_account_id, app_type, base::BindOnce(&CheckCryptohome),
+      local_state, app_account_id, app_type, base::BindOnce(&CheckCryptohome),
       base::BindOnce(&Signin), base::BindOnce(&SessionStarter::Run),
       std::move(on_done));
 }
 
 std::unique_ptr<CancellableJob> LoadProfileWithCallbacks(
+    PrefService* local_state,
     const AccountId& app_account_id,
     KioskAppType app_type,
     CheckCryptohomeCallback check_cryptohome,
@@ -431,7 +448,7 @@ std::unique_ptr<CancellableJob> LoadProfileWithCallbacks(
     StartSessionCallback start_session,
     LoadProfileResultCallback on_done) {
   return ProfileLoader::Run(
-      app_account_id, app_type, std::move(check_cryptohome),
+      local_state, app_account_id, app_type, std::move(check_cryptohome),
       std::move(perform_signin), std::move(start_session), std::move(on_done));
 }
 

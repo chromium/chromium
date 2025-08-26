@@ -57,7 +57,8 @@ class KioskAppLaunchError {
 
   // Saves a cryptohome auth error. The error is used for metrics report on the
   // next Chrome run.
-  static void SaveCryptohomeFailure(const AuthFailure& auth_failure);
+  static void SaveCryptohomeFailure(PrefService& local_state,
+                                    const AuthFailure& auth_failure);
 
   // Gets the last launch error.
   static Error Get();

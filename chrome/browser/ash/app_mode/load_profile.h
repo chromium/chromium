@@ -18,6 +18,7 @@
 #include "components/account_id/account_id.h"
 
 class Profile;
+class PrefService;
 
 namespace ash::kiosk {
 
@@ -42,7 +43,10 @@ using LoadProfileResultCallback =
 //
 // The returned `unique_ptr` can be destroyed to cancel this task. In that case
 // `on_done` will not be called.
+//
+// `local_state` must be non-null, and must outlive the returned object.
 [[nodiscard]] std::unique_ptr<CancellableJob> LoadProfile(
+    PrefService* local_state,
     const AccountId& app_account_id,
     KioskAppType app_type,
     LoadProfileResultCallback on_done);
@@ -77,6 +81,7 @@ using PerformSigninResultCallback =
 // Convenience alias to declare functions that perform signin.
 using PerformSigninCallback =
     base::OnceCallback<std::unique_ptr<CancellableJob>(
+        PrefService* local_state,
         KioskAppType app_type,
         AccountId account_id,
         PerformSigninResultCallback callback)>;
@@ -92,6 +97,7 @@ using StartSessionCallback = base::OnceCallback<std::unique_ptr<CancellableJob>(
 // Same as `LoadProfile` above but allows callers to replace the sub-callbacks
 // it executes. Useful in tests.
 [[nodiscard]] std::unique_ptr<CancellableJob> LoadProfileWithCallbacks(
+    PrefService* local_state,
     const AccountId& app_account_id,
     KioskAppType app_type,
     CheckCryptohomeCallback check_cryptohome,

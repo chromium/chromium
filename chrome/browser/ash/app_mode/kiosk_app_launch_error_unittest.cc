@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -119,7 +120,9 @@ TEST_F(KioskAppLaunchErrorTest, SaveCryptohomeFailure) {
   // No cryptohome failure is stored before it is saved.
   EXPECT_FALSE(GetKioskDictionary().contains(kKeyCryptohomeFailure));
   AuthFailure auth_failure(AuthFailure::FailureReason::AUTH_DISABLED);
-  KioskAppLaunchError::SaveCryptohomeFailure(auth_failure);
+  KioskAppLaunchError::SaveCryptohomeFailure(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+      auth_failure);
 
   // The cryptohome failure can be retrieved.
   std::optional<int> out_error =
