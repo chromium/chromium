@@ -90,6 +90,13 @@ WebTestContentRendererClient::WebTestContentRendererClient() {
   blink::UniqueNameHelper::PreserveStableUniqueNameForTesting();
   blink::WebDedicatedOrSharedWorkerGlobalScopeContext::
       InstallRewriteURLFunction(RewriteWebTestsURL);
+
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
+  // On these platforms, fonts are set up in the renderer process. Other
+  // platforms set up fonts as part of WebTestBrowserMainRunner in the
+  // browser process, via WebTestBrowserPlatformInitialize().
+  skia::InitializeSkFontMgrForTest();
+#endif
 }
 
 WebTestContentRendererClient::~WebTestContentRendererClient() {
@@ -101,13 +108,6 @@ void WebTestContentRendererClient::RenderThreadStarted() {
   ShellContentRendererClient::RenderThreadStarted();
 
   test_runner_ = std::make_unique<TestRunner>();
-
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
-  // On these platforms, fonts are set up in the renderer process. Other
-  // platforms set up fonts as part of WebTestBrowserMainRunner in the
-  // browser process, via WebTestBrowserPlatformInitialize().
-  skia::InitializeSkFontMgrForTest();
-#endif
 }
 
 void WebTestContentRendererClient::RenderFrameCreated(

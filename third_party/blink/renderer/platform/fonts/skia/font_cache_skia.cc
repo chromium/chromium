@@ -243,11 +243,7 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
       return typeface;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  // TODO(https://crbug.com/1425390: Assign FontCache::font_manager_ in the
-  // ctor.
-  auto font_manager = font_manager_ ? font_manager_ : skia::DefaultFontMgr();
-  return sk_sp<SkTypeface>(font_manager->matchFamilyStyle(
+  return sk_sp<SkTypeface>(font_manager_->matchFamilyStyle(
       name.empty() ? nullptr : name.c_str(), font_description.SkiaFontStyle()));
 }
 

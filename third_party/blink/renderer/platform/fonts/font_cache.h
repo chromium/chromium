@@ -157,7 +157,6 @@ class PLATFORM_EXPORT FontCache final {
   void Invalidate();
 
   sk_sp<SkFontMgr> FontManager() { return font_manager_; }
-  static void SetFontManager(sk_sp<SkFontMgr>);
 
 #if BUILDFLAG(IS_WIN)
   static WebFontPrewarmer* GetFontPrewarmer() { return prewarmer_; }
@@ -337,9 +336,6 @@ class PLATFORM_EXPORT FontCache final {
   int purge_prevent_count_ = 0;
 
   sk_sp<SkFontMgr> font_manager_;
-
-  // A leaky owning bare pointer.
-  static SkFontMgr* static_font_manager_;
 
 #if BUILDFLAG(IS_WIN)
   static WebFontPrewarmer* prewarmer_;

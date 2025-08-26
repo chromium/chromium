@@ -80,8 +80,6 @@ const char kMonoEmojiLocale[] = "und-Zsym";
 extern const char kNotoColorEmojiCompat[] = "Noto Color Emoji Compat";
 #endif
 
-SkFontMgr* FontCache::static_font_manager_ = nullptr;
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 float FontCache::device_scale_factor_ = 1.0;
 #endif
@@ -89,33 +87,15 @@ float FontCache::device_scale_factor_ = 1.0;
 #if BUILDFLAG(IS_WIN)
 bool FontCache::antialiased_text_enabled_ = false;
 bool FontCache::lcd_text_enabled_ = false;
-static bool should_use_test_font_mgr = false;
 #endif  // BUILDFLAG(IS_WIN)
 
 FontCache& FontCache::Get() {
   return FontGlobalContext::GetFontCache();
 }
 
-FontCache::FontCache() : font_manager_(sk_ref_sp(static_font_manager_)) {
-#if BUILDFLAG(IS_WIN)
-  if (!font_manager_ || should_use_test_font_mgr) {
-    // This code path is only for unit tests. This SkFontMgr does not work in
-    // sandboxed environments, but injecting this initialization code to all
-    // unit tests isn't easy.
-    font_manager_ = SkFontMgr_New_DirectWrite();
-    // Set |is_test_font_mgr_| to capture if this is not happening in the
-    // production code. crbug.com/561873
-    is_test_font_mgr_ = true;
-
-    // Tests[1][2] construct |FontCache| without |static_font_manager|, but
-    // these tests install font manager with dwrite proxy even if they don't
-    // have remote end in browser.
-    // [1] HtmlBasedUsernameDetectorTest.UserGroupAttributes
-    // [2] RenderViewImplTest.OnDeleteSurroundingTextInCodePoints
-    should_use_test_font_mgr = true;
-  }
+FontCache::FontCache()
+    : font_manager_(sk_ref_sp(skia::DefaultFontMgr().get())) {
   DCHECK(font_manager_.get());
-#endif
 }
 
 FontCache::~FontCache() = default;
@@ -175,11 +155,6 @@ ShapeCache* FontCache::GetShapeCache(const FallbackListCompositeKey& key) {
     result.stored_value->value = MakeGarbageCollected<ShapeCache>();
   }
   return result.stored_value->value.Get();
-}
-
-void FontCache::SetFontManager(sk_sp<SkFontMgr> font_manager) {
-  DCHECK(!static_font_manager_);
-  static_font_manager_ = font_manager.release();
 }
 
 void FontCache::AcceptLanguagesChanged(const String& accept_languages) {
@@ -316,17 +291,14 @@ void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
 #if BUILDFLAG(IS_WIN)
     is_test_font_mgr = font_cache.is_test_font_mgr_;
 #endif
-    font_mgr = font_cache.font_manager_.get();
-    if (font_mgr)
-      num_families = font_mgr->countFamilies();
+
+    num_families = font_cache.font_manager_->countFamilies();
   }
 
-  // In production, these 3 font managers must match.
+  // In production, these 2 font managers must match.
   // They don't match in unit tests or in single process mode.
-  SkFontMgr* static_font_mgr = static_font_manager_;
   SkFontMgr* skia_default_font_mgr = skia::DefaultFontMgr().get();
   base::debug::Alias(&font_mgr);
-  base::debug::Alias(&static_font_mgr);
   base::debug::Alias(&skia_default_font_mgr);
 
   FontDescription font_description_copy = *font_description;
