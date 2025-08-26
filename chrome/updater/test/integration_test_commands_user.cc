@@ -297,6 +297,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunServer(updater_scope_, exit_code, internal);
   }
 
+  void RunUpdateApps(int exit_code,
+                     const base::Version& version) const override {
+    updater::test::RunUpdateApps(updater_scope_, exit_code, version);
+  }
+
   void RegisterApp(const RegistrationRequest& registration) const override {
     updater::test::RegisterApp(updater_scope_, registration);
   }

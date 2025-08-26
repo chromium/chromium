@@ -940,6 +940,13 @@ void RunServer(UpdaterScope scope, int expected_exit_code, bool internal) {
   ASSERT_EQ(exit_code, expected_exit_code);
 }
 
+void RunUpdateApps(UpdaterScope scope,
+                   int expected_exit_code,
+                   const base::Version& version) {
+  RunUpdaterWithSwitches(version, scope, {kUpdateAppsSwitch},
+                         expected_exit_code);
+}
+
 void CheckForUpdate(UpdaterScope scope, const std::string& app_id) {
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   base::RunLoop loop;

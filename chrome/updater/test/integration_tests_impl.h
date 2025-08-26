@@ -235,6 +235,12 @@ void RunCrashMe(UpdaterScope scope);
 // `exit_code`.
 void RunServer(UpdaterScope scope, int exit_code, bool internal);
 
+// Runs the UpdateApps client and wait for it to exit. Assert that it exits with
+// `exit_code`. The server should exit a few seconds after.
+void RunUpdateApps(UpdaterScope scope,
+                   int exit_code,
+                   const base::Version& version);
+
 // Invokes the active instance's UpdateService::Update (via RPC) for an app.
 void Update(UpdaterScope scope,
             const std::string& app_id,

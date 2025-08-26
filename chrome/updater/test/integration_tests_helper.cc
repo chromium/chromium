@@ -459,6 +459,10 @@ void AppTestHelper::FirstTaskRun() {
           {"run_server",
            WithSwitch("internal", WithSwitch("exit_code", WithSystemScope(Wrap(
                                                               &RunServer))))},
+          {"run_update_apps",
+           WithSwitch(
+               "version",
+               WithSwitch("exit_code", WithSystemScope(Wrap(&RunUpdateApps))))},
           {"update",
            WithSwitch("install_data_index",
                       (WithSwitch("app_id", WithSystemScope(Wrap(&Update)))))},

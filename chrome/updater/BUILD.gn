@@ -116,6 +116,8 @@ if (is_win || is_mac || is_linux) {
       "app/app_unzip_worker.h",
       "app/app_update.cc",
       "app/app_update.h",
+      "app/app_update_apps.cc",
+      "app/app_update_apps.h",
       "app/app_utils.cc",
       "app/app_utils.h",
       "app/app_wake.cc",

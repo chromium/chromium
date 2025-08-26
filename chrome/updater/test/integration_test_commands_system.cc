@@ -385,6 +385,13 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                 Param("exit_code", base::NumberToString(expected_exit_code))});
   }
 
+  void RunUpdateApps(int expected_exit_code,
+                     const base::Version& version) const override {
+    RunCommand("run_update_apps",
+               {Param("exit_code", base::NumberToString(expected_exit_code)),
+                Param("version", version.GetString())});
+  }
+
   void RegisterApp(const RegistrationRequest& registration) const override {
     RunCommand(
         "register_app",

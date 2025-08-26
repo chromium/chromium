@@ -31,6 +31,7 @@
 #include "chrome/updater/app/app_uninstall_self.h"
 #include "chrome/updater/app/app_unzip_worker.h"
 #include "chrome/updater/app/app_update.h"
+#include "chrome/updater/app/app_update_apps.h"
 #include "chrome/updater/app/app_wake.h"
 #include "chrome/updater/app/app_wakeall.h"
 #include "chrome/updater/configurator.h"
@@ -177,6 +178,10 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 
   if (command_line->HasSwitch(kUpdateSwitch)) {
     return MakeAppUpdate()->Run();
+  }
+
+  if (command_line->HasSwitch(kUpdateAppsSwitch)) {
+    return MakeAppUpdateApps()->Run();
   }
 
 #if BUILDFLAG(IS_WIN)

@@ -281,20 +281,18 @@ system scope and one for user scope), and so there are often two log files.
 
 See [the functional spec](functional_spec.md#logging) for more details.
 
-## Force triggering an update check
+## Force updates to all apps
 
-Update checks can be force-triggered on Windows by doing the following:
-* Edit (from an elevated editor for `system` installs)
-`{%LocalAppData%|%programfiles(x86)%}\{Company}\{Company}Updater\prefs.json`.
-* Change the value of "last_checked" to "0".
-* Save the file.
-* Run the task starting with `{Company}UpdaterTask{User|System}` in the
-Task Scheduler.
+Updates can be force-triggered by running the updater as follows for Windows:
+* Run the following from a medium `cmd` prompt for `user` installs, and from an
+  elevated prompt with the `--system` switch for `system` installs:
+  `{%LocalAppData%|%programfiles(x86)%}\{Company}\{Company}Update\{Company}Update.exe --update-apps {--system}`.
+* For example, using "Google" as the `Company`:
+  `{%LocalAppData%|%programfiles(x86)%}\Google\GoogleUpdate\GoogleUpdate.exe --update-apps {--system}`.
 
-The same steps apply for macOS except:
-* the path to `prefs.js` is
-`/Library/Application Support/{Company}/{Company}Updater/prefs.json`
-or, `~/Library/Application Support/{Company}/{Company}Updater/prefs.json`.
-* And to run the wake task a user should run
-`sudo launchctl start com.{Company}.{Company}Updater.wake.system` or
-`launchctl start com.{Company}.{Company}Updater.wake`.
+Similar steps apply for macOS. The example below is using "Google" as the
+`Company`:
+* (macOS, per-user):
+`~/Library/Application\ Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --update-apps`
+* (macOS, system-wide):
+`sudo /Library/Application\ Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --update-apps --system`
