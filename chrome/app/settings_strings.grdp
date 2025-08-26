@@ -3590,7 +3590,7 @@
       When on, data is saved in your Google Account and can be used on all your devices. When off, data is saved only to this device.
     </message>
     <message name="IDS_SETTINGS_ACCOUNT_SYNC_DISABLED"  desc="Section in the account settings page informing the user when the toggles to save a specific data type to the user's Google Account are disabled as per an Enterprise policy.">
-      Managed by your administrator
+      Managed by your organization
     </message>
     <message name="IDS_SETTINGS_ACCOUNT_HISTORY_TOGGLE"  desc="Title of the merged toggle in the account settings page combining the data types history, tabs, and saved tab groups. Shown on next to the toggle that controls whether these data types should be saved in the Google Account and synced across devices.">
       History and tabs
