@@ -147,6 +147,9 @@ class TabDialogManager : public content::WebContentsObserver,
   bool UpdateDialogVisibility(
       std::optional<bool> requested_visibility = std::nullopt);
 
+  // Returns whether this given dialog is already under management or not.
+  bool IsDialogManaged(views::Widget* widget);
+
   // Overridden from gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;

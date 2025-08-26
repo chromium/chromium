@@ -436,6 +436,10 @@ bool TabDialogManager::UpdateDialogVisibility(
   return widget_->IsVisible();
 }
 
+bool TabDialogManager::IsDialogManaged(views::Widget* widget) {
+  return widget_ && widget == widget_.get();
+}
+
 void TabDialogManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!widget_) {
