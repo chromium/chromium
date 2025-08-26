@@ -5,6 +5,7 @@
 #include "net/test/net_test_suite.h"
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "net/base/network_change_notifier.h"
 #include "net/http/http_stream_factory.h"
 #include "net/quic/platform/impl/quic_test_flags_utils.h"
@@ -12,6 +13,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+// See kRunManualTestsFlag in "content_switches.cc".
+const char kManualTestPrefix[] = "MANUAL_";
+
+// This is the same as switches::kRunManualTestsFlag, but defined here to avoid
+// a dependency on //content.
+const char kRunManualTestsFlag[] = "run-manual";
+
 class NetUnitTestEventListener : public testing::EmptyTestEventListener {
  public:
   NetUnitTestEventListener() = default;
@@ -23,6 +32,12 @@ class NetUnitTestEventListener : public testing::EmptyTestEventListener {
     QuicFlagChecker checker;
     DCHECK(!quic_flags_saver_);
     quic_flags_saver_ = std::make_unique<QuicFlagSaverImpl>();
+    if (base::StartsWith(test_info.name(), kManualTestPrefix,
+                         base::CompareCase::SENSITIVE) &&
+        !base::CommandLine::ForCurrentProcess()->HasSwitch(
+            kRunManualTestsFlag)) {
+      GTEST_SKIP();
+    }
   }
 
   void OnTestEnd(const testing::TestInfo& test_info) override {

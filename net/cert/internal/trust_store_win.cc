@@ -256,15 +256,18 @@ class TrustStoreWin::Impl {
         L"Disallowed");
 
     // Auto-sync all of the cert stores to get updates to the cert store.
-    // Auto-syncing on all_certs_store seems to work to resync the nested
-    // stores, although the docs at
-    // https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-certcontrolstore
-    // are somewhat unclear. If and when root store changes are linked to
+    // Auto-sync must be invoked on each individual store so that any future
+    // checks performed on the collection will ensure the individual stores
+    // within it are properly synchronized. However, the documentation at:
+    // https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-certcontrolstore,
+    // is somewhat unclear. If and when root store changes are linked to
     // clearing various caches, this should be replaced with
     // CERT_STORE_CTRL_NOTIFY_CHANGE and CERT_STORE_CTRL_RESYNC.
-    if (!CertControlStore(stores.all.get(), 0, CERT_STORE_CTRL_AUTO_RESYNC,
+    if (!CertControlStore(stores.roots.get(), 0, CERT_STORE_CTRL_AUTO_RESYNC,
                           0) ||
         !CertControlStore(stores.trusted_people.get(), 0,
+                          CERT_STORE_CTRL_AUTO_RESYNC, 0) ||
+        !CertControlStore(stores.intermediates.get(), 0,
                           CERT_STORE_CTRL_AUTO_RESYNC, 0) ||
         !CertControlStore(stores.disallowed.get(), 0,
                           CERT_STORE_CTRL_AUTO_RESYNC, 0)) {
