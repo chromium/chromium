@@ -728,6 +728,7 @@ targets.binaries.script(
 targets.binaries.windowed_test_launcher(
     name = "components_unittests",
     label = "//components:components_unittests",
+    module_scheme = "gtest",
 )
 
 targets.binaries.script(
@@ -1659,6 +1660,7 @@ targets.binaries.script(
 targets.binaries.console_test_launcher(
     name = "net_unittests",
     label = "//net:net_unittests",
+    module_scheme = "gtest",
 )
 
 targets.binaries.windowed_test_launcher(

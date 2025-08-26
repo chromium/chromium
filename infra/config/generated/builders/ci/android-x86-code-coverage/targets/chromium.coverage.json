@@ -964,6 +964,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//components:components_unittests/",
+        "module_scheme": "gtest",
         "name": "components_unittests",
         "resultdb": {
           "enable": true,
@@ -2371,6 +2372,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//net:net_unittests/",
+        "module_scheme": "gtest",
         "name": "net_unittests",
         "resultdb": {
           "enable": true,

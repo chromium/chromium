@@ -466,6 +466,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//components:components_unittests/",
+        "module_scheme": "gtest",
         "name": "components_unittests iPad Air (5th generation) 26.0",
         "resultdb": {
           "enable": true,
@@ -515,6 +516,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//components:components_unittests/",
+        "module_scheme": "gtest",
         "name": "components_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
@@ -564,6 +566,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//components:components_unittests/",
+        "module_scheme": "gtest",
         "name": "components_unittests iPhone SE (3rd generation) 26.0",
         "resultdb": {
           "enable": true,
@@ -3080,6 +3083,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//net:net_unittests/",
+        "module_scheme": "gtest",
         "name": "net_unittests iPad Air (5th generation) 26.0",
         "resultdb": {
           "enable": true,
@@ -3129,6 +3133,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//net:net_unittests/",
+        "module_scheme": "gtest",
         "name": "net_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,

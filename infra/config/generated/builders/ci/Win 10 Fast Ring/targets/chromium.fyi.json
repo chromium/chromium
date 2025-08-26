@@ -143,6 +143,7 @@
       },
       {
         "module_name": "//components:components_unittests/",
+        "module_scheme": "gtest",
         "name": "components_unittests",
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/"
@@ -391,6 +392,7 @@
       },
       {
         "module_name": "//net:net_unittests/",
+        "module_scheme": "gtest",
         "name": "net_unittests",
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/"

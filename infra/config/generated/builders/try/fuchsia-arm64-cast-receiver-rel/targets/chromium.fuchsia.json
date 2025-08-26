@@ -403,6 +403,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//components:components_unittests/",
+        "module_scheme": "gtest",
         "name": "components_unittests",
         "resultdb": {
           "enable": true,
@@ -959,6 +960,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//net:net_unittests/",
+        "module_scheme": "gtest",
         "name": "net_unittests",
         "resultdb": {
           "enable": true,

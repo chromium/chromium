@@ -405,6 +405,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//components:components_unittests/",
+        "module_scheme": "gtest",
         "name": "components_unittests",
         "swarming": {
           "dimensions": {
@@ -1149,6 +1150,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//net:net_unittests/",
+        "module_scheme": "gtest",
         "name": "net_unittests",
         "swarming": {
           "dimensions": {
