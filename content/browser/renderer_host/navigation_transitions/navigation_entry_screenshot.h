@@ -61,9 +61,6 @@ class CONTENT_EXPORT NavigationEntryScreenshot
       public performance_scenarios::MatchingScenarioObserver,
       public viz::ContextLostObserver {
  public:
-  using ScreenshotCallback = base::RepeatingCallback<
-      void(const SkBitmap& bitmap, bool requested, SkBitmap& out_override)>;
-
   const static void* const kUserDataKey;
 
   static void SetDisableCompressionForTesting(bool disable);
@@ -75,8 +72,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
       scoped_refptr<gpu::ClientSharedImage> shared_image_holder,
       NavigationTransitionData::UniqueId unique_id,
       bool supports_etc_non_power_of_two,
-      scoped_refptr<viz::RasterContextProvider> context_provider,
-      ScreenshotCallback callback);
+      scoped_refptr<viz::RasterContextProvider> context_provider);
 
   NavigationEntryScreenshot(const NavigationEntryScreenshot&) = delete;
   NavigationEntryScreenshot& operator=(const NavigationEntryScreenshot&) =
@@ -165,8 +161,6 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   scoped_refptr<viz::RasterContextProvider> context_provider_;
 
   base::OnceClosure compression_task_;
-
-  ScreenshotCallback screenshot_callback_;
 
   base::WeakPtrFactory<NavigationEntryScreenshot> weak_factory_{this};
 };

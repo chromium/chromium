@@ -188,11 +188,7 @@ void CacheScreenshotSharedImageImpl(
     return;
   }
 
-  auto& screenshot_callback = GetTestScreenshotCallback();
-  auto bound_screenshot_callback =
-      screenshot_callback
-          ? base::BindRepeating(screenshot_callback, entry_index)
-          : NavigationEntryScreenshot::ScreenshotCallback();
+  // TODO(crbug.com/438496406): Figure out how to test shared images.
 
   if (!shared_image) {
     if (entry) {
@@ -203,15 +199,11 @@ void CacheScreenshotSharedImageImpl(
       entry->navigation_transition_data().set_is_copied_from_embedder(
           is_copied_from_embedder);
     }
-    if (bound_screenshot_callback) {
-      SkBitmap override_unused;
-      bound_screenshot_callback.Run({}, false, override_unused);
-    }
     return;
   }
   auto screenshot = std::make_unique<NavigationEntryScreenshot>(
       std::move(shared_image), screenshot_id, supports_etc_non_power_of_two,
-      std::move(raster_context_provider), bound_screenshot_callback);
+      std::move(raster_context_provider));
   NavigationEntryScreenshotCache* cache =
       controller->GetNavigationEntryScreenshotCache();
   cache->SetScreenshot(std::move(navigation_request), std::move(screenshot),

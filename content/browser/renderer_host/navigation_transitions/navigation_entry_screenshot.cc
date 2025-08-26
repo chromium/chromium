@@ -93,16 +93,14 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     NavigationTransitionData::UniqueId unique_id,
     bool supports_etc_non_power_of_two,
-    scoped_refptr<viz::RasterContextProvider> context_provider,
-    ScreenshotCallback screenshot_callback)
+    scoped_refptr<viz::RasterContextProvider> context_provider)
     : performance_scenarios::MatchingScenarioObserver(
           performance_scenarios::kDefaultIdleScenarios),
       shared_image_(std::move(shared_image)),
       unique_id_(unique_id),
       dimensions_without_compression_(shared_image_->size()),
       supports_etc_non_power_of_two_(supports_etc_non_power_of_two),
-      context_provider_(std::move(context_provider)),
-      screenshot_callback_(std::move(screenshot_callback)) {
+      context_provider_(std::move(context_provider)) {
   DCHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   context_provider_->AddObserver(this);
@@ -279,20 +277,7 @@ void NavigationEntryScreenshot::OnReadBack(bool success) {
   if (!success) {
     read_back_bitmap_.reset();
     shared_image_.reset();
-    if (screenshot_callback_) {
-      SkBitmap override_unused;
-      screenshot_callback_.Run({}, false, override_unused);
-    }
     return;
-  }
-  if (screenshot_callback_) {
-    SkBitmap bitmap_copy(*read_back_bitmap_);
-    bitmap_copy.setImmutable();
-    SkBitmap bitmap_override;
-    screenshot_callback_.Run(bitmap_copy, true, bitmap_override);
-    if (!bitmap_override.drawsNothing()) {
-      read_back_bitmap_ = bitmap_override;
-    }
   }
   read_back_bitmap_->setImmutable();
   bitmap_ = cc::UIResourceBitmap(*read_back_bitmap_);

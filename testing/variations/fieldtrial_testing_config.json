@@ -3534,21 +3534,6 @@
             ]
         }
     ],
-    "BackForwardTransitionsCrossDocSharedImage": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BackForwardTransitionsCrossDocSharedImage"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackNavigationMenuIPH": [
         {
             "platforms": [
