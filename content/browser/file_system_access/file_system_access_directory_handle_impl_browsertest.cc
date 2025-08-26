@@ -17,7 +17,6 @@ namespace {
 
 using blink::mojom::FileSystemAccessPermissionMode;
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 
 }  // namespace

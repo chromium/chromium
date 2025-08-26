@@ -694,12 +694,11 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   SBCallback sb_callback;
   base::RunLoop loop;
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
-      .WillOnce(testing::Invoke([&](FileSystemAccessWriteItem* item,
-                                    GlobalRenderFrameHostId frame_id,
-                                    SBCallback& callback) {
+      .WillOnce([&](FileSystemAccessWriteItem* item,
+                    GlobalRenderFrameHostId frame_id, SBCallback& callback) {
         sb_callback = std::move(callback);
         loop.Quit();
-      }));
+      });
 
   handle_->Close(base::DoNothing());
   loop.Run();
@@ -736,12 +735,11 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   SBCallback sb_callback;
   base::RunLoop loop;
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
-      .WillOnce(testing::Invoke([&](FileSystemAccessWriteItem* item,
-                                    GlobalRenderFrameHostId frame_id,
-                                    SBCallback& callback) {
+      .WillOnce([&](FileSystemAccessWriteItem* item,
+                    GlobalRenderFrameHostId frame_id, SBCallback& callback) {
         sb_callback = std::move(callback);
         loop.Quit();
-      }));
+      });
 
   handle_->Close(base::DoNothing());
   loop.Run();
@@ -800,12 +798,11 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   SBCallback sb_callback;
   base::RunLoop sb_loop;
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
-      .WillOnce(testing::Invoke([&](FileSystemAccessWriteItem* item,
-                                    GlobalRenderFrameHostId frame_id,
-                                    SBCallback& callback) {
+      .WillOnce([&](FileSystemAccessWriteItem* item,
+                    GlobalRenderFrameHostId frame_id, SBCallback& callback) {
         sb_callback = std::move(callback);
         sb_loop.Quit();
-      }));
+      });
 
   handle_->Close(base::DoNothing());
   sb_loop.Run();

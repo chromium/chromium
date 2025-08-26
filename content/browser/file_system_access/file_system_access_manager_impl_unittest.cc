@@ -1562,13 +1562,12 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
       .WillOnce(testing::Return(allow_grant_));
   EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
                                        testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             MockFileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::move(entries));
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   MockFileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::move(entries));
+      });
 
   auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
       blink::mojom::AcceptsTypesInfo::New(
@@ -1636,13 +1635,12 @@ TEST_F(FileSystemAccessManagerImplTest,
   // The callback is invoked with an empty path.
   EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
                                        testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             MockFileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::vector<PathInfo>());
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   MockFileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::vector<PathInfo>());
+      });
 
   auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
       blink::mojom::AcceptsTypesInfo::New(
@@ -1811,13 +1809,12 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
       .WillOnce(testing::Return(allow_grant_));
   EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
                                        testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             MockFileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::move(entries));
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   MockFileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::move(entries));
+      });
 
   auto picker_options = blink::mojom::FilePickerOptions::New(
       blink::mojom::TypeSpecificFilePickerOptionsUnion::
@@ -1894,13 +1891,12 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory_ReadWrite) {
       .WillOnce(testing::Return(allow_grant_));
   EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
                                        testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             MockFileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::move(entries));
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   MockFileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::move(entries));
+      });
 
   auto picker_options = blink::mojom::FilePickerOptions::New(
       blink::mojom::TypeSpecificFilePickerOptionsUnion::
@@ -1978,13 +1974,12 @@ TEST_F(FileSystemAccessManagerImplTest,
       .WillOnce(testing::Return(deny_grant_));
   EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
                                        testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             MockFileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::move(entries));
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   MockFileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::move(entries));
+      });
 
   auto picker_options = blink::mojom::FilePickerOptions::New(
       blink::mojom::TypeSpecificFilePickerOptionsUnion::
@@ -2062,13 +2057,12 @@ TEST_F(FileSystemAccessManagerImplTest,
   // The callback is invoked with an empty path.
   EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
                                        testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             MockFileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::vector<PathInfo>());
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   MockFileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::vector<PathInfo>());
+      });
 
   auto picker_options = blink::mojom::FilePickerOptions::New(
       blink::mojom::TypeSpecificFilePickerOptionsUnion::

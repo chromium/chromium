@@ -668,13 +668,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             FileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::move(entries));
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   FileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::move(entries));
+      });
 
   EXPECT_CALL(
       *read_grant,
@@ -765,13 +764,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             FileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::move(entries));
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   FileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::move(entries));
+      });
 
   EXPECT_CALL(
       *read_grant,
@@ -869,13 +867,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             FileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::move(entries));
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   FileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::move(entries));
+      });
 
   EXPECT_CALL(
       *read_grant,
@@ -1175,13 +1172,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             FileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::move(entries));
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   FileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::move(entries));
+      });
 
   EXPECT_CALL(
       *read_grant,
@@ -1285,13 +1281,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             FileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::move(entries));
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   FileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::move(entries));
+      });
 
   EXPECT_CALL(
       *read_grant,
@@ -1389,13 +1384,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             FileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::move(entries));
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   FileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::move(entries));
+      });
 
   EXPECT_CALL(
       *read_grant,
@@ -1502,13 +1496,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             FileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::move(entries));
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   FileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::move(entries));
+      });
 
   EXPECT_CALL(
       *read_grant,
@@ -1612,13 +1605,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(write_grant));
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::vector<PathInfo> entries,
-             content::GlobalRenderFrameHostId frame_id,
-             FileSystemAccessPermissionContext::
-                 EntriesAllowedByEnterprisePolicyCallback callback) {
-            std::move(callback).Run(std::move(entries));
-          }));
+      .WillOnce([](std::vector<PathInfo> entries,
+                   content::GlobalRenderFrameHostId frame_id,
+                   FileSystemAccessPermissionContext::
+                       EntriesAllowedByEnterprisePolicyCallback callback) {
+        std::move(callback).Run(std::move(entries));
+      });
 
   EXPECT_CALL(
       *read_grant,
