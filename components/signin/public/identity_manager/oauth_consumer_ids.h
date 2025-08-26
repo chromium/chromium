@@ -51,7 +51,9 @@ enum class OAuthConsumerId {
   kParentPermissionDialog = 36,
   kUserCloudSigninRestrictionPolicyFetcher = 37,
   kCloudPolicyClientRegistration = 38,
-  kMaxValue = kCloudPolicyClientRegistration,
+  kSafeBrowsing = 39,
+  kTailoredSecurityService = 40,
+  kMaxValue = kTailoredSecurityService,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

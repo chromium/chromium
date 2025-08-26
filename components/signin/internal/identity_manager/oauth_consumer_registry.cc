@@ -60,6 +60,8 @@ constexpr char kUserCloudSigninRestrictionPolicyFetcherName[] =
     "user_cloud_signin_restriction_policy_fetcher";
 constexpr char kCloudPolicyClientRegistrationName[] =
     "cloud_policy_client_registration";
+constexpr char kSafeBrowsingName[] = "safe_browsing_service";
+constexpr char kTailoredSecurityServiceName[] = "tailored_security_service";
 
 }  // namespace
 
@@ -253,6 +255,14 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
           /*name=*/kCloudPolicyClientRegistrationName,
           /*scopes=*/{GaiaConstants::kDeviceManagementServiceOAuth,
                       GaiaConstants::kGoogleUserInfoEmail});
+    case OAuthConsumerId::kSafeBrowsing:
+      return OAuthConsumer(
+          /*name=*/kSafeBrowsingName,
+          /*scopes=*/{GaiaConstants::kChromeSafeBrowsingOAuth2Scope});
+    case OAuthConsumerId::kTailoredSecurityService:
+      return OAuthConsumer(
+          /*name=*/kTailoredSecurityServiceName,
+          /*scopes=*/{GaiaConstants::kChromeSafeBrowsingOAuth2Scope});
   }
   NOTREACHED();
 }
