@@ -243,8 +243,8 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    // Specifies the test to run only with the GMS Core version greater than or equal to 22w30 which
-    // is the min version that supports the local UPM backend, to avoid
+    // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
+    // is the min version that supports split stores UPM backend, to avoid
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testIdentityDiscSignedIn() {
@@ -275,8 +275,8 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    // Specifies the test to run only with the GMS Core version greater than or equal to 22w30 which
-    // is the min version that supports the local UPM backend, to avoid
+    // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
+    // is the min version that supports split stores UPM backend, to avoid
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testIdentityDiscSignedIn_nonDisplayableEmail() {
@@ -470,8 +470,8 @@ public class IdentityDiscControllerTest {
     @MediumTest
     @Feature("RenderTest")
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    // Specifies the test to run only with the GMS Core version greater than or equal to 22w30 which
-    // is the min version that supports the local UPM backend, to avoid
+    // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
+    // is the min version that supports split stores UPM backend, to avoid
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testIdentityDisc_signedIn(boolean nightModeEnabled) throws IOException {
@@ -503,8 +503,8 @@ public class IdentityDiscControllerTest {
     @Feature("RenderTest")
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
-    // Specifies the test to run only with the GMS Core version greater than or equal to 22w30 which
-    // is the min version that supports the local UPM backend, to avoid
+    // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
+    // is the min version that supports split stores UPM backend, to avoid
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testIdentityDisc_signedIn_unoPhase2FollowUpEnabled_noIdentityError(
