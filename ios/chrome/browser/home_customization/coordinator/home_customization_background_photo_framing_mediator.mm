@@ -13,8 +13,8 @@
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_mutator.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
 
 @implementation HomeCustomizationBackgroundPhotoFramingMediator {
   raw_ptr<UserUploadedImageManager> _userUploadedImageManager;

@@ -12,9 +12,9 @@
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer_bridge.h"
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "skia/ext/skia_utils_ios.h"
 

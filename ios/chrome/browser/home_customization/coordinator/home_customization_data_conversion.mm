@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_data_conversion.h"
 
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_coordinates.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
 
 FramingCoordinates FramingCoordinatesFromHomeCustomizationFramingCoordinates(
     HomeCustomizationFramingCoordinates* coordinates) {

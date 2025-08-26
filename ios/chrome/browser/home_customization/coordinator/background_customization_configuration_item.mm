@@ -9,7 +9,7 @@
 #import "components/sync/protocol/theme_types.pb.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_data_conversion.h"
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_coordinates.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "url/gurl.h"
