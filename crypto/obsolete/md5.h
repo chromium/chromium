@@ -64,6 +64,10 @@ namespace policy {
 crypto::obsolete::Md5 MakeMd5HasherForPolicyEventId();
 }
 
+namespace remoting {
+std::string GetHostHash();
+}
+
 namespace trusted_vault {
 std::string MD5StringForTrustedVault(const std::string& local_trusted_value);
 }
@@ -115,6 +119,7 @@ class CRYPTO_EXPORT Md5 {
   friend Md5 drive::util::MakeMd5HasherForDriveApi();
   friend Md5 extensions::image_writer::MakeMd5HasherForImageWriter();
   friend Md5 cachetool::MakeMd5HasherForCachetools();
+  friend std::string remoting::GetHostHash();
 
   // TODO(b/298652869): get rid of these.
   friend Md5 ash::printing::MakeMd5HasherForPrinterConfigurer();
