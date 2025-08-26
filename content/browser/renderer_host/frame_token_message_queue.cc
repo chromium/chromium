@@ -49,6 +49,8 @@ void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token,
           "content", "Frame token (last reset)",
           base::NumberToString(last_received_frame_token_reset_));
     }
+    SCOPED_CRASH_KEY_STRING32("content", "Main frame last committed URL",
+                              client_->GetMainFrameLastCommittedURLSpec());
     client_->OnInvalidFrameToken(frame_token);
     return;
   }

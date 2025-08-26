@@ -2727,6 +2727,13 @@ void RenderWidgetHostImpl::OnInvalidInputEventSource() {
       GetProcess(), bad_message::INPUT_ROUTER_INVALID_EVENT_SOURCE);
 }
 
+std::string RenderWidgetHostImpl::GetMainFrameLastCommittedURLSpec() {
+  if (!frame_tree() || !frame_tree()->GetMainFrame()) {
+    return std::string();
+  }
+  return frame_tree()->GetMainFrame()->GetLastCommittedURL().spec();
+}
+
 void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_screen_rect,
                                      const gfx::Rect& anchor_screen_rect,
                                      ShowPopupCallback callback) {

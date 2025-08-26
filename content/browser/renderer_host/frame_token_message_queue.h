@@ -35,6 +35,10 @@ class CONTENT_EXPORT FrameTokenMessageQueue {
 
     // Notified when an invalid frame token was received.
     virtual void OnInvalidFrameToken(uint32_t frame_token) = 0;
+
+    // Query the main frame's last committed URL for debugging purpose.
+    // Returns empty string if frame tree or its main frame is nullptr.
+    virtual std::string GetMainFrameLastCommittedURLSpec() = 0;
   };
   FrameTokenMessageQueue();
 

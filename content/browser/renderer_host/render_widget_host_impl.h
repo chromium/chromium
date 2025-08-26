@@ -851,6 +851,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // FrameTokenMessageQueue::Client:
   void OnInvalidFrameToken(uint32_t frame_token) override;
 
+  // FrameTokenMessageQueue::Client:
+  std::string GetMainFrameLastCommittedURLSpec() override;
+
   void ProgressFlingIfNeeded(base::TimeTicks current_time);
   void StopFling();
 
