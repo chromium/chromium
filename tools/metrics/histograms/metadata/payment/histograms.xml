@@ -164,23 +164,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaymentRequest.PaymentDetailsUpdateService.Bind"
-    enum="Boolean" expires_after="2025-09-03">
-  <owner>rouslan@chromium.org</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <summary>
-    Recorded when an Android app binds to Chrome's service for updating payment
-    details, e.g., when an Android payment app supports the feature of dynamic
-    price updates based different shipping addresses.
-
-    All service connections are recorded, even if there are no ongoing payment
-    flows.
-
-    Warning: this histogram was expired from 2025-03-03 to ~2025-04-11; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangePaymentMethod"
     enum="Boolean" expires_after="2025-11-23">
