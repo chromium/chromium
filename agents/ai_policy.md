@@ -5,17 +5,18 @@ intended to outline expectations around the use of such tools.
 
 ## Responsibilities
 
-Authors **must** self-review and understand all code (with or without AI
-tooling) before sending it for review to ensure the correctness, design,
-security properties, and style meet the standards of the project. Authors
-should be able to answer questions reviewers have about the code. Beyond code
-quality, Chromium has a strict 2-committer code review requirement and when the
-author is a committer they are considered one of the two human reviewers. **Any
-account that sends for review CLs which are not actually understood by the human
-behind the account is at risk of losing their committer status.**
+Authors **must** self-review and understand all code and documentation updates
+(with or without AI tooling) before sending them for review to ensure the
+correctness, design, security properties, and style meet the standards of the
+project. Authors should be able to answer questions reviewers have about the
+changes. Beyond code quality, Chromium has a strict 2-committer code review
+requirement and when the author is a committer they are considered one of the
+two human reviewers. **Any account that sends for review CLs which are not
+actually understood by the human behind the account is at risk of losing their
+committer status.**
 
-To aid reviewers, authors **should** flag areas that they are not confident about
-that had AI assistance. This can be done in code review comments, the CL
+To aid reviewers, authors **should** flag areas that they are not confident
+about that had AI assistance. This can be done in code review comments, the CL
 description, or in code comments. There is a precedent for separating
 automatically-generated code from manual edits with different patchsets (e.g.
 patchset 1 has automatic changes and the reproduction instructions and patchset
@@ -26,8 +27,8 @@ regardless of whether AI tooling was used.
 
 ## Recommendations
 
-Authors **may** explain in the CL description or the code base itself how AI tools
-were used to produce the CL.
+Authors **may** explain in the CL description or the code base itself how AI
+tools were used to produce the CL.
 
 Examples:
 
