@@ -30,7 +30,7 @@ class ChangePasswordFormWaiter
  public:
   // Timeout for change password form await time after the page is loaded.
   static constexpr base::TimeDelta kChangePasswordFormWaitingTimeout =
-      base::Seconds(2);
+      base::Seconds(3);
 
   using PasswordFormFoundCallback =
       base::OnceCallback<void(password_manager::PasswordFormManager*)>;

@@ -130,7 +130,7 @@ void ChangePasswordFormWaiter::Init() {
     }
     cache->AddObserver(this);
   }
-  if (web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+  if (!web_contents()->IsLoading()) {
     DidStopLoading();
   }
 }
@@ -160,6 +160,9 @@ void ChangePasswordFormWaiter::DidStartLoading() {
 }
 
 void ChangePasswordFormWaiter::DidStopLoading() {
+  if (web_contents()->IsLoading()) {
+    return;
+  }
   timeout_timer_.Start(FROM_HERE, timeout_, this,
                        &ChangePasswordFormWaiter::OnTimeout);
 }
