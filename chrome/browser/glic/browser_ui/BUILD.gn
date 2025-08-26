@@ -8,6 +8,7 @@ assert(enable_glic)
 
 source_set("browser_ui") {
   sources = [
+    "glic_animated_effect_view.cc",
     "glic_border_view.cc",
     "glic_button_controller.cc",
     "glic_iph_controller.cc",

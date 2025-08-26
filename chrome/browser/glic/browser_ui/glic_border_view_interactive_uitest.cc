@@ -108,7 +108,7 @@ class TesterImpl : public GlicBorderView::Tester {
     animation_started_ = true;
     wait_for_animation_started_.Quit();
   }
-  void EmphasisRestarted() override {
+  void AnimationReset() override {
     emphasis_restarted_ = true;
     wait_for_emphasis_restarted_.Quit();
   }
