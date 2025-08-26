@@ -14,8 +14,10 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/sync/history_sync_metadata_database.h"
 #include "components/history/core/browser/sync/test_history_backend_for_sync.h"
@@ -615,6 +617,46 @@ TEST_F(HistorySyncBridgeTest, DoesNotApplyUnsyncableRemoteChanges) {
   // Since all remote URLs were invalid, they should not have been added to the
   // backend.
   EXPECT_TRUE(backend()->GetURLs().empty());
+}
+
+TEST_F(HistorySyncBridgeTest, DoesNotApply404sWhen404sNotEligibleForHistory) {
+  // Make 404s ineligible for history.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(history::kVisitedLinksOn404);
+
+  // Make a 404 visit.
+  const GURL remote_url("https://remote.com");
+  sync_pb::HistorySpecifics remote_entity =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
+                      remote_url, {}, kTestAppId);
+  remote_entity.set_http_response_code(404);
+
+  // Sync the 404 visit.
+  ApplyInitialSyncChanges({remote_entity});
+
+  // The visit should not be saved locally.
+  EXPECT_EQ(backend()->GetURLs().size(), 0u);
+  EXPECT_EQ(backend()->GetVisits().size(), 0u);
+}
+
+TEST_F(HistorySyncBridgeTest, Applies404sWhen404sEligibleForHistory) {
+  // Make 404s eligible for history.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
+
+  // Make a 404 visit.
+  const GURL remote_url("https://remote.com");
+  sync_pb::HistorySpecifics remote_entity =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
+                      remote_url, {}, kTestAppId);
+  remote_entity.set_http_response_code(404);
+
+  // Sync the 404 visit.
+  ApplyInitialSyncChanges({remote_entity});
+
+  // The visit should be saved locally.
+  EXPECT_EQ(backend()->GetURLs().size(), 1u);
+  EXPECT_EQ(backend()->GetVisits().size(), 1u);
 }
 
 TEST_F(HistorySyncBridgeTest, ClearsDataWhenSyncStopped) {

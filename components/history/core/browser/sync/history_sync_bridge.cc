@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/sync/history_sync_metadata_database.h"
 #include "components/history/core/browser/sync/visit_id_remapper.h"
@@ -581,6 +582,17 @@ HistorySyncBridge::ApplyIncrementalSyncChanges(
     DCHECK(entity_change->data().specifics.has_history());
     const sync_pb::HistorySpecifics& specifics =
         entity_change->data().specifics.history();
+
+    // `kVisitedLinksOn404` may be enabled on one device, where 404s are saved
+    // to history. That device's history may then be synced to another device
+    // where `kVisitedLinksOn404` is disabled and is therefore not expecting
+    // 404s to be in history. To avoid this scenario, don't save 404s to the
+    // local device if the flag is disabled.
+    if (!base::FeatureList::IsEnabled(history::kVisitedLinksOn404) &&
+        specifics.has_http_response_code() &&
+        specifics.http_response_code() == 404) {
+      continue;
+    }
 
     // Check validity requirements.
     std::optional<SpecificsError> specifics_error =
