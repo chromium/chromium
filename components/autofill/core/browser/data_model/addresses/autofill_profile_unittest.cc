@@ -1640,6 +1640,20 @@ TEST_F(AutofillProfileTest, ConvertToAccountProfile) {
   EXPECT_EQ(kLocalProfile.Compare(kAccountProfile), 0);
 }
 
+TEST_F(AutofillProfileTest, ConvertToLocalOrSyncableProfile) {
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  ASSERT_EQ(account_name_email_profile.record_type(),
+            AutofillProfile::RecordType::kAccountNameEmail);
+  const AutofillProfile local_or_syncable_profile =
+      account_name_email_profile.ConvertToLocalOrSyncableProfile();
+  EXPECT_EQ(local_or_syncable_profile.record_type(),
+            AutofillProfile::RecordType::kLocalOrSyncable);
+  EXPECT_NE(account_name_email_profile.guid(),
+            local_or_syncable_profile.guid());
+  EXPECT_EQ(account_name_email_profile.Compare(local_or_syncable_profile), 0);
+}
+
 TEST_F(AutofillProfileTest, RemoveInaccessibleProfileValues) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillUseINAddressModel};

@@ -214,13 +214,34 @@ void ProfileImportProcess::DetermineProfileImportType() {
     bool silent_updates_present = !silently_updated_profiles_.empty();
 
     if (merge_candidate_.has_value()) {
-      if (import_candidate_->IsHomeAndWorkProfile()) {
-        import_type_ = AutofillProfileImportType::kHomeAndWorkSuperset;
-      } else {
-        import_type_ =
-            silent_updates_present
-                ? AutofillProfileImportType::kConfirmableMergeAndSilentUpdate
-                : AutofillProfileImportType::kConfirmableMerge;
+      switch (import_candidate_->record_type()) {
+        case AutofillProfile::RecordType::kAccountHome:
+        case AutofillProfile::RecordType::kAccountWork:
+          import_type_ = AutofillProfileImportType::kHomeAndWorkSuperset;
+          break;
+        case AutofillProfile::RecordType::kAccountNameEmail:
+          import_type_ = AutofillProfileImportType::kNameEmailSuperset;
+          // Setting `merge_candidate_` to `std::nullopt` ensures that the save
+          // bubble will appear. Although `observed_profile` can be merged with
+          // with `kAccountNameEmail` profile this flow is supposed to create a
+          // new profile since the `kAccountNameEmail` profile, from the POV of
+          // import process, is read-only.
+          merge_candidate_ = std::nullopt;
+          // Resetting merge_candidate_ creates discrepancy between the real
+          // number of unchanged profiles and number stored in
+          // `number_of_unchanged_profiles` variable. In order to account for
+          // the fact that `kAccountNameEmail` profile will not be changed
+          // (instead a new profile will be created)
+          // `number_of_unchanged_profiles` should be incremented.
+          ++number_of_unchanged_profiles;
+          break;
+        case AutofillProfile::RecordType::kAccount:
+        case AutofillProfile::RecordType::kLocalOrSyncable:
+          import_type_ =
+              silent_updates_present
+                  ? AutofillProfileImportType::kConfirmableMergeAndSilentUpdate
+                  : AutofillProfileImportType::kConfirmableMerge;
+          break;
       }
     } else if (number_of_blocked_profile_updates > 0) {
       import_type_ =
@@ -258,6 +279,19 @@ void ProfileImportProcess::DetermineProfileImportType() {
 }
 
 void ProfileImportProcess::DetermineSourceOfImportCandidate() {
+  // The flow signified by `kNameEmailSuperset` leads to the save profile
+  // prompt. Since the `kAccountNameEmail` profile is available both to users
+  // eligible and ineligible for account address storage, `import_candidate_`
+  // (which has record type `kAccountNameEmail` in this case) must be converted
+  // to either `kAccount` (eligible) or `kLocalOrSyncable` (ineligible).
+  if (import_type_ == AutofillProfileImportType::kNameEmailSuperset) {
+    CHECK(import_candidate_);
+    import_candidate_ =
+        address_data_manager_->IsEligibleForAddressAccountStorage()
+            ? import_candidate_->ConvertToAccountProfile()
+            : import_candidate_->ConvertToLocalOrSyncableProfile();
+    return;
+  }
   // kHomeAndWorkSuperset prompts use the "Update profile" UI, but store a new
   // profile under the hood, since Home & Work is read-only. This makes sure
   // that the profile created is an account profile, since Home & Work is only
@@ -310,7 +344,10 @@ void ProfileImportProcess::ApplyImport() {
   } else if (is_confirmable_update()) {
     address_data_manager_->UpdateProfile(*confirmed_import_candidate_);
   } else {
-    // New update or Home & Work superset prompt.
+    // This is reached in case of:
+    // 1. New profile prompt
+    // 2. Home & Work superset import prompt
+    // 3. `kAccountNameEmail` superset import prompt
     address_data_manager_->AddProfile(*confirmed_import_candidate_);
   }
 }

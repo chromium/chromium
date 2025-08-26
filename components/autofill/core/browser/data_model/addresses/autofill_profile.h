@@ -350,11 +350,16 @@ class AutofillProfile : public FormGroup {
     last_modifier_id_ = modifier_id;
   }
 
-  // Converts a kLocalOrSyncable profile to a kAccount profile and returns it.
+  // Converts a non-`kAccount` profile to a `kAccount` profile and returns it.
   // The converted profile shares the same content, but with a different GUID
-  // and with `record_type` kAccount. Additional kAccount-specific metadata is
-  // set.
+  // and with `record_type` `kAccount`. Additional `kAccount`-specific metadata
+  // is set.
   AutofillProfile ConvertToAccountProfile() const;
+
+  // Converts a non-`kLocalOrSyncable` to `kLocalOrSyncable` profile and
+  // returns it. The converted profile shares the same content, but with a
+  // different GUID and with `record_type` `kLocalOrSyncable`.
+  AutofillProfile ConvertToLocalOrSyncableProfile() const;
 
   // Checks for non-empty setting-inaccessible fields and returns all that were
   // found.

@@ -1270,9 +1270,7 @@ bool AutofillProfile::FinalizeAfterImport() {
 }
 
 AutofillProfile AutofillProfile::ConvertToAccountProfile() const {
-  DCHECK(record_type() == RecordType::kLocalOrSyncable ||
-         record_type() == RecordType::kAccountHome ||
-         record_type() == RecordType::kAccountWork);
+  DCHECK(record_type() != RecordType::kAccount);
   AutofillProfile account_profile = *this;
   // Since GUIDs are assumed to be unique across all profile record types, a new
   // GUID is assigned.
@@ -1282,6 +1280,17 @@ AutofillProfile AutofillProfile::ConvertToAccountProfile() const {
   account_profile.initial_creator_id_ = kInitialCreatorOrModifierChrome;
   account_profile.last_modifier_id_ = kInitialCreatorOrModifierChrome;
   return account_profile;
+}
+
+AutofillProfile AutofillProfile::ConvertToLocalOrSyncableProfile() const {
+  DCHECK(record_type() != RecordType::kLocalOrSyncable);
+  AutofillProfile local_or_syncable_profile = *this;
+  // Since GUIDs are assumed to be unique across all profile record types, a new
+  // GUID is assigned.
+  local_or_syncable_profile.set_guid(
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
+  local_or_syncable_profile.record_type_ = RecordType::kLocalOrSyncable;
+  return local_or_syncable_profile;
 }
 
 FieldTypeSet AutofillProfile::FindInaccessibleProfileValues() const {

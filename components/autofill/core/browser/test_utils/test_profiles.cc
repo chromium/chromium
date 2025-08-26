@@ -6,7 +6,11 @@
 
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/phone_number.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -135,6 +139,27 @@ AutofillProfile KatakanaProfile2() {
   const std::vector<ProfileTestData> observed_profile_test_data = {
       {NAME_FULL, "ネオ アンダーソン"},
       {ALTERNATIVE_FULL_NAME, "ネオ アンダーソン"}};
+  SetProfileObservedTestValues(&profile, observed_profile_test_data);
+  return profile;
+}
+
+AutofillProfile AccountNameEmailProfile() {
+  AccountInfo info;
+  info.full_name = "George Washington";
+  info.email = "george.washington@gmail.com";
+  return AutofillProfile{info};
+}
+
+AutofillProfile AccountNameEmailProfileSuperset() {
+  AutofillProfile profile(AutofillProfile::RecordType::kAccount,
+                          AddressCountryCode("US"));
+  const std::vector<ProfileTestData> observed_profile_test_data = {
+      {NAME_FULL, "George Washington"},
+      {EMAIL_ADDRESS, "george.washington@gmail.com"},
+      {ADDRESS_HOME_STREET_ADDRESS, "119 Some Avenue"},
+      {ADDRESS_HOME_STATE, "CA"},
+      {ADDRESS_HOME_ZIP, "99666"},
+      {ADDRESS_HOME_CITY, "Los Angeles"}};
   SetProfileObservedTestValues(&profile, observed_profile_test_data);
   return profile;
 }

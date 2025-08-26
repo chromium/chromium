@@ -1101,6 +1101,93 @@ TEST_F(AutofillProfileImportProcessTest,
       SettingsVisibleFieldTypeForMetrics::kCity, 1);
 }
 
+// Tests that an accepted import of a `kAccountNameEmail` superset profile by an
+// address account storage eligible user, results in an addition of a new
+// `kAccount` profile.
+TEST_F(AutofillProfileImportProcessTest,
+       ImportingAccountNameEmailProfileSuperset_AddressAccountStorageEligible) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile observed_profile =
+      test::AccountNameEmailProfileSuperset();
+
+  address_data_manager().AddProfile(account_name_email_profile);
+
+  // Create the import process for the scenario where the `observed_profile` is
+  // a superset of the existing `account_name_email_profile`.
+  ProfileImportProcess import_data = CreateProfileImportProcess(
+      observed_profile, /*allow_only_silent_updates=*/false);
+
+  // Test that the type of import was determined correctly.
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kNameEmailSuperset);
+
+  // The merge candidate should be set to std::nullopt
+  ASSERT_FALSE(import_data.merge_candidate().has_value());
+
+  // Simulate that the user accepts this import without edits.
+  import_data.AcceptWithoutEdits();
+  EXPECT_TRUE(import_data.ProfilesChanged());
+
+  AutofillProfile expected_profile = test::AccountNameEmailProfileSuperset();
+  test_api(expected_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+
+  // Confirm two profiles exist post-import: the original
+  // `account_name_email_profile` and a newly created superset profile of type
+  // `kAccount`.
+  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
+              testing::UnorderedPointwise(
+                  CompareWithRecordType(),
+                  {expected_profile, account_name_email_profile}));
+}
+
+// Tests that an accepted import of a `kAccountNameEmail` superset profile by an
+// address account storage ineligible user, results in an addition of a new
+// `kLocalOrSyncable` profile.
+TEST_F(
+    AutofillProfileImportProcessTest,
+    ImportingAccountNameEmailProfileSuperset_AddressAccountStorageIneligible) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(false);
+
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile observed_profile =
+      test::AccountNameEmailProfileSuperset();
+
+  address_data_manager().AddProfile(account_name_email_profile);
+
+  // Create the import process for the scenario the where `observed_profile` is
+  // a superset of the existing `account_name_email_profile`.
+  ProfileImportProcess import_data = CreateProfileImportProcess(
+      observed_profile, /*allow_only_silent_updates=*/false);
+
+  // Test that the type of import was determined correctly.
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kNameEmailSuperset);
+
+  // The merge candidate should be set to std::nullopt
+  ASSERT_FALSE(import_data.merge_candidate().has_value());
+
+  // Simulate that the user accepts this import without edits.
+  import_data.AcceptWithoutEdits();
+  EXPECT_TRUE(import_data.ProfilesChanged());
+
+  AutofillProfile expected_profile = test::AccountNameEmailProfileSuperset();
+  test_api(expected_profile)
+      .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
+
+  // Confirm two profiles exist post-import: the original
+  // `account_name_email_profile` and a newly created superset profile of type
+  // `kLocalOrSyncable`.
+  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
+              testing::UnorderedPointwise(
+                  CompareWithRecordType(),
+                  {expected_profile, account_name_email_profile}));
+}
+
 }  // namespace
 
 }  // namespace autofill

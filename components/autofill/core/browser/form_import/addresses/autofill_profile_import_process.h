@@ -62,7 +62,14 @@ enum class AutofillProfileImportType {
   // prompt, but accepting this prompt creates a new H/W superset profile
   // under the hood since H/W is read-only.
   kHomeAndWorkSuperset = 13,
-  kMaxValue = kHomeAndWorkSuperset
+  // A profile that is a superset of an existing `kAccountNameEmail` profile was
+  // submitted. This triggers a prompt to save the submitted profile as a new,
+  // more complete profile.
+  // TODO(crbug.com/356845298): Handle import of the profile that is superset of
+  // both H/W profile and `kAccountNameEmail` profile, when the form fields
+  // autofilled with data of those profiles were not edited after filling.
+  kNameEmailSuperset = 14,
+  kMaxValue = kNameEmailSuperset
 };
 
 // Specifies the status of the imported phone number.
