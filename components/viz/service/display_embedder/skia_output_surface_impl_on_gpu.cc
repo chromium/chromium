@@ -1741,16 +1741,14 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   // scaled up from the source pixel space. When scaling |result_selection| back
   // down it might not be pixel aligned.
   gfx::Rect source_selection = geometry.sampling_bounds;
-  if (request->has_result_selection()) {
-    gfx::Rect sampling_selection = request->result_selection();
-    if (request->is_scaled()) {
-      // Invert the scaling.
-      sampling_selection = copy_output::ComputeResultRect(
-          sampling_selection, request->scale_to(), request->scale_from());
-    }
-    sampling_selection.Offset(source_selection.OffsetFromOrigin());
-    source_selection.Intersect(sampling_selection);
+  gfx::Rect sampling_selection = geometry.result_selection;
+  if (request->is_scaled()) {
+    // Invert the scaling.
+    sampling_selection = copy_output::ComputeResultRect(
+        sampling_selection, request->scale_to(), request->scale_from());
   }
+  sampling_selection.Offset(source_selection.OffsetFromOrigin());
+  source_selection.Intersect(sampling_selection);
 
   const SkIRect src_rect =
       SkIRect::MakeXYWH(source_selection.x(), source_selection.y(),
