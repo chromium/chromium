@@ -1313,11 +1313,23 @@ TEST_F(StyleCascadeTest, CycleMultipleAttr) {
   EXPECT_FALSE(cascade.ComputedValue("--x"));
 }
 
-TEST_F(StyleCascadeTest, CycleAttrWithFallback) {
+TEST_F(StyleCascadeTest, CycleAttrIgnoreFallback) {
   Element* element = DocumentElement();
   TestCascade cascade(GetDocument(), element);
   element->setAttribute(AtomicString("data-foo"),
-                        AtomicString("attr(data-foo"));
+                        AtomicString("attr(data-foo)"));
+
+  cascade.Reset();
+  cascade.Add("--x", "attr(data-foo type(*), abc)");
+  cascade.Apply();
+
+  EXPECT_EQ(cascade.ComputedValue("--x"), "abc");
+}
+
+TEST_F(StyleCascadeTest, CycleAttrUseFallback) {
+  Element* element = DocumentElement();
+  TestCascade cascade(GetDocument(), element);
+  element->setAttribute(AtomicString("data-foo"), AtomicString("var(--x)"));
 
   cascade.Reset();
   cascade.Add("--x", "attr(data-foo type(*), abc)");
