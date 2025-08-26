@@ -81,9 +81,8 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
   bool LoadGLES2Bindings(const gl::GLImplementationParts& impl) override;
 
  private:
-  const raw_ptr<WaylandConnection, AcrossTasksDanglingUntriaged> connection_;
-  const raw_ptr<WaylandBufferManagerGpu, AcrossTasksDanglingUntriaged>
-      buffer_manager_;
+  const raw_ptr<WaylandConnection> connection_;
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
   gl::EGLDisplayPlatform native_display_;
 };
 
@@ -359,6 +358,13 @@ WaylandSurfaceFactory::GetSupportedFormatsForTexturing() const {
 #else
   return {};
 #endif
+}
+
+void WaylandSurfaceFactory::SetBufferManagerForTesting(
+    WaylandBufferManagerGpu* buffer_manager) {
+  buffer_manager_ = buffer_manager;
+  egl_implementation_.reset(
+      new GLOzoneEGLWayland(connection_, buffer_manager_));
 }
 
 }  // namespace ui

@@ -63,10 +63,11 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
   std::vector<gfx::BufferFormat> GetSupportedFormatsForTexturing()
       const override;
 
+  void SetBufferManagerForTesting(WaylandBufferManagerGpu* buffer_manager);
+
  private:
   const raw_ptr<WaylandConnection> connection_;
-  const raw_ptr<WaylandBufferManagerGpu, AcrossTasksDanglingUntriaged>
-      buffer_manager_;
+  raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
   std::unique_ptr<GLOzone> egl_implementation_;
 };
 
