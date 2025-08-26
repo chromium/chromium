@@ -43,6 +43,7 @@
 #include "media/base/supported_types.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_bitrate_allocation.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/capture/capture_switches.h"
@@ -58,6 +59,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
+#include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_gfx.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
@@ -2580,9 +2582,6 @@ int32_t RTCVideoEncoder::InitializeEncoder(
 
 bool RTCVideoEncoder::CodecSettingsUsableForFrameSizeChange(
     const webrtc::VideoCodec& codec_settings) const {
-  if (codec_settings.codecType != codec_settings_.codecType) {
-    return false;
-  }
   if (codec_settings.GetScalabilityMode() !=
       codec_settings_.GetScalabilityMode()) {
     return false;
@@ -2612,6 +2611,8 @@ int32_t RTCVideoEncoder::InitEncode(
     const webrtc::VideoEncoder::Settings& settings) {
   TRACE_EVENT0("webrtc", "RTCVideoEncoder::InitEncode");
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
+  CHECK_EQ(media::VideoCodecProfileToVideoCodec(profile_),
+           WebRtcToMediaVideoCodec(codec_settings->codecType));
   DVLOG(1) << __func__ << " codecType=" << codec_settings->codecType
            << ", width=" << codec_settings->width
            << ", height=" << codec_settings->height
