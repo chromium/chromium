@@ -307,6 +307,17 @@
       '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
     ],
   },
+  'gpu_intel_arc_140v_linux_experimental': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'display_attached': '1',
+        'gpu': '8086:64a0',
+        'os': 'Ubuntu',
+        'pool': 'chromium.tests.gpu.experimental',
+      },
+    },
+  },
   'gpu_nvidia_shield_tv_stable': {
     'fail_if_unused': False,
     'swarming': {

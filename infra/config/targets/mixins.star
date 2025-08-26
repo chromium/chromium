@@ -1136,6 +1136,21 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gpu_intel_arc_140v_linux_experimental",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "display_attached": "1",
+            "gpu": "8086:64a0",
+            "os": "Ubuntu",
+            "pool": "chromium.tests.gpu.experimental",
+        },
+    ),
+)
+
+targets.mixin(
     name = "gpu-swarming-pool",
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(

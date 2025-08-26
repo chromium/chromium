@@ -88,6 +88,7 @@ ci/GPU Win x64 Builder
 ci/GPU Win x64 Builder (dbg)
 ci/Linux Debug (NVIDIA)
 ci/Linux FYI Debug (NVIDIA)
+ci/Linux FYI Experimental Release (Intel Arc 140V)
 ci/Linux FYI Experimental Release (Intel UHD 630)
 ci/Linux FYI Experimental Release (NVIDIA)
 ci/Linux FYI GPU TSAN Release
@@ -187,6 +188,7 @@ try/gpu-fyi-try-android-s23-64
 try/gpu-fyi-try-chromeos-amd64-generic
 try/gpu-fyi-try-linux-amd-rel
 try/gpu-fyi-try-linux-amd-rx-7600-rel
+try/gpu-fyi-try-linux-intel-arc-140v-exp
 try/gpu-fyi-try-linux-intel-exp
 try/gpu-fyi-try-linux-intel-rel
 try/gpu-fyi-try-linux-intel-uhd770-rel
