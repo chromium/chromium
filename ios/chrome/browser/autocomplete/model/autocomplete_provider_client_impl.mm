@@ -322,3 +322,8 @@ void AutocompleteProviderClientImpl::set_in_background_state(
     bool in_background_state) {
   in_background_state_ = in_background_state;
 }
+
+base::WeakPtr<AutocompleteProviderClient>
+AutocompleteProviderClientImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
