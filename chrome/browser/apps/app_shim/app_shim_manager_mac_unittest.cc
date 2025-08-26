@@ -147,8 +147,10 @@ class TestingAppShimManager : public AppShimManager {
   void SetAcceptablyCodeSigned(bool is_acceptable_code_signed) {
     is_acceptably_code_signed_ = is_acceptable_code_signed;
   }
-  bool IsAcceptablyCodeSigned(audit_token_t audit_token) const override {
-    return is_acceptably_code_signed_;
+  void IsAcceptablyCodeSigned(
+      audit_token_t audit_token,
+      base::OnceCallback<void(bool)> callback) const override {
+    std::move(callback).Run(is_acceptably_code_signed_);
   }
 
   MOCK_METHOD1(ProfileForPath, Profile*(const base::FilePath&));

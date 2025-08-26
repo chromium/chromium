@@ -83,6 +83,26 @@ namespace {
 crash_reporter::CrashKeyString<256> app_shim_requirement_crash_key(
     "AppShimRequirement");
 
+// UMA metric name for result of validating app shim signature.
+constexpr const char* kAppShimSignatureValidationResult =
+    "Apps.AppShimSignatureValidationResult";
+
+// Result of validating app shim signature.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SignatureValidationResult {
+  kInvalidSignature = 0,
+  kSuccessAdHoc = 1,
+  kSuccessLegacy = 2,
+  kExpectedAdHocGotLegacy = 3,
+  kMaxValue = kExpectedAdHocGotLegacy,
+};
+
+// Records the result of validating the app shim code signature to UMA.
+void RecordSignatureValidationResult(SignatureValidationResult result) {
+  base::UmaHistogramEnumeration(kAppShimSignatureValidationResult, result);
+}
+
 // This function logs the status and error_details using OSSTATUS_LOG(). It also
 // calls base::debug::DumpWithoutCrashing() using app_shim_requirement_crash_key
 // as a crash key. The status and error_details are appended to the crash key.
@@ -175,15 +195,17 @@ bool IsAcceptablyCodeSignedLegacy(audit_token_t app_shim_audit_token) {
 
 // Returns whether |app_shim_code|'s code directory hash matches the value
 // that was saved when the app was signed.
-bool VerifyCodeDirectoryHash(
-    base::apple::ScopedCFTypeRef<SecCodeRef> app_shim_code) {
+void VerifyCodeDirectoryHash(
+    base::apple::ScopedCFTypeRef<SecCodeRef> app_shim_code,
+    base::OnceCallback<void(bool)> callback) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> app_shim_info;
   OSStatus status = SecCodeCopySigningInformation(
       app_shim_code.get(), kSecCSSigningInformation,
       app_shim_info.InitializeInto());
   if (status != errSecSuccess) {
     DumpOSStatusError(status, "SecCodeCopySigningInformation");
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
   CFDataRef cd_hash = base::apple::GetValueFromDictionary<CFDataRef>(
@@ -193,17 +215,20 @@ bool VerifyCodeDirectoryHash(
       base::apple::GetValueFromDictionary<CFDictionaryRef>(app_shim_info.get(),
                                                            kSecCodeInfoPList);
   if (!info_plist) {
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
   CFStringRef app_id = base::apple::GetValueFromDictionary<CFStringRef>(
       info_plist, CFSTR("CrAppModeShortcutID"));
   if (!app_id) {
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
-  return AppShimRegistry::Get()->VerifyCdHashForApp(
-      base::SysCFStringRefToUTF8(app_id), base::apple::CFDataToSpan(cd_hash));
+  AppShimRegistry::Get()->VerifyCdHashForApp(base::SysCFStringRefToUTF8(app_id),
+                                             base::apple::CFDataToSpan(cd_hash),
+                                             std::move(callback));
 }
 
 // Returns whether |app_shim_audit_token|'s code signature is trusted. The
@@ -211,7 +236,9 @@ bool VerifyCodeDirectoryHash(
 //  - verifying the signature is valid.
 //  - verifying the code directory hash in the signature matches the value
 //    stored for this app at signing time.
-bool IsAcceptablyAdHocCodeSigned(audit_token_t app_shim_audit_token) {
+void IsAcceptablyAdHocCodeSigned(
+    audit_token_t app_shim_audit_token,
+    base::OnceCallback<void(SignatureValidationResult)> callback) {
   base::apple::ScopedCFTypeRef<CFDataRef> audit_token_cf(CFDataCreate(
       nullptr, reinterpret_cast<const UInt8*>(&app_shim_audit_token),
       sizeof(audit_token_t)));
@@ -228,16 +255,30 @@ bool IsAcceptablyAdHocCodeSigned(audit_token_t app_shim_audit_token) {
       app_shim_code.InitializeInto());
   if (status != errSecSuccess) {
     DumpOSStatusError(status, "SecCodeCopyGuestWithAttributes");
-    return false;
+    std::move(callback).Run(SignatureValidationResult::kInvalidSignature);
+    return;
   }
   status =
       SecCodeCheckValidity(app_shim_code.get(), kSecCSDefaultFlags, nullptr);
   if (status != errSecSuccess) {
     DumpOSStatusError(status, "SecCodeCheckValidity");
-    return false;
+    std::move(callback).Run(SignatureValidationResult::kInvalidSignature);
+    return;
   }
 
-  return VerifyCodeDirectoryHash(app_shim_code);
+  auto on_verify_cd_hash = base::BindOnce(
+      [](audit_token_t audit_token, bool success) {
+        if (success) {
+          return SignatureValidationResult::kSuccessAdHoc;
+        }
+        if (IsAcceptablyCodeSignedLegacy(audit_token)) {
+          return SignatureValidationResult::kExpectedAdHocGotLegacy;
+        }
+        return SignatureValidationResult::kInvalidSignature;
+      },
+      app_shim_audit_token);
+  VerifyCodeDirectoryHash(
+      app_shim_code, std::move(on_verify_cd_hash).Then(std::move(callback)));
 }
 
 bool ProfileMenuItemComparator(const chrome::mojom::ProfileMenuItemPtr& a,
@@ -1121,6 +1162,28 @@ void AppShimManager::OnShimProcessConnectedAndAllLaunchesDone(
   AppShimHost* host = profile_state->GetHost();
   DCHECK(host);
 
+  audit_token_t audit_token = bootstrap->GetAppShimAuditToken();
+  IsAcceptablyCodeSigned(
+      audit_token,
+      base::BindOnce(&AppShimManager::
+                         OnShimProcessConnectedAndAllLaunchesDoneValidationDone,
+                     weak_factory_.GetWeakPtr(), std::move(bootstrap),
+                     host->GetLaunchWeakPtr()));
+}
+
+void AppShimManager::OnShimProcessConnectedAndAllLaunchesDoneValidationDone(
+    std::unique_ptr<AppShimHostBootstrap> bootstrap,
+    base::WeakPtr<AppShimHost> host,
+    bool is_acceptably_signed) {
+  if (!host) {
+    // The host can be null if the AppShimHost instance was deleted (e.g,
+    // because the profile was closed) between the time the validation began
+    // and now.
+    bootstrap->OnFailedToConnectToHost(
+        chrome::mojom::AppShimLaunchResult::kProfileNotFound);
+    return;
+  }
+
   // If we already have a host attached (e.g, due to multiple launches racing),
   // close down the app shim that didn't win the race.
   if (host->HasBootstrapConnected()) {
@@ -1132,7 +1195,7 @@ void AppShimManager::OnShimProcessConnectedAndAllLaunchesDone(
   // If the connecting shim process doesn't have an acceptable code
   // signature, reject the connection and re-launch the shim. The internal
   // re-launch will likely fail, whereupon the shim will be recreated.
-  if (!IsAcceptablyCodeSigned(bootstrap->GetAppShimAuditToken())) {
+  if (!is_acceptably_signed) {
     LOG(ERROR) << "The attaching app shim's code signature is invalid.";
     bootstrap->OnFailedToConnectToHost(
         chrome::mojom::AppShimLaunchResult::kFailedValidation);
@@ -1273,52 +1336,39 @@ void AppShimManager::LoadProfileAndApp_OnAppEnabled(
   std::move(callback).Run(ProfileForPath(profile_path));
 }
 
-// UMA metric name for result of validating app shim signature.
-constexpr const char* kAppShimSignatureValidationResult =
-    "Apps.AppShimSignatureValidationResult";
-
-// Result of validating app shim signature.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SignatureValidationResult {
-  kInvalidSignature = 0,
-  kSuccessAdHoc = 1,
-  kSuccessLegacy = 2,
-  kExpectedAdHocGotLegacy = 3,
-  kMaxValue = kExpectedAdHocGotLegacy,
-};
-
-// Records the result of validating the app shim code signature to UMA.
-void RecordSignatureValidationResult(SignatureValidationResult result) {
-  base::UmaHistogramEnumeration(kAppShimSignatureValidationResult, result);
-}
-
-bool AppShimManager::IsAcceptablyCodeSigned(audit_token_t audit_token) const {
+void AppShimManager::IsAcceptablyCodeSigned(
+    audit_token_t audit_token,
+    base::OnceCallback<void(bool)> callback) const {
   static const bool requires_adhoc_signature =
       web_app::UseAdHocSigningForWebAppShims();
 
-  if (requires_adhoc_signature && IsAcceptablyAdHocCodeSigned(audit_token)) {
-    RecordSignatureValidationResult(SignatureValidationResult::kSuccessAdHoc);
-    return true;
+  if (requires_adhoc_signature) {
+    IsAcceptablyAdHocCodeSigned(
+        audit_token, base::BindOnce(
+                         [](base::OnceCallback<void(bool)> callback,
+                            SignatureValidationResult result) {
+                           RecordSignatureValidationResult(result);
+                           const bool is_acceptably_signed =
+                               result ==
+                               SignatureValidationResult::kSuccessAdHoc;
+                           std::move(callback).Run(is_acceptably_signed);
+                         },
+                         std::move(callback)));
+    return;
   }
 
+  // The legacy path, used when ad-hoc signing is disabled. This path does not
+  // verify the code directory hash of the app shim. Instead, it verifies that
+  // just the binary inside the app shim was signed with the same certificate as
+  //  the main Chrome binary.
   if (IsAcceptablyCodeSignedLegacy(audit_token)) {
-    if (requires_adhoc_signature) {
-      RecordSignatureValidationResult(
-          SignatureValidationResult::kExpectedAdHocGotLegacy);
-
-      // Returning false to indicate that the signature is invalid will trigger
-      // the recreation of the app shim app bundle. This will result in it
-      // being re-signed with an ad-hoc signature as expected.
-      return false;
-    }
-
     RecordSignatureValidationResult(SignatureValidationResult::kSuccessLegacy);
-    return true;
+    std::move(callback).Run(true);
+  } else {
+    RecordSignatureValidationResult(
+        SignatureValidationResult::kInvalidSignature);
+    std::move(callback).Run(false);
   }
-
-  RecordSignatureValidationResult(SignatureValidationResult::kInvalidSignature);
-  return false;
 }
 
 Profile* AppShimManager::ProfileForPath(const base::FilePath& full_path) {

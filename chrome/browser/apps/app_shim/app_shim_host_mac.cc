@@ -179,6 +179,10 @@ base::ProcessId AppShimHost::GetAppShimPid() const {
   return base::kNullProcessId;
 }
 
+base::WeakPtr<AppShimHost> AppShimHost::GetLaunchWeakPtr() {
+  return launch_weak_factory_.GetWeakPtr();
+}
+
 bool AppShimHost::HasBootstrapConnected() const {
   return bootstrap_ != nullptr;
 }

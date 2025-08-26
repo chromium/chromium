@@ -8,13 +8,19 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+
+namespace os_crypt_async {
+class Encryptor;
+}  // namespace os_crypt_async
 
 class PrefService;
 class PrefRegistrySimple;
@@ -118,12 +124,14 @@ class AppShimRegistry {
 
   // Associate the given code directory hash with a given app.
   void SaveCdHashForApp(const std::string& app_id,
-                        base::span<const uint8_t> cd_hash);
+                        base::span<const uint8_t> cd_hash,
+                        base::OnceClosure callback);
 
   // Verify that the given code directory hash matches the one previously
   // associated with the given app.
-  bool VerifyCdHashForApp(const std::string& app_id,
-                          base::span<const uint8_t> cd_hash);
+  void VerifyCdHashForApp(const std::string& app_id,
+                          base::span<const uint8_t> cd_hash,
+                          base::OnceCallback<void(bool)> callback);
 
   // Called when changes to the system level notification permission status for
   // the given app have been detected.
@@ -169,17 +177,19 @@ class AppShimRegistry {
 
   // Retrieve the key used to create HMACs of app's code directory hashes,
   // generating a new key if needed.
-  HmacKey GetCdHashHmacKey();
+  HmacKey GetCdHashHmacKey(const os_crypt_async::Encryptor& encryptor);
 
   // Helper function used by GetCdHashHmacKey
   // Retrieve the existing key used to create HMACs of app's code directory
   // hashes. Returns nullopt if no key was found or the existing key could not
   // be decoded or decrypted.
-  std::optional<HmacKey> GetExistingCdHashHmacKey();
+  std::optional<HmacKey> GetExistingCdHashHmacKey(
+      const os_crypt_async::Encryptor& encryptor);
 
   // Helper function used by GetCdHashHmacKey
   // Encode and encrypt the given HMAC key and save it to preferences.
-  void SaveCdHashHmacKey(const HmacKey& key);
+  void SaveCdHashHmacKey(const os_crypt_async::Encryptor& encryptor,
+                         const HmacKey& key);
 
   // Update the local storage for |app_id|. Update |installed_profiles| and
   // |last_active_profiles| only if they are non-nullptr. If
@@ -192,6 +202,14 @@ class AppShimRegistry {
                   const std::string* cd_hash_hmac_base64,
                   const mac_notifications::mojom::PermissionStatus*
                       notification_permission_status);
+
+ private:
+  void DoSaveCdHashForApp(const std::string& app_id,
+                          std::vector<uint8_t> cd_hash,
+                          os_crypt_async::Encryptor encryptor);
+  bool DoVerifyCdHashForApp(const std::string& app_id,
+                            std::vector<uint8_t> cd_hash,
+                            os_crypt_async::Encryptor encryptor);
 
   raw_ptr<PrefService> override_pref_service_ = nullptr;
   base::FilePath override_user_data_dir_;

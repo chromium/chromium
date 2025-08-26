@@ -1058,9 +1058,10 @@ bool WebAppShortcutCreator::UpdateSignature(
   std::vector<uint8_t> cd_hash(cd_hash_span.begin(), cd_hash_span.end());
 
   content::GetUIThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&AppShimRegistry::SaveCdHashForApp,
-                                base::Unretained(AppShimRegistry::Get()),
-                                info_->app_id, std::move(cd_hash)));
+      FROM_HERE,
+      base::BindOnce(&AppShimRegistry::SaveCdHashForApp,
+                     base::Unretained(AppShimRegistry::Get()), info_->app_id,
+                     std::move(cd_hash), base::DoNothing()));
 
   return true;
 }

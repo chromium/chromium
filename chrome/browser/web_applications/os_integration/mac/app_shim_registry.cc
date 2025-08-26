@@ -10,11 +10,13 @@
 
 #include "base/base64.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/os_crypt/sync/os_crypt.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -266,7 +268,8 @@ bool AppShimRegistry::HasSavedAnyCdHashes() const {
 }
 
 std::optional<AppShimRegistry::HmacKey>
-AppShimRegistry::GetExistingCdHashHmacKey() {
+AppShimRegistry::GetExistingCdHashHmacKey(
+    const os_crypt_async::Encryptor& encryptor) {
   std::string key_base64 = GetPrefService()->GetString(kAppShimsCdHashHmacKey);
   if (key_base64.empty()) {
     return std::nullopt;
@@ -278,10 +281,9 @@ AppShimRegistry::GetExistingCdHashHmacKey() {
   std::string encrypted_key;
   if (base::Base64Decode(key_base64, &encrypted_key)) {
     std::string key;
-    if (OSCrypt::DecryptString(encrypted_key, &key)) {
-      if (key.length() == kHmacKeySize) {
-        return std::make_optional<HmacKey>(key.begin(), key.end());
-      }
+    if (encryptor.DecryptString(encrypted_key, &key) &&
+        key.length() == kHmacKeySize) {
+      return std::make_optional<HmacKey>(key.begin(), key.end());
     }
   }
 
@@ -294,22 +296,24 @@ AppShimRegistry::GetExistingCdHashHmacKey() {
 
 // Encrypt the key using OSCrypt and base64-encode the encrypted data before
 // storing it in prefs.
-void AppShimRegistry::SaveCdHashHmacKey(const HmacKey& key) {
+void AppShimRegistry::SaveCdHashHmacKey(
+    const os_crypt_async::Encryptor& encryptor,
+    const HmacKey& key) {
   std::string key_str(key.begin(), key.end());
-  std::string encrypted_key_str;
-  bool result = OSCrypt::EncryptString(key_str, &encrypted_key_str);
-  if (!result) {
+  std::optional<std::vector<uint8_t>> encrypted_key =
+      encryptor.EncryptString(key_str);
+  if (!encrypted_key.has_value()) {
     base::debug::DumpWithoutCrashing();
     return;
   }
 
-  HmacKey encrypted_key(encrypted_key_str.begin(), encrypted_key_str.end());
   GetPrefService()->SetString(kAppShimsCdHashHmacKey,
-                              base::Base64Encode(encrypted_key));
+                              base::Base64Encode(*encrypted_key));
 }
 
-AppShimRegistry::HmacKey AppShimRegistry::GetCdHashHmacKey() {
-  if (auto key = GetExistingCdHashHmacKey(); key.has_value()) {
+AppShimRegistry::HmacKey AppShimRegistry::GetCdHashHmacKey(
+    const os_crypt_async::Encryptor& encryptor) {
+  if (auto key = GetExistingCdHashHmacKey(encryptor); key.has_value()) {
     return *key;
   }
 
@@ -321,14 +325,27 @@ AppShimRegistry::HmacKey AppShimRegistry::GetCdHashHmacKey() {
   HmacKey key(kHmacKeySize);
   crypto::RandBytes(key);
 
-  SaveCdHashHmacKey(key);
+  SaveCdHashHmacKey(encryptor, key);
 
   return key;
 }
 
 void AppShimRegistry::SaveCdHashForApp(const std::string& app_id,
-                                       base::span<const uint8_t> cd_hash) {
-  HmacKey hmac_key = GetCdHashHmacKey();
+                                       base::span<const uint8_t> cd_hash,
+                                       base::OnceClosure callback) {
+  // base::Unretained is safe, since AppShimRegistry is a singleton that is
+  // never destructed.
+  g_browser_process->os_crypt_async()->GetInstance(
+      base::BindOnce(&AppShimRegistry::DoSaveCdHashForApp,
+                     base::Unretained(this), app_id,
+                     std::vector<uint8_t>(cd_hash.begin(), cd_hash.end()))
+          .Then(std::move(callback)));
+}
+
+void AppShimRegistry::DoSaveCdHashForApp(const std::string& app_id,
+                                         std::vector<uint8_t> cd_hash,
+                                         os_crypt_async::Encryptor encryptor) {
+  HmacKey hmac_key = GetCdHashHmacKey(encryptor);
   crypto::HMAC hmac(crypto::HMAC::SHA256);
   CHECK(hmac.Init(hmac_key));
 
@@ -342,8 +359,23 @@ void AppShimRegistry::SaveCdHashForApp(const std::string& app_id,
              /*notification_permission_status=*/nullptr);
 }
 
-bool AppShimRegistry::VerifyCdHashForApp(const std::string& app_id,
-                                         base::span<const uint8_t> cd_hash) {
+void AppShimRegistry::VerifyCdHashForApp(
+    const std::string& app_id,
+    base::span<const uint8_t> cd_hash,
+    base::OnceCallback<void(bool)> callback) {
+  // base::Unretained is safe, since AppShimRegistry is a singleton that is
+  // never destructed.
+  g_browser_process->os_crypt_async()->GetInstance(
+      base::BindOnce(&AppShimRegistry::DoVerifyCdHashForApp,
+                     base::Unretained(this), app_id,
+                     std::vector<uint8_t>(cd_hash.begin(), cd_hash.end()))
+          .Then(std::move(callback)));
+}
+
+bool AppShimRegistry::DoVerifyCdHashForApp(
+    const std::string& app_id,
+    std::vector<uint8_t> cd_hash,
+    os_crypt_async::Encryptor encryptor) {
   const base::Value::Dict& cache = GetPrefService()->GetDict(kAppShims);
   const base::Value::Dict* app_info = cache.FindDict(app_id);
   if (!app_info) {
@@ -363,7 +395,7 @@ bool AppShimRegistry::VerifyCdHashForApp(const std::string& app_id,
     return false;
   }
 
-  HmacKey hmac_key = GetCdHashHmacKey();
+  HmacKey hmac_key = GetCdHashHmacKey(encryptor);
   crypto::HMAC hmac(crypto::HMAC::SHA256);
   CHECK(hmac.Init(hmac_key));
   return hmac.Verify(cd_hash, *cd_hash_hmac);

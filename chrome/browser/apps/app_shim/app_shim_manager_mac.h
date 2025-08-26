@@ -289,7 +289,9 @@ class AppShimManager
   typedef std::set<Browser*> BrowserSet;
 
   // Virtual for tests.
-  virtual bool IsAcceptablyCodeSigned(audit_token_t audit_token) const;
+  virtual void IsAcceptablyCodeSigned(
+      audit_token_t audit_token,
+      base::OnceCallback<void(bool)> callback) const;
 
   // Return the profile for |path|, only if it is already loaded.
   virtual Profile* ProfileForPath(const base::FilePath& path);
@@ -417,6 +419,12 @@ class AppShimManager
       std::unique_ptr<AppShimHostBootstrap> bootstrap,
       ProfileState* profile_state,
       chrome::mojom::AppShimLaunchResult result);
+  // The continuation of OnShimProcessConnectedAndAllLaunchesDone, called after
+  // the possibly asynchronous code signature validation is complete.
+  void OnShimProcessConnectedAndAllLaunchesDoneValidationDone(
+      std::unique_ptr<AppShimHostBootstrap> bootstrap,
+      base::WeakPtr<AppShimHost> host,
+      bool is_acceptably_signed);
 
   // Load the specified profile and extension, and run |callback| with
   // the result. The callback's arguments may be nullptr on failure.
