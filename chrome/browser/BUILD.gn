@@ -4283,11 +4283,6 @@ static_library("browser") {
       "support_tool/system_log_source_data_collector_adaptor.h",
       "tab_contents/form_interaction_tab_helper.cc",
       "tab_contents/form_interaction_tab_helper.h",
-      "upgrade_detector/build_state.cc",
-      "upgrade_detector/build_state.h",
-      "upgrade_detector/upgrade_detector.cc",
-      "upgrade_detector/version_history_client.cc",
-      "upgrade_detector/version_history_client.h",
       "usb/usb_connection_tracker.cc",
       "usb/usb_connection_tracker.h",
       "usb/usb_connection_tracker_factory.cc",
@@ -4508,6 +4503,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui_browser:impl",
       "//chrome/browser/upgrade_detector",
       "//chrome/browser/upgrade_detector:build_state_observer",
+      "//chrome/browser/upgrade_detector:impl",
       "//chrome/browser/user_education",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:features",
@@ -4704,6 +4700,13 @@ static_library("browser") {
       # TODO(crbug.com/434882143): Remove this circular dependency when
       # c/b/privacy_sandbox/tracking_protection_settings_factory.h gets componentized.
       "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
+
+      # TODO(crbug.com/441020158): Remove this circular dependency when the following headers get
+      # componentized:
+      # - c/b/enterprise/browser_management/management_service_factory.h
+      # - c/b/obsolete_system/obsolete_system.h
+      # - c/b/lifetime/application_lifetime.h
+      "//chrome/browser/upgrade_detector:impl",
     ]
 
     #!is_android
@@ -4776,13 +4779,6 @@ static_library("browser") {
         "signin/signin_manager.h",
         "signin/signin_manager_factory.cc",
         "signin/signin_manager_factory.h",
-        "upgrade_detector/get_installed_version.cc",
-        "upgrade_detector/get_installed_version.h",
-        "upgrade_detector/installed_version_monitor.h",
-        "upgrade_detector/installed_version_poller.cc",
-        "upgrade_detector/installed_version_poller.h",
-        "upgrade_detector/upgrade_detector_impl.cc",
-        "upgrade_detector/upgrade_detector_impl.h",
         "usb/usb_status_icon.cc",
         "usb/usb_status_icon.h",
       ]
@@ -5228,10 +5224,6 @@ static_library("browser") {
       "supervised_user/chromeos/supervised_user_web_content_handler_impl.h",
       "ui/ash/shelf/chrome_shelf_metrics_provider.cc",
       "ui/ash/shelf/chrome_shelf_metrics_provider.h",
-      "upgrade_detector/installed_version_updater_chromeos.cc",
-      "upgrade_detector/installed_version_updater_chromeos.h",
-      "upgrade_detector/upgrade_detector_chromeos.cc",
-      "upgrade_detector/upgrade_detector_chromeos.h",
       "usb/usb_pinned_notification.cc",
       "usb/usb_pinned_notification.h",
       "webauthn/unexportable_key_utils_chromeos.cc",
@@ -6447,9 +6439,6 @@ static_library("browser") {
       "tracing/windows_system_tracing_client_impl_win.cc",
       "tracing/windows_system_tracing_client_impl_win.h",
       "tracing/windows_system_tracing_client_win.h",
-      "upgrade_detector/get_installed_version_win.cc",
-      "upgrade_detector/registry_monitor.cc",
-      "upgrade_detector/registry_monitor.h",
       "webauthn/local_credential_management_win.cc",
       "webauthn/local_credential_management_win.h",
       "webshare/win/share_operation.cc",
@@ -6666,9 +6655,6 @@ static_library("browser") {
       "renderer_host/chrome_render_widget_host_view_mac_delegate.h",
       "renderer_host/chrome_render_widget_host_view_mac_delegate.mm",
       "shell_integration_mac.mm",
-      "upgrade_detector/directory_monitor.cc",
-      "upgrade_detector/directory_monitor.h",
-      "upgrade_detector/get_installed_version_mac.mm",
       "webauthn/chrome_authenticator_request_delegate_mac.mm",
       "webauthn/local_credential_management_mac.cc",
       "webauthn/local_credential_management_mac.h",
@@ -7087,9 +7073,6 @@ static_library("browser") {
       "obsolete_system/obsolete_system_linux.cc",
       "shell_integration_linux.cc",
       "shell_integration_linux.h",
-      "upgrade_detector/directory_monitor.cc",
-      "upgrade_detector/directory_monitor.h",
-      "upgrade_detector/get_installed_version_linux.cc",
     ]
     deps += [
       "//chrome/app/theme:chrome_unscaled_resources_grit",
