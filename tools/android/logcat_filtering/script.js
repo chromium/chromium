@@ -32,6 +32,9 @@
 
 const controlsDiv = document.getElementById('controls');
 const fileUploadButton = document.getElementById('file-upload-button');
+const pasteLogcatButton = document.getElementById('paste-logcat-button');
+const pasteLogcatButtonLabel = document.querySelector(
+  'label[for="paste-logcat-button"]');
 const nextExceptionButton = document.getElementById('next-exception-button');
 const exceptionFeedbackSpan = document.getElementById('exception-feedback');
 const nextTestButton = document.getElementById('next-test-button');
@@ -58,6 +61,8 @@ const textDisplayArea = document.getElementById('text-display-area');
 // Event listeners:
 
 fileUploadButton.addEventListener('change', handleFileUpload);
+
+pasteLogcatButton.addEventListener('click', handlePasteLogcatButtonClick);
 
 nextExceptionButton.addEventListener('click', jumpToNextException);
 
@@ -254,6 +259,33 @@ function handleFileUpload(event) {
       textDisplayArea.innerHTML = 'Encountered an error when reading the file.';
     };
     reader.readAsText(file);
+  }
+
+  // Reset the value of the file input element after the file is processed.
+  if (event.target) {
+    event.target.value = '';
+  }
+}
+
+/**
+ * This function is called when the user clicks on the paste logcat button.
+ * @param {Event} event
+ */
+function handlePasteLogcatButtonClick(event) {
+  if (pasteLogcatButtonLabel.textContent.includes('Paste Logcat')) {
+    // Change the UI to allow the user to paste text.
+    pasteLogcatButtonLabel.innerHTML =
+      '<i class="material-icons">done</i> Finish Pasting';
+    textDisplayArea.innerHTML = '';
+    textDisplayArea.contentEditable = 'true';
+    textDisplayArea.focus();
+  } else {
+    // Finish the pasting process and change the UI back to normal.
+    pasteLogcatButtonLabel.innerHTML =
+      '<i class="material-icons">content_paste</i> Paste Logcat';
+    textDisplayArea.contentEditable = 'false';
+    setUpElements(textDisplayArea.innerText.split('\n'));
+    updateTextDisplayArea(false);
   }
 }
 
