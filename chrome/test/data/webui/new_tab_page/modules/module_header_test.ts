@@ -63,7 +63,7 @@ suite('ModuleHeaderV2', () => {
     assertEquals('customize-module', dropDownItems[2]!.id);
   });
 
-  test('customize modules hides if `showCustomize` is false', async () => {
+  test('customize modules hides if `hideCustomize` is set', async () => {
     // Arrange.
     moduleHeaderElementV2.menuItems = [
       {
@@ -87,7 +87,7 @@ suite('ModuleHeaderV2', () => {
     assertTrue(isVisible(horizontalRule));
 
     // Act.
-    moduleHeaderElementV2.showCustomize = false;
+    moduleHeaderElementV2.hideCustomize = true;
     await microtasksFinished();
 
     // Assert.

@@ -16,7 +16,7 @@
       ${item.text}
     </button>
   `)}
-  ${this.showCustomize ? html`
+  ${!this.hideCustomize ? html`
     <hr id="actionMenuDivider" ?hidden="${!this.showDivider_()}">
     <button id="customize-module" class="dropdown-item"
           @click="${this.onButtonClick_}" data-action="customize-module">

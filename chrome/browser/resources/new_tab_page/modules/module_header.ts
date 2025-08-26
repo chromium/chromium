@@ -46,14 +46,14 @@ export class ModuleHeaderElement extends CrLitElement {
       headerText: {type: String},
       moreActionsText: {type: String},
       menuItems: {type: Array},
-      showCustomize: {type: Boolean},
+      hideCustomize: {type: Boolean},
     };
   }
 
   accessor headerText: string|null = null;
   accessor menuItems: MenuItem[] = [];
   accessor moreActionsText: string = '';
-  accessor showCustomize: boolean = true;
+  accessor hideCustomize: boolean = false;
 
   protected onButtonClick_(e: Event) {
     const action = (e.currentTarget as HTMLElement).dataset['action'];
