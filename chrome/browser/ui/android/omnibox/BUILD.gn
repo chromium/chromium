@@ -256,6 +256,7 @@ android_library("java") {
     "//third_party/metrics_proto:metrics_proto_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//ui/base/mojom:mojom_java",
     "//url:gurl_java",

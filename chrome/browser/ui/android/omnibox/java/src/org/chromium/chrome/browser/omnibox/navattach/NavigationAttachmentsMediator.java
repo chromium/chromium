@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox.navattach;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -26,6 +28,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +38,7 @@ import java.util.List;
 class NavigationAttachmentsMediator {
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
+    private final AndroidPermissionDelegate mPermissionDelegate;
     private final PropertyModel mModel;
     private final NavigationAttachmentsPopup mPopup;
     private final ModelList mModelList;
@@ -48,6 +52,7 @@ class NavigationAttachmentsMediator {
             ModelList modelList) {
         mContext = context;
         mWindowAndroid = windowAndroid;
+        mPermissionDelegate = windowAndroid;
         mModel = model;
         mPopup = viewHolder.popup;
         mModelList = modelList;
@@ -56,7 +61,7 @@ class NavigationAttachmentsMediator {
 
         mModel.set(
                 NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
-        mModel.set(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED, this::launchCamera);
+        mModel.set(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED, this::onCameraClicked);
         mModel.set(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED, this::launchImagePicker);
         mModel.set(NavigationAttachmentsProperties.POPUP_FILE_CLICKED, this::launchFilePicker);
         mModel.set(
@@ -88,9 +93,25 @@ class NavigationAttachmentsMediator {
         }
     }
 
-    private void launchCamera() {
+    @VisibleForTesting
+    void onCameraClicked() {
         mPopup.dismiss();
+        if (mPermissionDelegate.hasPermission(Manifest.permission.CAMERA)) {
+            launchCamera();
+        } else {
+            mPermissionDelegate.requestPermissions(
+                    new String[] {Manifest.permission.CAMERA},
+                    (permissions, grantResults) -> {
+                        if (grantResults.length > 0
+                                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                            launchCamera();
+                        }
+                    });
+        }
+    }
 
+    @VisibleForTesting
+    void launchCamera() {
         // Ask for a small-sized bitmap as a direct reply (passing no `EXTRA_OUTPUT` uri).
         // This should be sufficiently good, offering image of around 200-300px on the long edge.
         var i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

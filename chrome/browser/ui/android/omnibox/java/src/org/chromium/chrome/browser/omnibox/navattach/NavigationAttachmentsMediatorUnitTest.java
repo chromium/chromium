@@ -9,12 +9,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.Intent;
-import android.provider.MediaStore;
 import android.view.ViewGroup;
 
 import org.junit.Before;
@@ -23,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
@@ -52,8 +54,9 @@ public class NavigationAttachmentsMediatorUnitTest {
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mViewGroup, mPopup);
         mMediator =
-                new NavigationAttachmentsMediator(
-                        mContext, mWindowAndroid, mModel, mViewHolder, new ModelList());
+                Mockito.spy(
+                        new NavigationAttachmentsMediator(
+                                mContext, mWindowAndroid, mModel, mViewHolder, new ModelList()));
     }
 
     @Test
@@ -95,18 +98,25 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
-    public void onCameraButtonClicked_launchesCamera() {
-        Runnable runnable = mModel.get(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED);
-        assertNotNull(runnable);
+    public void onCameraClicked_permissionGranted_launchesCamera() {
+        doReturn(true).when(mWindowAndroid).hasPermission(any());
+        doNothing().when(mMediator).launchCamera();
 
-        runnable.run();
+        mMediator.onCameraClicked();
 
-        verify(mPopup).dismiss();
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mWindowAndroid).showCancelableIntent(intentCaptor.capture(), any(), any());
+        verify(mMediator).launchCamera();
+        verify(mWindowAndroid, never()).requestPermissions(any(), any());
+    }
 
-        Intent intent = intentCaptor.getValue();
-        assertEquals(MediaStore.ACTION_IMAGE_CAPTURE, intent.getAction());
+    @Test
+    public void onCameraClicked_permissionDenied_requestsPermission() {
+        doReturn(false).when(mWindowAndroid).hasPermission(any());
+        doNothing().when(mMediator).launchCamera();
+
+        mMediator.onCameraClicked();
+
+        verify(mMediator, never()).launchCamera();
+        verify(mWindowAndroid).requestPermissions(any(), any());
     }
 
     @Test
