@@ -202,6 +202,10 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sJumpStartOmniboxCoverRecentlyVisitedPage =
             newBooleanParam(sJumpStartOmnibox, "jump_start_cover_recently_visited_page", false);
 
+    // This parameter enables the hub search entrypoints on the tab groups pane.
+    public static final BooleanCachedFeatureParam sAndroidHubSearchEnableOnTabGroupsPane =
+            newBooleanParam(sAndroidHubSearchTabGroups, "enable_hub_search_tab_groups_pane", true);
+
     // Omnibox Diagnostics
     private static final CachedFlag sDiagnostics =
             newFlag(OmniboxFeatureList.DIAGNOSTICS, FeatureState.DISABLED);

@@ -752,6 +752,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "enable_hub_search_tab_groups_pane": "true"
+                    },
                     "enable_features": [
                         "AndroidHubSearchTabGroups"
                     ]

@@ -108,7 +108,11 @@ public class HubToolbarView extends LinearLayout {
     }
 
     void setMenuButtonVisible(boolean visible) {
-        mMenuButtonWrapper.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        if (OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.getValue()) {
+            mMenuButtonWrapper.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        } else {
+            mMenuButtonContainer.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        }
     }
 
     void setPaneSwitcherButtonData(

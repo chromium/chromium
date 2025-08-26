@@ -39,6 +39,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import androidx.core.content.ContextCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -71,6 +72,7 @@ import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -114,6 +116,7 @@ public class HubToolbarViewUnitTest {
     private FrameLayout mToolbarContainer;
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
+    private LinearLayout mMenuButtonContainer;
     private MenuButton mMenuButtonWrapper;
     private View mSearchBox;
     private View mSearchLoupe;
@@ -138,6 +141,7 @@ public class HubToolbarViewUnitTest {
         mToolbarContainer = (FrameLayout) inflater.inflate(layoutId, null, false);
         mActionButton = mToolbarContainer.findViewById(R.id.toolbar_action_button);
         mPaneSwitcher = mToolbarContainer.findViewById(R.id.pane_switcher);
+        mMenuButtonContainer = mToolbarContainer.findViewById(R.id.menu_button_container);
         mMenuButtonWrapper = mToolbarContainer.findViewById(R.id.menu_button_wrapper);
         mSearchBox = mToolbarContainer.findViewById(R.id.search_box);
         mSearchLoupe = mToolbarContainer.findViewById(R.id.search_loupe);
@@ -235,7 +239,18 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    public void testMenuButtonVisibility() {
+    public void testMenuButtonContainerVisibility() {
+        OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.setForTesting(false);
+        mPropertyModel.set(MENU_BUTTON_VISIBLE, false);
+        assertEquals(View.INVISIBLE, mMenuButtonContainer.getVisibility());
+
+        mPropertyModel.set(MENU_BUTTON_VISIBLE, true);
+        assertEquals(View.VISIBLE, mMenuButtonContainer.getVisibility());
+        OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.setForTesting(true);
+    }
+
+    @Test
+    public void testMenuButtonWrapperVisibility() {
         mPropertyModel.set(MENU_BUTTON_VISIBLE, false);
         assertEquals(View.INVISIBLE, mMenuButtonWrapper.getVisibility());
 
