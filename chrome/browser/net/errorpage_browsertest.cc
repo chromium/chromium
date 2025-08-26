@@ -721,13 +721,9 @@ class ErrorPageAutoReloadTest : public InProcessBrowserTest {
   int32_t failures_;
 };
 
-// Fails on official mac_trunk build. See crbug.com/465789.
-#if defined(OFFICIAL_BUILD) && BUILDFLAG(IS_MAC)
-#define MAYBE_AutoReload DISABLED_AutoReload
-#else
-#define MAYBE_AutoReload AutoReload
-#endif
-IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, MAYBE_AutoReload) {
+// Test is flaky.
+// TODO(crbug.com/41161951): Fix and reenable the test.
+IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, DISABLED_AutoReload) {
   GURL test_url("http://error.page.auto.reload");
   const int32_t kRequestsToFail = 2;
   InstallInterceptor(test_url, kRequestsToFail);
