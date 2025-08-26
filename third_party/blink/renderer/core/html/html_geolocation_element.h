@@ -36,7 +36,7 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
 
   void Trace(Visitor*) const override;
 
-private:
+ private:
   bool precise_ = false;
   bool autolocate_ = false;
   bool watch_ = false;
