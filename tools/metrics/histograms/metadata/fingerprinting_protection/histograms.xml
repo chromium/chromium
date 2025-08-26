@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.CanvasNoise.InterventionReason"
-    units="bitmask" expires_after="2025-12-14">
+    units="bitmask" expires_after="2026-02-22">
   <owner>tov@chromium.org</owner>
   <owner>antoniosartori@chromium.org</owner>
   <owner>johnykim@google.com</owner>
@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.CanvasNoise.NoisedCanvasSize"
-    units="pixels" expires_after="2025-12-14">
+    units="pixels" expires_after="2026-02-22">
   <owner>tov@chromium.org</owner>
   <owner>antoniosartori@chromium.org</owner>
   <owner>johnykim@google.com</owner>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.CanvasNoise.NoisedReadbacksPerContext"
-    units="count" expires_after="2025-12-14">
+    units="count" expires_after="2026-02-22">
   <owner>tov@chromium.org</owner>
   <owner>antoniosartori@chromium.org</owner>
   <owner>johnykim@google.com</owner>
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.CanvasNoise.NoiseDuration"
-    units="microseconds" expires_after="2025-12-14">
+    units="microseconds" expires_after="2026-02-22">
   <owner>tov@chromium.org</owner>
   <owner>antoniosartori@chromium.org</owner>
   <owner>johnykim@google.com</owner>

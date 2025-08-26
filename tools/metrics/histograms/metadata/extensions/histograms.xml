@@ -206,7 +206,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="ExtensionBlacklist.BlockCRX" enum="ExtensionLocation"
-    expires_after="2025-12-21">
+    expires_after="2026-02-22">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -395,7 +395,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.CommandLineWith{DeveloperModeState}{ExtensionState}"
-    units="count" expires_after="2025-12-14">
+    units="count" expires_after="2026-02-22">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1471,7 +1471,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DisableReason2" enum="ExtensionDisableReason"
-    expires_after="2025-12-14">
+    expires_after="2026-02-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3322,7 +3322,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.LoadTheme2" units="units"
-    expires_after="2025-12-14">
+    expires_after="2026-02-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4382,7 +4382,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Storage.GetOperation.AllocationSize" units="MB"
-    expires_after="2025-10-21">
+    expires_after="2026-02-22">
   <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

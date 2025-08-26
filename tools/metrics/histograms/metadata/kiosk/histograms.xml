@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeApp.PrimaryAppUpdateResult"
-    enum="KioskPrimaryAppDownloadResult" expires_after="2025-12-14">
+    enum="KioskPrimaryAppDownloadResult" expires_after="2026-02-22">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Launch.Error" enum="KioskLaunchError"
-    expires_after="2025-12-21">
+    expires_after="2026-02-22">
   <owner>xiyuan@chromium.org</owner>
   <owner>apotapchuk@chromium.org</owner>
   <summary>
@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.LaunchType" enum="KioskLaunchType"
-    expires_after="2025-12-21">
+    expires_after="2026-02-22">
   <owner>xiyuan@chromium.org</owner>
   <owner>aghuie@chromium.org</owner>
   <summary>

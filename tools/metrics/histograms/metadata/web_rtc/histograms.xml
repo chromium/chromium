@@ -1701,7 +1701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ValidIceChars" enum="Boolean"
-    expires_after="2025-12-14">
+    expires_after="2026-02-22">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>
@@ -3897,7 +3897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video{TypeOfStream}.CorruptionLikelihoodPermille"
-    units="permille (‰)" expires_after="2025-11-30">
+    units="permille (‰)" expires_after="2026-02-22">
   <owner>sprang@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>

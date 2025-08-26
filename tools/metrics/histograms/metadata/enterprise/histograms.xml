@@ -714,7 +714,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DevicePolicyInvalidations2"
-    enum="EnterprisePolicyInvalidations" expires_after="2025-12-07">
+    enum="EnterprisePolicyInvalidations" expires_after="2026-02-22">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -1472,7 +1472,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.Errors.FilesPolicySetup" enum="Boolean"
-    expires_after="2025-12-14">
+    expires_after="2026-02-22">
   <owner>accorsi@google.com</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1588,7 +1588,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.FilesDaemonStarted" enum="Boolean"
-    expires_after="2025-12-14">
+    expires_after="2026-02-22">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1862,7 +1862,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.DMServerCloudPolicyRequestStatus{EnterpriseDMServerCloudPolicyRequest}"
-    enum="EnterpriseDeviceManagementStatus" expires_after="2025-12-01">
+    enum="EnterpriseDeviceManagementStatus" expires_after="2026-02-22">
   <owner>vincb@google.com</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -2094,7 +2094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedAttestationBased"
-    enum="EnterpriseEnrollmentType" expires_after="2025-12-07">
+    enum="EnterpriseEnrollmentType" expires_after="2026-02-22">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2765,7 +2765,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Policies" enum="EnterprisePolicies"
-    expires_after="2025-12-14">
+    expires_after="2026-02-22">
   <owner>vsavu@google.com</owner>
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2790,7 +2790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Policies.{PolicyLevel}" enum="EnterprisePolicies"
-    expires_after="2025-12-13">
+    expires_after="2026-02-22">
   <owner>zmin@chromium.org</owner>
   <owner>qiutanw@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2876,7 +2876,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUI.ButtonUsage.{ButtonType}" units="counts"
-    expires_after="2025-12-13">
+    expires_after="2026-02-22">
   <owner>zmin@chromium.org</owner>
   <owner>src/components/policy/OWNERS</owner>
   <summary>
@@ -3036,7 +3036,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ReportingEvent.{EventType}.UploadSize" units="B"
-    expires_after="2025-12-21">
+    expires_after="2026-02-22">
   <owner>domfc@chromium.org</owner>
   <owner>xanth@google.com</owner>
   <owner>nancylanxiao@google.com</owner>
@@ -3093,7 +3093,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.ResumableRequest.{ResumableRequestCheckType}Check.{ContentAnalysisRequestType}.Duration"
-    units="ms" expires_after="2025-12-14">
+    units="ms" expires_after="2026-02-22">
   <owner>nancylanxiao@google.com</owner>
   <owner>domfc@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -3775,7 +3775,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.UserPolicyChromeOS.ReregistrationResult"
     enum="EnterpriseUserPolicyChromeOSReregistrationResult"
-    expires_after="2025-12-14">
+    expires_after="2026-02-22">
   <owner>hendrich@chromium.org</owner>
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -3889,7 +3889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.{Page}PromotionBannerAction"
-    enum="PromotionBannerAction" expires_after="2025-12-07">
+    enum="PromotionBannerAction" expires_after="2026-02-22">
   <owner>austinzzr@chromium.org</owner>
   <owner>esalma@google.com</owner>
   <summary>

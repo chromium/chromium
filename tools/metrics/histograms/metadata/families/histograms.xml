@@ -524,7 +524,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyUser.FamilyLinkUsersCount" units="Number of Users"
-    expires_after="2025-11-01">
+    expires_after="2026-02-22">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -707,7 +707,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyUser.WebFilterType.PerRecord"
-    enum="SupervisedUserWebFilterType" expires_after="2025-12-21">
+    enum="SupervisedUserWebFilterType" expires_after="2026-02-22">
   <owner>fernandex@chromium.org</owner>
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
@@ -1231,7 +1231,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   <token key="RequestType" variants="ProtoFetcherRequestType"/>
 </histogram>
 
-<histogram name="{RequestType}.Latency" units="ms" expires_after="2025-12-14">
+<histogram name="{RequestType}.Latency" units="ms" expires_after="2026-02-22">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>

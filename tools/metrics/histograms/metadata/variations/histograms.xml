@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Variations.LimitedEntropy.SeedRejectionReason"
     enum="VariationsLimitedEntropySeedRejectionReason"
-    expires_after="2025-11-16">
+    expires_after="2026-02-22">
   <owner>yulunz@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

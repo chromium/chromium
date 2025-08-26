@@ -682,7 +682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ArcOnDemandV2.ActivationShouldBeDelayed" enum="Boolean"
-    expires_after="2025-12-07">
+    expires_after="2026-02-22">
   <owner>yuholong@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
@@ -1208,7 +1208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.GameControls.ButtonOptionsMenuFunctionTriggered"
-    enum="GameControlsButtonOptionsMenuFunction" expires_after="2025-12-14">
+    enum="GameControlsButtonOptionsMenuFunction" expires_after="2026-02-22">
   <owner>cuicuiruan@google.com</owner>
   <owner>pjlee@google.com</owner>
   <owner>arc-gaming@google.com</owner>
@@ -1219,7 +1219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.GameControls.EditDeleteMenuFuctionTriggered"
-    enum="GameControlsEditDeleteMenuFunction" expires_after="2025-12-14">
+    enum="GameControlsEditDeleteMenuFunction" expires_after="2026-02-22">
   <owner>cuicuiruan@google.com</owner>
   <owner>pjlee@google.com</owner>
   <owner>arc-gaming@google.com</owner>
@@ -1230,7 +1230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.GameControls.EditingListFunctionTriggered"
-    enum="GameControlsEditingListFunction" expires_after="2025-12-14">
+    enum="GameControlsEditingListFunction" expires_after="2026-02-22">
   <owner>cuicuiruan@google.com</owner>
   <owner>pjlee@google.com</owner>
   <owner>arc-gaming@google.com</owner>
@@ -1253,7 +1253,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.GameControls.{FeatureOrHint}ToggleWithMappingSource.{OnOrOff}"
-    enum="GameControlsMappingSource" expires_after="2025-12-14">
+    enum="GameControlsMappingSource" expires_after="2026-02-22">
   <owner>cuicuiruan@google.com</owner>
   <owner>pjlee@google.com</owner>
   <owner>arc-gaming@google.com</owner>
@@ -2090,7 +2090,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.RevenHardwareChecker.Timeout" enum="Boolean"
-    expires_after="2025-12-07">
+    expires_after="2026-02-22">
   <owner>tinghaolin@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>

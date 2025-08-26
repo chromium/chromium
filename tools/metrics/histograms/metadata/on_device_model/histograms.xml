@@ -83,7 +83,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.BenchmarkSuccess" enum="Boolean"
-    expires_after="2025-10-26">
+    expires_after="2026-02-22">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -118,7 +118,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.Embedding.LoadDlcStatus"
-    enum="EmbeddingModelLoadDlcStatus" expires_after="2025-12-14">
+    enum="EmbeddingModelLoadDlcStatus" expires_after="2026-02-22">
   <owner>jmpollock@chromium.org</owner>
   <owner>yich@google.com</owner>
   <owner>zuan@chromium.org</owner>
@@ -130,7 +130,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.Embedding.LoadEmbeddingStatus"
-    enum="EmbeddingModelLoadEmbeddingStatus" expires_after="2025-12-14">
+    enum="EmbeddingModelLoadEmbeddingStatus" expires_after="2026-02-22">
   <owner>jmpollock@chromium.org</owner>
   <owner>yich@google.com</owner>
   <owner>zuan@chromium.org</owner>

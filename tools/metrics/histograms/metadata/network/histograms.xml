@@ -1807,7 +1807,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.ContentDecodingInterceptor.CreateDataPipeSuccess.{ContentDecodingInterceptorClientType}"
-    enum="Boolean" expires_after="2025-12-14">
+    enum="Boolean" expires_after="2026-02-22">
   <owner>horo@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5723,7 +5723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.MaskedDomainList.Size2" units="KB"
-    expires_after="2025-12-14">
+    expires_after="2026-02-22">
   <owner>aakallam@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
   <summary>
@@ -5903,7 +5903,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.SlopBucket.DisabledReason"
-    enum="SlopBucketDisabledReason" expires_after="2025-12-23">
+    enum="SlopBucketDisabledReason" expires_after="2026-02-22">
   <owner>ricea@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5918,7 +5918,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.SlopBucket.PeakChunksAllocated" units="chunks"
-    expires_after="2025-12-23">
+    expires_after="2026-02-22">
   <owner>ricea@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5931,7 +5931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.SlopBucket.RequestedPriority"
-    enum="NetRequestPriority" expires_after="2025-12-23">
+    enum="NetRequestPriority" expires_after="2026-02-22">
   <owner>ricea@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

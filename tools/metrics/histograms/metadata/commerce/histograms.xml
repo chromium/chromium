@@ -198,7 +198,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Compare.Table.LoadStatus"
-    enum="CompareTableLoadStatus" expires_after="2025-11-30">
+    enum="CompareTableLoadStatus" expires_after="2026-02-22">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>Records the status of a comparison table load.</summary>
@@ -302,7 +302,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.Discounts.DiscountsPageActionIconIsExpandedWhenClicked"
-    enum="BooleanYesNo" expires_after="2025-12-14">
+    enum="BooleanYesNo" expires_after="2026-02-22">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -322,7 +322,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.PageActionIcon.TypeOnClick"
-    enum="DiscountClusterType" expires_after="2025-12-14">
+    enum="DiscountClusterType" expires_after="2026-02-22">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -685,7 +685,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceInsights.PriceTracking.{Action}"
-    enum="PriceInsightsPriceBucket" expires_after="2025-12-14">
+    enum="PriceInsightsPriceBucket" expires_after="2026-02-22">
   <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>qib@google.com</owner>
@@ -917,7 +917,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Subscriptions.UntrackResult"
-    enum="ShoppingSubscriptionsRequestStatus" expires_after="2025-12-14">
+    enum="ShoppingSubscriptionsRequestStatus" expires_after="2026-02-22">
   <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
