@@ -68,6 +68,7 @@ import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwPrintDocumentAdapter;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwThreadUtils;
+import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.common.AwSwitches;
@@ -726,7 +727,7 @@ class WebViewChromium
         long startTime = SystemClock.uptimeMillis();
         boolean wasChromiumAlreadyInitialized = mAwInit.isChromiumInitialized();
         boolean isFirstWebViewInstance = !sFirstWebViewInstanceCreated.getAndSet(true);
-        try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.init")) {
+        try (DualTraceEvent ignored = DualTraceEvent.scoped("WebViewChromium.init")) {
             if (privateBrowsing) {
                 mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
                 final String msg = "Private browsing is not supported in WebView.";
@@ -862,7 +863,7 @@ class WebViewChromium
     }
 
     private void initForReal() {
-        try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.initForReal")) {
+        try (DualTraceEvent ignored = DualTraceEvent.scoped("WebViewChromium.initForReal")) {
             AwContentsStatics.setRecordFullDocument(
                     sRecordWholeDocumentEnabledByApi
                             || mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP);

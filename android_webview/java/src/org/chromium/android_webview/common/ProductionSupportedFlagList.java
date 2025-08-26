@@ -1128,6 +1128,11 @@ public final class ProductionSupportedFlagList {
                 UiBaseFeatures.SEND_EMPTY_GESTURE_SCROLL_UPDATE,
                 "Send GestureScrollUpdates together with TouchMoves, including empty GSUs for 0"
                         + " delta moves."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_EARLY_STARTUP_TRACING,
+                "Enables early startup tracing. This flag takes effect on subsequent application"
+                    + " startups: After enabling this flag, applications must be started and then"
+                    + " restarted for tracing to apply."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

@@ -88,7 +88,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.memory.MemoryInfoBridge;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -961,7 +960,7 @@ public class AwContents implements SmartClipProvider {
             // The browser context has been explicitly set by the application.
             mBrowserContextSetExplicitly = true;
         }
-        try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("AwContents.constructor")) {
+        try (DualTraceEvent e1 = DualTraceEvent.scoped("AwContents.constructor")) {
             mBrowserContext = browserContext;
 
             if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_DRAIN_PREFETCH_QUEUE_DURING_INIT)) {
@@ -1469,8 +1468,7 @@ public class AwContents implements SmartClipProvider {
         }
 
         public WindowAndroidWrapper(WindowAndroid windowAndroid) {
-            try (ScopedSysTraceEvent e =
-                    ScopedSysTraceEvent.scoped("WindowAndroidWrapper.constructor")) {
+            try (DualTraceEvent e = DualTraceEvent.scoped("WindowAndroidWrapper.constructor")) {
                 mWindowAndroid = windowAndroid;
                 mCleanupReference = new CleanupReference(this, new DestroyRunnable(windowAndroid));
             }
@@ -1510,12 +1508,11 @@ public class AwContents implements SmartClipProvider {
         WindowAndroidWrapper wrapper = sContextWindowMap.get(context);
         if (wrapper != null) return wrapper;
 
-        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped("AwContents.getWindowAndroid")) {
+        try (DualTraceEvent e = DualTraceEvent.scoped("AwContents.getWindowAndroid")) {
             Activity activity = ContextUtils.activityFromContext(context);
             if (activity != null) {
                 ActivityWindowAndroid activityWindow;
-                try (ScopedSysTraceEvent e2 =
-                        ScopedSysTraceEvent.scoped("AwContents.createActivityWindow")) {
+                try (DualTraceEvent e2 = DualTraceEvent.scoped("AwContents.createActivityWindow")) {
                     final boolean listenToActivityState = false;
                     activityWindow =
                             new ActivityWindowAndroid(

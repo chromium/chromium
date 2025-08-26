@@ -57,7 +57,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -205,8 +204,8 @@ public final class AwBrowserProcess {
     public static void triggerAsyncBrowserProcess(
             StartupCallback callback, boolean shouldScheduleFlushStartupTasks) {
         ThreadUtils.assertOnUiThread();
-        try (ScopedSysTraceEvent e2 =
-                ScopedSysTraceEvent.scoped("AwBrowserProcess.startBrowserProcessAsync")) {
+        try (DualTraceEvent e2 =
+                DualTraceEvent.scoped("AwBrowserProcess.startBrowserProcessAsync")) {
             BrowserStartupController.getInstance()
                     .startBrowserProcessesAsync(
                             LibraryProcessType.PROCESS_WEBVIEW,
@@ -226,8 +225,8 @@ public final class AwBrowserProcess {
      */
     public static void finishBrowserProcessStart() {
         ThreadUtils.assertOnUiThread();
-        try (ScopedSysTraceEvent e1 =
-                ScopedSysTraceEvent.scoped("AwBrowserProcess.finishBrowserProcessStart")) {
+        try (DualTraceEvent e1 =
+                DualTraceEvent.scoped("AwBrowserProcess.finishBrowserProcessStart")) {
             if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
                 BrowserStartupController.getInstance()
                         .startBrowserProcessesSync(
@@ -235,15 +234,29 @@ public final class AwBrowserProcess {
                                 !isMultiProcess(),
                                 /* startGpuProcess= */ false);
             }
-            PowerMonitor.create();
-            PlatformServiceBridge.getInstance().setSafeBrowsingHandler();
+            try (DualTraceEvent ignored =
+                    DualTraceEvent.scoped(
+                            "AwBrowserProcess.finishBrowserProcessStart.createPowerMonitor")) {
+                PowerMonitor.create();
+            }
+            try (DualTraceEvent ignored =
+                    DualTraceEvent.scoped(
+                            "AwBrowserProcess.finishBrowserProcessStart.setSafeBrowsingHandler")) {
+                PlatformServiceBridge.getInstance().setSafeBrowsingHandler();
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 AwContentsLifecycleNotifier.initialize();
             }
 
-            AwSupervisedUserUrlClassifier classifier = AwSupervisedUserUrlClassifier.getInstance();
-            if (classifier != null && AwSupervisedUserSafeModeAction.isSupervisionEnabled()) {
-                classifier.checkIfNeedRestrictedContentBlocking();
+            try (DualTraceEvent ignored =
+                    DualTraceEvent.scoped(
+                            "AwBrowserProcess.finishBrowserProcessStart"
+                                    + ".setupSupervisedUrlClassifier")) {
+                AwSupervisedUserUrlClassifier classifier =
+                        AwSupervisedUserUrlClassifier.getInstance();
+                if (classifier != null && AwSupervisedUserSafeModeAction.isSupervisionEnabled()) {
+                    classifier.checkIfNeedRestrictedContentBlocking();
+                }
             }
 
             PostTask.postTask(
@@ -262,8 +275,8 @@ public final class AwBrowserProcess {
      */
     public static void runPreBrowserProcessStart() {
         ThreadUtils.assertOnUiThread();
-        try (ScopedSysTraceEvent e1 =
-                ScopedSysTraceEvent.scoped("AwBrowserProcess.runPreBrowserProcessStart")) {
+        try (DualTraceEvent e1 =
+                DualTraceEvent.scoped("AwBrowserProcess.runPreBrowserProcessStart")) {
             final Context appContext = ContextUtils.getApplicationContext();
             AwBrowserProcessJni.get().setProcessNameCrashKey(ContextUtils.getProcessName());
             AwDataDirLock.lock(appContext);
@@ -282,8 +295,8 @@ public final class AwBrowserProcess {
             CombinedPolicyProvider.get().registerProvider(new AwPolicyProvider(appContext));
 
             // Check android settings but only when safebrowsing is enabled.
-            try (ScopedSysTraceEvent e2 =
-                    ScopedSysTraceEvent.scoped("AwBrowserProcess.maybeEnable")) {
+            try (DualTraceEvent e2 =
+                    DualTraceEvent.scoped("AwBrowserProcess.maybeEnableSafeBrowsingFromManifest")) {
                 AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest();
             }
         }
@@ -351,13 +364,13 @@ public final class AwBrowserProcess {
     /**
      * Trigger minidump uploading, and optionaly also update the metrics-consent value depending on
      * whether the Android Checkbox is toggled on.
+     *
      * @param updateMetricsConsent whether to update the metrics-consent value to represent the
-     * Android Checkbox toggle.
+     *     Android Checkbox toggle.
      */
     public static void handleMinidumpsAndSetMetricsConsent(final boolean updateMetricsConsent) {
-        try (ScopedSysTraceEvent e1 =
-                ScopedSysTraceEvent.scoped(
-                        "AwBrowserProcess.handleMinidumpsAndSetMetricsConsent")) {
+        try (DualTraceEvent e1 =
+                DualTraceEvent.scoped("AwBrowserProcess.handleMinidumpsAndSetMetricsConsent")) {
             final boolean enableMinidumpUploadingForTesting =
                     CommandLine.getInstance()
                             .hasSwitch(BaseSwitches.ENABLE_CRASH_REPORTER_FOR_TESTING);
@@ -634,8 +647,7 @@ public final class AwBrowserProcess {
      * org.chromium.android_webview.services.ComponentsProviderService}.
      */
     public static void loadComponents() {
-        try (ScopedSysTraceEvent e =
-                ScopedSysTraceEvent.scoped("AwBrowserProcess.loadComponents")) {
+        try (DualTraceEvent e = DualTraceEvent.scoped("AwBrowserProcess.loadComponents")) {
             ComponentLoaderPolicyBridge[] componentPolicies =
                     AwBrowserProcessJni.get().getComponentLoaderPolicies();
             // Don't connect to the service if there are no components to load.
@@ -657,8 +669,8 @@ public final class AwBrowserProcess {
 
     /** Initialize the metrics uploader. */
     public static void initializeMetricsLogUploader() {
-        try (ScopedSysTraceEvent e =
-                ScopedSysTraceEvent.scoped("AwBrowserProcess.initializeMetricsLogUploader")) {
+        try (DualTraceEvent e =
+                DualTraceEvent.scoped("AwBrowserProcess.initializeMetricsLogUploader")) {
             boolean metricServiceEnabledOnlySdkRuntime =
                     ContextUtils.isSdkSandboxProcess()
                             && AwFeatureMap.isEnabled(

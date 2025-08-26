@@ -277,4 +277,11 @@ BASE_FEATURE(WebViewReducedSeedExpiration, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(WebViewReducedSeedRequestPeriod,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables early Java startup tracing, which unconditionally collects timing
+// information and queues runnables to emit the trace events once Perfetto is
+// initialized. This flag does not affect tracing in native code.
+BASE_FEATURE(kWebViewEarlyStartupTracing,
+             "WebViewEarlyStartupTracing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

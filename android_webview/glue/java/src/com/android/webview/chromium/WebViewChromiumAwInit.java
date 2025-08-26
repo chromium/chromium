@@ -39,6 +39,7 @@ import org.chromium.android_webview.AwNetworkChangeNotifierRegistrationPolicy;
 import org.chromium.android_webview.AwProxyController;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.AwTracingController;
+import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
@@ -55,6 +56,7 @@ import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.ApkInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.FieldTrialList;
 import org.chromium.base.PathService;
 import org.chromium.base.ThreadUtils;
@@ -64,7 +66,6 @@ import org.chromium.base.library_loader.LibraryPrefetcher;
 import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
@@ -290,7 +291,6 @@ public class WebViewChromiumAwInit {
         mFactory = factory;
         // Do not make calls into 'factory' in this ctor - this ctor is called from the
         // WebViewChromiumFactoryProvider ctor, so 'factory' is not properly initialized yet.
-        TraceEvent.maybeEnableEarlyTracing(/* readCommandLine= */ false);
     }
 
     public AwTracingController getAwTracingController() {
@@ -366,10 +366,10 @@ public class WebViewChromiumAwInit {
         preBrowserProcessStartTasks.addLast(
                 () -> {
                     if (anyStartupTaskExperimentIsEnabled()) {
-                        // Disable java-side PostTask scheduling. The native-side task runners are
-                        // also disabled in the native code. The unscheduled prenative tasks are
-                        // migrated to the native task runner. The native task runner is enabled
-                        // when we are done with startup.
+                        // Disable java-side PostTask scheduling. The native-side task runners
+                        // are also disabled in the native code. The unscheduled prenative tasks
+                        // are migrated to the native task runner. The native task runner is
+                        // enabled when we are done with startup.
                         PostTask.disablePreNativeUiTasks(true);
                     }
 
@@ -382,8 +382,8 @@ public class WebViewChromiumAwInit {
                     ResourceBundle.setAvailablePakLocales(
                             AwLocaleConfig.getWebViewSupportedPakLocales());
 
-                    try (ScopedSysTraceEvent e =
-                            ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.LibraryLoader")) {
+                    try (DualTraceEvent ignored2 =
+                            DualTraceEvent.scoped("WebViewChromiumAwInit.LibraryLoader")) {
                         LibraryLoader.getInstance().ensureInitialized();
                     }
 
@@ -469,14 +469,14 @@ public class WebViewChromiumAwInit {
                     RecordHistogram.recordSparseHistogram(
                             "Android.WebView.TargetSdkVersion", targetSdkVersion);
 
-                    try (ScopedSysTraceEvent e =
-                            ScopedSysTraceEvent.scoped(
+                    try (DualTraceEvent e =
+                            DualTraceEvent.scoped(
                                     "WebViewChromiumAwInit.initThreadUnsafeSingletons")) {
                         mChromiumStartedGlobals = new ChromiumStartedGlobals();
                     }
                     if (mShouldInitializeDefaultProfile) {
-                        try (ScopedSysTraceEvent e =
-                                ScopedSysTraceEvent.scoped(
+                        try (DualTraceEvent e =
+                                DualTraceEvent.scoped(
                                         "WebViewChromiumAwInit.initializeDefaultProfile")) {
                             mDefaultProfileHolder.initializeDefaultProfileOnUI();
                         }
@@ -726,6 +726,10 @@ public class WebViewChromiumAwInit {
                 "Android.WebView.Startup.ChromiumInitTime.WallClockTime" + startupModeString,
                 wallClockTimeMs);
 
+        // Stop early trace event collection.
+        // They have already been emitted if a trace session was started to capture startup.
+        EarlyTraceEvent.reset();
+
         // Record traces
         TraceEvent.webViewStartupStartChromiumLocked(
                 startTimeMs,
@@ -750,9 +754,8 @@ public class WebViewChromiumAwInit {
      * @param context The context.
      */
     void setUpResourcesOnBackgroundThread(int packageId, Context context) {
-        try (ScopedSysTraceEvent e =
-                ScopedSysTraceEvent.scoped(
-                        "WebViewChromiumAwInit.setUpResourcesOnBackgroundThread")) {
+        try (DualTraceEvent e =
+                DualTraceEvent.scoped("WebViewChromiumAwInit.setUpResourcesOnBackgroundThread")) {
             assert mSetUpResourcesThread == null : "This method shouldn't be called twice.";
 
             // Make sure that ResourceProvider is initialized before starting the browser process.
@@ -770,8 +773,8 @@ public class WebViewChromiumAwInit {
     }
 
     private void waitUntilSetUpResources() {
-        try (ScopedSysTraceEvent e =
-                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.waitUntilSetUpResources")) {
+        try (DualTraceEvent e =
+                DualTraceEvent.scoped("WebViewChromiumAwInit.waitUntilSetUpResources")) {
             mSetUpResourcesThread.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -779,8 +782,7 @@ public class WebViewChromiumAwInit {
     }
 
     private void setUpResources(int packageId, Context context) {
-        try (ScopedSysTraceEvent e =
-                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.setUpResources")) {
+        try (DualTraceEvent e = DualTraceEvent.scoped("WebViewChromiumAwInit.setUpResources")) {
             R.onResourcesLoaded(packageId);
 
             AwResource.setResources(context.getResources());
@@ -811,8 +813,8 @@ public class WebViewChromiumAwInit {
         // See crbug.com/395877483 for more details.
         assert !Thread.holdsLock(mLazyInitLock);
 
-        try (ScopedSysTraceEvent event =
-                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.waitForUIThreadInit")) {
+        try (DualTraceEvent event =
+                DualTraceEvent.scoped("WebViewChromiumAwInit.waitForUIThreadInit")) {
             long startTime = SystemClock.uptimeMillis();
             // Wait for the UI thread to finish init.
             while (true) {
@@ -861,8 +863,8 @@ public class WebViewChromiumAwInit {
         if (mInitState.get() == INIT_FINISHED) { // Early-out for the common case.
             return true;
         }
-        try (ScopedSysTraceEvent e1 =
-                ScopedSysTraceEvent.scoped(
+        try (DualTraceEvent e1 =
+                DualTraceEvent.scoped(
                         "WebViewChromiumFactoryProvider.triggerChromiumStartupAndReturnTrueIfStartupIsFinished")) {
             maybeSetChromiumUiThread(Looper.getMainLooper());
             boolean runSynchronously = !alwaysPost && ThreadUtils.runningOnUiThread();
@@ -917,16 +919,16 @@ public class WebViewChromiumAwInit {
     }
 
     private void initPlatSupportLibrary() {
-        try (ScopedSysTraceEvent e =
-                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.initPlatSupportLibrary")) {
+        try (DualTraceEvent e =
+                DualTraceEvent.scoped("WebViewChromiumAwInit.initPlatSupportLibrary")) {
             AwDrawFnImpl.setDrawFnFunctionTable(DrawFunctor.getDrawFnFunctionTable());
             AwContents.setAwDrawSWFunctionTable(GraphicsUtils.getDrawSWFunctionTable());
         }
     }
 
     private void doNetworkInitializations(Context applicationContext) {
-        try (ScopedSysTraceEvent e =
-                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.doNetworkInitializations")) {
+        try (DualTraceEvent e =
+                DualTraceEvent.scoped("WebViewChromiumAwInit.doNetworkInitializations")) {
             boolean forceUpdateNetworkState =
                     !AwFeatureMap.isEnabled(
                             AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP);
@@ -994,8 +996,8 @@ public class WebViewChromiumAwInit {
     }
 
     private void finishVariationsInitLocked() {
-        try (ScopedSysTraceEvent e =
-                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.finishVariationsInitLocked")) {
+        try (DualTraceEvent e =
+                DualTraceEvent.scoped("WebViewChromiumAwInit.finishVariationsInitLocked")) {
             synchronized (mSeedLoaderLock) {
                 if (mSeedLoader == null) {
                     Log.e(TAG, "finishVariationsInitLocked() called before startVariationsInit()");
@@ -1240,9 +1242,8 @@ public class WebViewChromiumAwInit {
                 // This lets us track the reason for a sync finish, especially relevant if we
                 // started off asynchronously.
                 mFinishCallSite = callSite;
-                try (ScopedSysTraceEvent event =
-                        ScopedSysTraceEvent.scoped(
-                                "WebViewChromiumAwInit.startChromiumLockedSync")) {
+                try (DualTraceEvent event =
+                        DualTraceEvent.scoped("WebViewChromiumAwInit.startChromiumLockedSync")) {
                     timedRunWithExceptionHandling(this::runSync);
                 }
             }
@@ -1297,8 +1298,8 @@ public class WebViewChromiumAwInit {
 
             mRunState = ASYNC;
 
-            try (ScopedSysTraceEvent event =
-                    ScopedSysTraceEvent.scoped(
+            try (DualTraceEvent event =
+                    DualTraceEvent.scoped(
                             String.format(
                                     Locale.US,
                                     "WebViewChromiumAwInit.startChromiumLockedAsync_task%d/%d",

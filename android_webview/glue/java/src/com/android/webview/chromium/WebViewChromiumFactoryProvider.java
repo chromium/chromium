@@ -47,6 +47,7 @@ import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
@@ -66,11 +67,11 @@ import org.chromium.base.ApkInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.version_info.VersionConstants;
@@ -233,8 +234,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     // Separate method to allow downstream to override when needed.
     WebViewChromiumAwInit createAwInit() {
-        try (ScopedSysTraceEvent e2 =
-                ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.createAwInit")) {
+        try (DualTraceEvent ignored =
+                DualTraceEvent.scoped("WebViewChromiumFactoryProvider.createAwInit")) {
             return new WebViewChromiumAwInit(this);
         }
     }
@@ -255,8 +256,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     private void deleteContentsOnPackageDowngrade(PackageInfo packageInfo) {
-        try (ScopedSysTraceEvent e2 =
-                ScopedSysTraceEvent.scoped(
+        try (DualTraceEvent e2 =
+                DualTraceEvent.scoped(
                         "WebViewChromiumFactoryProvider.deleteContentsOnPackageDowngrade")) {
             // Use shared preference to check for package downgrade.
             int lastVersion = mWebViewPrefs.getInt(VERSION_CODE_PREF, 0);
@@ -320,7 +321,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @SuppressWarnings({"NoContextGetApplicationContext", "DiscouragedApi"})
     private void initialize(WebViewDelegate webViewDelegate) {
+        // Capture startup init time before anything else.
         mInitInfo.mStartTime = SystemClock.uptimeMillis();
+        // Use `ScopedSysTraceEvent` until `EarlyTraceEvent` is potentially enabled further down.
         try (ScopedSysTraceEvent e1 =
                 ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.initialize")) {
             ThreadUtils.setWillOverrideUiThread();
@@ -336,17 +339,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             AwBrowserProcess.setWebViewPackageName(packageInfo.packageName);
             AwBrowserProcess.initializeApkType(packageInfo.applicationInfo);
 
-            mAwInit = createAwInit();
-            if (Looper.myLooper() == Looper.getMainLooper()) {
-                mAwInit.setProviderInitOnMainLooperLocation(
-                        new Throwable(
-                                "Location where WebViewChromiumFactoryProvider init was"
-                                        + " started on the Android main looper"));
-            }
             mWebViewDelegate = webViewDelegate;
             Application application = webViewDelegate.getApplication();
             Context ctx = application.getApplicationContext();
-
             // If the application context is DE, but we have credentials, use a CE context instead
             try (ScopedSysTraceEvent e2 =
                     ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.checkStorage")) {
@@ -358,12 +353,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 ctx = ctx.createCredentialProtectedStorageContext();
             }
 
-            try (ScopedSysTraceEvent e2 =
-                    ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.initCommandLine")) {
-                // This may take ~20 ms only on userdebug devices.
-                CommandLineUtil.initCommandLine();
-            }
-
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                 // Since N, getSharedPreferences creates the preference dir if it doesn't exist,
                 // causing a disk write.
@@ -371,8 +360,32 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 WebViewCachedFlags.init(mWebViewPrefs);
             }
 
+            if (WebViewCachedFlags.get()
+                    .isCachedFeatureEnabled(AwFeatures.WEBVIEW_EARLY_STARTUP_TRACING)) {
+                // Enable capture of early timestamps for Perfetto traces.
+                // This is reset in `WebViewChromiumAwInit#recordStartupMetrics`.
+                // `TraceEvent` and `DualTraceEvent` can be used from this point.
+                EarlyTraceEvent.enable();
+            }
+
+            mAwInit = createAwInit();
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                mAwInit.setProviderInitOnMainLooperLocation(
+                        new Throwable(
+                                "Location where WebViewChromiumFactoryProvider init was"
+                                        + " started on the Android main looper"));
+            }
+
+            try (DualTraceEvent ignored =
+                    DualTraceEvent.scoped("WebViewChromiumFactoryProvider.initCommandLine")) {
+                // This may take ~20 ms only on userdebug devices.
+                CommandLineUtil.initCommandLine();
+            }
+
             if (shouldEnableContextExperiment(ctx)) {
-                try {
+                try (DualTraceEvent ignored =
+                        DualTraceEvent.scoped(
+                                "WebViewChromiumFactoryProvider.enableContextExperiment")) {
                     Context override =
                             ctx.createPackageContext(
                                     packageInfo.packageName,
@@ -482,7 +495,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             Map<String, Boolean> flagOverrides = null;
             if (isDeveloperModeEnabled) {
                 long start = SystemClock.elapsedRealtime();
-                try {
+                try (DualTraceEvent ignored =
+                        DualTraceEvent.scoped("WebViewChromiumFactoryProvider.getFlagOverrides")) {
                     FlagOverrideHelper helper =
                             new FlagOverrideHelper(ProductionSupportedFlagList.sFlagList);
                     flagOverrides = DeveloperModeUtils.getFlagOverrides(webViewPackageName);
@@ -499,8 +513,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             AndroidXProcessGlobalConfig androidXConfig = AndroidXProcessGlobalConfig.getConfig();
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-                try (ScopedSysTraceEvent e2 =
-                        ScopedSysTraceEvent.scoped(
+                try (DualTraceEvent e2 =
+                        DualTraceEvent.scoped(
                                 "WebViewChromiumFactoryProvider.loadChromiumLibrary")) {
                     String dataDirectoryBasePath = androidXConfig.getDataDirectoryBasePathOrNull();
                     String cacheDirectoryBasePath =
@@ -510,8 +524,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                             dataDirectoryBasePath, cacheDirectoryBasePath, dataDirectorySuffix);
                 }
 
-                try (ScopedSysTraceEvent e2 =
-                        ScopedSysTraceEvent.scoped(
+                try (DualTraceEvent e2 =
+                        DualTraceEvent.scoped(
                                 "WebViewChromiumFactoryProvider.loadGlueLayerPlatSupportLibrary")) {
                     System.loadLibrary("webviewchromium_plat_support");
                 }
@@ -829,8 +843,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public GeolocationPermissions getGeolocationPermissions() {
-        try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.Framework.GET_GEOLOCATION_PERMISSIONS")) {
+        try (DualTraceEvent event =
+                DualTraceEvent.scoped("WebView.APICall.Framework.GET_GEOLOCATION_PERMISSIONS")) {
             SharedStatics.recordStaticApiCall(ApiCall.GET_GEOLOCATION_PERMISSIONS);
             return mAwInit.getDefaultProfile(CallSite.GET_DEFAULT_GEOLOCATION_PERMISSIONS)
                     .getGeolocationPermissions();
@@ -874,8 +888,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     WebViewContentsClientAdapter createWebViewContentsClientAdapter(
             WebView webView, Context context) {
-        try (ScopedSysTraceEvent e =
-                ScopedSysTraceEvent.scoped(
+        try (DualTraceEvent e =
+                DualTraceEvent.scoped(
                         "WebViewChromiumFactoryProvider.insideCreateWebViewContentsClientAdapter")) {
             return new WebViewContentsClientAdapter(webView, context, mWebViewDelegate);
         }

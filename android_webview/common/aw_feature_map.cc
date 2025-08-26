@@ -40,6 +40,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewDisableCHIPS,
     &features::kWebViewDoNotSendAccessibilityEventsOnGSU,
     &features::kWebViewDrainPrefetchQueueDuringInit,
+    &features::kWebViewEarlyStartupTracing,
     &features::kWebViewEnableCrash,
     &features::kWebViewFileSystemAccess,
     &features::kWebViewHyperlinkContextMenu,

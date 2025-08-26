@@ -79,6 +79,8 @@ public class WebViewCachedFlags {
                                     // Add new CachedFlags here along with their default state.
                                     AwFeatures.WEBVIEW_DISABLE_CHIPS,
                                     DefaultState.DISABLED,
+                                    AwFeatures.WEBVIEW_EARLY_STARTUP_TRACING,
+                                    DefaultState.DISABLED,
                                     AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC,
                                     DefaultState.DISABLED,
                                     AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2,

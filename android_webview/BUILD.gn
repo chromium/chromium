@@ -539,6 +539,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/ClientCertLookupTable.java",
       "java/src/org/chromium/android_webview/DarkModeHelper.java",
       "java/src/org/chromium/android_webview/DefaultVideoPosterRequestHandler.java",
+      "java/src/org/chromium/android_webview/DualTraceEvent.java",
       "java/src/org/chromium/android_webview/ErrorCodeConversionHelper.java",
       "java/src/org/chromium/android_webview/FileModeConversionHelper.java",
       "java/src/org/chromium/android_webview/FindAddress.java",
