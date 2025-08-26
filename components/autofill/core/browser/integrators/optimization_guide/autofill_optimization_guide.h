@@ -36,6 +36,12 @@ class AutofillOptimizationGuide : public KeyedService {
       delete;
   ~AutofillOptimizationGuide() override;
 
+  // Registers the necessary optimization guide deciders based on the payments
+  // data cached in `payments_data_manager`. Runs after every payments data
+  // loading.
+  virtual void OnPaymentsDataLoaded(
+      const PaymentsDataManager& payments_data_manager);
+
   // Registers the necessary optimization guide deciders based on
   // `form_structure`, which is a result of the form parsing that takes place
   // once a user navigates to a new page. Based on `form_structure`,

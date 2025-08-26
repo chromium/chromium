@@ -341,6 +341,21 @@ TEST_F(PaymentsDataManagerTest, GetIbans) {
   ExpectSameElements(all_ibans, payments_data_manager().GetIbans());
 }
 
+// Tests that OnPaymentsDataLoaded is called after syncing.
+TEST_F(PaymentsDataManagerTest, OnPaymentsDataLoaded) {
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {test::CreatePaymentInstrumentWithEwalletAccount(1234L)}));
+
+  EXPECT_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+                  autofill_client()->GetAutofillOptimizationGuide()),
+              OnPaymentsDataLoaded);
+
+  // We need to call `Refresh()` to ensure that the payment instruments
+  // are loaded from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+}
+
 // Test that a local IBAN is removed from suggestions when it has a matching
 // prefix and suffix (either equal or starting with) and the same length as a
 // server IBAN.

@@ -470,6 +470,10 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
     PaymentsDataCleaner(this).CleanupPaymentsData();
   }
 
+  if (autofill_optimization_guide_) {
+    autofill_optimization_guide_->OnPaymentsDataLoaded(*this);
+  }
+
   NotifyObservers();
 }
 

@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -58,6 +59,8 @@ class AutofillOptimizationGuideTest : public testing::Test {
         autofill_optimization_guide_(&decider()) {
     payments_data_manager_.SetPrefService(pref_service_.get());
     payments_data_manager_.SetSyncServiceForTest(&sync_service_);
+    test_api(payments_data_manager_)
+        .SetAutofillOptimizationGuide(&autofill_optimization_guide_);
   }
 
   CreditCard GetVcnEnrolledCard(
@@ -690,11 +693,109 @@ TEST_F(AutofillOptimizationGuideTest,
   guide().OnDidParseForm(form_structure, payments_data_manager());
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+// Test the `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM` optimization type is registered
+// when the amount extraction allowlist is enabled and there is at least one
+// Affirm BNPL issuer with `OnPaymentsDataLoaded()` call.
+TEST_F(AutofillOptimizationGuideTest,
+       OnPaymentsDataLoaded_BuyNowPayLaterProviderAffirm) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+       features::kAutofillEnableBuyNowPayLaterSyncing,
+       features::kAutofillEnableLoadBnplAllowlistAfterSyncing},
+      {});
+
+  payments_data_manager().AddBnplIssuer(
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm));
+
+  // Ensure that on registration the right optimization type is registered.
+  EXPECT_CALL(
+      decider(),
+      RegisterOptimizationTypes(testing::IsSupersetOf(
+          {optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM})));
+
+  guide().OnPaymentsDataLoaded(payments_data_manager());
+}
+
+// Test the `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP` optimization type is registered
+// when the amount extraction allowlist is enabled and there is at least one
+// Zip BNPL issuer with `OnPaymentsDataLoaded()` call.
+TEST_F(AutofillOptimizationGuideTest,
+       OnPaymentsDataLoaded_BuyNowPayLaterProviderZip) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+       features::kAutofillEnableBuyNowPayLaterSyncing,
+       features::kAutofillEnableLoadBnplAllowlistAfterSyncing},
+      {});
+
+  payments_data_manager().AddBnplIssuer(
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip));
+
+  // Ensure that on registration the right optimization type is registered.
+  EXPECT_CALL(
+      decider(),
+      RegisterOptimizationTypes(testing::IsSupersetOf(
+          {optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP})));
+
+  guide().OnPaymentsDataLoaded(payments_data_manager());
+}
+
+// Test the `BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA` optimization type is registered
+// when the amount extraction allowlist is enabled and there is at least one
+// Klarna BNPL issuer with `OnPaymentsDataLoaded()` call.
+TEST_F(AutofillOptimizationGuideTest,
+       OnPaymentsDataLoaded_BuyNowPayLaterProviderKlarna) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+       features::kAutofillEnableBuyNowPayLaterSyncing,
+       features::kAutofillEnableLoadBnplAllowlistAfterSyncing},
+      {});
+
+  payments_data_manager().AddBnplIssuer(
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplKlarna));
+
+  // Ensure that on registration the right optimization type is registered.
+  EXPECT_CALL(
+      decider(),
+      RegisterOptimizationTypes(testing::IsSupersetOf(
+          {optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA})));
+
+  guide().OnPaymentsDataLoaded(payments_data_manager());
+}
+
+// Test the `BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA` optimization type is not
+// registered when the amount extraction allowlist is enabled and there is at
+// least one Klarna BNPL issuer with `OnPaymentsDataLoaded()` call if flag
+// `features::kAutofillEnableLoadBnplAllowlistAfterSyncing` is disabled.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    OnPaymentsDataLoaded_BuyNowPayLaterProviderKlarna_LoadAllowListAfterSyncingDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+       features::kAutofillEnableBuyNowPayLaterSyncing},
+      {features::kAutofillEnableLoadBnplAllowlistAfterSyncing});
+
+  payments_data_manager().AddBnplIssuer(
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplKlarna));
+
+  // Ensure optimization type for Klarna allowlist is not registered.
+  EXPECT_CALL(
+      decider(),
+      RegisterOptimizationTypes(testing::IsSupersetOf(
+          {optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA})))
+      .Times(0);
+
+  guide().OnPaymentsDataLoaded(payments_data_manager());
+}
+
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM` optimization type is registered
 // when the amount extraction allowlist is enabled and there is at least one
 // Affirm BNPL issuer.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
 TEST_F(
     AutofillOptimizationGuideTest,
     CreditCardFormFound_AmountExtractionAllowed_BuyNowPayLaterProviderAffirm) {
@@ -709,9 +810,8 @@ TEST_F(
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
-  BnplIssuer bnpl_issuer = test::GetTestLinkedBnplIssuer();
-  bnpl_issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplAffirm);
-  payments_data_manager().AddBnplIssuer(bnpl_issuer);
+  payments_data_manager().AddBnplIssuer(
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm));
 
   // Ensure that on registration the right optimization type is registered.
   EXPECT_CALL(
@@ -737,9 +837,8 @@ TEST_F(AutofillOptimizationGuideTest,
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
-  BnplIssuer bnpl_issuer = test::GetTestLinkedBnplIssuer();
-  bnpl_issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplZip);
-  payments_data_manager().AddBnplIssuer(bnpl_issuer);
+  payments_data_manager().AddBnplIssuer(
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip));
 
   // Ensure that on registration the right optimization type is registered.
   EXPECT_CALL(
@@ -766,9 +865,8 @@ TEST_F(
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
-  BnplIssuer bnpl_issuer = test::GetTestLinkedBnplIssuer();
-  bnpl_issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplKlarna);
-  payments_data_manager().AddBnplIssuer(bnpl_issuer);
+  payments_data_manager().AddBnplIssuer(
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplKlarna));
 
   // Ensure that on registration the right optimization type is registered.
   EXPECT_CALL(
@@ -795,8 +893,8 @@ TEST_F(AutofillOptimizationGuideTest,
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
-  BnplIssuer bnpl_issuer = test::GetTestLinkedBnplIssuer();
-  bnpl_issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplAffirm);
+  BnplIssuer bnpl_issuer =
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm);
   payments_data_manager().AddBnplIssuer(bnpl_issuer);
   bnpl_issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplKlarna);
   payments_data_manager().AddBnplIssuer(bnpl_issuer);
@@ -1035,7 +1133,7 @@ TEST_F(AutofillOptimizationGuideTest,
       BnplIssuer::IssuerId::kBnplZip, GURL("https://www.testurl.test")));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 // Test that the ablation site lists are registered in case the ablation
 // experiment is enabled.

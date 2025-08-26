@@ -43,6 +43,10 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
               IsUrlEligibleForBnplIssuer,
               (BnplIssuer::IssuerId issuer_id, const GURL& url),
               (const override));
+  MOCK_METHOD(void,
+              OnPaymentsDataLoaded,
+              (const PaymentsDataManager& payments_data_manager),
+              (override));
 };
 
 }  // namespace autofill

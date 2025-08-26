@@ -198,6 +198,38 @@ GetBenefitCategoryForOptimizationType(
   }
 }
 
+void AddOptimizationTypesForBnplIssuers(
+    const std::vector<BnplIssuer>& bnpl_issuers,
+    base::flat_set<optimization_guide::proto::OptimizationType>&
+        optimization_types) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  auto bnpl_issuer_allowlist_can_be_loaded =
+      [&bnpl_issuers](BnplIssuer::IssuerId issuer_id) {
+        return base::Contains(bnpl_issuers, issuer_id,
+                              &BnplIssuer::issuer_id) &&
+               base::FeatureList::IsEnabled(
+                   features::kAutofillEnableAmountExtractionAllowlistDesktop);
+      };
+
+  if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplAffirm)) {
+    optimization_types.insert(
+        optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM);
+  }
+
+  if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplZip)) {
+    optimization_types.insert(
+        optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP);
+  }
+
+  if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplKlarna)) {
+    optimization_types.insert(
+        optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+}
+
 }  // namespace
 
 AutofillOptimizationGuide::AutofillOptimizationGuide(
@@ -205,6 +237,32 @@ AutofillOptimizationGuide::AutofillOptimizationGuide(
     : decider_(decider) {}
 
 AutofillOptimizationGuide::~AutofillOptimizationGuide() = default;
+
+void AutofillOptimizationGuide::OnPaymentsDataLoaded(
+    const PaymentsDataManager& payments_data_manager) {
+  // Currently this function is only introduced for BNPL allowlists, and no
+  // further steps should be processed if flag
+  // `kAutofillEnableLoadBnplAllowlistAfterSyncing` is disabled.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableLoadBnplAllowlistAfterSyncing)) {
+    return;
+  }
+
+  // This flat set represents all of the optimization types that we need to
+  // register after loading payments data.
+  base::flat_set<optimization_guide::proto::OptimizationType>
+      optimization_types;
+
+  AddOptimizationTypesForBnplIssuers(payments_data_manager.GetBnplIssuers(),
+                                     optimization_types);
+
+  // If we do not have any optimization types to register, do not do anything.
+  if (!optimization_types.empty()) {
+    decider_->RegisterOptimizationTypes(
+        std::vector<optimization_guide::proto::OptimizationType>(
+            std::move(optimization_types).extract()));
+  }
+}
 
 void AutofillOptimizationGuide::OnDidParseForm(
     const FormStructure& form_structure,
@@ -230,32 +288,8 @@ void AutofillOptimizationGuide::OnDidParseForm(
     AddCreditCardOptimizationTypes(payments_data_manager, optimization_types);
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  auto bnpl_issuer_allowlist_can_be_loaded =
-      [&payments_data_manager](BnplIssuer::IssuerId issuer_id) {
-        return base::Contains(payments_data_manager.GetBnplIssuers(), issuer_id,
-                              &BnplIssuer::issuer_id) &&
-               base::FeatureList::IsEnabled(
-                   features::kAutofillEnableAmountExtractionAllowlistDesktop);
-      };
-
-  if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplAffirm)) {
-    optimization_types.insert(
-        optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM);
-  }
-
-  if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplZip)) {
-    optimization_types.insert(
-        optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP);
-  }
-
-  if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplKlarna)) {
-    optimization_types.insert(
-        optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA);
-  }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  AddOptimizationTypesForBnplIssuers(payments_data_manager.GetBnplIssuers(),
+                                     optimization_types);
 
   if (base::FeatureList::IsEnabled(features::kAutofillEnableAblationStudy)) {
     AddAblationOptimizationTypes(optimization_types);
