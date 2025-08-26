@@ -38,12 +38,6 @@ namespace {
 base::ReadOnlySharedMemoryRegion CreateRegion(const media::VideoFrame& frame,
                                               std::vector<uint32_t>& offsets,
                                               std::vector<int32_t>& strides) {
-  if (!media::IsYuvPlanar(frame.format()) || !media::IsOpaque(frame.format())) {
-    DLOG(ERROR) << "format is not opaque YUV: "
-                << VideoPixelFormatToString(frame.format());
-    return base::ReadOnlySharedMemoryRegion();
-  }
-
   size_t num_planes = media::VideoFrame::NumPlanes(frame.format());
   DCHECK_LE(num_planes, 3u);
   offsets.resize(num_planes);
@@ -349,9 +343,18 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
-        *layout, visible_rect, natural_size, plane_data[0], plane_data[1],
-        plane_data[2], timestamp);
+    if (media::IsYuvPlanar(format) && media::IsOpaque(format)) {
+      frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
+          *layout, visible_rect, natural_size, plane_data[0], plane_data[1],
+          plane_data[2], timestamp);
+    } else if (media::IsRGB(format)) {
+      frame = media::VideoFrame::WrapExternalDataWithLayout(
+          *layout, visible_rect, natural_size, plane_data[0], timestamp);
+    } else {
+      DLOG(ERROR) << "Format is not opaque YUV or RGB: "
+                  << VideoPixelFormatToString(format);
+      return false;
+    }
     if (frame) {
       frame->BackWithOwnedSharedMemory(std::move(region), std::move(mapping));
     }
