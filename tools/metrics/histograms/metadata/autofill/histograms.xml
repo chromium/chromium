@@ -5017,9 +5017,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
-    Logs when the add card flow is started (currently only on Android). Recorded
-    when a user starts the flow to add a new local card through the Chrome
-    payment methods settings page.
+    Logs when the add card flow is started. Recorded when a user starts the flow
+    to add a new local card through the Chrome payment methods settings page.
 
     Note that a previous version of this histogram incorrectly measured both add
     and edit cases, and was obsoleted in mid-June 2025.
