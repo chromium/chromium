@@ -5,6 +5,7 @@
 #include "android_webview/browser/android_protocol_handler.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "android_webview/common/url_constants.h"
