@@ -76,7 +76,9 @@ source_set("constants") {
     "constants.cc",
     "constants.h",
   ]
+
   public_deps = [ "//base" ]
+
   deps = [ "//components/segmentation_platform/embedder/home_modules/tips_manager:constants" ]
 }
 
@@ -97,6 +99,7 @@ source_set("unit_tests") {
   if (is_ios) {
     sources += [
       "address_bar_position_ephemeral_module_unittest.cc",
+      "app_bundle_promo_ephemeral_module_unittest.cc",
       "autofill_passwords_ephemeral_module_unittest.cc",
       "enhanced_safe_browsing_ephemeral_module_unittest.cc",
       "lens_ephemeral_module_unittest.cc",
