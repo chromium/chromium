@@ -730,6 +730,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.UserFolder.OnProfileLoad.BookmarkBarTopLevelItems"
+    units="items" expires_after="2026-02-01">
+  <owner>yzshen@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>eleanorlee@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the total number of top-level bookmarks/items (including folders) in
+    the Bookmark Bar folder. This includes all bookmarks/items, not just those
+    currently visible (i.e. items in the overflow menu are included). If there
+    are non-profile top-level bookmarks/items, they are not included in this
+    count. Recorded on profile load.
+
+    These are the direct descendants of the permanent folder: Bookmarks Bar.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.UserFolder.OnProfileLoad.Count" units="folders"
     expires_after="2026-02-01">
   <owner>yzshen@chromium.org</owner>

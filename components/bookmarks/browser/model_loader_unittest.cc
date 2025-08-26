@@ -28,6 +28,8 @@ constexpr char kUserFolderCountMetricName[] =
     "Bookmarks.UserFolder.OnProfileLoad.Count";
 constexpr char kUserFolderTopLevelCountMetricName[] =
     "Bookmarks.UserFolder.OnProfileLoad.TopLevelCount";
+constexpr char kUserFolderBookmarkBarTopLevelItemsMetricName[] =
+    "Bookmarks.UserFolder.OnProfileLoad.BookmarkBarTopLevelItems";
 
 const base::FilePath& GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
@@ -99,6 +101,13 @@ TEST(ModelLoaderTest, LoadEmptyModelFromInexistentFile) {
                                     /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(kUserFolderTopLevelCountMetricName,
                                      /*sample=*/0, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kUserFolderBookmarkBarTopLevelItemsMetricName,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kUserFolderBookmarkBarTopLevelItemsMetricName,
+      /*sample=*/0, /*expected_count=*/1);
 }
 
 TEST(ModelLoaderTest, LoadNonEmptyModel) {
@@ -157,6 +166,13 @@ TEST(ModelLoaderTest, LoadNonEmptyModel) {
                                     /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(kUserFolderTopLevelCountMetricName,
                                      /*sample=*/3, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kUserFolderBookmarkBarTopLevelItemsMetricName,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kUserFolderBookmarkBarTopLevelItemsMetricName,
+      /*sample=*/1, /*expected_count=*/1);
 }
 
 TEST(ModelLoaderTest, LoadNonEmptyModelFromOneFileWithInternalIdCollisions) {
@@ -290,6 +306,13 @@ TEST(ModelLoaderTest, LoadTwoFilesWithNonCollidingIds) {
                                     /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(kUserFolderTopLevelCountMetricName,
                                      /*sample=*/6, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kUserFolderBookmarkBarTopLevelItemsMetricName,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kUserFolderBookmarkBarTopLevelItemsMetricName,
+      /*sample=*/1, /*expected_count=*/1);
 }
 
 TEST(ModelLoaderTest, LoadTwoFilesWithCollidingIdsAcross) {
@@ -671,6 +694,13 @@ TEST(ModelLoaderTest, LoadModelWithNestedUserFolders) {
                                     /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(kUserFolderTopLevelCountMetricName,
                                      /*sample=*/3, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kUserFolderBookmarkBarTopLevelItemsMetricName,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kUserFolderBookmarkBarTopLevelItemsMetricName,
+      /*sample=*/2, /*expected_count=*/1);
 }
 
 }  // namespace

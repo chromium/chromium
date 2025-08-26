@@ -184,6 +184,10 @@ void RecordUserFolderLoadStatsOnProfileLoad(const UserFolderLoadStats& stats) {
   base::UmaHistogramCustomCounts("Bookmarks.UserFolder.OnProfileLoad.Count",
                                  stats.total_folders, /*min=*/1,
                                  /*exclusive_max=*/300, /*buckets=*/100);
+
+  base::UmaHistogramCounts100(
+      "Bookmarks.UserFolder.OnProfileLoad.BookmarkBarTopLevelItems",
+      stats.bookmark_bar_top_level_items);
 }
 
 void RecordCloneBookmarkNode(int num_cloned) {
