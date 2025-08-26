@@ -421,10 +421,10 @@
 -keep,allowoptimization class ** implements androidx.appsearch.app.DocumentClassFactory {}
 
 -if class androidx.appsearch.app.DocumentClassFactoryRegistry {}
--keepnames,allowoptimization @androidx.appsearch.annotation.Document class ** {}
+-keep,allowshrinking @androidx.appsearch.annotation.Document class ** {}
 
 # Keep AppSearchDocumentClassMap name for ServiceLoader
--keepnames,allowoptimization class androidx.appsearch.app.AppSearchDocumentClassMap {}
+-keep,allowshrinking class androidx.appsearch.app.AppSearchDocumentClassMap {}
 
 # If AppSearchDocumentClassMap#getGlobalMap() is used, keep any implementing subclasses since
 # AppSearchDocumentClassMap#getMap() is used to populate the global map.
