@@ -36,6 +36,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.COOKIES.hasMigratedToPlugin = true;
   if (loadTimeData.getBoolean('enableIncognitoTrackingProtections') ) {
     r.INCOGNITO_TRACKING_PROTECTIONS = r.PRIVACY.createChild('/incognito');
+    r.INCOGNITO_TRACKING_PROTECTIONS.hasMigratedToPlugin = true;
   }
 
   if (!loadTimeData.getBoolean('isPrivacySandboxRestricted')) {

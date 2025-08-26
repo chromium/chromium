@@ -4,6 +4,7 @@
 
 import '/shared/settings/prefs/prefs.js';
 import '../icons.html.js';
+import '../settings_page/settings_subpage.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -12,10 +13,12 @@ import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './incognito_tracking_protections_page.html.js';
 
-const IncognitoTrackingProtectionsPageElementBase = PrefsMixin(PolymerElement);
+const IncognitoTrackingProtectionsPageElementBase =
+    SettingsViewMixin(PrefsMixin(PolymerElement));
 
 export class IncognitoTrackingProtectionsPageElement extends
     IncognitoTrackingProtectionsPageElementBase {
@@ -104,6 +107,11 @@ export class IncognitoTrackingProtectionsPageElement extends
     }
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.IP_PROTECTION);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

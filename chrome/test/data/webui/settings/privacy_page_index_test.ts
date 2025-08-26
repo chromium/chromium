@@ -18,8 +18,9 @@ suite('PrivacyPageIndex', function() {
 
     loadTimeData.overrideValues(Object.assign(
         {
-          isGuest: false,
+          enableIncognitoTrackingProtections: false,
           enableSecurityKeysSubpage: false,
+          isGuest: false,
           isPrivacySandboxRestricted: false,
           isPrivacySandboxRestrictedNoticeEnabled: false,
         },
@@ -169,6 +170,18 @@ suite('PrivacyPageIndex', function() {
     // Test that data-parent-view is correctly populated.
     assertTrue(!!index.$.viewManager.querySelector(
         `#securityKeys[slot=view][data-parent-view-id=old]`));
+  });
+
+  test('RoutingIncognitoTrackingProtections', async function() {
+    assertFalse(loadTimeData.getBoolean('enableIncognitoTrackingProtections'));
+    await createPrivacyPageIndex({enableIncognitoTrackingProtections: true});
+    await testActiveViewsForRoute(
+        routes.INCOGNITO_TRACKING_PROTECTIONS,
+        ['incognitoTrackingProtections']);
+
+    // Test that data-parent-view is correctly populated.
+    assertTrue(!!index.$.viewManager.querySelector(
+        `#incognitoTrackingProtections[slot=view][data-parent-view-id=old]`));
   });
 
   // <if expr="is_chromeos">

@@ -219,11 +219,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             map.set(routes.PRIVACY_GUIDE.path, '#privacyGuideLinkRow');
           }
 
-          if (routes.INCOGNITO_TRACKING_PROTECTIONS) {
-            map.set(routes.INCOGNITO_TRACKING_PROTECTIONS.path,
-              '#incognitoTrackingProtectionsLinkRow');
-          }
-
           return map;
         },
       },
@@ -506,6 +501,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     switch (childViewId) {
       case 'cookies':
         triggerId = 'thirdPartyCookiesLinkRow';
+        break;
+      case 'incognitoTrackingProtections':
+        triggerId = 'incognitoTrackingProtectionsLinkRow';
         break;
       case 'securityKeys':
         triggerId = 'securityLinkRow';

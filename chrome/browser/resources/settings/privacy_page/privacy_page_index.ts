@@ -79,6 +79,12 @@ export class SettingsPrivacyPageIndexElement extends
         value: false,
       },
 
+      enableIncognitoTrackingProtections_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableIncognitoTrackingProtections'),
+      },
+
       enableSecurityKeysSubpage_: {
         type: Boolean,
         readOnly: true,
@@ -115,6 +121,7 @@ export class SettingsPrivacyPageIndexElement extends
   declare private pageVisibility_: PageVisibility;
   declare private routes_: SettingsRoutes;
   declare private showPrivacyGuidePromo_: boolean;
+  declare private enableIncognitoTrackingProtections_: boolean;
   declare private enableSecurityKeysSubpage_: boolean;
   declare private isAdPrivacyAvailable_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
@@ -166,6 +173,9 @@ export class SettingsPrivacyPageIndexElement extends
         return this.inSearchMode ? this.getDefaultViews_() : [];
       case routes.COOKIES:
         return ['cookies'];
+      case routes.INCOGNITO_TRACKING_PROTECTIONS:
+        assert(this.enableIncognitoTrackingProtections_);
+        return ['incognitoTrackingProtections'];
       case routes.SECURITY_KEYS:
         assert(this.enableSecurityKeysSubpage_);
         return ['securityKeys'];
