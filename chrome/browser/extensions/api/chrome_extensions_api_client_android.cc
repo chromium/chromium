@@ -7,8 +7,15 @@
 #include <memory>
 
 #include "base/notimplemented.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/base/window_open_disposition.h"
 
 // TODO(crbug.com/417770773): This file contains stubs for the parts of
 // ChromeExtensionsAPIClient that are not yet supported on desktop Android. Once
@@ -23,8 +30,27 @@ namespace extensions {
 void ChromeExtensionsAPIClient::OpenFileUrl(
     const GURL& file_url,
     content::BrowserContext* browser_context) {
-  // TODO(crbug.com/417785325): Support opening file URLs on desktop Android.
-  NOTIMPLEMENTED();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  // Find the active web contents for this profile.
+  // TODO(crbug.com/429037015): Use BrowserWindowInterface when
+  // AndroidBrowserWindow::GetProfile() returns a valid value.
+  content::WebContents* web_contents = nullptr;
+  for (TabModel* model : TabModelList::models()) {
+    if (model->GetProfile() == profile && model->IsActiveModel()) {
+      web_contents = model->GetActiveWebContents();
+      break;
+    }
+  }
+  if (!web_contents) {
+    LOG(ERROR) << "Unable to find active web contents for profile.";
+    return;
+  }
+
+  // Open the file URL in the current tab.
+  content::OpenURLParams params(
+      file_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_FROM_API, /*is_renderer_initiated=*/false);
+  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 std::unique_ptr<DevicePermissionsPrompt>

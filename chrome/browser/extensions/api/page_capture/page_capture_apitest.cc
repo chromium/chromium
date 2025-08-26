@@ -94,15 +94,8 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionPageCaptureApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-// TODO(crbug.com/402488726) : Enable the api test  for android Desktop after
-// supervised user and openFileURL is supported.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#define MAYBE_SaveAsMHTMLWithoutFileAccess SaveAsMHTMLWithoutFileAccess
-#else
-#define MAYBE_SaveAsMHTMLWithoutFileAccess DISABLED_SaveAsMHTMLWithoutFileAccess
-#endif
 IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
-                       MAYBE_SaveAsMHTMLWithoutFileAccess) {
+                       SaveAsMHTMLWithoutFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", "ONLY_PAGE_CAPTURE_PERMISSION"))
@@ -110,15 +103,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
   WaitForFileCleanup(&delegate);
 }
 
-// TODO(crbug.com/402488726) : Enable the api test  for android Desktop after
-// supervised user and openFileURL is supported.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#define MAYBE_SaveAsMHTMLWithFileAccess SaveAsMHTMLWithFileAccess
-#else
-#define MAYBE_SaveAsMHTMLWithFileAccess DISABLED_SaveAsMHTMLWithFileAccess
-#endif
-IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
-                       MAYBE_SaveAsMHTMLWithFileAccess) {
+IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest, SaveAsMHTMLWithFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", /*custom_arg=*/nullptr,

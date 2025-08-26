@@ -282,8 +282,8 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/417785325): Enable this test on desktop Android when it
-// supports chrome.test.openFileUrl. See ChromeExtensionsAPIClient.
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerAllowedOnFileUrlsWithFileAccess) {
   EXPECT_TRUE(RunExtensionTest("debugger_file_access",
@@ -292,8 +292,8 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
       << message_;
 }
 
-// TODO(crbug.com/417785325): Enable this test on desktop Android when it
-// supports chrome.test.openFileUrl. See ChromeExtensionsAPIClient.
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerNotAllowedOnFileUrlsWithoutAccess) {
   EXPECT_TRUE(RunExtensionTest("debugger_file_access")) << message_;
@@ -864,14 +864,10 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, DISABLED_DebuggerMv3) {
   ASSERT_TRUE(RunExtensionTest("debugger_mv3")) << message_;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/417785325): Enable this test on desktop Android when it
-// supports chrome.test.openFileUrl. See ChromeExtensionsAPIClient.
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, ParentTargetPermissions) {
   // Run test with file access disabled.
   ASSERT_TRUE(RunExtensionTest("parent_target_permissions")) << message_;
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, ReloadAndResetHistory) {
   // Run test with file access disabled.
