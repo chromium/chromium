@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/signin_promo.h"
 
+#include "base/command_line.h"
 #include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"

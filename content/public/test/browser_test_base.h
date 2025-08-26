@@ -21,6 +21,7 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -39,7 +40,6 @@
 #include "ui/gfx/animation/animation_test_api.h"
 
 namespace base {
-class CommandLine;
 class FilePath;
 class TimeDelta;
 }  // namespace base

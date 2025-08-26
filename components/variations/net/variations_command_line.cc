@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/base_switches.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"

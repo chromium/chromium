@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
+#include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"

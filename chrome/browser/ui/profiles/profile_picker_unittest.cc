@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/profiles/profile_picker.h"
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"

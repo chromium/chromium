@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 
+#include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"

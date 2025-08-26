@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/session/arc_disk_space_monitor.h"
 
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"

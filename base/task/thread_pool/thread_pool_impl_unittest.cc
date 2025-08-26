@@ -14,6 +14,7 @@
 
 #include "base/base_switches.h"
 #include "base/cfi_buildflags.h"
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"

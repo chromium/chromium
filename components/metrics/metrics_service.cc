@@ -128,6 +128,7 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"

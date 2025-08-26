@@ -14,6 +14,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
+#include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

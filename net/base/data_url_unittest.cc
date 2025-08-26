@@ -4,6 +4,7 @@
 
 #include "net/base/data_url.h"
 
+#include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"

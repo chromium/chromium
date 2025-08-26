@@ -12,6 +12,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"

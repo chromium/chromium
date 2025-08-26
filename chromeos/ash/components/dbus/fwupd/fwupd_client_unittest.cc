@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/memory/raw_ptr.h"

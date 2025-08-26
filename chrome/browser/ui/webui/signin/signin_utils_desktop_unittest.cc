@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 
+#include "base/command_line.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

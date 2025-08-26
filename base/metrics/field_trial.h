@@ -80,7 +80,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -107,6 +106,7 @@ class ScopedFeatureList;
 }  // namespace test
 
 class CompareActiveGroupToFieldTrialMatcher;
+class CommandLine;
 class FieldTrialList;
 struct LaunchOptions;
 

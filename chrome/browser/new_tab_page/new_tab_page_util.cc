@@ -4,6 +4,7 @@
 
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
