@@ -49,9 +49,8 @@ export class DriveModuleElement extends DriveModuleElementBase {
   accessor files: File[] = [];
   protected accessor showInfoDialog_: boolean = false;
 
-  protected getMenuItemGroups_(): MenuItem[][] {
+  protected getMenuItems_(): MenuItem[] {
     return [
-      [
         {
           action: 'dismiss',
           icon: 'modules:visibility_off',
@@ -69,14 +68,6 @@ export class DriveModuleElement extends DriveModuleElementBase {
           icon: 'modules:info',
           text: this.i18n('moduleInfoButtonTitle'),
         },
-      ],
-      [
-        {
-          action: 'customize-module',
-          icon: 'modules:tune',
-          text: this.i18n('modulesCustomizeButtonText'),
-        },
-      ],
     ];
   }
 

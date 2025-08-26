@@ -58,39 +58,30 @@ export class OutlookCalendarModuleElement extends
     this.events_ = events;
   }
 
-  protected getMenuItemGroups_(): MenuItem[][] {
+  protected getMenuItems_(): MenuItem[] {
     return [
-      [
-        {
-          action: 'dismiss',
-          icon: 'modules:visibility_off',
-          text: this.i18nRecursive(
-              '', 'modulesDismissForHoursButtonText',
-              'calendarModuleDismissHours'),
-        },
-        {
-          action: 'disable',
-          icon: 'modules:block',
-          text: this.i18n('modulesOutlookCalendarDisableButtonText'),
-        },
-        {
-          action: 'signout',
-          icon: 'modules:logout',
-          text: this.i18n('modulesMicrosoftSignOutButtonText'),
-        },
-        {
-          action: 'info',
-          icon: 'modules:info',
-          text: this.i18n('moduleInfoButtonTitle'),
-        },
-      ],
-      [
-        {
-          action: 'customize-module',
-          icon: 'modules:tune',
-          text: this.i18n('modulesCustomizeButtonText'),
-        },
-      ],
+      {
+        action: 'dismiss',
+        icon: 'modules:visibility_off',
+        text: this.i18nRecursive(
+            '', 'modulesDismissForHoursButtonText',
+            'calendarModuleDismissHours'),
+      },
+      {
+        action: 'disable',
+        icon: 'modules:block',
+        text: this.i18n('modulesOutlookCalendarDisableButtonText'),
+      },
+      {
+        action: 'signout',
+        icon: 'modules:logout',
+        text: this.i18n('modulesMicrosoftSignOutButtonText'),
+      },
+      {
+        action: 'info',
+        icon: 'modules:info',
+        text: this.i18n('moduleInfoButtonTitle'),
+      },
     ];
   }
 

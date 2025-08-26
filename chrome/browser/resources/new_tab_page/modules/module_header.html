@@ -9,14 +9,19 @@
 
 <cr-action-menu id="actionMenu"
     role-description="$i18n{moduleHeaderMoreActionsMenu}">
-  ${this.menuItemGroups.map((group, index) => html`
-    ${group.map(item => html`
-      <button id="${item.action}" class="dropdown-item"
-          @click="${this.onButtonClick_}" data-action="${item.action}">
-        <cr-icon class="action-menu-icon cr-icon" icon="${item.icon}"></cr-icon>
-        ${item.text}
-      </button>
-    `)}
-    <hr id="actionMenuDivider" ?hidden="${!this.showDivider_(index)}">
+  ${this.menuItems.map(item => html`
+    <button id="${item.action}" class="dropdown-item"
+        @click="${this.onButtonClick_}" data-action="${item.action}">
+      <cr-icon class="action-menu-icon cr-icon" icon="${item.icon}"></cr-icon>
+      ${item.text}
+    </button>
   `)}
+  ${this.showCustomize ? html`
+    <hr id="actionMenuDivider" ?hidden="${!this.showDivider_()}">
+    <button id="customize-module" class="dropdown-item"
+          @click="${this.onButtonClick_}" data-action="customize-module">
+    <cr-icon class="action-menu-icon cr-icon" icon="modules:tune"></cr-icon>
+        $i18n{modulesCustomizeButtonText}
+    </button>
+  ` : ''}
 </cr-action-menu>

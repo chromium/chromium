@@ -64,9 +64,8 @@ export class ModuleElement extends ModuleElementBase {
     return (device && device.length > 0) ? `${time} • ${device.trim()}` : time;
   }
 
-  protected getMenuItemGroups_(): MenuItem[][] {
+  protected getMenuItems_(): MenuItem[] {
     return [
-      [
         {
           action: 'dismiss',
           icon: 'modules:visibility_off',
@@ -85,14 +84,6 @@ export class ModuleElement extends ModuleElementBase {
           icon: 'modules:info',
           text: this.i18n('moduleInfoButtonTitle'),
         },
-      ],
-      [
-        {
-          action: 'customize-module',
-          icon: 'modules:tune',
-          text: this.i18n('modulesCustomizeButtonText'),
-        },
-      ],
     ];
   }
 

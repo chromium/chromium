@@ -58,9 +58,8 @@ export class GoogleCalendarModuleElement extends
     this.events_ = events;
   }
 
-  protected getMenuItemGroups_(): MenuItem[][] {
+  protected getMenuItems_(): MenuItem[] {
     return [
-      [
         {
           action: 'dismiss',
           icon: 'modules:visibility_off',
@@ -78,14 +77,6 @@ export class GoogleCalendarModuleElement extends
           icon: 'modules:info',
           text: this.i18n('moduleInfoButtonTitle'),
         },
-      ],
-      [
-        {
-          action: 'customize-module',
-          icon: 'modules:tune',
-          text: this.i18n('modulesCustomizeButtonText'),
-        },
-      ],
     ];
   }
 

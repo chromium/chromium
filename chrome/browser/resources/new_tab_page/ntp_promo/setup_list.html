@@ -4,8 +4,7 @@
 <ntp-module-header-v2
     id="moduleHeaderElementV2"
     header-text="${this.i18n('modulesSetupListTitle')}"
-    .menuItemGroups="${[
-      [
+    .menuItems="${[
         {
           action: 'dismiss',
           icon: 'modules:visibility_off',
@@ -24,14 +23,6 @@
           icon: 'modules:info',
           text: this.i18n('moduleInfoButtonTitle'),
         },
-      ],
-      [
-        {
-          action: 'customize-module',
-          icon: 'modules:tune',
-          text: this.i18n('modulesCustomizeButtonText'),
-        },
-      ],
     ]}"
     more-actions-text="${this.i18nRecursive('',
                                   'modulesMoreActions',

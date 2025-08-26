@@ -53,9 +53,8 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
     this.handler_ = MicrosoftAuthProxyImpl.getInstance().handler;
   }
 
-  protected getMenuItemGroups_(): MenuItem[][] {
+  protected getMenuItems_(): MenuItem[] {
     return [
-      [
         {
           action: 'dismiss',
           icon: 'modules:visibility_off',
@@ -66,14 +65,6 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
           icon: 'modules:block',
           text: this.i18n('modulesMicrosoftAuthDisable'),
         },
-      ],
-      [
-        {
-          action: 'customize-module',
-          icon: 'modules:tune',
-          text: this.i18n('modulesCustomizeButtonText'),
-        },
-      ],
     ];
   }
 

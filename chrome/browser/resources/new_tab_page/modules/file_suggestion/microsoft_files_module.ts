@@ -63,9 +63,8 @@ export class MicrosoftFilesModuleElement extends
     this.recordFileTypesShown_(files);
   }
 
-  protected getMenuItemGroups_(): MenuItem[][] {
+  protected getMenuItems_(): MenuItem[] {
     return [
-      [
         {
           action: 'dismiss',
           icon: 'modules:visibility_off',
@@ -88,14 +87,6 @@ export class MicrosoftFilesModuleElement extends
           icon: 'modules:info',
           text: this.i18n('moduleInfoButtonTitle'),
         },
-      ],
-      [
-        {
-          action: 'customize-module',
-          icon: 'modules:tune',
-          text: this.i18n('modulesCustomizeButtonText'),
-        },
-      ],
     ];
   }
 

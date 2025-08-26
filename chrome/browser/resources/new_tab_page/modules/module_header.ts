@@ -45,13 +45,15 @@ export class ModuleHeaderElement extends CrLitElement {
     return {
       headerText: {type: String},
       moreActionsText: {type: String},
-      menuItemGroups: {type: Array},
+      menuItems: {type: Array},
+      showCustomize: {type: Boolean},
     };
   }
 
   accessor headerText: string|null = null;
-  accessor menuItemGroups: MenuItem[][] = [];
+  accessor menuItems: MenuItem[] = [];
   accessor moreActionsText: string = '';
+  accessor showCustomize: boolean = true;
 
   protected onButtonClick_(e: Event) {
     const action = (e.currentTarget as HTMLElement).dataset['action'];
@@ -71,8 +73,8 @@ export class ModuleHeaderElement extends CrLitElement {
     this.$.actionMenu.showAt(e.target as HTMLElement);
   }
 
-  protected showDivider_(index: number): boolean {
-    return index === 0;
+  protected showDivider_(): boolean {
+    return this.menuItems?.length > 0;
   }
 }
 

@@ -53,16 +53,14 @@ export class ModuleElement extends ModuleElementBase {
   accessor tiles: FooDataItem[] = [];
   override accessor title: string = '';
 
-  protected getMenuItemGroups_(): MenuItem[][] {
+  protected getMenuItems_(): MenuItem[] {
     return [
-      [
         {
           action: 'disable',
           icon: 'modules:block',
           text: this.i18nRecursive(
               '', 'modulesDisableButtonText', 'modulesDummyLower'),
         },
-      ],
     ];
   }
 

@@ -85,9 +85,8 @@ export class ModuleElement extends I18nMixinLit
       loadTimeData.getBoolean(
           'mostRelevantTabResumptionAllowFaviconServerFallback');
 
-  protected getMenuItemGroups_(): MenuItem[][] {
+  protected getMenuItems_(): MenuItem[] {
     return [
-      [
         {
           action: 'dismiss',
           icon: 'modules:thumb_down',
@@ -104,14 +103,6 @@ export class ModuleElement extends I18nMixinLit
           icon: 'modules:info',
           text: this.i18n('moduleInfoButtonTitle'),
         },
-      ],
-      [
-        {
-          action: 'customize-module',
-          icon: 'modules:tune',
-          text: this.i18n('modulesCustomizeButtonText'),
-        },
-      ],
     ];
   }
 

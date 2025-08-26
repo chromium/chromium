@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ModuleHeaderElementV2} from 'chrome://new-tab-page/lazy_load.js';
+import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -38,26 +39,17 @@ suite('ModuleHeaderV2', () => {
 
   test('menu items are displayed', async () => {
     // Act.
-    moduleHeaderElementV2.menuItemGroups = [
-      [
-        {
-          action: 'foo',
-          icon: 'modules:foo',
-          text: 'Foo',
-        },
-        {
-          action: 'bar',
-          icon: 'modules:bar',
-          text: 'Bar',
-        },
-      ],
-      [
-        {
-          action: 'baz',
-          icon: 'modules:baz',
-          text: 'Baz',
-        },
-      ],
+    moduleHeaderElementV2.menuItems = [
+      {
+        action: 'foo',
+        icon: 'modules:foo',
+        text: 'Foo',
+      },
+      {
+        action: 'bar',
+        icon: 'modules:bar',
+        text: 'Bar',
+      },
     ];
     moduleHeaderElementV2.$.menuButton.click();
     await microtasksFinished();
@@ -68,55 +60,70 @@ suite('ModuleHeaderV2', () => {
     assertEquals(3, dropDownItems.length);
     assertEquals('foo', dropDownItems[0]!.id);
     assertEquals('bar', dropDownItems[1]!.id);
-    assertEquals('baz', dropDownItems[2]!.id);
+    assertEquals('customize-module', dropDownItems[2]!.id);
   });
 
-  test(
-      'horizontal rule shows if the first list of menu items is not empty',
-      async () => {
-        // Act.
-        moduleHeaderElementV2.menuItemGroups = [
-          [
-            {
-              action: 'baz',
-              icon: 'modules:baz',
-              text: 'Baz',
-            },
-          ],
-          [],
-        ];
-        moduleHeaderElementV2.$.menuButton.click();
-        await microtasksFinished();
+  test('customize modules hides if `showCustomize` is false', async () => {
+    // Arrange.
+    moduleHeaderElementV2.menuItems = [
+      {
+        action: 'foo',
+        icon: 'modules:foo',
+        text: 'Foo',
+      },
+      {
+        action: 'bar',
+        icon: 'modules:bar',
+        text: 'Bar',
+      },
+    ];
+    moduleHeaderElementV2.$.menuButton.click();
+    await microtasksFinished();
+    let dropDownItems =
+        moduleHeaderElementV2.shadowRoot.querySelectorAll('button');
+    assertEquals(3, dropDownItems.length);
+    assertEquals('customize-module', dropDownItems[2]!.id);
+    const horizontalRule = $$(moduleHeaderElementV2, 'hr');
+    assertTrue(isVisible(horizontalRule));
 
-        // Assert.
-        const horizontalRules =
-            moduleHeaderElementV2.shadowRoot.querySelectorAll('hr');
-        assertEquals(2, horizontalRules.length);
-        assertTrue(isVisible(horizontalRules[0]!));
-        assertFalse(isVisible(horizontalRules[1]!));
-      });
+    // Act.
+    moduleHeaderElementV2.showCustomize = false;
+    await microtasksFinished();
 
-  test(
-      'horizontal rules are hidden if the first list of menu items is empty',
-      async () => {
-        // Act.
-        moduleHeaderElementV2.menuItemGroups = [
-          [],
-          [
-            {
-              action: 'foo',
-              icon: 'modules:foo',
-              text: 'Foo',
-            },
-          ],
-        ];
-        await microtasksFinished();
+    // Assert.
+    dropDownItems = moduleHeaderElementV2.shadowRoot.querySelectorAll('button');
+    assertEquals(2, dropDownItems.length);
+    assertFalse(isVisible(horizontalRule));
+  });
 
-        // Assert.
-        const horizontalRules =
-            moduleHeaderElementV2.shadowRoot.querySelectorAll('hr');
-        assertEquals(2, horizontalRules.length);
-        assertFalse(isVisible(horizontalRules[0]!));
-        assertFalse(isVisible(horizontalRules[1]!));
-      });
+
+  test('horizontal rule shows if `menuItems` is not empty', async () => {
+    // Act.
+    moduleHeaderElementV2.menuItems = [
+      {
+        action: 'baz',
+        icon: 'modules:baz',
+        text: 'Baz',
+      },
+    ];
+    moduleHeaderElementV2.$.menuButton.click();
+    await microtasksFinished();
+
+    // Assert.
+    const horizontalRule = $$(moduleHeaderElementV2, 'hr');
+    assertTrue(isVisible(horizontalRule));
+  });
+
+  test('horizontal rule hides if `menuItems` is empty', async () => {
+    // Act.
+    moduleHeaderElementV2.$.menuButton.click();
+    await microtasksFinished();
+
+    // Assert.
+    const dropDownItems =
+        moduleHeaderElementV2.shadowRoot.querySelectorAll('button');
+    assertEquals(1, dropDownItems.length);
+    const horizontalRule = $$(moduleHeaderElementV2, 'hr');
+    assertFalse(isVisible(horizontalRule));
+  });
 });
