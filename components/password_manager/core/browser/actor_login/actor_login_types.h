@@ -31,13 +31,13 @@ struct Credential {
   // during the login process. It is unique for this `source_site_or_app`.
   // It may be an empty string if the credential has no associated username.
   // This field may be presented to the user.
-  // TODO(crbug.com/427171031): Clarify how to deal with empty usernames.
+  // TODO(crbug.com/441231848): Clarify how to deal with empty usernames.
   // We should either provide display and non-display values, or let the caller
   // format strings to display.
   std::u16string username;
   // The original website or application for which this credential was saved in
   // GPM. This filed may be presented to the user.
-  // TODO(crbug.com/427171031): Clarify the format.
+  // TODO(crbug.com/441231531): Clarify the format.
   // We should probably provide display and non-display values, or let the
   // caller format strings to display.
   std::u16string source_site_or_app;

@@ -40,7 +40,7 @@ actor_login::Credential MakeTestCredential(
   actor_login::Credential credential;
   credential.id = actor_login::Credential::GenerateCredentialId();
   credential.username = username;
-  // TODO(crbug.com/427171031): Clarify the format.
+  // TODO(crbug.com/441231531): Clarify the format.
   credential.source_site_or_app =
       base::UTF8ToUTF16(url.GetWithEmptyPath().spec());
   credential.type = actor_login::CredentialType::kPassword;

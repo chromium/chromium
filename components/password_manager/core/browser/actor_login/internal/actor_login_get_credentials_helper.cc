@@ -25,9 +25,8 @@ Credential PasswordFormToCredential(
   Credential credential;
   credential.id = Credential::GenerateCredentialId();
   credential.username = form.username_value;
-  // TODO(crbug.com/427171031): Clarify the format.
   credential.source_site_or_app = GetSourceSiteOrAppFromUrl(form.url);
-  // TODO(crbug.com/427171031): Use PasswordManager to set the real value here.
+  // TODO(crbug.com/434165685): Use PasswordManager to set the real value here.
   credential.immediatelyAvailableToLogin = true;
   return credential;
 }
