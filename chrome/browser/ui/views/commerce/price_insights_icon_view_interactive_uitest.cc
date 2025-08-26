@@ -345,11 +345,11 @@ class PriceInsightsIconViewEngagementTest
         WaitForHide(kPriceInsightsChipElementId));
   }
 
-  using PageActionInteractiveTestMixin::WaitForPageActionButtonVisible;
+  using PageActionInteractiveTestMixin::WaitForPageActionChipVisible;
 
-  auto WaitForPageActionButtonVisible() {
+  auto WaitForPageActionChipVisible() {
     MultiStep steps;
-    steps += WaitForPageActionButtonVisible(kActionCommercePriceInsights);
+    steps += WaitForPageActionChipVisible(kActionCommercePriceInsights);
     return steps;
   }
 
@@ -360,7 +360,7 @@ class PriceInsightsIconViewEngagementTest
     RunTestSequence(
         NavigateWebContents(kShoppingTab,
                             embedded_test_server()->GetURL(kShoppingURL)),
-        WaitForPageActionButtonVisible(),
+        WaitForPageActionChipVisible(),
         CheckViewProperty(kPriceInsightsChipElementId,
                           &IconLabelBubbleView::ShouldShowLabel,
                           expected_to_show_label));

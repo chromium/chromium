@@ -104,12 +104,12 @@ class CollaborationMessagingPageActionControllerBrowserTest
     return RecentActivityBubbleCoordinator::From(target_browser);
   }
 
-  using PageActionInteractiveTestMixin::WaitForPageActionButtonVisible;
+  using PageActionInteractiveTestMixin::WaitForPageActionChipVisible;
 
-  auto WaitForPageActionButtonVisible() {
+  auto WaitForPageActionChipVisible() {
     MultiStep steps;
     steps +=
-        WaitForPageActionButtonVisible(kActionShowCollaborationRecentActivity);
+        WaitForPageActionChipVisible(kActionShowCollaborationRecentActivity);
     return steps;
   }
 
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionControllerBrowserTest,
         tab_data->set_mocked_avatar_for_testing(favicon::GetDefaultFavicon());
         tab_data->SetMessage(message);
       }),
-      WaitForPageActionButtonVisible(),
+      WaitForPageActionChipVisible(),
       PressButton(kCollaborationMessagingPageActionIconElementId),
       Check([this]() { return GetBubbleCoordinator(browser())->IsShowing(); },
             "Ensure the coordinator believes the bubble is showing."));
