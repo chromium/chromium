@@ -19,8 +19,24 @@ module sys_stage1 [system] [extern_c] {
     header "../../linux/debian_bullseye_amd64-sysroot/usr/include/asm-generic/errno.h"
     export *
   }
+  module sysroot_asm_generic_ioctl_h {
+    header "../../linux/debian_bullseye_amd64-sysroot/usr/include/asm-generic/ioctl.h"
+    export *
+  }
+  module sysroot_asm_generic_ioctls_h {
+    header "../../linux/debian_bullseye_amd64-sysroot/usr/include/asm-generic/ioctls.h"
+    export *
+  }
   module sysroot_asm_errno_h {
     header "../../linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/asm/errno.h"
+    export *
+  }
+  module sysroot_asm_ioctl_h {
+    header "../../linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/asm/ioctl.h"
+    export *
+  }
+  module sysroot_asm_ioctls_h {
+    header "../../linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/asm/ioctls.h"
     export *
   }
   module sysroot_endian_h {
@@ -54,6 +70,10 @@ module sys_stage1 [system] [extern_c] {
   }
   module sysroot_linux_falloc_h {
     header "../../linux/debian_bullseye_amd64-sysroot/usr/include/linux/falloc.h"
+    export *
+  }
+  module sysroot_linux_ioctl_h {
+    header "../../linux/debian_bullseye_amd64-sysroot/usr/include/linux/ioctl.h"
     export *
   }
   module sysroot_locale_h {
@@ -92,8 +112,16 @@ module sys_stage1 [system] [extern_c] {
     header "../../linux/debian_bullseye_amd64-sysroot/usr/include/strings.h"
     export *
   }
+  module sysroot_sys_ioctl_h {
+    header "../../linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/ioctl.h"
+    export *
+  }
   module sysroot_sys_select_h {
     header "../../linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/select.h"
+    export *
+  }
+  module sysroot_sys_ttydefaults_h {
+    header "../../linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/ttydefaults.h"
     export *
   }
   module sysroot_sys_types_h {

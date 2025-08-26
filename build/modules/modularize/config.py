@@ -40,6 +40,7 @@ SYSROOT_DIRS = {
 SYSROOT_PRECOMPILED_HEADERS = [
     'fcntl.h',
     'getopt.h',
+    'sys/ioctl.h',
 ]
 
 

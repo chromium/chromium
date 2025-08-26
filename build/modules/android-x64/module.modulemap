@@ -40,6 +40,14 @@ module sys_stage1 [system] [extern_c] {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/int-ll64.h"
     export *
   }
+  module sysroot_asm_generic_ioctl_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/ioctl.h"
+    export *
+  }
+  module sysroot_asm_generic_ioctls_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/ioctls.h"
+    export *
+  }
   module sysroot_asm_generic_posix_types_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/posix_types.h"
     export *
@@ -52,6 +60,18 @@ module sys_stage1 [system] [extern_c] {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/signal-defs.h"
     export *
   }
+  module sysroot_asm_generic_termbits_common_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/termbits-common.h"
+    export *
+  }
+  module sysroot_asm_generic_termbits_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/termbits.h"
+    export *
+  }
+  module sysroot_asm_generic_termios_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/termios.h"
+    export *
+  }
   module sysroot_asm_generic_types_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/types.h"
     export *
@@ -62,6 +82,14 @@ module sys_stage1 [system] [extern_c] {
   }
   module sysroot_asm_errno_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/x86_64-linux-android/asm/errno.h"
+    export *
+  }
+  module sysroot_asm_ioctl_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/x86_64-linux-android/asm/ioctl.h"
+    export *
+  }
+  module sysroot_asm_ioctls_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/x86_64-linux-android/asm/ioctls.h"
     export *
   }
   module sysroot_asm_posix_types_h {
@@ -84,6 +112,14 @@ module sys_stage1 [system] [extern_c] {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/x86_64-linux-android/asm/signal.h"
     export *
   }
+  module sysroot_asm_termbits_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/x86_64-linux-android/asm/termbits.h"
+    export *
+  }
+  module sysroot_asm_termios_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/x86_64-linux-android/asm/termios.h"
+    export *
+  }
   module sysroot_asm_types_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/x86_64-linux-android/asm/types.h"
     export *
@@ -102,6 +138,10 @@ module sys_stage1 [system] [extern_c] {
   }
   module sysroot_bits_getopt_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/getopt.h"
+    export *
+  }
+  module sysroot_bits_ioctl_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/ioctl.h"
     export *
   }
   module sysroot_bits_mbstate_t_h {
@@ -152,6 +192,10 @@ module sys_stage1 [system] [extern_c] {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/falloc.h"
     export *
   }
+  module sysroot_linux_ioctl_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/ioctl.h"
+    export *
+  }
   module sysroot_linux_limits_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/limits.h"
     export *
@@ -180,6 +224,14 @@ module sys_stage1 [system] [extern_c] {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/stddef.h"
     export *
   }
+  module sysroot_linux_termios_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/termios.h"
+    export *
+  }
+  module sysroot_linux_tty_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/tty.h"
+    export *
+  }
   module sysroot_linux_types_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/types.h"
     export *
@@ -198,6 +250,10 @@ module sys_stage1 [system] [extern_c] {
   }
   module sysroot_setjmp_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/setjmp.h"
+    export *
+  }
+  module sysroot_sys_ioctl_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/ioctl.h"
     export *
   }
   module sysroot_xlocale_h {

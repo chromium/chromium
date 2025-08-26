@@ -27,6 +27,14 @@ module sys_stage1 [system] [extern_c] {
     header "../../linux/debian_bullseye_arm64-sysroot/usr/include/asm-generic/int-ll64.h"
     export *
   }
+  module sysroot_asm_generic_ioctl_h {
+    header "../../linux/debian_bullseye_arm64-sysroot/usr/include/asm-generic/ioctl.h"
+    export *
+  }
+  module sysroot_asm_generic_ioctls_h {
+    header "../../linux/debian_bullseye_arm64-sysroot/usr/include/asm-generic/ioctls.h"
+    export *
+  }
   module sysroot_asm_generic_posix_types_h {
     header "../../linux/debian_bullseye_arm64-sysroot/usr/include/asm-generic/posix_types.h"
     export *
@@ -41,6 +49,14 @@ module sys_stage1 [system] [extern_c] {
   }
   module sysroot_asm_errno_h {
     header "../../linux/debian_bullseye_arm64-sysroot/usr/include/aarch64-linux-gnu/asm/errno.h"
+    export *
+  }
+  module sysroot_asm_ioctl_h {
+    header "../../linux/debian_bullseye_arm64-sysroot/usr/include/aarch64-linux-gnu/asm/ioctl.h"
+    export *
+  }
+  module sysroot_asm_ioctls_h {
+    header "../../linux/debian_bullseye_arm64-sysroot/usr/include/aarch64-linux-gnu/asm/ioctls.h"
     export *
   }
   module sysroot_asm_posix_types_h {
@@ -92,6 +108,10 @@ module sys_stage1 [system] [extern_c] {
     header "../../linux/debian_bullseye_arm64-sysroot/usr/include/linux/falloc.h"
     export *
   }
+  module sysroot_linux_ioctl_h {
+    header "../../linux/debian_bullseye_arm64-sysroot/usr/include/linux/ioctl.h"
+    export *
+  }
   module sysroot_linux_posix_types_h {
     header "../../linux/debian_bullseye_arm64-sysroot/usr/include/linux/posix_types.h"
     export *
@@ -140,6 +160,10 @@ module sys_stage1 [system] [extern_c] {
     header "../../linux/debian_bullseye_arm64-sysroot/usr/include/strings.h"
     export *
   }
+  module sysroot_sys_ioctl_h {
+    header "../../linux/debian_bullseye_arm64-sysroot/usr/include/aarch64-linux-gnu/sys/ioctl.h"
+    export *
+  }
   module sysroot_sys_procfs_h {
     header "../../linux/debian_bullseye_arm64-sysroot/usr/include/aarch64-linux-gnu/sys/procfs.h"
     export *
@@ -150,6 +174,10 @@ module sys_stage1 [system] [extern_c] {
   }
   module sysroot_sys_time_h {
     header "../../linux/debian_bullseye_arm64-sysroot/usr/include/aarch64-linux-gnu/sys/time.h"
+    export *
+  }
+  module sysroot_sys_ttydefaults_h {
+    header "../../linux/debian_bullseye_arm64-sysroot/usr/include/aarch64-linux-gnu/sys/ttydefaults.h"
     export *
   }
   module sysroot_sys_types_h {
