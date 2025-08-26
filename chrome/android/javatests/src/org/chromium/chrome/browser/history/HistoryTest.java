@@ -37,6 +37,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -126,6 +127,7 @@ public class HistoryTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky test, see crbug.com/441282177")
     // Tests that the history sync opt-in promo is shown correctly when display conditions are met,
     // and the history sync opt-in flow works correctly when the CTA is clicked.
     public void testHistorySyncPromoHeader_withHistoryRecord() throws Exception {
@@ -166,6 +168,7 @@ public class HistoryTest {
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky test, see crbug.com/441282177")
     // Tests that the history sync opt-in promo when there's no history record, to verify
     // interactions with the history page empty state.
     //
