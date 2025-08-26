@@ -256,8 +256,7 @@ public class ManualFillingTestHelper {
         pollUiThread(
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
-                    return !getKeyboard()
-                            .isSoftKeyboardShowing(activity, activity.getCurrentFocus());
+                    return !getKeyboard().isSoftKeyboardShowing(activity.getCurrentFocus());
                 });
     }
 
@@ -278,7 +277,6 @@ public class ManualFillingTestHelper {
                             mActivityTestRule
                                     .getKeyboardDelegate()
                                     .isKeyboardShowing(
-                                            mActivityTestRule.getActivity(),
                                             mActivityTestRule.getActivity().getTabsView());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(true));
                 });

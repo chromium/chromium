@@ -452,7 +452,7 @@ public class MiniOriginBarController implements Observer {
     }
 
     private boolean isKeyboardShowing() {
-        return mKeyboardVisibilityDelegate.isKeyboardShowing(mContext, mControlContainer.getView());
+        return mKeyboardVisibilityDelegate.isKeyboardShowing(mControlContainer.getView());
     }
 
     private void updateAnimationProgress(float minimizationProgress) {
@@ -482,7 +482,6 @@ public class MiniOriginBarController implements Observer {
         private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
         private final ViewGroup mContainerView;
         private final ObservableSupplierImpl<Integer> mTranslationSupplier;
-        private final Context mContext;
         private final Runnable mOnAnimationPreparedSignal;
         private final Callback<Boolean> mAnimationEndedSignal;
         private final Callback<Float> mAnimationProgressSignal;
@@ -508,7 +507,6 @@ public class MiniOriginBarController implements Observer {
             mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
             mContainerView = containerView;
             mTranslationSupplier = translationSupplier;
-            mContext = containerView.getContext();
             mOnAnimationPreparedSignal = animationPreparedSignal;
             mAnimationEndedSignal = animationEndedSignal;
             mAnimationProgressSignal = animationProgressSignal;
@@ -558,7 +556,7 @@ public class MiniOriginBarController implements Observer {
             ViewUtils.setAncestorsShouldClipChildren(mContainerView, false, View.NO_ID);
             ViewUtils.setAncestorsShouldClipToPadding(mContainerView, false, View.NO_ID);
             mFinalKeyboardHeight =
-                    mKeyboardVisibilityDelegate.isKeyboardShowing(mContext, mContainerView)
+                    mKeyboardVisibilityDelegate.isKeyboardShowing(mContainerView)
                             ? bounds.getUpperBound().bottom
                             : 0;
         }

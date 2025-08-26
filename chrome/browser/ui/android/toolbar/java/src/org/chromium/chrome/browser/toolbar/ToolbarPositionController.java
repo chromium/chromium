@@ -111,7 +111,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final ObservableSupplierImpl<Integer> mBrowserControlsOffsetSupplier;
     private final View mToolbarProgressBarContainer;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
-    private final Context mContext;
     private final ObservableSupplier<Integer> mKeyboardAccessoryHeightSupplier;
     private final ObservableSupplier<Integer> mControlContainerTranslationSupplier;
     private final ObservableSupplier<Integer> mControlContainerHeightSupplier;
@@ -205,7 +204,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mControlContainerTranslationSupplier = controlContainerTranslationSupplier;
         mControlContainerHeightSupplier = controlContainerHeightSupplier;
         mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
-        mContext = context;
         mCurrentPosition = controlsPosition;
         mCurrentPosition.set(mBrowserControlsSizer.getControlsPosition());
 
@@ -443,7 +441,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         boolean isFormFieldFocusedWithKeyboardVisible =
                 mIsFormFieldFocusedSupplier.get()
                         && mKeyboardVisibilityDelegate.isKeyboardShowing(
-                                mContext, mControlContainer.getView());
+                                mControlContainer.getView());
         @StateTransition
         int stateTransition =
                 calculateStateTransition(

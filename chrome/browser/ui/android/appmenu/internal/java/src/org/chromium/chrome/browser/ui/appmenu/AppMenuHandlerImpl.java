@@ -326,7 +326,7 @@ class AppMenuHandlerImpl
                 mWindowAndroid.getKeyboardDelegate();
 
         // If keyboard is showing, wait until keyboard disappears to set appRect
-        if (keyboardVisibilityDelegate.isKeyboardShowing(mContext, anchorView)) {
+        if (keyboardVisibilityDelegate.isKeyboardShowing(anchorView)) {
             View finalAnchorView = anchorView;
             boolean finalIsByPermanentButton = isByPermanentButton;
             mKeyboardVisibilityListener =

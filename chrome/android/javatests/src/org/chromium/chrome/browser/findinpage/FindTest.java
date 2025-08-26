@@ -496,8 +496,7 @@ public class FindTest {
                     Criteria.checkThat(
                             mActivityTestRule
                                     .getKeyboardDelegate()
-                                    .isKeyboardShowing(
-                                            mActivityTestRule.getActivity(), getFindQueryText()),
+                                    .isKeyboardShowing(getFindQueryText()),
                             Matchers.is(imePresent));
                 });
     }

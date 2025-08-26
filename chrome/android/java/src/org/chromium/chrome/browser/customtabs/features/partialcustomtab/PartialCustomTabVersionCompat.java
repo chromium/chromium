@@ -340,7 +340,7 @@ abstract class PartialCustomTabVersionCompat {
                             // to use it again.
                             boolean imeVisible =
                                     KeyboardVisibilityDelegate.getInstance()
-                                            .isKeyboardShowing(mActivity, view);
+                                            .isKeyboardShowing(view);
                             callback.onResult(imeVisible);
                         };
                 contentFrame.addOnLayoutChangeListener(mLayoutListener);

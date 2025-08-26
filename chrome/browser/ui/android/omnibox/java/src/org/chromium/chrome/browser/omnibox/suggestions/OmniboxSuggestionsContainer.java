@@ -86,7 +86,7 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
                 setRoundBottomCorners(
                         getMeasuredHeight() < availableViewportHeight
                                 || !KeyboardVisibilityDelegate.getInstance()
-                                        .isKeyboardShowing(getContext(), this));
+                                        .isKeyboardShowing(this));
             }
         }
     }

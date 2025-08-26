@@ -167,14 +167,12 @@ public class WebOTPServiceInfoBarTest {
                 });
 
         // Wait until the keyboard is showing.
-        CriteriaHelper.pollUiThread(
-                () -> keyboardVisibilityDelegate.isKeyboardShowing(mActivity, editText));
+        CriteriaHelper.pollUiThread(() -> keyboardVisibilityDelegate.isKeyboardShowing(editText));
 
         WebOTPServiceInfoBar infoBar = createInfoBar();
 
         // Keyboard is hidden after info bar is created and shown.
-        CriteriaHelper.pollUiThread(
-                () -> !keyboardVisibilityDelegate.isKeyboardShowing(mActivity, editText));
+        CriteriaHelper.pollUiThread(() -> !keyboardVisibilityDelegate.isKeyboardShowing(editText));
 
         assertHistogramRecordedCount(
                 INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shown_count + 1);
@@ -218,14 +216,12 @@ public class WebOTPServiceInfoBarTest {
                 });
 
         // Wait until the keyboard is showing.
-        CriteriaHelper.pollUiThread(
-                () -> keyboardVisibilityDelegate.isKeyboardShowing(mActivity, editText));
+        CriteriaHelper.pollUiThread(() -> keyboardVisibilityDelegate.isKeyboardShowing(editText));
 
         WebOTPServiceInfoBar infoBar = createInfoBar();
 
         // Keyboard is hidden after info bar is created and shown.
-        CriteriaHelper.pollUiThread(
-                () -> !keyboardVisibilityDelegate.isKeyboardShowing(mActivity, editText));
+        CriteriaHelper.pollUiThread(() -> !keyboardVisibilityDelegate.isKeyboardShowing(editText));
 
         // Close info bar.
         InfoBarUtil.clickCloseButton(infoBar);

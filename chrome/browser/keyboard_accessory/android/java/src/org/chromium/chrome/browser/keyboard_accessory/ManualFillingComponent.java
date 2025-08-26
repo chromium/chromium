@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -63,12 +62,11 @@ public interface ManualFillingComponent extends BackPressHandler {
         /**
          * Returns whether Android soft keyboard is showing and ignores all extensions/replacements.
          *
-         * @param context A {@link Context} instance.
          * @param view A {@link View}.
          * @return Returns true if Android's soft keyboard is visible. Ignores
          *     extensions/replacements.
          */
-        boolean isSoftKeyboardShowing(Context context, View view);
+        boolean isSoftKeyboardShowing(View view);
 
         /**
          * Requests Android's soft keyboard.

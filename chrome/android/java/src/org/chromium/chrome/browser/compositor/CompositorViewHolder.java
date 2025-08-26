@@ -432,7 +432,7 @@ public class CompositorViewHolder extends FrameLayout
         // [1] -
         // https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_FULLSCREEN
         if (mShowingFullscreen
-                && KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(getContext(), this)) {
+                && KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this)) {
             getWindowVisibleDisplayFrame(mCacheRect);
 
             // On certain devices, getWindowVisibleDisplayFrame is larger than the screen size, so
@@ -1312,8 +1312,7 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        mIsKeyboardShowing =
-                KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(getContext(), this);
+        mIsKeyboardShowing = KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this);
     }
 
     @Override
@@ -1403,7 +1402,7 @@ public class CompositorViewHolder extends FrameLayout
         if (hasFocus()) {
             KeyboardVisibilityDelegate keyboardVisibilityDelegate =
                     KeyboardVisibilityDelegate.getInstance();
-            wasVisible = keyboardVisibilityDelegate.isKeyboardShowing(getContext(), this);
+            wasVisible = keyboardVisibilityDelegate.isKeyboardShowing(this);
             if (wasVisible) {
                 keyboardVisibilityDelegate.hideKeyboard(this);
             }

@@ -294,7 +294,7 @@ public class ToolbarPositionControllerTest {
         }
 
         @Override
-        public boolean isKeyboardShowing(Context context, View view) {
+        public boolean isKeyboardShowing(View view) {
             return mIsShowing;
         }
     }

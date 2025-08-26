@@ -156,7 +156,6 @@ public class ActivityRecreationController {
 
         return KeyboardVisibilityDelegate.getInstance()
                 .isKeyboardShowing(
-                        activityTabProvider.get().getContext(),
                         activityTabProvider
                                 .get()
                                 .getWebContents()

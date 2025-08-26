@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.keyboard_accessory;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -49,7 +48,7 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
     }
 
     @Override
-    public boolean isSoftKeyboardShowing(Context context, View view) {
+    public boolean isSoftKeyboardShowing(View view) {
         return mIsShowing;
     }
 
@@ -64,7 +63,7 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
                         return; // ... unless the keyboard didn't affect it.
                     }
                     if (!keyboardWasVisible) {
-                        notifyListeners(isKeyboardShowing(getActivity(), view));
+                        notifyListeners(isKeyboardShowing(view));
                     }
                     // Pretend a layout change for components listening to the activity directly:
                     View contentView = getActivity().findViewById(android.R.id.content);
@@ -84,7 +83,7 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
                     if (getStaticKeyboardHeight() <= 0) {
                         return; // ... unless the keyboard didn't affect it.
                     }
-                    if (keyboardWasVisible) notifyListeners(isKeyboardShowing(getActivity(), view));
+                    if (keyboardWasVisible) notifyListeners(isKeyboardShowing(view));
                     View contentView = getActivity().findViewById(android.R.id.content);
                     ViewGroup.LayoutParams p = contentView.getLayoutParams();
                     p.height = p.height + getStaticKeyboardHeight();

@@ -866,7 +866,7 @@ class ManualFillingMediator
     }
 
     private boolean isSoftKeyboardShowing(@Nullable View view) {
-        return view != null && mSoftKeyboardDelegate.isSoftKeyboardShowing(mActivity, view);
+        return view != null && mSoftKeyboardDelegate.isSoftKeyboardShowing(view);
     }
 
     /**

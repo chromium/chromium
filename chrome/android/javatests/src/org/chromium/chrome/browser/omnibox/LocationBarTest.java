@@ -233,8 +233,7 @@ public class LocationBarTest {
                     Assert.assertTrue(mLocationBarMediator.isUrlBarFocused());
                 });
 
-        CriteriaHelper.pollUiThread(
-                () -> mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
+        CriteriaHelper.pollUiThread(() -> mKeyboardDelegate.isKeyboardShowing(mUrlBar));
     }
 
     @Test
@@ -717,7 +716,7 @@ public class LocationBarTest {
     @MediumTest
     public void testFocusLogic_keyboardVisibility() {
         startActivityNormally();
-        assertFalse(mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
+        assertFalse(mKeyboardDelegate.isKeyboardShowing(mUrlBar));
 
         mOmnibox.requestFocus();
         mOmnibox.checkFocus(true);

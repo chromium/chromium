@@ -1061,8 +1061,7 @@ public class AutofillProfilesFragmentTest {
                 () -> {
                     Criteria.checkThat(
                             KeyboardVisibilityDelegate.getInstance()
-                                    .isKeyboardShowing(
-                                            activity, activity.findViewById(android.R.id.content)),
+                                    .isKeyboardShowing(activity.findViewById(android.R.id.content)),
                             Matchers.is(keyboardVisible));
                 });
     }

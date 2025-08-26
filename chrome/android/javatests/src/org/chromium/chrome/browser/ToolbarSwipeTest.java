@@ -309,9 +309,7 @@ public class ToolbarSwipeTest {
 
         Assert.assertFalse(
                 "Keyboard somehow got shown",
-                mActivityTestRule
-                        .getKeyboardDelegate()
-                        .isKeyboardShowing(mActivityTestRule.getActivity(), urlBar));
+                mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar));
 
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
@@ -340,9 +338,7 @@ public class ToolbarSwipeTest {
                 () -> {
                     Assert.assertFalse(
                             "Keyboard should be hidden while swiping",
-                            mActivityTestRule
-                                    .getKeyboardDelegate()
-                                    .isKeyboardShowing(mActivityTestRule.getActivity(), urlBar));
+                            mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar));
                     swipeHandler.onSwipeFinished();
                 });
 
@@ -355,9 +351,7 @@ public class ToolbarSwipeTest {
 
         Assert.assertFalse(
                 "Keyboard should not be shown",
-                mActivityTestRule
-                        .getKeyboardDelegate()
-                        .isKeyboardShowing(mActivityTestRule.getActivity(), urlBar));
+                mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar));
     }
 
     private LayoutManagerChrome updateTabsViewSize() {

@@ -583,8 +583,7 @@ public class LocationBarCoordinator
 
     @Override
     public boolean isKeyboardActive() {
-        return KeyboardVisibilityDelegate.getInstance()
-                        .isKeyboardShowing(mLocationBarLayout.getContext(), mUrlBar)
+        return KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(mUrlBar)
                 || (mLocationBarLayout.getContext().getResources().getConfiguration().keyboard
                         == Configuration.KEYBOARD_QWERTY);
     }

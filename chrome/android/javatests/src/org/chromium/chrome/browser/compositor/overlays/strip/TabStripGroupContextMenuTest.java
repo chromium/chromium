@@ -563,7 +563,6 @@ public class TabStripGroupContextMenuTest {
         CriteriaHelper.pollUiThread(
                 () ->
                         delegate.isKeyboardShowing(
-                                mActivityTestRule.getActivity(),
                                 mActivityTestRule
                                         .getActivity()
                                         .getCompositorViewHolderForTesting()));
@@ -577,7 +576,6 @@ public class TabStripGroupContextMenuTest {
         CriteriaHelper.pollUiThread(
                 () ->
                         !delegate.isKeyboardShowing(
-                                mActivityTestRule.getActivity(),
                                 mActivityTestRule
                                         .getActivity()
                                         .getCompositorViewHolderForTesting()));

@@ -866,7 +866,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             if (isOnTabStrip(e1)) return false;
             if (mToolbar != null && mToolbar.shouldIgnoreSwipeGesture()) return false;
             if (KeyboardVisibilityDelegate.getInstance()
-                    .isKeyboardShowing(getContext(), ToolbarControlContainer.this)) {
+                    .isKeyboardShowing(ToolbarControlContainer.this)) {
                 return false;
             }
             return true;

@@ -172,10 +172,7 @@ public class BottomSheetControllerTest {
                 () -> keyboardDelegate.showKeyboard(mActivity.getTabsView()));
         requestContentInSheet(mLowPriorityContent, true);
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        assertFalse(
-                                keyboardDelegate.isKeyboardShowing(
-                                        mActivity, mActivity.getTabsView())));
+                () -> assertFalse(keyboardDelegate.isKeyboardShowing(mActivity.getTabsView())));
         BottomSheetTestSupport.waitForContentChange(mSheetController, mLowPriorityContent);
         BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);
     }

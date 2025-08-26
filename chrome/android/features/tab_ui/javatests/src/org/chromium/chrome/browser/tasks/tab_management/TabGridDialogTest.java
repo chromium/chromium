@@ -2176,7 +2176,7 @@ public class TabGridDialogTest {
                 () ->
                         cta.getWindowAndroid()
                                 .getKeyboardDelegate()
-                                .isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
+                                .isKeyboardShowing(cta.getCompositorViewHolderForTesting()));
     }
 
     private void openDialogToolbarMenuAndVerify(ChromeTabbedActivity cta) {
@@ -2340,7 +2340,7 @@ public class TabGridDialogTest {
         // Wait until the keyboard is hidden to make sure the edit has taken effect.
         KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
         CriteriaHelper.pollUiThread(
-                () -> !delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
+                () -> !delegate.isKeyboardShowing(cta.getCompositorViewHolderForTesting()));
     }
 
     private void verifyFirstCardTitle(String title) {
@@ -2508,8 +2508,7 @@ public class TabGridDialogTest {
                     KeyboardVisibilityDelegate delegate =
                             cta.getWindowAndroid().getKeyboardDelegate();
                     boolean keyboardVisible =
-                            delegate.isKeyboardShowing(
-                                    cta, cta.getCompositorViewHolderForTesting());
+                            delegate.isKeyboardShowing(cta.getCompositorViewHolderForTesting());
                     boolean isFocused = titleTextView.isFocused();
                     return (!shouldFocus ^ isFocused) && (!shouldFocus ^ keyboardVisible);
                 });

@@ -1721,10 +1721,7 @@ public class TabStripTest {
                             mActivityTestRule
                                     .getKeyboardDelegate()
                                     .isKeyboardShowing(
-                                            mActivityTestRule.getActivity(),
-                                            mActivityTestRule
-                                                    .getActivityTab()
-                                                    .getView()),
+                                            mActivityTestRule.getActivityTab().getView()),
                             Matchers.is(expectsShown));
                 });
     }

@@ -108,11 +108,10 @@ public class KeyboardVisibilityDelegate {
     /**
      * Returns whether the keyboard is showing.
      *
-     * @param context A {@link Context} instance.
      * @param view A {@link View}.
      * @return Whether or not the software keyboard is visible.
      */
-    public boolean isKeyboardShowing(Context context, View view) {
+    public boolean isKeyboardShowing(View view) {
         return KeyboardUtils.isAndroidSoftKeyboardShowing(view);
     }
 

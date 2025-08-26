@@ -279,7 +279,6 @@ public class TabsTest {
                             mActivityTestRule
                                     .getKeyboardDelegate()
                                     .isKeyboardShowing(
-                                            mActivityTestRule.getActivity(),
                                             mActivityTestRule.getActivity().getTabsView());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(show));
                 });
@@ -686,9 +685,7 @@ public class TabsTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean keyboardVisible =
-                            mActivityTestRule
-                                    .getKeyboardDelegate()
-                                    .isKeyboardShowing(mActivityTestRule.getActivity(), urlBar);
+                            mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar);
                     Criteria.checkThat(keyboardVisible, Matchers.is(true));
                 });
 
@@ -708,9 +705,7 @@ public class TabsTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean keyboardVisible =
-                            mActivityTestRule
-                                    .getKeyboardDelegate()
-                                    .isKeyboardShowing(mActivityTestRule.getActivity(), urlBar);
+                            mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar);
                     Criteria.checkThat(keyboardVisible, Matchers.is(true));
                 });
 
@@ -724,9 +719,7 @@ public class TabsTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean keyboardVisible =
-                            mActivityTestRule
-                                    .getKeyboardDelegate()
-                                    .isKeyboardShowing(mActivityTestRule.getActivity(), urlBar);
+                            mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar);
                     Criteria.checkThat(keyboardVisible, Matchers.is(false));
                 });
     }

@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser;
 
-
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -52,8 +50,8 @@ public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibility
     }
 
     @Override
-    public boolean isKeyboardShowing(Context context, View view) {
-        return isSoftKeyboardShowing(context, view)
+    public boolean isKeyboardShowing(View view) {
+        return isSoftKeyboardShowing(view)
                 || (mManualFillingComponentSupplier.hasValue()
                         && mManualFillingComponentSupplier.get().isFillingViewShown(view));
     }
@@ -82,10 +80,10 @@ public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibility
     /**
      * Implementation ignoring the Chrome-specific keyboard logic on top of the system keyboard.
      *
-     * @see ManualFillingComponent.SoftKeyboardDelegate#isSoftKeyboardShowing(Context, View)
+     * @see ManualFillingComponent.SoftKeyboardDelegate#isSoftKeyboardShowing(View)
      */
     @Override
-    public boolean isSoftKeyboardShowing(Context context, View view) {
+    public boolean isSoftKeyboardShowing(View view) {
         return KeyboardUtils.isAndroidSoftKeyboardShowing(view);
     }
 
