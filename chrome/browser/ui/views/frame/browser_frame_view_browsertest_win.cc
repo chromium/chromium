@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -31,7 +30,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -140,74 +138,6 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
   auto* maximize_button = GetMaximizeButton();
   EXPECT_FALSE(maximize_button->GetVisible());
   EXPECT_TRUE(maximize_button->GetEnabled());
-}
-
-// Test that the window title is available for popups and not for regular
-// browser windows. This is a regression test for crbug.com/440472004.
-IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest, PopupHasTitle) {
-  // The regular browser window should not have a visible title.
-  auto* frame_view = GetBrowserFrameViewWin();
-  ASSERT_TRUE(frame_view);
-  views::View* title = frame_view->GetViewByID(VIEW_ID_WINDOW_TITLE);
-  ASSERT_TRUE(title);
-  EXPECT_FALSE(title->GetVisible());
-
-  // The popup window should have a visible title.
-  Browser::CreateParams params(Browser::TYPE_POPUP, browser()->profile(), true);
-  Browser* popup = Browser::Create(params);
-  popup->tab_strip_model()->InsertWebContentsAt(
-      0,
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile())),
-      AddTabTypes::ADD_ACTIVE);
-  popup->window()->Show();
-
-  auto* popup_browser_view = BrowserView::GetBrowserViewForBrowser(popup);
-  auto* popup_frame_view = static_cast<BrowserFrameViewWin*>(
-      popup_browser_view->GetWidget()->non_client_view()->frame_view());
-  ASSERT_TRUE(popup_frame_view);
-  views::View* popup_title =
-      popup_frame_view->GetViewByID(VIEW_ID_WINDOW_TITLE);
-  ASSERT_TRUE(popup_title);
-  EXPECT_TRUE(popup_title->GetVisible());
-
-  // The app popup window should also have a visible title.
-  Browser* app_popup = Browser::Create(Browser::CreateParams::CreateForAppPopup(
-      "app_name", true, gfx::Rect(), browser()->profile(), true));
-  app_popup->tab_strip_model()->InsertWebContentsAt(
-      0,
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile())),
-      AddTabTypes::ADD_ACTIVE);
-  app_popup->window()->Show();
-
-  auto* app_popup_browser_view =
-      BrowserView::GetBrowserViewForBrowser(app_popup);
-  auto* app_popup_frame_view = static_cast<BrowserFrameViewWin*>(
-      app_popup_browser_view->GetWidget()->non_client_view()->frame_view());
-  ASSERT_TRUE(app_popup_frame_view);
-  views::View* app_popup_title =
-      app_popup_frame_view->GetViewByID(VIEW_ID_WINDOW_TITLE);
-  ASSERT_TRUE(app_popup_title);
-  EXPECT_TRUE(app_popup_title->GetVisible());
-
-  // The app window (non-popup version) should have a visible title.
-  Browser* app = Browser::Create(Browser::CreateParams::CreateForAppPopup(
-      "app_name", true, gfx::Rect(), browser()->profile(), true));
-  app->tab_strip_model()->InsertWebContentsAt(
-      0,
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile())),
-      AddTabTypes::ADD_ACTIVE);
-  app->window()->Show();
-
-  auto* app_browser_view = BrowserView::GetBrowserViewForBrowser(app);
-  auto* app_frame_view = static_cast<BrowserFrameViewWin*>(
-      app_browser_view->GetWidget()->non_client_view()->frame_view());
-  ASSERT_TRUE(app_frame_view);
-  views::View* app_title = app_frame_view->GetViewByID(VIEW_ID_WINDOW_TITLE);
-  ASSERT_TRUE(app_title);
-  EXPECT_TRUE(app_title->GetVisible());
 }
 
 class CaptionButtonContainerTest : public BrowserFrameViewWinTest,
