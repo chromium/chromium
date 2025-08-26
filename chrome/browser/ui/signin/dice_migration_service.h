@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_DICE_MIGRATION_SERVICE_H_
 #define CHROME_BROWSER_UI_SIGNIN_DICE_MIGRATION_SERVICE_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -16,6 +17,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 namespace signin {
 class AccountManagedStatusFinder;
@@ -137,6 +139,9 @@ class DiceMigrationService : public KeyedService,
   base::Time GetDialogLastShownTime() const;
   void UpdateDialogShownCountAndTime();
 
+  // Invoked when `browser_` is closed.
+  void BrowserDidClose(BrowserWindowInterface* browser);
+
   raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -153,8 +158,10 @@ class DiceMigrationService : public KeyedService,
   raw_ptr<views::Widget> dialog_widget_ = nullptr;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       dialog_widget_observation_{this};
+
   // The browser instance that was used to show the dialog.
   base::WeakPtr<Browser> browser_;
+  std::optional<base::CallbackListSubscription> browser_close_subscription_;
 
   // Observes the avatar button to close the dialog when it is clicked.
   std::unique_ptr<AvatarButtonObserver> avatar_button_observer_;

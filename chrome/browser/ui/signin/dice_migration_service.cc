@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -443,7 +444,12 @@ DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
       builder.Build(), avatar_button, views::BubbleBorder::TOP_RIGHT);
   dialog_widget_ = views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   dialog_widget_observation_.Observe(dialog_widget_);
+
   browser_ = browser->AsWeakPtr();
+  browser_close_subscription_ =
+      browser->RegisterBrowserDidClose(base::BindRepeating(
+          &DiceMigrationService::BrowserDidClose, base::Unretained(this)));
+
   dialog_widget_->Show();
 
   // Update the dialog shown count and time. Note that the user may not interact
@@ -475,6 +481,7 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
   CHECK_EQ(dialog_widget_, widget);
   avatar_button_observer_.reset();
   dialog_widget_observation_.Reset();
+  browser_close_subscription_.reset();
   dialog_widget_ = nullptr;
   switch (widget->closed_reason()) {
     // Losing focus should not close the dialog.
@@ -619,4 +626,10 @@ void DiceMigrationService::UpdateDialogShownCountAndTime() {
   CHECK(prefs);
   prefs->SetInteger(kDiceMigrationDialogShownCount, GetDialogShownCount() + 1);
   prefs->SetTime(kDiceMigrationDialogLastShownTime, base::Time::Now());
+}
+
+void DiceMigrationService::BrowserDidClose(BrowserWindowInterface* browser) {
+  if (dialog_widget_) {
+    dialog_widget_->CloseNow();
+  }
 }
