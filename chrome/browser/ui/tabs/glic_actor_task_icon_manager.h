@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_GLIC_ACTOR_TASK_ICON_MANAGER_H_
 #define CHROME_BROWSER_UI_TABS_GLIC_ACTOR_TASK_ICON_MANAGER_H_
 
+#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -49,9 +50,8 @@ class GlicActorTaskIconManager : public KeyedService {
   void OnFloatyUpdate(glic::GlicWindowController::State floaty_state,
                       glic::mojom::CurrentView current_view);
 
-  // TODO(crbug.com/437161973): Add necessary parameters.
   // Called whenever actor task state updates.
-  void OnActorTaskStateUpdate();
+  void OnActorTaskStateUpdate(actor::TaskId task_id);
 
   // Determines the state the task icon should be in.
   void UpdateTaskIcon(glic::GlicWindowController::State floaty_state,
@@ -66,6 +66,8 @@ class GlicActorTaskIconManager : public KeyedService {
       TaskIconStateChangeCallback callback);
 
   ActorTaskIconState GetCurrentActorTaskIconState() const;
+
+  raw_ptr<tabs::TabInterface> GetLastUpdatedTab();
 
   // KeyedService:
   void Shutdown() override;
@@ -89,6 +91,9 @@ class GlicActorTaskIconManager : public KeyedService {
   raw_ptr<actor::ActorKeyedService> actor_service_;
   raw_ref<glic::GlicWindowController> window_controller_;
   raw_ref<glic::Host> host_;
+
+  // TODO(mjenn): Update implementation for multi-tab actuation.
+  actor::TaskId current_task_id_;
 };
 
 }  // namespace tabs

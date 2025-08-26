@@ -33,9 +33,8 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
 
  private:
-  // TODO(crbug.com/422850343): Add task id to callback.
   // Notify profile scoped ui components about actor task state changes.
-  void NotifyActorTaskStateChange();
+  void NotifyActorTaskStateChange(TaskId task_id);
   // Called whenever an actor task state changes.
   void OnActorTaskStateChange(TaskId task_id, ActorTask::State new_task_state);
 
@@ -44,7 +43,8 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
 
   const raw_ref<ActorKeyedService> actor_service_;
 
-  base::RepeatingCallbackList<void()> actor_task_state_change_callback_list_;
+  base::RepeatingCallbackList<void(TaskId)>
+      actor_task_state_change_callback_list_;
 
   base::WeakPtrFactory<ActorUiStateManager> weak_factory_{this};
 };

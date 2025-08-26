@@ -144,7 +144,7 @@ void ActorUiStateManager::OnActorTaskStateChange(
           base::Seconds(
               features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()),
           base::BindOnce(&ActorUiStateManager::NotifyActorTaskStateChange,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(), task_id));
       break;
   }
   for (const auto& tab : GetTabs(task_id)) {
@@ -157,7 +157,7 @@ void ActorUiStateManager::OnActorTaskStateChange(
   notify_actor_task_state_change_debounce_timer_.Start(
       FROM_HERE, kProfileScopedUiUpdateDebounceDelay,
       base::BindOnce(&ActorUiStateManager::NotifyActorTaskStateChange,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), task_id));
 }
 
 std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
@@ -210,7 +210,7 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
             notify_actor_task_state_change_debounce_timer_.Start(
                 FROM_HERE, kProfileScopedUiUpdateDebounceDelay,
                 base::BindOnce(&ActorUiStateManager::NotifyActorTaskStateChange,
-                               weak_factory_.GetWeakPtr()));
+                               weak_factory_.GetWeakPtr(), e.task_id));
           },
           [this](const TaskStateChanged& e) {
             this->OnActorTaskStateChange(e.task_id, e.state);
@@ -253,8 +253,8 @@ void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
   }
 }
 
-void ActorUiStateManager::NotifyActorTaskStateChange() {
-  actor_task_state_change_callback_list_.Notify();
+void ActorUiStateManager::NotifyActorTaskStateChange(TaskId task_id) {
+  actor_task_state_change_callback_list_.Notify(task_id);
 }
 
 base::CallbackListSubscription

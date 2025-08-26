@@ -177,7 +177,7 @@ TEST_F(ActorUiStateManagerTest, SingleTask_RapidTaskStateChanges_Debounced) {
   subscriptions.push_back(
       actor_ui_state_manager()->RegisterActorTaskStateChange(
           base::BindLambdaForTesting(
-              [&callback_count]() { callback_count++; })));
+              [&callback_count](TaskId task_id) { callback_count++; })));
 
   // 1. Create a task.
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();

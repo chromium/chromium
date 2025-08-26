@@ -62,9 +62,10 @@ void GlicActorTaskIconManager::OnFloatyUpdate(
   UpdateTaskIcon(floaty_state, current_view);
 }
 
-void GlicActorTaskIconManager::OnActorTaskStateUpdate() {
+void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   // Reset suppression every time a new actor task state change occurs.
   suppress_task_icon_text_ = false;
+  current_task_id_ = task_id;
   UpdateTaskIcon(window_controller_->state(), host_->GetPrimaryCurrentView());
 }
 
@@ -128,6 +129,13 @@ GlicActorTaskIconManager::RegisterTaskIconStateChange(
 ActorTaskIconState GlicActorTaskIconManager::GetCurrentActorTaskIconState()
     const {
   return current_actor_task_icon_state_;
+}
+
+raw_ptr<tabs::TabInterface> GlicActorTaskIconManager::GetLastUpdatedTab() {
+  if (!current_task_id_ || !actor_service_->GetTask(current_task_id_)) {
+    return nullptr;
+  }
+  return actor_service_->GetTask(current_task_id_)->GetLastActedTab().Get();
 }
 
 }  // namespace tabs

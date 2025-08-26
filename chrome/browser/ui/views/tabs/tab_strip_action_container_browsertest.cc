@@ -7,8 +7,10 @@
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -29,8 +31,10 @@
 #include "chrome/browser/ui/views/tabs/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
@@ -171,6 +175,12 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     } else if (button == GlicNudgeButton()) {
 #if BUILDFLAG(ENABLE_GLIC)
       tab_strip_action_container()->OnGlicButtonClicked();
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_GLIC)
+    } else if (button == GlicActorTaskIcon()) {
+#if BUILDFLAG(ENABLE_GLIC)
+      tab_strip_action_container()->OnGlicActorTaskIconClicked();
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -657,5 +667,80 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
             std::u16string(u"Close Gemini in Chrome"));
   EXPECT_EQ(GlicActorTaskIcon()->GetViewAccessibility().GetCachedName(),
             std::u16string(u"Close Gemini in Chrome"));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
+                       ActivatesTabOnGlicActorTaskIconNudgeClick) {
+  auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
+  actor::TaskId task_id = actor_service->CreateTask();
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  actor::ui::StartTask start_task_event(task_id);
+  actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
+  // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
+  base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
+
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0,
+                                     GURL(chrome::kChromeUINewTabURL),
+                                     ui::PAGE_TRANSITION_LINK));
+  auto* tab_one = browser()->GetTabStripModel()->GetTabAtIndex(0);
+  base::RunLoop loop;
+  task->AddTab(
+      tab_one->GetHandle(),
+      base::BindLambdaForTesting([&](actor::mojom::ActionResultPtr result) {
+        EXPECT_TRUE(actor::IsOk(*result));
+        loop.Quit();
+      }));
+  loop.Run();
+
+  // Add and activate the non-actuation tab.
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1,
+                                     GURL(chrome::kChromeUINewTabURL),
+                                     ui::PAGE_TRANSITION_LINK));
+  auto* tab_two = browser()->GetTabStripModel()->GetTabAtIndex(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+
+  EXPECT_TRUE(task->IsActingOnTab(tab_one->GetHandle()));
+  EXPECT_FALSE(task->IsActingOnTab(tab_two->GetHandle()));
+  EXPECT_FALSE(tab_one->IsActivated());
+  EXPECT_TRUE(tab_two->IsActivated());
+
+  actor_service->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(task_id,
+                                  actor::ActorTask::State::kPausedByActor));
+  // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
+  base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
+
+  auto* task_icon_controller =
+      tabs::GlicActorTaskIconController::From(browser());
+  auto actor_task_icon_state = tabs::ActorTaskIconState();
+  actor_task_icon_state = {
+      .is_visible = true,
+      .text = tabs::ActorTaskIconState::Text::kNeedsAttention};
+  task_icon_controller->OnStateUpdate(
+      glic::GlicWindowController::State::kClosed,
+      glic::mojom::CurrentView::kConversation, actor_task_icon_state);
+  EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
+  OnButtonClicked(GlicActorTaskIcon());
+
+  EXPECT_TRUE(tab_one->IsActivated());
+  EXPECT_FALSE(tab_two->IsActivated());
+
+  // Mark task as completed and remove the tab being actuated on.
+  actor_task_icon_state = {
+      .is_visible = true,
+      .text = tabs::ActorTaskIconState::Text::kCompleteTasks};
+  task_icon_controller->OnStateUpdate(
+      glic::GlicWindowController::State::kClosed,
+      glic::mojom::CurrentView::kConversation, actor_task_icon_state);
+  task->RemoveTab(tab_one->GetHandle());
+
+  EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
+  EXPECT_FALSE(task->IsActingOnTab(tab_one->GetHandle()));
+  // User switches to another tab but the last actuated tab has been removed
+  // from the task. Expect no change in the active tab once it is removed.
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  OnButtonClicked(GlicActorTaskIcon());
+  EXPECT_TRUE(tab_two->IsActivated());
+  EXPECT_FALSE(tab_one->IsActivated());
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)

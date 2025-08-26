@@ -358,6 +358,7 @@ if (!is_android) {
       ]
 
       public_deps += [
+        "//chrome/browser/actor:types",
         "//chrome/browser/glic",
         "//chrome/browser/glic:mojo_bindings",
       ]

@@ -31,6 +31,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/tween.h"
@@ -50,6 +51,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/grit/branded_strings.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -571,11 +573,24 @@ void TabStripActionContainer::OnGlicButtonMouseDown() {
 }
 
 void TabStripActionContainer::OnGlicActorTaskIconClicked() {
-  glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-      tab_strip_controller_->GetProfile())
-      ->ToggleUI(tab_strip_controller_->GetBrowserWindowInterface(),
-                 /*prevent_close=*/false,
-                 glic::mojom::InvocationSource::kActorTaskIcon);
+  Profile* profile = tab_strip_controller_->GetProfile();
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ToggleUI(
+      tab_strip_controller_->GetBrowserWindowInterface(),
+      /*prevent_close=*/false, glic::mojom::InvocationSource::kActorTaskIcon);
+
+  if (glic_actor_task_icon_->GetIsShowingNudge()) {
+    // If a nudge is showing, activate the last actuated tab on click of the
+    // Task Icon.
+    if (tabs::TabInterface* last_updated_tab =
+            tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile)
+                ->GetLastUpdatedTab()) {
+      TabStripModel* tab_strip_model =
+          tab_strip_controller_->GetBrowserWindowInterface()
+              ->GetTabStripModel();
+      int tab_index = tab_strip_model->GetIndexOfTab(last_updated_tab);
+      tab_strip_model->ActivateTabAt(tab_index);
+    }
+  }
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)

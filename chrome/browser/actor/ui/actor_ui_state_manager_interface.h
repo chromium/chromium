@@ -34,7 +34,7 @@ class ActorUiStateManagerInterface {
 
   // Register for this callback to be notified whenever the actor task state
   // changes.
-  using ActorTaskStateChangeCallback = base::RepeatingCallback<void()>;
+  using ActorTaskStateChangeCallback = base::RepeatingCallback<void(TaskId)>;
   virtual base::CallbackListSubscription RegisterActorTaskStateChange(
       ActorTaskStateChangeCallback callback) = 0;
 };
