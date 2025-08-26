@@ -11,10 +11,10 @@
 @protocol AutocompleteSuggestion;
 @protocol AutocompleteSuggestionGroup;
 @class AutocompleteMatchFormatter;
+class AutocompleteProviderClient;
 class AutocompleteResult;
 class OmniboxClient;
 @class OmniboxPedalAnnotator;
-class ProfileIOS;
 class TemplateURLService;
 
 // The autocomplete match wrapper. This class is responsible for wrapping
@@ -23,7 +23,7 @@ class TemplateURLService;
 
 /// Initializes the wrapper with the given omnibox client.
 - (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
-                              profile:(ProfileIOS*)profile
+           autocompleteProviderClient:(AutocompleteProviderClient*)acClient
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

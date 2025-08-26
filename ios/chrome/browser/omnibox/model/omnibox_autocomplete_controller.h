@@ -53,6 +53,11 @@ struct OmniboxTextModel;
 // Whether or not the popup has suggestions.
 @property(nonatomic, assign, readonly) BOOL hasSuggestions;
 
+// Returns the autocomplete provider client that's used by the internal
+// autocomplete controller.
+@property(nonatomic, assign, readonly)
+    AutocompleteProviderClient* autocompleteProviderClient;
+
 - (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
                      omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
     NS_DESIGNATED_INITIALIZER;
