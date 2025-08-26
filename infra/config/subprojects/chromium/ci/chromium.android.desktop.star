@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.android.desktop builder group."""
 
+load("@chromium-luci//args.star", "args")
 load("@chromium-luci//branches.star", "branches")
 load("@chromium-luci//builder_config.star", "builder_config")
 load("@chromium-luci//builder_health_indicators.star", "health_spec")
@@ -314,4 +315,118 @@ ci.thin_tester(
         short_name = "15-rel",
     ),
     cq_mirrors_console_view = "mirrors",
+)
+
+ci.builder(
+    name = "android-desktop-arm64-deterministic-rel",
+    description_html = "Deterministic arm64 release build for Android Desktop.",
+    executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "android_desktop",
+            "android_builder",
+            "android_with_static_analysis",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "strip_debug_info",
+            "arm64",
+        ],
+    ),
+    builderless = False,
+    cores = 32,
+    # TODO(crbug.com/420639761): Enable gardening and tree closing when stable.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|det",
+        short_name = "arm64-rel",
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    execution_timeout = 7 * time.hour,
+)
+
+ci.builder(
+    name = "android-desktop-arm64-deterministic-dbg",
+    description_html = "Deterministic arm64 dbg build for Android Desktop.",
+    executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "android_desktop",
+            "android_builder",
+            "android_with_static_analysis",
+            "debug_builder",
+            "remoteexec",
+            "arm64",
+        ],
+    ),
+    builderless = False,
+    cores = 32,
+    # TODO(crbug.com/420639761): Enable gardening and tree closing when stable.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|det",
+        short_name = "arm64-dbg",
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    execution_timeout = 6 * time.hour,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
+)
+
+ci.builder(
+    name = "android-desktop-x64-deterministic-rel",
+    description_html = "Deterministic x64 release build for Android Desktop.",
+    executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "android_desktop",
+            "android_builder",
+            "android_with_static_analysis",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "strip_debug_info",
+            "x64",
+        ],
+    ),
+    builderless = False,
+    cores = 32,
+    # TODO(crbug.com/420639761): Enable gardening and tree closing when stable.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|det",
+        short_name = "x64-rel",
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    execution_timeout = 7 * time.hour,
+)
+
+ci.builder(
+    name = "android-desktop-x64-deterministic-dbg",
+    description_html = "Deterministic x64 dbg build for Android Desktop.",
+    executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "android_desktop",
+            "android_builder",
+            "android_with_static_analysis",
+            "debug_builder",
+            "remoteexec",
+            "x64",
+        ],
+    ),
+    builderless = False,
+    cores = 32,
+    # TODO(crbug.com/420639761): Enable gardening and tree closing when stable.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|det",
+        short_name = "x64-dbg",
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    execution_timeout = 6 * time.hour,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )

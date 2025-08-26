@@ -132,6 +132,54 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-desktop-arm64-deterministic-rel",
+    description_html = "Deterministic arm64 release trybot for Android Desktop.",
+    executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-desktop-arm64-deterministic-rel",
+        ],
+    ),
+    execution_timeout = 6 * time.hour,
+)
+
+try_.builder(
+    name = "android-desktop-arm64-deterministic-dbg",
+    description_html = "Deterministic arm64 dbg build for Android Desktop.",
+    executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-desktop-arm64-deterministic-dbg",
+        ],
+    ),
+    execution_timeout = 6 * time.hour,
+)
+
+try_.builder(
+    name = "android-desktop-x64-deterministic-rel",
+    description_html = "Deterministic x64 release trybot for Android Desktop.",
+    executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-desktop-x64-deterministic-rel",
+        ],
+    ),
+    execution_timeout = 6 * time.hour,
+)
+
+try_.builder(
+    name = "android-desktop-x64-deterministic-dbg",
+    description_html = "Deterministic x64 dbg build for Android Desktop.",
+    executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-desktop-x64-deterministic-dbg",
+        ],
+    ),
+    execution_timeout = 6 * time.hour,
+)
+
+try_.builder(
     name = "android-desktop-15-x64-fyi-rel",
     mirrors = [
         "ci/android-desktop-15-x64-fyi-rel",
