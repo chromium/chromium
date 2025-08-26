@@ -63,9 +63,6 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable aria-actions.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "AriaActions");
-  // Enable CSSReadingFlow, used by AccessibilityCSSReadingFlow.
-  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                  "CSSReadingFlow");
   // Enable CSSInert, used by AccessibilityCSSInteractivityInert.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "CSSInert");
   // Enable custom elements to have a default role of "none", removing them
@@ -80,9 +77,6 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable AOMAriaRelationshipProperties
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "AOMAriaRelationshipProperties");
-  // Enable command/commandfor attributes
-  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                  "HTMLCommandAttributes");
   // Enable headingoffset/headingreset attributes
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "HeadingOffset");

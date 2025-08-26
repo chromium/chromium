@@ -97,8 +97,6 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   // RunHtmlTest when `interestfor` is enabled by default.
   void RunPopoverHintTest(const base::FilePath::CharType* file_path) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "HTMLCommandAttributes");
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "HTMLInterestForAttribute");
     RunTypedTest<kHtml>(file_path);
   }
