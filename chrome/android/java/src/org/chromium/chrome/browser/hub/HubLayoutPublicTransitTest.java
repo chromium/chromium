@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -29,6 +28,7 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 /** Public transit instrumentation/integration test of Hub. */
@@ -38,7 +38,8 @@ import org.chromium.components.tab_groups.TabGroupColorId;
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
-    ChromeFeatureList.ANDROID_THEME_MODULE
+    ChromeFeatureList.ANDROID_THEME_MODULE,
+    OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS
 })
 @Batch(Batch.PER_CLASS)
 public class HubLayoutPublicTransitTest {
@@ -100,7 +101,6 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
-    @DisabledTest(message = "crbug.com/439324966")
     public void testTabGroupPane_newTabGroup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         int firstTabId = firstPage.loadedTabElement.value().getId();

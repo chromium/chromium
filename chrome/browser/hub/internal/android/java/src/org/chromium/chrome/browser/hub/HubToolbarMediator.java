@@ -369,7 +369,10 @@ public class HubToolbarMediator {
     }
 
     private boolean maybeExcludeHubSearchForTabGroupsPane(@PaneId int focusedPaneId) {
-        if (!OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.getValue()) return true;
+        if (!OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()
+                || !OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.getValue()) {
+            return true;
+        }
 
         return focusedPaneId != PaneId.TAB_GROUPS;
     }
