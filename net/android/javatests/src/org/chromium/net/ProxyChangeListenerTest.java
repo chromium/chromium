@@ -125,8 +125,8 @@ public class ProxyChangeListenerTest {
 
         // Create the listener that's going to be used for tests
         mListener = ProxyChangeListener.create();
-        mListener.setDelegateForTesting(
-                mDelegate = Mockito.mock(ProxyChangeListener.Delegate.class));
+        mDelegate = Mockito.mock(ProxyChangeListener.Delegate.class);
+        mListener.setDelegateForTesting(mDelegate);
         mListener.start(0);
 
         // These are looking for a call to register*NonExported*BroadcastReceiver to register a

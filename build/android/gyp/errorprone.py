@@ -30,7 +30,6 @@ TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
 ERRORPRONE_WARNINGS_TO_DISABLE = [
     # High priority to enable:
     'DirectInvocationOnMock',
-    'AssignmentExpression',
     # High priority to enable in non-tests:
     'JdkObsolete',
     'ReturnValueIgnored',

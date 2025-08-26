@@ -26,8 +26,8 @@ class WebViewRenderProcessAdapter extends WebViewRenderProcess {
         }
         WebViewRenderProcessAdapter instance = sInstances.get(awRenderProcess);
         if (instance == null) {
-            sInstances.put(
-                    awRenderProcess, instance = new WebViewRenderProcessAdapter(awRenderProcess));
+            instance = new WebViewRenderProcessAdapter(awRenderProcess);
+            sInstances.put(awRenderProcess, instance);
         }
         return instance;
     }

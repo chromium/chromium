@@ -22,7 +22,8 @@ abstract class IsomorphicAdapter implements IsomorphicObjectBoundaryInterface {
         Object peer = peeredObject.getSupportLibObject();
         if (peer == null) {
             try {
-                peeredObject.setSupportLibObject(peer = creationCallable.call());
+                peer = creationCallable.call();
+                peeredObject.setSupportLibObject(peer);
             } catch (Exception e) {
                 throw new RuntimeException("Could not create peered object", e);
             }
