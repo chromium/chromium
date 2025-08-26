@@ -257,7 +257,6 @@ class ProcessNodeImpl
   // determine the right priority.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       base::TaskPriority,
-      base::TaskPriority,
       &ProcessNodeObserver::OnPriorityChanged>
       priority_ GUARDED_BY_CONTEXT(sequence_checker_);
 

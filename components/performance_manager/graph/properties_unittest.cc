@@ -80,7 +80,6 @@ class DummyNode {
           observed_only_on_changes_{false};
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       bool,
-      bool,
       &DummyObserver::NotifyOnlyOnChangesWithPreviousValueConst>
       observed_only_on_changes_with_previous_value_{false};
 

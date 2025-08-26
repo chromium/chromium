@@ -322,7 +322,6 @@ class PageNodeImpl
   // navigation.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       std::optional<blink::mojom::PermissionStatus>,
-      std::optional<blink::mojom::PermissionStatus>,
       &PageNodeObserver::OnPageNotificationPermissionStatusChange>
       notification_permission_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -339,7 +338,6 @@ class PageNodeImpl
 
   // The type of the page.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
-      PageType,
       PageType,
       &PageNodeObserver::OnTypeChanged>
       type_ GUARDED_BY_CONTEXT(sequence_checker_){PageType::kUnknown};
@@ -382,7 +380,6 @@ class PageNodeImpl
   // The loading state. This is driven by instrumentation in the browser
   // process.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
-      LoadingState,
       LoadingState,
       &PageNodeObserver::OnLoadingStateChanged>
       loading_state_ GUARDED_BY_CONTEXT(sequence_checker_){

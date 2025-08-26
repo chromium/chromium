@@ -119,13 +119,7 @@ class ObservedPropertyImpl {
 
   // Same as NotifiesOnlyOnChanges, but provides the previous value when
   // notifying observers.
-  // TODO(chrisha): When C++17 is available, deduce PreviousValueType via use of
-  // an 'auto' placeholder non-type template parameter helper.
-  template <typename PropertyType,
-            typename PreviousValueType,
-            void (ObserverType::*NotifyFunctionPtr)(
-                const NodeType* node,
-                PreviousValueType previous_value)>
+  template <typename PropertyType, auto NotifyFunctionPtr>
   class NotifiesOnlyOnChangesWithPreviousValue {
    public:
     NotifiesOnlyOnChangesWithPreviousValue() = default;

@@ -381,7 +381,6 @@ class FrameNodeImpl
   // Frame priority information. Set via ExecutionContextPriorityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       PriorityAndReason,
-      const PriorityAndReason&,
       &FrameNodeObserver::OnPriorityAndReasonChanged>
       priority_and_reason_{PriorityAndReason(base::TaskPriority::LOWEST,
                                              kDefaultPriorityReason)};
@@ -413,7 +412,6 @@ class FrameNodeImpl
   // Indicates if the frame is visible. This is maintained by the
   // FrameVisibilityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
-      Visibility,
       Visibility,
       &FrameNodeObserver::OnFrameVisibilityChanged>
       visibility_{Visibility::kUnknown};

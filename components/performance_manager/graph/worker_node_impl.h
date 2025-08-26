@@ -151,7 +151,6 @@ class WorkerNodeImpl
   // Worker priority information. Set via ExecutionContextPriorityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       PriorityAndReason,
-      const PriorityAndReason&,
       &WorkerNodeObserver::OnPriorityAndReasonChanged>
       priority_and_reason_ GUARDED_BY_CONTEXT(sequence_checker_){
           PriorityAndReason(base::TaskPriority::LOWEST,
