@@ -63,7 +63,7 @@ class NavigationAttachmentsMediator {
                 NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
         mModel.set(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED, this::onCameraClicked);
         mModel.set(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED, this::launchImagePicker);
-        mModel.set(NavigationAttachmentsProperties.POPUP_FILE_CLICKED, this::launchFilePicker);
+        mModel.set(NavigationAttachmentsProperties.POPUP_FILE_CLICKED, this::onFilePickerClicked);
         mModel.set(
                 NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED, this::onUseAiModeChanged);
     }
@@ -159,9 +159,25 @@ class NavigationAttachmentsMediator {
                 R.string.low_memory_error);
     }
 
-    private void launchFilePicker() {
+    @VisibleForTesting
+    void onFilePickerClicked() {
         mPopup.dismiss();
+        if (mPermissionDelegate.hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            launchFilePicker();
+        } else {
+            mPermissionDelegate.requestPermissions(
+                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                    (permissions, grantResults) -> {
+                        if (grantResults.length > 0
+                                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                            launchFilePicker();
+                        }
+                    });
+        }
+    }
 
+    @VisibleForTesting
+    void launchFilePicker() {
         var i =
                 new Intent(Intent.ACTION_OPEN_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)

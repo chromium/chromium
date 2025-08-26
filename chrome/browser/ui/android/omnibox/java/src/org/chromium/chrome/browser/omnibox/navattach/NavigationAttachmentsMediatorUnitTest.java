@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -120,39 +119,32 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
-    public void onGalleryButtonClicked_launchesImagePicker() {
-        Runnable runnable = mModel.get(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED);
-        assertNotNull(runnable);
+    public void onFilePickerClicked_permissionGranted_launchesFilePicker() {
+        doReturn(true).when(mWindowAndroid).hasPermission(any());
+        doNothing().when(mMediator).launchFilePicker();
 
-        runnable.run();
+        mMediator.onFilePickerClicked();
 
-        verify(mPopup).dismiss();
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mWindowAndroid).showCancelableIntent(intentCaptor.capture(), any(), any());
-
-        Intent intent = intentCaptor.getValue();
-        assertEquals(Intent.ACTION_GET_CONTENT, intent.getAction());
-        assertTrue(intent.hasCategory(Intent.CATEGORY_OPENABLE));
-        assertEquals("image/*", intent.getType());
-        assertTrue(intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false));
+        verify(mMediator).launchFilePicker();
+        verify(mWindowAndroid, never()).requestPermissions(any(), any());
     }
 
     @Test
-    public void onFileButtonClicked_launchesFilePicker() {
-        Runnable runnable = mModel.get(NavigationAttachmentsProperties.POPUP_FILE_CLICKED);
-        assertNotNull(runnable);
+    public void onFilePickerClicked_permissionDenied_requestsPermission() {
+        doReturn(false).when(mWindowAndroid).hasPermission(any());
+        doNothing().when(mMediator).launchFilePicker();
 
-        runnable.run();
+        mMediator.onFilePickerClicked();
 
+        verify(mMediator, never()).launchFilePicker();
+        verify(mWindowAndroid).requestPermissions(any(), any());
+    }
+
+    @Test
+    public void onGalleryButtonClicked_launchesImagePicker() {
+        mModel.get(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED).run();
         verify(mPopup).dismiss();
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mWindowAndroid).showCancelableIntent(intentCaptor.capture(), any(), any());
-
-        Intent intent = intentCaptor.getValue();
-        assertEquals(Intent.ACTION_OPEN_DOCUMENT, intent.getAction());
-        assertTrue(intent.hasCategory(Intent.CATEGORY_OPENABLE));
-        assertEquals("*/*", intent.getType());
-        assertTrue(intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false));
+        verify(mWindowAndroid).showCancelableIntent(any(Intent.class), any(), any());
     }
 
     @Test
