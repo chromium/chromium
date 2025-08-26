@@ -1218,7 +1218,6 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/439859529")
     public void testCentralAccountCardNotReceivingFocus() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startManageSyncPreferences();
@@ -1263,7 +1262,6 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/439859529")
     public void testIdentityErrorCardNotReceivingFocus() {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
 
