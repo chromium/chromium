@@ -10,7 +10,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -192,14 +191,10 @@ class PrivacyGuideMetricsDelegate {
 
         boolean isInitialStateBlock3PIncognito =
                 mInitialCookiesControlMode == CookieControlsMode.INCOGNITO_ONLY
-                        || (ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)
-                                && mInitialCookiesControlMode == CookieControlsMode.OFF);
+                        || mInitialCookiesControlMode == CookieControlsMode.OFF;
         boolean isEndStateBlock3PIncognito =
                 currentValue == CookieControlsMode.INCOGNITO_ONLY
-                        || (ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)
-                                && currentValue == CookieControlsMode.OFF);
+                        || currentValue == CookieControlsMode.OFF;
 
         @PrivacyGuideSettingsStates int stateChange;
 

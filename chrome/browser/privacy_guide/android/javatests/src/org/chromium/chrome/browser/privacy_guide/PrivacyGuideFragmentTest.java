@@ -94,7 +94,6 @@ import java.util.Set;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({
     ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY,
-    ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO
 })
 @DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 public class PrivacyGuideFragmentTest {
@@ -1155,7 +1154,7 @@ public class PrivacyGuideFragmentTest {
                         SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.BLOCK3P_TO3P_INCOGNITO);
 
-        onView(withId(R.id.block_third_party_incognito)).perform(click());
+        onView(withId(R.id.allow_third_party)).perform(click());
         navigateFromCardToNext(FragmentType.COOKIES);
 
         histogram.assertExpected();
