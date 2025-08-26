@@ -61,7 +61,7 @@ class KioskAppLaunchError {
                                     const AuthFailure& auth_failure);
 
   // Gets the last launch error.
-  static Error Get();
+  static Error Get(const PrefService& local_state);
 
   // Records the launch error and cryptohome auth error metric and clears them.
   static void RecordMetricAndClear();

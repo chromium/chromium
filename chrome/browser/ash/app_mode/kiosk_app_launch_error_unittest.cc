@@ -107,13 +107,16 @@ TEST_F(KioskAppLaunchErrorTest, SaveError) {
   EXPECT_TRUE(out_error.has_value());
   EXPECT_EQ(out_error.value(),
             static_cast<int>(KioskAppLaunchError::Error::kUserCancel));
-  EXPECT_EQ(KioskAppLaunchError::Get(),
+  EXPECT_EQ(KioskAppLaunchError::Get(
+                CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())),
             KioskAppLaunchError::Error::kUserCancel);
 
   // The launch error is cleaned up after clear operation.
   KioskAppLaunchError::RecordMetricAndClear();
   EXPECT_FALSE(GetKioskDictionary().contains(kKeyLaunchError));
-  EXPECT_EQ(KioskAppLaunchError::Get(), KioskAppLaunchError::Error::kNone);
+  EXPECT_EQ(KioskAppLaunchError::Get(
+                CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())),
+            KioskAppLaunchError::Error::kNone);
 }
 
 TEST_F(KioskAppLaunchErrorTest, SaveCryptohomeFailure) {

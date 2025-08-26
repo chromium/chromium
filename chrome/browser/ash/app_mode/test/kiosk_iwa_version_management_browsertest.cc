@@ -329,7 +329,8 @@ class KioskIwaVersionManagementBaseTest
   void RunUnableToInstallChecks() {
     RunUntilBrowserProcessQuits();
     EXPECT_EQ(KioskAppLaunchError::Error::kUnableToInstall,
-              KioskAppLaunchError::Get());
+              KioskAppLaunchError::Get(
+                  CHECK_DEREF(g_browser_process->local_state())));
     EXPECT_FALSE(KioskController::Get().IsSessionStarting());
   }
 

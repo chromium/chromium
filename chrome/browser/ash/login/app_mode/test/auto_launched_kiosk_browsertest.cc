@@ -11,6 +11,7 @@
 #include "apps/test/app_window_waiter.h"
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -364,8 +365,9 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedNonKioskEnabledAppTest, NotLaunched) {
   run_loop.Run();
 
   EXPECT_FALSE(listener.was_satisfied());
-  EXPECT_EQ(KioskAppLaunchError::Error::kNotKioskEnabled,
-            KioskAppLaunchError::Get());
+  EXPECT_EQ(
+      KioskAppLaunchError::Error::kNotKioskEnabled,
+      KioskAppLaunchError::Get(CHECK_DEREF(g_browser_process->local_state())));
 }
 
 // Used to test management API availability in kiosk sessions.

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/login_accelerators.h"
+#include "base/check_deref.h"
 #include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -53,7 +55,8 @@ class ChromeAppDeprecationKioskSessionBrowserTest
 
   void WaitForChromeAppDeprecatedLaunchError() {
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      return KioskAppLaunchError::Get() ==
+      return KioskAppLaunchError::Get(
+                 CHECK_DEREF(g_browser_process->local_state())) ==
              KioskAppLaunchError::Error::kChromeAppDeprecated;
     }));
   }
@@ -104,8 +107,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAppDeprecationKioskDefaultFlagTest,
   PressBailoutAccelerator();
 
   RunUntilBrowserProcessQuits();
-  EXPECT_EQ(KioskAppLaunchError::Get(),
-            KioskAppLaunchError::Error::kUserCancel);
+  EXPECT_EQ(
+      KioskAppLaunchError::Get(CHECK_DEREF(g_browser_process->local_state())),
+      KioskAppLaunchError::Error::kUserCancel);
   EXPECT_FALSE(ash::KioskController::Get().IsSessionStarting());
 }
 
@@ -157,8 +161,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAppDeprecationKioskDefaultFlagTest,
   PressBailoutAccelerator();
 
   RunUntilBrowserProcessQuits();
-  EXPECT_EQ(KioskAppLaunchError::Get(),
-            KioskAppLaunchError::Error::kUserCancel);
+  EXPECT_EQ(
+      KioskAppLaunchError::Get(CHECK_DEREF(g_browser_process->local_state())),
+      KioskAppLaunchError::Error::kUserCancel);
   EXPECT_FALSE(ash::KioskController::Get().IsSessionStarting());
 }
 

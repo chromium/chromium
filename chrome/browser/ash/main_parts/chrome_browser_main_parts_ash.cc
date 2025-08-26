@@ -1010,7 +1010,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kTestType) ||
       ShouldAutoLaunchKioskApp(*base::CommandLine::ForCurrentProcess(),
-                               *g_browser_process->local_state())) {
+                               CHECK_DEREF(g_browser_process->local_state()))) {
     WizardController::SetZeroDelays();
   }
 

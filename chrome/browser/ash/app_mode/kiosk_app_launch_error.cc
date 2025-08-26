@@ -110,14 +110,14 @@ void KioskAppLaunchError::SaveCryptohomeFailure(
 }
 
 // static
-KioskAppLaunchError::Error KioskAppLaunchError::Get() {
+KioskAppLaunchError::Error KioskAppLaunchError::Get(
+    const PrefService& local_state) {
   if (s_last_error) {
     return *s_last_error;
   }
   s_last_error = Error::kNone;
-  PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& dict =
-      local_state->GetDict(KioskChromeAppManager::kKioskDictionaryName);
+      local_state.GetDict(KioskChromeAppManager::kKioskDictionaryName);
 
   std::optional<int> error = dict.FindInt(kKeyLaunchError);
   if (error.has_value()) {
