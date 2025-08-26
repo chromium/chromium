@@ -125,10 +125,13 @@ BrowserFrameViewWin::BrowserFrameViewWin(BrowserFrame* frame,
                      .Build());
   }
 
+  bool supports_title =
+      supports_title_bar ||
+      WebUITabStripContainerView::SupportsTouchableTabStrip(browser);
+
   // If this is a web app window, the window title will be part of the
   // BrowserView and thus we don't need to create another one here.
-  if (!browser_view->GetIsWebAppType() && supports_title_bar &&
-      WebUITabStripContainerView::SupportsTouchableTabStrip(browser)) {
+  if (!browser_view->GetIsWebAppType() && supports_title) {
     window_title_ = new views::Label(browser_view->GetWindowTitle());
     window_title_->SetSubpixelRenderingEnabled(false);
     window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
