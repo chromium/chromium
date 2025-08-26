@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -641,35 +642,28 @@ const char* SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType type) {
 
 // static
 const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
-  switch (type) {
-    case UserSelectableType::kBookmarks:
-      return prefs::internal::kSyncBookmarks;
-    case UserSelectableType::kPreferences:
-      return prefs::internal::kSyncPreferences;
-    case UserSelectableType::kPasswords:
-      return prefs::internal::kSyncPasswords;
-    case UserSelectableType::kAutofill:
-      return prefs::internal::kSyncAutofill;
-    case UserSelectableType::kThemes:
-      return prefs::internal::kSyncThemes;
-    case UserSelectableType::kHistory:
-      return prefs::internal::kSyncHistory;
-    case UserSelectableType::kExtensions:
-      return prefs::internal::kSyncExtensions;
-    case UserSelectableType::kApps:
-      return prefs::internal::kSyncApps;
-    case UserSelectableType::kReadingList:
-      return prefs::internal::kSyncReadingList;
-    case UserSelectableType::kTabs:
-      return prefs::internal::kSyncTabs;
-    case UserSelectableType::kSavedTabGroups:
-      return prefs::internal::kSyncSavedTabGroups;
-    case UserSelectableType::kPayments:
-      return prefs::internal::kSyncPayments;
-    case UserSelectableType::kProductComparison:
-      return prefs::internal::kSyncProductComparison;
-    case UserSelectableType::kCookies:
-      return prefs::internal::kSyncCookies;
+  static constexpr auto kTypeToPrefName =
+      base::MakeFixedFlatMap<UserSelectableType, const char*>({
+          {UserSelectableType::kBookmarks, prefs::internal::kSyncBookmarks},
+          {UserSelectableType::kPreferences, prefs::internal::kSyncPreferences},
+          {UserSelectableType::kPasswords, prefs::internal::kSyncPasswords},
+          {UserSelectableType::kAutofill, prefs::internal::kSyncAutofill},
+          {UserSelectableType::kThemes, prefs::internal::kSyncThemes},
+          {UserSelectableType::kHistory, prefs::internal::kSyncHistory},
+          {UserSelectableType::kExtensions, prefs::internal::kSyncExtensions},
+          {UserSelectableType::kApps, prefs::internal::kSyncApps},
+          {UserSelectableType::kReadingList, prefs::internal::kSyncReadingList},
+          {UserSelectableType::kTabs, prefs::internal::kSyncTabs},
+          {UserSelectableType::kSavedTabGroups,
+           prefs::internal::kSyncSavedTabGroups},
+          {UserSelectableType::kPayments, prefs::internal::kSyncPayments},
+          {UserSelectableType::kProductComparison,
+           prefs::internal::kSyncProductComparison},
+          {UserSelectableType::kCookies, prefs::internal::kSyncCookies},
+      });
+  auto it = kTypeToPrefName.find(type);
+  if (it != kTypeToPrefName.end()) {
+    return it->second;
   }
   NOTREACHED();
 }
