@@ -37,6 +37,7 @@
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_test_ids.h"
 #include "ui/color/dynamic_color/palette_factory.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -183,6 +184,11 @@ BrowserThemePackTest::BrowserThemePackTest()
 // static
 std::map<int, SkColor> BrowserThemePackTest::GetDefaultColorMap() {
   std::map<int, SkColor> colors;
+
+  for (int i = TP::COLOR_BOOKMARK_TEXT; i <= TP::COLOR_TOOLBAR_TEXT; ++i) {
+    colors[i] = GetDefaultColor(i);
+  }
+
   GenerateDefaultFrameColor(&colors, TP::COLOR_FRAME_ACTIVE, TP::TINT_FRAME,
                             false);
   GenerateDefaultFrameColor(&colors, TP::COLOR_FRAME_INACTIVE,
@@ -191,12 +197,6 @@ std::map<int, SkColor> BrowserThemePackTest::GetDefaultColorMap() {
                             TP::TINT_FRAME, true);
   GenerateDefaultFrameColor(&colors, TP::COLOR_FRAME_INACTIVE_INCOGNITO,
                             TP::TINT_FRAME_INACTIVE, true);
-
-  // For the rest, use default colors.
-  for (int i = TP::COLOR_FRAME_INACTIVE_INCOGNITO + 1;
-       i <= TP::COLOR_CONTROL_BUTTON_BACKGROUND; ++i) {
-    colors[i] = GetDefaultColor(i);
-  }
 
   return colors;
 }
@@ -605,6 +605,15 @@ SkColor BrowserThemePackTest::BuildThirdOpacity(SkColor color_link) {
 
 // static
 SkColor BrowserThemePackTest::GetDefaultColor(int id) {
+  // These colors are no longer provided by `ThemeProperties`, since the theme
+  // code does not query for them directly.
+  if (id == TP::COLOR_BOOKMARK_TEXT || id == TP::COLOR_OMNIBOX_BACKGROUND ||
+      id == TP::COLOR_OMNIBOX_TEXT ||
+      id == TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE ||
+      id == TP::COLOR_TOOLBAR_BUTTON_ICON) {
+    return gfx::kPlaceholderColor;
+  }
+
   // Direct incognito IDs need to be mapped back to the non-incognito versions
   // (plus passing "true" for |incognito|) to avoid DCHECK failures.
   switch (id) {
