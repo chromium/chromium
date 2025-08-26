@@ -1427,6 +1427,7 @@ TEST_P(WindowPerformanceTest, ElementTimingTraceEvent) {
   std::string* url = arg_dict.FindString("url");
   ASSERT_TRUE(url);
   EXPECT_EQ(*url, "url");
+  ASSERT_TRUE(arg_dict.FindInt("nodeId").has_value());
 }
 
 TEST_P(WindowPerformanceTest, EventTimingTraceEvents) {

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 
@@ -90,6 +91,8 @@ std::unique_ptr<TracedValue> PerformanceElementTiming::ToTracedValue() const {
   traced_value->SetInteger("naturalHeight", naturalHeight_);
   traced_value->SetString("elementId", id_);
   traced_value->SetString("url", url_);
+  traced_value->SetInteger(
+      "nodeId", element_ ? element_->GetDomNodeId() : kInvalidDOMNodeId);
   return traced_value;
 }
 
