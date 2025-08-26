@@ -916,14 +916,6 @@ BASE_FEATURE(ImmersiveFullscreenPWAs, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(IncognitoFingerprintingInterventions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-// A feature that controls whether Chrome warns about incompatible applications.
-// This feature requires Windows 10 or higher to work because it depends on
-// the "Apps & Features" system settings.
-BASE_FEATURE(IncompatibleApplicationsWarning,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 // A feature that controls whether Instant uses a spare renderer.
 BASE_FEATURE(InstantUsesSpareRenderer, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1338,15 +1330,6 @@ BASE_FEATURE(TPMFirmwareUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables the Support Tool to include a screenshot in the exported support tool
 // packet.
 BASE_FEATURE(SupportToolScreenshot, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(IS_WIN)
-// Enables the blocking of third-party modules. This feature requires Windows 8
-// or higher because it depends on the ProcessExtensionPointDisablePolicy
-// mitigation, which was not available on Windows 7.
-// Note: Due to a limitation in the implementation of this feature, it is
-// required to start the browser two times to fully enable or disable it.
-BASE_FEATURE(ThirdPartyModulesBlocking, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Disable downloads of unsafe file types over insecure transports if initiated

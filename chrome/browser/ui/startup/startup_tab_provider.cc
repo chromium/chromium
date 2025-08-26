@@ -395,14 +395,6 @@ StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabsForState(
 #endif
 
 // static
-void StartupTabProviderImpl::AddIncompatibleApplicationsUrl(StartupTabs* tabs) {
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  GURL url(chrome::kChromeUISettingsURL);
-  tabs->emplace_back(url.Resolve("incompatibleApplications"));
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
-// static
 GURL StartupTabProviderImpl::GetTriggeredResetSettingsUrl() {
   return GURL(
       chrome::GetSettingsUrl(chrome::kTriggeredResetProfileSettingsSubPage));

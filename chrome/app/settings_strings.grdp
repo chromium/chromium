@@ -3850,40 +3850,6 @@
     </message>
   </if>
 
-  <!-- Incompatible Applications Page -->
-  <if expr="is_win and _google_chrome">
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_RESET_CARD_TITLE" desc="The title of the Incompatible Applications section of the settings.">
-      Update or remove incompatible applications
-    </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_SUBTITLE" desc="The subtitle shown in the subpage for incompatible applications.">
-      {NUM_APPLICATIONS, plural,
-        =1 {This application could prevent Chrome from working properly.}
-        other {These applications could prevent Chrome from working properly.}}
-    </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_SUBTITLE_NO_ADMIN_RIGHTS" desc="The subtitle shown in the subpage for incompatible applications, when the user does not have administrator rights. This means that these users are incapable of updating or removing incompatible applications by themselves.">
-      {NUM_APPLICATIONS, plural,
-        =1 {To ensure that you can keep browsing the web, ask your administrator to remove this application.}
-        other {To ensure that you can keep browsing the web, ask your administrator to remove these applications.}}
-    </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_LEARN_HOW" desc="Following the subtitle, this is a link to a help center article that explains how to update any program.">
-      <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn how to update applications<ph name="END_LINK">&lt;/a&gt;</ph>
-    </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_LIST_TITLE" desc="This is the title for the list of incompatible applications.">
-      {NUM_APLLICATIONS, plural,
-        =1 {Application}
-        other {Applications}}
-    </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_REMOVE_BUTTON" desc="The label of the button if the recommended action for this application is to uninstall it.">
-      Remove...
-    </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_UPDATE_BUTTON" desc="The label of the button if the recommended action for this application is to update it.">
-      Update
-    </message>
-    <message name="IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_DONE" desc="This message is displayed when the Incompatible Applications section is empty. This is possible when the user starts interacting with the section and update/remove the applications in the list.">
-      Done! No incompatible applications found.
-    </message>
-  </if>
-
   <message name="IDS_PAGE_NOT_AVAILABLE_FOR_GUEST_HEADING" desc="This is the heading for the page not available for guest.">
     <ph name="PAGE_NAME">$1<ex>Bookmarks</ex></ph> is not available to Guest users.
   </message>

@@ -144,13 +144,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/features.h"
 #include "device/fido/win/webauthn_api.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "base/metrics/field_trial_params.h"
-#include "base/strings/strcat.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
-#include "ui/base/resource/resource_bundle.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
@@ -827,41 +820,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
                                                      features::kGlicAssetsV2));
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-void AddIncompatibleApplicationsStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"incompatibleApplicationsResetCardTitle",
-       IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_RESET_CARD_TITLE},
-      {"incompatibleApplicationsSubpageSubtitle",
-       IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_SUBTITLE},
-      {"incompatibleApplicationsSubpageSubtitleNoAdminRights",
-       IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_SUBTITLE_NO_ADMIN_RIGHTS},
-      {"incompatibleApplicationsListTitle",
-       IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_LIST_TITLE},
-      {"incompatibleApplicationsRemoveButton",
-       IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_REMOVE_BUTTON},
-      {"incompatibleApplicationsUpdateButton",
-       IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_UPDATE_BUTTON},
-      {"incompatibleApplicationsDone",
-       IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_DONE},
-  };
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  // The help URL is provided via Field Trial param. If none is provided, the
-  // "Learn How" text is left empty so that no link is displayed.
-  std::u16string learn_how_text;
-  std::string help_url = GetFieldTrialParamValueByFeature(
-      features::kIncompatibleApplicationsWarning, "HelpURL");
-  if (!help_url.empty()) {
-    learn_how_text = l10n_util::GetStringFUTF16(
-        IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_LEARN_HOW,
-        base::UTF8ToUTF16(help_url));
-  }
-  html_source->AddString("incompatibleApplicationsSubpageLearnHow",
-                         learn_how_text);
-}
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -3833,11 +3791,6 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddAiStrings(html_source);
   AddAutofillStrings(html_source, profile, web_contents);
   AddAppearanceStrings(html_source, profile);
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  AddIncompatibleApplicationsStrings(html_source);
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
   AddClearBrowsingDataStrings(html_source, profile);
   AddCommonStrings(html_source, profile);
   AddDownloadsStrings(html_source);
