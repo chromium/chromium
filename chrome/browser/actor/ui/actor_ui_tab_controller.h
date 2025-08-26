@@ -55,6 +55,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // Binds the Mojo receiver to the tab's ActorOverlayViewController.
   // Called by ActorOverlayUI when the chrome://actor-overlay page loads.
   void BindActorOverlay(
+      mojo::PendingRemote<mojom::ActorOverlayPage> page,
       mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) override;
 
   base::CallbackListSubscription RegisterActorTabIndicatorStateChangedCallback(
@@ -84,6 +85,10 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
 
   // Sets the Border Glow visibility.
   void SetBorderGlowVisibility();
+
+  // Updates the visibility of the scrim background. This is determined by the
+  // hover status of the overlay and the handoff button.
+  void UpdateScrimBackground();
 
   // The current UiTabState.
   UiTabState current_ui_tab_state_ = {

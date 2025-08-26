@@ -403,6 +403,32 @@ TEST_F(ActorUiTabControllerTest,
       "Actor.UiTabController.NumberOfPendingCallbacks", 2, 1);
 }
 
+TEST_F(ActorUiTabControllerTest, SetScrimBackgroundOnHoverChanges) {
+  auto* mock_overlay_controller =
+      tab_controller_factory()->overlay_controller();
+  testing::InSequence sequence;
+
+  EXPECT_CALL(*mock_overlay_controller, SetScrimBackground(true));
+  tab_controller()->SetOverlayHoverStatus(true);
+  testing::Mock::VerifyAndClearExpectations(mock_overlay_controller);
+
+  EXPECT_CALL(*mock_overlay_controller, SetScrimBackground(true));
+  tab_controller()->SetHandoffButtonHoverStatus(true);
+  testing::Mock::VerifyAndClearExpectations(mock_overlay_controller);
+
+  EXPECT_CALL(*mock_overlay_controller, SetScrimBackground(true));
+  tab_controller()->SetOverlayHoverStatus(false);
+  testing::Mock::VerifyAndClearExpectations(mock_overlay_controller);
+
+  EXPECT_CALL(*mock_overlay_controller, SetScrimBackground(false));
+  tab_controller()->SetHandoffButtonHoverStatus(false);
+  testing::Mock::VerifyAndClearExpectations(mock_overlay_controller);
+
+  EXPECT_CALL(*mock_overlay_controller, SetScrimBackground(_)).Times(0);
+  tab_controller()->SetHandoffButtonHoverStatus(false);
+  tab_controller()->SetOverlayHoverStatus(false);
+}
+
 using UiTabStateActivationParams =
     std::tuple<bool, bool, bool>;  // <handoff_is_active,
                                    // actor_overlay_is_active, tab_is_activated>

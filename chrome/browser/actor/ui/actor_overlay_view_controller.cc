@@ -32,8 +32,10 @@ ActorOverlayViewController::ActorOverlayViewController(
 ActorOverlayViewController::~ActorOverlayViewController() = default;
 
 void ActorOverlayViewController::BindOverlay(
+    mojo::PendingRemote<mojom::ActorOverlayPage> page,
     mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) {
   receiver_.Bind(std::move(receiver));
+  page_.Bind(std::move(page));
 }
 
 // TODO(crbug.com/422540636): Might not be sufficient to determine when the
@@ -42,6 +44,10 @@ void ActorOverlayViewController::BindOverlay(
 void ActorOverlayViewController::OnHoverStatusChanged(bool is_hovering) {
   ActorUiTabControllerInterface::From(&tab_interface_.get())
       ->SetOverlayHoverStatus(is_hovering);
+}
+
+void ActorOverlayViewController::SetScrimBackground(bool is_visible) {
+  page_->SetScrimBackground(is_visible);
 }
 
 void ActorOverlayViewController::UpdateState(const ActorOverlayState& state,

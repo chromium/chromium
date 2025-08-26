@@ -54,7 +54,8 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
 
   MOCK_METHOD(void,
               BindActorOverlay,
-              (mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver),
+              (mojo::PendingRemote<mojom::ActorOverlayPage> page,
+               mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver),
               (override));
 
   MOCK_METHOD(void,

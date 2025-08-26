@@ -35,13 +35,21 @@ WEB_UI_CONTROLLER_TYPE_IMPL(ActorOverlayUI)
 ActorOverlayUI::~ActorOverlayUI() = default;
 
 void ActorOverlayUI::BindInterface(
+    mojo::PendingReceiver<mojom::ActorOverlayPageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void ActorOverlayUI::CreatePageHandler(
+    mojo::PendingRemote<mojom::ActorOverlayPage> page,
     mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) {
   content::WebContents* web_contents = web_ui()->GetWebContents();
   tabs::TabInterface* tab_interface = webui::GetTabInterface(web_contents);
   ActorUiTabControllerInterface* actor_ui_tab_controller =
       ActorUiTabControllerInterface::From(tab_interface);
   CHECK(actor_ui_tab_controller);
-  actor_ui_tab_controller->BindActorOverlay(std::move(receiver));
+  actor_ui_tab_controller->BindActorOverlay(std::move(page),
+                                            std::move(receiver));
 }
 
 }  // namespace actor::ui

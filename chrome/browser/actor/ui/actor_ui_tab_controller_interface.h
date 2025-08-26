@@ -82,6 +82,7 @@ class ActorUiTabControllerInterface {
 
   virtual base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() = 0;
   virtual void BindActorOverlay(
+      mojo::PendingRemote<mojom::ActorOverlayPage> page,
       mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) = 0;
 
   // Sets a callback to run when the controller is idle, for tests.

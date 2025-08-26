@@ -218,9 +218,18 @@ void ActorUiTabController::SetActorTaskResume() {
 }
 
 void ActorUiTabController::BindActorOverlay(
+    mojo::PendingRemote<mojom::ActorOverlayPage> page,
     mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) {
   if (features::kGlicActorUiOverlay.Get()) {
-    actor_overlay_view_controller_->BindOverlay(std::move(receiver));
+    actor_overlay_view_controller_->BindOverlay(std::move(page),
+                                                std::move(receiver));
+  }
+}
+
+void ActorUiTabController::UpdateScrimBackground() {
+  if (features::kGlicActorUiOverlay.Get()) {
+    actor_overlay_view_controller_->SetScrimBackground(is_hovering_overlay_ ||
+                                                       is_hovering_button_);
   }
 }
 
@@ -229,6 +238,7 @@ void ActorUiTabController::SetOverlayHoverStatus(bool is_hovering) {
     return;
   }
   is_hovering_overlay_ = is_hovering;
+  UpdateScrimBackground();
   update_ui_debounce_timer_.Reset();
 }
 
@@ -237,6 +247,7 @@ void ActorUiTabController::SetHandoffButtonHoverStatus(bool is_hovering) {
     return;
   }
   is_hovering_button_ = is_hovering;
+  UpdateScrimBackground();
   update_ui_debounce_timer_.Reset();
 }
 

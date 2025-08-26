@@ -3,13 +3,19 @@
 // found in the LICENSE file.
 
 import type {ActorOverlayPageHandlerInterface} from './actor_overlay.mojom-webui.js';
-import {ActorOverlayPageHandler} from './actor_overlay.mojom-webui.js';
+import {ActorOverlayPageCallbackRouter, ActorOverlayPageHandlerFactory, ActorOverlayPageHandlerRemote} from './actor_overlay.mojom-webui.js';
 
 export class ActorOverlayBrowserProxy {
+  callbackRouter: ActorOverlayPageCallbackRouter;
   handler: ActorOverlayPageHandlerInterface;
 
   constructor() {
-    this.handler = ActorOverlayPageHandler.getRemote();
+    this.callbackRouter = new ActorOverlayPageCallbackRouter();
+    this.handler = new ActorOverlayPageHandlerRemote();
+    ActorOverlayPageHandlerFactory.getRemote().createPageHandler(
+        this.callbackRouter.$.bindNewPipeAndPassRemote(),
+        (this.handler as ActorOverlayPageHandlerRemote)
+            .$.bindNewPipeAndPassReceiver());
   }
 
   static setInstance(proxy: ActorOverlayBrowserProxy) {

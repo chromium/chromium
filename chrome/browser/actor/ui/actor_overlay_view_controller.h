@@ -12,6 +12,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace actor::ui {
 
@@ -34,6 +35,7 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   // Binds the Mojo receiver to enable communication from the WebUI. Called by
   // ActorUiTabController.
   virtual void BindOverlay(
+      mojo::PendingRemote<mojom::ActorOverlayPage> page,
       mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver);
 
   // Updates the visibility and state of the Actor Overlay for this tab. Called
@@ -46,6 +48,10 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   // Notifies the ActorUiTabController that the user's hovering status over the
   // overlay has changed. Called by the ActorOverlay WebUI (renderer-side).
   void OnHoverStatusChanged(bool is_hovering) override;
+
+  // mojom::ActorOverlayPage
+  // Forwards the scrim background visibility to WebUI.
+  virtual void SetScrimBackground(bool is_visible);
 
  private:
   // Tab subscriptions:
@@ -99,6 +105,7 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   mojo::Receiver<mojom::ActorOverlayPageHandler> receiver_{this};
+  mojo::Remote<mojom::ActorOverlayPage> page_;
   const raw_ref<tabs::TabInterface> tab_interface_;
 };
 

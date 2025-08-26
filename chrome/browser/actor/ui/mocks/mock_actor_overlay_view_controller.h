@@ -18,7 +18,8 @@ class MockActorOverlayViewController : public ActorOverlayViewController {
 
   MOCK_METHOD(void,
               BindOverlay,
-              (mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver),
+              (mojo::PendingRemote<mojom::ActorOverlayPage> page,
+               mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver),
               (override));
   MOCK_METHOD(void,
               UpdateState,
@@ -26,6 +27,7 @@ class MockActorOverlayViewController : public ActorOverlayViewController {
               (override));
   MOCK_METHOD(void, AttachManagedWebViewToWindowController, (), (override));
   MOCK_METHOD(void, OnHoverStatusChanged, (bool is_hovering), (override));
+  MOCK_METHOD(void, SetScrimBackground, (bool is_visible), (override));
 };
 
 }  // namespace actor::ui

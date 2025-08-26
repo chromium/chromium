@@ -8,11 +8,14 @@
 #include "chrome/browser/actor/ui/actor_overlay.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace actor::ui {
 
-class ActorOverlayUI : public ::ui::MojoWebUIController {
+class ActorOverlayUI : public ::ui::MojoWebUIController,
+                       public mojom::ActorOverlayPageHandlerFactory {
  public:
   explicit ActorOverlayUI(content::WebUI* web_ui);
   ActorOverlayUI(const ActorOverlayUI&) = delete;
@@ -24,7 +27,17 @@ class ActorOverlayUI : public ::ui::MojoWebUIController {
   // actor::ui::mojom::ActorOverlayPageHandler mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver);
+      mojo::PendingReceiver<mojom::ActorOverlayPageHandlerFactory> receiver);
+
+ private:
+  // The PendingRemote must be valid and bind to a receiver in order to start
+  // sending messages to the receiver.
+  void CreatePageHandler(
+      mojo::PendingRemote<mojom::ActorOverlayPage> page,
+      mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) override;
+
+  mojo::Receiver<mojom::ActorOverlayPageHandlerFactory> page_factory_receiver_{
+      this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

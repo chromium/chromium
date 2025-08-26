@@ -526,8 +526,8 @@ void PopulateChromeWebUIFrameBinders(
 
   if (features::kGlicActorUiOverlay.Get()) {
     RegisterWebUIControllerInterfaceBinder<
-        actor::ui::mojom::ActorOverlayPageHandler, actor::ui::ActorOverlayUI>(
-        map);
+        actor::ui::mojom::ActorOverlayPageHandlerFactory,
+        actor::ui::ActorOverlayUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<

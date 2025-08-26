@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -22,6 +23,7 @@ export class ActorOverlayAppElement extends CrLitElement {
   }
 
   private eventTracker_: EventTracker = new EventTracker();
+  private setScrimBackgroundListenerId_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -32,11 +34,22 @@ export class ActorOverlayAppElement extends CrLitElement {
     this.eventTracker_.add(this, 'pointerleave', () => {
       proxy.handler.onHoverStatusChanged(false);
     });
+    this.setScrimBackgroundListenerId_ =
+        proxy.callbackRouter.setScrimBackground.addListener(
+            this.setScrimBackground.bind(this));
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+    assert(this.setScrimBackgroundListenerId_);
+    ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
+        this.setScrimBackgroundListenerId_);
+  }
+
+  private setScrimBackground(isVisible: boolean) {
+    isVisible ? this.classList.add('background-visible') :
+                this.classList.remove('background-visible');
   }
 }
 
