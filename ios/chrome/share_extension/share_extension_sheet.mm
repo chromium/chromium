@@ -29,11 +29,13 @@ enum SharedItemType {
 CGFloat const kInnerViewWidthPadding = 32;
 CGFloat const kMainViewHeightPadding = 34;
 CGFloat const kMainViewCornerRadius = 12;
-CGFloat const kSnapshotViewSize = 72;
-CGFloat const kURLStackSpacing = 2;
+CGFloat const kSnapshotViewSize = 150;
+CGFloat const kURLStackSpacing = 8;
+CGFloat const kDefaultSnapshotViewSize = 60;
+CGFloat const kLinkIconSize = 34.0;
 
 // The horizontal spacing between image preview and the URL stack.
-CGFloat const kInnerViewSpacing = 16;
+CGFloat const kInnerViewSpacing = 30;
 
 CGFloat const kSharedImageHeight = 181;
 
@@ -50,7 +52,7 @@ CGFloat const kTitleViewSpacing = 3.0;
 NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 
 // Constants for the MIM configuration.
-CGFloat const kMIMStackSpacing = 8.0;
+CGFloat const kMIMStackSpacing = 16.0;
 CGFloat const kAccountRowHeight = 57.0;
 CGFloat const kMIMViewCornerRadius = 10;
 CGFloat const kAvatarImageDimension = 30.0;
@@ -323,7 +325,8 @@ CGFloat const kAvatarImageDimension = 30.0;
   _customDetent = [UISheetPresentationControllerDetent
       customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
                         resolver:resolver];
-  presentationController.detents = @[ _customDetent ];
+  presentationController.detents =
+      @[ [UISheetPresentationControllerDetent largeDetent] ];
   presentationController.selectedDetentIdentifier =
       kCustomMinimizedDetentIdentifier;
 }
@@ -430,35 +433,20 @@ CGFloat const kAvatarImageDimension = 30.0;
 - (UIStackView*)configureSharedURLView {
   UIImageView* snapshotView = [self configureSnapshotView];
   UIStackView* URLStackView = [self configureURLView];
-  URLStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  UIView* URLView = [[UIView alloc] init];
-
-  [URLView addSubview:URLStackView];
 
   UIStackView* containerStack;
   if (snapshotView) {
     containerStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ snapshotView, URLView ]];
+        initWithArrangedSubviews:@[ snapshotView, URLStackView ]];
   } else {
     containerStack =
-        [[UIStackView alloc] initWithArrangedSubviews:@[ URLView ]];
+        [[UIStackView alloc] initWithArrangedSubviews:@[ URLStackView ]];
   }
 
-  containerStack.axis = UILayoutConstraintAxisHorizontal;
+  containerStack.axis = UILayoutConstraintAxisVertical;
   containerStack.translatesAutoresizingMaskIntoConstraints = NO;
   containerStack.spacing = kInnerViewSpacing;
   containerStack.alignment = UIStackViewAlignmentCenter;
-  URLView.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [URLView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:snapshotView.heightAnchor],
-    [URLView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:URLStackView.heightAnchor],
-    [URLStackView.widthAnchor constraintEqualToAnchor:URLView.widthAnchor],
-    [containerStack.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:URLView.heightAnchor],
-  ]];
-  AddSameCenterConstraints(URLView, URLStackView);
 
   return containerStack;
 }
@@ -512,7 +500,7 @@ CGFloat const kAvatarImageDimension = 30.0;
 
 - (UIImageView*)configureSnapshotView {
   if (!_sharedURLPreview) {
-    return nil;
+    return [self configureDefaultSnapshotView];
   }
 
   UIImageView* snapshotView =
@@ -542,23 +530,51 @@ CGFloat const kAvatarImageDimension = 30.0;
   titleLabel.font = [UIFont systemFontOfSize:fontDescriptor.pointSize
                                       weight:UIFontWeightSemibold];
   titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  titleLabel.textAlignment = NSTextAlignmentCenter;
   titleLabel.numberOfLines = 2;
 
   URLLabel.text = [_sharedURL absoluteString];
   URLLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   URLLabel.textColor = [UIColor colorNamed:kTextTertiaryColor];
   URLLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  URLLabel.textAlignment = NSTextAlignmentCenter;
   URLLabel.numberOfLines = 2;
 
   UIStackView* URLStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[ titleLabel, URLLabel ]];
 
   URLStackView.axis = UILayoutConstraintAxisVertical;
-  URLStackView.alignment = UIStackViewAlignmentLeading;
+  URLStackView.alignment = UIStackViewAlignmentCenter;
+  URLStackView.distribution = UIStackViewDistributionEqualCentering;
   URLStackView.spacing = kURLStackSpacing;
   URLStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   return URLStackView;
+}
+
+- (UIImageView*)configureDefaultSnapshotView {
+  CHECK(!_sharedURLPreview);
+  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kLinkIconSize
+                          weight:UIImageSymbolWeightMedium
+                           scale:UIImageSymbolScaleMedium];
+  _sharedURLPreview = [UIImage systemImageNamed:@"link"
+                              withConfiguration:configuration];
+  UIImageView* snapshotView =
+      [[UIImageView alloc] initWithImage:_sharedURLPreview];
+  snapshotView.backgroundColor = [UIColor whiteColor];
+  snapshotView.layer.cornerRadius = kMainViewCornerRadius;
+
+  snapshotView.contentMode = UIViewContentModeCenter;
+  snapshotView.layer.masksToBounds = YES;
+  snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [snapshotView.widthAnchor
+        constraintEqualToConstant:kDefaultSnapshotViewSize],
+    [snapshotView.heightAnchor
+        constraintEqualToConstant:kDefaultSnapshotViewSize],
+  ]];
+  return snapshotView;
 }
 
 @end
