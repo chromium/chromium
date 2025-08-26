@@ -14,8 +14,8 @@ ScopedPlatformWrapper::ScopedPlatformWrapper() {
   PlatformWrapper::SetInstanceForTesting(this);
 
   ON_CALL(*this, PathExists(testing::_))
-      .WillByDefault(testing::Invoke(
-          [](const base::FilePath& path) { return base::PathExists(path); }));
+      .WillByDefault(
+          [](const base::FilePath& path) { return base::PathExists(path); });
 }
 
 ScopedPlatformWrapper::~ScopedPlatformWrapper() {

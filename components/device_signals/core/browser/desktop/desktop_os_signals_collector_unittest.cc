@@ -24,7 +24,6 @@
 
 using testing::_;
 using testing::ContainerEq;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 

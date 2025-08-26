@@ -20,7 +20,6 @@
 
 using testing::_;
 using testing::ContainerEq;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
@@ -153,12 +152,11 @@ TEST_F(SettingsSignalsCollectorTest, GetSignal_SettingsInfo) {
 
   EXPECT_CALL(*settings_client_,
               GetSettings(ContainerEq(request.settings_signal_parameters), _))
-      .WillOnce(
-          Invoke([&settings_items](
-                     const std::vector<GetSettingsOptions> signal_parameters,
-                     GetSettingsSignalsCallback signal_callback) {
-            std::move(signal_callback).Run(settings_items);
-          }));
+      .WillOnce([&settings_items](
+                    const std::vector<GetSettingsOptions> signal_parameters,
+                    GetSettingsSignalsCallback signal_callback) {
+        std::move(signal_callback).Run(settings_items);
+      });
 
   SignalsAggregationResponse response;
   base::RunLoop run_loop;

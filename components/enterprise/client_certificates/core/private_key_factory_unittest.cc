@@ -18,7 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::StrictMock;
 
 namespace client_certificates {
@@ -41,9 +40,9 @@ TEST(PrivateKeyFactoryTest, CreatePrivateKey_OnlySoftwareSource) {
   auto software_factory = CreateMockedFactory();
 
   EXPECT_CALL(*software_factory, CreatePrivateKey(_))
-      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
         std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
-      }));
+      });
 
   PrivateKeyFactory::PrivateKeyFactoriesMap map;
   map.insert_or_assign(PrivateKeySource::kSoftwareKey,
@@ -60,9 +59,9 @@ TEST(PrivateKeyFactoryTest, CreatePrivateKey_OnlySoftwareSource_Fail) {
   auto software_factory = CreateMockedFactory();
 
   EXPECT_CALL(*software_factory, CreatePrivateKey(_))
-      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
         std::move(callback).Run(nullptr);
-      }));
+      });
 
   PrivateKeyFactory::PrivateKeyFactoriesMap map;
   map.insert_or_assign(PrivateKeySource::kSoftwareKey,
@@ -79,9 +78,9 @@ TEST(PrivateKeyFactoryTest, CreatePrivateKey_OnlyUnexportableSource) {
   auto unexportable_factory = CreateMockedFactory();
 
   EXPECT_CALL(*unexportable_factory, CreatePrivateKey(_))
-      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
         std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
-      }));
+      });
 
   PrivateKeyFactory::PrivateKeyFactoriesMap map;
   map.insert_or_assign(PrivateKeySource::kUnexportableKey,
@@ -98,9 +97,9 @@ TEST(PrivateKeyFactoryTest, CreatePrivateKey_OnlyUnexportableSource_Fail) {
   auto unexportable_factory = CreateMockedFactory();
 
   EXPECT_CALL(*unexportable_factory, CreatePrivateKey(_))
-      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
         std::move(callback).Run(nullptr);
-      }));
+      });
 
   PrivateKeyFactory::PrivateKeyFactoriesMap map;
   map.insert_or_assign(PrivateKeySource::kUnexportableKey,
@@ -118,9 +117,9 @@ TEST(PrivateKeyFactoryTest, CreatePrivateKey_OsSoftwareAndSoftware) {
   auto software_factory = CreateMockedFactory();
 
   EXPECT_CALL(*os_software_factory, CreatePrivateKey(_))
-      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
         std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
-      }));
+      });
 
   PrivateKeyFactory::PrivateKeyFactoriesMap map;
   map.insert_or_assign(PrivateKeySource::kOsSoftwareKey,
@@ -141,9 +140,9 @@ TEST(PrivateKeyFactoryTest, CreatePrivateKey_AllSources) {
   auto software_factory = CreateMockedFactory();
 
   EXPECT_CALL(*unexportable_factory, CreatePrivateKey(_))
-      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
         std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
-      }));
+      });
 
   PrivateKeyFactory::PrivateKeyFactoriesMap map;
   map.insert_or_assign(PrivateKeySource::kOsSoftwareKey,
@@ -166,14 +165,14 @@ TEST(PrivateKeyFactoryTest, CreatePrivateKey_AllSources_UnexportableFail) {
   auto software_factory = CreateMockedFactory();
 
   EXPECT_CALL(*unexportable_factory, CreatePrivateKey(_))
-      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
         std::move(callback).Run(nullptr);
-      }));
+      });
 
   EXPECT_CALL(*software_factory, CreatePrivateKey(_))
-      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
         std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
-      }));
+      });
 
   PrivateKeyFactory::PrivateKeyFactoriesMap map;
   map.insert_or_assign(PrivateKeySource::kOsSoftwareKey,
@@ -196,14 +195,14 @@ TEST(PrivateKeyFactoryTest, CreatePrivateKey_AllSources_AllFail) {
   auto software_factory = CreateMockedFactory();
 
   EXPECT_CALL(*unexportable_factory, CreatePrivateKey(_))
-      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
         std::move(callback).Run(nullptr);
-      }));
+      });
 
   EXPECT_CALL(*software_factory, CreatePrivateKey(_))
-      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
         std::move(callback).Run(nullptr);
-      }));
+      });
 
   PrivateKeyFactory::PrivateKeyFactoriesMap map;
   map.insert_or_assign(PrivateKeySource::kOsSoftwareKey,
@@ -230,14 +229,14 @@ TEST(PrivateKeyFactoryTest, LoadPrivateKey_AllSources_Unexportable) {
       client_certificates_pb::PrivateKey::PRIVATE_UNEXPORTABLE_KEY);
 
   EXPECT_CALL(*unexportable_factory, LoadPrivateKey(_, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&serialized_private_key](
               client_certificates_pb::PrivateKey serialized_private_key_param,
               PrivateKeyFactory::PrivateKeyCallback callback) {
             EXPECT_EQ(serialized_private_key.source(),
                       serialized_private_key_param.source());
             std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
-          }));
+          });
 
   PrivateKeyFactory::PrivateKeyFactoriesMap map;
   map.insert_or_assign(PrivateKeySource::kOsSoftwareKey,
@@ -265,14 +264,13 @@ TEST(PrivateKeyFactoryTest, LoadPrivateKeyFromDict_AllSources_Unexportable) {
   serialized_private_key.Set(kKeySource, unexportable_source);
 
   EXPECT_CALL(*unexportable_factory, LoadPrivateKeyFromDict(_, _))
-      .WillOnce(
-          Invoke([&unexportable_source](
-                     const base::Value::Dict& serialized_private_key_param,
-                     PrivateKeyFactory::PrivateKeyCallback callback) {
-            EXPECT_EQ(*serialized_private_key_param.FindInt(kKeySource),
-                      unexportable_source);
-            std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
-          }));
+      .WillOnce([&unexportable_source](
+                    const base::Value::Dict& serialized_private_key_param,
+                    PrivateKeyFactory::PrivateKeyCallback callback) {
+        EXPECT_EQ(*serialized_private_key_param.FindInt(kKeySource),
+                  unexportable_source);
+        std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
+      });
 
   PrivateKeyFactory::PrivateKeyFactoriesMap map;
   map.insert_or_assign(PrivateKeySource::kOsSoftwareKey,
@@ -300,14 +298,13 @@ TEST(PrivateKeyFactoryTest, LoadPrivateKeyFromDict_AllSources_OsSoftware) {
   serialized_private_key.Set(kKeySource, expected_source);
 
   EXPECT_CALL(*os_software_factory, LoadPrivateKeyFromDict(_, _))
-      .WillOnce(
-          Invoke([&expected_source](
-                     const base::Value::Dict& serialized_private_key_param,
-                     PrivateKeyFactory::PrivateKeyCallback callback) {
-            EXPECT_EQ(*serialized_private_key_param.FindInt(kKeySource),
-                      expected_source);
-            std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
-          }));
+      .WillOnce([&expected_source](
+                    const base::Value::Dict& serialized_private_key_param,
+                    PrivateKeyFactory::PrivateKeyCallback callback) {
+        EXPECT_EQ(*serialized_private_key_param.FindInt(kKeySource),
+                  expected_source);
+        std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
+      });
 
   PrivateKeyFactory::PrivateKeyFactoriesMap map;
   map.insert_or_assign(PrivateKeySource::kOsSoftwareKey,

@@ -22,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 
 namespace device_signals {
@@ -83,12 +82,11 @@ class FileSystemServiceTest : public testing::Test {
   void ExpectResolvablePath(const base::FilePath& path,
                             const base::FilePath& resolved_path) {
     EXPECT_CALL(*mock_platform_delegate_, ResolveFilePath(path, _))
-        .WillOnce(
-            Invoke([&resolved_path](const base::FilePath& original_file_path,
-                                    base::FilePath* resolved_file_path) {
-              *resolved_file_path = resolved_path;
-              return true;
-            }));
+        .WillOnce([&resolved_path](const base::FilePath& original_file_path,
+                                   base::FilePath* resolved_file_path) {
+          *resolved_file_path = resolved_path;
+          return true;
+        });
   }
 
   void ExpectPathIsReadable(const base::FilePath& path) {

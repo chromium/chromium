@@ -280,8 +280,9 @@ TEST_F(EnterpriseIdentityServiceTest,
        Observer_OnManagedAccountSessionChanged_AsyncManagedUser) {
   base::RunLoop run_loop;
   StrictMock<MockEnterpriseIdentityServiceObserver> observer;
-  EXPECT_CALL(observer, OnManagedAccountSessionChanged)
-      .WillOnce(testing::Invoke([&run_loop]() { run_loop.Quit(); }));
+  EXPECT_CALL(observer, OnManagedAccountSessionChanged).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
 
   auto service = CreateService();
   service->AddObserver(&observer);
@@ -307,8 +308,9 @@ TEST_F(EnterpriseIdentityServiceTest,
   service->AddObserver(&observer);
 
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnManagedAccountSessionChanged)
-      .WillOnce(testing::Invoke([&run_loop]() { run_loop.Quit(); }));
+  EXPECT_CALL(observer, OnManagedAccountSessionChanged).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
   identity_env_.SetRefreshTokenForAccount(account.account_id);
   run_loop.Run();
 

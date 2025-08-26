@@ -97,11 +97,11 @@ TEST_F(PromotionEligibilityCheckerTest, DeterminePromotionEligibilitySuccess) {
   auto* client_ptr = client.get();
 
   EXPECT_CALL(*client, DeterminePromotionEligibility(testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [response](
               policy::CloudPolicyClient::PromotionEligibilityCallback cb) {
             std::move(cb).Run(response);
-          }));
+          });
   EXPECT_CALL(callback, Run(EqualsProto(response)));
 
   checker_->SetCloudPolicyClientForTesting(std::move(client));

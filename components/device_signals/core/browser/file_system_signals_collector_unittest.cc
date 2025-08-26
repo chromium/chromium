@@ -21,7 +21,6 @@
 
 using testing::_;
 using testing::ContainerEq;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
@@ -174,12 +173,12 @@ TEST_F(FileSystemSignalsCollectorTest, GetSignal_FileSystemInfo) {
   EXPECT_CALL(service_,
               GetFileSystemSignals(
                   ContainerEq(request.file_system_signal_parameters), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&file_system_items](
               const std::vector<GetFileSystemInfoOptions> signal_parameters,
               GetFileSystemSignalsCallback signal_callback) {
             std::move(signal_callback).Run(file_system_items);
-          }));
+          });
 
   SignalsAggregationResponse response;
   base::RunLoop run_loop;

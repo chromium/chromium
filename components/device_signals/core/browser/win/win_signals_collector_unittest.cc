@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
@@ -126,9 +125,9 @@ TEST_F(WinSignalsCollectorTest, GetSignal_Hotfix) {
 
   EXPECT_CALL(service_host_, GetService()).Times(1);
   EXPECT_CALL(service_, GetHotfixSignals(_))
-      .WillOnce(Invoke([&hotfixes](GetHotfixSignalsCallback signal_callback) {
+      .WillOnce([&hotfixes](GetHotfixSignalsCallback signal_callback) {
         std::move(signal_callback).Run(hotfixes);
-      }));
+      });
 
   SignalName signal_name = SignalName::kHotfixes;
   SignalsAggregationResponse response;
@@ -149,9 +148,9 @@ TEST_F(WinSignalsCollectorTest, GetSignal_Hotfix) {
 TEST_F(WinSignalsCollectorTest, GetSignal_AV_Empty) {
   EXPECT_CALL(service_host_, GetService()).Times(1);
   EXPECT_CALL(service_, GetAntiVirusSignals(_))
-      .WillOnce(Invoke([](GetAntiVirusSignalsCallback signal_callback) {
+      .WillOnce([](GetAntiVirusSignalsCallback signal_callback) {
         std::move(signal_callback).Run(std::vector<AvProduct>());
-      }));
+      });
 
   SignalName signal_name = SignalName::kAntiVirus;
   SignalsAggregationResponse response;
@@ -190,10 +189,9 @@ TEST_P(AntivirusWinSignalsCollectorTest, GetSignal_AV) {
 
   EXPECT_CALL(service_host_, GetService()).Times(1);
   EXPECT_CALL(service_, GetAntiVirusSignals(_))
-      .WillOnce(
-          Invoke([&av_products](GetAntiVirusSignalsCallback signal_callback) {
-            std::move(signal_callback).Run(av_products);
-          }));
+      .WillOnce([&av_products](GetAntiVirusSignalsCallback signal_callback) {
+        std::move(signal_callback).Run(av_products);
+      });
 
   SignalName signal_name = SignalName::kAntiVirus;
   SignalsAggregationResponse response;

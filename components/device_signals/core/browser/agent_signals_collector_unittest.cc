@@ -21,7 +21,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::StrictMock;
 
 namespace device_signals {
@@ -90,14 +89,14 @@ class AgentSignalsCollectorTest : public testing::Test,
       const std::optional<CrowdStrikeSignals>& crowdstrike_signal,
       const std::optional<SignalCollectionError>& crowdstrike_signal_error) {
     EXPECT_CALL(*mocked_crowdstrike_client_, GetIdentifiers(_))
-        .WillOnce(Invoke(
+        .WillOnce(
             [crowdstrike_signal, crowdstrike_signal_error](
                 base::OnceCallback<void(std::optional<CrowdStrikeSignals>,
                                         std::optional<SignalCollectionError>)>
                     callback) {
               std::move(callback).Run(crowdstrike_signal,
                                       crowdstrike_signal_error);
-            }));
+            });
   }
 
   void RunTest(std::optional<CrowdStrikeSignals> crowdstrike_signal,

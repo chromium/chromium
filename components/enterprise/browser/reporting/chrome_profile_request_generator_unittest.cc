@@ -22,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::StrictMock;
 
 namespace enterprise_reporting {
@@ -309,12 +308,11 @@ TEST_P(ChromeProfileRequestGeneratorTest,
       mock_aggregator_,
       GetSignals(
           CreateExpectedRequest(detected_agent_signal_collection_enabled), _))
-      .WillOnce(
-          Invoke([](const device_signals::SignalsAggregationRequest& request,
-                    base::OnceCallback<void(
-                        device_signals::SignalsAggregationResponse)> callback) {
-            std::move(callback).Run(CreateFilledResponse());
-          }));
+      .WillOnce([](const device_signals::SignalsAggregationRequest& request,
+                   base::OnceCallback<void(
+                       device_signals::SignalsAggregationResponse)> callback) {
+        std::move(callback).Run(CreateFilledResponse());
+      });
 
   base::test::TestFuture<ReportRequestQueue> test_future;
   generator_.Generate(
@@ -337,12 +335,11 @@ TEST_P(ChromeProfileRequestGeneratorTest, GenerateSecuritySignalsOnlyReport) {
       mock_aggregator_,
       GetSignals(
           CreateExpectedRequest(detected_agent_signal_collection_enabled), _))
-      .WillOnce(
-          Invoke([](const device_signals::SignalsAggregationRequest& request,
-                    base::OnceCallback<void(
-                        device_signals::SignalsAggregationResponse)> callback) {
-            std::move(callback).Run(CreateFilledResponse());
-          }));
+      .WillOnce([](const device_signals::SignalsAggregationRequest& request,
+                   base::OnceCallback<void(
+                       device_signals::SignalsAggregationResponse)> callback) {
+        std::move(callback).Run(CreateFilledResponse());
+      });
   base::test::TestFuture<ReportRequestQueue> test_future;
   generator_.Generate(ReportGenerationConfig(ReportTrigger::kTriggerNone,
                                              ReportType::kProfileReport,
@@ -364,13 +361,12 @@ TEST_P(ChromeProfileRequestGeneratorTest, NoProfileId) {
       mock_aggregator_,
       GetSignals(
           CreateExpectedRequest(detected_agent_signal_collection_enabled), _))
-      .WillOnce(
-          Invoke([](const device_signals::SignalsAggregationRequest& request,
-                    base::OnceCallback<void(
-                        device_signals::SignalsAggregationResponse)> callback) {
-            std::move(callback).Run(
-                CreateFilledResponse(/*nullify_profile_id=*/true));
-          }));
+      .WillOnce([](const device_signals::SignalsAggregationRequest& request,
+                   base::OnceCallback<void(
+                       device_signals::SignalsAggregationResponse)> callback) {
+        std::move(callback).Run(
+            CreateFilledResponse(/*nullify_profile_id=*/true));
+      });
   base::test::TestFuture<ReportRequestQueue> test_future;
   generator_.Generate(ReportGenerationConfig(ReportTrigger::kTriggerNone,
                                              ReportType::kProfileReport,
