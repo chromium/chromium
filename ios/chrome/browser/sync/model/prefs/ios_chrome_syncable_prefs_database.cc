@@ -37,7 +37,8 @@ enum {
   kNTPContentSuggestionsForSupervisedUserEnabled = 200007,
   kSearchSuggestEnabled = 200008,
   kTrackPricesOnTabsEnabled = 200009,
-  kVoiceSearchLocale = 200010
+  kVoiceSearchLocale = 200010,
+  kIOSBwgConsent = 200011
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -86,6 +87,10 @@ constexpr auto kIOSChromeSyncablePrefsAllowlist =
           sync_preferences::MergeBehavior::kNone}},
         {prefs::kVoiceSearchLocale,
          {syncable_prefs_ids::kVoiceSearchLocale, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kIOSBwgConsent,
+         {syncable_prefs_ids::kIOSBwgConsent, syncer::PREFERENCES,
           sync_preferences::PrefSensitivity::kNone,
           sync_preferences::MergeBehavior::kNone}},
     });

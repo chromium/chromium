@@ -117,3 +117,11 @@ bool IsGeminiAvailableForManagedAccounts() {
 BASE_FEATURE(kAIHubNewBadge,
              "AIHubNewBadge",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool ShouldDeleteGeminiConsentPref() {
+  return base::FeatureList::IsEnabled(kDeleteGeminiConsentPref);
+}
+
+BASE_FEATURE(kDeleteGeminiConsentPref,
+             "DeleteGeminiConsentPref",
+             base::FEATURE_ENABLED_BY_DEFAULT);

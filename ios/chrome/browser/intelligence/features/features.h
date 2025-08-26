@@ -95,4 +95,10 @@ bool IsGeminiAvailableForManagedAccounts();
 // Feature flag to show the AI Hub new badge.
 BASE_DECLARE_FEATURE(kAIHubNewBadge);
 
+// Whether the Gemini consent pref should be deleted on account change.
+bool ShouldDeleteGeminiConsentPref();
+
+// Feature flag to delete the Gemini consent pref.
+BASE_DECLARE_FEATURE(kDeleteGeminiConsentPref);
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
