@@ -14,3 +14,7 @@
   flex-direction: column;
   gap: 12px;
 }
+
+:host([hidden]) {
+  display: none;
+}

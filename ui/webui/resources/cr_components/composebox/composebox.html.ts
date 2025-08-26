@@ -39,12 +39,11 @@ export function getHtml(this: ComposeboxElement) {
           placeholder="${this.inputPlaceholder_}"
           @keydown="${this.onInputKeydown_}"
           @input=${this.handleInput_}></textarea>
-      ${this.showDropdown_ ?
-        html`<ntp-composebox-dropdown id="matches"
-          role="listbox"
-          .result="${this.result_}">
-        </ntp-composebox-dropdown>`
-        : ''}
+      <ntp-composebox-dropdown id="matches"
+        role="listbox"
+        .result="${this.result_}"
+        ?hidden="${!this.showDropdown_}">
+      </ntp-composebox-dropdown>
       <div id="uploadContainer" class="icon-fade">
         <cr-icon-button
             class="upload-icon no-overlap"

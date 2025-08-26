@@ -599,29 +599,22 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.input.dispatchEvent(new Event('input'));
 
     // Composebox dropdown should show in zps.
-    let composeboxDropdown =
+    const composeboxDropdown =
         composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
     assertTrue(!!composeboxDropdown);
+    assertFalse(composeboxDropdown.hidden);
 
-    // Add input with space.
+    // Dropdown should not show for input with only spaces.
     composeboxElement.$.input.value = ' ';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
     await microtasksFinished();
+    assertTrue(composeboxDropdown.hidden);
 
-    // Composebox dropdown shouldn't show if input is only spaces.
-    composeboxDropdown =
-        composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
-    assertFalse(!!composeboxDropdown);
-
-    // Add text input.
+    // Dropdown should show with text.
     composeboxElement.$.input.value = ' hello';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
     await microtasksFinished();
-
-    // Composebox dropdown should show with input if typed suggest is enabled.
-    composeboxDropdown =
-        composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
-    assertTrue(!!composeboxDropdown);
+    assertFalse(composeboxDropdown.hidden);
 
     // Restore.
     loadTimeData.overrideValues(
