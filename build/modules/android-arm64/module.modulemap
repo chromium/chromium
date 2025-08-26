@@ -16,14 +16,6 @@ module sys_stage1 [system] [extern_c] {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/cdefs.h"
     export *
   }
-  module sysroot_android_legacy_stdlib_inlines_h {
-    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/legacy_stdlib_inlines.h"
-    export *
-  }
-  module sysroot_android_legacy_unistd_inlines_h {
-    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/legacy_unistd_inlines.h"
-    export *
-  }
   module sysroot_android_ndk_version_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/ndk-version.h"
     export *
