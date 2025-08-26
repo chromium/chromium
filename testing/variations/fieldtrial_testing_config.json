@@ -16134,6 +16134,28 @@
             ]
         }
     ],
+    "OmniboxAiRhsEchoLensToolbeltDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AiModeOmniboxEntryPoint",
+                        "AllowAiModeMatches",
+                        "OmniboxHideAimEntrypointOnUserInput",
+                        "OmniboxToolbelt",
+                        "OpenLensActionUITweaks"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxAnswerActions": [
         {
             "platforms": [

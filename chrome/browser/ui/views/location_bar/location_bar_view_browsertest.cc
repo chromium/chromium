@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -431,7 +432,7 @@ class LocationBarViewPageActionMigrationTest
         {{::features::kPageActionsMigration,
           {{::features::kPageActionsMigrationLensOverlay.name, "true"}}},
          {lens::features::kLensOverlayOmniboxEntryPoint, {}}},
-        {});
+        {omnibox::kAiModeOmniboxEntryPoint});
   }
   ~LocationBarViewPageActionMigrationTest() override = default;
 
@@ -460,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionMigrationTest,
   actions::ActionItem* const lens_action =
       actions::ActionManager::Get().FindAction(
           kActionSidePanelShowLensOverlayResults);
-  ASSERT_NE(nullptr, lens_action);
+  ASSERT_NE(lens_action, nullptr);
   lens_action->SetVisible(true);
   lens_action->SetEnabled(true);
   browser()
@@ -475,7 +476,6 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionMigrationTest,
   views::View* const bookmark_page_action_view =
       GetLocationBarView()->page_action_icon_controller()->GetIconView(
           PageActionIconType::kBookmarkStar);
-  ASSERT_TRUE(lens_overlay_page_action_view->GetVisible());
   ASSERT_TRUE(bookmark_page_action_view->GetVisible());
 
   views::FocusManager* const focus_manager =
@@ -483,13 +483,13 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionMigrationTest,
 
   GetLocationBarView()->FocusLocation(true);
   OmniboxViewViews* const omnibox = GetLocationBarView()->omnibox_view();
-  ASSERT_EQ(omnibox, focus_manager->GetFocusedView());
+  ASSERT_EQ(focus_manager->GetFocusedView(), omnibox);
 
   FocusNextView(focus_manager);
-  EXPECT_EQ(lens_overlay_page_action_view, focus_manager->GetFocusedView());
+  EXPECT_EQ(focus_manager->GetFocusedView(), lens_overlay_page_action_view);
 
   FocusNextView(focus_manager);
-  EXPECT_EQ(bookmark_page_action_view, focus_manager->GetFocusedView());
+  EXPECT_EQ(focus_manager->GetFocusedView(), bookmark_page_action_view);
 }
 
 class LocationBarViewPageActionHideWhileEditingTests

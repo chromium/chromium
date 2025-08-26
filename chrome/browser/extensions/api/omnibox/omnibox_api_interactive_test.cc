@@ -962,6 +962,16 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class UnscopedOmniboxApiTest : public OmniboxApiTestBase {
+ public:
+  UnscopedOmniboxApiTest() {
+    // TODO(crbug.com/441102004): Update UnscopedExtensionZeroSuggest to support
+    //   kAiModeOmniboxEntryPoint.
+    scoped_feature_list_.InitWithFeatures(
+        {extensions_features::kExperimentalOmniboxLabs},
+        {omnibox::kAiModeOmniboxEntryPoint});
+  }
+
+ private:
   void SetUpOnMainThread() override {
     OmniboxApiTestBase::SetUpOnMainThread();
     // Prevent the stop timer from killing the hints fetch early, which might
@@ -970,8 +980,7 @@ class UnscopedOmniboxApiTest : public OmniboxApiTestBase {
         base::Seconds(30));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      extensions_features::kExperimentalOmniboxLabs};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,

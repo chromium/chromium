@@ -121,7 +121,10 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
   OmniboxViewViewsTest& operator=(const OmniboxViewViewsTest&) = delete;
 
  protected:
-  OmniboxViewViewsTest() = default;
+  OmniboxViewViewsTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        omnibox::kAiModeOmniboxEntryPoint);
+  }
   ~OmniboxViewViewsTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -215,6 +218,7 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
     return native_window;
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   OmniboxTriggeredFeatureService triggered_feature_service_;
 };
 

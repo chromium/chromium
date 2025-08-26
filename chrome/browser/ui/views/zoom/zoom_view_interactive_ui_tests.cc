@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_zoom.h"
@@ -33,9 +34,12 @@ namespace {
 class ZoomViewInteractiveUiTest : public InteractiveBrowserTest {
  public:
   ZoomViewInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageActionsMigration,
-        {{features::kPageActionsMigrationZoom.name, "true"}});
+    // TODO(crbug.com/441102004): Update ShowAndHideZoomBubbleByClickWithMouse
+    //   to support kAiModeOmniboxEntryPoint.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPageActionsMigration,
+          {{features::kPageActionsMigrationZoom.name, "true"}}}},
+        {omnibox::kAiModeOmniboxEntryPoint});
   }
 
   ZoomViewInteractiveUiTest(const ZoomViewInteractiveUiTest&) = delete;
