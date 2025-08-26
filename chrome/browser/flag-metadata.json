@@ -727,6 +727,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "autofill-android-desktop-keyboard-accessory-revamp",
+    "owners": [ "piotrkotynia@google.com", "luchenpeng@google.com" ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "autofill-android-desktop-suppress-accessory-on-empty",
     "owners": [ "luchenpeng@google.com", "piotrkotynia@google.com" ],
     "expiry_milestone": 142

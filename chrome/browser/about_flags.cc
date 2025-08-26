@@ -13192,6 +13192,16 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAndroidAutofillUpdateContextForWebContents)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-android-desktop-keyboard-accessory-revamp",
+     flag_descriptions::kAutofillAndroidDesktopKeyboardAccessoryRevampName,
+     flag_descriptions::
+         kAutofillAndroidDesktopKeyboardAccessoryRevampDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAndroidDesktopKeyboardAccessoryRevamp)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

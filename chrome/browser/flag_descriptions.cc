@@ -4845,6 +4845,13 @@ const char kAppSpecificHistoryName[] = "Allow app specific history";
 const char kAppSpecificHistoryDescription[] =
     "If enabled, history results will also be categorized by application.";
 
+const char kAutofillAndroidDesktopKeyboardAccessoryRevampName[] =
+    "Move keyboard accessory to top on devices with large form factors";
+const char kAutofillAndroidDesktopKeyboardAccessoryRevampDescription[] =
+    "When enabled, a new keyboard accessory design will be applied. It moves "
+    "the entire bar to the top and changes the style to be more convenient for "
+    "devices with large screens.";
+
 const char kAutomotiveBackButtonBarStreamlineName[] =
     "AutomotiveBackButtonBarStreamline";
 const char kAutomotiveBackButtonBarStreamlineDescription[] =

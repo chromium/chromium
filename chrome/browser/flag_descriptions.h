@@ -2799,6 +2799,9 @@ extern const char kAndroidTipsNotificationsDescription[];
 extern const char kAppSpecificHistoryName[];
 extern const char kAppSpecificHistoryDescription[];
 
+extern const char kAutofillAndroidDesktopKeyboardAccessoryRevampName[];
+extern const char kAutofillAndroidDesktopKeyboardAccessoryRevampDescription[];
+
 extern const char kAutomotiveBackButtonBarStreamlineName[];
 extern const char kAutomotiveBackButtonBarStreamlineDescription[];
 

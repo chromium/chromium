@@ -11559,6 +11559,8 @@ from previous Chrome versions.
   <int value="-977476498" label="disable-eol-notification"/>
   <int value="-976514241" label="AutofillEnableCardBenefitsIph:enabled"/>
   <int value="-976421766" label="AutofillEnableManualFallbackIPH:enabled"/>
+  <int value="-976400334"
+      label="AutofillAndroidDesktopKeyboardAccessoryRevamp:disabled"/>
   <int value="-975787829" label="AutofillProfileServerValidation:enabled"/>
   <int value="-974882918" label="WebXRIncubations:disabled"/>
   <int value="-974749863" label="LiveCaptionMultiLanguage:disabled"/>
@@ -11595,6 +11597,8 @@ from previous Chrome versions.
   <int value="-960745328" label="EnableBubbleCornerRadiusUpdate:enabled"/>
   <int value="-960679124" label="CastStreamingMediaVideoEncoder:disabled"/>
   <int value="-960077963" label="EnableAuraTooltipsOnWindows:enabled"/>
+  <int value="-960031496"
+      label="AutofillAndroidDesktopKeyboardAccessoryRevamp:enabled"/>
   <int value="-959244784" label="ContextualSearchSuppressShortView:enabled"/>
   <int value="-959173180" label="AccessibilityPageZoom:disabled"/>
   <int value="-958950214" label="AllowDisableMouseAcceleration:disabled"/>
