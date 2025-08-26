@@ -39,7 +39,7 @@ android_library("java") {
   deps = [
     "//build/android:build_java",
     "//chrome/browser/ui/android/extensions/windowing:java",
-    "//chrome/browser/ui/browser_window:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
@@ -85,8 +85,8 @@ android_library("javatests") {
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/extensions/windowing:java",
-    "//chrome/browser/ui/browser_window:java",
     "//chrome/browser/ui/browser_window/internal:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//chrome/test/android:chrome_java_transit",
     "//third_party/androidx:androidx_test_runner_java",

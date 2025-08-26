@@ -4,7 +4,7 @@
 
 import("//chrome/common/features.gni")
 
-assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
 
 # This is the public interface for a browser window. Most features in
 # //chrome/browser depend on this interface, and thus to prevent circular
@@ -41,39 +41,7 @@ source_set("create_browser_window") {
   ]
 }
 
-# Android targets need to be guarded by is_android because:
-# (1) Android GNI files may assert is_android, and
-# (2) The rest of this file can be included in non-Android builds.
-if (is_android) {
-  import("//build/config/android/rules.gni")
-  import("//chrome/android/features/android_library_factory_tmpl.gni")
-
-  # Public Java interfaces
-  android_library("java") {
-    sources = [
-      "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTask.java",
-      "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskFeature.java",
-      "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTracker.java",
-      "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerObserver.java",
-    ]
-    deps = [
-      "//build/android:build_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//ui/android:ui_no_recycler_view_java",
-    ]
-    srcjar_deps = [ ":java_enum_srcjar" ]
-  }
-
-  # Public Java factory
-  android_library_factory("factory_java") {
-    deps = [ ":java" ]
-    sources = [ "internal/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java" ]
-  }
-
-  java_cpp_enum("java_enum_srcjar") {
-    sources = [ "public/browser_window_interface.h" ]
-  }
-} else {
+if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     sources = [
