@@ -327,6 +327,8 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
           WaitForShow(AskBeforeHttpDialogController::kContinueButtonId)),
       InSameContext(
           InstrumentTab(kTestTab),
+          CheckViewProperty(AskBeforeHttpDialogController::kGoBackButtonId,
+                            &views::View::HasFocus, true),
           PressButton(AskBeforeHttpDialogController::kContinueButtonId),
           WaitForWebContentsNavigation(kTestTab, http_url)));
 
@@ -375,6 +377,8 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
       InAnyContext(WaitForShow(AskBeforeHttpDialogController::kGoBackButtonId)),
       InSameContext(
           InstrumentTab(kTestTab),
+          CheckViewProperty(AskBeforeHttpDialogController::kGoBackButtonId,
+                            &views::View::HasFocus, true),
           PressButton(AskBeforeHttpDialogController::kGoBackButtonId),
           WaitForWebContentsNavigation(kTestTab, GURL("about:blank"))));
 
