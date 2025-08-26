@@ -62,6 +62,12 @@ class BwgService : public KeyedService,
   // Checks if the account is eligible for Gemini Enterprise and populates
   // `is_disabled_by_gemini_policy_`.
   void CheckGeminiEnterpriseEligibility();
+
+  // Clears the Gemini consent profile pref.
+  void ClearConsentPref();
+
+  // Weak pointer factory.
+  base::WeakPtrFactory<BwgService> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_H_

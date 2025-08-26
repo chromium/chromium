@@ -129,3 +129,11 @@ BASE_FEATURE(kGeminiForManagedAccounts,
 bool IsGeminiAvailableForManagedAccounts() {
   return base::FeatureList::IsEnabled(kGeminiForManagedAccounts);
 }
+
+bool ShouldDeleteGeminiConsentPref() {
+  return base::FeatureList::IsEnabled(kDeleteGeminiConsentPref);
+}
+
+BASE_FEATURE(kDeleteGeminiConsentPref,
+             "DeleteGeminiConsentPref",
+             base::FEATURE_ENABLED_BY_DEFAULT);

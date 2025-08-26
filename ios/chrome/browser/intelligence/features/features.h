@@ -92,4 +92,10 @@ BASE_DECLARE_FEATURE(kGeminiForManagedAccounts);
 // be disabled by an Enterprise policy.
 bool IsGeminiAvailableForManagedAccounts();
 
+// Whether the Gemini consent pref should be deleted on account change.
+bool ShouldDeleteGeminiConsentPref();
+
+// Feature flag to delete the Gemini consent pref.
+BASE_DECLARE_FEATURE(kDeleteGeminiConsentPref);
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
