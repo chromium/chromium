@@ -674,15 +674,13 @@ std::vector<ReadAloudTextSegment> ReadAloudAppModel::GetCurrentTextSegments(
     bool is_pdf,
     bool is_docs,
     const std::set<ui::AXNodeID>* current_nodes) {
-  GetCurrentText(is_pdf, is_docs, current_nodes);
-  // If the granularity index isn't valid, return an empty array.
-  if (processed_granularity_index_ >=
-      processed_granularities_on_current_page_.size()) {
+  a11y::ReadAloudCurrentGranularity current_granularity =
+      GetCurrentText(is_pdf, is_docs, current_nodes);
+
+  if (current_granularity.node_ids.empty()) {
     return {};
   }
 
-  a11y::ReadAloudCurrentGranularity current_granularity =
-      processed_granularities_on_current_page_[processed_granularity_index_];
   return current_granularity.GetSegmentsForRange(
       0, current_granularity.text.length());
 }
