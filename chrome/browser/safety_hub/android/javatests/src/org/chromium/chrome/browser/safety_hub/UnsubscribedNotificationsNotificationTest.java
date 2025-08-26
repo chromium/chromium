@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
@@ -50,6 +51,7 @@ public final class UnsubscribedNotificationsNotificationTest {
     @Test
     @SmallTest
     @Feature({"SafetyHubNotification"})
+    @DisabledTest(message = "Flaky. See crbug.com/441276761")
     public void testReviewNotification() throws Exception {
         UnsubscribedNotificationsNotificationManager.displayNotification(1);
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
