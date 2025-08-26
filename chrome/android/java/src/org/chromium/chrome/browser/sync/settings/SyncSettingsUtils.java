@@ -14,7 +14,6 @@ import android.provider.Browser;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -27,6 +26,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -94,7 +94,7 @@ public class SyncSettingsUtils {
     }
 
     /** Returns the type of the sync error */
-    public static @UserActionableError int getSyncError(Profile profile) {
+    public static @UserActionableError int getSyncError(@Nullable Profile profile) {
         assert profile != null;
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         if (syncService == null) {
@@ -109,7 +109,8 @@ public class SyncSettingsUtils {
      * @param context The application context.
      * @param error The sync error.
      */
-    public static String getSyncErrorHint(Context context, @UserActionableError int error) {
+    public static @Nullable String getSyncErrorHint(
+            Context context, @UserActionableError int error) {
         switch (error) {
             case UserActionableError.SIGN_IN_NEEDS_UPDATE:
                 return context.getString(R.string.hint_sync_auth_error_modern);
@@ -144,7 +145,8 @@ public class SyncSettingsUtils {
      * @param context The application context.
      * @param error The sync error.
      */
-    public static String getSyncErrorCardTitle(Context context, @UserActionableError int error) {
+    public static @Nullable String getSyncErrorCardTitle(
+            Context context, @UserActionableError int error) {
         switch (error) {
             case UserActionableError.SIGN_IN_NEEDS_UPDATE:
             case UserActionableError.NEEDS_CLIENT_UPGRADE:
@@ -483,17 +485,17 @@ public class SyncSettingsUtils {
     }
 
     /**
-     * Returns either the full name or the email address of a DisplayableProfileData according
-     * to preference. If the preferred string is not displayable, returns the other displayable
-     * string, or fallback to default string.
+     * Returns either the full name or the email address of a DisplayableProfileData according to
+     * preference. If the preferred string is not displayable, returns the other displayable string,
+     * or fallback to default string.
      *
-     * This method is used by {@link Preference#setTitle(CharSequence)} callers.
+     * <p>This method is used by {@link Preference#setTitle(CharSequence)} callers.
      *
      * @param profileData DisplayableProfileData containing the user's full name and email address.
      * @param context The context where the returned string is passed to setTitle(CharSequence).
      * @param preference Whether the full name or the email is preferred.
      */
-    public static String getDisplayableFullNameOrEmailWithPreference(
+    public static @Nullable String getDisplayableFullNameOrEmailWithPreference(
             DisplayableProfileData profileData, Context context, @TitlePreference int preference) {
         final String fullName = profileData.getFullName();
         final String accountEmail = profileData.getAccountEmail();
@@ -526,7 +528,7 @@ public class SyncSettingsUtils {
      * @return A ErrorCardDetails instance containing the error message and the button text for the
      *     identity error.
      */
-    public static ErrorCardDetails getIdentityErrorErrorCardDetails(
+    public static @Nullable ErrorCardDetails getIdentityErrorErrorCardDetails(
             @UserActionableError int error) {
         switch (error) {
             case UserActionableError.NEEDS_PASSPHRASE:

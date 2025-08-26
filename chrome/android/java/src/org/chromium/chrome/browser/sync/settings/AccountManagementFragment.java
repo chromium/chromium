@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.UserManager;
 
 import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -26,6 +25,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -95,15 +95,15 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
     private @GAIAServiceType int mGaiaServiceType = GAIAServiceType.GAIA_SERVICE_TYPE_NONE;
 
-    private CoreAccountInfo mSignedInCoreAccountInfo;
+    private @Nullable CoreAccountInfo mSignedInCoreAccountInfo;
     private ProfileDataCache mProfileDataCache;
     private SyncService mSyncService;
-    private @Nullable SyncService.SyncSetupInProgressHandle mSyncSetupInProgressHandle;
-    private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
+    private SyncService.@Nullable SyncSetupInProgressHandle mSyncSetupInProgressHandle;
+    private @Nullable OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedState, @Nullable String rootKey) {
         mSyncService = SyncServiceFactory.getForProfile(getProfile());
         if (mSyncService != null) {
             // Prevent sync settings changes from taking effect until the user leaves this screen.
@@ -310,7 +310,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         accountsCategory.addPreference(createAddAccountPreference());
     }
 
-    private Preference createAccountPreference(CoreAccountInfo coreAccountInfo) {
+    private Preference createAccountPreference(@Nullable CoreAccountInfo coreAccountInfo) {
         Preference accountPreference = new Preference(getStyledContext());
         accountPreference.setLayoutResource(R.layout.account_management_account_row);
 
@@ -503,7 +503,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
      * @param data The data returned by the intent.
      */
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         // Upon key retrieval completion, the keys in TrustedVaultClient could have changed. This is
         // done even if the user cancelled the flow (i.e. resultCode != RESULT_OK) because it's
         // harmless to issue a redundant notifyKeysChanged().

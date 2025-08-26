@@ -16,6 +16,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -31,9 +32,9 @@ public class IdentityErrorCardPreference extends Preference
         void onIdentityErrorCardButtonClicked(@UserActionableError int error);
     }
 
-    private Profile mProfile;
-    private SyncService mSyncService;
-    private Listener mListener;
+    private @Nullable Profile mProfile;
+    private @Nullable SyncService mSyncService;
+    private @Nullable Listener mListener;
 
     private @UserActionableError int mIdentityError;
 

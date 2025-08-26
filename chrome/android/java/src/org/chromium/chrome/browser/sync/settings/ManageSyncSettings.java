@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
@@ -39,6 +38,8 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
@@ -204,7 +205,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
     private static final int REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 2;
 
-    private BatchUploadCardPreference mBatchUploadCardPreference;
+    private @Nullable BatchUploadCardPreference mBatchUploadCardPreference;
     private SyncService mSyncService;
     private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
 
@@ -222,13 +223,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
      * `mSyncTypeSwitchPreferencesMap` is used for the new account settings panel when
      * mShouldReplaceSyncSettingsWithAccountSettings is true.
      */
-    @Nullable private Map<Integer, ChromeBaseCheckBoxPreference> mSyncTypeCheckBoxPreferencesMap;
+    private @Nullable Map<Integer, ChromeBaseCheckBoxPreference> mSyncTypeCheckBoxPreferencesMap;
 
-    @Nullable private Map<Integer, ChromeSwitchPreference> mSyncTypeSwitchPreferencesMap;
+    private @Nullable Map<Integer, ChromeSwitchPreference> mSyncTypeSwitchPreferencesMap;
 
     private Preference mGoogleActivityControls;
     private Preference mSyncEncryption;
-    private SignoutButtonPreference mSignOutPreference;
+    private @Nullable SignoutButtonPreference mSignOutPreference;
 
     private PreferenceCategory mSearchAndBrowseCategory;
     private ChromeSwitchPreference mUrlKeyedAnonymizedData;
@@ -251,7 +252,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onCreatePreferences(@Nullable Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         Profile profile = getProfile();
         mSyncService = SyncServiceFactory.getForProfile(profile);
 
@@ -572,6 +573,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         mSignOutPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
     }
 
+    @Initializer
     private void setupSyncSettings(Profile profile) {
         assert mSyncService.hasSyncConsent();
         mPageTitle.set(getString(R.string.sync_category_title));
@@ -1093,12 +1095,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
      * Called upon completion of an activity started by a previous call to startActivityForResult()
      * via SyncSettingsUtils.openTrustedVaultKeyRetrievalDialog() or
      * SyncSettingsUtils.openTrustedVaultRecoverabilityDegradedDialog().
+     *
      * @param requestCode Request code of the requested intent.
      * @param resultCode Result code of the requested intent.
      * @param data The data returned by the intent.
      */
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         // Upon key retrieval completion, the keys in TrustedVaultClient could have changed. This is
         // done even if the user cancelled the flow (i.e. resultCode != RESULT_OK) because it's
         // harmless to issue a redundant notifyKeysChanged().

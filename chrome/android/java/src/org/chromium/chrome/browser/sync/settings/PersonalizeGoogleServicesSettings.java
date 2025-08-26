@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.sync.settings;
 
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -31,7 +31,7 @@ public class PersonalizeGoogleServicesSettings extends ChromeBaseSettingsFragmen
     private static final String PREF_WEB_AND_APP_ACTIVITY = "web_and_app_activity";
     private static final String PREF_LINKED_GOOGLE_SERVICES = "linked_google_services";
 
-    private SyncService mSyncService;
+    private @Nullable SyncService mSyncService;
     private Preference mWebAndAppActivity;
     private Preference mLinkedGoogleServices;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();

@@ -10,12 +10,12 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -62,9 +62,9 @@ public class SignInPreference extends Preference
     private PrefService mPrefService;
     private ProfileDataCache mProfileDataCache;
     private AccountManagerFacade mAccountManagerFacade;
-    private SyncService mSyncService;
+    private @Nullable SyncService mSyncService;
     private SigninManager mSigninManager;
-    private IdentityManager mIdentityManager;
+    private @Nullable IdentityManager mIdentityManager;
 
     public ProfileDataCache getProfileDataCache() {
         return mProfileDataCache;
@@ -194,8 +194,8 @@ public class SignInPreference extends Preference
                                             WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                             HistorySyncConfig.OptInMode.OPTIONAL)
                                     .build();
-                    @Nullable
-                    Intent intent =
+
+                    @Nullable Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
                                             getContext(),

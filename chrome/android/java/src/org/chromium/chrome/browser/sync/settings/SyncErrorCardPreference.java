@@ -13,6 +13,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -47,9 +48,9 @@ public class SyncErrorCardPreference extends Preference
     }
 
     private ProfileDataCache mProfileDataCache;
-    private Profile mProfile;
-    private SyncService mSyncService;
-    private IdentityManager mIdentityManager;
+    private @Nullable Profile mProfile;
+    private @Nullable SyncService mSyncService;
+    private @Nullable IdentityManager mIdentityManager;
     private SyncErrorCardPreferenceListener mListener;
     private @UserActionableError int mSyncError;
 

@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
@@ -17,6 +16,7 @@ import androidx.preference.PreferenceGroup;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
@@ -66,6 +66,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
 
     @VisibleForTesting
     public static final String PREF_USAGE_STATS_REPORTING = "usage_stats_reporting";
+
     @VisibleForTesting
     public static final String PREF_PRICE_TRACKING_ANNOTATIONS = "price_tracking_annotations";
 
@@ -81,15 +82,15 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
     private ChromeSwitchPreference mSearchSuggestions;
     private ChromeSwitchPreference mUsageAndCrashReporting;
     private ChromeSwitchPreference mUrlKeyedAnonymizedData;
-    private ChromeSwitchPreference mPriceTrackingAnnotations;
+    private @Nullable ChromeSwitchPreference mPriceTrackingAnnotations;
     private @Nullable Preference mContextualSearch;
-    private Preference mPriceNotificationSection;
-    private Preference mUsageStatsReporting;
-    private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
+    private @Nullable Preference mPriceNotificationSection;
+    private @Nullable Preference mUsageStatsReporting;
+    private @Nullable OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(@Nullable Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.prefs_google_services));
         setHasOptionsMenu(true);
 

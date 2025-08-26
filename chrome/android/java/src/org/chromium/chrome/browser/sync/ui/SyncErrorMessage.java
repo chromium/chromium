@@ -296,7 +296,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         return R.string.identity_error_message_button_verify;
     }
 
-    private String getTitle(Context context) {
+    private @Nullable String getTitle(Context context) {
         assert mError != UserActionableError.NONE;
         // Check if this is for a sync error.
         if (mSyncService.hasSyncConsent()) {
@@ -334,7 +334,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         return R.string.identity_error_card_button_verify;
     }
 
-    private String getMessage(Context context) {
+    private @Nullable String getMessage(Context context) {
         assert mError != UserActionableError.NONE;
         // Check if this is for a sync error.
         if (mSyncService.hasSyncConsent()) {
