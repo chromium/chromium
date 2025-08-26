@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
@@ -116,9 +114,17 @@ public class PageContentProtoViewStructureBuilderTest {
                 });
 
         CriteriaHelper.pollUiThread(
-                () ->
-                        Criteria.checkThat(
-                                outViewStructure.isChildCountSet(), Matchers.equalTo(true)),
+                () -> {
+                    if (outViewStructure.getChildCount() == 0
+                            && outViewStructure.isChildCountSet()) {
+                        return true;
+                    }
+                    if (outViewStructure.getChildCount() > 0
+                            && outViewStructure.getChild(0).getHtmlInfo() != null) {
+                        return true;
+                    }
+                    return false;
+                },
                 DEFAULT_MAX_TIME_TO_WAIT_IN_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 

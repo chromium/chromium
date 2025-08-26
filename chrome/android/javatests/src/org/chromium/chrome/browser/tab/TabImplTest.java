@@ -121,7 +121,13 @@ public class TabImplTest {
                 });
 
         CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(viewStructure.getChildCount(), Matchers.equalTo(1)),
+                () -> {
+                    if (viewStructure.getChildCount() != 1) return false;
+                    var rootNode = viewStructure.getChild(0);
+                    if (!rootNode.hasExtras()) return false;
+                    return rootNode.getExtras()
+                            .containsKey("org.chromium.chrome.browser.AnnotatedPageContents");
+                },
                 DEFAULT_MAX_TIME_TO_WAIT_IN_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 

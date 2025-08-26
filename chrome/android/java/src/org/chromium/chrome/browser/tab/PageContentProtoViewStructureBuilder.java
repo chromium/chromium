@@ -167,6 +167,8 @@ public class PageContentProtoViewStructureBuilder implements VirtualStructurePro
             structure.setChildCount(0);
             return;
         }
+        structure.setChildCount(1);
+        final ViewStructure rootNode = structure.asyncNewChild(0);
 
         PageContentProtoProviderBridge.getAiPageContent(
                 webContents,
@@ -176,11 +178,9 @@ public class PageContentProtoViewStructureBuilder implements VirtualStructurePro
                             !result.isEmpty());
 
                     if (result.isEmpty()) {
-                        structure.setChildCount(0);
+                        rootNode.asyncCommit();
                         return;
                     }
-                    structure.setChildCount(1);
-                    final ViewStructure rootNode = structure.asyncNewChild(0);
                     populateVirtualStructureWithPageContentProto(rootNode, result.get());
                 });
     }

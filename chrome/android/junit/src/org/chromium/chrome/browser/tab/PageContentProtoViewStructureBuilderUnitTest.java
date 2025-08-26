@@ -69,7 +69,14 @@ public class PageContentProtoViewStructureBuilderUnitTest {
 
         builder.provideVirtualStructureForWebContents(structure, mWebContents);
 
-        assertEquals(0, structure.getChildCount());
+        assertEquals(1, structure.getChildCount());
+        var rootNode = structure.getChild(0);
+        assertFalse(
+                "Extras should not contain proto",
+                rootNode.hasExtras()
+                        && rootNode.getExtras()
+                                .containsKey(
+                                        PageContentProtoViewStructureBuilder.APC_PROTO_EXTRA_KEY));
         histogramWatcher.assertExpected();
     }
 
