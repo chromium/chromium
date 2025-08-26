@@ -10,7 +10,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/glic/browser_ui/theme_util.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -613,7 +612,7 @@ void GlicTabUnderlineView::OnPaint(gfx::Canvas* canvas) {
                      static_cast<float>(u_resolution.height())}}};
   std::vector<cc::PaintShader::IntUniform> int_uniforms = {
       {.name = SkString("u_dark"),
-       .value = UseDarkMode(theme_service_) ? 1 : 0}};
+       .value = theme_service_->BrowserUsesDarkColors() ? 1 : 0}};
 
   std::vector<cc::PaintShader::Float4Uniform> float4_uniforms;
   float4_uniforms.push_back({.name = SkString("u_corner_radius"),

@@ -78,18 +78,14 @@ PrivacySandboxDialogUntrustedUI::PrivacySandboxDialogUntrustedUI(
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PRIVACY_POLICY_HTML);
 
   // Dark mode support.
-  ThemeService::BrowserColorScheme browser_color_scheme =
+  const bool use_dark_mode =
       ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))
-          ->GetBrowserColorScheme();
-  bool is_dark_mode =
-      (browser_color_scheme == ThemeService::BrowserColorScheme::kSystem)
-          ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-          : browser_color_scheme == ThemeService::BrowserColorScheme::kDark;
+          ->BrowserUsesDarkColors();
 
   untrusted_source->AddString("privacyPolicyURL",
                               privacy_sandbox::GetEmbeddedPrivacyPolicyURL(
                                   should_use_china_domain ? kChina : kNonChina,
-                                  is_dark_mode ? kDarkMode : kLightMode,
+                                  use_dark_mode ? kDarkMode : kLightMode,
                                   g_browser_process->GetApplicationLocale()));
 
   untrusted_source->AddFrameAncestor(

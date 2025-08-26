@@ -15,8 +15,6 @@ source_set("browser_ui") {
     "glic_tab_underline_view.cc",
     "glic_vector_icon_manager.cc",
     "scoped_glic_button_indicator.cc",
-    "theme_util.cc",
-    "theme_util.h",
   ]
   deps = [
     "//chrome/browser/actor/ui",
