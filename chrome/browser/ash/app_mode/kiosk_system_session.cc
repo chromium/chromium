@@ -22,12 +22,10 @@
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -145,9 +143,7 @@ void KioskSystemSession::InitKioskAppUpdateService(const std::string& app_id) {
 }
 
 void KioskSystemSession::SetRebootAfterUpdateIfNecessary() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (!connector->IsDeviceEnterpriseManaged()) {
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     local_state_->SetBoolean(::prefs::kRebootAfterUpdate, true);
     KioskModeIdleAppNameNotification::Initialize();
   }
