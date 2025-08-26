@@ -139,8 +139,9 @@ void MediaInspectorContextImpl::CullPlayers(const WebString& prefer_keep) {
       return;
     auto iterator = players_.begin();
     // Make sure not to delete the item that is preferred to keep.
-    if (WTF::String(prefer_keep) == iterator->key)
+    if (String(prefer_keep) == iterator->key) {
       ++iterator;
+    }
     RemovePlayer(iterator->key);
   }
 

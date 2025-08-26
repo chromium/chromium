@@ -100,7 +100,7 @@ protocol::String BuildCookieExclusionReason(
 
 std::unique_ptr<std::vector<blink::protocol::String>>
 BuildCookieExclusionReasons(
-    const WTF::Vector<mojom::blink::CookieExclusionReason>& exclusion_reasons) {
+    const Vector<mojom::blink::CookieExclusionReason>& exclusion_reasons) {
   auto protocol_exclusion_reasons =
       std::make_unique<std::vector<blink::protocol::String>>();
   for (const auto& reason : exclusion_reasons) {
@@ -159,7 +159,7 @@ protocol::String BuildCookieWarningReason(
 }
 
 std::unique_ptr<std::vector<blink::protocol::String>> BuildCookieWarningReasons(
-    const WTF::Vector<mojom::blink::CookieWarningReason>& warning_reasons) {
+    const Vector<mojom::blink::CookieWarningReason>& warning_reasons) {
   auto protocol_warning_reasons =
       std::make_unique<std::vector<blink::protocol::String>>();
   for (const auto& reason : warning_reasons) {

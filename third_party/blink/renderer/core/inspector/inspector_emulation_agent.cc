@@ -100,32 +100,32 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       document_cookie_disabled_(&agent_state_, /*default_value=*/false),
       touch_event_emulation_enabled_(&agent_state_, /*default_value=*/false),
       max_touch_points_(&agent_state_, /*default_value=*/1),
-      emulated_media_(&agent_state_, /*default_value=*/WTF::String()),
-      emulated_media_features_(&agent_state_, /*default_value=*/WTF::String()),
+      emulated_media_(&agent_state_, /*default_value=*/String()),
+      emulated_media_features_(&agent_state_, /*default_value=*/String()),
       emulated_vision_deficiency_(&agent_state_,
-                                  /*default_value=*/WTF::String()),
+                                  /*default_value=*/String()),
       os_text_scale_emulation_enabled_(&agent_state_, /*default_value=*/false),
       emulated_os_text_scale_(&agent_state_, /*default_value=*/1),
       navigator_platform_override_(&agent_state_,
-                                   /*default_value=*/WTF::String()),
+                                   /*default_value=*/String()),
       hardware_concurrency_override_(&agent_state_, /*default_value=*/0),
       data_saver_override_(&agent_state_,
                            /*default_value=*/DataSaverOverride::Unset),
-      user_agent_override_(&agent_state_, /*default_value=*/WTF::String()),
+      user_agent_override_(&agent_state_, /*default_value=*/String()),
       serialized_ua_metadata_override_(
           &agent_state_,
           /*default_value=*/std::vector<uint8_t>()),
       accept_language_override_(&agent_state_,
-                                /*default_value=*/WTF::String()),
-      locale_override_(&agent_state_, /*default_value=*/WTF::String()),
+                                /*default_value=*/String()),
+      locale_override_(&agent_state_, /*default_value=*/String()),
       virtual_time_budget_(&agent_state_, /*default_value*/ 0.0),
       initial_virtual_time_(&agent_state_, /*default_value=*/0.0),
-      virtual_time_policy_(&agent_state_, /*default_value=*/WTF::String()),
+      virtual_time_policy_(&agent_state_, /*default_value=*/String()),
       virtual_time_task_starvation_count_(&agent_state_, /*default_value=*/0),
       emulate_focus_(&agent_state_, /*default_value=*/false),
       emulate_auto_dark_mode_(&agent_state_, /*default_value=*/false),
       auto_dark_mode_override_(&agent_state_, /*default_value=*/false),
-      timezone_id_override_(&agent_state_, /*default_value=*/WTF::String()),
+      timezone_id_override_(&agent_state_, /*default_value=*/String()),
       disabled_image_types_(&agent_state_, /*default_value=*/false),
       cpu_throttling_rate_(&agent_state_, /*default_value=*/1),
       automation_override_(&agent_state_, /*default_value=*/false),
@@ -366,7 +366,7 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
   GetWebViewImpl()->GetPage()->GetSettings().SetMediaTypeOverride(media_value);
 
   auto const old_emulated_media_features_keys =
-      WTF::ToVector(emulated_media_features_.Keys());
+      ToVector(emulated_media_features_.Keys());
   emulated_media_features_.Clear();
 
   if (features) {
@@ -413,7 +413,7 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
           initial_system_forced_colors_state_);
     }
 
-    for (const WTF::String& feature : emulated_media_features_.Keys()) {
+    for (const String& feature : emulated_media_features_.Keys()) {
       auto const& value = emulated_media_features_.Get(feature);
       GetWebViewImpl()->GetPage()->SetMediaFeatureOverride(
           AtomicString(feature), value);
@@ -428,7 +428,7 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
     }
   }
 
-  for (const WTF::String& feature : old_emulated_media_features_keys) {
+  for (const String& feature : old_emulated_media_features_keys) {
     auto const& value = emulated_media_features_.Get(feature);
     if (!value) {
       GetWebViewImpl()->GetPage()->SetMediaFeatureOverride(
@@ -594,8 +594,8 @@ protocol::Response InspectorEmulationAgent::setVirtualTimePolicy(
         base::Milliseconds(virtual_time_budget_ms.value());
     virtual_time_controller_.GrantVirtualTimeBudget(
         budget_amount,
-        WTF::BindOnce(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
-                      WrapWeakPersistent(this)));
+        BindOnce(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
+                 WrapWeakPersistent(this)));
     for (DocumentLoader* loader : pending_document_loaders_)
       loader->SetDefersLoading(LoaderFreezeMode::kNone);
     pending_document_loaders_.clear();

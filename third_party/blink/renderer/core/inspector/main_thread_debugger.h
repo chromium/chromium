@@ -87,7 +87,7 @@ class CORE_EXPORT MainThreadDebugger final : public ThreadDebuggerCommonImpl {
   void ReportConsoleMessage(ExecutionContext*,
                             mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
-                            const WTF::String& message,
+                            const String& message,
                             SourceLocation*) override;
   int ContextGroupId(ExecutionContext*) override;
 

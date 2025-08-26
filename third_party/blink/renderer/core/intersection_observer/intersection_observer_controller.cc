@@ -94,11 +94,10 @@ void IntersectionObserverController::PostTaskToDeliverNotifications() {
   DCHECK(GetExecutionContext());
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kInternalIntersectionObserver)
-      ->PostTask(
-          FROM_HERE,
-          WTF::BindOnce(&IntersectionObserverController::DeliverNotifications,
-                        WrapWeakPersistent(this),
-                        IntersectionObserver::kPostTaskToDeliver));
+      ->PostTask(FROM_HERE,
+                 BindOnce(&IntersectionObserverController::DeliverNotifications,
+                          WrapWeakPersistent(this),
+                          IntersectionObserver::kPostTaskToDeliver));
 }
 
 void IntersectionObserverController::ScheduleIntersectionObserverForDelivery(

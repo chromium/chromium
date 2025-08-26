@@ -831,9 +831,8 @@ void InspectorAnimationAgent::AnimationUpdated(blink::Animation* animation) {
         inspected_frames_->Root()->GetTaskRunner(TaskType::kInternalInspector);
     task_runner->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(&InspectorAnimationAgent::NotifyAnimationUpdated,
-                      WrapPersistent(weak_factory_.GetWeakCell()),
-                      animation_id),
+        BindOnce(&InspectorAnimationAgent::NotifyAnimationUpdated,
+                 WrapPersistent(weak_factory_.GetWeakCell()), animation_id),
         base::Milliseconds(50));
   }
 }

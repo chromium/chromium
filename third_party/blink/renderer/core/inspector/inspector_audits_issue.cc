@@ -88,7 +88,7 @@ std::unique_ptr<protocol::Audits::SourceCodeLocation> CreateProtocolLocation(
                                .setColumnNumber(location.ColumnNumber())
                                .build();
   if (location.ScriptId()) {
-    protocol_location->setScriptId(WTF::String::Number(location.ScriptId()));
+    protocol_location->setScriptId(String::Number(location.ScriptId()));
   }
   return protocol_location;
 }
@@ -906,8 +906,8 @@ void AuditsIssue::ReportUserReidentificationResourceBlockedIssue(
           .setRequest(
               protocol::Audits::AffectedRequest::create()
                   .setRequestId(devtools_request_id.has_value()
-                                    ? WTF::String(devtools_request_id.value())
-                                    : WTF::String())
+                                    ? String(devtools_request_id.value())
+                                    : String())
                   .setUrl(affected_request_url)
                   .build())
           .build();

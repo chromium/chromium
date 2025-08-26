@@ -777,10 +777,9 @@ protocol::Response InspectorDOMAgent::getNodesForSubtreeByStyle(
 
   HeapVector<Member<Node>> nodes;
 
-  CollectNodes(
-      root_node, INT_MAX, pierce.value_or(false), IncludeWhitespace(),
-      WTF::BindRepeating(&NodeHasMatchingStyles, WTF::Unretained(&properties)),
-      &nodes);
+  CollectNodes(root_node, INT_MAX, pierce.value_or(false), IncludeWhitespace(),
+               BindRepeating(&NodeHasMatchingStyles, Unretained(&properties)),
+               &nodes);
 
   NodeToIdMap* nodes_map = document_node_to_id_map_.Get();
   *node_ids = std::make_unique<protocol::Array<int>>();
@@ -1218,7 +1217,7 @@ protocol::Response InspectorDOMAgent::getOuterHTML(
     std::optional<int> backend_node_id,
     std::optional<String> object_id,
     std::optional<bool> include_shadow_dom,
-    WTF::String* outer_html) {
+    String* outer_html) {
   Node* node = nullptr;
   protocol::Response response =
       AssertNode(node_id, backend_node_id, object_id, node);

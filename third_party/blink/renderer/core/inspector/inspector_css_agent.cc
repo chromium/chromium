@@ -872,8 +872,8 @@ void InspectorCSSAgent::enable(std::unique_ptr<EnableCallback> prp_callback) {
   enable_requested_.Set(true);
   resource_content_loader_->EnsureResourcesContentLoaded(
       resource_content_loader_client_id_,
-      WTF::BindOnce(&InspectorCSSAgent::ResourceContentLoaded,
-                    WrapPersistent(this), std::move(prp_callback)));
+      BindOnce(&InspectorCSSAgent::ResourceContentLoaded, WrapPersistent(this),
+               std::move(prp_callback)));
 }
 
 void InspectorCSSAgent::ResourceContentLoaded(
@@ -4822,8 +4822,8 @@ void InspectorCSSAgent::DidUpdateComputedStyle(Element* element,
         inspected_frames_->Root()->GetTaskRunner(TaskType::kInternalInspector);
     task_runner->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(&InspectorCSSAgent::NotifyComputedStyleUpdatedForNode,
-                      WrapPersistent(weak_factory_.GetWeakCell()), id),
+        BindOnce(&InspectorCSSAgent::NotifyComputedStyleUpdatedForNode,
+                 WrapPersistent(weak_factory_.GetWeakCell()), id),
         base::Milliseconds(50));
   }
 

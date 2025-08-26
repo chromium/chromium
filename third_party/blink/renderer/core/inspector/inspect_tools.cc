@@ -802,16 +802,16 @@ void PausedInDebuggerTool::Dispatch(const ScriptValue& message,
     auto task_runner =
         overlay_->GetFrame()->GetTaskRunner(TaskType::kInternalInspector);
     if (message_string == "resume") {
-      task_runner->PostTask(
-          FROM_HERE, WTF::BindOnce(&v8_inspector::V8InspectorSession::resume,
-                                   WTF::Unretained(v8_session_),
-                                   /* setTerminateOnResume */ false));
+      task_runner->PostTask(FROM_HERE,
+                            BindOnce(&v8_inspector::V8InspectorSession::resume,
+                                     Unretained(v8_session_),
+                                     /* setTerminateOnResume */ false));
       return;
     }
     if (message_string == "stepOver") {
       task_runner->PostTask(
-          FROM_HERE, WTF::BindOnce(&v8_inspector::V8InspectorSession::stepOver,
-                                   WTF::Unretained(v8_session_)));
+          FROM_HERE, BindOnce(&v8_inspector::V8InspectorSession::stepOver,
+                              Unretained(v8_session_)));
       return;
     }
   }

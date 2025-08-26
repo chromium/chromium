@@ -33,7 +33,8 @@ class CORE_EXPORT InspectorSessionState {
   // that are sent back to the browser.
   // A null string for |value| indicates a deletion.
   // TODO(johannes): Lower cost of repeated updates.
-  void EnqueueUpdate(const WTF::String& key, const std::vector<uint8_t>* value);
+  void EnqueueUpdate(const blink::String& key,
+                     const std::vector<uint8_t>* value);
 
   // Yields and consumes the field updates that have thus far accumulated.
   // These updates are sent back to DevToolsSession on the browser side.
@@ -59,8 +60,8 @@ class CORE_EXPORT InspectorAgentState {
   static bool Deserialize(crdtp::span<uint8_t> in, int32_t* v);
   static void Serialize(double v, std::vector<uint8_t>* out);
   static bool Deserialize(crdtp::span<uint8_t> in, double* v);
-  static void Serialize(const WTF::String& v, std::vector<uint8_t>* out);
-  static bool Deserialize(crdtp::span<uint8_t> in, WTF::String* v);
+  static void Serialize(const blink::String& v, std::vector<uint8_t>* out);
+  static bool Deserialize(crdtp::span<uint8_t> in, blink::String* v);
   static void Serialize(const std::vector<uint8_t>& v,
                         std::vector<uint8_t>* out);
   static bool Deserialize(crdtp::span<uint8_t> in, std::vector<uint8_t>* v);
@@ -88,18 +89,18 @@ class CORE_EXPORT InspectorAgentState {
     // The field instance is allowed to use/allocate any entry in
     // the session state starting with this prefix. SimpleField instances
     // just use prefix_key_ directly, MapField instances append a suffix.
-    const WTF::String prefix_key_;
+    const blink::String prefix_key_;
     InspectorSessionState* session_state_;
   };
 
   // A simple field with a default value, providing Get, Set, and Clear
-  // operations. E.g. an instantiation with WTF::String yields:
-  // - const WTF::String& Get();
-  // - Set(const WTF::String&);
+  // operations. E.g. an instantiation with blink::String yields:
+  // - const blink::String& Get();
+  // - Set(const blink::String&);
   // - void Clear();
   template <class ValueType>
   class SimpleField : public Field {
-    // Means in practice: const WTF::String& for WTF::String, otherwise same
+    // Means in practice: const blink::String& for blink::String, otherwise same
     // as ValueType.
     using ConstRefType =
         typename std::conditional<std::is_fundamental<ValueType>::value,
@@ -158,11 +159,11 @@ class CORE_EXPORT InspectorAgentState {
     ValueType value_;
   };
 
-  // A map field provides a map from WTF::String to its value type,
+  // A map field provides a map from blink::String to its value type,
   // and Keys, Get, Set, Clear operations.
   template <class ValueType>
   class MapField : public Field {
-    // Means in practice: const WTF::String& for WTF::String, otherwise same
+    // Means in practice: const blink::String& for blink::String, otherwise same
     // as ValueType.
     using ConstRefType =
         typename std::conditional<std::is_fundamental<ValueType>::value,
@@ -184,14 +185,14 @@ class CORE_EXPORT InspectorAgentState {
 
     // Returns the value for a given |key|, or the default value if
     // the key wasn't set.
-    ConstRefType Get(const WTF::String& key) const {
+    ConstRefType Get(const blink::String& key) const {
       auto it = map_.find(key);
       return it == map_.end() ? default_value_ : it->value;
     }
 
     // Sets the |value| for |key| as provided, except if |value| is the
     // default value in which case |key| is cleared.
-    void Set(const WTF::String& key, ConstRefType value) {
+    void Set(const blink::String& key, ConstRefType value) {
       if (value == default_value_) {
         Clear(key);
         return;
@@ -206,7 +207,7 @@ class CORE_EXPORT InspectorAgentState {
     }
 
     // Clears the entry for |key|.
-    void Clear(const WTF::String& key) {
+    void Clear(const blink::String& key) {
       auto it = map_.find(key);
       if (it == map_.end())
         return;
@@ -217,7 +218,7 @@ class CORE_EXPORT InspectorAgentState {
     // Clears the entire field.
     void Clear() override {
       // TODO(johannes): Handle this in a single update.
-      for (const WTF::String& key : map_.Keys()) {
+      for (const blink::String& key : map_.Keys()) {
         session_state_->EnqueueUpdate(StrCat({prefix_key_, key}), nullptr);
       }
       map_.clear();
@@ -236,7 +237,7 @@ class CORE_EXPORT InspectorAgentState {
       for (const auto& entry : reattach_state->entries) {
         if (!entry.key.StartsWith(prefix_key_))
           continue;
-        WTF::String suffix_key = entry.key.Substring(prefix_key_.length());
+        blink::String suffix_key = entry.key.Substring(prefix_key_.length());
         ValueType v;
         if (Deserialize(
                 crdtp::span<uint8_t>(entry.value->data(), entry.value->size()),
@@ -247,25 +248,25 @@ class CORE_EXPORT InspectorAgentState {
     }
 
     const ValueType default_value_;
-    WTF::HashMap<WTF::String, ValueType> map_;
+    HashMap<blink::String, ValueType> map_;
   };
 
   using Boolean = SimpleField<bool>;
   using Integer = SimpleField<int32_t>;
   using Double = SimpleField<double>;
-  using String = SimpleField<WTF::String>;
+  using String = SimpleField<blink::String>;
   using Bytes = SimpleField<std::vector<uint8_t>>;
   using BooleanMap = MapField<bool>;
   using IntegerMap = MapField<int32_t>;
   using DoubleMap = MapField<double>;
-  using StringMap = MapField<WTF::String>;
+  using StringMap = MapField<blink::String>;
 
-  InspectorAgentState(const WTF::String& domain_name);
+  InspectorAgentState(const blink::String& domain_name);
 
   // Registers |field| and returns the prefix key for it.
   // The prefix key is domain_name + "." + index in fields_ + "/",
   // e.g. "network.0/".
-  WTF::String RegisterField(Field* field);
+  blink::String RegisterField(Field* field);
 
   // Init must be called *after* all fields are registered with the
   // InspectorAgentState. Usually, the fact that fields are registered in
@@ -276,7 +277,7 @@ class CORE_EXPORT InspectorAgentState {
   void ClearAllFields();
 
  private:
-  const WTF::String domain_name_;
+  const blink::String domain_name_;
   Vector<Field*> fields_;
 };
 }  // namespace blink

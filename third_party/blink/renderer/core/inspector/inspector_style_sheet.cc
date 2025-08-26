@@ -608,7 +608,7 @@ String CanonicalCSSText(CSSRule* rule) {
 
   std::sort(properties.begin(), properties.end(),
             [](const auto& a, const auto& b) -> bool {
-              return WTF::CodeUnitCompareLessThan(a.second, b.second);
+              return CodeUnitCompareLessThan(a.second, b.second);
             });
 
   StringBuilder builder;

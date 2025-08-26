@@ -61,7 +61,7 @@ void InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
       CSSDefaultStyleSheets::Instance().ForEachRuleFeatureSet(
           tree_scope.GetDocument(),
           /*call_for_each_stylesheet=*/true,
-          WTF::BindRepeating(
+          BindRepeating(
               [](InvalidationSetToSelectorMap* instance,
                  const StyleEngine* style_engine,
                  const RuleFeatureSet& features, StyleSheetContents* contents) {

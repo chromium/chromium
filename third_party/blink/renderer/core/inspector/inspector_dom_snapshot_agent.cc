@@ -168,7 +168,7 @@ class DOMTreeIterator {
 
  private:
   Node* current_;
-  WTF::Vector<int> path_to_current_node_;
+  Vector<int> path_to_current_node_;
 };
 
 }  // namespace
