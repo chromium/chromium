@@ -3089,7 +3089,7 @@ crbug.com/437877028 [ Mac14 ] virtual/renderer-side-content-decoding/external/wp
 crbug.com/437877028 [ Mac14 ] virtual/renderer-side-content-decoding/external/wpt/fetch/content-encoding/zstd/big-zstd-body.https.any.html [ Timeout ]
 crbug.com/437855566 [ Mac14 ] virtual/unified-autoplay/external/wpt/feature-policy/experimental-features/trust-token-redemption-supported-by-feature-policy.tentative.html [ Timeout ]
 crbug.com/437594843 [ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/blocklisted-manufacturer-data-in-filter.https.window.html [ Pass Timeout ]
-crbug.com/437594843 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/invalid-companyIdentifier.https.window.html [ Pass Timeout Failure ]
+crbug.com/437594843 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/invalid-companyIdentifier.https.window.html [ Failure Pass Timeout ]
 crbug.com/437594843 [ Win10.20h2 ] external/wpt/bluetooth/bidi/service/getCharacteristic/gen-invalid-characteristic-name.https.window.html [ Pass Timeout ]
 crbug.com/437594843 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/getCharacteristics/blocklisted-characteristics.https.window.html [ Failure Pass Timeout ]
 crbug.com/437622043 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?7-8 [ Crash Pass ]
