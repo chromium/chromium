@@ -186541,6 +186541,19 @@
        {}
       ]
      ],
+     "first-line-on-list-item-with-block-children.html": [
+      "e3880d593e123895a5714095864516f4febcfdbf",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/first-line-on-list-item-with-block-children-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "first-line-opacity-001-ref.html": [
       "b4f4ddc185fc5e958f1934a0a1e948eee29e8057",
       [
@@ -339928,6 +339941,10 @@
       "3528b565fccb1d32dff6fe732c9497446e5f525e",
       []
      ],
+     "last-successful-animation-expected.txt": [
+      "3586324e8e4f42aeac5a471656c842f9b524aad1",
+      []
+     ],
      "last-successful-basic-expected.txt": [
       "3586324e8e4f42aeac5a471656c842f9b524aad1",
       []
@@ -367912,6 +367929,10 @@
      ],
      "first-line-on-ancestor-block-ref.html": [
       "7193bf25eb88c5443457480f7ce27782acd9473a",
+      []
+     ],
+     "first-line-on-list-item-with-block-children-ref.html": [
+      "7c3eac0f36d110ac745f2b8cfc600f8c5f6ae5dd",
       []
      ],
      "first-line-opacity-001-not-ref.html": [
@@ -504322,6 +504343,13 @@
      ],
      "idlharness.html": [
       "2679bb3740b99a20024ff2254037d42fb6793af7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "last-successful-animation.html": [
+      "1495318bc4e66e4e7f424fc781194fdc6d4ebc08",
       [
        null,
        {}
@@ -767435,7 +767463,7 @@
        ]
       ],
       "realtimeanalyser-fft-scaling.html": [
-       "043bd5890a04c162720b401f2482bd6c1f26bcbc",
+       "7ee63bf769b9a46346fab8b24ca78f9a75894a34",
        [
         null,
         {}
