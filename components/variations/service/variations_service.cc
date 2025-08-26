@@ -712,9 +712,10 @@ void VariationsService::StoreSeed(std::string seed_data,
       base::BindOnce(&VariationsService::OnSeedStoreResult,
                      weak_ptr_factory_.GetWeakPtr(), is_delta_compressed);
   field_trial_creator_.seed_store()->StoreSeedData(
-      std::move(seed_data), std::move(seed_signature), std::move(country_code),
-      date_fetched, is_delta_compressed, is_gzip_compressed,
-      std::move(done_callback));
+      std::move(done_callback), std::move(seed_data), std::move(seed_signature),
+      std::move(country_code), date_fetched, is_delta_compressed,
+      is_gzip_compressed,
+      /*require_synchronous=*/false);
 }
 
 void VariationsService::OnSeedStoreResult(bool is_delta_compressed,

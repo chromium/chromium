@@ -116,11 +116,16 @@ COMPONENT_EXPORT(VARIATIONS) extern const SeedFieldsPrefs kSafeSeedFieldsPrefs;
 class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
     : public base::ImportantFileWriter::BackgroundDataSerializer {
  public:
-  // Call with the result of a seed read, the seed data, and the signature. The
+  // Result of a seed read, the seed data, and the signature. The
   // seed data and signature should only be used if the result is
   // `LoadSeedResult::kSuccess`.
-  using ReadSeedDataCallback =
-      base::OnceCallback<void(LoadSeedResult, std::string, std::string)>;
+  struct ReadSeedDataResult {
+    LoadSeedResult result;
+    std::string seed_data;
+    std::string signature;
+  };
+
+  using ReadSeedDataCallback = base::OnceCallback<void(ReadSeedDataResult)>;
 
   // `local_state` provides access to the local state prefs. Must not be null.
   // `seed_file_dir` denotes the directory for storing a seed file. Note that

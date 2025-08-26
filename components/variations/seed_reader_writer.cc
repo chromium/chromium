@@ -721,7 +721,8 @@ void SeedReaderWriter::ProcessStoredSeedDataAndRunCallback(
   LoadSeedResult result = ProcessStoredSeedData(
       std::move(stored_seed), &seed_data, &base64_seed_signature);
   std::move(done_callback)
-      .Run(result, std::move(seed_data), base64_seed_signature);
+      .Run(ReadSeedDataResult{result, std::move(seed_data),
+                              base64_seed_signature});
 }
 
 void SeedReaderWriter::GetSeedData(

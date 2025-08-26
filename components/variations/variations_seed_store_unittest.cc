@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_command_line.h"
@@ -860,12 +861,12 @@ class StoreSeedDataGroupTest
                      const Params& params = {}) {
     base::RunLoop run_loop;
     seed_store.StoreSeedData(
+        /*done_callback=*/base::BindOnce(
+            &StoreSeedDataGroupTest::OnSeedStoreResult, base::Unretained(this),
+            run_loop.QuitClosure()),
         seed_data, /*base64_seed_signature=*/std::string(), params.country_code,
         base::Time::Now(), params.is_delta_compressed,
-        params.is_gzip_compressed,
-        base::BindOnce(&StoreSeedDataGroupTest::OnSeedStoreResult,
-                       base::Unretained(this), run_loop.QuitClosure()),
-        RequireSynchronousStores());
+        params.is_gzip_compressed, RequireSynchronousStores());
     // If we're testing synchronous stores, we shouldn't issue a Run() call so
     // that the test verifies that the operation completed synchronously.
     if (!RequireSynchronousStores()) {
@@ -1561,10 +1562,19 @@ TEST_P(StoreInvalidSafeSeedTest, StoreSafeSeed) {
   base::HistogramTester histogram_tester;
 
   // Verify that attempting to store an invalid seed fails.
-  ASSERT_FALSE(
-      seed_store.StoreSafeSeed(params.seed, params.signature,
-                               /*seed_milestone=*/91, *client_state,
-                               /*seed_fetch_time=*/now - base::Hours(1)));
+  base::RunLoop run_loop;
+  bool store_seed_result = false;
+  seed_store.StoreSafeSeed(
+      /*done_callback=*/base::BindLambdaForTesting(
+          [&store_seed_result, &run_loop](bool result) {
+            store_seed_result = result;
+            run_loop.Quit();
+          }),
+      params.seed, params.signature,
+      /*seed_milestone=*/91, *client_state,
+      /*seed_fetch_time=*/now - base::Hours(1));
+  run_loop.Run();
+  ASSERT_FALSE(store_seed_result);
 
   // Verify that the seed file has no pending writes and was not overwritten.
   ASSERT_FALSE(timer_.IsRunning());
@@ -1657,12 +1667,21 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest, StoreSafeSeed_ValidSignature) {
   const base::Time expected_fetch_time = now - base::Hours(6);
 
   // Verify that storing the safe seed succeeded.
-  ASSERT_TRUE(seed_store.StoreSafeSeed(expected_seed, expected_signature,
-                                       expected_seed_milestone, *client_state,
-                                       expected_fetch_time));
+  base::RunLoop run_loop;
+  bool store_seed_result = false;
+  seed_store.StoreSafeSeed(
+      /*done_callback=*/base::BindLambdaForTesting(
+          [&store_seed_result, &run_loop](bool result) {
+            store_seed_result = result;
+            run_loop.Quit();
+          }),
+      expected_seed, expected_signature, expected_seed_milestone, *client_state,
+      expected_fetch_time);
+  run_loop.Run();
   // Force write for SeedReaderWriter.
   timer_.Fire();
   file_writer_thread_.FlushForTesting();
+  ASSERT_TRUE(store_seed_result);
 
   // Make sure the seed was successfully stored in the seed file.
   std::string seed_file_data;
@@ -1733,9 +1752,18 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
           .session_country_code = "us",
       });
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(seed_store.StoreSafeSeed(
+  base::RunLoop run_loop;
+  bool store_seed_result = false;
+  seed_store.StoreSafeSeed(
+      /*done_callback=*/base::BindLambdaForTesting(
+          [&store_seed_result, &run_loop](bool result) {
+            store_seed_result = result;
+            run_loop.Quit();
+          }),
       new_seed_data, "a completely ignored signature",
-      /*seed_milestone=*/92, *client_state, fetch_time));
+      /*seed_milestone=*/92, *client_state, fetch_time);
+  run_loop.Run();
+  ASSERT_TRUE(store_seed_result);
 
   // Verify the latest seed value was copied before the safe seed was
   // overwritten.
@@ -1801,9 +1829,18 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
   seed_store.SetSafeSeedReaderWriterForTesting(std::move(seed_reader_writer_));
 
   // Verify that storing the safe seed succeeded.
-  ASSERT_TRUE(seed_store.StoreSafeSeed(expected_seed, expected_signature,
-                                       expected_seed_milestone, *client_state,
-                                       expected_fetch_time));
+  base::RunLoop run_loop;
+  bool store_seed_result = false;
+  seed_store.StoreSafeSeed(
+      /*done_callback=*/base::BindLambdaForTesting(
+          [&store_seed_result, &run_loop](bool result) {
+            store_seed_result = result;
+            run_loop.Quit();
+          }),
+      expected_seed, expected_signature, expected_seed_milestone, *client_state,
+      expected_fetch_time);
+  run_loop.Run();
+  ASSERT_TRUE(store_seed_result);
 
   // Verify that the seed file has no pending or executed writes
   ASSERT_FALSE(timer_.IsRunning());
@@ -1880,9 +1917,18 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
           .session_country_code = "us",
       });
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(seed_store.StoreSafeSeed(
+  base::RunLoop run_loop;
+  bool store_seed_result = false;
+  seed_store.StoreSafeSeed(
+      /*done_callback=*/base::BindLambdaForTesting(
+          [&store_seed_result, &run_loop](bool result) {
+            store_seed_result = result;
+            run_loop.Quit();
+          }),
       new_seed_data, "a completely ignored signature",
-      /*seed_milestone=*/92, *client_state, fetch_time));
+      /*seed_milestone=*/92, *client_state, fetch_time);
+  run_loop.Run();
+  ASSERT_TRUE(store_seed_result);
 
   // Verify the latest seed value was copied before the safe seed was
   // overwritten.
@@ -1950,9 +1996,18 @@ TEST_P(StoreSafeSeedDataAllGroupsTest, StoreSafeSeed_IdenticalToLatestSeed) {
       GetParam().field_trial_group == kSeedFilesGroup ? compressed_seed
                                                       : base64_seed;
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(seed_store.StoreSafeSeed(
+  base::RunLoop run_loop;
+  bool store_seed_result = false;
+  seed_store.StoreSafeSeed(
+      /*done_callback=*/base::BindLambdaForTesting(
+          [&store_seed_result, &run_loop](bool result) {
+            store_seed_result = result;
+            run_loop.Quit();
+          }),
       serialized_seed, "a completely ignored signature", /*seed_milestone=*/92,
-      *client_state, /*seed_fetch_time=*/WrapTime(12345)));
+      *client_state, /*seed_fetch_time=*/WrapTime(12345));
+  run_loop.Run();
+  ASSERT_TRUE(store_seed_result);
 
   // Verify the latest seed value was migrated to a sentinel value, rather than
   // the full string.

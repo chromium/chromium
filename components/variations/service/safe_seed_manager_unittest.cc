@@ -60,7 +60,8 @@ class FakeSeedStore : public VariationsSeedStore {
 
   ~FakeSeedStore() override = default;
 
-  bool StoreSafeSeed(const std::string& seed_data,
+  void StoreSafeSeed(base::OnceCallback<void(bool)> done_callback,
+                     const std::string& seed_data,
                      const std::string& base64_seed_signature,
                      int seed_milestone,
                      const ClientFilterableState& client_state,
@@ -73,7 +74,7 @@ class FakeSeedStore : public VariationsSeedStore {
     permanent_consistency_country_ = client_state.permanent_consistency_country;
     session_consistency_country_ = client_state.session_consistency_country;
     fetch_time_ = seed_fetch_time;
-    return true;
+    std::move(done_callback).Run(true);
   }
 
   const std::string& seed_data() const { return seed_data_; }

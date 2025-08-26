@@ -123,7 +123,8 @@ void SafeSeedManager::RecordSuccessfulFetch(VariationsSeedStore* seed_store) {
   const std::optional<ActiveSeedState>& active_seed_state =
       GetActiveSeedState();
   if (active_seed_state) {
-    seed_store->StoreSafeSeed(active_seed_state->seed_data,
+    seed_store->StoreSafeSeed(/*done_callback=*/base::DoNothing(),
+                              active_seed_state->seed_data,
                               active_seed_state->base64_seed_signature,
                               active_seed_state->seed_milestone,
                               *active_seed_state->client_filterable_state,

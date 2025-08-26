@@ -623,22 +623,20 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedDataCallback) {
       .signature = signature,
   });
 
-  LoadSeedResult load_result;
-  std::string read_seed_data;
-  std::string read_signature;
+  // Read seed data and verify result.
+  base::RunLoop run_loop;
+  SeedReaderWriter::ReadSeedDataResult result;
   auto lambda_cb = base::BindLambdaForTesting(
-      [&load_result, &read_seed_data, &read_signature](
-          LoadSeedResult result, std::string seed_data,
-          std::string base64_seed_signature) {
-        load_result = result;
-        read_seed_data = std::move(seed_data);
-        read_signature = std::move(base64_seed_signature);
+      [&result, &run_loop](SeedReaderWriter::ReadSeedDataResult read_result) {
+        result = std::move(read_result);
+        run_loop.Quit();
       });
   seed_reader_writer.ReadSeedData(lambda_cb);
+  run_loop.Run();
 
-  EXPECT_EQ(load_result, LoadSeedResult::kSuccess);
-  EXPECT_EQ(read_seed_data, seed_data);
-  EXPECT_EQ(read_signature, signature);
+  EXPECT_EQ(result.result, LoadSeedResult::kSuccess);
+  EXPECT_EQ(result.seed_data, seed_data);
+  EXPECT_EQ(result.signature, signature);
 }
 
 TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedDataCallbackCorruptGzip) {
@@ -657,13 +655,17 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedDataCallbackCorruptGzip) {
   compressed_seed[10] ^= 0xFF;
   seed_reader_writer.StoreRawSeedForTesting(compressed_seed);
 
+  // Read seed data and verify result.
+  base::RunLoop run_loop;
   LoadSeedResult load_result;
   auto lambda_cb = base::BindLambdaForTesting(
-      [&load_result](LoadSeedResult result, std::string _seed_data,
-                     std::string _base64_seed_signature) {
-        load_result = result;
+      [&load_result,
+       &run_loop](SeedReaderWriter::ReadSeedDataResult read_result) {
+        load_result = read_result.result;
+        run_loop.Quit();
       });
   seed_reader_writer.ReadSeedData(lambda_cb);
+  run_loop.Run();
   EXPECT_EQ(load_result, LoadSeedResult::kCorruptGzip);
 }
 
@@ -684,13 +686,17 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest,
       .signature = "ignored signature",
   });
 
+  // Read seed data and verify result.
+  base::RunLoop run_loop;
   LoadSeedResult load_result;
   auto lambda_cb = base::BindLambdaForTesting(
-      [&load_result](LoadSeedResult result, std::string _seed_data,
-                     std::string _base64_seed_signature) {
-        load_result = result;
+      [&load_result,
+       &run_loop](SeedReaderWriter::ReadSeedDataResult read_result) {
+        load_result = read_result.result;
+        run_loop.Quit();
       });
   seed_reader_writer.ReadSeedData(lambda_cb);
+  run_loop.Run();
   EXPECT_EQ(load_result, LoadSeedResult::kExceedsUncompressedSizeLimit);
 }
 
@@ -1019,22 +1025,16 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ReadSeedDataCallback) {
       .signature = signature,
   });
 
-  LoadSeedResult load_result;
-  std::string read_seed_data;
-  std::string read_signature;
+  SeedReaderWriter::ReadSeedDataResult read_result;
   auto lambda_cb = base::BindLambdaForTesting(
-      [&load_result, &read_seed_data, &read_signature](
-          LoadSeedResult result, std::string seed_data,
-          std::string base64_seed_signature) {
-        load_result = result;
-        read_seed_data = std::move(seed_data);
-        read_signature = std::move(base64_seed_signature);
+      [&read_result](SeedReaderWriter::ReadSeedDataResult result) {
+        read_result = result;
       });
   seed_reader_writer.ReadSeedData(lambda_cb);
 
-  EXPECT_EQ(load_result, LoadSeedResult::kSuccess);
-  EXPECT_EQ(read_seed_data, seed_data);
-  EXPECT_EQ(read_signature, signature);
+  EXPECT_EQ(read_result.result, LoadSeedResult::kSuccess);
+  EXPECT_EQ(read_result.seed_data, seed_data);
+  EXPECT_EQ(read_result.signature, signature);
 }
 
 TEST_P(SeedReaderWriterLocalStateGroupsTest,
@@ -1054,9 +1054,8 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest,
 
   LoadSeedResult load_result;
   auto lambda_cb = base::BindLambdaForTesting(
-      [&load_result](LoadSeedResult result, std::string _seed_data,
-                     std::string _base64_seed_signature) {
-        load_result = result;
+      [&load_result](SeedReaderWriter::ReadSeedDataResult read_result) {
+        load_result = read_result.result;
       });
   seed_reader_writer.ReadSeedData(lambda_cb);
   EXPECT_EQ(load_result, LoadSeedResult::kCorruptBase64);
@@ -1083,9 +1082,8 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ReadSeedDataCallbackCorruptGzip) {
 
   LoadSeedResult load_result;
   auto lambda_cb = base::BindLambdaForTesting(
-      [&load_result](LoadSeedResult result, std::string _seed_data,
-                     std::string _base64_seed_signature) {
-        load_result = result;
+      [&load_result](SeedReaderWriter::ReadSeedDataResult read_result) {
+        load_result = read_result.result;
       });
   seed_reader_writer.ReadSeedData(lambda_cb);
   EXPECT_EQ(load_result, LoadSeedResult::kCorruptGzip);
@@ -1108,13 +1106,16 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest,
       base::Base64Encode(Gzip(std::string(51 * 1024 * 1024, 'A')));
   seed_reader_writer.StoreRawSeedForTesting(base64_compressed_seed);
 
+  base::RunLoop run_loop;
   LoadSeedResult load_result;
   auto lambda_cb = base::BindLambdaForTesting(
-      [&load_result](LoadSeedResult result, std::string _seed_data,
-                     std::string _base64_seed_signature) {
-        load_result = result;
+      [&load_result,
+       &run_loop](SeedReaderWriter::ReadSeedDataResult read_result) {
+        load_result = read_result.result;
+        run_loop.Quit();
       });
   seed_reader_writer.ReadSeedData(lambda_cb);
+  run_loop.Run();
   EXPECT_EQ(load_result, LoadSeedResult::kExceedsUncompressedSizeLimit);
 }
 

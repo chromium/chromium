@@ -823,12 +823,11 @@ void VariationsFieldTrialCreator::LoadSeedFromJsonFile(
         base::StrCat({"Failed to decode seed data in contents of \"",
                       json_seed_path.AsUTF8Unsafe(), "\""}));
   }
-  seed_store_->StoreSeedData(decoded_seed, seed_signature->GetString(),
-                             /*country_code=*/"",
+  seed_store_->StoreSeedData(/*done_callback=*/base::DoNothing(), decoded_seed,
+                             seed_signature->GetString(), /*country_code=*/"",
                              /*date_fetched=*/base::Time(),
                              /*is_delta_compressed=*/false,
                              /*is_gzip_compressed=*/true,
-                             /*done_callback=*/base::DoNothing(),
                              /*require_synchronous=*/true);
 }
 

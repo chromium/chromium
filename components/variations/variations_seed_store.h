@@ -106,14 +106,14 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // performed synchronously, whereas otherwise some processing can be async.
   // Note: Strings are passed by value to support std::move() semantics.
   void StoreSeedData(
+      base::OnceCallback<void(bool, VariationsSeed)> done_callback,
       std::string data,
       std::string base64_seed_signature,
       std::string country_code,
       base::Time date_fetched,
       bool is_delta_compressed,
       bool is_gzip_compressed,
-      base::OnceCallback<void(bool, VariationsSeed)> done_callback,
-      bool require_synchronous = false);
+      bool require_synchronous);
 
   // Loads the safe variations seed data from local state into |seed| and
   // updates any relevant fields in |client_state|. Returns true iff the safe
@@ -128,12 +128,13 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   [[nodiscard]] virtual bool LoadSafeSeed(VariationsSeed* seed,
                                           ClientFilterableState* client_state);
 
-  // Stores the given |seed_data| (a serialized protobuf) to local state as a
-  // safe seed, along with a base64-encoded digital signature for seed and any
-  // additional client metadata relevant to the safe seed. Returns true on
+  // Stores the given `seed_data` (a serialized protobuf) as a safe seed, along
+  // with a base64-encoded digital signature for seed and any additional client
+  // metadata relevant to the safe seed. Calls `done_callback` with true on
   // success or false on failure; no prefs are updated in case of failure.
   // Virtual for testing.
-  virtual bool StoreSafeSeed(const std::string& seed_data,
+  virtual void StoreSafeSeed(base::OnceCallback<void(bool)> done_callback,
+                             const std::string& seed_data,
                              const std::string& base64_seed_signature,
                              int seed_milestone,
                              const ClientFilterableState& client_state,
@@ -313,6 +314,15 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
     SAFE,
   };
 
+  // Callback for reading both seeds. They contain the result of loading the
+  // safe and latest seeds.
+  using ReadBothSeedsCallback = base::OnceCallback<void(
+      SeedReaderWriter::ReadSeedDataResult /*safe_seed_result*/,
+      SeedReaderWriter::ReadSeedDataResult /*latest_seed_result*/)>;
+
+  // Class for reading both latest and safe seeds in parallel.
+  class TwoSeedReader;
+
   // Clears all prefs related to variations seed storage for the specified seed
   // type.
   void ClearPrefs(SeedType seed_type);
@@ -353,48 +363,65 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // from the seed file. The |done_callback| will be called when the read is
   // complete. The result of the read will be handled by
   // VariationsSeedStore::ReadSeedDataCallback().
-  void ReadSeedData(SeedType seed_type,
-                    bool require_synchronous,
-                    SeedReaderWriter::ReadSeedDataCallback done_callback);
+  void ReadSeedData(SeedReaderWriter::ReadSeedDataCallback done_callback,
+                    SeedType seed_type,
+                    bool require_synchronous);
 
   // Callback for VariationsSeedStore::ReadSeedData(). If the read was
   // successful, it will call the |done_callback| with the result of the read
   // and the seed data. If the read was unsuccessful, it will clear the prefs
   // associated with the seed and call the |done_callback| with empty seed data.
   void CheckReadSeedDataResultAndRunCallback(
+      SeedReaderWriter::ReadSeedDataCallback done_callback,
       SeedType seed_type,
       bool require_synchronous,
-      SeedReaderWriter::ReadSeedDataCallback done_callback,
-      LoadSeedResult load_seed_result,
-      std::string seed_data,
-      std::string base64_seed_signature);
+      SeedReaderWriter::ReadSeedDataResult read_result);
 
   // Processes the seed data (decompression, parsing and signature
   // verification) and stores the result.
   void ProcessAndStoreSeedData(
-      SeedData seed_data,
       base::OnceCallback<void(bool, VariationsSeed)> done_callback,
+      SeedData seed_data,
       bool require_synchronous,
-      LoadSeedResult read_result,
-      std::string existing_seed_bytes,
-      std::string existing_base64_seed_signature);
+      SeedReaderWriter::ReadSeedDataResult read_result);
 
   // Called on the UI thread after the seed has been processed.
   void OnSeedDataProcessed(
       base::OnceCallback<void(bool, VariationsSeed)> done_callback,
+      bool require_synchronous,
       SeedProcessingResult result);
 
-  // Updates the latest seed with validated data.
-  StoreSeedResult StoreValidatedSeed(const ValidatedSeed& seed,
-                                     const std::string& country_code,
-                                     base::Time date_fetched);
+  // Stores the validated seed and calls `done_callback` with the result of the
+  // store and the validated seed.
+  void StoreValidatedSeed(
+      base::OnceCallback<void(bool, VariationsSeed)> done_callback,
+      ValidatedSeed seed,
+      std::string country_code,
+      base::Time date_fetched,
+      bool require_synchronous,
+      SeedReaderWriter::ReadSeedDataResult read_result);
+
+  // Called after the safe seed has been stored. It records the result of the
+  // store and calls `done_callback`.
+  void OnValidatedSafeSeedStored(base::OnceCallback<void(bool)> done_callback,
+                                 StoreSeedResult store_result);
+
+  // Reads both the safe and latest seeds. The callback is called with the
+  // results of each read in that order.
+  void ReadBothSeedsData(ReadBothSeedsCallback done_callback);
 
   // Updates the safe seed with validated data.
-  StoreSeedResult StoreValidatedSafeSeed(
-      const ValidatedSeed& seed,
+  void StoreValidatedSafeSeed(
+      base::OnceCallback<void(StoreSeedResult)> done_callback,
+      ValidatedSeed seed,
       int seed_milestone,
-      const ClientFilterableState& client_state,
-      base::Time seed_fetch_time);
+      base::Time reference_date,
+      std::string session_consistency_country,
+      std::string permanent_consistency_country,
+      std::string locale,
+      base::Time seed_fetch_time,
+      SeedReaderWriter::ReadSeedDataResult safe_seed_read_result,
+      SeedReaderWriter::ReadSeedDataResult latest_seed_read_result);
 
   // Processes seed data (decompression, parsing and signature verification).
   // This is meant to be called on a background thread in the case of periodic
