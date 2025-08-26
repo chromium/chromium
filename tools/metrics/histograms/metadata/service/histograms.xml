@@ -1313,7 +1313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.PaymentRequestEvent.Time" units="ms"
-    expires_after="2025-08-31">
+    expires_after="2026-08-25">
   <owner>rouslan@chromium.org</owner>
   <owner>chrome-payments-team@google.com</owner>
   <owner>jinho.bang@samsung.com</owner>
