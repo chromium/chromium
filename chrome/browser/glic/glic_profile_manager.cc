@@ -85,11 +85,18 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
   }
 
   // Look for a profile to based on most recently used browser windows
-  for (BrowserWindowInterface* browser :
-       GetBrowserWindowInterfacesOrderedByActivation()) {
-    if (GlicEnabling::IsEnabledAndConsentForProfile(browser->GetProfile())) {
-      return browser->GetProfile();
-    }
+  Profile* profile_from_browser_window = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (GlicEnabling::IsEnabledAndConsentForProfile(
+                browser->GetProfile())) {
+          profile_from_browser_window = browser->GetProfile();
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  if (profile_from_browser_window != nullptr) {
+    return profile_from_browser_window;
   }
 
   // TODO(https://crbug.com/379166075) Remove loaded profile look up once the
