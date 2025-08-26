@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.navattach;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -33,6 +34,10 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> POPUP_FILE_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Callback for when the Use AI Mode switch is toggled. */
+    public static final WritableObjectPropertyKey<Callback<Boolean>> ON_USE_AI_MODE_CHANGED =
+            new WritableObjectPropertyKey<>();
+
     /** Action to perform when the user clicks the Gallery button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_GALLERY_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -45,6 +50,7 @@ class NavigationAttachmentsProperties {
         ADAPTER,
         ATTACHMENTS_VISIBLE,
         BUTTON_ADD_CLICKED,
+        ON_USE_AI_MODE_CHANGED,
         POPUP_CAMERA_CLICKED,
         POPUP_FILE_CLICKED,
         POPUP_GALLERY_CLICKED,

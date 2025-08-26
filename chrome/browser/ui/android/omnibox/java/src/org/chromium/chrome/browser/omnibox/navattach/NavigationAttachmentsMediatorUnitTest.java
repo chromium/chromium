@@ -31,6 +31,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Unit tests for {@link NavigationAttachmentsMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -148,5 +149,20 @@ public class NavigationAttachmentsMediatorUnitTest {
     public void addAttachment_setsAttachmentsVisible() {
         mMediator.addAttachment(null);
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
+    }
+
+    @Test
+    public void onUseAiModeChanged_off_clearsAttachments() {
+        ModelList modelList = new ModelList();
+        mMediator =
+                new NavigationAttachmentsMediator(
+                        mContext, mWindowAndroid, mModel, mViewHolder, modelList);
+        modelList.add(new SimpleRecyclerViewAdapter.ListItem(0, new PropertyModel()));
+        assertEquals(1, modelList.size());
+
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
+        mMediator.onUseAiModeChanged(false);
+        assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
+        assertEquals(0, modelList.size());
     }
 }

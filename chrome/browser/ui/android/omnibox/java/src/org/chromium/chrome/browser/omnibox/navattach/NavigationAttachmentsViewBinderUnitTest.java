@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.navattach;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.Group;
 
 import org.junit.Before;
@@ -23,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -43,6 +46,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     private @Mock Button mGalleryButton;
     private @Mock Button mFileButton;
     private @Mock NavigationAttachmentsRecyclerView mRecyclerView;
+    private @Mock SwitchCompat mSwitch;
 
     private PropertyModel mModel;
     private NavigationAttachmentsViewHolder mViewHolder;
@@ -52,6 +56,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
         doReturn(mNavigationView).when(mParent).findViewById(R.id.location_bar_navigation_toolbar);
         doReturn(mAddButton).when(mParent).findViewById(R.id.location_bar_attachments_add);
         doReturn(mRecyclerView).when(mParent).findViewById(R.id.location_bar_attachments);
+        doReturn(mSwitch).when(mParent).findViewById(R.id.location_bar_navigation_type);
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
         mViewHolder.popup.mCameraButton = mCameraButton;
@@ -71,12 +76,20 @@ public class NavigationAttachmentsViewBinderUnitTest {
     }
 
     @Test
-    public void attachmentsVisible_setsVisibility() {
+    public void attachmentsVisible_setsVisibilityAndTogglesSwitch() {
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
         verify(mRecyclerView).setVisibility(View.VISIBLE);
+        verify(mSwitch).setChecked(true);
 
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, false);
         verify(mRecyclerView).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void useAiModeChanged_setsListener() {
+        Callback<Boolean> callback = mock(Callback.class);
+        mModel.set(NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED, callback);
+        verify(mSwitch).setOnCheckedChangeListener(any());
     }
 
     @Test

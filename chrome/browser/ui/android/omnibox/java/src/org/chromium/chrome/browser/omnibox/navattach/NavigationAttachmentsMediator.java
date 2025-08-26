@@ -56,9 +56,18 @@ class NavigationAttachmentsMediator {
         mModel.set(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED, this::launchCamera);
         mModel.set(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED, this::launchImagePicker);
         mModel.set(NavigationAttachmentsProperties.POPUP_FILE_CLICKED, this::launchFilePicker);
+        mModel.set(
+                NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED, this::onUseAiModeChanged);
     }
 
     void destroy() {}
+
+    void onUseAiModeChanged(boolean enabled) {
+        if (!enabled) {
+            mModelList.clear();
+            mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, false);
+        }
+    }
 
     /** Called when the URL focus changes. */
     void onUrlFocusChange(boolean hasFocus) {
