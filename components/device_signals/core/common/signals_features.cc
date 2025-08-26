@@ -23,7 +23,7 @@ BASE_FEATURE(kProfileSignalsReportingEnabled,
 // Enables the collection of detected agent signals in Chrome report.
 BASE_FEATURE(kDetectedAgentSignalCollectionEnabled,
              "DetectedAgentSignalCollectionEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the addition of device signals fields to Browser-level Chrome
 // Reports.
