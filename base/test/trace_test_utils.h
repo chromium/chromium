@@ -5,9 +5,7 @@
 #ifndef BASE_TEST_TRACE_TEST_UTILS_H_
 #define BASE_TEST_TRACE_TEST_UTILS_H_
 
-namespace base {
-
-namespace test {
+namespace base::test {
 
 // A scoped class that sets up and tears down tracing support for unit tests.
 // Note that only in-process tracing is supported by this harness. See
@@ -20,7 +18,9 @@ class TracingEnvironment {
   ~TracingEnvironment();
 };
 
-}  // namespace test
-}  // namespace base
+void InitializeTracing();
+void SetupTracing();
+
+}  // namespace base::test
 
 #endif  // BASE_TEST_TRACE_TEST_UTILS_H_

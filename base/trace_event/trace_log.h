@@ -175,8 +175,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
   };
   std::vector<TrackEventSession> GetTrackEventSessions() const;
 
-  void InitializePerfettoIfNeeded();
-  bool IsPerfettoInitializedByTraceLog() const;
   void SetEnabledImpl(const TraceConfig& trace_config,
                       const perfetto::TraceConfig& perfetto_config);
 

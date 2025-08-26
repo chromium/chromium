@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
+#include "base/test/trace_test_utils.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
@@ -200,6 +201,7 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
   }
 
  private:
+  base::test::TracingEnvironment tracing_environment_;
   base::Value::List trace_events_;
   base::trace_event::TraceResultBuffer trace_buffer_;
   base::trace_event::TraceResultBuffer::SimpleOutput json_output_;
@@ -457,6 +459,7 @@ TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
 
 TEST(TraceNetLogObserverCategoryTest, DisabledCategory) {
   base::test::TaskEnvironment task_environment;
+  base::test::TracingEnvironment tracing_environment;
   TraceNetLogObserver observer;
   observer.WatchForTraceStart(NetLog::Get());
 
@@ -473,6 +476,7 @@ TEST(TraceNetLogObserverCategoryTest, DisabledCategory) {
 
 TEST(TraceNetLogObserverCategoryTest, EnabledCategory) {
   base::test::TaskEnvironment task_environment;
+  base::test::TracingEnvironment tracing_environment;
   TraceNetLogObserver observer;
   observer.WatchForTraceStart(NetLog::Get());
 

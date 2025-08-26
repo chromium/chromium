@@ -16,6 +16,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/test/trace_test_utils.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
@@ -33,8 +34,6 @@ class ScopedTraceTest : public testing::Test {
   void SetUp() override {
     test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   }
-
-  void TearDown() override { base::trace_event::TraceLog::ResetForTesting(); }
 
  protected:
   void StartTracing(const std::string& filter) {
@@ -98,6 +97,7 @@ class ScopedTraceTest : public testing::Test {
 
   // The task runner we use for posting tasks.
   base::test::TaskEnvironment task_environment_;
+  base::test::TracingEnvironment tracing_environment_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
 };
 

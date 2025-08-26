@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -828,6 +829,7 @@ TEST_P(PaintLayerPainterTest, EmptyFilterReference) {
 }
 
 TEST_P(PaintLayerPainterTest, DevtoolsPaintTraceEvents) {
+  base::test::TracingEnvironment tracing_environment;
   SetBodyInnerHTML(R"HTML(
     <div id=scroller style="width: 400px; height: 400px; overflow-y: scroll;
                             position: relative">

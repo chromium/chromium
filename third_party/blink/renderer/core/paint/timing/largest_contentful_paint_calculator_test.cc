@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -150,6 +151,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
         .GetLargestContentfulPaintCalculator();
   }
 
+  base::test::TracingEnvironment tracing_environment_;
   base::SimpleTestTickClock simulated_clock_;
   Persistent<MockPaintTimingCallbackManager> mock_text_callback_manager_;
   Persistent<MockPaintTimingCallbackManager> mock_image_callback_manager_;

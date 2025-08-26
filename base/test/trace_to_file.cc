@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/trace_buffer.h"
+#include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/trace_log.h"
 
 namespace base::test {
@@ -54,6 +55,8 @@ void TraceToFile::BeginTracing(const FilePath& path,
   path_ = path;
   WriteFileHeader();
 
+  base::trace_event::SetPerfettoInitializedForTesting();
+  base::trace_event::InitializeInProcessPerfettoBackend();
   trace_event::TraceLog::GetInstance()->SetEnabled(
       trace_event::TraceConfig(categories, trace_event::RECORD_UNTIL_FULL));
 }

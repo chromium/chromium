@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/client_process_impl.h"
-
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -14,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_manager_test_utils.h"
 #include "base/trace_event/memory_dump_scheduler.h"
@@ -25,6 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/client_process_impl.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -141,7 +141,7 @@ class MemoryTracingIntegrationTest : public testing::Test {
         std::make_unique<base::test::SingleThreadTaskEnvironment>();
     coordinator_ = std::make_unique<MockCoordinator>(this);
 
-    TraceLog::GetInstance()->InitializePerfettoIfNeeded();
+    tracing_environment_ = std::make_unique<base::test::TracingEnvironment>();
     tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunner(
         base::SingleThreadTaskRunner::GetCurrentDefault());
     TracingObserverProto::GetInstance()->ResetForTesting();
@@ -166,9 +166,9 @@ class MemoryTracingIntegrationTest : public testing::Test {
     mdm_->ResetForTesting();
     mdm_ = nullptr;
     client_process_.reset();
+    tracing_environment_.reset();
     coordinator_.reset();
     task_environment_.reset();
-    TraceLog::ResetForTesting();
   }
 
   // Blocks the current thread (spinning a nested message loop) until the
@@ -253,6 +253,7 @@ class MemoryTracingIntegrationTest : public testing::Test {
  private:
   std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
   std::unique_ptr<MockCoordinator> coordinator_;
+  std::unique_ptr<base::test::TracingEnvironment> tracing_environment_;
   std::unique_ptr<ClientProcessImpl> client_process_;
   uint64_t guid_counter_ = 0;
 };

@@ -26,6 +26,10 @@
 
 namespace base::trace_event {
 
+void BASE_EXPORT SetPerfettoInitializedForTesting();
+bool BASE_EXPORT IsPerfettoInitializedForTesting();
+void BASE_EXPORT InitializeInProcessPerfettoBackend();
+
 using ArgumentNameFilterPredicate =
     base::RepeatingCallback<bool(const char* arg_name)>;
 

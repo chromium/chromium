@@ -10,8 +10,9 @@ specific_include_rules = {
     "+ui/native_theme/native_theme_base.h",
     "+ui/gfx/color_utils.h"
   ],
-  ".*test\.cc": [
+  ".*test\.[cc|h]": [
     "+base/test/trace_event_analyzer.h",
+    "+base/test/trace_test_utils.h",
   ],
   "box_fragment_painter_test.cc": [
     "+components/paint_preview/common/paint_preview_tracker.h",

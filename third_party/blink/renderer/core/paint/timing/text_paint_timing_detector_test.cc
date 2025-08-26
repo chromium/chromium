@@ -6,6 +6,7 @@
 
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -301,6 +302,7 @@ TEST_F(TextPaintTimingDetectorTest,
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
+  base::test::TracingEnvironment tracing_environment;
   using trace_analyzer::Query;
   trace_analyzer::Start("loading");
   {
@@ -345,6 +347,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
 
 TEST_F(TextPaintTimingDetectorTest,
        LargestTextPaint_TraceEvent_Candidate_Frame) {
+  base::test::TracingEnvironment tracing_environment;
   using trace_analyzer::Query;
   trace_analyzer::Start("loading");
   {

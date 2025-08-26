@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 
+#include "base/test/trace_test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"

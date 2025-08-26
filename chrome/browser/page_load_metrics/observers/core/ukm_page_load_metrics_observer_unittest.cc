@@ -15,6 +15,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_trace_processor.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
@@ -65,7 +66,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
-#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using content::NavigationSimulator;
 using content::RenderFrameHost;
@@ -908,15 +908,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestTextPaint) {
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_Trace) {
-  // TODO(crbug.com/40801822): Improve unit tests support for tracing.
-  // In particular, the initialization call below is most likely too narrow /
-  // doesn't take care of everything that is needed.  In the future we might
-  // need to 1) initialize tracing from a better place (maybe
-  // RenderViewHostTestEnabler) and 2) initialize more broadly (maybe via
-  // tracing::PerfettoTracedProcess::SetupForTesting method once it is
-  // reintroduced).
-  perfetto::internal::TrackRegistry::InitializeInstance();
-
+  base::test::TracingEnvironment tracing_environment_;
   using trace_analyzer::Query;
   trace_analyzer::Start("loading");
   {
@@ -956,6 +948,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_Trace) {
 TEST_F(UkmPageLoadMetricsObserverTest,
        LargestContentfulPaint_Trace_InvalidateCandidate) {
   using trace_analyzer::Query;
+  base::test::TracingEnvironment tracing_environment_;
   trace_analyzer::Start("loading");
   {
     page_load_metrics::mojom::PageLoadTiming timing;

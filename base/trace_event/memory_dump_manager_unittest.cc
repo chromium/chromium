@@ -24,6 +24,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
+#include "base/test/trace_test_utils.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/memory_dump_manager_test_utils.h"
@@ -185,6 +186,7 @@ class MemoryDumpManagerTest : public testing::Test {
     InitializeMemoryDumpManagerForInProcessTesting(is_coordinator_);
 
     task_environment_ = std::make_unique<test::TaskEnvironment>();
+    tracing_environment_ = std::make_unique<test::TracingEnvironment>();
   }
 
   void TearDown() override {
@@ -193,7 +195,7 @@ class MemoryDumpManagerTest : public testing::Test {
     // Tear down the MemoryDumpManager while single-threaded to mirror logic in
     // SetUp().
     mdm_.reset();
-    TraceLog::ResetForTesting();
+    tracing_environment_.reset();
   }
 
  protected:
@@ -258,6 +260,7 @@ class MemoryDumpManagerTest : public testing::Test {
   ShadowingAtExitManager at_exit_manager_;
 
   std::unique_ptr<test::TaskEnvironment> task_environment_;
+  std::unique_ptr<test::TracingEnvironment> tracing_environment_;
 
   // Whether the test MemoryDumpManager should be initialized as the
   // coordinator.

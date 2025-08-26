@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
@@ -735,6 +736,7 @@ CORE_EXPORT const CSSStyleSheet* FindStyleSheet(
     const StyleRule* rule);
 
 TEST_F(ElementRuleCollectorTest, FindStyleSheet) {
+  base::test::TracingEnvironment tracing_environment;
   trace_analyzer::Start(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"));
   InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(

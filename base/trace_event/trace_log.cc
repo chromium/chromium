@@ -62,8 +62,6 @@ namespace base::trace_event {
 
 namespace {
 
-bool g_perfetto_initialized_by_tracelog = false;
-
 TraceLog* g_trace_log_for_testing = nullptr;
 
 ThreadTicks ThreadNow() {
@@ -361,10 +359,10 @@ TraceLog* TraceLog::GetInstance() {
 void TraceLog::ResetForTesting() {
   auto* self = GetInstance();
   AutoLock lock(self->observers_lock_);
+  self->tracing_session_.reset();
   self->enabled_state_observers_.clear();
   self->owned_enabled_state_observer_copy_.clear();
   self->async_observers_.clear();
-  self->InitializePerfettoIfNeeded();
 }
 
 TraceLog::TraceLog() : process_id_(base::kNullProcessId) {
@@ -474,38 +472,6 @@ std::vector<TraceLog::TrackEventSession> TraceLog::GetTrackEventSessions()
   return track_event_sessions_;
 }
 
-void TraceLog::InitializePerfettoIfNeeded() {
-  // When we're using the Perfetto client library, only tests should be
-  // recording traces directly through TraceLog. Production code should instead
-  // use perfetto::Tracing::NewTrace(). Let's make sure the tracing service
-  // didn't already initialize Perfetto in this process, because it's not safe
-  // to consume trace data from arbitrary processes through TraceLog as the JSON
-  // conversion here isn't sandboxed like with the real tracing service.
-  //
-  // Note that initializing Perfetto here requires the thread pool to be ready.
-  CHECK(!perfetto::Tracing::IsInitialized() ||
-        g_perfetto_initialized_by_tracelog)
-      << "Don't use TraceLog for recording traces from non-test code. Use "
-         "perfetto::Tracing::NewTrace() instead.";
-
-  if (perfetto::Tracing::IsInitialized()) {
-    return;
-  }
-  g_perfetto_initialized_by_tracelog = true;
-  perfetto::TracingInitArgs init_args;
-  init_args.backends = perfetto::BackendType::kInProcessBackend;
-  init_args.shmem_batch_commits_duration_ms = 1000;
-  init_args.shmem_size_hint_kb = 4 * 1024;
-  init_args.shmem_direct_patching_enabled = true;
-  init_args.disallow_merging_with_system_tracks = true;
-  perfetto::Tracing::Initialize(init_args);
-  TrackEvent::Register();
-}
-
-bool TraceLog::IsPerfettoInitializedByTraceLog() const {
-  return g_perfetto_initialized_by_tracelog;
-}
-
 void TraceLog::SetEnabled(const TraceConfig& trace_config,
                           const perfetto::TraceConfig& perfetto_config) {
   AutoLock lock(lock_);
@@ -515,8 +481,14 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
 void TraceLog::SetEnabledImpl(const TraceConfig& trace_config,
                               const perfetto::TraceConfig& perfetto_config) {
   DCHECK(!TrackEvent::IsEnabled());
+  CHECK(perfetto::Tracing::IsInitialized());
+  // When we're using the Perfetto client library, only tests should be
+  // recording traces directly through TraceLog. Production code should instead
+  // use perfetto::Tracing::NewTrace().
+  CHECK(IsPerfettoInitializedForTesting())
+      << "Don't use TraceLog for recording traces from non-test code. Use "
+         "perfetto::Tracing::NewTrace() instead.";
   lock_.AssertAcquired();
-  InitializePerfettoIfNeeded();
   perfetto_config_ = perfetto_config;
   tracing_session_ = perfetto::Tracing::NewTrace();
 

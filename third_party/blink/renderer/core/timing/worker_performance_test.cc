@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
@@ -33,6 +34,7 @@ class WorkerPerformanceTest : public testing::Test {
 // The trace_analyzer does not work on platforms on which the migration of
 // tracing into Perfetto has not completed.
 TEST_F(WorkerPerformanceTest, Mark) {
+  base::test::TracingEnvironment tracing_environment;
   using trace_analyzer::Query;
   trace_analyzer::Start("*");
 

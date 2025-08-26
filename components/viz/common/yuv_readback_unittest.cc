@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/trace_test_utils.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
@@ -472,6 +473,7 @@ class YUVReadbackTest : public testing::Test {
 #endif
 
 TEST_F(YUVReadbackTest, MAYBE_YUVReadbackOptTest) {
+  base::test::TracingEnvironment tracing_environment;
   for (int use_mrt = 0; use_mrt <= 1; ++use_mrt) {
     // This test uses the gpu.service/gpu.decoder tracing events to detect how
     // many scaling passes are actually performed by the YUV readback pipeline.
