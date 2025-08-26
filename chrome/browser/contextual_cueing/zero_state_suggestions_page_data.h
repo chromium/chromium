@@ -88,7 +88,7 @@ class ZeroStateSuggestionsPageData
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void set_is_focused_tab() { is_focused_ = true; }
+  void set_is_focused_tab(bool is_focused) { is_focused_ = is_focused; }
 
  private:
   friend class content::PageUserData<ZeroStateSuggestionsPageData>;

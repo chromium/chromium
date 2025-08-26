@@ -277,6 +277,10 @@ void ZeroStateSuggestionsPageData::GetPageContext(
 
 void ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent(
     std::optional<optimization_guide::proto::AnnotatedPageContent> content) {
+  if (annotated_page_content_done_) {
+    return;
+  }
+
   if (content) {
     base::UmaHistogramTimes(
         "ContextualCueing.GlicSuggestions.PageContextFetchlatency."
@@ -290,6 +294,9 @@ void ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent(
 
 void ZeroStateSuggestionsPageData::OnReceivedInnerText(
     std::unique_ptr<content_extraction::InnerTextResult> result) {
+  if (inner_text_done_) {
+    return;
+  }
   inner_text_result_ = std::move(result);
   inner_text_done_ = true;
   if (inner_text_result_) {
@@ -319,6 +326,10 @@ void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadataOnDemand(
 void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata(
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
+  if (optimization_metadata_done_) {
+    return;
+  }
+
   optimization_metadata_done_ = true;
   optimization_decision_ = decision;
   optimization_metadata_ = metadata;
@@ -327,6 +338,10 @@ void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata(
 }
 
 void ZeroStateSuggestionsPageData::GiveUp() {
+  if (work_done()) {
+    return;
+  }
+
   MODEL_EXECUTION_LOG(
       base::StringPrintf("ZeroStateSuggestionsPageData: Timed out or page "
                          "destroyed while waiting for "

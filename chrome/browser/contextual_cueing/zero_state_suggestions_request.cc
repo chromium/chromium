@@ -58,7 +58,9 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
 
     // If we're in multitab mode, store the information about focused tab.
     if (focused_tab && tab == focused_tab) {
-      zss_data->set_is_focused_tab();
+      zss_data->set_is_focused_tab(true);
+    } else {
+      zss_data->set_is_focused_tab(false);
     }
     // Otherwise, start grabbing the page context.
     zss_data->GetPageContext(barrier_callback);
