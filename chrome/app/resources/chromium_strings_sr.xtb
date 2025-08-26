@@ -84,6 +84,7 @@
 <translation id="2008474315282236005">Овим ћете избрисати 1 ставку са овог уређаја. Да бисте касније вратили податке, пријавите се у Chromium као <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Инсталација није успела. Пробајте поново.</translation>
 <translation id="2020032459870799438">Да бисте проверили да ли су остале лозинке безбедне од упада у податке и других безбедносних проблема, <ph name="BEGIN_LINK" />пријавите се у Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Подешавања.</translation>
 <translation id="2049376729098081731">Одаберите да ли ћете уврстити историју Chromium-а ради персонализованијих доживљаја у Google услугама</translation>
 <translation id="2054039611381840095">Да бисте добијали будућа Chromium ажурирања, треба вам macOS 12 или новија верзија. Овај рачунар користи macOS 11.</translation>
 <translation id="2086476982681781442">Chromium је блокирао ово преузимање јер је овај фајл обмањујући и може да изврши неочекиване промене на уређај</translation>
@@ -316,6 +317,7 @@
 <translation id="5123973130450702873">Chromium-у треба дозвола за праћење руку</translation>
 <translation id="5141988424377517949">Нисте скоро посећивали сајт. Chromium је уклонио дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Обично блокирате обавештења. Да бисте дозволили овом сајту да вас обавештава, кликните на икону обавештења у десном углу траке за локацију.</translation>
+<translation id="5174983315706567306">Нема довољно простора на диску.</translation>
 <translation id="5187123684706427865">Chromium налог захтева поновну потврду идентитета</translation>
 <translation id="5224391634244552924">Нема сачуваних лозинки. Chromium може да проверава лозинке када их сачувате.</translation>
 <translation id="5231355151045086930">Одјавите се из Chromium-а</translation>
@@ -443,6 +445,7 @@
 <translation id="6598877126913850652">Иди на подешавања обавештења за Chromium</translation>
 <translation id="6600016381025017075">Претражите било шта на овој страници</translation>
 <translation id="6613594504749178791">Промене ће ступити на снагу када следећи пут поново покренете Chromium.</translation>
+<translation id="6648212540664651655">Наставите тамо где сте стали: Chromium је вратио картице из последње сесије. То можете да искључите у</translation>
 <translation id="665732753414869868">Chromium-у треба дозвола за камеру да би направио 3D мапу окружења</translation>
 <translation id="6669284030132180248">Ако сачувате обележиваче и на Google налогу, можете да пратите цене производа у Chromium-у и да добијате обавештења када падне цена</translation>
 <translation id="6676384891291319759">Приступите Интернету</translation>
@@ -507,6 +510,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="7352651011704765696">Дошло је до грешке</translation>
 <translation id="7376384068949534168">Нисте скоро посећивали сајт. Chromium је уклонио дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Овај додатак више није подржан. Chromium препоручује да га уклоните.</translation>
+<translation id="7413153308467572558">Наставите тамо где сте стали: Chromium враћа картице сваки пут када га рестартујете. Да бисте то искључили, идите у</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Програмерска верзија Chromium-а</translation>
 <translation id="7450541714075000668">Текст је копиран</translation>
 <translation id="7451052299415159299">Chromium тражи дозволу да приступи камери за овај сајт</translation>
@@ -612,6 +616,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8747073452963259673">доњи леви угао области претраге: улево <ph name="LEFT" />%, надоле <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Грешка при инсталацији: Администратор мреже је применио смернице за групу које спречавају инсталацију: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium тражи дозволу да приступи камери и микрофону за овај сајт</translation>
+<translation id="880560872634367429">Преузимање се верификује…</translation>
 <translation id="8818550178040858407">Желите ли да се пријавите у Chromium?</translation>
 <translation id="8826492472752484139">Кликните на Менаџер лозинки</translation>
 <translation id="8833697763442816810">Систем Chromium ОС</translation>
@@ -638,6 +643,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="911206726377975832">Желите ли да избришете и податке прегледања?</translation>
 <translation id="9134482777260927479">Помоћ за домаће задатке</translation>
 <translation id="9148058034647219655">Изађи</translation>
+<translation id="9155105544013854680">Наставите тамо где сте стали: Chromium може да врати картице сваки пут када га рестартујете. Да бисте то укључили, идите у</translation>
 <translation id="9158494823179993217">Администратор система је конфигурисао Chromium да отвара алтернативни прегледач за приступ URL-у <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Поново покрени да би се &amp;Chromium ажурирао</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

@@ -1232,6 +1232,7 @@
 <translation id="6674571176963658787">Για να ξεκινήσετε τον συγχρονισμό, εισαγάγετε τη φράση πρόσβασης.</translation>
 <translation id="6676927815633975364">Συνδεθείτε σε αυτόν τον ιστότοπο και στο Chrome</translation>
 <translation id="6684809838922667136">Βελτίωση του Chrome</translation>
+<translation id="6689436252814043643">Η λειτουργία Ανάγνωσης δεν είναι διαθέσιμη</translation>
 <translation id="6700279777779583398">Οι επιλογές αποθηκεύτηκαν</translation>
 <translation id="670498945988402717">Ελέγχθηκε χθες</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
@@ -1342,6 +1343,7 @@
 <translation id="7111822978084196600">Ονομάστε αυτό το παράθυρο</translation>
 <translation id="7115358764509798967">Προεπιλεγμένο από το σύστημα</translation>
 <translation id="7117485132243600300">Διαχειριστείτε το περιεχόμενο που ακολουθείτε και τα προτεινόμενα θέματα και αναζητήσεις</translation>
+<translation id="7119984597597798764">Κλείσιμο <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Ελέγχθηκαν οι άδειες για 1 ιστότοπο}other{Ελέγχθηκαν οι άδειες για # ιστοτόπους}}</translation>
 <translation id="7138678301420049075">Άλλο</translation>
 <translation id="7140829094791862589">Ταξ. με μη αυτόμ. σειρά</translation>

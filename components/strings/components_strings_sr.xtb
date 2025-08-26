@@ -440,6 +440,7 @@
 <translation id="1719838434204287058">24×30 in</translation>
 <translation id="1720941539803966190">Затворите водич</translation>
 <translation id="1721424275792716183">* Поље је обавезно</translation>
+<translation id="1723636263173393300">Максимални број пречица који ове смернице могу да имају је <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Коверта You 6</translation>
 <translation id="1727613060316725209">Сертификат је важећи</translation>
 <translation id="1728677426644403582">Прегледате извор веб-странице.</translation>
@@ -1047,6 +1048,7 @@
 <translation id="271663710482723385">Притисните |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| да бисте изашли из режима целог екрана</translation>
 <translation id="2717336592027046789">Котур</translation>
 <translation id="2718207025093645426">Корисник или уређај којим се управља нема учитаних смерница.</translation>
+<translation id="2719233594187778789">Занемарен нејединствени URL: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Захтев је успео</translation>
 <translation id="2722622039067384533">Намештај за дневну собу</translation>
 <translation id="2723669454293168317">Покрените проверу безбедности у Chrome подешавањима</translation>
@@ -2007,6 +2009,7 @@
 <translation id="4298000214066716287">Инвестирање</translation>
 <translation id="4298148761711700950">Плаћајте одмах без отпремања QR кода</translation>
 <translation id="4298925811540301889">Колачићи за овај сајт се синхронизују на ChromeOS уређајима. Да бисте управљали садржајем који синхронизујете, посетите <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Назив пречице премашује максималну дозвољену дужину од <ph name="MAX_LENGTH" /> знак(ов)а.</translation>
 <translation id="4300272766492248925">Отвори апликацију</translation>
 <translation id="4300675098767811073">Вишеструко бушење на десној страни</translation>
 <translation id="4302514097724775343">Додирните диносауруса да бисте играли</translation>
@@ -2708,6 +2711,7 @@
     Покушајте да се обратите администратору система.</translation>
 <translation id="5496804587179176046">Чувај безбедносне кодове, тренутно нема сачуваних безбедносних кодова</translation>
 <translation id="550365051221576010">Попуни све</translation>
+<translation id="5506286895894263601">Листа не садржи важеће пречице.</translation>
 <translation id="5508443345185481044">Фото-апарати и камкордери</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Обележивачи којим се управља</translation>
@@ -3626,6 +3630,7 @@
 <translation id="7014741021609395734">Ниво зумирања</translation>
 <translation id="7016992613359344582">Те наплате могу да буду једнократне или периодичне и можда нису одмах видљиве.</translation>
 <translation id="701757816833614688">Образовање за визуелне уметности и дизајн</translation>
+<translation id="7020464868401003526">URL пречице премашује максималну дозвољену дужину од <ph name="MAX_LENGTH" /> знак(ов)а.</translation>
 <translation id="702275896380648118">Овај сајт одређује ствари које вам се свиђају, а затим предлаже огласе за друге сајтове. Овај сајт такође прима податке о вашим темама огласа из Chrome-а да би вам приказивао релевантније огласе.</translation>
 <translation id="7023162328967545559">Упозорење администратора</translation>
 <translation id="7023765275461720661">Желите ли да повежете налог и платите користећи <ph name="BNPL_ISSUER_NAME" />?</translation>

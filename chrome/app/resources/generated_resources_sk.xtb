@@ -6080,7 +6080,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5213114823401215820">Znova otvoriť zatvorenú skupinu</translation>
 <translation id="5213481667492808996">Dátová služba <ph name="NAME" /> je pripravená na použitie</translation>
 <translation id="5213891612754844763">Zobraziť nastavenia proxy servera</translation>
-<translation id="5214484632844730228">Chcete zobraziť karty z iných zariadení?</translation>
 <translation id="5214639857958972833">Bola vytvorená záložka <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215450412607891876">Zapnite rozšírené bezpečnostné aktualizácie</translation>
 <translation id="5215502535566372932">Vyberte krajinu</translation>
@@ -10451,7 +10450,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8280848878018088610">Tmavá maľba vzdúvajúcich sa morských vĺn a fantastického mesta a hradu na pozadí.</translation>
 <translation id="828180235270931531">Ďalšie dostupné tlačiarne</translation>
 <translation id="8281886186245836920">Preskočiť</translation>
-<translation id="8283802069507225582">Ak chcete pokračovať tam, kde ste prestali v iných zariadeniach, synchronizujte si históriu a karty s účtom <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">všetky weby <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Titulky</translation>
 <translation id="8285625579699113397">Váš účet</translation>
@@ -10680,7 +10678,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="844059392176531372">Zdieľanie skupiny kariet <ph name="GROUP_NAME" /></translation>
 <translation id="8440630305826533614">Aplikácie pre Linux</translation>
 <translation id="844063558976952706">Vždy na týchto stránkach</translation>
-<translation id="8440730169421032987">Chcete prehliadať v rôznych zariadeniach?</translation>
 <translation id="8441313165929432954">Povoliť alebo zakázať zdieľanie dátového pripojenia</translation>
 <translation id="8443986842926457191">Webová adresa obsahuje viac ako 2 048 znakov.</translation>
 <translation id="8445281870900174108">Táto karta používa vašu kameru</translation>
@@ -10727,7 +10724,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8472623782143987204">hardvérová záloha</translation>
 <translation id="8473540203671727883">Čítať text pod kurzorom myši</translation>
 <translation id="8473863474539038330">Adresy a ďalšie údaje</translation>
-<translation id="847433688444405067">Prehliadajte rôzne zariadenia</translation>
 <translation id="8474378002946546633">Povoliť upozornenia</translation>
 <translation id="8474561048882755118">Umožňuje vám vidieť podobné výrobky vedľa seba a jednoducho porovnávať podrobnosti, ktoré sú pre vás dôležité</translation>
 <translation id="8475313423285172237">Iný program v počítači pridal rozšírenie, ktoré môže zmeniť spôsob fungovania prehliadača Chrome.</translation>
@@ -11142,7 +11138,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8754200782896249056">&lt;p&gt;Pri spustení aplikácie <ph name="PRODUCT_NAME" /> v podporovanom prostredí počítača sa použijú systémové nastavenia servera proxy. Váš systém však nie je podporovaný alebo sa pri spúšťaní konfigurácie vášho systému vyskytol problém.&lt;/p&gt;
 
           &lt;p&gt;Stále však môžete nastavenia nakonfigurovať pomocou príkazového riadka. Ďalšie informácie o príznakoch a premenných prostredia nájdete v príručke &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
-<translation id="8754810799862630650">Ak chcete vidieť otvorené karty z iných počítačov a telefónov, synchronizujte si históriu a karty s účtom <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Vykonávajte pre svoju organizáciu úlohy týkajúce sa zabezpečenia, napríklad spravujte certifikáty a kľúče uložené v zariadení</translation>
 <translation id="875532100880844232">Pre <ph name="DEVICE_NAME" /> vyberte akciu pre každý kláves</translation>
 <translation id="8755376271068075440">&amp;Väčší</translation>

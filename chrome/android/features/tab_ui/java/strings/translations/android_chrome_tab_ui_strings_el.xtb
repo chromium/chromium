@@ -28,6 +28,7 @@
 <translation id="1828808367831369073">Ομαδοποιήθηκε <ph name="TABS_COUNT_ONE" /> καρτέλα</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> καρτέλα}other{<ph name="TABS_COUNT_MANY" /> καρτέλες}}</translation>
 <translation id="1909810060368225529">Σημείωση: Οι αλλαγές σε αυτή την κοινόχρηστη ομάδα καρτελών είναι ορατές σε όλους. Όλοι μπορούν να κάνουν αλλαγές στις κοινόχρηστες ομάδες καρτελών</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Καρφίτσωμα καρτέλας}other{Καρφίτσωμα καρτελών}}</translation>
 <translation id="1982637982196732906">Μετακίνηση στην ενότητα ανενεργών</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Δημιουργία σελιδοδείκτη για <ph name="TABS_COUNT_ONE" /> επιλεγμένη καρτέλα}other{Δημιουργία σελιδοδείκτη για <ph name="TABS_COUNT_MANY" /> επιλεγμένες καρτέλες}}</translation>
 <translation id="2055057176188061528">Επιλέξτε μια ομάδα καρτελών ή δημιουργήστε μια νέα ομάδα καρτελών</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Μικρ. προεπ. φύλλου κοινής χρήσης.</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Ξεκαρφίτσωμα καρτέλας}other{Ξεκαρφίτσωμα καρτελών}}</translation>
 <translation id="3940195383040445971">Παρακολούθηση τιμών σε καρτέλες</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> νέα καρτέλα, <ph name="ANY_CLOSED" /> έκλεισε}other{<ph name="MANY_ADDED" /> νέα καρτέλα, <ph name="ANY_CLOSED" /> έκλεισαν}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ομαδοποίηση καρτέλας}other{Ομαδοποίηση καρτελών}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Κλείσιμο <ph name="TABS_COUNT_ONE" /> επιλεγμένου στοιχείου}other{Κλείσιμο <ph name="TABS_COUNT_MANY" /> επιλεγμένων στοιχείων}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Μετακίνηση ομάδας σε νέο παράθυρο}other{Μετακίνηση ομάδας σε άλλα παράθυρα}}</translation>
 <translation id="6228793724645064692">(αξιολόγηση καταστήματος)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Κατάργηση καρτέλας από την ομάδα}other{Κατάργηση καρτελών από την ομάδα}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Προσθήκη καρτέλας σε νέα ομάδα}other{Προσθήκη καρτελών σε νέα ομάδα}}</translation>
 <translation id="6333260925957816943">Πληροφορίες για αυτό το κατάστημα</translation>
 <translation id="6381032505162537930">Εδώ θα βρείτε τις ομάδες καρτελών</translation>

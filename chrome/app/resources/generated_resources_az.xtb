@@ -6076,7 +6076,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5213114823401215820">Qapalı qrupu yenidən açın</translation>
 <translation id="5213481667492808996">"<ph name="NAME" />" data xidmətiniz istifadəyə hazırdır</translation>
 <translation id="5213891612754844763">Proksi ayarlarını göstərin</translation>
-<translation id="5214484632844730228">Digər cihazlardan olan tablara baxırsınız?</translation>
 <translation id="5214639857958972833">"<ph name="BOOKMARK_TITLE" />" əlfəcini yaradıldı.</translation>
 <translation id="5215450412607891876">Genişləndirilmiş təhlükəsizlik güncəlləmələrini aktiv edin</translation>
 <translation id="5215502535566372932">Ölkə seçin</translation>
@@ -10441,7 +10440,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8280848878018088610">Qaranlıq əhval-ruhiyyəli fonda fantastik şəhər və qala ilə dənizdə çırpınan dalğalar.</translation>
 <translation id="828180235270931531">Digər əlçatan printerlər</translation>
 <translation id="8281886186245836920">Keçin</translation>
-<translation id="8283802069507225582">Digər cihazlarda qaldığınız yerdən davam etmək üçün tarixçəni və tabları <ph name="ACCOUNT_EMAIL" /> ilə sinxronlaşdırın</translation>
 <translation id="8284279544186306258">bütün <ph name="WEBSITE_1" /> saytları</translation>
 <translation id="8284326494547611709">Başlıqlar</translation>
 <translation id="8285625579699113397">Hesabınız</translation>
@@ -10670,7 +10668,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="844059392176531372">"<ph name="GROUP_NAME" />" tab qrupunu paylaşın</translation>
 <translation id="8440630305826533614">Linux tətbiqləri</translation>
 <translation id="844063558976952706">Həmişə bu saytda</translation>
-<translation id="8440730169421032987">Cihazlarda axtaraq?</translation>
 <translation id="8441313165929432954">Modem Rejimini Aktiv/Deaktiv edin</translation>
 <translation id="8443986842926457191">Keçid 2048 simvoldan uzundur</translation>
 <translation id="8445281870900174108">Bu tab kameradan istifadə edir</translation>
@@ -10717,7 +10714,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8472623782143987204">avadanlıqla yedəklənmiş</translation>
 <translation id="8473540203671727883">Mətni maus ilə səsləndirin</translation>
 <translation id="8473863474539038330">Ünvanlar və s.</translation>
-<translation id="847433688444405067">Cihazlarda axtarın</translation>
 <translation id="8474378002946546633">Bildirişlərə icazə verin</translation>
 <translation id="8474561048882755118">Bənzər məhsulları yan-yana görməyinizə və vacib təfərrüatları asanlıqla müqayisə etməyinizə imkan verir</translation>
 <translation id="8475313423285172237">Kompüterinizdə başqa bir proqram Chrome'un işləməsini dəyişən artırma əlavə etdi.</translation>
@@ -11130,7 +11126,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8752451679755290210">Avtomatik olaraq elementlər arasında keçid edin</translation>
 <translation id="8753948258138515839">Fayllar tətbiqi Google Disk, xarici yaddaş və ya ChromeOS Flex cihazınızda saxladığınız fayllara sürətli giriş təmin edir.</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" /> məhsulunu dəstəklənən masaüstündə işlədəndə, sistemin proksi məlumatları istifadə olunacaq. Belə ki, sisteminiz dəstəklənmir və ya sistem konfiqurasiyanızı başladarkən problem oldub.&lt;/p&gt;            &lt;p&gt;Amma əmr sətri vasitəsilə konfiqurasiya edə bilərsiniz. bayraqlar və fəqrlər haqqında əlavə məlumat üçün &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; baxın.&lt;/p&gt;</translation>
-<translation id="8754810799862630650">Digər kompüter və telefonlarınızdakı açıq tabları görmək üçün tarixçəni və tabları <ph name="ACCOUNT_EMAIL" /> ilə sinxronlaşdırın</translation>
 <translation id="8755175579224030324">Təşkilatınız üçün cihazınızda saxlanan sertifikat və açarların idarə olunması kimi təhlükəsizlik tapşırıqlarını icra edin</translation>
 <translation id="875532100880844232"><ph name="DEVICE_NAME" /> üçün hər düymə üzrə əməliyyat seçin</translation>
 <translation id="8755376271068075440">Geniş</translation>

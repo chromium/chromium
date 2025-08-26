@@ -3539,6 +3539,7 @@
 <translation id="3450056559545492516">显示有关 Chrome 功能和提示的系统通知</translation>
 <translation id="3450157232394774192">闲置状态占用率</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - 您正在与 Gemini 分享此标签页</translation>
 <translation id="345078987193237421">这将允许具有相机权限的应用和网站以及系统服务使用相机</translation>
 <translation id="3451362021220965191">独立式 Web 应用 (IWA) 会控制智能卡读卡器，以便访问插入读卡器或读卡器感应到的智能卡。智能卡通常包含用于验证或授权操作、登录服务等的身份信息。</translation>
 <translation id="3452999110156026232">家长访问</translation>
@@ -6067,7 +6068,6 @@
 <translation id="5213114823401215820">重新打开已关闭的群组</translation>
 <translation id="5213481667492808996">您可以使用“<ph name="NAME" />”的数据流量服务了</translation>
 <translation id="5213891612754844763">显示代理设置</translation>
-<translation id="5214484632844730228">要查看其他设备上的标签页吗？</translation>
 <translation id="5214639857958972833">已创建“<ph name="BOOKMARK_TITLE" />”书签。</translation>
 <translation id="5215450412607891876">开启延长安全更新</translation>
 <translation id="5215502535566372932">选择国家/地区</translation>
@@ -7359,6 +7359,7 @@
 <translation id="6151128161396960693">请确认您信任邀请人</translation>
 <translation id="6151771661215463137">“下载”文件夹中已存在此文件。</translation>
 <translation id="6152918902620844577">正在等待下一项操作</translation>
+<translation id="6152929108650354050">您正在与 Gemini 分享此标签页</translation>
 <translation id="6153439704237222699">详细了解 Do Not Track</translation>
 <translation id="6154240335466762404">移除所有端口</translation>
 <translation id="615436196126345398">协议</translation>
@@ -10432,7 +10433,6 @@
 <translation id="8280848878018088610">图片描绘了一种黑暗氛围，海中巨浪翻滚，背景中有一座奇幻的城市和城堡。</translation>
 <translation id="828180235270931531">其他可用打印机</translation>
 <translation id="8281886186245836920">跳过</translation>
-<translation id="8283802069507225582">如需在其他设备上继续浏览，请将历史记录和标签页同步到 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">所有<ph name="WEBSITE_1" />网站</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8285625579699113397">您的账号</translation>
@@ -10661,7 +10661,6 @@
 <translation id="844059392176531372">分享标签页分组“<ph name="GROUP_NAME" />”</translation>
 <translation id="8440630305826533614">Linux 应用</translation>
 <translation id="844063558976952706">始终在该网站上</translation>
-<translation id="8440730169421032987">要跨设备浏览吗？</translation>
 <translation id="8441313165929432954">启用/停用网络共享</translation>
 <translation id="8443986842926457191">网址长度超出了 2048 个字符（上限）</translation>
 <translation id="8445281870900174108">此标签页正在使用您的摄像头</translation>
@@ -10708,7 +10707,6 @@
 <translation id="8472623782143987204">硬件支持</translation>
 <translation id="8473540203671727883">说出鼠标指针下的文字</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
-<translation id="847433688444405067">跨设备浏览</translation>
 <translation id="8474378002946546633">允许通知</translation>
 <translation id="8474561048882755118">帮助您并排查看相似商品，轻松比较您关心的细节</translation>
 <translation id="8475313423285172237">您计算机上的其他程序添加了一个扩展程序，该扩展程序可能会改变 Chrome 的工作方式。</translation>
@@ -11123,7 +11121,6 @@
 <translation id="8754200782896249056">&lt;p&gt;在受支持的桌面环境中运行<ph name="PRODUCT_NAME" />时，将使用系统代理设置。但您的系统不受支持，或启动系统配置时出现问题。&lt;/p&gt;
 
           &lt;p&gt;但您仍可通过命令行进行配置。如需详细了解各项实验功能和环境变量，请参见 &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;。&lt;/p&gt;</translation>
-<translation id="8754810799862630650">如需查看您在其他计算机和手机上打开的标签页，请将历史记录和标签页同步到 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">为贵组织执行与安全性有关的任务，例如管理设备上存储的证书和密钥</translation>
 <translation id="875532100880844232">对于<ph name="DEVICE_NAME" />，请为每个按键选择一项操作</translation>
 <translation id="8755376271068075440">放大(&amp;L)</translation>

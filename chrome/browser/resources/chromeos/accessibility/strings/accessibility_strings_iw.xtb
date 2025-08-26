@@ -149,7 +149,7 @@
 <translation id="1829244130665387512">חיפוש בדף</translation>
 <translation id="1834891354138622109">עמודה</translation>
 <translation id="1846771122725914429">‏צג ברייל תואם Bluetooth</translation>
-<translation id="1852018405765032699">‏כדי לפתוח ולסגור את התפריטים של ChromeVox, לוחצים על המסך בעזרת ארבע אצבעות. התפריטים האלה כוללים מידע שימושי לגבי פקודות ומקשי קיצור. אחרי שפותחים את התפריטים, אפשר להחליק בעזרת אצבע אחת כדי לעבור בין פריטים וללחוץ פעמיים כדי להפעיל פריטים. כדי להמשיך יש ללחוץ על המסך בעזרת ארבע אצבעות.</translation>
+<translation id="1852018405765032699">‏כדי לפתוח ולסגור את התפריטים של ChromeVox, צריך ללחוץ על המסך בעזרת ארבע אצבעות. התפריטים האלה כוללים מידע שימושי לגבי פקודות ומקשי קיצור. כשהתפריטים פתוחים, אפשר להחליק בעזרת אצבע אחת כדי לעבור בין הפריטים וללחוץ לחיצה כפולה כדי להפעיל אותם. כדי להמשיך יש ללחוץ על המסך בעזרת ארבע אצבעות.</translation>
 <translation id="1864430479908918647">יש להקיש על מקש החיפוש ועל מקש הרווח</translation>
 <translation id="1865601187525349519">סוף הטקסט</translation>
 <translation id="1876229593313240038">doc</translation>
@@ -735,7 +735,7 @@
 <translation id="5655682562155942719">פקודות דילוג</translation>
 <translation id="56637627897541303">אזור טקסט</translation>
 <translation id="5666746275818170484">לחיצה על מקש החץ שמאלה</translation>
-<translation id="5669637233317991674">כדי לנווט בשיעור הזה, יש להקיש על מקש החיפוש ועל החץ ימינה או על מקש החיפוש ועל החץ שמאלה</translation>
+<translation id="5669637233317991674">כדי לנווט בשיעור הזה, צריך ללחוץ על מקש החיפוש ועל החץ ימינה או על מקש החיפוש ועל החץ שמאלה</translation>
 <translation id="5677240841070992068">המיקום הנוכחי</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5678971933640285754">.input {$$COUNT :number} .match $$COUNT 1{{right brace}} *{{{$$COUNT} right braces}}</translation>
@@ -883,11 +883,11 @@
 <translation id="6759710362319508545">מקורות מידע</translation>
 <translation id="67862343314499040">סגול סיגלית</translation>
 <translation id="6786800275320335305">סעיף</translation>
-<translation id="6790781785997195160">אפשר להתאמן קצת על התנועות ולאחר מכן למצוא את הכפתור לשיעור הבא. לאחר מכן, יש ללחוץ פעמיים כדי להמשיך.</translation>
+<translation id="6790781785997195160">אחרי שהתאמנת קצת על התנועות אפשר להמשיך בכפתור "שיעור הבא". יש ללחוץ לחיצה כפולה כדי להמשיך.</translation>
 <translation id="6793101435925451627">lstbx</translation>
 <translation id="6815255864998354418">לימון שיפון</translation>
 <translation id="6816066673340002913">מטה-זהב חיוור</translation>
-<translation id="6826226459053491773">החלקה מטה עם שתי אצבעות</translation>
+<translation id="6826226459053491773">מחליקים למטה עם שתי אצבעות</translation>
 <translation id="6826669432862053130">הפריט הלא תקין הבא</translation>
 <translation id="6833103209700200188">כותרת תחתונה</translation>
 <translation id="6858047746862060282">פרולוג</translation>
@@ -1032,7 +1032,7 @@
 <translation id="7724603315864178912">חיתוך</translation>
 <translation id="7731002461127710752">.input {$$COUNT :number} .match $$COUNT 1{{backtick}} *{{{$$COUNT} backticks}}</translation>
 <translation id="7731785449856576010">אין עוד ווידג'טים של מדיה</translation>
-<translation id="7735498529470878067">בעזרת 'גילוי באמצעות מגע', קל להבין במהירות מה מוצג במסך.</translation>
+<translation id="7735498529470878067">בעזרת "גילוי באמצעות מגע", קל להבין במהירות מה מוצג במסך.</translation>
 <translation id="773906353055481349">‏כדי לעבור בין התאים בטבלה, אפשר ללחוץ על Search+Ctrl+Alt יחד עם אחד ממקשי החיצים</translation>
 <translation id="7746976083433980639"><ph name="ACTION" /> עד <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">ההורדה של <ph name="FILE_NAME" /> התחילה</translation>

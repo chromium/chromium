@@ -6093,7 +6093,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5213114823401215820">닫은 그룹 다시 열기</translation>
 <translation id="5213481667492808996">'<ph name="NAME" />' 데이터 서비스를 사용할 수 있습니다.</translation>
 <translation id="5213891612754844763">프록시 설정 표시</translation>
-<translation id="5214484632844730228">다른 기기의 탭을 표시할까요?</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' 북마크가 생성되었습니다.</translation>
 <translation id="5215450412607891876">보안 업데이트 연장 사용 설정</translation>
 <translation id="5215502535566372932">국가 선택</translation>
@@ -10462,7 +10461,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8280848878018088610">어두운 분위기의 바다에 파도가 치고, 그뒤로 환상적인 도시와 성이 보입니다.</translation>
 <translation id="828180235270931531">사용 가능한 다른 프린터</translation>
 <translation id="8281886186245836920">건너뛰기</translation>
-<translation id="8283802069507225582">다른 기기에서 중단한 부분부터 이어서 계속하려면 방문 기록과 탭을 <ph name="ACCOUNT_EMAIL" /> 계정과 동기화하세요.</translation>
 <translation id="8284279544186306258">모든 <ph name="WEBSITE_1" /> 사이트</translation>
 <translation id="8284326494547611709">자막</translation>
 <translation id="8285625579699113397">내 계정</translation>
@@ -10691,7 +10689,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="844059392176531372">'<ph name="GROUP_NAME" />' 탭 그룹 공유</translation>
 <translation id="8440630305826533614">Linux 앱</translation>
 <translation id="844063558976952706">항상 이 사이트에서</translation>
-<translation id="8440730169421032987">여러 기기에서 탐색할까요?</translation>
 <translation id="8441313165929432954">테더링 사용/사용 중지</translation>
 <translation id="8443986842926457191">URL이 2,048자(영문 기준)를 초과합니다.</translation>
 <translation id="8445281870900174108">이 탭에서 카메라를 사용 중입니다.</translation>
@@ -10738,7 +10735,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8472623782143987204">하드웨어 지원</translation>
 <translation id="8473540203671727883">마우스 커서를 올린 텍스트를 음성으로 알려줍니다.</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
-<translation id="847433688444405067">여러 기기에서 탐색하기</translation>
 <translation id="8474378002946546633">알림 허용</translation>
 <translation id="8474561048882755118">비슷한 제품을 나란히 놓고 비교하여 나에게 중요한 세부정보를 손쉽게 비교할 수 있습니다.</translation>
 <translation id="8475313423285172237">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다.</translation>
@@ -11153,7 +11149,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8754200782896249056">&lt;p&gt;지원되는 데스크톱 환경에서 <ph name="PRODUCT_NAME" />을(를) 실행하는 경우 시스템 프록시 설정이 사용됩니다.  하지만 시스템이 지원되지 않거나 시스템 설정을 실행하는 데 문제가 있었습니다.&lt;/p&gt;
 
         &lt;p&gt;이 경우 명령줄을 사용하여 설정할 수 있습니다.  플래그와 환경 변수에 대한 자세한 내용은 &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;을(를) 참조하세요.&lt;/p&gt;</translation>
-<translation id="8754810799862630650">다른 컴퓨터 및 휴대전화에서 열려 있는 탭을 보려면 방문 기록과 탭을 <ph name="ACCOUNT_EMAIL" /> 계정과 동기화하세요.</translation>
 <translation id="8755175579224030324">기기에 저장된 인증서 및 키 관리와 같은 조직의 보안 관련 작업 실행</translation>
 <translation id="875532100880844232"><ph name="DEVICE_NAME" />의 경우 키별로 작업을 선택하세요.</translation>
 <translation id="8755376271068075440">크게(&amp;L)</translation>

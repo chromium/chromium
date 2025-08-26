@@ -25,6 +25,7 @@
 <translation id="129382876167171263">فایل‌هایی را که وب‌سایت‌ها ذخیره کرده‌اند، در اینجا نمایش داده می‌شود</translation>
 <translation id="131112695174432497">داده‌ای که بر شخصی‌سازی آگهی اثر بگذارد حذف می‌شود</translation>
 <translation id="1317194122196776028">فراموش کردن این سایت</translation>
+<translation id="1321110954513621549">مجاز است • تقریبی</translation>
 <translation id="1323433172918577554">نمایش موارد بیشتر</translation>
 <translation id="1333965224356556482">به سایت‌ها اجازه داده نشود مکان شما را ببینند</translation>
 <translation id="1343356790768851700">این سایت چیزهایی را که می‌پسندید تعیین می‌کند و سپس به سایت‌های دیگر آگهی پیشنهاد می‌دهد</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">کاهش بزرگ‌نمایی</translation>
 <translation id="1464044141348608623">به سایت‌ها اجازه داده نشود وقتی شما به‌طور فعال از دستگاه استفاده می‌کنید مطلع شوند</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سایت}one{<ph name="SITE_COUNT" /> سایت}other{<ph name="SITE_COUNT" /> سایت}}</translation>
+<translation id="1476700086976862423">رنگ زمینه سپیا</translation>
 <translation id="1500473259453106018">پنهان کردن کارت «کاهش قیمت در برگه‌ها»</translation>
 <translation id="1508931164824684991">سایت‌ها بتوانند از جاوا اسکریپت استفاده کنند</translation>
 <translation id="1510341833810331442">سایت‌ها نمی‌توانند در دستگاه داده ذخیره کنند</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">‏نکته‌های Chrome</translation>
 <translation id="1816835383954230954">‏وقتی روشن باشد، Chrome سریع‌تر اجرا می‌شود و ویژگی‌هایی که از جاوا اسکریپت استفاده می‌کنند باید طبق طراحی کار کنند. وقتی خاموش باشد، عملکرد کاهش می‌یابد اما V8 دربرابر حملات مقاوم‌تر می‌شود.</translation>
 <translation id="1818308510395330587">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید از AR استفاده کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
+<translation id="1848033246551405023">قلم سن‌سریف</translation>
 <translation id="1881806992065048905">برگ زیرین نمایش صفحه زبانه جدید</translation>
 <translation id="1887786770086287077">‏دسترسی به مکان برای این دستگاه خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="1906181697255754968">سایت‌ها معمولاً برای ارائه ویژگی‌هایی مانند ذخیره خودکار به فایل‌ها و پوشه‌های دستگاه دسترسی می‌یابند</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2080070583977670716">تنظیمات بیشتر</translation>
 <translation id="2091887806945687916">صدا</translation>
+<translation id="2094208275686143364">رنگ زمینه روشن</translation>
 <translation id="2096716221239095980">حذف همه داده‌ها</translation>
 <translation id="2102396546234652240">به سایت‌ها اجازه داده نشود از میکروفون استفاده کنند</translation>
 <translation id="2117655453726830283">اسلاید بعدی</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">راهنمایی و بازخورد</translation>
 <translation id="2501278716633472235">بازگشت</translation>
 <translation id="2533138527374486328">وقتی روشن باشد، سایت‌ها می‌توانند درخواست دهند به دستگاه‌های موجود در شبکه محلی شما متصل شوند. وقتی خاموش باشد، سایت‌ها نمی‌توانند به دستگاه‌های موجود در شبکه محلی شما متصل شوند.</translation>
+<translation id="2544997614631598250">رنگ زمینه تیره</translation>
 <translation id="2546283357679194313">کوکی‌ها و داده‌های سایت</translation>
 <translation id="2570922361219980984">‏دسترسی به مکان برای این دستگاه نیز خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="257931822824936280">بزرگ‌شده - برای کوچک کردن کلیک کنید.</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">اجازه دادن به سایتی به‌خصوص برای استفاده از کوکی‌های طرف سوم</translation>
 <translation id="3167868116600277716">فید «یافته‌ها»</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> داده‌های ذخیره شده</translation>
+<translation id="3199078925536734975">این بار مجاز است • تقریبی</translation>
 <translation id="321187648315454507">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید برایتان اعلان ارسال کند، اعلان‌ها را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
 <translation id="3223425961342298674">مکان مجاز نیست</translation>
 <translation id="3227137524299004712">میکروفن</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">ممکن است سایت‌هایی که بازدید می‌کنید دیگر مطابق طراحی عمل نکنند</translation>
 <translation id="3816118180265633665">‏رنگ‌های Chrome</translation>
 <translation id="381841723434055211">شماره‌های تلفن</translation>
+<translation id="3823453485268218808">قلم تک‌رنگ</translation>
 <translation id="3826050100957962900">ورود به سیستم شخص ثالث</translation>
 <translation id="3835233591525155343">استفاده از دستگاه</translation>
 <translation id="3843916486309149084">‏Chrome کوکی‌ها را امروز دوباره مسدود خواهد کرد</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">از اینکه سایت‌ها بدانند چه زمانی به‌صورت فعال از این دستگاه استفاده می‌کنید جلوگیری می‌شود</translation>
 <translation id="4412992751769744546">اجازه دادن به کوکی‌های طرف سوم</translation>
 <translation id="4419929467120297501">‏Chrome سایت‌هایی را که بااستفاده از کوکی‌های طرف سوم، شما را هنگام مرور وب ردیابی می‌کنند مسدود می‌کند. برای <ph name="BEGIN_LINK" />مدیریت دسترسی به کوکی‌های طرف سوم<ph name="END_LINK" /> به تنظیمات بروید.</translation>
+<translation id="4425416282877905577">قلم سریف</translation>
 <translation id="443121186588148776">درگاه سریالی</translation>
 <translation id="4434045419905280838">پنجره‌های بازشو و هدایت‌ها</translation>
 <translation id="443552056913301231">با این کار، همه داده‌های محلی، ازجمله کوکی‌ها، حذف خواهد شد و تمام اجازه‌های <ph name="ORIGIN" /> بازنشانی خواهد شد</translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">به سایت‌ها اجازه داده نشود به درگاه‌های سریال متصل شوند</translation>
 <translation id="7488573225650545859">پنهان کردن «مشاهده برگه‌ها» در فهرست برنامه</translation>
 <translation id="7521387064766892559">جاوا اسکریپت</translation>
+<translation id="7538975533793429503">لغزنده اندازه قلم</translation>
 <translation id="7547989957535180761">هرگاه روشن باشد، سایت‌ها می‌توانند درخواست‌های ورود به سیستم نمایش دهند. هرگاه روشن باشد، سایت‌ها نمی‌توانند درخواست‌های ورود به سیستم نمایش دهند.</translation>
 <translation id="7553211568594248088">خارج شدن از مرکز جستجو</translation>
 <translation id="7554752735887601236">سایتی درحال استفاده از میکروفونتان است</translation>

@@ -440,6 +440,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1719838434204287058">24 in x 30 in</translation>
 <translation id="1720941539803966190">Close tutorial</translation>
 <translation id="1721424275792716183">* Field is required</translation>
+<translation id="1723636263173393300">This policy should not have more than <ph name="MAX_ITEMS_LIMIT" /> shortcuts.</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">Certificate is valid</translation>
 <translation id="1728677426644403582">You're viewing the source of a web page</translation>
@@ -1047,6 +1048,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="271663710482723385">Press |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| to exit full screen</translation>
 <translation id="2717336592027046789">Roll</translation>
 <translation id="2718207025093645426">Managed user or device does not have a policy loaded.</translation>
+<translation id="2719233594187778789">Ignored non-unique URL: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Request succeeded</translation>
 <translation id="2722622039067384533">Living Room Furniture</translation>
 <translation id="2723669454293168317">Run a safety check in Chrome settings</translation>
@@ -2007,6 +2009,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4298000214066716287">Investing</translation>
 <translation id="4298148761711700950">Pay instantly without QR upload</translation>
 <translation id="4298925811540301889">Cookies for this site are synced across your ChromeOS devices. To manage what you sync, go to <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">The name of the shortcut exceeds the maximum allowed length of <ph name="MAX_LENGTH" /> characters.</translation>
 <translation id="4300272766492248925">Open app</translation>
 <translation id="4300675098767811073">Multiple punch right</translation>
 <translation id="4302514097724775343">Tap the dino to play</translation>
@@ -2708,6 +2711,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     Try contacting your system administrator.</translation>
 <translation id="5496804587179176046">Save security codes, no security codes currently saved</translation>
 <translation id="550365051221576010">Fill everything</translation>
+<translation id="5506286895894263601">The list contains no valid shortcuts.</translation>
 <translation id="5508443345185481044">Cameras and camcorders</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Managed bookmarks</translation>
@@ -3627,6 +3631,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7014741021609395734">Zoom level</translation>
 <translation id="7016992613359344582">These charges could be one-off or recurring and may not be obvious.</translation>
 <translation id="701757816833614688">Visual Arts and Design Education</translation>
+<translation id="7020464868401003526">The URL of the shortcut exceeds the maximum allowed length of <ph name="MAX_LENGTH" /> characters.</translation>
 <translation id="702275896380648118">This site determines things that you like and then suggests ads to other sites. This site also gets your ad topics from Chrome to show you more relevant ads.</translation>
 <translation id="7023162328967545559">Admin warning</translation>
 <translation id="7023765275461720661">Link account and pay with <ph name="BNPL_ISSUER_NAME" />?</translation>

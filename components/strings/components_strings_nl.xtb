@@ -440,6 +440,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1719838434204287058">24 x 30 inch</translation>
 <translation id="1720941539803966190">Tutorial sluiten</translation>
 <translation id="1721424275792716183">* Verplicht veld</translation>
+<translation id="1723636263173393300">Dit beleid mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> snelkoppelingen bevatten.</translation>
 <translation id="1725591448053514783">Envelop You 6</translation>
 <translation id="1727613060316725209">Certificaat is geldig</translation>
 <translation id="1728677426644403582">Je bekijkt de bron van een webpagina</translation>
@@ -1047,6 +1048,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="271663710482723385">Druk op |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om het volledige scherm te sluiten</translation>
 <translation id="2717336592027046789">Rol</translation>
 <translation id="2718207025093645426">Er is geen beleid geladen voor een beheerde gebruiker of beheerd apparaat.</translation>
+<translation id="2719233594187778789">Niet-unieke URL genegeerd: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Verzoek geslaagd</translation>
 <translation id="2722622039067384533">Woonkamermeubilair</translation>
 <translation id="2723669454293168317">Voer een veiligheidscheck uit in de Chrome-instellingen</translation>
@@ -2001,6 +2003,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4298000214066716287">Beleggen</translation>
 <translation id="4298148761711700950">Betaal direct zonder QR-upload</translation>
 <translation id="4298925811540301889">Cookies voor deze site worden gesynchroniseerd op je ChromeOS-apparaten. Ga naar <ph name="SYNC_SETTINGS" /> om te beheren wat je synchroniseert.</translation>
+<translation id="4299919199185766032">De naam van de snelkoppeling overschrijdt de maximaal toegestane lengte van <ph name="MAX_LENGTH" /> tekens.</translation>
 <translation id="4300272766492248925">App openen</translation>
 <translation id="4300675098767811073">Meerdere perforaties rechts</translation>
 <translation id="4302514097724775343">Tik op de dino om te spelen</translation>
@@ -2702,6 +2705,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
     Neem contact op met je systeembeheerder.</translation>
 <translation id="5496804587179176046">Beveiligingscodes opslaan, op dit moment zijn er geen beveiligingscodes opgeslagen</translation>
 <translation id="550365051221576010">Alles invullen</translation>
+<translation id="5506286895894263601">De lijst bevat geen geldige snelkoppelingen.</translation>
 <translation id="5508443345185481044">Camera's en camcorders</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Beheerde bookmarks</translation>
@@ -3620,6 +3624,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7014741021609395734">Zoomniveau</translation>
 <translation id="7016992613359344582">Dit kunnen eenmalige of terugkerende kosten zijn die misschien niet duidelijk worden aangegeven.</translation>
 <translation id="701757816833614688">Design- en beeldende-kunstonderwijs</translation>
+<translation id="7020464868401003526">De URL van de snelkoppeling is langer dan de maximaal toegestane lengte van <ph name="MAX_LENGTH" /> tekens.</translation>
 <translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>
 <translation id="7023162328967545559">Beheerderswaarschuwing</translation>
 <translation id="7023765275461720661">Account koppelen en betalen met <ph name="BNPL_ISSUER_NAME" />?</translation>

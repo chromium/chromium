@@ -6086,7 +6086,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5213114823401215820">Suletud grupi uuesti avamine</translation>
 <translation id="5213481667492808996">Võrgu „<ph name="NAME" />” andmesideteenus on kasutamiseks valmis</translation>
 <translation id="5213891612754844763">Kuva puhverserveri seaded</translation>
-<translation id="5214484632844730228">Kas kuvada vahelehed teistest seadmetest?</translation>
 <translation id="5214639857958972833">Järjehoidja „<ph name="BOOKMARK_TITLE" />” on loodud.</translation>
 <translation id="5215450412607891876">Lülitage sisse pikendatud turvavärskendused</translation>
 <translation id="5215502535566372932">Valige riik</translation>
@@ -10456,7 +10455,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8280848878018088610">Murduvad lained merel fantastilise linna ja lossi taustal, pimedas atmosfääris.</translation>
 <translation id="828180235270931531">Muud saadaolevad printerid</translation>
 <translation id="8281886186245836920">Jäta vahele</translation>
-<translation id="8283802069507225582">Kui soovite teistes seadmetes jätkata sealt, kus pooleli jäite, sünkroonige ajalugu ja vahelehed kontoga <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">kõik domeeni <ph name="WEBSITE_1" /> saidid</translation>
 <translation id="8284326494547611709">Subtiitrid</translation>
 <translation id="8285625579699113397">Teie konto</translation>
@@ -10685,7 +10683,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="844059392176531372">Vahelehegrupi „<ph name="GROUP_NAME" />“ jagamine</translation>
 <translation id="8440630305826533614">Linuxi rakendused</translation>
 <translation id="844063558976952706">Sellel saidil alati</translation>
-<translation id="8440730169421032987">Kas sirvida mitmes seadmes?</translation>
 <translation id="8441313165929432954">Jagamise lubamine/keelamine</translation>
 <translation id="8443986842926457191">URL on pikem kui 2048 tähemärki</translation>
 <translation id="8445281870900174108">See vaheleht kasutab teie kaamerat</translation>
@@ -10732,7 +10729,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8472623782143987204">riistvaraga toetatud</translation>
 <translation id="8473540203671727883">Hiirekursori all oleva teksti ettelugemine</translation>
 <translation id="8473863474539038330">Aadressid ja muu</translation>
-<translation id="847433688444405067">Sirvige mitmes seadmes</translation>
 <translation id="8474378002946546633">Luba märguanded</translation>
 <translation id="8474561048882755118">Aitab teil sarnaseid tooteid kõrvuti vaadata ja teile olulisi üksikasju hõlpsasti võrrelda</translation>
 <translation id="8475313423285172237">Teine programm teie arvutis lisas laienduse, mis võib muuta Chrome'i toimimist.</translation>
@@ -11147,7 +11143,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8754200782896249056">&lt;p&gt;Kui toodet <ph name="PRODUCT_NAME" /> käitatakse toetatud töölaua keskkonnas, kasutatakse süsteemi puhverserveri seadeid. Kuid teie süsteemi ei toetata või tekkis probleem süsteemi konfiguratsiooni käivitamisel.&lt;/p&gt;
 
           &lt;p&gt;Saate ikka seadistada käsurea abil. Vaadake lisateavet (&lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;) märgistuste ja keskkonna muutujate kohta.&lt;/p&gt;</translation>
-<translation id="8754810799862630650">Selleks et näha avatud vahelehti oma teistest arvutitest ja telefonidest, sünkroonige ajalugu ja vahelehed kontoga <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Teie organisatsiooni puhul turvalisusega seotud toimingute tegemine (nt seadmesse talletatud sertifikaatide ja võtmete haldamine)</translation>
 <translation id="875532100880844232">Klaviatuuri <ph name="DEVICE_NAME" /> puhul valige iga klahvi jaoks toiming</translation>
 <translation id="8755376271068075440">&amp;Suuremaks</translation>

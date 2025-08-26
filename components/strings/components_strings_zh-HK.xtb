@@ -440,6 +440,7 @@
 <translation id="1719838434204287058">24 x 30 吋</translation>
 <translation id="1720941539803966190">閂教學課程</translation>
 <translation id="1721424275792716183">* 為必填欄位</translation>
+<translation id="1723636263173393300">此政策最多只能有 <ph name="MAX_ITEMS_LIMIT" /> 個捷徑。</translation>
 <translation id="1725591448053514783">You 6 信封</translation>
 <translation id="1727613060316725209">憑證有效</translation>
 <translation id="1728677426644403582">您正在查看網頁的原始碼</translation>
@@ -1047,6 +1048,7 @@
 <translation id="271663710482723385">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可結束全螢幕模式</translation>
 <translation id="2717336592027046789">卷</translation>
 <translation id="2718207025093645426">受管使用者或裝置未載入政策。</translation>
+<translation id="2719233594187778789">已忽略非專屬網址：<ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">要求成功</translation>
 <translation id="2722622039067384533">客廳家具</translation>
 <translation id="2723669454293168317">在 Chrome 設定中執行安全檢查</translation>
@@ -2006,6 +2008,7 @@
 <translation id="4298000214066716287">投資</translation>
 <translation id="4298148761711700950">即時付款而無需上載 QR 碼</translation>
 <translation id="4298925811540301889">此網站的 Cookie 會在你的 ChromeOS 裝置之間同步。如要管理同步內容，請前往「<ph name="SYNC_SETTINGS" />」。</translation>
+<translation id="4299919199185766032">捷徑名稱長度超出 <ph name="MAX_LENGTH" /> 個字元的上限。</translation>
 <translation id="4300272766492248925">開啟應用程式</translation>
 <translation id="4300675098767811073">多孔 (右側)</translation>
 <translation id="4302514097724775343">輕按恐龍即可開始遊戲</translation>
@@ -2707,6 +2710,7 @@
     請嘗試聯絡您的系統管理員。</translation>
 <translation id="5496804587179176046">儲存安全碼，目前未儲存任何安全碼</translation>
 <translation id="550365051221576010">填寫所有資料</translation>
+<translation id="5506286895894263601">此清單不含有效捷徑。</translation>
 <translation id="5508443345185481044">相機和攝錄機</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">受管理書籤</translation>
@@ -3626,6 +3630,7 @@
 <translation id="7014741021609395734">縮放比例</translation>
 <translation id="7016992613359344582">這些費用可能是一次性或會重複收取，而收費時亦可能難以察覺。</translation>
 <translation id="701757816833614688">視覺藝術和設計教育</translation>
+<translation id="7020464868401003526">捷徑網址長度超出 <ph name="MAX_LENGTH" /> 個字元的上限。</translation>
 <translation id="702275896380648118">此網站會判斷您喜歡的內容，以便向其他網站建議廣告。此網站亦會從 Chrome 取得您的廣告主題，以便為您顯示更相關的廣告。</translation>
 <translation id="7023162328967545559">管理員警告</translation>
 <translation id="7023765275461720661">要連結帳戶並透過 <ph name="BNPL_ISSUER_NAME" /> 付款嗎？</translation>

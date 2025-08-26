@@ -25,6 +25,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="129382876167171263">Hier zie je bestanden die worden opgeslagen door websites</translation>
 <translation id="131112695174432497">Gegevens die van invloed zijn op advertentiepersonalisatie, worden verwijderd</translation>
 <translation id="1317194122196776028">Deze site vergeten</translation>
+<translation id="1321110954513621549">Toegestaan • Geschat</translation>
 <translation id="1323433172918577554">Meer bekijken</translation>
 <translation id="1333965224356556482">Niet toestaan dat sites je locatie zien</translation>
 <translation id="1343356790768851700">Deze site bepaalt wat je leuk vindt en stelt daarna advertenties voor op andere sites</translation>
@@ -40,6 +41,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="1448064542941920355">Zoomniveau verkleinen</translation>
 <translation id="1464044141348608623">Niet toestaan dat sites weten wanneer je je apparaat actief gebruikt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
+<translation id="1476700086976862423">Themakleur sepia</translation>
 <translation id="1500473259453106018">Kaart Prijsdalingen op tabbladen verbergen</translation>
 <translation id="1508931164824684991">Sites kunnen JavaScript gebruiken</translation>
 <translation id="1510341833810331442">Sites mogen geen gegevens opslaan op je apparaat</translation>
@@ -71,6 +73,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1816835383954230954">Als deze optie aanstaat, werkt Chrome sneller en zouden functies die JavaScript gebruiken, naar behoren moeten werken. Als deze optie uitstaat, worden de prestaties slechter, maar is V8 beter bestand tegen aanvallen.</translation>
 <translation id="1818308510395330587">Als je <ph name="APP_NAME" /> AR wilt laten gebruiken, moet je ook de camera aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Lettertype Sans Serif</translation>
 <translation id="1881806992065048905">Blad onderaan voor het uiterlijk van de pagina Nieuw tabblad</translation>
 <translation id="1887786770086287077">Locatietoegang staat uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Sites vragen meestal toegang tot bestanden en mappen op je apparaat voor functies zoals het automatisch opslaan van je werk</translation>
@@ -92,6 +95,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2091887806945687916">Geluid</translation>
+<translation id="2094208275686143364">Themakleur licht</translation>
 <translation id="2096716221239095980">Alle gegevens verwijderen</translation>
 <translation id="2102396546234652240">Niet toestaan dat sites je microfoon gebruiken</translation>
 <translation id="2117655453726830283">Volgende dia</translation>
@@ -137,6 +141,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="2498359688066513246">Hulp en feedback</translation>
 <translation id="2501278716633472235">Terug</translation>
 <translation id="2533138527374486328">Als deze optie aanstaat, kunnen sites vragen of ze verbinding mogen maken met apparaten in je lokale netwerk. Staat de optie uit, dan kunnen sites geen verbinding maken met apparaten in je lokale netwerk.</translation>
+<translation id="2544997614631598250">Themakleur donker</translation>
 <translation id="2546283357679194313">Cookies en sitegegevens</translation>
 <translation id="2570922361219980984">Locatietoegang staat ook uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Uitgevouwen; klik om samen te vouwen.</translation>
@@ -194,6 +199,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3165022941318558018">Toestaan dat een site cookies van derden gebruikt</translation>
 <translation id="3167868116600277716">Discover-feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> opgeslagen gegevens</translation>
+<translation id="3199078925536734975">Deze keer toegestaan • Geschat</translation>
 <translation id="321187648315454507">Als je wilt dat <ph name="APP_NAME" /> je meldingen stuurt, moet je meldingen ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Locatie niet toegestaan</translation>
 <translation id="3227137524299004712">Microfoon</translation>
@@ -250,6 +256,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3803367742635802571">Sites die je bezoekt, werken misschien niet meer zoals bedoeld</translation>
 <translation id="3816118180265633665">Kleuren van Chrome</translation>
 <translation id="381841723434055211">Telefoonnummers</translation>
+<translation id="3823453485268218808">Lettertype Mono</translation>
 <translation id="3826050100957962900">Externe login</translation>
 <translation id="3835233591525155343">Je apparaatgebruik</translation>
 <translation id="3843916486309149084">Chrome blokkeert vandaag weer cookies</translation>
@@ -302,6 +309,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="4402755511846832236">Voorkomen dat sites weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="4412992751769744546">Cookies van derden toestaan</translation>
 <translation id="4419929467120297501">Chrome voorkomt dat sites cookies van derden gebruiken om je te volgen terwijl je browst. Ga naar Instellingen om <ph name="BEGIN_LINK" />de toegang tot cookies van derden te beheren<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Lettertype Serif</translation>
 <translation id="443121186588148776">Seriële poort</translation>
 <translation id="4434045419905280838">Pop-ups en omleidingen</translation>
 <translation id="443552056913301231">Met deze actie worden alle lokale gegevens (waaronder cookies) verwijderd en worden alle rechten voor <ph name="ORIGIN" /> gereset</translation>
@@ -554,6 +562,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7478658909253570368">Niet toestaan dat sites verbinding maken met seriële poorten</translation>
 <translation id="7488573225650545859">Tabbladen bekijken verbergen in je app-lijst</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Schuifregelaar voor lettergrootte</translation>
 <translation id="7547989957535180761">Als deze optie aanstaat, kunnen sites inlogprompts tonen. Staat de optie uit, dan kunnen sites geen inlogprompts tonen.</translation>
 <translation id="7553211568594248088">Hub-zoekfunctie sluiten</translation>
 <translation id="7554752735887601236">Een site gebruikt de microfoon</translation>

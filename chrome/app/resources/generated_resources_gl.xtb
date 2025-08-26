@@ -6081,7 +6081,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5213114823401215820">Volver abrir grupo pechado</translation>
 <translation id="5213481667492808996">Xa podes usar o servizo de datos <ph name="NAME" /></translation>
 <translation id="5213891612754844763">Mostrar configuración de proxy</translation>
-<translation id="5214484632844730228">Queres ver as pestanas doutros dispositivos?</translation>
 <translation id="5214639857958972833">Marcador creado: <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215450412607891876">Activar as actualizacións de seguranza ampliadas</translation>
 <translation id="5215502535566372932">Seleccionar país</translation>
@@ -10445,7 +10444,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8280848878018088610">Ondas rompendo no mar, cun castelo e unha cidade fantásticos de fondo e un ambiente sombrío.</translation>
 <translation id="828180235270931531">Outras impresoras dispoñibles</translation>
 <translation id="8281886186245836920">Omitir</translation>
-<translation id="8283802069507225582">Para retomar a actividade onde a deixaches noutros dispositivos, sincroniza as pestanas e o historial con <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">todos os sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8285625579699113397">A túa conta</translation>
@@ -10674,7 +10672,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="844059392176531372">Compartir o grupo de pestanas "<ph name="GROUP_NAME" />"</translation>
 <translation id="8440630305826533614">Aplicacións de Linux</translation>
 <translation id="844063558976952706">Sempre neste sitio</translation>
-<translation id="8440730169421032987">Queres navegar en varios dispositivos?</translation>
 <translation id="8441313165929432954">Activar/Desactivar conexión compartida</translation>
 <translation id="8443986842926457191">O URL contén máis de 2048 caracteres</translation>
 <translation id="8445281870900174108">Esta pestana está utilizando a túa cámara</translation>
@@ -10721,7 +10718,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8472623782143987204">teclas de hardware</translation>
 <translation id="8473540203671727883">Pronunciar texto ao pasar por encima o punteiro do rato</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
-<translation id="847433688444405067">Navega en varios dispositivos</translation>
 <translation id="8474378002946546633">Permitir notificacións</translation>
 <translation id="8474561048882755118">Axúdache a ver produtos similares en paralelo e comparar facilmente os detalles que máis che interesen</translation>
 <translation id="8475313423285172237">Outro programa do teu ordenador engadiu unha extensión que pode cambiar o funcionamento de Chrome.</translation>
@@ -11136,7 +11132,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8754200782896249056">&lt;p&gt;Cando se execute <ph name="PRODUCT_NAME" /> nun contorno de escritorio compatible, utilizarase a configuración do proxy do sistema. Non obstante, ou o sistema non é compatible ou se produciu un problema ao iniciar a configuración do sistema.&lt;/p&gt;
 
         &lt;p&gt;Pero aínda así podes efectuar a configuración a través da liña de comandos. Consulta &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; para obter máis información acerca das marcas e das variables do contorno.&lt;/p&gt;</translation>
-<translation id="8754810799862630650">Para ver as pestanas abertas nos teus outros ordenadores e teléfonos, sincroniza as pestanas e o historial con <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Realizar tarefas relacionadas coa seguranza para a túa organización, como a xestión de certificados e claves almacenados no dispositivo</translation>
 <translation id="875532100880844232">Selecciona unha acción para cada tecla de <ph name="DEVICE_NAME" /></translation>
 <translation id="8755376271068075440">&amp;Máis grande</translation>

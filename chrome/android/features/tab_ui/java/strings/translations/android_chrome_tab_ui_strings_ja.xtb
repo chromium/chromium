@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> 個のタブをグループ化しました</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブ}other{<ph name="TABS_COUNT_MANY" /> 個のタブ}}</translation>
 <translation id="1909810060368225529">注: この共有タブグループに加えた変更は、すべてのユーザーに表示されます。共有タブグループは誰でも変更できます</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{タブを固定}other{タブを固定}}</translation>
 <translation id="1982637982196732906">アクティブでないセクションに移動</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブをブックマークに追加}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブをブックマークに追加}}</translation>
 <translation id="2055057176188061528">タブグループを選択するか、新しいタブグループを作成します</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">共有シートのプレビューのサムネイル。</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{タブの固定を解除}other{タブの固定を解除}}</translation>
 <translation id="3940195383040445971">タブで価格をトラッキング</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 個の新しいタブを開き、<ph name="ANY_CLOSED" /> 個のタブを閉じました}other{<ph name="MANY_ADDED" /> 個の新しいタブを開き、<ph name="ANY_CLOSED" /> 個のタブを閉じました}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{タブをグループ化する}other{タブをグループ化する}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のアイテムを閉じる}other{選択した <ph name="TABS_COUNT_MANY" /> 個のアイテムを閉じる}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{グループを新しいウィンドウに移動}other{グループを別のウィンドウに移動}}</translation>
 <translation id="6228793724645064692">（ストアの評価）</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{グループからタブを削除}other{グループからタブを削除}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
 <translation id="6333260925957816943">このショップに関する情報</translation>
 <translation id="6381032505162537930">タブグループはここに表示されます</translation>

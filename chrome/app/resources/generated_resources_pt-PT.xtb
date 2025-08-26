@@ -3550,6 +3550,7 @@ Quer pará-lo?</translation>
 <translation id="3450056559545492516">Mostrar notificações do sistema acerca de sugestões e funcionalidades do Chrome</translation>
 <translation id="3450157232394774192">Percentagem de ocupação no estado inativo</translation>
 <translation id="3450180775417907283">O domínio <ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi agora e transfira uma atualização.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Está a partilhar este separador com o Gemini</translation>
 <translation id="345078987193237421">Isto permite o acesso à câmara para apps, Websites com a autorização de acesso à câmara e serviços do sistema</translation>
 <translation id="3451362021220965191">As apps Web isoladas controlam os leitores de cartões inteligentes para terem acesso aos cartões inteligentes inseridos ou apresentados. Normalmente, os cartões inteligentes contêm identidades usadas para autenticar ou autorizar operações, iniciar sessão em serviços, etc.</translation>
 <translation id="3452999110156026232">Acesso parental</translation>
@@ -6080,7 +6081,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5213114823401215820">Voltar a abrir grupo fechado</translation>
 <translation id="5213481667492808996">O serviço de dados de "<ph name="NAME" />" está pronto a ser utilizado.</translation>
 <translation id="5213891612754844763">Mostrar definições de proxy</translation>
-<translation id="5214484632844730228">Ver separadores de outros dispositivos?</translation>
 <translation id="5214639857958972833">Foi criado o marcador "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215450412607891876">Ative as atualizações de segurança alargadas</translation>
 <translation id="5215502535566372932">Selecionar país</translation>
@@ -7377,6 +7377,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6151128161396960693">Certifique-se de que confia na pessoa que enviou este convite</translation>
 <translation id="6151771661215463137">O ficheiro já existe na sua pasta de transferências.</translation>
 <translation id="6152918902620844577">A aguardar pela próxima operação</translation>
+<translation id="6152929108650354050">Está a partilhar este separador com o Gemini</translation>
 <translation id="6153439704237222699">Saber mais sobre Do Not Track</translation>
 <translation id="6154240335466762404">Remover todas as portas</translation>
 <translation id="615436196126345398">Protocolo</translation>
@@ -10450,7 +10451,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8280848878018088610">Ondas a rebentar no mar, com uma cidade e um castelo fantásticos no fundo, num ambiente sombrio.</translation>
 <translation id="828180235270931531">Outras impressoras disponíveis</translation>
 <translation id="8281886186245836920">Ignorar</translation>
-<translation id="8283802069507225582">Para continuar a partir do ponto em que ficou noutros dispositivos, sincronize o histórico e os separadores com a conta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">todos os sites de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Legendas</translation>
 <translation id="8285625579699113397">A sua conta</translation>
@@ -10679,7 +10679,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="844059392176531372">Partilhe o grupo de separadores "<ph name="GROUP_NAME" />"</translation>
 <translation id="8440630305826533614">Apps para Linux</translation>
 <translation id="844063558976952706">Sempre neste Website</translation>
-<translation id="8440730169421032987">Navegar entre dispositivos?</translation>
 <translation id="8441313165929432954">Ativar/desativar ligação (à Internet) via telemóvel</translation>
 <translation id="8443986842926457191">O URL contém mais de 2048 carateres</translation>
 <translation id="8445281870900174108">Este separador está a usar a sua câmara</translation>
@@ -10726,7 +10725,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8472623782143987204">suporte de hardware</translation>
 <translation id="8473540203671727883">Pronunciar o texto sob o rato</translation>
 <translation id="8473863474539038330">Moradas e mais</translation>
-<translation id="847433688444405067">Navegue entre dispositivos</translation>
 <translation id="8474378002946546633">Permitir notificações</translation>
 <translation id="8474561048882755118">Ajuda a ver produtos semelhantes lado a lado e comparar facilmente os detalhes mais importantes para si</translation>
 <translation id="8475313423285172237">Outro programa do computador adicionou uma extensão que pode alterar o funcionamento do Chrome.</translation>
@@ -11141,7 +11139,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8754200782896249056">&lt;p&gt;Ao executar o <ph name="PRODUCT_NAME" /> num ambiente de trabalho suportado, são utilizadas as definições de proxy do sistema. No entanto, o seu sistema não é suportado ou ocorreu um problema no início da configuração do sistema.&lt;/p&gt;
 
         &lt;p&gt;Porém, pode ainda configurar através da linha de comandos. Consulte &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; para obter mais informações acerca de sinalizadores e variáveis do ambiente.&lt;/p&gt;</translation>
-<translation id="8754810799862630650">Para ver os separadores abertos dos seus outros computadores e telemóveis, sincronize o histórico e os separadores com a conta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Executar tarefas relacionadas com a segurança para a sua entidade, como a gestão das chaves e certificados armazenados no dispositivo</translation>
 <translation id="875532100880844232">Para o dispositivo <ph name="DEVICE_NAME" />, escolha uma ação para cada tecla</translation>
 <translation id="8755376271068075440">&amp;Maior</translation>

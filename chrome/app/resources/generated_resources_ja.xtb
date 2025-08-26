@@ -1554,6 +1554,7 @@
 <translation id="2059913712424898428">タイムゾーン</translation>
 <translation id="2060375639911876205">eSIM プロファイルの削除</translation>
 <translation id="2061366302742593739">表示するものがありません</translation>
+<translation id="2061589908388230480">一般に報告されているデータ侵害でパスワードが検出された場合、Google パスワード マネージャーによってログイン時にパスワードの変更を促すメッセージが表示されます。<ph name="BEGIN_LINK" />自動パスワード変更の詳細<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">シークレット ウィンドウを使うと、閲覧履歴を残さずにウェブを閲覧できます</translation>
 <translation id="206308717637808771">すべてのウィンドウを閉じるときにデータを削除します。データは表示しているサイトと同じように扱われます</translation>
 <translation id="2065405795449409761">Chrome は自動テスト ソフトウェアによって制御されています。</translation>
@@ -2448,6 +2449,7 @@
 <translation id="2669241540496514785"><ph name="APP_NAME" /> を開けませんでした</translation>
 <translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> が Chrome タブを共有しています。</translation>
+<translation id="2670168377011445813">一般に報告されているデータ侵害でパスワードが検出された場合、Google パスワード マネージャーによってログイン時にパスワードの変更を促すメッセージが表示されます。<ph name="BEGIN_LINK" />自動パスワード変更の詳細<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">アニメーションを減らす</translation>
 <translation id="2670403088701171361">サイトにクリップボード内のテキストや画像へのアクセスを許可しない</translation>
 <translation id="2671423594960767771">グループを共有</translation>
@@ -3541,6 +3543,7 @@
 <translation id="3450056559545492516">Chrome の機能やヒントに関するシステム通知を表示する</translation>
 <translation id="3450157232394774192">アイドル状態の占有率（%）</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> が、Wi-Fi に接続して、今すぐアップデートをダウンロードするよう求めています。</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - このタブは Gemini と共有されています</translation>
 <translation id="345078987193237421">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスに対して、カメラへのアクセスを許可します</translation>
 <translation id="3451362021220965191">独立したウェブアプリは、スマートカード リーダーを操作して、挿入または提示されたスマートカードにアクセスできます。通常、スマートカードには、操作の認証や承認、サービスへのログインなどに使用される ID が含まれます。</translation>
 <translation id="3452999110156026232">保護者によるアクセス</translation>
@@ -6065,7 +6068,6 @@
 <translation id="5213114823401215820">閉じたグループを開く</translation>
 <translation id="5213481667492808996">「<ph name="NAME" />」データサービスを使用できるようになりました</translation>
 <translation id="5213891612754844763">プロキシ設定を表示</translation>
-<translation id="5214484632844730228">他のデバイスのタブを表示しますか？</translation>
 <translation id="5214639857958972833">ブックマーク「<ph name="BOOKMARK_TITLE" />」が作成されました。</translation>
 <translation id="5215450412607891876">セキュリティ アップデートの延長を有効化</translation>
 <translation id="5215502535566372932">国を選択</translation>
@@ -7359,6 +7361,7 @@
 <translation id="6151128161396960693">この招待状の送信元が信頼できるか確認してください</translation>
 <translation id="6151771661215463137">このファイルはダウンロード フォルダにすでにあります。</translation>
 <translation id="6152918902620844577">次の処理を待機しています</translation>
+<translation id="6152929108650354050">このタブは Gemini と共有されています</translation>
 <translation id="6153439704237222699">トラッキング拒否の詳細</translation>
 <translation id="6154240335466762404">すべてのポートを削除</translation>
 <translation id="615436196126345398">プロトコル</translation>
@@ -10429,7 +10432,6 @@
 <translation id="8280848878018088610">砕け散る海の波と、幻想的な市街と城郭、暗い雰囲気の背景。</translation>
 <translation id="828180235270931531">その他の利用可能なプリンタ</translation>
 <translation id="8281886186245836920">スキップ</translation>
-<translation id="8283802069507225582">他のデバイスで中断したところから再開するには、履歴とタブを <ph name="ACCOUNT_EMAIL" /> に同期します</translation>
 <translation id="8284279544186306258"><ph name="WEBSITE_1" /> の全サイト</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8285625579699113397">お客様のアカウント</translation>
@@ -10658,7 +10660,6 @@
 <translation id="844059392176531372">「<ph name="GROUP_NAME" />」タブグループを共有</translation>
 <translation id="8440630305826533614">Linux アプリ</translation>
 <translation id="844063558976952706">常にこのサイトのプラグインを実行する</translation>
-<translation id="8440730169421032987">複数のデバイスでブラウジングしますか？</translation>
 <translation id="8441313165929432954">テザリングを有効または無効にする</translation>
 <translation id="8443986842926457191">URL が 2048 文字を超えています</translation>
 <translation id="8445281870900174108">このタブはカメラを使用しています</translation>
@@ -10705,7 +10706,6 @@
 <translation id="8472623782143987204">ハードウェア式</translation>
 <translation id="8473540203671727883">カーソル部分のテキストを読み上げる</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
-<translation id="847433688444405067">複数のデバイスでブラウジング</translation>
 <translation id="8474378002946546633">通知を許可する</translation>
 <translation id="8474561048882755118">同様の商品を並べて表示して、重要な情報を簡単に比較できるようにします</translation>
 <translation id="8475313423285172237">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のある拡張機能が追加されました。</translation>
@@ -11120,7 +11120,6 @@
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" /> をサポート対象のデスクトップ環境で実行するとシステムのプロキシ設定が使用されますが、お使いのシステムがサポートされていないか、システム設定の適用で問題が発生した可能性があります。&lt;/p&gt;
 
           &lt;p&gt;コマンドラインからの設定は可能です。フラグや環境変数について詳しくは、&lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; を実行してご確認ください。&lt;/p&gt;</translation>
-<translation id="8754810799862630650">他のパソコンやスマートフォンで開いているタブを表示するには、履歴とタブを <ph name="ACCOUNT_EMAIL" /> に同期します</translation>
 <translation id="8755175579224030324">デバイスに保存された証明書やキーの管理など、組織のセキュリティ関連のタスクを実行する</translation>
 <translation id="875532100880844232"><ph name="DEVICE_NAME" /> のキーごとにアクションを選択します</translation>
 <translation id="8755376271068075440">拡大(&amp;L)</translation>

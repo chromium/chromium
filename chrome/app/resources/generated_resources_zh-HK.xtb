@@ -3559,6 +3559,7 @@
 <translation id="3450056559545492516">顯示 Chrome 功能和提示相關的系統通知</translation>
 <translation id="3450157232394774192">閒置狀態占用率</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> 要求您立即連接 Wi-Fi 並下載更新。</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - 你而家同 Gemini 分享緊呢個分頁</translation>
 <translation id="345078987193237421">此操作會允許應用程式、具有相機權限的網站和系統服務存取相機</translation>
 <translation id="3451362021220965191">「隔離的網絡應用程式」可控制智能讀卡器，以存取插入讀卡器或讀卡器感應到的智能卡。智能卡通常包含身分資料，用於驗證或授權操作、登入服務等。</translation>
 <translation id="3452999110156026232">家長存取權</translation>
@@ -6085,7 +6086,6 @@
 <translation id="5213114823401215820">重新開啟先前關閉的群組</translation>
 <translation id="5213481667492808996">「<ph name="NAME" />」的數據服務現可使用</translation>
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
-<translation id="5214484632844730228">要查看其他裝置上的分頁嗎？</translation>
 <translation id="5214639857958972833">建立咗「<ph name="BOOKMARK_TITLE" />」書籤。</translation>
 <translation id="5215450412607891876">開啟延長安全更新</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
@@ -7377,6 +7377,7 @@
 <translation id="6151128161396960693">請確保你信任邀請者</translation>
 <translation id="6151771661215463137">下載資料夾中已有此檔案。</translation>
 <translation id="6152918902620844577">正在等待下一次操作</translation>
+<translation id="6152929108650354050">你目前正與 Gemini 分享此分頁</translation>
 <translation id="6153439704237222699">進一步了解 Do Not Track</translation>
 <translation id="6154240335466762404">移除所有連接埠</translation>
 <translation id="615436196126345398">通訊協定</translation>
@@ -10447,7 +10448,6 @@
 <translation id="8280848878018088610">巨浪翻滾，背景是奇幻的城市和城堡，色調偏暗。</translation>
 <translation id="828180235270931531">其他可用的打印機</translation>
 <translation id="8281886186245836920">略過</translation>
-<translation id="8283802069507225582">如要在其他裝置上繼續瀏覽，可將記錄和分頁同步至 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">所有 <ph name="WEBSITE_1" /> 網站</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8285625579699113397">你的帳戶</translation>
@@ -10676,7 +10676,6 @@
 <translation id="844059392176531372">分享「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="8440630305826533614">Linux 應用程式</translation>
 <translation id="844063558976952706">一律在此網站上允許</translation>
-<translation id="8440730169421032987">要在不同裝置上瀏覽嗎？</translation>
 <translation id="8441313165929432954">啟用/停用網絡共享</translation>
 <translation id="8443986842926457191">網址超過 2048 個字元</translation>
 <translation id="8445281870900174108">此分頁正在使用攝錄機</translation>
@@ -10723,7 +10722,6 @@
 <translation id="8472623782143987204">硬件支援</translation>
 <translation id="8473540203671727883">說出滑鼠游標下的文字</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
-<translation id="847433688444405067">在不同裝置上瀏覽</translation>
 <translation id="8474378002946546633">允許通知</translation>
 <translation id="8474561048882755118">方便你並排查看類似產品，輕鬆比較重要資料</translation>
 <translation id="8475313423285172237">電腦中其他程式所新增的擴充功能可能會變更 Chrome 的運作方式。</translation>
@@ -11138,7 +11136,6 @@
 <translation id="8754200782896249056">&lt;p&gt;在受支援的桌面環境下執行 <ph name="PRODUCT_NAME" /> 時，瀏覽器會使用系統的 Proxy 設定。不過，您的系統可能不受支援，或在啟動系統設定時發生問題。&lt;/p&gt;
 
         &lt;p&gt;然而，您仍然可以透過命令列設定。如需標幟及環境變數的詳細資料，請參閱 &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;。&lt;/p&gt;</translation>
-<translation id="8754810799862630650">如要查看其他電腦和手機上開啟的分頁，可將記錄和分頁同步至 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">為您的機構進行安全性相關的工作，例如管理儲存在裝置上的憑證和金鑰</translation>
 <translation id="875532100880844232">選擇「<ph name="DEVICE_NAME" />」每個按鍵的動作</translation>
 <translation id="8755376271068075440">放大(&amp;L)</translation>

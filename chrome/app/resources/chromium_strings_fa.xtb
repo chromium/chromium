@@ -82,6 +82,7 @@
 <translation id="2008474315282236005">‏این کار یک مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> به سیستم Chromium وارد شوید.</translation>
 <translation id="2018879682492276940">نصب تکمیل نشد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="2020032459870799438">‏برای بررسی اینکه از دیگر گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود، <ph name="BEGIN_LINK" />به سیستم Chromium وارد شوید<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">تنظیمات.</translation>
 <translation id="2049376729098081731">‏انتخاب کنید که آیا سابقه Chromium برای تجربه‌های شخصی‌شده‌تر در سرویس‌های Google لحاظ شود یا نه</translation>
 <translation id="2054039611381840095">‏برای دریافت به‌روزرسانی‌های بعدی Chromium، باید macOS نسخه ۱۲ یا بالاتر داشته باشید. این رایانه از macOS نسخه ۱۱ استفاده می‌کند.</translation>
 <translation id="2086476982681781442">‏‫Chromium این بارگیری را مسدود کرد زیرا این فایل فریب‌دهنده است و ممکن است تغییرات غیرمنتظره‌ای در دستگاهتان ایجاد کند</translation>
@@ -313,6 +314,7 @@
 <translation id="5123973130450702873">‏‫Chromium برای ردیابی کردن دست‌های شما به اجازه نیاز دارد</translation>
 <translation id="5141988424377517949">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="PERMISSION_3" /> را برداشت.</translation>
 <translation id="5174969993834422967">معمولاً اعلان‌ها را مسدود می‌کنید. برای اینکه اجازه دهید این سایت اعلان ارسال کند، روی نماد اعلان در گوشه چپ نوار نشانی کلیک کنید.</translation>
+<translation id="5174983315706567306">فضای دیسک کافی نیست.</translation>
 <translation id="5187123684706427865">‏حساب Chromium به اصالت‌سنجی مجدد نیاز دارد</translation>
 <translation id="5224391634244552924">‏گذرواژه ذخیره‌شده‌ای وجود ندارد. Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید.</translation>
 <translation id="5231355151045086930">‏خروج از سیستم Chromium</translation>
@@ -440,6 +442,7 @@
 <translation id="6598877126913850652">‏رفتن به تنظیمات اعلان Chromium</translation>
 <translation id="6600016381025017075">هرچیزی در این صفحه را جستجو کنید</translation>
 <translation id="6613594504749178791">‏دفعه بعدی که Chromium را مجدداً راه‌اندازی می‌کنید، این تغییرات اعمال می‌شوند.</translation>
+<translation id="6648212540664651655">‏کارتان را از جایی که متوقف کرده بودید ادامه دهید: Chromium زبانه‌های جلسه قبلی‌تان را بازگرداند. می‌توانید این ویژگی را در اینجا خاموش کنید:</translation>
 <translation id="665732753414869868">‏Chromium برای ایجاد نقشه سه‌بعدی از محیط اطراف شما به اجازه دوربین نیاز دارد</translation>
 <translation id="6669284030132180248">‏اگر نشانک‌ها را در «حساب Google» هم ذخیره کنید، می‌توانید قیمت محصولات را در Chromium پیگیری کنید و از کاهش قیمت‌ها مطلع شوید</translation>
 <translation id="6676384891291319759">دسترسی به اینترنت</translation>
@@ -503,6 +506,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7376384068949534168">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> را برداشت.</translation>
 <translation id="7384121030444253939">‏دیگر از این افزونه پشتیبانی نمی‌شود. ‫Chromium توصیه می‌کند آن را حذف کنید.</translation>
+<translation id="7413153308467572558">‏کارتان را از جایی که متوقف کرده بودید ادامه دهید: Chromium هربار که آن را بازراه‌اندازی کنید، زبانه‌هایتان را بازمی‌گرداند. برای خاموش کردن این ویژگی، به اینجا بروید:</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">نوشتار کپی شد</translation>
 <translation id="7451052299415159299">‏Chromium برای این سایت به مجوز دسترسی به دوربین نیاز دارد</translation>
@@ -608,6 +612,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8747073452963259673">‏گوشه پایین سمت راست ناحیه جستجو: ‎٪<ph name="LEFT" /> سمت راست، ‎٪<ph name="BOTTOM" /> پایین</translation>
 <translation id="878572486461146056">خطای نصب: سرپرست شبکه شما «خط‌مشی گروهی» اعمال کرده است که از نصب جلوگیری می‌کند: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">‏Chromium به مجوز دسترسی به دوربین و میکروفون برای این سایت نیاز دارد</translation>
+<translation id="880560872634367429">درحال درستی‌سنجی بارگیری…</translation>
 <translation id="8818550178040858407">‏به سیستم Chromium وارد می‌شوید؟</translation>
 <translation id="8826492472752484139">روی «مدیر گذرواژه» کلیک کنید</translation>
 <translation id="8833697763442816810">‏سیستم ChromiumOS</translation>
@@ -634,6 +639,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="911206726377975832">داده‌های مرور شما نیز حذف شود؟</translation>
 <translation id="9134482777260927479">کمک در تکالیف</translation>
 <translation id="9148058034647219655">خروج</translation>
+<translation id="9155105544013854680">‏کارتان را از جایی که متوقف کرده بودید ادامه دهید: Chromium می‌تواند هربار که آن را بازراه‌اندازی می‌کنید، زبانه‌هایتان را بازگرداند. برای روشن کردن این ویژگی، به اینجا بروید:</translation>
 <translation id="9158494823179993217">‏سرپرست سیستم شما برای باز شدن مرورگر جایگزین برای دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Chromium را پیکربندی کرده است.</translation>
 <translation id="9185526690718004400">‏راه‌اندازی مجدد برای به‌روزرسانی Chromium</translation>
 <translation id="9190841055450128916">‏Chromium‏ (mDNS ورودی)</translation>

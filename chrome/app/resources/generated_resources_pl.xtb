@@ -3531,6 +3531,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3450056559545492516">Wyświetlaj powiadomienia systemowe o funkcjach i wskazówkach dotyczących Chrome</translation>
 <translation id="3450157232394774192">Stan bezczynności – procentowo</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – udostępniasz tę kartę usłudze Gemini</translation>
 <translation id="345078987193237421">Z aparatu będą mogły korzystać aplikacje i strony, które mają odpowiednie uprawnienia, oraz usługi systemowe</translation>
 <translation id="3451362021220965191">Izolowane aplikacje internetowe sterują czytnikami kart inteligentnych, aby uzyskać dostęp do kart inteligentnych, które są do nich wkładane lub przez nie odczytywane. Karty inteligentne zwykle zawierają dane dotyczące tożsamości, które są używane do uwierzytelniania lub autoryzowania operacji, logowania się w usługach itp.</translation>
 <translation id="3452999110156026232">Dostęp rodzica</translation>
@@ -6058,7 +6059,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5213114823401215820">Otwórz ponownie zamkniętą grupę</translation>
 <translation id="5213481667492808996">Usługa transmisji danych „<ph name="NAME" />” jest gotowa do użycia</translation>
 <translation id="5213891612754844763">Pokaż ustawienia serwera proxy</translation>
-<translation id="5214484632844730228">Czy chcesz widzieć karty z innych urządzeń?</translation>
 <translation id="5214639857958972833">Utworzono zakładkę „<ph name="BOOKMARK_TITLE" />”.</translation>
 <translation id="5215450412607891876">Włącz rozszerzone aktualizacje zabezpieczeń</translation>
 <translation id="5215502535566372932">Wybierz kraj</translation>
@@ -7352,6 +7352,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6151128161396960693">Zastanów się, czy ufasz osobie, która wysłała to zaproszenie</translation>
 <translation id="6151771661215463137">Plik już istnieje w folderze pobierania.</translation>
 <translation id="6152918902620844577">Czekam na następną operację</translation>
+<translation id="6152929108650354050">Udostępniasz tę kartę usłudze Gemini</translation>
 <translation id="6153439704237222699">Więcej informacji o nagłówku Do Not Track</translation>
 <translation id="6154240335466762404">Usuń wszystkie porty</translation>
 <translation id="615436196126345398">Protokół</translation>
@@ -10426,7 +10427,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8280848878018088610">Rozbijające się fale na morzu, a w tle fantastyczne miasto i zamek w ciemnej scenerii.</translation>
 <translation id="828180235270931531">Inne dostępne drukarki</translation>
 <translation id="8281886186245836920">Pomiń</translation>
-<translation id="8283802069507225582">Aby móc wracać do tego samego miejsca na innych urządzeniach, zsynchronizuj historię i karty z kontem <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">wszystkie strony <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Napisy</translation>
 <translation id="8285625579699113397">Twoje konto</translation>
@@ -10655,7 +10655,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="844059392176531372">Udostępnij grupę kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="8440630305826533614">Aplikacje na Linuksa</translation>
 <translation id="844063558976952706">Zawsze w tej witrynie</translation>
-<translation id="8440730169421032987">Przeglądać na różnych urządzeniach?</translation>
 <translation id="8441313165929432954">Włącz/wyłącz tethering</translation>
 <translation id="8443986842926457191">URL zawiera więcej niż 2048 znaków</translation>
 <translation id="8445281870900174108">Ta karta używa Twojej kamery</translation>
@@ -10702,7 +10701,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8472623782143987204">sprzętowe</translation>
 <translation id="8473540203671727883">Przeczytaj na głos tekst wskazany myszą</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
-<translation id="847433688444405067">Przeglądaj na różnych urządzeniach</translation>
 <translation id="8474378002946546633">Zezwalaj na powiadomienia.</translation>
 <translation id="8474561048882755118">Pozwala porównywać podobne produkty obok siebie i łatwo sprawdzać ważne szczegóły</translation>
 <translation id="8475313423285172237">Inny program na Twoim komputerze dodał rozszerzenie, które może zmienić działanie Chrome.</translation>
@@ -11113,7 +11111,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8754200782896249056">&lt;p&gt;Po uruchomieniu programu <ph name="PRODUCT_NAME" /> w obsługiwanym środowisku pulpitu są używane systemowe ustawienia serwera proxy. Jednak ten system nie jest obsługiwany lub wystąpił problem z zastosowaniem konfiguracji systemu.&lt;/p&gt;
 
           &lt;p&gt;Serwer proxy można jeszcze skonfigurować za pomocą wiersza poleceń. Więcej informacji na temat flag i zmiennych środowiskowych zawiera instrukcja &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
-<translation id="8754810799862630650">Aby móc widzieć otwarte karty z innych komputerów i telefonów, zsynchronizuj historię i karty z kontem <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Wykonywanie na użytek Twojej organizacji zadań związanych z bezpieczeństwem, takich jak zarządzanie certyfikatami i kluczami zapisanymi na urządzeniu</translation>
 <translation id="875532100880844232">Wybierz działanie każdego klawisza urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="8755376271068075440">&amp;Większy</translation>

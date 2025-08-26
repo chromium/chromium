@@ -3547,6 +3547,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3450056559545492516">Prikazuj sistemska obaveštenja o funkcijama i savetima za Chrome</translation>
 <translation id="3450157232394774192">Procenat zauzetosti stanja mirovanja</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> zahteva da se odmah povežete na WiFi i da preuzmete ažuriranje.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Delite ovu karticu sa Gemini-jem</translation>
 <translation id="345078987193237421">To omogućava pristup kameri za aplikacije, veb-sajtove sa dozvolom za kameru i sistemske usluge</translation>
 <translation id="3451362021220965191">Izolovane veb-aplikacije kontrolišu čitače pametnih kartica da bi dobile pristup pametnim karticama koje su umetnute ili predstavljene. Pametne kartice obično sadrže identitete koji se koriste za potvrdu ili ovlašćivanje operacija, prijavljivanje u usluge itd.</translation>
 <translation id="3452999110156026232">Roditeljski pristup</translation>
@@ -6077,7 +6078,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5213114823401215820">Ponovo otvori zatvorenu grupu</translation>
 <translation id="5213481667492808996">Usluga prenosa podataka „<ph name="NAME" />“ je spremna za korišćenje</translation>
 <translation id="5213891612754844763">Prikaži podešavanja proksija</translation>
-<translation id="5214484632844730228">Želite da vidite kartice sa drugih uređaja?</translation>
 <translation id="5214639857958972833">Napravljen je obeleživač <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215450412607891876">Uključite dodatna bezbednosna ažuriranja</translation>
 <translation id="5215502535566372932">Izaberite zemlju</translation>
@@ -7372,6 +7372,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6151128161396960693">Uverite se da imate poverenja u osobu koja je poslala ovaj poziv</translation>
 <translation id="6151771661215463137">Datoteka već postoji u direktorijumu sa preuzimanjima.</translation>
 <translation id="6152918902620844577">Čeka se sledeća radnja</translation>
+<translation id="6152929108650354050">Delite ovu karticu sa Gemini-jem</translation>
 <translation id="6153439704237222699">Saznajte više o zahtevu „Ne prati“</translation>
 <translation id="6154240335466762404">Ukloni sve portove</translation>
 <translation id="615436196126345398">Protokol</translation>
@@ -10449,7 +10450,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8280848878018088610">Morski talasi udaraju o obalu, sa fantastičnim gradom i zamkom u pozadini, u tamnom ambijentu.</translation>
 <translation id="828180235270931531">Drugi dostupni štampači</translation>
 <translation id="8281886186245836920">Preskoči</translation>
-<translation id="8283802069507225582">Da biste nastavili tamo gde ste stali na drugim uređajima, sinhronizujte istoriju i kartice sa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">svi <ph name="WEBSITE_1" /> sajtovi</translation>
 <translation id="8284326494547611709">Titl</translation>
 <translation id="8285625579699113397">Vaš nalog</translation>
@@ -10678,7 +10678,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="844059392176531372">Delite grupu kartica <ph name="GROUP_NAME" /></translation>
 <translation id="8440630305826533614">Linux aplikacije</translation>
 <translation id="844063558976952706">Uvek na ovom sajtu</translation>
-<translation id="8440730169421032987">Želite da pregledate na više uređaja?</translation>
 <translation id="8441313165929432954">Omogućavanje ili onemogućavanje privezivanja</translation>
 <translation id="8443986842926457191">URL ima više od 2048 znakova</translation>
 <translation id="8445281870900174108">Ova kartica koristi kameru</translation>
@@ -10725,7 +10724,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8472623782143987204">hardverski podržan</translation>
 <translation id="8473540203671727883">Izgovaraj tekst pod mišem</translation>
 <translation id="8473863474539038330">Adrese i drugo</translation>
-<translation id="847433688444405067">Pregledajte na više uređaja</translation>
 <translation id="8474378002946546633">Dozvoli obaveštenja</translation>
 <translation id="8474561048882755118">Omogućava vam da vidite slične proizvode jedan pored drugog i lako uporedite detalje koji su vam važni</translation>
 <translation id="8475313423285172237">Drugi program na računaru je dodao dodatak koji može da promeni način na koji Chrome funkcioniše.</translation>
@@ -11140,7 +11138,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8754200782896249056">&lt;p&gt;Kada koristite <ph name="PRODUCT_NAME" /> u podržanom računarskom okruženju, koristiće se podešavanja proksija sistema. Međutim, ili sistem nije podržan ili je došlo do problema pri pokretanju konfiguracije sistema.&lt;/p&gt;
 
         &lt;p&gt;Ali i dalje možete da konfigurišete preko komandne linije. Pogledajte &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; za više informacija o obeležjima i promenljivama okruženja.&lt;/p&gt;</translation>
-<translation id="8754810799862630650">Da biste videli otvorene kartice sa drugih računara i telefona, sinhronizujte istoriju i kartice sa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Obavljanje zadataka u vezi sa bezbednošću za organizaciju, poput upravljanja sertifikatima i ključevima koji se skladište na uređaju</translation>
 <translation id="875532100880844232">Za uređaj <ph name="DEVICE_NAME" /> odaberite radnju za svaki taster</translation>
 <translation id="8755376271068075440">&amp;Veće</translation>

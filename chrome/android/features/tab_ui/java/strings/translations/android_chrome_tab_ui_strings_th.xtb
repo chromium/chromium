@@ -28,6 +28,7 @@
 <translation id="1828808367831369073">จัดกลุ่มไว้ <ph name="TABS_COUNT_ONE" /> แท็บ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="1909810060368225529">ประกาศ: ทุกคนจะเห็นการเปลี่ยนแปลงที่เกิดขึ้นกับกลุ่มแท็บที่แชร์นี้ ทุกคนจะเปลี่ยนแปลงกลุ่มแท็บที่แชร์ของคุณได้</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{ปักหมุดแท็บ}other{ปักหมุดแท็บ}}</translation>
 <translation id="1982637982196732906">ย้ายไปยังส่วนที่ไม่ได้ใช้งาน</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{บุ๊กมาร์กแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{บุ๊กมาร์กแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="2055057176188061528">เลือกกลุ่มแท็บหรือสร้างกลุ่มแท็บใหม่</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ภาพแบบย่อตัวอย่างชีตที่แชร์</translation>
 <translation id="3810973564298564668">จัดการ</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{เลิกปักหมุดแท็บ}other{เลิกปักหมุดแท็บ}}</translation>
 <translation id="3940195383040445971">ติดตามราคาในแท็บ</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{แท็บใหม่ <ph name="ONE_ADDED" /> แท็บ ปิดไปแล้ว <ph name="ANY_CLOSED" /> แท็บ}other{แท็บใหม่ <ph name="MANY_ADDED" /> แท็บ ปิดไปแล้ว <ph name="ANY_CLOSED" /> แท็บ}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{จัดกลุ่มแท็บ}other{จัดกลุ่มแท็บ}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{ปิดรายการที่เลือก <ph name="TABS_COUNT_ONE" /> รายการ}other{ปิดรายการที่เลือก <ph name="TABS_COUNT_MANY" /> รายการ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ย้ายกลุ่มไปยังหน้าต่างใหม่}other{ย้ายกลุ่มไปยังหน้าต่างอื่น}}</translation>
 <translation id="6228793724645064692">(คะแนนร้านค้า)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{นำแท็บออกจากกลุ่ม}other{นำแท็บออกจากกลุ่ม}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{เพิ่มแท็บไปยังกลุ่มใหม่}other{เพิ่มแท็บไปยังกลุ่มใหม่}}</translation>
 <translation id="6333260925957816943">ข้อมูลเกี่ยวกับร้านนี้</translation>
 <translation id="6381032505162537930">คุณจะเห็นกลุ่มแท็บที่นี่</translation>

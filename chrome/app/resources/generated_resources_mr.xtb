@@ -6089,7 +6089,6 @@
 <translation id="5213114823401215820">बंद केलेला गट पुन्हा उघडा</translation>
 <translation id="5213481667492808996">तुमची '<ph name="NAME" />' डेटा सेवा वापरण्यासाठी तयार आहे</translation>
 <translation id="5213891612754844763">प्रॉक्सी सेटिग्ज दर्शवा</translation>
-<translation id="5214484632844730228">इतर डिव्हाइसवरील टॅब पहायचे आहेत का?</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' बुकमार्क तयार केले.</translation>
 <translation id="5215450412607891876">विस्तारित सुरक्षा अपडेट सुरू करा</translation>
 <translation id="5215502535566372932">देश निवडा</translation>
@@ -10459,7 +10458,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8280848878018088610">गडद मूडमध्ये, बॅकग्राउंडमध्ये विलक्षण शहर आणि किल्ला असलेला समुद्रामधील उसळलेल्या लाटा.</translation>
 <translation id="828180235270931531">इतर उपलब्ध प्रिंटर</translation>
 <translation id="8281886186245836920">वगळा</translation>
-<translation id="8283802069507225582">इतर डिव्हाइसवर तुम्ही सोडले होते तिथून पुन्हा सुरू करण्यासाठी तुमचा इतिहास आणि टॅब <ph name="ACCOUNT_EMAIL" /> शी सिंक करा</translation>
 <translation id="8284279544186306258">सर्व <ph name="WEBSITE_1" /> साइट</translation>
 <translation id="8284326494547611709">मथळे</translation>
 <translation id="8285625579699113397">तुमचे खाते</translation>
@@ -10688,7 +10686,6 @@ I feel - विटांची इमारत</translation>
 <translation id="844059392176531372">“<ph name="GROUP_NAME" />” हा टॅब गट शेअर करा</translation>
 <translation id="8440630305826533614">Linux ॲप्स</translation>
 <translation id="844063558976952706">नेहमी या साइटवर</translation>
-<translation id="8440730169421032987">सर्व डिव्हाइसवर ब्राउझ करायचे आहे का?</translation>
 <translation id="8441313165929432954">टेदरिंग सुरू/बंद करा</translation>
 <translation id="8443986842926457191">URL मध्ये २०४८ पेक्षा जास्त वर्ण आहेत</translation>
 <translation id="8445281870900174108">हा टॅब तुमचा कॅमेरा वापरत आहे</translation>
@@ -10735,7 +10732,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8472623782143987204">हार्डवेअर-बॅक्ड</translation>
 <translation id="8473540203671727883">माउसखाली मजकूर बोला</translation>
 <translation id="8473863474539038330">अ‍ॅड्रेस आणि बरेच काही</translation>
-<translation id="847433688444405067">सर्व डिव्हाइसवर ब्राउझ करा</translation>
 <translation id="8474378002946546633">सूचनांना अनुमती द्या</translation>
 <translation id="8474561048882755118">एकसारखी उत्पादने शेजारी शेजारी पाहण्यात आणि तुमच्यासाठी महत्त्वाच्या असलेल्या तपशिलांची सहजपणे तुलना करण्यात मदत करते</translation>
 <translation id="8475313423285172237">तुमच्या कॉंप्युटरवरील दुसऱ्या प्रोग्रामने Chrome च्या काम करण्याचा मार्ग बदलू शकणारा एक्स्टेंशन जोडला.</translation>
@@ -11150,7 +11146,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8754200782896249056">&lt;p&gt;सपोर्टेड डेस्कटॉप परिस्थिती अंतर्गत <ph name="PRODUCT_NAME" /> चालवताना, सिस्टीम प्रॉक्सी सेटिंग्ज वापरल्या जातील. तथापि, एकतर तुमची सिस्टीमला सपोर्ट नाही नसते किंवा तुमचे सिस्टीम कॉन्फिगरेशन लाँच करताना समस्या आली.&lt;/p&gt;
 
           &lt;/p&gt;परंतु तुम्ही अद्याप कमांड लाइन कॉन्फिगर करू शकता. कृपया फ्लॅग आणि परिस्थिती व्हेरिएबलवरील अधिक माहितीसाठी &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; पहा.&lt;/p&gt;</translation>
-<translation id="8754810799862630650">तुमच्या इतर काँप्युटर आणि फोनवरून उघडे असलेले टॅब पाहण्यासाठी, तुमचा इतिहास व टॅब<ph name="ACCOUNT_EMAIL" /> शी सिंक करा</translation>
 <translation id="8755175579224030324">तुमच्या संस्थेसाठी सुरक्षिततेशी संबंधित टास्क पार पाडा, जसे की डिव्हाइसवर स्टोअर केलेली सर्टिफिकेट आणि की व्यवस्थापित करणे</translation>
 <translation id="875532100880844232"><ph name="DEVICE_NAME" />साठी, प्रत्येक कीसाठी कृती निवडा</translation>
 <translation id="8755376271068075440">&amp;विशाल</translation>
