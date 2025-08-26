@@ -32,7 +32,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #import "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
@@ -1015,11 +1014,8 @@ void OnListFamilyMembersResponse(
 
 - (WidgetContext*)findContextRequiringAccountChange:
     (NSSet<UIOpenURLContext*>*)URLContexts {
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.profile->GetOriginalProfile());
-  CoreAccountInfo primaryAccount =
-      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* gaiaInApp = primaryAccount.gaia.ToNSString();
+  NSString* gaiaInApp = nil;
+
   for (UIOpenURLContext* context : URLContexts) {
     // Check that this URL is coming from a widget.
     if (!([self widgetURLEligibleForAccountChange:context.URL] ||
@@ -1034,6 +1030,13 @@ void OnListFamilyMembersResponse(
       continue;
     }
     NSString* newGaiaID = base::SysUTF8ToNSString(newGaia);
+
+    ProfileIOS* profile = self.profile->GetOriginalProfile();
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForProfile(profile);
+    id<SystemIdentity> identityOnDevice =
+        authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    gaiaInApp = identityOnDevice.gaiaID;
 
     // Only switch account if the gaia in the widget is different from the gaia
     // in the app.
@@ -1746,11 +1749,13 @@ void OnListFamilyMembersResponse(
 }
 
 - (BOOL)isSignedIn {
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.profile);
-  CHECK(identityManager);
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  DCHECK(authenticationService);
+  DCHECK(authenticationService->initialized());
 
-  return identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  return authenticationService->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
 }
 
 - (void)showYoutubeIncognitoWithUrlLoadParams:
