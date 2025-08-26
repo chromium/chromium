@@ -24,6 +24,7 @@ source_set("extensions") {
       "extension_install_ui.h",
       "extensions_dialogs.h",
       "reload_page_dialog_controller.h",
+      "settings_overridden_dialog.h",
     ]
 
     if (is_android) {
@@ -53,7 +54,6 @@ source_set("extensions") {
       "extension_enable_flow.h",
       "extension_installed_bubble_model.h",
       "extension_installed_waiter.h",
-      "extension_settings_overridden_dialog.h",
       "extension_side_panel_utils.h",
       "extensions_container.h",
       "extensions_overrides/simple_overrides.h",
@@ -104,6 +104,7 @@ source_set("impl") {
       "extension_multiple_uninstall_dialog.cc",
       "extension_uninstall_dialog_impl.cc",
       "reload_page_dialog_controller.cc",
+      "settings_overridden_dialog.cc",
     ]
     deps += [
       "//chrome/browser/extensions",

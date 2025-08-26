@@ -4824,6 +4824,10 @@ if (!is_android) {
         "../browser/ui/extensions/extension_multiple_uninstall_dialog_browsertest.cc",
         "../browser/ui/extensions/extension_uninstall_dialog_impl_browsertest.cc",
         "../browser/ui/extensions/reload_page_dialog_controller_browsertest.cc",
+
+        # TODO(crbug.com/424013924): Move settings_overridden_dialog_browsertest.cc to
+        # chrome/browser/ui/extensions/ once we enable it on Android.
+        "../browser/ui/extensions/settings_overridden_dialog_browsertest.cc",
       ]
 
       if (is_chromeos) {
@@ -5018,7 +5022,6 @@ if (!is_android) {
         "../browser/ui/views/desktop_capture/desktop_media_picker_views_browsertest.cc",
         "../browser/ui/views/extensions/device_chooser_extension_browsertest.cc",
         "../browser/ui/views/extensions/dialogs/mv2_deprecation_reenable_dialog_browsertest.cc",
-        "../browser/ui/views/extensions/dialogs/settings_overridden_dialog_browsertest.cc",
         "../browser/ui/views/extensions/dialogs/upload_extension_to_account_dialog_browsertest.cc",
         "../browser/ui/views/extensions/extension_install_dialog_view_browsertest.cc",
         "../browser/ui/views/extensions/extension_installed_bubble_view_browsertest.cc",
@@ -9714,6 +9717,7 @@ test("unit_tests") {
   if (is_win || is_mac || is_linux) {
     sources += [
       "../browser/sharing_hub/sharing_hub_model_unittest.cc",
+      "../browser/ui/extensions/settings_overridden_dialog_unittest.cc",
       "../browser/ui/views/sharing_hub/preview_view_unittest.cc",
       "../browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl_unittest.cc",
     ]
@@ -10428,7 +10432,6 @@ test("unit_tests") {
       "../browser/ui/views/device_chooser_content_view_unittest.cc",
       "../browser/ui/views/download/download_in_progress_dialog_view_unittest.cc",
       "../browser/ui/views/extensions/chooser_dialog_view_unittest.cc",
-      "../browser/ui/views/extensions/dialogs/settings_overridden_dialog_unittest.cc",
       "../browser/ui/views/extensions/expandable_container_view_unittest.cc",
       "../browser/ui/views/extensions/extensions_menu_item_unittest.cc",
       "../browser/ui/views/extensions/extensions_menu_main_page_view_unittest.cc",

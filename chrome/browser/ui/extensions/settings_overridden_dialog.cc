@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/dialogs/settings_overridden_dialog.h"
+#include "chrome/browser/ui/extensions/settings_overridden_dialog.h"
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/image_model.h"
@@ -19,9 +16,10 @@
 using DialogResult = SettingsOverriddenDialogController::DialogResult;
 
 namespace {
+constexpr int kDialogHeaderIconSize = 20;
 
 // Model delegate that notifies the `controller_` when a click event occurs in
-// the settings overriden dialog.
+// the settings overridden dialog.
 class SettingsOverriddenDialogDelegate : public ui::DialogModelDelegate {
  public:
   explicit SettingsOverriddenDialogDelegate(
@@ -65,7 +63,7 @@ namespace extensions {
 
 void ShowSettingsOverriddenDialog(
     std::unique_ptr<SettingsOverriddenDialogController> controller,
-    Browser* browser) {
+    gfx::NativeWindow parent) {
   SettingsOverriddenDialogController::ShowParams show_params =
       controller->GetShowParams();
 
@@ -98,17 +96,14 @@ void ShowSettingsOverriddenDialog(
       .OverrideShowCloseButton(false);
 
   if (show_params.icon) {
-    gfx::ImageSkia icon = gfx::CreateVectorIcon(
-        *show_params.icon,
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE),
-        ui::kColorIcon);
-
-    dialog_builder.SetIcon(ui::ImageModel::FromImageSkia(icon));
+    dialog_builder.SetIcon(ui::ImageModel::FromVectorIcon(
+        // TODO(crbug.com/439918265): Align on a single icon size for extension
+        // dialogs and use such variable here.
+        *show_params.icon, ui::kColorIcon, kDialogHeaderIconSize));
   }
 
-  constrained_window::ShowBrowserModal(dialog_builder.Build(),
-                                       browser->window()->GetNativeWindow());
+  ShowModalDialog(parent, dialog_builder.Build());
+
   dialog_delegate->controller()->OnDialogShown();
 }
 

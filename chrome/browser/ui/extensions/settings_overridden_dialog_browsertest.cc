@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/dialogs/settings_overridden_dialog.h"
+#include "chrome/browser/ui/extensions/settings_overridden_dialog.h"
 
 #include <algorithm>
 
@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
@@ -36,6 +37,8 @@
 
 using DialogResult = SettingsOverriddenDialogController::DialogResult;
 
+// TODO(crbug.com/424013924): Remove browser dependency and enable test for
+// Desktop Android
 namespace {
 
 // A stub dialog controller that displays the dialog with the supplied params.
@@ -68,7 +71,7 @@ class TestDialogController : public SettingsOverriddenDialogController {
 
 }  // namespace
 
-class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
+class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
  public:
   enum class DefaultSearch {
     kUseDefault,
@@ -76,8 +79,8 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
     kUseNewSearch,
   };
 
-  SettingsOverriddenDialogViewBrowserTest() = default;
-  ~SettingsOverriddenDialogViewBrowserTest() override = default;
+  SettingsOverriddenDialogBrowserTest() = default;
+  ~SettingsOverriddenDialogBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     DialogBrowserTest::SetUpOnMainThread();
@@ -122,7 +125,7 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
     extensions::ShowSettingsOverriddenDialog(
         std::make_unique<TestDialogController>(std::move(params),
                                                &dialog_result_),
-        browser);
+        browser->window()->GetNativeWindow());
     return waiter.WaitIfNeededAndGet();
   }
 
@@ -246,17 +249,17 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
 ////////////////////////////////////////////////////////////////////////////////
 // UI Browser Tests
 
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogBrowserTest,
                        InvokeUi_SimpleDialog) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogBrowserTest,
                        InvokeUi_SimpleDialogWithIcon) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogBrowserTest,
                        InvokeUi_NtpOverriddenDialog_BackToDefault) {
   // Force the post-install NTP UI to be enabled, so that we can test on all
   // platforms.
@@ -265,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
   extensions::SetNtpPostInstallUiEnabledForTesting(false);
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogBrowserTest,
                        InvokeUi_NtpOverriddenDialog_Generic) {
   // Force the post-install NTP UI to be enabled, so that we can test on all
   // platforms.
@@ -277,17 +280,17 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
 // The chrome_settings_overrides API that allows extensions to override the
 // default search provider is only available on Windows and Mac.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogBrowserTest,
                        InvokeUi_SearchOverriddenDialog_BackToGoogle) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogBrowserTest,
                        InvokeUi_SearchOverriddenDialog_BackToOther) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogBrowserTest,
                        InvokeUi_SearchOverriddenDialog_Generic) {
   ShowAndVerifyUi();
 }
@@ -298,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
 
 // Verify that if the parent window is closed, the dialog notifies the
 // controller that it was closed without any user action.
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogBrowserTest,
                        DialogWindowClosed) {
   Browser* second_browser = CreateBrowser(browser()->profile());
   ASSERT_TRUE(second_browser);

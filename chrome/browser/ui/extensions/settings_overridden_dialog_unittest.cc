@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/dialogs/settings_overridden_dialog.h"
+#include "chrome/browser/ui/extensions/settings_overridden_dialog.h"
 
 #include <optional>
 
@@ -52,14 +52,16 @@ class TestDialogController : public SettingsOverriddenDialogController {
 
 }  // namespace
 
-class SettingsOverriddenDialogViewUnitTest : public TestWithBrowserView {
+class SettingsOverriddenDialogUnitTest : public TestWithBrowserView {
+  // TODO(crbug.com/424013924): Remove browser dependency and enable test for
+  // Desktop Android
  public:
-  SettingsOverriddenDialogViewUnitTest() = default;
-  SettingsOverriddenDialogViewUnitTest(
-      const SettingsOverriddenDialogViewUnitTest&) = delete;
-  const SettingsOverriddenDialogViewUnitTest& operator=(
-      const SettingsOverriddenDialogViewUnitTest&) = delete;
-  ~SettingsOverriddenDialogViewUnitTest() override = default;
+  SettingsOverriddenDialogUnitTest() = default;
+  SettingsOverriddenDialogUnitTest(const SettingsOverriddenDialogUnitTest&) =
+      delete;
+  const SettingsOverriddenDialogUnitTest& operator=(
+      const SettingsOverriddenDialogUnitTest&) = delete;
+  ~SettingsOverriddenDialogUnitTest() override = default;
 
   views::Widget* ShowDialog(DialogState* state) {
     auto controller = std::make_unique<TestDialogController>(state);
@@ -69,7 +71,7 @@ class SettingsOverriddenDialogViewUnitTest : public TestWithBrowserView {
         views::test::AnyWidgetTestPasskey{},
         kExtensionSettingsOverriddenDialogName);
     extensions::ShowSettingsOverriddenDialog(std::move(controller),
-                                             browser_view()->browser());
+                                             browser_view()->GetNativeWindow());
     views::Widget* dialog = waiter.WaitIfNeededAndGet();
     EXPECT_TRUE(state->shown);
 
@@ -77,7 +79,7 @@ class SettingsOverriddenDialogViewUnitTest : public TestWithBrowserView {
   }
 };
 
-TEST_F(SettingsOverriddenDialogViewUnitTest, DialogResult_ChangeSettingsBack) {
+TEST_F(SettingsOverriddenDialogUnitTest, DialogResult_ChangeSettingsBack) {
   DialogState state;
   views::Widget* dialog = ShowDialog(&state);
 
@@ -89,7 +91,7 @@ TEST_F(SettingsOverriddenDialogViewUnitTest, DialogResult_ChangeSettingsBack) {
   EXPECT_EQ(DialogResult::kChangeSettingsBack, state.result);
 }
 
-TEST_F(SettingsOverriddenDialogViewUnitTest, DialogResult_KeepNewSettings) {
+TEST_F(SettingsOverriddenDialogUnitTest, DialogResult_KeepNewSettings) {
   DialogState state;
   views::Widget* dialog = ShowDialog(&state);
 
@@ -101,7 +103,7 @@ TEST_F(SettingsOverriddenDialogViewUnitTest, DialogResult_KeepNewSettings) {
   EXPECT_EQ(DialogResult::kKeepNewSettings, state.result);
 }
 
-TEST_F(SettingsOverriddenDialogViewUnitTest, DialogResult_DismissDialog) {
+TEST_F(SettingsOverriddenDialogUnitTest, DialogResult_DismissDialog) {
   DialogState state;
   views::Widget* dialog = ShowDialog(&state);
 
@@ -113,7 +115,7 @@ TEST_F(SettingsOverriddenDialogViewUnitTest, DialogResult_DismissDialog) {
   EXPECT_EQ(DialogResult::kDialogDismissed, state.result);
 }
 
-TEST_F(SettingsOverriddenDialogViewUnitTest, DialogResult_CloseParentWidget) {
+TEST_F(SettingsOverriddenDialogUnitTest, DialogResult_CloseParentWidget) {
   DialogState state;
   views::Widget* dialog = ShowDialog(&state);
 

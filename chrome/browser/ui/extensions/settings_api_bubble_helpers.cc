@@ -143,7 +143,8 @@ void MaybeShowExtensionControlledSearchNotification(
     return;
   }
 
-  ShowSettingsOverriddenDialog(std::move(dialog), browser);
+  ShowSettingsOverriddenDialog(std::move(dialog),
+                               browser->window()->GetNativeWindow());
 #endif
 }
 
@@ -196,7 +197,8 @@ void MaybeShowExtensionControlledNewTabPage(
     return;
   }
 
-  ShowSettingsOverriddenDialog(std::move(dialog), browser);
+  ShowSettingsOverriddenDialog(std::move(dialog),
+                               browser->window()->GetNativeWindow());
 }
 
 }  // namespace extensions

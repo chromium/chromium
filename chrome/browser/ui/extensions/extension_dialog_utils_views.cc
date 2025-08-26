@@ -38,6 +38,11 @@ void ShowDialog(gfx::NativeWindow parent,
   ShowDialog(parent, std::vector({extension_id}), std::move(dialog_model));
 }
 
+void ShowModalDialog(gfx::NativeWindow parent,
+                     std::unique_ptr<ui::DialogModel> dialog_model) {
+  constrained_window::ShowBrowserModal(std::move(dialog_model), parent);
+}
+
 void ShowDialog(gfx::NativeWindow parent,
                 const std::vector<extensions::ExtensionId>& extension_ids,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
@@ -46,7 +51,8 @@ void ShowDialog(gfx::NativeWindow parent,
   if (container && container->GetVisible()) {
     ShowDialog(container, extension_ids, std::move(dialog_model));
   } else {
-    constrained_window::ShowBrowserModal(std::move(dialog_model), parent);
+    // If the container is not available, show a modal dialog.
+    ShowModalDialog(parent, std::move(dialog_model));
   }
 }
 

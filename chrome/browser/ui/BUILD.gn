@@ -5040,8 +5040,6 @@ static_library("ui") {
       "views/chrome_javascript_app_modal_view_factory_views.cc",
       "views/extensions/browser_action_drag_data.cc",
       "views/extensions/browser_action_drag_data.h",
-      "views/extensions/dialogs/settings_overridden_dialog.cc",
-      "views/extensions/dialogs/settings_overridden_dialog.h",
       "views/extensions/extension_action_platform_delegate_views.cc",
       "views/extensions/extension_action_platform_delegate_views.h",
       "views/extensions/extension_popup.cc",

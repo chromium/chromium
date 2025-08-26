@@ -109,7 +109,7 @@ void ShowMv2DeprecationReEnableDialog(
 // overridden by an extension.
 void ShowSettingsOverriddenDialog(
     std::unique_ptr<SettingsOverriddenDialogController> controller,
-    Browser* browser);
+    gfx::NativeWindow parent);
 
 // The type of action that the ExtensionInstalledBlockedByParentDialog
 // is being shown in reaction to.
