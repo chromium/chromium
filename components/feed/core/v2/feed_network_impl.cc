@@ -59,10 +59,6 @@ constexpr char kApplicationXProtobuf[] = "application/x-protobuf";
 constexpr base::TimeDelta kNetworkTimeout = base::Seconds(30);
 constexpr char kDiscoverHost[] = "https://discover-pa.googleapis.com/";
 
-signin::ScopeSet GetAuthScopes() {
-  return {GaiaConstants::kFeedOAuth2Scope};
-}
-
 int EstimateFeedQueryRequestSize(const network::ResourceRequest& request) {
   int total_size = 14 +  // GET <path> HTTP/1.1
                    request.url.path_piece().size() +
@@ -236,7 +232,7 @@ class FeedNetworkImpl::NetworkFetch {
   void StartAccessTokenFetch() {
     DVLOG(1) << "Feed access token fetch started.";
     token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-        "feed", identity_manager_, GetAuthScopes(),
+        signin::OAuthConsumerId::kFeedNetwork, identity_manager_,
         base::BindOnce(&NetworkFetch::AccessTokenFetchFinished, GetWeakPtr(),
                        base::TimeTicks::Now()),
         signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
@@ -476,7 +472,7 @@ class FeedNetworkImpl::NetworkFetch {
             signin::ConsentLevel::kSignin);
         if (!account_id.empty()) {
           identity_manager_->RemoveAccessTokenFromCache(
-              account_id, GetAuthScopes(), access_token_);
+              account_id, signin::OAuthConsumerId::kFeedNetwork, access_token_);
         }
       }
     }

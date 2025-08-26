@@ -62,6 +62,10 @@ constexpr char kCloudPolicyClientRegistrationName[] =
     "cloud_policy_client_registration";
 constexpr char kSafeBrowsingName[] = "safe_browsing_service";
 constexpr char kTailoredSecurityServiceName[] = "tailored_security_service";
+constexpr char kLensOverlayQueryControllerName[] =
+    "lens_overlay_query_controller";
+constexpr char kTrustedVaultFrontendName[] = "trusted_vault_frontend";
+constexpr char kFeedNetworkName[] = "feed_network";
 
 }  // namespace
 
@@ -263,6 +267,18 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kTailoredSecurityServiceName,
           /*scopes=*/{GaiaConstants::kChromeSafeBrowsingOAuth2Scope});
+    case OAuthConsumerId::kLensOverlayQueryController:
+      return OAuthConsumer(
+          /*name=*/kLensOverlayQueryControllerName,
+          /*scopes=*/{GaiaConstants::kLensOAuth2Scope});
+    case OAuthConsumerId::kTrustedVaultFrontend:
+      return OAuthConsumer(
+          /*name=*/kTrustedVaultFrontendName,
+          /*scopes=*/{GaiaConstants::kCryptAuthOAuth2Scope});
+    case OAuthConsumerId::kFeedNetwork:
+      return OAuthConsumer(
+          /*name=*/kFeedNetworkName,
+          /*scopes=*/{GaiaConstants::kFeedOAuth2Scope});
   }
   NOTREACHED();
 }

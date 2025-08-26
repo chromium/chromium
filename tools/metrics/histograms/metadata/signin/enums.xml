@@ -745,6 +745,9 @@ chromium-metrics-reviews@google.com.
   <int value="38" label="Cloud Policy Client Registration"/>
   <int value="39" label="Safe Browsing"/>
   <int value="40" label="Tailored Security Service"/>
+  <int value="41" label="Lens Overlay Query controller"/>
+  <int value="42" label="Trusted Vault Frontend"/>
+  <int value="43" label="Feed Network"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

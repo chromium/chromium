@@ -14,8 +14,6 @@
 namespace trusted_vault {
 
 namespace {
-const char kCryptAuthOAuth2Scope[] =
-    "https://www.googleapis.com/auth/cryptauth";
 
 void FulfillPendingRequests(
     std::vector<TrustedVaultAccessTokenFetcher::TokenCallback> pending_requests,
@@ -100,8 +98,7 @@ void TrustedVaultAccessTokenFetcherFrontend::StartAccessTokenFetch() {
   // auth errors.
   ongoing_access_token_fetch_ = std::make_unique<
       signin::PrimaryAccountAccessTokenFetcher>(
-      /*ouath_consumer_name=*/"TrustedVaultAccessTokenFetcherFrontend",
-      identity_manager_, signin::ScopeSet{kCryptAuthOAuth2Scope},
+      signin::OAuthConsumerId::kTrustedVaultFrontend, identity_manager_,
       base::BindOnce(
           &TrustedVaultAccessTokenFetcherFrontend::OnAccessTokenFetchCompleted,
           base::Unretained(this)),
