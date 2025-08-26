@@ -732,17 +732,17 @@ class CodeSignBundleAction(Action):
       os.makedirs(bundle.executable_dir)
     shutil.copy(args.binary, bundle.binary_path)
 
-    # If the manifest is present, check that the bundle is well-formed.
-    # Perform this check before creating the symlinks for mac_framework
-    # as they likely are not listed in the manifest (as the script will
-    # conditionally create them).
-    VerifyBundleManifest(bundle, args.manifest)
+    # Record the symlinks created (they are likely not listed in the
+    # manifest, but must not be deleted).
+    created_symlinks = []
 
     if bundle.kind == 'mac_framework':
       # Create Versions/Current -> Versions/A symlink
+      created_symlinks.append('Versions/Current')
       CreateSymlink('A', os.path.join(bundle.path, 'Versions/Current'))
 
       # Create $binary_name -> Versions/Current/$binary_name symlink
+      created_symlinks.append(bundle.binary_name)
       CreateSymlink(os.path.join('Versions/Current', bundle.binary_name),
                     os.path.join(bundle.path, bundle.binary_name))
 
@@ -750,12 +750,20 @@ class CodeSignBundleAction(Action):
       for name in ('Headers', 'Resources', 'Modules'):
         target = os.path.join(bundle.path, 'Versions/A', name)
         if os.path.exists(target):
+          created_symlinks.append(name)
           CreateSymlink(os.path.join('Versions/Current', name),
                         os.path.join(bundle.path, name))
         else:
           obsolete_path = os.path.join(bundle.path, name)
           if os.path.exists(obsolete_path):
             os.unlink(obsolete_path)
+
+    # If the manifest is present, check that the bundle is well-formed. Only
+    # perform this verification if requested, but in that case, consider all
+    # the created symlinks as part of the manifest (since they are generated
+    # conditionally, it is difficult to explicit list them all).
+    if args.manifest:
+      VerifyBundleManifest(bundle, set(args.manifest) | set(created_symlinks))
 
     if args.no_signature:
       return
