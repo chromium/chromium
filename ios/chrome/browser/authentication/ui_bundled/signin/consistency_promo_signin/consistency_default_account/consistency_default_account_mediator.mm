@@ -346,7 +346,12 @@ NSString* GetPromoLabelString(
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  [self selectSelectedIdentity];
+  if (_accountManagerService &&
+      !_accountManagerService->IsValidIdentity(self.selectedIdentity)) {
+    // The currently selected identity is not valid anymore. Let’s select the
+    // default identity instead.
+    [self selectSelectedIdentity];
+  }
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
