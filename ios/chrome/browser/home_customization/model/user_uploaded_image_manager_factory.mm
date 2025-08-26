@@ -38,6 +38,6 @@ UserUploadedImageManagerFactory::BuildServiceInstanceFor(
   return std::make_unique<UserUploadedImageManager>(
       profile->GetStatePath(),
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 }

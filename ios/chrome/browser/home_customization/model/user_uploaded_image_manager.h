@@ -36,7 +36,8 @@ class UserUploadedImageManager : public KeyedService {
       base::OnceCallback<void(base::FilePath)> callback);
 
   // Loads an image previously stored at the provided relative file path.
-  UIImage* LoadUserUploadedImage(base::FilePath relative_image_file_path);
+  void LoadUserUploadedImage(base::FilePath relative_image_file_path,
+                             base::OnceCallback<void(UIImage*)> callback);
 
   // Deletes an image previously stored at the provided relative file path.
   void DeleteUserUploadedImage(base::FilePath relative_image_file_path);

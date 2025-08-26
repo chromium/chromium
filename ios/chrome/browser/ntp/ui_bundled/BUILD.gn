@@ -274,6 +274,7 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/discover_feed/model:discover_feed_visibility_browser_agent",
     "//ios/chrome/browser/home_customization/coordinator",
     "//ios/chrome/browser/home_customization/model",
+    "//ios/chrome/browser/home_customization/ui",
     "//ios/chrome/browser/lens/ui_bundled:lens_availability",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/location_bar/ui_bundled:fakebox_buttons_snapshot",

@@ -55,6 +55,25 @@ base::FilePath SaveImageToDirectory(const base::FilePath& directory_path,
   return image_relative_file_path;
 }
 
+// Loads the image at the given path.
+UIImage* LoadImageAtPath(const base::FilePath& path) {
+  NSURL* image_url =
+      [NSURL fileURLWithPath:base::apple::FilePathToNSString(path)];
+
+  // Load the image from disk.
+  NSData* image_data = [NSData dataWithContentsOfURL:image_url];
+  if (!image_data) {
+    return nil;
+  }
+
+  UIImage* image = [UIImage imageWithData:image_data];
+  if (!image) {
+    return nil;
+  }
+
+  return image;
+}
+
 // Deletes any unused image files that exist in `directory_path` but not in
 // `relative_file_paths_in_use`.
 void DeleteUnusedImageFilePaths(
@@ -92,26 +111,16 @@ void UserUploadedImageManager::StoreUserUploadedImage(
       std::move(callback));
 }
 
-UIImage* UserUploadedImageManager::LoadUserUploadedImage(
-    base::FilePath relative_image_file_path) {
+void UserUploadedImageManager::LoadUserUploadedImage(
+    base::FilePath relative_image_file_path,
+    base::OnceCallback<void(UIImage*)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FilePath full_file_path =
       storage_directory_path_.Append(relative_image_file_path);
-  NSURL* imageURL =
-      [NSURL fileURLWithPath:base::apple::FilePathToNSString(full_file_path)];
 
-  // Load the image from disk.
-  NSData* imageData = [NSData dataWithContentsOfURL:imageURL];
-  if (!imageData) {
-    return nil;
-  }
-
-  UIImage* image = [UIImage imageWithData:imageData];
-  if (!image) {
-    return nil;
-  }
-
-  return image;
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&LoadImageAtPath, full_file_path),
+      std::move(callback));
 }
 
 void UserUploadedImageManager::DeleteUserUploadedImage(
