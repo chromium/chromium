@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -149,10 +150,7 @@ class DevToolsEmbedderMessageDispatcher {
                                          const std::string& request) = 0;
     virtual void DispatchHttpRequest(
         DispatchCallback callback,
-        const std::string& service,
-        const std::string& path,
-        const std::string& method,
-        const std::optional<std::string>& body) = 0;
+        const DevToolsDispatchHttpRequestParams& body) = 0;
   };
 
   using DispatchCallback = Delegate::DispatchCallback;

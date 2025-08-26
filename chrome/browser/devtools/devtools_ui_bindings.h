@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/aida_client.h"
+#include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_embedder_message_dispatcher.h"
 #include "chrome/browser/devtools/devtools_file_helper.h"
 #include "chrome/browser/devtools/devtools_file_storage.h"
@@ -299,11 +300,9 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   //    `{"error": "Request failed", "detail": "<response_body>", "netError":
   //    net::OK, "netErrorName": "net::ERR_FAILED", "statusCode":
   //    <http_status>}`
-  void DispatchHttpRequest(DispatchCallback callback,
-                           const std::string& service,
-                           const std::string& path,
-                           const std::string& method,
-                           const std::optional<std::string>& body) override;
+  void DispatchHttpRequest(
+      DispatchCallback callback,
+      const DevToolsDispatchHttpRequestParams& params) override;
 
   void EnableRemoteDeviceCounter(bool enable);
 

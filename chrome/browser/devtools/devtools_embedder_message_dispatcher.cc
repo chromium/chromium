@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_settings.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/visual_logging.h"
@@ -16,6 +17,20 @@
 namespace {
 
 using DispatchCallback = DevToolsEmbedderMessageDispatcher::DispatchCallback;
+
+bool GetValue(const base::Value& value,
+              DevToolsDispatchHttpRequestParams* params) {
+  if (!value.is_dict()) {
+    return false;
+  }
+  auto parsed_params =
+      DevToolsDispatchHttpRequestParams::FromDict(value.GetDict());
+  if (!parsed_params) {
+    return false;
+  }
+  *params = std::move(*parsed_params);
+  return true;
+}
 
 bool GetValue(const base::Value& value, std::string* result) {
   if (result && value.is_string()) {
@@ -282,21 +297,6 @@ bool GetValue(const base::Value& value, FunctionCallEvent* event) {
     event->context = *context;
   }
   return true;
-}
-
-bool GetValue(const base::Value& value,
-              std::optional<std::string>* string_value) {
-  if (value.is_string()) {
-    *string_value = value.GetString();
-    return true;
-  }
-
-  if (value.is_none()) {
-    string_value->reset();
-    return true;
-  }
-
-  return false;
 }
 
 template <typename T>

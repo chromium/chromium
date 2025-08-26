@@ -1078,12 +1078,9 @@ void DevToolsUIBindings::OnAidaResponse(
 
 void DevToolsUIBindings::DispatchHttpRequest(
     DispatchCallback callback,
-    const std::string& service,
-    const std::string& path,
-    const std::string& method,
-    const std::optional<std::string>& body) {
+    const DevToolsDispatchHttpRequestParams& params) {
   http_service_registry_->Request(
-      profile_, service, path, method, body,
+      profile_, params.service, params.path, params.method, params.body,
       base::BindOnce(&DevToolsUIBindings::OnHttpRequestPerformed,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

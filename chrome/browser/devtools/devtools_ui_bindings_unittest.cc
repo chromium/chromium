@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_http_service_handler.h"
 #include "chrome/browser/devtools/devtools_http_service_registry.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -246,8 +247,12 @@ class DevToolsUIBindingsDispatchHttpRequestTest : public testing::Test {
                            const std::string& path,
                            const std::string& method,
                            const std::optional<std::string>& body) {
-    bindings_->DispatchHttpRequest(std::move(callback), service, path, method,
-                                   body);
+    DevToolsDispatchHttpRequestParams params;
+    params.service = service;
+    params.path = path;
+    params.method = method;
+    params.body = body;
+    bindings_->DispatchHttpRequest(std::move(callback), params);
   }
 
   void ExpectCanMakeRequest(bool can_make_request) {
