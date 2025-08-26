@@ -62,6 +62,7 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
 
 // Struct containing details on the state of an update. It is passed
 // periodically from the server to the client via the StateChangeObserver.
+// Next version: 2
 [Stable] struct UpdateState {
   // Possible states for updating an app. Add new values at the end of
   // the definition, and do not mutate the existing values.
@@ -99,6 +100,12 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
     // The engine encountered an error updating this product. The update has
     // halted and the state will not change.
     kUpdateError,
+
+    // The engine is decompressing an update.
+    [MinVersion=1] kDecompressing,
+
+    // The engine is applying a patch to a file.
+    [MinVersion=1] kPatching,
   };
 
   string app_id;
