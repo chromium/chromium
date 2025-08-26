@@ -56,12 +56,6 @@ void InitTracingPostFeatureList(
   DCHECK(!g_tracing_initialized_after_featurelist);
   g_tracing_initialized_after_featurelist = true;
 
-  // Initialize the client library's TrackRegistry to support trace points
-  // during startup tracing. We don't setup the client library completely here
-  // yet, because we don't have field trials loaded yet (which influence which
-  // backends we enable).
-  perfetto::internal::TrackRegistry::InitializeInstance();
-
   // Create the PerfettoTracedProcess.
   auto& traced_process =
       PerfettoTracedProcess::MaybeCreateInstance(will_trace_thread_restart);

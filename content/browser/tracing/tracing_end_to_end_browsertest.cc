@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
 #if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
                        PackageNameRecordedTraceLogSet) {
-  tracing::TrackNameRecorder::GetInstance()->SetRecordHostAppPackageName(true);
+  tracing::TrackNameRecorder::SetRecordHostAppPackageName(true);
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace(base::test::DefaultTraceConfig("foo", false),
                  perfetto::kCustomBackend);
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
                        PackageNameNotRecordedTraceLogNotSet) {
-  tracing::TrackNameRecorder::GetInstance()->SetRecordHostAppPackageName(false);
+  tracing::TrackNameRecorder::SetRecordHostAppPackageName(false);
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace(base::test::DefaultTraceConfig("foo", false),
                  perfetto::kCustomBackend);

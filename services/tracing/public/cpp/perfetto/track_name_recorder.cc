@@ -85,6 +85,8 @@ void SetThreadTrackDescriptors() {
 
 }  // namespace
 
+bool TrackNameRecorder::record_host_app_package_name_ = false;
+
 void TrackNameRecorder::SetProcessTrackDescriptor(
     const std::string& process_name,
     pbzero_enums::ProcessType process_type) {
@@ -162,7 +164,7 @@ TrackNameRecorder::GenerateProcessTrackDescriptor(
 TrackNameRecorder::TrackNameRecorder()
     : process_start_timestamp_(
           TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds()) {
-  perfetto::internal::TrackRegistry::InitializeInstance();
+  CHECK(perfetto::Tracing::IsInitialized());
   base::ThreadIdNameManager::GetInstance()->AddObserver(this);
   base::CurrentProcess::GetInstance().SetDelegate(this, {});
   base::TrackEvent::AddSessionObserver(this);
@@ -181,22 +183,14 @@ void TrackNameRecorder::OnSetup(const perfetto::DataSourceBase::SetupArgs&) {
   SetProcessTrackDescriptor();
 }
 
-void TrackNameRecorder::OnStop(const perfetto::DataSourceBase::StopArgs&) {
-  SetProcessTrackDescriptor();
-}
-
 void TrackNameRecorder::OnThreadNameChanged(const char* name) {
-  // If tracing is not initialized, the thread name is lost, but this should
-  // never happen outside of tests.
   FillThreadTrack(perfetto::ThreadTrack::Current(), name);
 }
 
 void TrackNameRecorder::OnProcessNameChanged(
     const std::string& process_name,
     base::CurrentProcessType process_type) {
-  if (perfetto::Tracing::IsInitialized()) {
-    SetProcessTrackDescriptor(process_name, process_type);
-  }
+  SetProcessTrackDescriptor(process_name, process_type);
 }
 
 int TrackNameRecorder::GetNewProcessLabelId() {
@@ -210,12 +204,10 @@ void TrackNameRecorder::UpdateProcessLabel(int label_id,
     return RemoveProcessLabel(label_id);
   }
 
-  if (perfetto::Tracing::IsInitialized()) {
-    auto track = perfetto::ProcessTrack::Current();
-    auto desc = track.Serialize();
-    desc.mutable_process()->add_process_labels(current_label);
-    base::TrackEvent::SetTrackDescriptor(track, std::move(desc));
-  }
+  auto track = perfetto::ProcessTrack::Current();
+  auto desc = track.Serialize();
+  desc.mutable_process()->add_process_labels(current_label);
+  base::TrackEvent::SetTrackDescriptor(track, std::move(desc));
 
   base::AutoLock lock(lock_);
   process_labels_[label_id] = current_label;
@@ -232,6 +224,7 @@ void TrackNameRecorder::SetProcessTrackDescriptor() {
   SetProcessTrackDescriptor(process_name, process_type);
 }
 
+// static
 void TrackNameRecorder::SetRecordHostAppPackageName(
     bool record_host_app_package_name) {
   record_host_app_package_name_ = record_host_app_package_name;
