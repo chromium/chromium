@@ -45,6 +45,7 @@ source_set("tab_list_interface") {
   ]
 
   deps = [
+    "//build:android_buildflags",
     "//components/tab_groups",
     "//components/tabs:public",
     "//url",

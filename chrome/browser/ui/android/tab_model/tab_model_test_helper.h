@@ -103,7 +103,11 @@ class TestTabModel : public TabModel {
                             SessionID destination_window_id,
                             int destination_index) override;
 
+// BrowserWindowInterface is available on desktop Android, but not other Android
+// builds.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
   void AssociateWithBrowserWindow(BrowserWindowInterface* browser_window);
+#endif
 
  private:
   // A fake value for the current number of tabs.

@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "build/android_buildflags.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,11 +14,14 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
+#endif
 
 using chrome::android::ActivityType;
 
@@ -135,8 +139,10 @@ void TabModel::RecordActualSyncedTabsHistogram() {
 
 // static
 // From //chrome/browser/ui/tabs/tab_list_interface.h
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
 TabListInterface* TabListInterface::From(
     BrowserWindowInterface* browser_window_interface) {
   return ui::ScopedUnownedUserData<TabModel>::Get(
       browser_window_interface->GetUnownedUserDataHost());
 }
+#endif

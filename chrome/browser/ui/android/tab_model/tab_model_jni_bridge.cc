@@ -25,14 +25,19 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer_jni_bridge.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/resource_request_body_android.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/android/gurl_android.h"
+
+// "chrome/browser/ui/browser_window" is available on desktop Android, but not
+// other Android builds.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"  // nogncheck
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck
+#endif
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TabModelJniBridge_jni.h"
@@ -98,11 +103,15 @@ void TabModelJniBridge::Destroy(JNIEnv* env) {
 void TabModelJniBridge::AssociateWithBrowserWindow(
     JNIEnv* env,
     long native_android_browser_window) {
+// BrowserWindowInterface is available on desktop Android, but not other Android
+// builds. For non-desktop Android, this function should be a no-op.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
   BrowserWindowInterface* android_browser_window =
       reinterpret_cast<BrowserWindowInterface*>(native_android_browser_window);
   scoped_unowned_user_data_ =
       std::make_unique<ui::ScopedUnownedUserData<TabModel>>(
           android_browser_window->GetUnownedUserDataHost(), *this);
+#endif
 }
 
 void TabModelJniBridge::TabAddedToModel(JNIEnv* env,
