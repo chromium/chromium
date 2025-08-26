@@ -447,10 +447,7 @@ HttpCache::HttpCache(
   if (base::FeatureList::IsEnabled(features::kHttpCacheNoVarySearch)) {
     size_t max_entries = features::kHttpCacheNoVarySearchCacheMaxEntries.Get();
     if (max_entries) {
-      // TODO(https://crbug.com/382394774): Make
-      // kHttpCacheNoVarySearchCacheMaxEntries be a size_t param.
-      no_vary_search_cache_ =
-          std::make_unique<NoVarySearchCache>(static_cast<size_t>(max_entries));
+      no_vary_search_cache_ = std::make_unique<NoVarySearchCache>(max_entries);
     }
   }
   HttpNetworkSession* session = network_layer_->GetSession();
