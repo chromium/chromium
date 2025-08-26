@@ -303,7 +303,7 @@
 <translation id="2161656808144014275">نص</translation>
 <translation id="2163937499206714165">تفعيل الوضع المُعتِم</translation>
 <translation id="2164131940279488868">يُرجى التأكّد من توصيل ميكروفون لبدء تسجيل الصوت</translation>
-<translation id="2173302385160625112">يُرجى التحقُّق من اتصال الإنترنت.</translation>
+<translation id="2173302385160625112">يرجى التأكّد من الاتصال بالإنترنت</translation>
 <translation id="2176909213844392588">يتعذّر تنزيل نموذج تحويل الصوت إلى نص باللغة <ph name="LANGUAGE_NAME" />. يُرجى إعادة المحاولة أو إعادة تشغيل <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">حدث خطأ. يُرجى إعادة فتح التطبيق.</translation>
 <translation id="2189104374785738357">تعديل تفاصيل اسم نقطة الوصول</translation>
@@ -447,7 +447,7 @@
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="2880569433548999039">شاشة استراحة تعرض منظرًا انسيابيًا للسُحب</translation>
 <translation id="2882230315487799269">‏تخصيص الطلب الموجَّه إلى الذكاء الاصطناعي (AI)</translation>
-<translation id="2888298276507578975">أدخِل طلبًا، مثل "كتابة رسالة شكر"</translation>
+<translation id="2888298276507578975">يُرجى إدخال طلب، مثل "كتابة رسالة شكر"</translation>
 <translation id="2890557891229184386">جزيرة استوائية</translation>
 <translation id="2895772081848316509">داكنة</translation>
 <translation id="2915996080311180594">إعادة التشغيل لاحقًا</translation>
@@ -558,7 +558,7 @@
 <translation id="346423161771747987">الاستهلاك الحالي لطاقة البطارية</translation>
 <translation id="346539236881580388">إعادة التقاط</translation>
 <translation id="3479552764303398839">ليس الآن</translation>
-<translation id="3484914941826596830">لا تفصل هذا الجهاز الخارجي أو توقف تشغيل الكمبيوتر أثناء تحديث البرامج الثابتة. يمكنك تصغير هذه النافذة. قد يستغرق هذا التحديث بضع دقائق وقد يتوقف الجهاز الخارجي عن العمل أثناء التحديث.</translation>
+<translation id="3484914941826596830">يرجى عدم فصل هذا الجهاز الخارجي أو إيقاف تشغيل الكمبيوتر أثناء تحديث البرامج الثابتة. يمكنك تصغير هذه النافذة. قد يستغرق هذا التحديث بضع دقائق وقد يتوقف الجهاز الخارجي عن العمل أثناء التحديث.</translation>
 <translation id="3486220673238053218">تعريف</translation>
 <translation id="3487866404496702283">‏ملاحظات حول ميزة Mahi</translation>
 <translation id="3488065109653206955">نشطة جزئيًا</translation>
@@ -715,7 +715,7 @@
 <translation id="4170180284036919717">التقاط صورة</translation>
 <translation id="4170700058716978431">تعذّر إجراء الاختبار.</translation>
 <translation id="4171077696775491955">خفض مستوى السطوع</translation>
-<translation id="4176463684765177261">غير مفعّل</translation>
+<translation id="4176463684765177261">غير مفعّلة</translation>
 <translation id="4176659219503619100">لوحة التحكم</translation>
 <translation id="4192913637640303603">يتعذّر إنشاء عناوين التسجيلات</translation>
 <translation id="4193496492959950834">إعدادات "المسجّلة الذكية"</translation>
@@ -798,7 +798,7 @@
 <translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
 <translation id="4483498983731992167">تعذَّر إنشاء النص</translation>
 <translation id="4486524074141928967">سيتمّ تسجيل خروجك في <ph name="TIME" /></translation>
-<translation id="4500722292849917410">‏هذا الاختصار غير متاح. اضغط على اختصار جديد باستخدام أحد مفاتيح التعديل (Ctrl أو Alt أو Shift أو مفتاح <ph name="META_KEY" />).</translation>
+<translation id="4500722292849917410">‏هذا الاختصار غير متاح. يُرجى الضغط على اختصار جديد باستخدام أحد مفاتيح التعديل (Ctrl أو Alt أو Shift أو مفتاح <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">لون الواجهة</translation>
 <translation id="4501302804999678844">لإنشاء نص، عليك إعادة تشغيل <ph name="DEVICE_TYPE" /></translation>
 <translation id="4503223151711056411">السهم المتّجه لليسار</translation>
@@ -1096,7 +1096,7 @@
 <translation id="5877503382465267833">إيقاف تنزيل "<ph name="RECORDING_NAME" />" مؤقتًا</translation>
 <translation id="588258955323874662">ملء الشاشة</translation>
 <translation id="5889539348012432386">الصفحة الرئيسية لـ "أدوات الدراسة"</translation>
-<translation id="5893975327266416093">انقر على مفتاح بلوحة المفاتيح لتخصيصه</translation>
+<translation id="5893975327266416093">يرجى النقر على مفتاح بلوحة المفاتيح لتخصيصه</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="5896602941605730551">تشغيل</translation>
 <translation id="5901630391730855834">أصفر</translation>
@@ -1737,7 +1737,7 @@
 <translation id="8682949824227998083">رامين</translation>
 <translation id="8689520252402395106">‏عليك إعادة توصيل كابل USB الخاص بجهاز "<ph name="DEVICE_NAME" />" لمواصلة عملية التحديث</translation>
 <translation id="8699053192961439771">يمكن النقر لإخفاء علامات التبويب تلقائيًا</translation>
-<translation id="8709616837707653427"><ph name="DESC_TEXT" /> يمكنك استخدام أزرار السهم المتجه لليمين أو السهم المتجه لليسار لإدارة هذه الميزة.</translation>
+<translation id="8709616837707653427">‫<ph name="DESC_TEXT" /> يمكنك استخدام أزرار السهم المتجه لليمين أو السهم المتجه لليسار لإدارة هذه الميزة.</translation>
 <translation id="8712637175834984815">حسنًا</translation>
 <translation id="871560550817059752">تعذَّرت الطباعة - نفد الحبر</translation>
 <translation id="8721554916373590179">نماذج الطلبات</translation>
@@ -1844,7 +1844,7 @@
 <translation id="9108856746036501072">يمكن لتطبيق "المسجّلة الذكية" تحويل الكلام في التسجيلات إلى نصوص. في الخطوة التالية، عليك اختيار لغة تحويل الصوت إلى نص وتنزيل النموذج (يصل حجمه إلى 100 ميغابايت).</translation>
 <translation id="9111102763498581341">فتح القفل</translation>
 <translation id="9122492456897874028">يمكنك تلخيص المحتوى وتعريف المصطلحات والمزيد</translation>
-<translation id="9122602430962285795">لإعادة الاتصال، انتقِل إلى "الإعدادات".</translation>
+<translation id="9122602430962285795">لإعادة الاتصال، يرجى الانتقال إلى "الإعدادات".</translation>
 <translation id="9122865513525855321">بسيط</translation>
 <translation id="9126720536733509015">‏حفظ صفحات متعدّدة في ملف PDF واحد</translation>
 <translation id="9133772297793293778">‏يمكنك الضغط على ما بين 1 إلى 4 مفاتيح تعديل ومفتاح آخر على لوحة المفاتيح. للخروج من وضع التعديل، يمكنك الضغط على Alt + مفتاح الخروج (Esc).</translation>
@@ -1853,7 +1853,7 @@
 <translation id="9149391708638971077">تشغيل اختبار الذاكرة</translation>
 <translation id="9159524746324788320">هامبورغر</translation>
 <translation id="9161276708550942948">مفتاح المسافة</translation>
-<translation id="9169345239923038539">‏جهازك غير متصل بالشبكة بعد. إذا اقترح مشغّل شبكة الجوّال اسمًا مخصصًا لنقطة الوصول (APN)، <ph name="BEGIN_LINK" />أدخِل معلومات اسم نقطة الوصول.<ph name="END_LINK" /></translation>
+<translation id="9169345239923038539">‏جهازك غير متصل بالشبكة بعد. إذا اقترح مشغّل شبكة الجوّال اسمًا مخصصًا لنقطة الوصول (APN)، <ph name="BEGIN_LINK" />يُرجى إدخال معلومات اسم نقطة الوصول.<ph name="END_LINK" /></translation>
 <translation id="9173638680043580060">يتبقى أقل من دقيقة.</translation>
 <translation id="9174334653006917325">لون واجهة المستخدم</translation>
 <translation id="917720651393141712">اختبار</translation>

@@ -350,7 +350,7 @@
 <translation id="1569487616857761740">输入失效日期</translation>
 <translation id="1569694109004336106">Google Chrome 正在尝试开启 Windows Hello 来填充密码。</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 英寸</translation>
-<translation id="1574714699824202614">正在验证付款方式</translation>
+<translation id="1574714699824202614">正在验证支付方式</translation>
 <translation id="1576277203042721907">购物数据洞见</translation>
 <translation id="1579189948231786790">贵组织已屏蔽此网站</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -1059,7 +1059,7 @@
 <translation id="2726001110728089263">侧面纸匣</translation>
 <translation id="272616190148046464">您的所有会员卡</translation>
 <translation id="2728127805433021124">服务器的证书是使用弱签名算法进行签名的。</translation>
-<translation id="272937284275742856">正在安全地验证付款信息…</translation>
+<translation id="272937284275742856">正在安全验证支付信息…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />运行网络连接诊断<ph name="END_LINK" /></translation>
 <translation id="2731220418440848219">详细了解 Chromium 中的搜索引擎</translation>
 <translation id="2731382536835015353">44 x 68 英寸</translation>
@@ -3695,7 +3695,7 @@
 <translation id="7119371694555167493">复制超时</translation>
 <translation id="7119414471315195487">关闭其他标签页或程序</translation>
 <translation id="7120588595737538743">下载内容和屏幕截图</translation>
-<translation id="7124354851782353862">请输入您的 CVC</translation>
+<translation id="7124354851782353862">请输入 CVC</translation>
 <translation id="7129409597930077180">无法向此地址送货。请另选一个地址。</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">禁止上传</translation>

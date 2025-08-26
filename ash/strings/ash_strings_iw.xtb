@@ -270,10 +270,10 @@
 <translation id="1838895407229022812">תאורת הלילה כבויה.</translation>
 <translation id="1840920496749066704">‎°C</translation>
 <translation id="1854180393107901205">הפסקת ההעברה</translation>
-<translation id="1862077610023398675">הסתרת הפקדים</translation>
+<translation id="1862077610023398675">הסתרת אמצעי הבקרה</translation>
 <translation id="1862380676329487333">עדכון ויציאה מהחשבון</translation>
 <translation id="1864454756846565995">‏מכשיר עם יציאת USB-C (יציאה אחורית)</translation>
-<translation id="1867566089293859645">השינויים ייכנסו לתוקף בכניסה הבאה שלך לחשבון. אפשר לעדכן את זה בכל שלב ב'הגדרות' &gt; 'העדפות המערכת' &gt; 'הפעלה'.</translation>
+<translation id="1867566089293859645">השינויים ייכנסו לתוקף בכניסה הבאה שלך לחשבון. אפשר לעדכן את זה בכל שלב ב"הגדרות" &gt; "העדפות המערכת" &gt; "הפעלה".</translation>
 <translation id="1871023081802165724">הפעלת המדיה</translation>
 <translation id="1871915835366697861">התכונה לא זמינה למשחק הזה</translation>
 <translation id="1879018240766558464">בשלב זה, אין תמיכה בחלונות פרטיים. אפליקציות אחרות יישמרו.</translation>
@@ -327,7 +327,7 @@
 <translation id="2065098273523946419">קישור למידע נוסף. הפניה לדפדפן כשלוחצים על הקישור</translation>
 <translation id="2067220651560163985">הצגת הטמפרטורה במעלות צלזיוס</translation>
 <translation id="2067602449040652523">בהירות מקלדת</translation>
-<translation id="2075520525463668108">החלפת המצב של ה<ph name="CAPTURE_MEDIUM" />. ה<ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
+<translation id="2075520525463668108">החלפת המצב של ה<ph name="CAPTURE_MEDIUM" />. ה<ph name="CAPTURE_MEDIUM" /> במצב <ph name="CAPTURE_STATE" /></translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2083190527011054446">לילה טוב <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">פתיחה של בוחר אמוג'י</translation>
@@ -411,7 +411,7 @@
 <translation id="240006516586367791">פקדי מדיה</translation>
 <translation id="240155812475001919">‏מסמך Google Docs</translation>
 <translation id="2402411679569069051">‏כדי לבטל את נעילת ה-Chromebook, עליך להשתמש בטביעת האצבע או לבטל את נעילת הטלפון שלך</translation>
-<translation id="240545663114741956">כדי לצאת, מקישים פעמיים על <ph name="ACCELERATOR" />.</translation>
+<translation id="240545663114741956">כדי לצאת, לוחצים פעמיים על <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">לא מחובר</translation>
 <translation id="2406710117564540804">הפעלה או השבתה של מצב "נא לא להפריע"</translation>
 <translation id="2408955596600435184">יש להזין את קוד האימות</translation>
@@ -462,7 +462,7 @@
 <translation id="2531025035050312891">המכשיר איטי</translation>
 <translation id="2531107890083353124">לחיצה על <ph name="KEY_ONE" /> תוך כדי גרירת הכרטיסייה</translation>
 <translation id="2532199152994248594">צריך לגרור או ללחוץ על מקש הרווח כדי לבחור אזור לצילום</translation>
-<translation id="2545334090614121435">‏רוצה להשתמש במקש Home? שימוש במקש</translation>
+<translation id="2545334090614121435">‏מנסה להשתמש במקש Home? יש להשתמש</translation>
 <translation id="254900897760075745">העתקת התוכן שנבחר ללוח</translation>
 <translation id="2549711466868162843">תאורה משופרת</translation>
 <translation id="2549985041256363841">צילום סרטון</translation>
@@ -570,7 +570,7 @@
 <translation id="292506373491190801">מאירוע שמתקיים עכשיו</translation>
 <translation id="2931572158271115754">אין משימות לביצוע ברשימת המשימות.</translation>
 <translation id="2932487126591186298">נוספו 10 דקות. הזמן שנותר הוא <ph name="REMAINING_TIME" />.</translation>
-<translation id="2935225303485967257">ניהול פרופילים</translation>
+<translation id="2935225303485967257">הגדרת פרופילים</translation>
 <translation id="2941112035454246133">נמוכה</translation>
 <translation id="2941232201846070406">צריך לבדוק את החיבור לאינטרנט ולנסות שוב</translation>
 <translation id="2942350706960889382">זכוכית מגדלת במצב עגינה</translation>
@@ -816,7 +816,7 @@
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ואז <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">אתרים</translation>
 <translation id="3697991387880191195">אפשר להקיש על קיצור הדרך לצילום המסך</translation>
-<translation id="3702809606464356667">מוצגים החלונות משולחן העבודה הווירטואלי הנוכחי. ניתן להקיש על מקש החץ למעלה כדי להציג חלונות מכל שולחנות העבודה הווירטואליים</translation>
+<translation id="3702809606464356667">מוצגים החלונות משולחן העבודה הווירטואלי הנוכחי. אפשר ללחוץ על מקש החץ למעלה כדי להציג חלונות מכל שולחנות העבודה הווירטואליים</translation>
 <translation id="3702846122927433391">אוכלוסיית ניגריה</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">תרבות ובידור</translation>
@@ -958,7 +958,7 @@
 <translation id="4181841719683918333">שפות</translation>
 <translation id="4185671786623711291">העברת החלון הפעיל לשולחן העבודה הווירטואלי שבצד ימין</translation>
 <translation id="4189826113259617332">שמירת כל הדפים הפתוחים בחלון הנוכחי, בתור סימניות בתיקייה חדשה</translation>
-<translation id="4190143678693626113">‏כדי לחסוך זמן, אפשר להשיב במהירות ב-Chromebook להודעות הטקסט שבטלפון</translation>
+<translation id="4190143678693626113">‏רוצה להרוויח זמן? אפשר להשיב להודעות הטקסט מהטלפון ישירות ב-Chromebook</translation>
 <translation id="4190780880566297084">ביטול ההגדרה של הצגת התמונות, המדיה והאפליקציות שבטלפון מהזמן האחרון</translation>
 <translation id="4192112279662688596">או</translation>
 <translation id="4193857202545160520">הצגת קליקים וקיצורי מקשים</translation>
@@ -1415,7 +1415,7 @@
 <translation id="5586388332127302891">התכונה 'זכוכית מגדלת במצב מעוגן' מופעלת. אפשר להקיש שוב על <ph name="ACCELERATOR" /> כדי להשבית אותה.</translation>
 <translation id="5587506661873751671">ההורדה מתבצעת <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">יש לגרור כדי לבחור אזור לצילום</translation>
-<translation id="5590609058453685222">התזכורת שהמיקרופון מושתק פועלת. תתקבל הודעה במקרים של דיבור כשההשתקה פועלת.</translation>
+<translation id="5590609058453685222">התזכורת שהמיקרופון מושתק פועלת. אם מדברים כשההשתקה מופעלת מקבלים התראה.</translation>
 <translation id="5592745162308462420">Fn</translation>
 <translation id="5593564924968945303">‏דפדפן Chrome</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
@@ -1894,7 +1894,7 @@
 <translation id="7144942256906679589">מצב הסוללה</translation>
 <translation id="7145639536026937076">רמת הטעינה של הסוללה היא %<ph name="PERCENTAGE" /> והטעינה נמשכת. התכונה 'חיסכון בסוללה' פועלת.</translation>
 <translation id="7147587499155271409">אין היסטוריית גלישה</translation>
-<translation id="7147657298465433425">‏כדי לגשת למקשי הפונקציות (F), מקישים על מקש Fn + המקשים בשורה העליונה</translation>
+<translation id="7147657298465433425">‏כדי להפעיל את מקשי הפונקציות (F), צריך ללחוץ על מקש Fn + המקשים בשורה העליונה</translation>
 <translation id="7149149900052329230">‏ניהול הקבצים במכשיר והקבצים ב-Google Drive באמצעות האפליקציה 'קבצים'.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1955,7 +1955,7 @@
 <translation id="7382680553121047388">מופעל</translation>
 <translation id="7384028040782072252">לוחצים לחיצה ימנית במקום כלשהו כדי למיין מחדש את האפליקציות</translation>
 <translation id="7386767620098596324">הפעלה או השבתה של החיבור לרשת. <ph name="STATE_TEXT" />.</translation>
-<translation id="7392563512730092880">תמיד אפשר להגדיר מאוחר יותר דרך 'הגדרות'.</translation>
+<translation id="7392563512730092880">תמיד אפשר לעשות את זה אחר כך ב-"הגדרות".</translation>
 <translation id="7401222354741467707">יצירת צילום מסך או הקלטת מסך מלאים</translation>
 <translation id="7401788553834047908">'נא לא להפריע' בזמן מצב ריכוז</translation>
 <translation id="7405710164030118432">‏כדי לבטל את נעילת המכשיר, יש להזין את קוד גישת ההורה של Family Link</translation>
@@ -2280,7 +2280,7 @@
 <translation id="8426708595819210923">ערב טוב <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> עד <ph name="KEY_TWO" /></translation>
-<translation id="8429547770382807369">שמירת הקבוצה למועד מאוחר יותר</translation>
+<translation id="8429547770382807369">שמירת הקבוצה לשימוש בהמשך</translation>
 <translation id="8433186206711564395">הגדרות רשת</translation>
 <translation id="8433977262951327081">שינינו את קיצור הדרך להצגת בועת התפריט של אפשרויות הקלט במדף. יש להשתמש ב-<ph name="NEW_SHORTCUT" /> במקום ב-<ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">פתיחת כלי המשוב</translation>
@@ -2350,12 +2350,12 @@
 <translation id="8660331759611631213">השורש הריבועי של 71</translation>
 <translation id="8662921061190671299">לא הצלחנו להוסיף ליומן</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="8664282223139913403">‏כדי לצלם חלק מהמסך, מקישים על Enter</translation>
+<translation id="8664282223139913403">‏אפשר ללחוץ על Enter כדי לעשות צילום מסך חלקי</translation>
 <translation id="8676770494376880701">חובר מטען בעל מתח נמוך</translation>
 <translation id="8679158879996532670">הצגת ההגדרות של מצב הריכוז. מצב הריכוז מופעל. הזמן שנותר: <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">מעקב הביצועים פעיל</translation>
 <translation id="8703634754197148428">‏יש להתחיל בהקלטה. לאחר התחלת ההקלטה, יש ללחוץ על Alt ‏+ Shift ‏+ L כדי לעבור למדף ולמצוא את הכפתור להפסקת ההקלטה</translation>
-<translation id="8704155109538237473">התמקדות בחלון תמונה בתוך תמונה</translation>
+<translation id="8704155109538237473">התמקדות בחלון "תמונה בתוך תמונה"</translation>
 <translation id="870917907284186124">הפעלה/השבתה של הכתבה (הקלדה קולית)</translation>
 <translation id="8711169534266271368">אפשרויות במרכז בקרת המשחקים</translation>
 <translation id="8712637175834984815">הבנתי</translation>
@@ -2433,7 +2433,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{קובץ אחד}one{# קבצים}two{# קבצים}other{# קבצים}}</translation>
 <translation id="8936501819958976551">מושבתת</translation>
 <translation id="8938800817013097409">‏מכשיר עם יציאת USB-C (יציאה ימנית מאחור)</translation>
-<translation id="8939855324412367560">מקור קלט האודיו הוא '<ph name="INPUT_DEVICE_NAME" />' ומקור פלט האודיו הוא '<ph name="OUTPUT_DEVICE_NAME" />'. אפשר לשנות את זה בהגדרות.</translation>
+<translation id="8939855324412367560">מקור קלט האודיו הוא "<ph name="INPUT_DEVICE_NAME" />" ומקור פלט האודיו הוא "<ph name="OUTPUT_DEVICE_NAME" />". אפשר לשנות את זה בהגדרות.</translation>
 <translation id="8940956008527784070">‏סוללה חלשה (‎<ph name="PERCENTAGE" />%‎)</translation>
 <translation id="8945508919180478719">מיקרופון בסגנון אולפן</translation>
 <translation id="894774083269346314">התיבה <ph name="PROFILE_NAME" /> ‏<ph name="EMAIL" /> לא מסומנת.</translation>
