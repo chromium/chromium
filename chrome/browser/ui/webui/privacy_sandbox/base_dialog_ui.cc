@@ -56,8 +56,6 @@ void BaseDialogUI::BindInterface(
 void BaseDialogUI::CreatePageHandler(
     mojo::PendingRemote<BaseDialogPage> page,
     mojo::PendingReceiver<BaseDialogPageHandler> receiver) {
-  // Checks that the PendingRemote is bound.
-  CHECK(page);
   if (auto* privacy_sandbox_notice_service =
           PrivacySandboxNoticeServiceFactory::GetForProfile(
               Profile::FromWebUI(web_ui()))) {
