@@ -296,6 +296,7 @@ if (!is_android) {
       "//components/user_data_importer/utility:safari_data_importer",
       "//content/test:test_support",
       "//sql",
+      "//sql:test_support",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/zlib/google:compression_utils",

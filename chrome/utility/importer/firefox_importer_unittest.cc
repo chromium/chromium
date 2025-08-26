@@ -22,7 +22,10 @@
 #include "components/user_data_importer/common/importer_url_row.h"
 #include "content/public/test/browser_task_environment.h"
 #include "sql/database.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::_;
 
 class FirefoxImporterTest : public testing::Test {
  public:
@@ -33,7 +36,6 @@ class FirefoxImporterTest : public testing::Test {
       std::string_view firefox_version,
       std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks,
       favicon_base::FaviconUsageDataList* favicons) {
-    using ::testing::_;
     base::FilePath places_path;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &places_path));
     places_path =
@@ -57,8 +59,10 @@ class FirefoxImporterTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  scoped_refptr<MockImporterBridge> bridge_ = new MockImporterBridge;
-  scoped_refptr<FirefoxImporter> importer_ = new FirefoxImporter;
+  scoped_refptr<MockImporterBridge> bridge_ =
+      base::MakeRefCounted<MockImporterBridge>();
+  scoped_refptr<FirefoxImporter> importer_ =
+      base::MakeRefCounted<FirefoxImporter>();
 };
 
 TEST_F(FirefoxImporterTest, ImportBookmarks_Firefox48) {
@@ -119,17 +123,106 @@ TEST_F(FirefoxImporterTest, ImportBookmarks_Firefox57) {
             favicons[3].favicon_url.spec());
 }
 
+TEST_F(FirefoxImporterTest, ImportBookmarksWithCorruptedDb) {
+  base::ScopedTempDir source_temp_dir;
+  ASSERT_TRUE(source_temp_dir.CreateUniqueTempDir());
+  base::FilePath places_file =
+      source_temp_dir.GetPath().AppendASCII("places.sqlite");
+
+  // Part 1: Test LoadNodeIDByGUID, LoadLivemarkIDs, and GetTopBookmarkFolder
+  // validation
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(places_file));
+    // Create tables with missing columns (no 'id' column in moz_bookmarks) to
+    // test that SQL statement validation in LoadNodeIDByGUID and
+    // GetTopBookmarkFolder prevents crashes
+    ASSERT_TRUE(
+        db.Execute("CREATE TABLE moz_bookmarks (type INTEGER, fk INTEGER, "
+                   "parent INTEGER, position INTEGER)"));
+    ASSERT_TRUE(db.Execute(
+        "CREATE TABLE moz_anno_attributes (attr_id INTEGER PRIMARY KEY, "
+        "name TEXT)"));
+    ASSERT_TRUE(
+        db.Execute("CREATE TABLE moz_items_annos (item_id INTEGER, "
+                   "anno_attribute_id INTEGER)"));
+    ASSERT_TRUE(db.Execute("INSERT INTO moz_bookmarks VALUES (2, NULL, 0, 0)"));
+    ASSERT_TRUE(db.Execute("INSERT INTO moz_bookmarks VALUES (2, NULL, 1, 0)"));
+  }
+  scoped_refptr<FirefoxImporter> first_importer =
+      base::MakeRefCounted<FirefoxImporter>();
+  user_data_importer::SourceProfile profile;
+  profile.source_path = source_temp_dir.GetPath();
+  scoped_refptr<MockImporterBridge> bridge =
+      base::MakeRefCounted<MockImporterBridge>();
+  EXPECT_CALL(*bridge, NotifyStarted());
+  EXPECT_CALL(*bridge, NotifyItemStarted(user_data_importer::FAVORITES));
+  EXPECT_CALL(*bridge, AddBookmarks(_, _)).Times(0);
+  EXPECT_CALL(*bridge, SetFavicons(_)).Times(0);
+  EXPECT_CALL(*bridge, NotifyItemEnded(user_data_importer::FAVORITES));
+  EXPECT_CALL(*bridge, NotifyEnded());
+  first_importer->StartImport(profile, user_data_importer::FAVORITES,
+                              bridge.get());
+
+  // Part 2: Test GetWholeBookmarkFolder validation
+  base::ScopedTempDir second_source_dir;
+  ASSERT_TRUE(second_source_dir.CreateUniqueTempDir());
+  base::FilePath second_places_file =
+      second_source_dir.GetPath().AppendASCII("places.sqlite");
+
+  {
+    // Create the database with a valid moz_bookmarks table structure
+    // but missing the tables needed for the joins in GetWholeBookmarkFolder
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(second_places_file));
+    ASSERT_TRUE(db.Execute(
+        "CREATE TABLE moz_bookmarks (id INTEGER PRIMARY KEY, type INTEGER, "
+        "parent INTEGER, position INTEGER, title TEXT, "
+        "guid TEXT)"));
+    ASSERT_TRUE(
+        db.Execute("INSERT INTO moz_bookmarks VALUES (1, 2, 0, 0, 'root', "
+                   "'root________')"));
+    ASSERT_TRUE(
+        db.Execute("INSERT INTO moz_bookmarks VALUES (2, 2, 1, 0, 'toolbar', "
+                   "'toolbar_____')"));
+    ASSERT_TRUE(
+        db.Execute("INSERT INTO moz_bookmarks VALUES (3, 2, 1, 1, 'menu', "
+                   "'menu________')"));
+    ASSERT_TRUE(
+        db.Execute("CREATE TABLE moz_anno_attributes (id INTEGER PRIMARY KEY, "
+                   "name TEXT)"));
+    ASSERT_TRUE(
+        db.Execute("CREATE TABLE moz_items_annos (item_id INTEGER, "
+                   "anno_attribute_id INTEGER)"));
+  }
+  scoped_refptr<FirefoxImporter> second_importer =
+      base::MakeRefCounted<FirefoxImporter>();
+  user_data_importer::SourceProfile second_profile;
+  second_profile.source_path = second_source_dir.GetPath();
+  scoped_refptr<MockImporterBridge> second_bridge =
+      base::MakeRefCounted<MockImporterBridge>();
+  EXPECT_CALL(*second_bridge, NotifyStarted());
+  EXPECT_CALL(*second_bridge, NotifyItemStarted(user_data_importer::FAVORITES));
+  EXPECT_CALL(*second_bridge, AddBookmarks(_, _)).Times(0);
+  EXPECT_CALL(*second_bridge, SetFavicons(_)).Times(0);
+  EXPECT_CALL(*second_bridge, NotifyItemEnded(user_data_importer::FAVORITES));
+  EXPECT_CALL(*second_bridge, NotifyEnded());
+  second_importer->StartImport(second_profile, user_data_importer::FAVORITES,
+                               second_bridge.get());
+}
+
 TEST_F(FirefoxImporterTest, ImportHistorySchema) {
-  using ::testing::_;
   base::FilePath places_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &places_path));
   places_path =
       places_path.AppendASCII("import").AppendASCII("firefox").AppendASCII(
           "48.0.2");
-  scoped_refptr<FirefoxImporter> ff_importer = new FirefoxImporter;
+  scoped_refptr<FirefoxImporter> ff_importer =
+      base::MakeRefCounted<FirefoxImporter>();
   user_data_importer::SourceProfile profile;
   profile.source_path = places_path;
-  scoped_refptr<MockImporterBridge> bridge = new MockImporterBridge;
+  scoped_refptr<MockImporterBridge> bridge =
+      base::MakeRefCounted<MockImporterBridge>();
   std::vector<user_data_importer::ImporterURLRow> history;
   EXPECT_CALL(*bridge, NotifyStarted());
   EXPECT_CALL(*bridge, NotifyItemStarted(user_data_importer::HISTORY));
@@ -144,4 +237,65 @@ TEST_F(FirefoxImporterTest, ImportHistorySchema) {
   EXPECT_EQ("https://www.mozilla.org/en-US/firefox/48.0.2/firstrun/",
             history[1].url.spec());
   EXPECT_EQ("http://google.com/", history[2].url.spec());
+}
+
+TEST_F(FirefoxImporterTest, ImportHistoryWithCorruptedDb) {
+  base::ScopedTempDir source_temp_dir;
+  ASSERT_TRUE(source_temp_dir.CreateUniqueTempDir());
+  base::FilePath places_file =
+      source_temp_dir.GetPath().AppendASCII("places.sqlite");
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(places_file));
+    // Create moz_places with missing columns to test s.is_valid() check in
+    // ImportHistory
+    ASSERT_TRUE(db.Execute("CREATE TABLE moz_places (partial_url TEXT)"));
+    ASSERT_TRUE(db.Execute(
+        "CREATE TABLE moz_historyvisits (visit_id INTEGER PRIMARY KEY)"));
+    ASSERT_TRUE(db.Execute("INSERT INTO moz_places VALUES ('invalid-url')"));
+    ASSERT_TRUE(db.Execute("INSERT INTO moz_historyvisits VALUES (1)"));
+  }
+  scoped_refptr<FirefoxImporter> ff_importer =
+      base::MakeRefCounted<FirefoxImporter>();
+  user_data_importer::SourceProfile profile;
+  profile.source_path = source_temp_dir.GetPath();
+  scoped_refptr<MockImporterBridge> bridge =
+      base::MakeRefCounted<MockImporterBridge>();
+  EXPECT_CALL(*bridge, NotifyStarted());
+  EXPECT_CALL(*bridge, NotifyItemStarted(user_data_importer::HISTORY));
+  EXPECT_CALL(*bridge, SetHistoryItems(_, _)).Times(0);
+  EXPECT_CALL(*bridge, NotifyItemEnded(user_data_importer::HISTORY));
+  EXPECT_CALL(*bridge, NotifyEnded());
+  ff_importer->StartImport(profile, user_data_importer::HISTORY, bridge.get());
+}
+
+TEST_F(FirefoxImporterTest, ImportAutofillFormDataWithCorruptedDb) {
+  base::ScopedTempDir source_temp_dir;
+  ASSERT_TRUE(source_temp_dir.CreateUniqueTempDir());
+  base::FilePath form_history_file =
+      source_temp_dir.GetPath().AppendASCII("formhistory.sqlite");
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(form_history_file));
+    // Create moz_formhistory with missing columns to test s.is_valid() check
+    // in ImportAutofillFormData
+    ASSERT_TRUE(
+        db.Execute("CREATE TABLE moz_formhistory (partial_field TEXT)"));
+    ASSERT_TRUE(
+        db.Execute("INSERT INTO moz_formhistory VALUES ('invalid-data')"));
+  }
+  scoped_refptr<FirefoxImporter> ff_importer =
+      base::MakeRefCounted<FirefoxImporter>();
+  user_data_importer::SourceProfile profile;
+  profile.source_path = source_temp_dir.GetPath();
+  scoped_refptr<MockImporterBridge> bridge =
+      base::MakeRefCounted<MockImporterBridge>();
+  EXPECT_CALL(*bridge, NotifyStarted());
+  EXPECT_CALL(*bridge,
+              NotifyItemStarted(user_data_importer::AUTOFILL_FORM_DATA));
+  EXPECT_CALL(*bridge, SetAutofillFormData(_)).Times(0);
+  EXPECT_CALL(*bridge, NotifyItemEnded(user_data_importer::AUTOFILL_FORM_DATA));
+  EXPECT_CALL(*bridge, NotifyEnded());
+  ff_importer->StartImport(profile, user_data_importer::AUTOFILL_FORM_DATA,
+                           bridge.get());
 }
