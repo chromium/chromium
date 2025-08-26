@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.ANIM_TAB_MOVE_MS;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
@@ -302,8 +303,10 @@ public class StripLayoutHelper
                                     && !mTabGroupModelFilter.tabGroupExists(mSourceTabGroupId);
 
                     // Skip if the rebuild will be handled elsewhere after reaching a "proper" tab
-                    // state, such as confirming the group deletion.
-                    if (!removedHiddenLastTabInGroup) onTabMergeToOrMoveOutOfGroup();
+                    // state, such as confirming the group deletion or tab is being pinned.
+                    if (!removedHiddenLastTabInGroup && !movedTab.getIsPinned()) {
+                        onTabMergeToOrMoveOutOfGroup();
+                    }
 
                     // Expand the tab if necessary.
                     StripLayoutTab tab = findTabById(movedTab.getId());
@@ -399,11 +402,39 @@ public class StripLayoutHelper
                     stripTab.setIsPinned(isPinned);
                     mPinnedTabCount += isPinned ? 1 : -1;
 
-                    // TODO(crbug.com/436264203) Add animation.
-                    computeAndUpdateTabWidth(
-                            /* animate= */ false,
-                            /* deferAnimations= */ false,
-                            /* closedTab= */ null);
+                    // Compute each view's ideal position to get ready for the tab move animation
+                    // below.
+                    computeIdealViewPositions();
+
+                    // Foreground the pinned/unpinned tab to start animation.
+                    stripTab.setIsForegrounded(/* isForegrounded= */ true);
+                    mTabDelegate.setIsTabNonDragReordering(
+                            stripTab, /* isNonDragReordering= */ true);
+                    List<Animator> pinnedAnimations =
+                            computeAndUpdateTabWidth(
+                                    /* animate= */ true,
+                                    /* deferAnimations= */ true,
+                                    /* closedTab= */ null);
+                    assumeNonNull(pinnedAnimations);
+                    pinnedAnimations.add(
+                            CompositorAnimator.ofFloatProperty(
+                                    mUpdateHost.getAnimationHandler(),
+                                    stripTab,
+                                    StripLayoutView.X_OFFSET,
+                                    stripTab.getDrawX() - stripTab.getIdealX(),
+                                    0f,
+                                    ANIM_TAB_MOVE_MS));
+
+                    queueAnimations(
+                            pinnedAnimations,
+                            new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    stripTab.setIsForegrounded(/* isForegrounded= */ false);
+                                    mTabDelegate.setIsTabNonDragReordering(
+                                            stripTab, /* isNonDragReordering= */ false);
+                                }
+                            });
                 }
             };
 
