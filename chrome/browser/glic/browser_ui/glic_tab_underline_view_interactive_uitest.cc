@@ -503,6 +503,15 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest,
   EXPECT_FALSE(GetAlertIndicatorButtonOfActiveTab()->GetVisible());
 }
 
+// Ensure basic incognito window doesn't cause a crash. Simply opens an
+// incognito window and navigates, test passes if it doesn't crash.
+IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest, IncognitoModeCrash) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(incognito_browser, GURL("about:blank")));
+}
+
 namespace {
 class GlicTabUnderlineViewFeatureDisabledBrowserTest
     : public GlicTabUnderlineViewUiTest {
