@@ -34,7 +34,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -78,6 +77,7 @@ public class TabTest {
 
     private Tab mTab;
     private int mRootIdForReset;
+    private Token mTabGroupIdForReset;
     private CallbackHelper mOnTitleUpdatedHelper;
 
     private final TabObserver mTabObserver =
@@ -98,15 +98,17 @@ public class TabTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mTabObserver));
         mOnTitleUpdatedHelper = new CallbackHelper();
         mRootIdForReset = mTab.getRootId();
+        mTabGroupIdForReset = mTab.getTabGroupId();
     }
 
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Reset Root Id to what it was at the start, as it can be modified in the
-                    // tests.
+                    // Reset root id and tab group id to what it was at the start, as it can be
+                    // modified in the tests.
                     mTab.setRootId(mRootIdForReset);
+                    mTab.setTabGroupId(mTabGroupIdForReset);
                     mTab.removeObserver(mTabObserver);
                 });
     }
@@ -185,7 +187,6 @@ public class TabTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    @DisabledTest(message = "Flaky test, see crbug.com/441306188")
     public void testTabAttachment() {
         assertNotNull(mTab.getWebContents());
         assertFalse(mTab.isDetached());

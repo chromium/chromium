@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -12,7 +13,6 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
@@ -71,11 +71,9 @@ public class ArchivedTabCreatorTest {
                     mOrchestrator = ArchivedTabModelOrchestrator.getForProfile(mProfile);
                     mTabCreator = mOrchestrator.getArchivedTabCreatorForTesting();
                 });
-    }
-
-    @After
-    public void tearDown() {
-        runOnUiThreadBlocking(() -> mOrchestrator.destroy());
+        // Wait for the native tab state to be initialized so that we are sure that native is ready.
+        CriteriaHelper.pollUiThread(
+                () -> mOrchestrator.getTabModelSelector().isTabStateInitialized());
     }
 
     @Test
@@ -102,15 +100,16 @@ public class ArchivedTabCreatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky test, see crbug.com/441306188")
     public void testRestoreFallback() {
         runOnUiThreadBlocking(
                 () -> {
+                    int count = mOrchestrator.getTabModel().getCount();
                     assertNotNull(
                             mTabCreator.createNewTab(
                                     new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
                                     TabLaunchType.FROM_RESTORE,
                                     null));
+                    assertEquals(count + 1, mOrchestrator.getTabModel().getCount());
                 });
     }
 
