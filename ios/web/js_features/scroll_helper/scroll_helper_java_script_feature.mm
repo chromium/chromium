@@ -33,8 +33,8 @@ void ScrollHelperJavaScriptFeature::SetWebViewScrollViewIsDragging(
     return;
   }
   auto parameters = base::Value::List().Append(dragging);
-  CallJavaScriptFunction(main_frame, "setWebViewScrollViewIsDragging",
-                         parameters);
+  CallJavaScriptFunction(
+      main_frame, "scrollHelper.setWebViewScrollViewIsDragging", parameters);
 }
 
 }  // namespace web

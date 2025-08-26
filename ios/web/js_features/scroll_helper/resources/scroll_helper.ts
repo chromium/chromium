@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * @fileoverview APIs used for the scroll workaround. See crbug.com/554257.
@@ -10,13 +10,18 @@ import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 let webViewScrollViewIsDragging = false;
 
+const scrollHelperApi = new CrWebApi();
+
 /**
  * Tracks whether user is in the middle of scrolling/dragging. If user is
  * scrolling, ignore window.scrollTo() until user stops scrolling.
  */
-gCrWebLegacy.setWebViewScrollViewIsDragging = function(state: boolean) {
-  webViewScrollViewIsDragging = state;
-};
+scrollHelperApi.addFunction(
+    'setWebViewScrollViewIsDragging', (state: boolean) => {
+      webViewScrollViewIsDragging = state;
+    });
+
+gCrWeb.registerApi('scrollHelper', scrollHelperApi);
 
 const originalWindowScrollTo_: Function = window.scrollTo;
 
