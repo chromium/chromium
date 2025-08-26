@@ -10,8 +10,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -174,35 +174,27 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, CaptureFrame) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto params = MakeParams();
 
-  base::RunLoop loop;
-
   CreateClient();
   auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
   WaitForLoadStopWithoutSuccessCheck();
-  client->CapturePaintPreview(
-      params, GetWebContents()->GetPrimaryMainFrame(),
-      base::BindOnce(
-          [](base::RepeatingClosure quit,
-             const PaintPreviewClient::PaintPreviewParams& params,
-             base::UnguessableToken guid, mojom::PaintPreviewStatus status,
-             std::unique_ptr<CaptureResult> result) {
-            EXPECT_EQ(guid, params.inner.document_guid);
-            EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
-            EXPECT_TRUE(result->proto.has_root_frame());
-            EXPECT_EQ(result->proto.subframes_size(), 0);
-            EXPECT_EQ(result->proto.root_frame()
-                          .content_id_to_embedding_tokens_size(),
-                      0);
-            EXPECT_TRUE(result->proto.root_frame().is_main_frame());
-            {
-              base::ScopedAllowBlockingForTesting scoped_blocking;
-              auto pair = RecordingMapFromCaptureResult(std::move(*result));
-              EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 0);
-            }
-            quit.Run();
-          },
-          loop.QuitClosure(), params));
-  loop.Run();
+  base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
+                         std::unique_ptr<CaptureResult>>
+      future;
+  client->CapturePaintPreview(params, GetWebContents()->GetPrimaryMainFrame(),
+                              future.GetCallback());
+  auto [guid, status, result] = future.Take();
+  EXPECT_EQ(guid, params.inner.document_guid);
+  EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
+  EXPECT_TRUE(result->proto.has_root_frame());
+  EXPECT_EQ(result->proto.subframes_size(), 0);
+  EXPECT_EQ(result->proto.root_frame().content_id_to_embedding_tokens_size(),
+            0);
+  EXPECT_TRUE(result->proto.root_frame().is_main_frame());
+  {
+    base::ScopedAllowBlockingForTesting scoped_blocking;
+    auto pair = RecordingMapFromCaptureResult(std::move(*result));
+    EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 0);
+  }
 
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::PaintPreviewCapture::kEntryName);
@@ -215,40 +207,33 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
       http_server_.GetURL("a.com", "/cross_site_iframe_factory.html?a(b)"));
   auto params = MakeParams();
 
-  base::RunLoop loop;
-
   CreateClient();
   auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
   WaitForLoadStopWithoutSuccessCheck();
-  client->CapturePaintPreview(
-      params, GetWebContents()->GetPrimaryMainFrame(),
-      base::BindOnce(
-          [](base::RepeatingClosure quit,
-             const PaintPreviewClient::PaintPreviewParams& params,
-             base::UnguessableToken guid, mojom::PaintPreviewStatus status,
-             std::unique_ptr<CaptureResult> result) {
-            EXPECT_EQ(guid, params.inner.document_guid);
-            EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
-            EXPECT_TRUE(result->proto.has_root_frame());
-            EXPECT_EQ(result->proto.subframes_size(), 1);
-            EXPECT_EQ(result->proto.root_frame()
-                          .content_id_to_embedding_tokens_size(),
-                      1);
-            EXPECT_TRUE(result->proto.root_frame().is_main_frame());
-            EXPECT_EQ(result->proto.subframes(0)
-                          .content_id_to_embedding_tokens_size(),
-                      0);
-            EXPECT_FALSE(result->proto.subframes(0).is_main_frame());
-            {
-              base::ScopedAllowBlockingForTesting scoped_blocking;
-              auto pair = RecordingMapFromCaptureResult(std::move(*result));
-              EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 1);
-              EnsureSkPictureIsValid(&pair.first, pair.second.subframes(0), 0);
-            }
-            quit.Run();
-          },
-          loop.QuitClosure(), params));
-  loop.Run();
+
+  base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
+                         std::unique_ptr<CaptureResult>>
+      future;
+  client->CapturePaintPreview(params, GetWebContents()->GetPrimaryMainFrame(),
+                              future.GetCallback());
+
+  auto [guid, status, result] = future.Take();
+  EXPECT_EQ(guid, params.inner.document_guid);
+  EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
+  EXPECT_TRUE(result->proto.has_root_frame());
+  EXPECT_EQ(result->proto.subframes_size(), 1);
+  EXPECT_EQ(result->proto.root_frame().content_id_to_embedding_tokens_size(),
+            1);
+  EXPECT_TRUE(result->proto.root_frame().is_main_frame());
+  EXPECT_EQ(result->proto.subframes(0).content_id_to_embedding_tokens_size(),
+            0);
+  EXPECT_FALSE(result->proto.subframes(0).is_main_frame());
+  {
+    base::ScopedAllowBlockingForTesting scoped_blocking;
+    auto pair = RecordingMapFromCaptureResult(std::move(*result));
+    EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 1);
+    EnsureSkPictureIsValid(&pair.first, pair.second.subframes(0), 0);
+  }
 }
 
 class PaintPreviewFencedFrameBrowserTest : public PaintPreviewBrowserTest {
@@ -278,40 +263,33 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
       primary_main_rfh,
       http_server_.GetURL("c.com", "/fenced_frames/title1.html"));
 
-  base::RunLoop finished_loop;
   CreateClient();
   auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
   auto params = MakeParams();
 
-  client->CapturePaintPreview(
-      params, primary_main_rfh,
-      base::BindOnce(
-          [](const PaintPreviewClient::PaintPreviewParams& params,
-             base::UnguessableToken guid, mojom::PaintPreviewStatus status,
-             std::unique_ptr<CaptureResult> result) {
-            // This callback should have a success result without any DCHECK
-            // error.
-            EXPECT_EQ(guid, params.inner.document_guid);
-            EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
-            EXPECT_TRUE(result->proto.has_root_frame());
-            EXPECT_EQ(result->proto.subframes_size(), 2);
-            EXPECT_EQ(result->proto.root_frame()
-                          .content_id_to_embedding_tokens_size(),
-                      2);
-            EXPECT_TRUE(result->proto.root_frame().is_main_frame());
-            EXPECT_FALSE(result->proto.subframes(0).is_main_frame());
-            EXPECT_FALSE(result->proto.subframes(1).is_main_frame());
-            {
-              base::ScopedAllowBlockingForTesting scoped_blocking;
-              auto pair = RecordingMapFromCaptureResult(std::move(*result));
-              EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 2);
-              EnsureSkPictureIsValid(&pair.first, pair.second.subframes(0), 0);
-              EnsureSkPictureIsValid(&pair.first, pair.second.subframes(1), 0);
-            }
-          },
-          params)
-          .Then(finished_loop.QuitClosure()));
-  finished_loop.Run();
+  base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
+                         std::unique_ptr<CaptureResult>>
+      future;
+  client->CapturePaintPreview(params, primary_main_rfh, future.GetCallback());
+  auto [guid, status, result] = future.Take();
+  // This callback should have a success result without any DCHECK
+  // error.
+  EXPECT_EQ(guid, params.inner.document_guid);
+  EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
+  EXPECT_TRUE(result->proto.has_root_frame());
+  EXPECT_EQ(result->proto.subframes_size(), 2);
+  EXPECT_EQ(result->proto.root_frame().content_id_to_embedding_tokens_size(),
+            2);
+  EXPECT_TRUE(result->proto.root_frame().is_main_frame());
+  EXPECT_FALSE(result->proto.subframes(0).is_main_frame());
+  EXPECT_FALSE(result->proto.subframes(1).is_main_frame());
+  {
+    base::ScopedAllowBlockingForTesting scoped_blocking;
+    auto pair = RecordingMapFromCaptureResult(std::move(*result));
+    EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 2);
+    EnsureSkPictureIsValid(&pair.first, pair.second.subframes(0), 0);
+    EnsureSkPictureIsValid(&pair.first, pair.second.subframes(1), 0);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
@@ -332,49 +310,23 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
       http_server_.GetURL("c.com", "/fenced_frames/title1.html"));
 
   // Override remote interfaces of the fenced frame with a no-op.
-  base::RunLoop started_loop;
+  base::test::TestFuture<void> started_future;
   NoOpPaintPreviewRecorder noop_recorder;
-  noop_recorder.SetReceivedRequestClosure(started_loop.QuitClosure());
+  noop_recorder.SetReceivedRequestClosure(started_future.GetCallback());
 
   OverrideInterface(&noop_recorder, fenced_rfh_wrapper.get());
 
-  base::RunLoop finished_loop;
   CreateClient();
   auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
   auto params = MakeParams();
 
-  client->CapturePaintPreview(
-      params, primary_main_rfh,
-      base::BindOnce(
-          [](const PaintPreviewClient::PaintPreviewParams& params,
-             base::UnguessableToken guid, mojom::PaintPreviewStatus status,
-             std::unique_ptr<CaptureResult> result) {
-            // This callback should have a partial success result since the
-            // fenced frame has been removed during running the capture.
-            EXPECT_EQ(guid, params.inner.document_guid);
-            EXPECT_EQ(status, mojom::PaintPreviewStatus::kPartialSuccess);
-            EXPECT_TRUE(result->proto.has_root_frame());
-            EXPECT_EQ(result->proto.subframes_size(), 1);
-            EXPECT_EQ(result->proto.root_frame()
-                          .content_id_to_embedding_tokens_size(),
-                      2);
-            EXPECT_TRUE(result->proto.root_frame().is_main_frame());
-            EXPECT_EQ(result->proto.subframes(0)
-                          .content_id_to_embedding_tokens_size(),
-                      0);
-            EXPECT_FALSE(result->proto.subframes(0).is_main_frame());
-            {
-              base::ScopedAllowBlockingForTesting scoped_blocking;
-              auto pair = RecordingMapFromCaptureResult(std::move(*result));
-              EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 2);
-              EnsureSkPictureIsValid(&pair.first, pair.second.subframes(0), 0);
-            }
-          },
-          params)
-          .Then(finished_loop.QuitClosure()));
+  base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
+                         std::unique_ptr<CaptureResult>>
+      future;
+  client->CapturePaintPreview(params, primary_main_rfh, future.GetCallback());
 
   // Wait for the request to execute before removing the fenced frame.
-  started_loop.Run();
+  ASSERT_TRUE(started_future.Wait());
 
   // Remove the fenced frame.
   EXPECT_TRUE(
@@ -382,7 +334,25 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
              "const ff = document.querySelector('fencedframe'); ff.remove();"));
   ASSERT_TRUE(fenced_rfh_wrapper.WaitUntilRenderFrameDeleted());
 
-  finished_loop.Run();
+  auto [guid, status, result] = future.Take();
+  // This callback should have a partial success result since the
+  // fenced frame has been removed during running the capture.
+  EXPECT_EQ(guid, params.inner.document_guid);
+  EXPECT_EQ(status, mojom::PaintPreviewStatus::kPartialSuccess);
+  EXPECT_TRUE(result->proto.has_root_frame());
+  EXPECT_EQ(result->proto.subframes_size(), 1);
+  EXPECT_EQ(result->proto.root_frame().content_id_to_embedding_tokens_size(),
+            2);
+  EXPECT_TRUE(result->proto.root_frame().is_main_frame());
+  EXPECT_EQ(result->proto.subframes(0).content_id_to_embedding_tokens_size(),
+            0);
+  EXPECT_FALSE(result->proto.subframes(0).is_main_frame());
+  {
+    base::ScopedAllowBlockingForTesting scoped_blocking;
+    auto pair = RecordingMapFromCaptureResult(std::move(*result));
+    EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 2);
+    EnsureSkPictureIsValid(&pair.first, pair.second.subframes(0), 0);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
@@ -403,40 +373,32 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   LoadHtml(html);
   auto params = MakeParams();
 
-  base::RunLoop loop;
   CreateClient();
   auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
   WaitForLoadStopWithoutSuccessCheck();
-  client->CapturePaintPreview(
-      params, GetWebContents()->GetPrimaryMainFrame(),
-      base::BindOnce(
-          [](base::RepeatingClosure quit,
-             const PaintPreviewClient::PaintPreviewParams& params,
-             base::UnguessableToken guid, mojom::PaintPreviewStatus status,
-             std::unique_ptr<CaptureResult> result) {
-            EXPECT_EQ(guid, params.inner.document_guid);
-            EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
-            EXPECT_TRUE(result->proto.has_root_frame());
-            EXPECT_EQ(result->proto.subframes_size(), 1);
-            EXPECT_EQ(result->proto.root_frame()
-                          .content_id_to_embedding_tokens_size(),
-                      1);
-            EXPECT_TRUE(result->proto.root_frame().is_main_frame());
-            EXPECT_EQ(result->proto.subframes(0)
-                          .content_id_to_embedding_tokens_size(),
-                      0);
-            EXPECT_FALSE(result->proto.subframes(0).is_main_frame());
-            {
-              base::ScopedAllowBlockingForTesting scoped_blocking;
-              auto pair = RecordingMapFromCaptureResult(std::move(*result));
-              EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 1);
-              EnsureSkPictureIsValid(&pair.first, pair.second.subframes(0), 0,
-                                     gfx::Size(300, 300));
-            }
-            quit.Run();
-          },
-          loop.QuitClosure(), params));
-  loop.Run();
+  base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
+                         std::unique_ptr<CaptureResult>>
+      future;
+  client->CapturePaintPreview(params, GetWebContents()->GetPrimaryMainFrame(),
+                              future.GetCallback());
+  auto [guid, status, result] = future.Take();
+  EXPECT_EQ(guid, params.inner.document_guid);
+  EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
+  EXPECT_TRUE(result->proto.has_root_frame());
+  EXPECT_EQ(result->proto.subframes_size(), 1);
+  EXPECT_EQ(result->proto.root_frame().content_id_to_embedding_tokens_size(),
+            1);
+  EXPECT_TRUE(result->proto.root_frame().is_main_frame());
+  EXPECT_EQ(result->proto.subframes(0).content_id_to_embedding_tokens_size(),
+            0);
+  EXPECT_FALSE(result->proto.subframes(0).is_main_frame());
+  {
+    base::ScopedAllowBlockingForTesting scoped_blocking;
+    auto pair = RecordingMapFromCaptureResult(std::move(*result));
+    EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 1);
+    EnsureSkPictureIsValid(&pair.first, pair.second.subframes(0), 0,
+                           gfx::Size(300, 300));
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
@@ -457,34 +419,27 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   LoadHtml(html);
   auto params = MakeParams();
 
-  base::RunLoop loop;
   CreateClient();
   auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
   WaitForLoadStopWithoutSuccessCheck();
-  client->CapturePaintPreview(
-      params, GetWebContents()->GetPrimaryMainFrame(),
-      base::BindOnce(
-          [](base::RepeatingClosure quit,
-             const PaintPreviewClient::PaintPreviewParams& params,
-             base::UnguessableToken guid, mojom::PaintPreviewStatus status,
-             std::unique_ptr<CaptureResult> result) {
-            EXPECT_EQ(guid, params.inner.document_guid);
-            EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
-            EXPECT_TRUE(result->proto.has_root_frame());
-            EXPECT_EQ(result->proto.subframes_size(), 0);
-            EXPECT_EQ(result->proto.root_frame()
-                          .content_id_to_embedding_tokens_size(),
-                      0);
-            EXPECT_TRUE(result->proto.root_frame().is_main_frame());
-            {
-              base::ScopedAllowBlockingForTesting scoped_blocking;
-              auto pair = RecordingMapFromCaptureResult(std::move(*result));
-              EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 0);
-            }
-            quit.Run();
-          },
-          loop.QuitClosure(), params));
-  loop.Run();
+  base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
+                         std::unique_ptr<CaptureResult>>
+      future;
+  client->CapturePaintPreview(params, GetWebContents()->GetPrimaryMainFrame(),
+                              future.GetCallback());
+  auto [guid, status, result] = future.Take();
+  EXPECT_EQ(guid, params.inner.document_guid);
+  EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
+  EXPECT_TRUE(result->proto.has_root_frame());
+  EXPECT_EQ(result->proto.subframes_size(), 0);
+  EXPECT_EQ(result->proto.root_frame().content_id_to_embedding_tokens_size(),
+            0);
+  EXPECT_TRUE(result->proto.root_frame().is_main_frame());
+  {
+    base::ScopedAllowBlockingForTesting scoped_blocking;
+    auto pair = RecordingMapFromCaptureResult(std::move(*result));
+    EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 0);
+  }
 }
 
 // https://crbug.com/1146573 reproduction. If a renderer crashes,
@@ -503,9 +458,9 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
   content::WebContents* web_contents = GetWebContents();
 
   // Override remote interfaces with a no-op.
-  base::RunLoop started_loop;
+  base::test::TestFuture<void> started_future;
   NoOpPaintPreviewRecorder noop_recorder;
-  noop_recorder.SetReceivedRequestClosure(started_loop.QuitClosure());
+  noop_recorder.SetReceivedRequestClosure(started_future.GetCallback());
   OverrideInterface(&noop_recorder, GetWebContents()->GetPrimaryMainFrame());
 
   CreateClient();
@@ -520,34 +475,19 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
 
   // A callback that causes the frame to reload and end up in an invalid state
   // if it is allowed to run during crash handling.
-  base::RunLoop finished_loop;
   auto params = MakeParams();
-  bool did_run = false;
-  client->CapturePaintPreview(
-      params, web_contents->GetPrimaryMainFrame(),
-      // This callback is now posted so it shouldn't cause a crash.
-      base::BindOnce(
-          [](content::WebContents* web_contents, bool* did_run_ptr,
-             base::ScopedClosureRunner handle1,
-             base::ScopedClosureRunner handle2, base::UnguessableToken guid,
-             mojom::PaintPreviewStatus status,
-             std::unique_ptr<CaptureResult> result) {
-            EXPECT_EQ(status, mojom::PaintPreviewStatus::kFailed);
-            EXPECT_EQ(result, nullptr);
-            // On Android crashed frames are marked as needing reload.
-            web_contents->GetController().SetNeedsReload();
-            handle1.RunAndReset();
-            handle2.RunAndReset();
-            *did_run_ptr = true;
-          },
-          web_contents, &did_run, std::move(handle1), std::move(handle2))
-          .Then(finished_loop.QuitClosure()));
+  base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
+                         std::unique_ptr<CaptureResult>>
+      future;
+  client->CapturePaintPreview(params, web_contents->GetPrimaryMainFrame(),
+                              future.GetCallback());
+  // This callback is now posted so it shouldn't cause a crash.
   // Wait for the request to execute before crashing the renderer. Otherwise in
   // the FileSystem variant it is possible there will be a race during creation
   // of the file with the renderer crash. If this happens the callback for
   // `finished_loop` will not be run as no request to capture succeeded leading
   // to a timeout.
-  started_loop.Run();
+  ASSERT_TRUE(started_future.Wait());
 
   // Crash the renderer.
   content::RenderProcessHost* process =
@@ -559,8 +499,13 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
 
   // The browser would have crashed before the loop exited if the callback was
   // not posted.
-  if (!did_run)
-    finished_loop.Run();
+  auto [guid, status, result] = future.Take();
+  EXPECT_EQ(status, mojom::PaintPreviewStatus::kFailed);
+  EXPECT_EQ(result, nullptr);
+  // On Android crashed frames are marked as needing reload.
+  web_contents->GetController().SetNeedsReload();
+  handle1.RunAndReset();
+  handle2.RunAndReset();
 
   // Now navigate away and ensure that the frame unloads successfully.
   LoadPage(http_server_.GetURL("a.com", "/title2.html"));
