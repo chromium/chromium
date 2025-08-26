@@ -6,8 +6,10 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_view.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/strings/grit/components_strings.h"
@@ -38,7 +40,7 @@ class SaveAndFillDialogControllerImplTest : public testing::Test {
     return controller_.get();
   }
 
- private:
+ protected:
   std::unique_ptr<SaveAndFillDialogControllerImpl> controller_;
   base::MockCallback<
       base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
@@ -205,6 +207,60 @@ TEST_F(SaveAndFillDialogControllerImplTest, IsValidNameOnCard) {
   EXPECT_FALSE(controller()->IsValidNameOnCard(u"Invalid@Name"));
   EXPECT_FALSE(
       controller()->IsValidNameOnCard(u"This name is way too long for a card"));
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_AcceptedWithCvc) {
+  base::HistogramTester histogram_tester;
+  payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails details;
+  details.security_code = u"123";
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_,
+              Run(payments::PaymentsAutofillClient::
+                      CardSaveAndFillDialogUserDecision::kAccepted,
+                  testing::_));
+
+  controller()->OnUserAcceptedDialog(details);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult",
+      autofill_metrics::SaveAndFillDialogResult::kAcceptedWithCvc,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_AcceptedWithoutCvc) {
+  base::HistogramTester histogram_tester;
+  payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails details;
+  details.security_code = u"";
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_,
+              Run(payments::PaymentsAutofillClient::
+                      CardSaveAndFillDialogUserDecision::kAccepted,
+                  testing::_));
+
+  controller()->OnUserAcceptedDialog({});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult",
+      autofill_metrics::SaveAndFillDialogResult::kAcceptedWithoutCvc,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogResult_Canceled) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_,
+              Run(payments::PaymentsAutofillClient::
+                      CardSaveAndFillDialogUserDecision::kDeclined,
+                  testing::_));
+
+  controller()->OnUserCanceledDialog();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult",
+      autofill_metrics::SaveAndFillDialogResult::kCanceled,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace autofill

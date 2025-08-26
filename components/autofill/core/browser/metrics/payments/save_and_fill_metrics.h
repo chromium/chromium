@@ -41,6 +41,21 @@ enum class SaveAndFillSuggestionNotShownReason {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillSuggestionNotShownReason)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SaveAndFillDialogResult)
+enum class SaveAndFillDialogResult {
+  // User accepted the dialog and provided a CVC.
+  kAcceptedWithCvc = 0,
+  // User accepted the dialog but did not provide a CVC.
+  kAcceptedWithoutCvc = 1,
+  // User declined the dialog.
+  kCanceled = 2,
+  kMaxValue = kCanceled,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillDialogResult)
+
 void LogSaveAndFillFormEvent(SaveAndFillFormEvent event);
 
 // Logs the reason why the Save and Fill suggestion was not shown.
@@ -61,6 +76,8 @@ void LogSaveAndFillStrikeDatabaseBlockReason(
     AutofillMetrics::AutofillStrikeDatabaseBlockReason reason);
 void LogSaveAndFillNumOfStrikesPresentWhenDialogAccepted(int strike_count);
 
+// Logs the result of the Save and Fill dialog.
+void LogSaveAndFillDialogResult(SaveAndFillDialogResult result);
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_SAVE_AND_FILL_METRICS_H_

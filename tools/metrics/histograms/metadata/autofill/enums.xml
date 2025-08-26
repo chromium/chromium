@@ -4124,6 +4124,16 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="User-edited select field"/>
 </enum>
 
+<!-- LINT.IfChange(SaveAndFillDialogResult) -->
+
+<enum name="SaveAndFillDialogResult">
+  <int value="0" label="User accepted the dialog and provided a CVC"/>
+  <int value="1" label="User accepted the dialog but did not provide a CVC"/>
+  <int value="2" label="User canceled the dialog"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillDialogResult) -->
+
 <!-- LINT.IfChange(SaveAndFillFormEvent) -->
 
 <enum name="SaveAndFillFormEvent">

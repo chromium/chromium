@@ -5935,6 +5935,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="RequestResult" variants="Autofill.RequestResult"/>
 </histogram>
 
+<histogram name="Autofill.SaveAndFill.DialogResult"
+    enum="SaveAndFillDialogResult" expires_after="2026-06-01">
+  <owner>averina@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the user's action in the Save and Fill dialog. Logged when the user
+    accepts (with or without providing a CVC) or cancels the dialog.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.SaveAndFill.GetDetailsForCreateCard.Latency{RequestResult}"
     units="ms" expires_after="2026-06-01">

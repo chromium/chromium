@@ -53,4 +53,8 @@ void LogSaveAndFillNumOfStrikesPresentWhenDialogAccepted(int strike_count) {
       strike_count);
 }
 
+void LogSaveAndFillDialogResult(SaveAndFillDialogResult result) {
+  base::UmaHistogramEnumeration("Autofill.SaveAndFill.DialogResult", result);
+}
+
 }  // namespace autofill::autofill_metrics
