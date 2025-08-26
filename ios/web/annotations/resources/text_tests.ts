@@ -15,7 +15,7 @@ import {TestDomUtils} from '//ios/web/annotations/resources/text_dom_utils_test.
 import {TestTextExtractor} from '//ios/web/annotations/resources/text_extractor_test.js';
 import {TestTextIntersectionObserver} from '//ios/web/annotations/resources/text_intersection_observer_test.js';
 import {TestTextTasks} from '//ios/web/annotations/resources/text_tasks_test.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 function testAll() {
   return [
@@ -31,6 +31,8 @@ function testAll() {
   ];
 }
 
-gCrWebLegacy.textTests = {
-  testAll,
-};
+const textTests = new CrWebApi();
+
+textTests.addFunction('testAll', testAll);
+
+gCrWeb.registerApi('textTests', textTests);

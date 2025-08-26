@@ -7,7 +7,7 @@
  */
 
 import {NON_TEXT_NODE_NAMES} from '//ios/web/annotations/resources/annotations_constants.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 // Simpleton tags with no closing tags (only those used in tests).
 const NO_END_TAGS_NODE_NAMES = new Set([
@@ -90,8 +90,10 @@ function clickAnnotation(index: number, viewport: boolean): boolean {
   return ''.concat(...parts);
 }
 
-gCrWebLegacy.annotationsTest = {
-  getPageTaggedText,
-  countAnnotations,
-  clickAnnotation,
-};
+const annotationsTest = new CrWebApi();
+
+annotationsTest.addFunction('getPageTaggedText', getPageTaggedText);
+annotationsTest.addFunction('countAnnotations', countAnnotations);
+annotationsTest.addFunction('clickAnnotation', clickAnnotation);
+
+gCrWeb.registerApi('annotationsTest', annotationsTest);

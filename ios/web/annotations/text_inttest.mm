@@ -36,9 +36,11 @@ class AnnotationJsTest : public JavascriptTest {
   // Executes `test_entry` ("gcrWebStubName.jsTestSuiteEntryPoint" ) in the
   // script and outputs the result to `std::cerr`. If all js suite tests are OK
   // the unittest succeeds.
-  void TestJavascriptStub(const char* test_entry) {
-    NSString* entryPoint =
-        [NSString stringWithFormat:@"__gCrWeb.%s();", test_entry];
+  void TestJavascriptStub(const char* api, const char* function) {
+    NSString* entryPoint = [NSString
+        stringWithFormat:
+            @"__gCrWeb.getRegisteredApi(\'%s\').getFunction(\'%s\')();", api,
+            function];
     id suite_result = test::ExecuteJavaScript(web_view(), entryPoint);
     ASSERT_TRUE(suite_result);
     NSArray<NSDictionary*>* result_array =
@@ -66,7 +68,7 @@ class AnnotationJsTest : public JavascriptTest {
 };
 
 TEST_F(AnnotationJsTest, All) {
-  TestJavascriptStub("textTests.testAll");
+  TestJavascriptStub("textTests", "testAll");
 }
 
 }  // namespace web
