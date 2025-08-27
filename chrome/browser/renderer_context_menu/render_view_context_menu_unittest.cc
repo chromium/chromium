@@ -1519,6 +1519,41 @@ TEST_F(RenderViewContextMenuPrefsTest, GetIsNewFeatureAtValue) {
   ASSERT_FALSE(menu.GetIsNewFeatureAtValue(kUnregisteredFeatureName));
 }
 
+TEST_F(RenderViewContextMenuPrefsTest, GetIsNewFeatureAtValue_GuestProfile) {
+  profile_metrics::SetBrowserProfileType(
+      profile(), profile_metrics::BrowserProfileType::kGuest);
+
+  // The profile should be a guest profile.
+  ASSERT_TRUE(profile()->IsGuestSession());
+
+  content::ContextMenuParams params;
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+
+  // If it is not a regular profile, we don't have user education tracking and
+  // the feature should not be considered new.
+  ASSERT_FALSE(menu.GetIsNewFeatureAtValue(
+      user_education::features::kNewBadgeTestFeature.name));
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       GetIsNewFeatureAtValue_IncognitoProfile) {
+  profile_metrics::SetBrowserProfileType(
+      profile(), profile_metrics::BrowserProfileType::kIncognito);
+
+  // The profile should be an incognito profile.
+  ASSERT_TRUE(profile()->IsIncognitoProfile());
+
+  content::ContextMenuParams params;
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+
+  // If it is not a regular profile, we don't have user education tracking and
+  // the feature should not be considered new.
+  ASSERT_FALSE(menu.GetIsNewFeatureAtValue(
+      user_education::features::kNewBadgeTestFeature.name));
+}
+
 // Verify that the Lens Region Search menu item is enabled for Progressive Web
 // Apps. Region Search on PWAs is currently broken and therefore disabled on
 // Mac. b/250074889
