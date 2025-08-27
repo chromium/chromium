@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -101,9 +102,9 @@ Matcher<Suggestion> EqualLabels(
 }
 
 // This function is currently only used for BNPL unittests, and BNPL is
-// currently only available for desktop platforms.
+// currently only available for desktop and android platforms.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 Matcher<Suggestion> EqualsSuggestion(const Suggestion& suggestion) {
   return AllOf(Field(&Suggestion::type, suggestion.type),
                Field(&Suggestion::main_text, suggestion.main_text),
@@ -112,7 +113,7 @@ Matcher<Suggestion> EqualsSuggestion(const Suggestion& suggestion) {
                Field(&Suggestion::labels, suggestion.labels));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 Matcher<Suggestion> EqualsIbanSuggestion(
     const std::u16string& identifier_string,
@@ -1553,16 +1554,20 @@ TEST_F(PaymentsSuggestionGeneratorTest, IsCreditCardFooterSuggestion) {
                                             footer_suggestions.size()));
 }
 
-// BNPL is currently only available for desktop platforms.
+// BNPL is currently only available for desktop and android platforms.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 class PaymentsSuggestionGeneratorBnplTest
     : public PaymentsSuggestionGeneratorTest {
  public:
   void SetUp() override {
     PaymentsSuggestionGeneratorTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableBuyNowPayLaterSyncing);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kAutofillEnableAmountExtractionDesktop,
+         features::kAutofillEnableBuyNowPayLater,
+         features::kAutofillEnableBuyNowPayLaterSyncing},
+        /*disabled_features=*/{});
   }
 
  private:
@@ -1571,7 +1576,8 @@ class PaymentsSuggestionGeneratorBnplTest
 
 // Ensures that the pay over time option is generated with expected content
 // and inserted as the last entry before the footer suggestions.
-TEST_F(PaymentsSuggestionGeneratorBnplTest, MaybeUpdateSuggestionsWithBnpl) {
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       MaybeUpdateDesktopSuggestionsWithBnpl) {
   // Add a server card with vcn enrolled.
   payments_data().AddServerCreditCard(
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber());
@@ -1611,9 +1617,9 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest, MaybeUpdateSuggestionsWithBnpl) {
   uint64_t extracted_amount_in_micros = 50'000'000;
 
   BnplSuggestionUpdateResult update_suggestions_result =
-      MaybeUpdateSuggestionsWithBnpl(suggestions,
-                                     payments_data().GetBnplIssuers(),
-                                     extracted_amount_in_micros);
+      MaybeUpdateDesktopSuggestionsWithBnpl(suggestions,
+                                            payments_data().GetBnplIssuers(),
+                                            extracted_amount_in_micros);
 
   // `updated_suggesions` should contains 7 suggestions which are 4 credit
   // card suggestions, 1 BNPL suggestion, 1 separator, and 1 manage card
@@ -1771,19 +1777,19 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 // Ensures that the pay over time option is not added if the suggestion list
 // is empty.
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       MaybeUpdateSuggestionsWithBnpl_EmptySuggestionList) {
+       MaybeUpdateDesktopSuggestionsWithBnpl_EmptySuggestionList) {
   payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
 
-  EXPECT_FALSE(
-      MaybeUpdateSuggestionsWithBnpl({}, payments_data().GetBnplIssuers(),
-                                     /*extracted_amount_in_micros=*/50'000'000)
-          .is_bnpl_suggestion_added);
+  EXPECT_FALSE(MaybeUpdateDesktopSuggestionsWithBnpl(
+                   {}, payments_data().GetBnplIssuers(),
+                   /*extracted_amount_in_micros=*/50'000'000)
+                   .is_bnpl_suggestion_added);
 }
 
 // Ensures that the pay over time option is not added if the suggestion list
 // already contains a BNPL suggestion.
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       MaybeUpdateSuggestionsWithBnpl_SuggestionListWithBnplInserted) {
+       MaybeUpdateDesktopSuggestionsWithBnpl_SuggestionListWithBnplInserted) {
   payments_data().AddServerCreditCard(test::GetMaskedServerCard2());
   payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
 
@@ -1796,24 +1802,25 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       {}, CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false, summary);
   BnplSuggestionUpdateResult update_suggestions_result =
-      MaybeUpdateSuggestionsWithBnpl(suggestions,
-                                     payments_data().GetBnplIssuers(),
-                                     /*extracted_amount_in_micros=*/50'000'000);
+      MaybeUpdateDesktopSuggestionsWithBnpl(
+          suggestions, payments_data().GetBnplIssuers(),
+          /*extracted_amount_in_micros=*/50'000'000);
 
   ASSERT_THAT(update_suggestions_result.suggestions,
               ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
                           EqualsSuggestion(SuggestionType::kBnplEntry),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsSuggestion(SuggestionType::kManageCreditCard)));
-  EXPECT_FALSE(
-      MaybeUpdateSuggestionsWithBnpl(update_suggestions_result.suggestions,
-                                     payments_data().GetBnplIssuers(),
-                                     /*extracted_amount_in_micros=*/50'000'000)
-          .is_bnpl_suggestion_added);
+  EXPECT_FALSE(MaybeUpdateDesktopSuggestionsWithBnpl(
+                   update_suggestions_result.suggestions,
+                   payments_data().GetBnplIssuers(),
+                   /*extracted_amount_in_micros=*/50'000'000)
+                   .is_bnpl_suggestion_added);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       MaybeUpdateSuggestionsWithBnpl_IphBubbleNotShown_IssuerMissing) {
+       MaybeUpdateDesktopSuggestionsWithBnpl_IphBubbleNotShown_IssuerMissing) {
   // Add a server card.
   payments_data().AddServerCreditCard(test::GetMaskedServerCardAmex());
   // Add BNPL issuers.
@@ -1826,9 +1833,9 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       {}, CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false, summary);
   BnplSuggestionUpdateResult update_suggestions_result =
-      MaybeUpdateSuggestionsWithBnpl(suggestions,
-                                     payments_data().GetBnplIssuers(),
-                                     /*extracted_amount_in_micros=*/50'000'000);
+      MaybeUpdateDesktopSuggestionsWithBnpl(
+          suggestions, payments_data().GetBnplIssuers(),
+          /*extracted_amount_in_micros=*/50'000'000);
 
   ASSERT_TRUE(update_suggestions_result.is_bnpl_suggestion_added);
   Suggestion bnpl_suggestion = *std::ranges::find_if(
@@ -1839,7 +1846,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 }
 
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       MaybeUpdateSuggestionsWithBnpl_IphBubble_KlarnaDisabled) {
+       MaybeUpdateDesktopSuggestionsWithBnpl_IphBubble_KlarnaDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -1863,9 +1870,9 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       {}, CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false, summary);
   BnplSuggestionUpdateResult update_suggestions_result =
-      MaybeUpdateSuggestionsWithBnpl(suggestions,
-                                     payments_data().GetBnplIssuers(),
-                                     /*extracted_amount_in_micros=*/50'000'000);
+      MaybeUpdateDesktopSuggestionsWithBnpl(
+          suggestions, payments_data().GetBnplIssuers(),
+          /*extracted_amount_in_micros=*/50'000'000);
 
   ASSERT_TRUE(update_suggestions_result.is_bnpl_suggestion_added);
   Suggestion bnpl_suggestion = *std::ranges::find_if(
@@ -1877,7 +1884,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 }
 
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       MaybeUpdateSuggestionsWithBnpl_IphBubble_KlarnaEnabled) {
+       MaybeUpdateDesktopSuggestionsWithBnpl_IphBubble_KlarnaEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForKlarna},
@@ -1900,9 +1907,9 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       {}, CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false, summary);
   BnplSuggestionUpdateResult update_suggestions_result =
-      MaybeUpdateSuggestionsWithBnpl(suggestions,
-                                     payments_data().GetBnplIssuers(),
-                                     /*extracted_amount_in_micros=*/50'000'000);
+      MaybeUpdateDesktopSuggestionsWithBnpl(
+          suggestions, payments_data().GetBnplIssuers(),
+          /*extracted_amount_in_micros=*/50'000'000);
 
   ASSERT_TRUE(update_suggestions_result.is_bnpl_suggestion_added);
   Suggestion bnpl_suggestion = *std::ranges::find_if(
@@ -1914,8 +1921,9 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       &feature_engagement::kIPHAutofillBnplAffirmZipOrKlarnaSuggestionFeature);
 }
 
-TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       MaybeUpdateSuggestionsWithBnpl_IphBubble_KlarnaEnabled_KlarnaMissing) {
+TEST_F(
+    PaymentsSuggestionGeneratorBnplTest,
+    MaybeUpdateDesktopSuggestionsWithBnpl_IphBubble_KlarnaEnabled_KlarnaMissing) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForKlarna},
@@ -1936,9 +1944,9 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       {}, CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false, summary);
   BnplSuggestionUpdateResult update_suggestions_result =
-      MaybeUpdateSuggestionsWithBnpl(suggestions,
-                                     payments_data().GetBnplIssuers(),
-                                     /*extracted_amount_in_micros=*/50'000'000);
+      MaybeUpdateDesktopSuggestionsWithBnpl(
+          suggestions, payments_data().GetBnplIssuers(),
+          /*extracted_amount_in_micros=*/50'000'000);
 
   ASSERT_TRUE(update_suggestions_result.is_bnpl_suggestion_added);
   Suggestion bnpl_suggestion = *std::ranges::find_if(
@@ -1948,9 +1956,73 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
   EXPECT_EQ(bnpl_suggestion.iph_metadata.feature,
             &feature_engagement::kIPHAutofillBnplAffirmOrZipSuggestionFeature);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+// Verifies that a BNPL suggestion is added to Touch to Fill suggestions when
+// BNPL is eligible and there are credit card suggestions.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       GetCreditCardSuggestionsForTouchToFill_BnplSuggestionAdded) {
+  payments_data().AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  ON_CALL(*autofill_manager_.GetPaymentsBnplManager(), IsEligibleForBnpl())
+      .WillByDefault(testing::Return(true));
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      {CreateServerCard(), CreateLocalCard()}, autofill_manager_);
+
+  ASSERT_EQ(suggestions.size(), 3U);
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
+  EXPECT_EQ(suggestions[1].type, SuggestionType::kCreditCardEntry);
+  EXPECT_EQ(suggestions[2].type, SuggestionType::kBnplEntry);
+  EXPECT_THAT(
+      suggestions[2],
+      EqualsSuggestion(
+          SuggestionType::kBnplEntry,
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
+          Suggestion::Icon::kBnpl,
+          {{Suggestion::Text(l10n_util::GetStringFUTF16(
+              IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL, u"$35"))}}));
+}
+
+// Verifies that a BNPL suggestion is not added to Touch to Fill suggestions
+// when BNPL is not eligible.
+TEST_F(
+    PaymentsSuggestionGeneratorBnplTest,
+    GetCreditCardSuggestionsForTouchToFill_BnplSuggestionNotAdded_BnplNotEligible) {
+  payments_data().AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  ON_CALL(*autofill_manager_.GetPaymentsBnplManager(), IsEligibleForBnpl())
+      .WillByDefault(testing::Return(false));
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      {CreateServerCard()}, autofill_manager_);
+
+  ASSERT_EQ(suggestions.size(), 1U);
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
+}
+
+// Verifies that a BNPL suggestion is not added to Touch to Fill suggestions
+// when `kAutofillEnableBuyNowPayLater` is disabled.
+TEST_F(
+    PaymentsSuggestionGeneratorBnplTest,
+    GetCreditCardSuggestionsForTouchToFill_BnplSuggestionNotAdded_FlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableBuyNowPayLater);
+
+  payments_data().AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  ON_CALL(*autofill_manager_.GetPaymentsBnplManager(), IsEligibleForBnpl())
+      .WillByDefault(testing::Return(true));
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      {CreateServerCard()}, autofill_manager_);
+
+  ASSERT_EQ(suggestions.size(), 1U);
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 // Test that the virtual card option is shown when the autofill optimization
 // guide is not present.

@@ -795,7 +795,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptedBnplEntry_FormIsFilled) {
   CreditCard card = test::GetVirtualCard();
   card.set_issuer_id(kBnplAffirmIssuerId);
 
-  const uint64_t expected_amount = 50'000'000;
+  const std::optional<uint64_t> expected_amount = 50'000'000;
 
   EXPECT_CALL(*manager().GetPaymentsBnplManager(),
               OnDidAcceptBnplSuggestion(expected_amount, _))

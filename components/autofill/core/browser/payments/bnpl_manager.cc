@@ -89,11 +89,11 @@ bool BnplManager::IsBnplIssuerSupported(std::string_view issuer_id) {
 }
 
 void BnplManager::OnDidAcceptBnplSuggestion(
-    uint64_t final_checkout_amount,
+    std::optional<uint64_t> final_checkout_amount,
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback) {
   ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
 
-  ongoing_flow_state_->final_checkout_amount = final_checkout_amount;
+  ongoing_flow_state_->final_checkout_amount = std::move(final_checkout_amount);
   ongoing_flow_state_->app_locale =
       browser_autofill_manager_->client().GetAppLocale();
   ongoing_flow_state_->billing_customer_number =
@@ -141,7 +141,7 @@ void BnplManager::NotifyOfSuggestionGeneration(
 
   update_suggestions_barrier_callback_ = base::BarrierCallback<
       std::variant<SuggestionsShownResponse, std::optional<uint64_t>>>(
-      2U, base::BindOnce(&BnplManager::MaybeUpdateSuggestionsWithBnpl,
+      2U, base::BindOnce(&BnplManager::MaybeUpdateDesktopSuggestionsWithBnpl,
                          weak_factory_.GetWeakPtr(), trigger_source));
 }
 
@@ -392,7 +392,9 @@ void BnplManager::FetchRedirectUrl() {
       browser_autofill_manager_->client()
           .GetLastCommittedPrimaryMainFrameOrigin()
           .GetURL();
-  request_details.total_amount = ongoing_flow_state_->final_checkout_amount;
+  CHECK(ongoing_flow_state_->final_checkout_amount);
+  request_details.total_amount =
+      ongoing_flow_state_->final_checkout_amount.value();
   // Only `USD` is supported for MVP.
   request_details.currency = "USD";
 
@@ -464,7 +466,7 @@ void BnplManager::OnPopupWindowCompleted(
   }
 }
 
-void BnplManager::MaybeUpdateSuggestionsWithBnpl(
+void BnplManager::MaybeUpdateDesktopSuggestionsWithBnpl(
     const AutofillSuggestionTriggerSource trigger_source,
     std::vector<std::variant<SuggestionsShownResponse, std::optional<uint64_t>>>
         responses) {
@@ -524,7 +526,7 @@ void BnplManager::MaybeUpdateSuggestionsWithBnpl(
   // Append the BNPL suggestion at the end of the existing suggestion list
   // (before footer items).
   BnplSuggestionUpdateResult update_suggestions_result =
-      ::autofill::MaybeUpdateSuggestionsWithBnpl(
+      ::autofill::MaybeUpdateDesktopSuggestionsWithBnpl(
           /*current_suggestions=*/std::get<0>(*suggestions_shown_response),
           bnpl_issuers, extracted_amount->value());
 
@@ -661,6 +663,7 @@ std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
             price_range =
                 issuer.GetEligiblePriceRangeForCurrency(/*currency=*/"USD");
         CHECK(price_range.has_value());
+        CHECK(ongoing_flow_state_->final_checkout_amount);
 
         BnplIssuerEligibilityForPage eligibility;
 
@@ -712,6 +715,12 @@ std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
 }
 
 bool BnplManager::IsEligibleForBnpl() const {
+  // BNPL is not supported in off-the-record (incognito) mode because amount
+  // extraction is not intended to be used in off-the-record mode.
+  if (browser_autofill_manager_->client().IsOffTheRecord()) {
+    return false;
+  }
+
   AutofillOptimizationGuide* autofill_optimization_guide =
       browser_autofill_manager_->client().GetAutofillOptimizationGuide();
   if (!autofill_optimization_guide) {

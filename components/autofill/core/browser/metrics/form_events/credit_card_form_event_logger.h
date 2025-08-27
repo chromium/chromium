@@ -179,8 +179,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool DoesCardHaveOffer(const CreditCard& credit_card);
   // Returns whether the shown suggestions included a virtual credit card.
   bool DoSuggestionsIncludeVirtualCard();
-  // Checks whether the current website is relevant for BNPL for any known BNPL
-  // provider, according to the optimization guide.
+  // Checks with the associated BnplManager if the current session is eligible
+  // for BNPL.
   bool IsEligibleForBnpl();
 
   size_t server_record_type_count_ = 0;

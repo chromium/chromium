@@ -49,7 +49,7 @@ struct CreditCardSuggestionSummary {
   autofill_metrics::SuggestionRankingContext ranking_context;
 };
 
-// Holds the result of `MaybeUpdateSuggestionsWithBnpl`.
+// Holds the result of `MaybeUpdateDesktopSuggestionsWithBnpl`.
 struct BnplSuggestionUpdateResult {
   BnplSuggestionUpdateResult();
 
@@ -128,7 +128,7 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
 // end (but before footer items) of the given suggestion list
 // `current_suggestions`. `BnplSuggestionUpdateResult::is_bnpl_suggestion_added`
 // is true if a BNPL suggestion is inserted successfully.
-BnplSuggestionUpdateResult MaybeUpdateSuggestionsWithBnpl(
+BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
     const base::span<const Suggestion>& current_suggestions,
     const std::vector<BnplIssuer>& bnpl_issuers,
     uint64_t extracted_amount_in_micros);

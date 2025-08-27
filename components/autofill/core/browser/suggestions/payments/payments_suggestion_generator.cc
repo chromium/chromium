@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/save_and_fill_manager.h"
@@ -962,8 +963,9 @@ std::u16string GetBnplPriceLowerBound(
 // Creates a suggestion for the BNPL issuer selection.
 // The suggestion text shows the minimum eligible value of all available
 // BNPL issuers.
-Suggestion CreateBnplSuggestion(const std::vector<BnplIssuer>& bnpl_issuers,
-                                uint64_t extracted_amount_in_micros) {
+Suggestion CreateBnplSuggestion(
+    const std::vector<BnplIssuer>& bnpl_issuers,
+    std::optional<uint64_t> extracted_amount_in_micros) {
   Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
   bnpl_suggestion.icon = Suggestion::Icon::kBnpl;
   bnpl_suggestion.main_text = Suggestion::Text(
@@ -973,6 +975,7 @@ Suggestion CreateBnplSuggestion(const std::vector<BnplIssuer>& bnpl_issuers,
       l10n_util::GetStringFUTF16(IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL,
                                  GetBnplPriceLowerBound(bnpl_issuers)))}};
 
+#if !BUILDFLAG(IS_ANDROID)
   using IssuerId = BnplIssuer::IssuerId;
   auto issuer_present = [&bnpl_issuers](IssuerId issuer_id) {
     return base::Contains(bnpl_issuers, issuer_id, &BnplIssuer::issuer_id);
@@ -991,9 +994,11 @@ Suggestion CreateBnplSuggestion(const std::vector<BnplIssuer>& bnpl_issuers,
     bnpl_suggestion.iph_metadata = Suggestion::IPHMetadata(
         &feature_engagement::kIPHAutofillBnplAffirmOrZipSuggestionFeature);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   Suggestion::PaymentsPayload payments_payload;
-  payments_payload.extracted_amount_in_micros = extracted_amount_in_micros;
+  payments_payload.extracted_amount_in_micros =
+      std::move(extracted_amount_in_micros);
   bnpl_suggestion.payload = std::move(payments_payload);
 
   return bnpl_suggestion;
@@ -1327,7 +1332,7 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
   return suggestions;
 }
 
-BnplSuggestionUpdateResult MaybeUpdateSuggestionsWithBnpl(
+BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
     const base::span<const Suggestion>& current_suggestions,
     const std::vector<BnplIssuer>& bnpl_issuers,
     uint64_t extracted_amount_in_micros) {
@@ -1459,6 +1464,19 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
                                                      .app_locale()))});
     }
     suggestions.push_back(suggestion);
+  }
+  if (manager.GetPaymentsBnplManager() &&
+      manager.GetPaymentsBnplManager()->IsEligibleForBnpl() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableAmountExtractionDesktop) &&
+      base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater)) {
+    suggestions.reserve(suggestions.size() + 1);
+    suggestions.push_back(
+        CreateBnplSuggestion(/*bnpl_issuers=*/manager.client()
+                                 .GetPersonalDataManager()
+                                 .payments_data_manager()
+                                 .GetBnplIssuers(),
+                             /*extracted_amount_in_micros=*/std::nullopt));
   }
   manager.GetCreditCardFormEventLogger().OnMetadataLoggingContextReceived(
       std::move(metadata_logging_context));

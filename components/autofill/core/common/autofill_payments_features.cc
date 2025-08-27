@@ -33,6 +33,9 @@ BASE_FEATURE(kAutofillEnableAmountExtractionAllowlistDesktop,
 // of the allowlisted merchant websites. The suffix `desktop` is kept, it was an
 // error in original naming that can not be updated due to ongoing gcl config
 // experiments.
+// TODO(crbug.com/430575808): Rename `kAutofillEnableAmountExtractionDesktop`
+// flag to `kAutofillEnableAmountExtraction` now that it is fully launched
+// on desktop and being added to Android.
 BASE_FEATURE(kAutofillEnableAmountExtractionDesktop,
              "AutofillEnableAmountExtractionDesktop",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

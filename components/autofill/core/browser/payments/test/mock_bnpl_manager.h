@@ -37,9 +37,11 @@ class MockBnplManager : public payments::BnplManager {
 
   MOCK_METHOD(void,
               OnDidAcceptBnplSuggestion,
-              (uint64_t final_checkout_amount,
+              (std::optional<uint64_t> final_checkout_amount,
                OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback),
               (override));
+
+  MOCK_METHOD(bool, IsEligibleForBnpl, (), (const, override));
 };
 
 }  // namespace autofill

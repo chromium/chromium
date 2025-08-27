@@ -52,11 +52,14 @@ class BnplManager {
   // issuer, a possible ToS dialog, and redirecting to the selected issuer's
   // website before filling the form, if the flow succeeds.
   // `final_checkout_amount` is the checkout amount extracted from the page (in
-  // micros). `on_bnpl_vcn_fetched_callback` is the callback that should be run
-  // if the flow is completed successfully, to fill the form with the VCN that
-  // will facilitate the BNPL transaction.
+  // micros). It is present if amount extraction completed successfully before
+  // the user accepted the BNPL suggestion, and is empty if the user accepted
+  // the suggestion before amount extraction finished running.
+  // `on_bnpl_vcn_fetched_callback` is the callback that should be run if the
+  // flow is completed successfully, to fill the form with the VCN that will
+  // facilitate the BNPL transaction.
   virtual void OnDidAcceptBnplSuggestion(
-      uint64_t final_checkout_amount,
+      std::optional<uint64_t> final_checkout_amount,
       OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback);
 
   // Notifies the BNPL manager that suggestion generation has been requested
@@ -83,10 +86,10 @@ class BnplManager {
 
   // Determines if autofill BNPL is supported.
   // Returns true if:
-  // 1. The BNPL feature flag is enabled.
+  // 1. The profile is not off the record.
   // 2. The client has an `AutofillOptimizationGuide` assigned.
   // 3. The URL being visited is within the BNPL issuer allowlist.
-  bool IsEligibleForBnpl() const;
+  virtual bool IsEligibleForBnpl() const;
 
   // Returns true if the issuer for the ongoing flow contains the required
   // action `PaymentInstrument::ActionRequired::kAcceptTos`.
@@ -138,8 +141,9 @@ class BnplManager {
     BnplIssuer issuer;
 
     // The final checkout amount on the page (in micros), used for the ongoing
-    // BNPL flow.
-    uint64_t final_checkout_amount;
+    // BNPL flow. It is present if amount extraction has been completed
+    // successfully, and is empty if amount extraction has not finished running.
+    std::optional<uint64_t> final_checkout_amount;
 
     // The callback that will fill the fetched BNPL VCN into the form.
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback;
@@ -219,7 +223,7 @@ class BnplManager {
 
   // Combines `responses` from suggestion shown event and amount extraction,
   // and try to show card suggestions with buy-now-pay-later suggestion.
-  void MaybeUpdateSuggestionsWithBnpl(
+  void MaybeUpdateDesktopSuggestionsWithBnpl(
       const AutofillSuggestionTriggerSource trigger_source,
       std::vector<std::variant<SuggestionsShownResponse,
                                std::optional<uint64_t>>> responses);

@@ -1307,6 +1307,24 @@ TEST_F(BnplManagerTest, IsEligibleForBnpl_NoAutofillOptimizationGuide) {
   EXPECT_FALSE(bnpl_manager_->IsEligibleForBnpl());
 }
 
+// Tests that `IsEligibleForBnpl()` returns false if the client is in an
+// off-the-record (incognito) session.
+TEST_F(BnplManagerTest, IsEligibleForBnpl_OffTheRecord) {
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        IssuerId::kBnplAffirm, /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          IssuerId::kBnplZip);
+
+  EXPECT_TRUE(bnpl_manager_->IsEligibleForBnpl());
+
+  autofill_client_->set_is_off_the_record(true);
+
+  EXPECT_FALSE(bnpl_manager_->IsEligibleForBnpl());
+}
+
 // Tests that `IsEligibleForBnpl()` returns false if if the current visiting
 // url is not in the allowlist.
 TEST_F(BnplManagerTest, IsEligibleForBnpl_UrlNotSupported) {
