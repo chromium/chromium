@@ -36,10 +36,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/ui_base_features.h"
-
-#if defined(TOOLKIT_VIEWS)
-#include "ui/views/controls/textfield/textfield.h"
-#endif
+#include "ui/native_theme/native_theme.h"
 
 #if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
 #include "chrome/browser/themes/theme_service.h"
@@ -115,14 +112,10 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
     BUILDFLAG(IS_WIN)
   content::UpdateFontRendererPreferencesFromSystemSettings(prefs);
 #endif
-#if BUILDFLAG(IS_MAC)
-  prefs->focus_ring_color = SkColorSetRGB(0x00, 0x5F, 0xCC);
-#else
-  prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
-#endif
-#if defined(TOOLKIT_VIEWS)
-  prefs->caret_blink_interval = views::Textfield::GetCaretBlinkInterval();
-#endif
+  prefs->focus_ring_color = BUILDFLAG(IS_MAC) ? SkColorSetRGB(0x00, 0x5F, 0xCC)
+                                              : SkColorSetRGB(0x10, 0x10, 0x10);
+  prefs->caret_blink_interval =
+      ui::NativeTheme::GetInstanceForNativeUi()->GetCaretBlinkInterval();
 #if defined(USE_AURA)
 #if BUILDFLAG(IS_CHROMEOS)
   // This color is 0x544d90fe modulated with 0xffffff.
@@ -131,11 +124,9 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
   prefs->inactive_selection_bg_color = SkColorSetRGB(0xEA, 0xEA, 0xEA);
   prefs->inactive_selection_fg_color = SK_ColorBLACK;
 #endif
-#endif
 
-#if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
-  auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
-  if (linux_ui_theme) {
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile)) {
     if (ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme()) {
       linux_ui_theme->GetFocusRingColor(&prefs->focus_ring_color);
       linux_ui_theme->GetActiveSelectionBgColor(
@@ -149,11 +140,10 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
     }
   }
 
-  // If we have a linux_ui object, set the caret blink interval regardless of
-  // whether we're in native theme mode.
   if (auto* linux_ui = ui::LinuxUi::instance()) {
     prefs->caret_blink_interval = linux_ui->GetCursorBlinkInterval();
   }
+#endif
 #endif
   prefs->enable_referrers = pref_service->GetBoolean(prefs::kEnableReferrers);
   prefs->enable_do_not_track =
@@ -164,9 +154,8 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
   prefs->webrtc_ip_handling_policy = blink::ToWebRTCIPHandlingPolicy(
       pref_service->GetString(prefs::kWebRTCIPHandlingPolicy));
 
-  const base::Value::List& webrtc_ip_handling_urls =
-      pref_service->GetList(prefs::kWebRTCIPHandlingUrl);
-  for (const base::Value& entry : webrtc_ip_handling_urls) {
+  for (const base::Value& entry :
+       pref_service->GetList(prefs::kWebRTCIPHandlingUrl)) {
     const base::Value::Dict& dict = entry.GetDict();
     const std::string* url = dict.FindString("url");
     if (!url) {
@@ -195,14 +184,10 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
         pref_service->GetBoolean(prefs::kWebRTCPostQuantumKeyAgreement);
   }
 
-  std::string webrtc_udp_port_range =
-      pref_service->GetString(prefs::kWebRTCUDPPortRange);
-  ParsePortRange(webrtc_udp_port_range, &prefs->webrtc_udp_min_port,
-                 &prefs->webrtc_udp_max_port);
-
-  const base::Value::List& allowed_urls =
-      pref_service->GetList(prefs::kWebRtcLocalIpsAllowedUrls);
-  prefs->webrtc_local_ips_allowed_urls = GetLocalIpsAllowedUrls(allowed_urls);
+  ParsePortRange(pref_service->GetString(prefs::kWebRTCUDPPortRange),
+                 &prefs->webrtc_udp_min_port, &prefs->webrtc_udp_max_port);
+  prefs->webrtc_local_ips_allowed_urls = GetLocalIpsAllowedUrls(
+      pref_service->GetList(prefs::kWebRtcLocalIpsAllowedUrls));
   prefs->accept_languages = GetLanguageListForProfile(
       profile, pref_service->GetString(language::prefs::kAcceptLanguages));
 #if !BUILDFLAG(IS_MAC)
@@ -212,14 +197,13 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 #if BUILDFLAG(IS_ANDROID)
   prefs->uses_platform_autofill = pref_service->GetBoolean(
       autofill::prefs::kAutofillUsingVirtualViewStructure);
-#else  // if !BUILDFLAG(IS_ANDROID)
+#else
   prefs->caret_browsing_enabled =
       pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
   ui::AXPlatform::GetInstance().SetCaretBrowsingState(
       prefs->caret_browsing_enabled);
 #endif
-  PrefService* local_state = g_browser_process->local_state();
-  if (local_state) {
+  if (PrefService* const local_state = g_browser_process->local_state()) {
     prefs->allow_cross_origin_auth_prompt =
         local_state->GetBoolean(prefs::kAllowCrossOriginAuthPrompt);
 
