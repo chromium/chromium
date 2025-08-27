@@ -728,19 +728,30 @@ fn parse_ixdtf(source: &[u8], variant: ParseVariant) -> TemporalResult<IxdtfPars
         );
     }
 
+    // Temporal requires parsed dates to be checked for validity at parse time
+    // https://tc39.es/proposal-temporal/#sec-temporal-iso8601grammar-static-semantics-early-errors
+    // https://tc39.es/proposal-temporal/#sec-temporal-iso8601grammar-static-semantics-isvaliddate
+    // https://tc39.es/proposal-temporal/#sec-temporal-iso8601grammar-static-semantics-isvalidmonthday
     if let Some(date) = record.date {
-        if !crate::iso::is_valid_date(date.year, date.month, date.day) {
+        // ixdtf currently returns always-valid reference years/days
+        // in these cases (year = 0, day = 1), but we should set our own
+        // for robustness.
+        let year = if variant == ParseVariant::MonthDay {
+            1972
+        } else {
+            date.year
+        };
+        let day = if variant == ParseVariant::YearMonth {
+            1
+        } else {
+            date.day
+        };
+        if !crate::iso::is_valid_date(year, date.month, day) {
             return Err(TemporalError::range()
                 .with_message("DateTime strings must contain a valid ISO date."));
         }
     }
 
-    if let Some(time) = record.time {
-        if !crate::iso::is_valid_time(time.hour, time.minute, time.second, 0, 0, 0) {
-            return Err(TemporalError::range()
-                .with_message("DateTime strings must contain a valid ISO time."));
-        }
-    }
     Ok(record)
 }
 

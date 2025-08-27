@@ -1,0 +1,57 @@
+From 06c6daf2dae554d6abe102691b35c4a57389114f Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Tue, 26 Aug 2025 23:24:38 +0000
+Subject: [PATCH] Fix validity checks
+
+Uplifts https://github.com/boa-dev/temporal/pull/523
+
+Change-Id: I0c57492edcf46ea35dff1675d1f3d10506fbafcc
+---
+ .../vendor/temporal_rs-v0_0_13/src/parsers.rs | 25 +++++++++++++------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0_13/src/parsers.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0_13/src/parsers.rs
+index 3ea9a2d77cc11..86b56ff2b6901 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0_13/src/parsers.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0_13/src/parsers.rs
+@@ -728,19 +728,30 @@ fn parse_ixdtf(source: &[u8], variant: ParseVariant) -> TemporalResult<IxdtfPars
+         );
+     }
+ 
++    // Temporal requires parsed dates to be checked for validity at parse time
++    // https://tc39.es/proposal-temporal/#sec-temporal-iso8601grammar-static-semantics-early-errors
++    // https://tc39.es/proposal-temporal/#sec-temporal-iso8601grammar-static-semantics-isvaliddate
++    // https://tc39.es/proposal-temporal/#sec-temporal-iso8601grammar-static-semantics-isvalidmonthday
+     if let Some(date) = record.date {
+-        if !crate::iso::is_valid_date(date.year, date.month, date.day) {
++        // ixdtf currently returns always-valid reference years/days
++        // in these cases (year = 0, day = 1), but we should set our own
++        // for robustness.
++        let year = if variant == ParseVariant::MonthDay {
++            1972
++        } else {
++            date.year
++        };
++        let day = if variant == ParseVariant::YearMonth {
++            1
++        } else {
++            date.day
++        };
++        if !crate::iso::is_valid_date(year, date.month, day) {
+             return Err(TemporalError::range()
+                 .with_message("DateTime strings must contain a valid ISO date."));
+         }
+     }
+ 
+-    if let Some(time) = record.time {
+-        if !crate::iso::is_valid_time(time.hour, time.minute, time.second, 0, 0, 0) {
+-            return Err(TemporalError::range()
+-                .with_message("DateTime strings must contain a valid ISO time."));
+-        }
+-    }
+     Ok(record)
+ }
+ 
+-- 
+2.51.0.318.gd7df087d1a-goog
+
