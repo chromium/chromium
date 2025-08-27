@@ -38,6 +38,7 @@ class TabGroupsPageHandler : public ntp::tab_groups::mojom::PageHandler {
   // ntp::tab_groups::mojom::PageHandler:
   void CreateNewTabGroup() override;
   void GetTabGroups(GetTabGroupsCallback callback) override;
+  void OpenTabGroup(const std::string& id) override;
   void DismissModule() override;
   void RestoreModule() override;
 

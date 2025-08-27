@@ -37,6 +37,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const tabGroups: TabGroup[] = [
       {
+        id: '0',
         title: 'Tab Group 1',
         updateTime: 'Recently used',
         deviceName: 'Test Device',
@@ -49,6 +50,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
         totalTabCount: 4,
       },
       {
+        id: '0',
         title: 'Tab Group 2',
         updateTime: 'Recently used',
         deviceName: 'Test Device',
@@ -61,6 +63,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
         totalTabCount: 8,
       },
       {
+        id: '0',
         title: 'Tab Group 3',
         updateTime: 'Recently used',
         deviceName: null,
@@ -127,6 +130,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
   test('show empty cells if there are less than four tabs', async () => {
     // Arrange.
     const module = await createModule([{
+      id: '0',
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -151,6 +155,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
   test('show four favicons when there are exactly four tabs', async () => {
     // Arrange.
     const module = await createModule([{
+      id: '0',
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -178,6 +183,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
   test('show +N when more than one tab remains', async () => {
     // Arrange.
     const module = await createModule([{
+      id: '0',
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -208,6 +214,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
   test('caps at 99+ when more than 99 tabs remain', async () => {
     // Arrange.
     const module = await createModule([{
+      id: '0',
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -270,6 +277,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
   test('action menu - open and close info dialog', async () => {
     // Arrange.
     const module = await createModule([{
+      id: '0',
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -308,6 +316,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
   test('action menu - disable button fires disable toast', async () => {
     // Arrange.
     const module = await createModule([{
+      id: '0',
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -333,6 +342,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
   test('action menu - dismiss and restore module', async () => {
     // Arrange.
     const module = await createModule([{
+      id: '0',
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -366,6 +376,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
   test('create new tab group from the footer link', async () => {
     // Arrange.
     const module = await createModule([{
+      id: '0',
       title: 'Group',
       updateTime: 'Recently used',
       deviceName: null,
@@ -407,5 +418,44 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
 
     // Assert.
     assertEquals(1, handler.getCallCount('createNewTabGroup'));
+  });
+
+  test('open a tab group and fire openTabGroup with the group ID', async () => {
+    // Arrange.
+    const module = await createModule([
+      {
+        id: '0',
+        title: 'Group 1',
+        updateTime: 'Recently used',
+        deviceName: null,
+        faviconUrls: [{url: 'https://www.google.com'}],
+        totalTabCount: 1,
+      },
+      {
+        id: '1',
+        title: 'Group 2',
+        updateTime: 'Recently used',
+        deviceName: null,
+        faviconUrls: [],
+        totalTabCount: 0,
+      },
+    ]);
+    assertTrue(!!module);
+
+    const groups =
+        module.shadowRoot.querySelectorAll<HTMLAnchorElement>('.tab-group');
+    assertEquals(2, groups.length);
+
+    const index = 1;
+
+    // Act.
+    handler.setResultFor('openTabGroup', Promise.resolve());
+    groups[index]!.click();
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(1, handler.getCallCount('openTabGroup'));
+    const groupId = handler.getArgs('openTabGroup')[0];
+    assertEquals(`${index}`, groupId);
   });
 });

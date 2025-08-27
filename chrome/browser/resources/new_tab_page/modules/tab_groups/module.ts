@@ -124,6 +124,10 @@ export class ModuleElement extends ModuleElementBase {
   protected onCreateNewTabGroupClick_() {
     this.handler_.createNewTabGroup();
   }
+
+  protected onTabGroupClick_(id: string) {
+    this.handler_.openTabGroup(id);
+  }
 }
 
 customElements.define(ModuleElement.is, ModuleElement);

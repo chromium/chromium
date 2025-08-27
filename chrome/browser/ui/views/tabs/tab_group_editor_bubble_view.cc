@@ -600,7 +600,7 @@ TabGroupEditorBubbleView::BuildLeaveGroupButton() {
 
 std::unique_ptr<views::LabelButton>
 TabGroupEditorBubbleView::BuildMoveGroupToNewWindowButton() {
-  return CreateMenuItem(
+  std::unique_ptr<views::LabelButton> menu_item = CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW,
       l10n_util::GetStringUTF16(
           IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW),
@@ -609,6 +609,11 @@ TabGroupEditorBubbleView::BuildMoveGroupToNewWindowButton() {
           base::Unretained(this)),
       ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowRefreshIcon,
                                      ui::kColorMenuIcon, kDefaultIconSize));
+
+  menu_item->SetProperty(views::kElementIdentifierKey,
+                         kTabGroupEditorBubbleMoveGroupToNewWindowButtonId);
+
+  return menu_item;
 }
 
 std::unique_ptr<views::LabelButton>

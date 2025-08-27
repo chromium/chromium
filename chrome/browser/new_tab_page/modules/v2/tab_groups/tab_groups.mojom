@@ -8,6 +8,9 @@ import "url/mojom/url.mojom";
 
 // Information about a tab group.
 struct TabGroup {
+  // The persisted unique ID used by the tab group service backend to retrieve
+  // saved tab groups.
+  string id;
   // Title of the tab group.
   string title;
   // The time delta between now and when the tab group was last updated.
@@ -28,6 +31,8 @@ interface PageHandler {
   // Returns null if the current time is still within the module's dismissal
   // time window.
   GetTabGroups() => (array<TabGroup>? tab_groups);
+  // Opens the tab group with the given ID.
+  OpenTabGroup(string id);
   // Dismisses the module for a fixed amount of time.
   DismissModule();
   // Restores the module immediately.

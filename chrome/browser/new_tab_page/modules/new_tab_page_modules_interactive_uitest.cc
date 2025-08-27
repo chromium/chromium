@@ -7,12 +7,16 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
 #include "chrome/browser/new_tab_page/modules/test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -37,6 +41,8 @@ const DeepQuery kMicrosoftAuthIframe = {"ntp-app", "#microsoftAuth"};
 const DeepQuery kTabGroupsModule = {"ntp-app", "ntp-modules", "ntp-tab-groups"};
 const DeepQuery kCreateNewTabGroup = {
     "ntp-app", "ntp-modules", "ntp-tab-groups", ".create-new-tab-group"};
+const DeepQuery kFirstTabGroup = {"ntp-app", "ntp-modules", "ntp-tab-groups",
+                                  ".tab-group:nth-of-type(1)"};
 
 struct ModuleLink {
   const DeepQuery query;
@@ -413,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveMicrosoftAuthUiTest,
 }
 
 class NewTabPageModulesInteractiveTabGroupsUiTest
-    : public NewTabPageModulesInteractiveUiBaseTest {
+    : public TabStripInteractiveTestMixin<
+          NewTabPageModulesInteractiveUiBaseTest> {
  public:
   NewTabPageModulesInteractiveTabGroupsUiTest() = default;
   ~NewTabPageModulesInteractiveTabGroupsUiTest() override = default;
@@ -436,8 +443,18 @@ class NewTabPageModulesInteractiveTabGroupsUiTest
                  ExecuteJsAt(contents_id, element, "el => el.click()"));
   }
 
-  size_t GetTabGroupCount() {
-    return browser()->tab_strip_model()->group_model()->ListTabGroups().size();
+  InteractiveTestApi::MultiStep OpenTabGroupEditorMenu(
+      tab_groups::TabGroupId group_id) {
+    return Steps(HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
+                 WaitForShow(kTabGroupEditorBubbleId));
+  }
+
+  size_t GetTabGroupCount(Browser* browser) {
+    return browser->tab_strip_model()->group_model()->ListTabGroups().size();
+  }
+
+  size_t GetTabCount(Browser* browser) {
+    return browser->tab_strip_model()->count();
   }
 };
 
@@ -455,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
         browser()->tab_strip_model()->AddToNewGroup({1});
       }),
       // 3. Verify the initial tab group count is 2.
-      CheckResult([&]() { return GetTabGroupCount(); }, 2),
+      CheckResult([&]() { return GetTabGroupCount(browser()); }, 2),
 
       // Act.
       // 4. Wait for new tab page to load.
@@ -467,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
 
       // Assert.
       // 7. Verify a new tab group has been created.
-      CheckResult([&]() { return GetTabGroupCount(); }, 3));
+      CheckResult([&]() { return GetTabGroupCount(browser()); }, 3));
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
@@ -475,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
   RunTestSequence(
       // Arrange.
       // 1. Verify the initial tab group count is 0.
-      CheckResult([&]() { return GetTabGroupCount(); }, 0),
+      CheckResult([&]() { return GetTabGroupCount(browser()); }, 0),
 
       // Act.
       // 2. Wait for new tab page to load.
@@ -487,5 +504,81 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
 
       // Assert.
       // 5. Verify a new tab group has been created.
-      CheckResult([&]() { return GetTabGroupCount(); }, 1));
+      CheckResult([&]() { return GetTabGroupCount(browser()); }, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
+                       ResumeTabGroupInCurrentWindow) {
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      // Verify current widow: 1 tab group, 2 tabs.
+      CheckResult([&]() { return GetTabGroupCount(browser()); }, 1),
+      CheckResult([&]() { return GetTabCount(browser()); }, 2),
+      // Open tab group editor bubble.
+      OpenTabGroupEditorMenu(group_id),
+      // Close tab group.
+      Steps(EnsurePresent(kTabGroupEditorBubbleCloseGroupButtonId),
+            MoveMouseTo(kTabGroupEditorBubbleCloseGroupButtonId), ClickMouse(),
+            WaitForHide(kTabGroupEditorBubbleId)),
+      // Verify current window: 0 tab groups, 1 tab.
+      CheckResult([&]() { return GetTabGroupCount(browser()); }, 0),
+      CheckResult([&]() { return GetTabCount(browser()); }, 1),
+      // Load the New Tab Page.
+      LoadNewTabPage(),
+      // Wait for the module to render.
+      WaitForElementToRender(kTabGroupsModule),
+      // Click the first tab group in the module to re-open it.
+      ClickElement(kNewTabPageElementId, kFirstTabGroup),
+      // Verify the tab group header is visible.
+      WaitForShow(kTabGroupHeaderElementId),
+      // Verify current window: 1 tab group, 2 tabs.
+      CheckResult([&] { return GetTabGroupCount(browser()); }, 1),
+      CheckResult([&]() { return GetTabCount(browser()); }, 2));
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
+                       ResumeTabGroupInAnotherWindow) {
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      // Ensure browser() is active.
+      Do([&]() {
+        ASSERT_EQ(BrowserList::GetInstance()->GetLastActive(), browser());
+      }),
+      // Current widow: 1 tab group, 2 tabs.
+      CheckResult([&]() { return GetTabGroupCount(browser()); }, 1),
+      CheckResult([&]() { return GetTabCount(browser()); }, 2),
+      // Open tab group editor bubble.
+      OpenTabGroupEditorMenu(group_id),
+      // Move tab group to new window.
+      Steps(EnsurePresent(kTabGroupEditorBubbleMoveGroupToNewWindowButtonId),
+            MoveMouseTo(kTabGroupEditorBubbleMoveGroupToNewWindowButtonId),
+            ClickMouse(), WaitForHide(kTabGroupEditorBubbleId)),
+      // Verify current window: 0 tab groups, 1 tab.
+      CheckResult([&]() { return GetTabGroupCount(browser()); }, 0),
+      CheckResult([&]() { return GetTabCount(browser()); }, 1),
+      // Verify browser() is not active.
+      Do([&]() {
+        ASSERT_NE(BrowserList::GetInstance()->GetLastActive(), browser());
+      }),
+      // Load the New Tab Page in browser().
+      LoadNewTabPage(),
+      // Wait for the module to render.
+      WaitForElementToRender(kTabGroupsModule),
+      // Click the first tab group in the module to re-open it.
+      ClickElement(kNewTabPageElementId, kFirstTabGroup),
+      // Verify current window stays unchanged: 0 tab groups, 1 tab.
+      CheckResult([&]() { return GetTabGroupCount(browser()); }, 0),
+      CheckResult([&]() { return GetTabCount(browser()); }, 1),
+      // Verify browser() is not active.
+      Do([&]() {
+        ASSERT_NE(BrowserList::GetInstance()->GetLastActive(), browser());
+      }));
 }
