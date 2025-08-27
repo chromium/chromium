@@ -342,8 +342,8 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
       NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
                          "MediaCodec error in DequeueInputBuffer",
                          std::move(result)});
-      return;
     }
+    return;
   }
 
   const PendingFrames::value_type& input = pending_frames_.front();
