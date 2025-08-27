@@ -5,7 +5,7 @@
 package org.stubs;
 
 public class MyClass<T> {
-    public static interface FirstNestedInterface {}
+    public interface FirstNestedInterface {}
 
-    public static interface SecondNestedInterface {}
+    public interface SecondNestedInterface {}
 }

@@ -14,5 +14,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 @UsedReflectively
 public @interface AccessedByNative {
-    public String value() default "";
+    String value() default "";
 }
