@@ -356,7 +356,13 @@ import java.util.function.Consumer;
 
         // Note: getMode() and getSupportedModes() can return null in some situations - see
         // crbug.com/1401322.
-        Display.Mode currentMode = display.getMode();
+        // Can also throw when modeId=-1 (b/441513616).
+        Display.Mode currentMode = null;
+        try {
+            currentMode = display.getMode();
+        } catch (Exception e) {
+            Log.w(TAG, "Invalid display mode", e);
+        }
         Display.Mode[] modes = display.getSupportedModes();
         List<Display.Mode> supportedModes = null;
         if (modes != null && modes.length > 0) {
