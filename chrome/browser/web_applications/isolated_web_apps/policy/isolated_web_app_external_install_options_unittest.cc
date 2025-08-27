@@ -95,7 +95,8 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValuePinnedVersion) {
       const auto options,
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry));
 
-  EXPECT_EQ(options.pinned_version(), base::Version(kCorrectPinnedVersion));
+  EXPECT_EQ(options.pinned_version(),
+            *IwaVersion::Create(kCorrectPinnedVersion));
   EXPECT_EQ(options.allow_downgrades(), false);
 }
 
@@ -109,7 +110,9 @@ TEST(IsolatedWebAppExternalInstallOptionsTest,
   const auto options =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry);
 
-  EXPECT_THAT(options, ErrorIs(Eq("Pinned version has invalid format")));
+  EXPECT_THAT(
+      options,
+      ErrorIs(testing::StartsWith("Pinned version has invalid format")));
 }
 
 // Verify if allow_downgrades field is correctly set.
@@ -123,7 +126,8 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueAllowDowngrades) {
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry));
 
   EXPECT_EQ(options.allow_downgrades(), true);
-  EXPECT_EQ(options.pinned_version(), base::Version(kCorrectPinnedVersion));
+  EXPECT_EQ(options.pinned_version(),
+            *IwaVersion::Create(kCorrectPinnedVersion));
 }
 
 // Verify if a pinned version is correctly parsed and set when there is no
@@ -138,7 +142,8 @@ TEST(IsolatedWebAppExternalInstallOptionsTest,
       const auto options,
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry));
   EXPECT_EQ(options.update_channel(), UpdateChannel::default_channel());
-  EXPECT_EQ(options.pinned_version(), base::Version(kCorrectPinnedVersion));
+  EXPECT_EQ(options.pinned_version(),
+            *IwaVersion::Create(kCorrectPinnedVersion));
 }
 
 // Verify that if no pinned version is set, then it does not appear in options.

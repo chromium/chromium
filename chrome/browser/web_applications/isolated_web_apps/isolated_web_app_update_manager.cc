@@ -55,6 +55,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/browser/browser_thread.h"
@@ -168,18 +169,12 @@ IwaBundleIdToUpdateOptionsMap GetForceInstalledPolicyIsolatedWebApps(
 
   for (const auto& install_options :
        IsolatedWebAppPolicyManager::GetIwaInstallForceList(*profile)) {
-    // TODO(crbug.com/437038363): Adjust to IwaVersion.
-    std::optional<IwaVersion> pinned_version;
-    if (install_options.pinned_version().has_value()) {
-      pinned_version = base::OptionalFromExpected(
-          IwaVersion::Create(install_options.pinned_version()->components()));
-    }
-
-    result.emplace(install_options.web_bundle_id(),
-                   IsolatedWebAppUpdateOptions(
-                       install_options.update_manifest_url(),
-                       install_options.update_channel(),
-                       install_options.allow_downgrades(), pinned_version));
+    result.emplace(
+        install_options.web_bundle_id(),
+        IsolatedWebAppUpdateOptions(install_options.update_manifest_url(),
+                                    install_options.update_channel(),
+                                    install_options.allow_downgrades(),
+                                    install_options.pinned_version()));
   }
 
   return result;
@@ -191,19 +186,12 @@ IwaBundleIdToUpdateOptionsMap GetKioskPolicyIsolatedWebApps() {
   std::optional<ash::KioskIwaUpdateData> kiosk_iwa_policy_data =
       ash::GetCurrentKioskIwaUpdateData();
   if (kiosk_iwa_policy_data) {
-    // TODO(crbug.com/437038363): Adjust to IwaVersion.
-    std::optional<IwaVersion> pinned_version;
-    if (kiosk_iwa_policy_data->pinned_version.has_value()) {
-      pinned_version = base::OptionalFromExpected(IwaVersion::Create(
-          kiosk_iwa_policy_data->pinned_version->components()));
-    }
-
     result.emplace(
         kiosk_iwa_policy_data->web_bundle_id,
         IsolatedWebAppUpdateOptions(kiosk_iwa_policy_data->update_manifest_url,
                                     kiosk_iwa_policy_data->update_channel,
                                     kiosk_iwa_policy_data->allow_downgrades,
-                                    pinned_version));
+                                    kiosk_iwa_policy_data->pinned_version));
   }
   return result;
 }

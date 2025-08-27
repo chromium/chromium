@@ -11,13 +11,13 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/version.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -31,7 +31,7 @@ class KioskAppDataDelegate;
 
 class KioskIwaData : public KioskAppDataBase {
  public:
-  using PinnedVersion = std::optional<base::Version>;
+  using PinnedVersion = std::optional<web_app::IwaVersion>;
 
   // Size of a kiosk IWA icon in pixels.
   static constexpr int kIconSize = 128;

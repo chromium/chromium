@@ -103,11 +103,8 @@ std::optional<UpdateManifest::VersionEntry> GetVersionWithOptions(
     const UpdateManifest& update_manifest,
     const IsolatedWebAppExternalInstallOptions& install_options) {
   if (install_options.pinned_version().has_value()) {
-    // TODO(crbug.com/437038363): Adjust to IwaVersion.
-    return update_manifest.GetVersion(
-        IwaVersion::Create(install_options.pinned_version()->components())
-            .value(),
-        install_options.update_channel());
+    return update_manifest.GetVersion(*install_options.pinned_version(),
+                                      install_options.update_channel());
   } else {
     return update_manifest.GetLatestVersion(install_options.update_channel());
   }
@@ -193,17 +190,11 @@ void IwaInstaller::Start() {
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
             install_options_.web_bundle_id());
 
-    // TODO(crbug.com/437038363): Adjust to IwaVersion.
-    std::optional<IwaVersion> pinned_version;
-    if (install_options_.pinned_version().has_value()) {
-      pinned_version = base::OptionalFromExpected(
-          IwaVersion::Create(install_options_.pinned_version()->components()));
-    }
-
     CHECK_DEREF(provider_.get())
         .scheduler()
         .GetIsolatedWebAppBundleCachePath(
-            url_info, pinned_version, IwaCacheClient::GetCurrentSessionType(),
+            url_info, install_options_.pinned_version(),
+            IwaCacheClient::GetCurrentSessionType(),
             base::BindOnce(&IwaInstaller::OnBundleCachePathReceived,
                            weak_factory_.GetWeakPtr()));
     return;

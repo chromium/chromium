@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/path_service.h"
-#include "base/version.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -18,6 +17,7 @@
 #include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -39,6 +39,10 @@ constexpr bool kDisallowDowngrades = false;
 std::string GetTestUserId() {
   return policy::GenerateDeviceLocalAccountUserId(
       kTestAccount, policy::DeviceLocalAccountType::kKioskIsolatedWebApp);
+}
+
+web_app::IwaVersion PinnedVersion() {
+  return *web_app::IwaVersion::Create(kTestPinnedVersion);
 }
 
 class FakeKioskAppDataDelegate : public KioskAppDataDelegate {
@@ -175,7 +179,7 @@ TEST_F(KioskIwaDataTest, CreateSuccessWithPinningDowngradeAndNoChannel) {
   ASSERT_NE(iwa_data, nullptr);
   EXPECT_EQ(iwa_data->update_channel(),
             web_app::UpdateChannel::default_channel());
-  EXPECT_EQ(iwa_data->pinned_version(), base::Version(kTestPinnedVersion));
+  EXPECT_EQ(iwa_data->pinned_version(), PinnedVersion());
   EXPECT_EQ(iwa_data->allow_downgrades(), kAllowDowngrades);
 }
 
@@ -187,7 +191,6 @@ TEST_F(KioskIwaDataTest, CreateSuccessWithAllValues) {
   const std::string kExpectedDefaultName = "iwa.com/path/";
   const auto kExpectedChannel =
       web_app::UpdateChannel::Create(kTestUpdateChannel);
-  const auto kExpectedPinnedVersion = base::Version(kTestPinnedVersion);
 
   auto iwa_data = KioskIwaData::Create(
       GetTestUserId(),
@@ -203,7 +206,7 @@ TEST_F(KioskIwaDataTest, CreateSuccessWithAllValues) {
   EXPECT_EQ(iwa_data->web_bundle_id().id(), kTestWebBundleId);
   EXPECT_EQ(iwa_data->update_manifest_url().spec(), kTestUpdateUrl);
   EXPECT_EQ(iwa_data->update_channel(), kExpectedChannel);
-  EXPECT_EQ(iwa_data->pinned_version(), kExpectedPinnedVersion);
+  EXPECT_EQ(iwa_data->pinned_version(), PinnedVersion());
   EXPECT_EQ(iwa_data->allow_downgrades(), kAllowDowngrades);
 }
 
