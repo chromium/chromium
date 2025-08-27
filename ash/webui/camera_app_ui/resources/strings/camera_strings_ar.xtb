@@ -11,7 +11,7 @@
 <translation id="1467231725790366244">تم فصل كاميرا <ph name="CAMERA" /> عن الجهاز.</translation>
 <translation id="1473110567575736769">مؤقّت لمدة 3 ثوانٍ</translation>
 <translation id="148783771699678004">جارٍ نقل زاوية المستند في اتجاه أعلى اليمين</translation>
-<translation id="1545749641540134597">فحص رمز الاستجابة السريعة</translation>
+<translation id="1545749641540134597">مسح رمز الاستجابة السريعة ضوئيًا</translation>
 <translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">عادي</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
@@ -89,7 +89,7 @@
 <translation id="4984613436295737187">‏دقة Quad HD ‏(1440p)</translation>
 <translation id="5034763830503483128">نسبة العرض إلى الارتفاع في الصورة</translation>
 <translation id="5057360777601936059">الكاميرا غير مُتاحة حاليًا.
-        يُرجى التحقُّق من اتصال الكاميرا بشكلٍ صحيح.</translation>
+        يُرجى التأكّد من أن الكاميرا متّصلة بشكلٍ صحيح.</translation>
 <translation id="5157591164390831335">‏تم رصد عنوان URL.</translation>
 <translation id="5163387177077603948">جارٍ نقل زاوية المستند في اتجاه اليمين</translation>
 <translation id="5235304959032763950">16 إلى 9</translation>
@@ -124,7 +124,7 @@
 <translation id="659539649712855529">تم نسخ "<ph name="CONTENT" />"</translation>
 <translation id="6617916774429601017">عرض كل درجات الدقة</translation>
 <translation id="6631515515009660915">المرآة غير مفعلّة</translation>
-<translation id="6652737148136672975">حرِّك موضع الزاوية باستخدام مفاتيح الأسهم.</translation>
+<translation id="6652737148136672975">عليك تحريك موضع الزاوية باستخدام مفاتيح الأسهم.</translation>
 <translation id="667999046851023355">مستند</translation>
 <translation id="6681668084120808868">التقاط صورة</translation>
 <translation id="6692092766759105707">انسخ المحتوى لإثبات صحته.</translation>

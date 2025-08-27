@@ -102,7 +102,7 @@
 <translation id="1761091787730831947">שיתוף עם <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">אישור האימות נדחה מקומית</translation>
 <translation id="1775381402323441512">פרטי הסרטון</translation>
-<translation id="180035236176489073">עליך להיות במצב מקוון כדי לגשת לקבצים אלה.</translation>
+<translation id="180035236176489073">נדרש חיבור לאינטרנט כדי לגשת לקבצים האלה.</translation>
 <translation id="1807938677607439181">כל הקבצים</translation>
 <translation id="1810764548349082891">אין תצוגה מקדימה זמינה</translation>
 <translation id="1812302367230252929">תעתיק אמהרית</translation>
@@ -142,7 +142,7 @@
 <translation id="2122305276694332719">חיבור אוטומטי לרשת מוסתרת מאפשר לאחרים לראות את המכשיר שלך וחלק מהגדרות הרשת. האפשרות הזו לא מומלצת.</translation>
 <translation id="2125607626296734455">חמר</translation>
 <translation id="2139545522194199494">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, התחברות</translation>
-<translation id="2141347188420181405">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ עוצמת האות <ph name="SIGNAL_STRENGTH" />%, נחסמה על ידי מנהל המערכת, פרטים</translation>
+<translation id="2141347188420181405">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ עוצמת האות <ph name="SIGNAL_STRENGTH" />%, נחסמה על ידי האדמין שלך, לפרטים</translation>
 <translation id="2142680004883808240">‏רוסית עם מקלדת פונטית YaZHert</translation>
 <translation id="2143778271340628265">‏תצורת שרת proxy ידנית</translation>
 <translation id="2148716181193084225">היום</translation>
@@ -242,7 +242,7 @@
 <translation id="2943503720238418293">השם צריך להיות קצר יותר</translation>
 <translation id="2949781154072577687">מתבצע פרמוט של <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">מדוזה</translation>
-<translation id="2958458230122209142">נפח האחסון כמעט ריק. יש עוד <ph name="REMAINING_PERCENTAGE" />% מתוך האחסון לשימוש פרטי בנפח <ph name="TOTAL_SPACE" />.</translation>
+<translation id="2958458230122209142">נפח האחסון כמעט ריק. נשארו לך <ph name="REMAINING_PERCENTAGE" />% מתוך האחסון לשימוש פרטי בנפח <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">‏הקובץ הזה מיועד למחשב שיכול להפעיל תוכנות Macintosh. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה ChromeOS. יש לחפש אפליקציה חלופית בחנות האינטרנט של Chrome.</translation>
 <translation id="2984337792991268709">היום <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">צרפתית (קנדה)</translation>
@@ -299,7 +299,7 @@
 <translation id="338691029516748599">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, התחברות</translation>
 <translation id="3408072735282270043">הפעלה, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">‏גרמנית (גרמניה) עם מקלדת Neo 2</translation>
-<translation id="3414856743105198592">פרמוט המדיה הנשלפת יגרום למחיקת כל הנתונים. האם ברצונך להמשיך?</translation>
+<translation id="3414856743105198592">פרמוט המדיה הנשלפת יגרום למחיקת כל הנתונים. רוצה להמשיך?</translation>
 <translation id="3437801641691368414">שעת יצירה</translation>
 <translation id="343907260260897561">מצלמת פיתוח מיידי</translation>
 <translation id="3455931012307786678">אסטונית</translation>
@@ -382,7 +382,7 @@
 <translation id="4101601646343868113">עליך להיכנס לרשת הסלולרית שלך ולאשר שחבילת הגלישה שלך פעילה</translation>
 <translation id="4124731372776320263">‏קובץ אחד מסתנכרן ב-Drive עכשיו</translation>
 <translation id="4124935795427217608">חד-קרן</translation>
-<translation id="4131235941541910880">אפשר להעביר לאשפה פריטים שאין לך צורך בהם</translation>
+<translation id="4131235941541910880">אפשר להעביר לאשפה פריטים שלא צריכים יותר</translation>
 <translation id="4134804435730168042">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, הפעלה בסיום הגדרת המכשיר</translation>
 <translation id="4153015322587141338">כדי לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ימנית על קובץ ולבחור באפשרות '<ph name="PIN_COMMAND" />'.</translation>
 <translation id="4157569377477607576">לפי מדיניות האדמין, הפעולות הבאות לא מומלצות:</translation>
@@ -401,7 +401,7 @@
 <translation id="4290535918735525311">‏תיקייה אחת שותפה עם Linux</translation>
 <translation id="4299729908419173967">פורטוגזית (ברזיל)</translation>
 <translation id="4302605047395093221">כל המשתמשים במכשיר יצטרכו להזין את קוד האימות כדי להתחבר לרשת הסלולרית הזו</translation>
-<translation id="4303531889494116116">הרשת הזו עמוסה. יש לנסות שוב מאוחר יותר.</translation>
+<translation id="4303531889494116116">הרשת הזו עמוסה. אפשר לנסות שוב אחר כך.</translation>
 <translation id="4309915981827077375">מידע כללי</translation>
 <translation id="432252891123397018">רומנית עם מקלדת רגילה</translation>
 <translation id="4325128273762811722">סלובנית</translation>
@@ -420,7 +420,7 @@
 <translation id="4394980935660306080">מוקדם יותר השבוע</translation>
 <translation id="4397435965699247285">‏שירות OneDrive לא זמין כשהמכשיר במצב אופליין</translation>
 <translation id="4398096759193130964">אפשר לשחזר את הפריטים או לגרור אותם לתיקייה חדשה מחוץ לאשפה</translation>
-<translation id="4401287888955153199">חילוץ הכול</translation>
+<translation id="4401287888955153199">חילוץ הכל</translation>
 <translation id="4410695710508688828">פעולת החילוץ נכשלה. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4414834425328380570">הקובץ '<ph name="FILE_NAME" />' יימחק ולא תהיה אפשרות לשחזר אותו.</translation>
 <translation id="4418686080762064601">יצירת קיצור דרך לקבצים</translation>
@@ -462,7 +462,7 @@
 <translation id="4694604912444486114">קוף</translation>
 <translation id="469612310041132144">סינית מהירה</translation>
 <translation id="4697043402264950621">רשימת הקבצים ממוינת לפי <ph name="COLUMN_NAME" /> בסדר עולה.</translation>
-<translation id="469897186246626197">‏הקובץ הזה מיועד למחשב PC עם מערכת ההפעלה Windows. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה ChromeOS. <ph name="BEGIN_LINK_HELP" />לרשותך מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-ChromeOS.</translation>
+<translation id="469897186246626197">‏הקובץ הזה מיועד למחשב עם מערכת הפעלה של Windows. הוא לא מתאים למכשיר שלך, שפועלת בו מערכת ההפעלה ChromeOS. אפשר לקרוא <ph name="BEGIN_LINK_HELP" />מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-ChromeOS.</translation>
 <translation id="4706042980341760088">‏טמילית עם מקלדת Typewriter</translation>
 <translation id="4711094779914110278">טורקית</translation>
 <translation id="4712283082407695269">הפתיחה של "<ph name="PATH" />" מתבצעת</translation>
@@ -511,7 +511,7 @@
 <translation id="4992066212339426712">ביטול השתקה</translation>
 <translation id="5010406651457630570">מחשבים</translation>
 <translation id="5011233892417813670">Chromebook</translation>
-<translation id="5024856940085636730">פעולה מסוימת נמשכת זמן רב מהצפוי. האם ברצונך לבטל אותה?</translation>
+<translation id="5024856940085636730">הפעולה נמשכת זמן רב מהצפוי. רוצה לבטל אותה?</translation>
 <translation id="5036159836254554629">‏ניהול השיתוף של Parallels Desktop</translation>
 <translation id="5038625366300922036">פרטים נוספים...</translation>
 <translation id="5044852990838351217">ארמנית</translation>
@@ -531,7 +531,7 @@
 <translation id="5144820558584035333">Hangul 3 Set (390)‎</translation>
 <translation id="5145331109270917438">תאריך שינוי</translation>
 <translation id="515594325917491223">שח-מט</translation>
-<translation id="5158983316805876233">‏שימוש באותו שרת proxy עבור כל הפרוטוקולים</translation>
+<translation id="5158983316805876233">‏שימוש באותו שרת proxy בכל הפרוטוקולים</translation>
 <translation id="5159383109919732130">‏<ph name="BEGIN_BOLD" />אל תסיר עדיין את המכשיר!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        הסרת המכשיר בעודו בשימוש תגרום לאובדן נתונים. יש להמתין עד לסיום הפעולה, ולאחר מכן לנתק את המכשיר דרך היישום Files.</translation>
@@ -673,7 +673,7 @@
 <translation id="6187719147498869044">הונגרית</translation>
 <translation id="6198252989419008588">שינוי קוד אימות</translation>
 <translation id="6199801702437275229">בהמתנה למידע על נפח האחסון...</translation>
-<translation id="6205710420833115353">פעולות מסוימות נמשכות זמן רב מהצפוי. האם ברצונך לבטל אותן?</translation>
+<translation id="6205710420833115353">הפעולות נמשכות יותר זמן מהצפוי. רוצה לבטל אותן?</translation>
 <translation id="6220423280121890987">פונג'בית</translation>
 <translation id="6224240818060029162">דנית</translation>
 <translation id="6224253798271602650">פירמוט של <ph name="DRIVE_NAME" /></translation>
@@ -697,7 +697,7 @@
 <translation id="636254897931573416">ערך ההתאמה של סיומות האתרים לא תקין</translation>
 <translation id="6364301859968397756">נפח האחסון של הארגון מלא</translation>
 <translation id="6367976544441405720">רכב מסחרי</translation>
-<translation id="637062427944097960">הקובץ הזה נפתח בשולחן עבודה שונה. עבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי לראות אותו.</translation>
+<translation id="637062427944097960">הקובץ הזה נפתח בשולחן עבודה אחר. כדי לראות אותו צריך לעבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">לקריאה בלבד</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> פריטים</translation>
 <translation id="6407769893376380348">לא ניתן להעביר את הקובץ <ph name="FILE_NAME" /> כי הוא מוצפן.</translation>
@@ -792,7 +792,7 @@
 <translation id="7103992300314999525">מקדונית</translation>
 <translation id="7104338189998813914">‏יש בעיה בגישה לחשבון OneDrive שלך</translation>
 <translation id="7106346894903675391">קניית נפח אחסון נוסף...</translation>
-<translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;חיפוש ב-‏Drive‏&lt;/em‏&gt;</translation>
+<translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;חיפוש ב-Drive‏&lt;/em&gt;</translation>
 <translation id="7135561821015524160">קאנדה פונטית</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7162080671816799010">חסר ערך בשדה 'התאמה של שמות נושאים חלופיים' או בשדה 'התאמה של סיומות אתרים' לצורך אימות הזהות של השרת</translation>
@@ -847,7 +847,7 @@
 <translation id="7551643184018910560">הצמדה למדף</translation>
 <translation id="7553492409867692754">‏אישור לאפליקציות של Linux לגשת לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">אין חיבור לאינטרנט כרגע. סנכרון הקבצים ימשיך כשיהיה חיבור לאינטרנט.</translation>
-<translation id="7589661784326793847">יש להמתין מספר רגעים</translation>
+<translation id="7589661784326793847">רק עוד רגע</translation>
 <translation id="7600126690270271294">סרבית</translation>
 <translation id="7603724359189955920">רשתות</translation>
 <translation id="7624010287655004652">ננעל על ידי ספק סלולר אחר</translation>
@@ -933,7 +933,7 @@
 <translation id="8147028810663464959">רוחב התווים הוא מלא</translation>
 <translation id="8151638057146502721">הגדרה</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{שגיאה אחת.}one{# שגיאות.}two{# שגיאות.}other{# שגיאות.}}</translation>
-<translation id="8154842056504218462">בחרת את כל הפריטים.</translation>
+<translation id="8154842056504218462">כל הפריטים נבחרו.</translation>
 <translation id="8157684860301034423">אחזור פרטי האפליקציה נכשל.</translation>
 <translation id="8175731104491895765">צרפתית (בלגיה)</translation>
 <translation id="8175799081768705361">‏<ph name="NUMBER_OF_FILES_SYNCING" /> קבצים ב-Drive מסתנכרנים עכשיו</translation>
@@ -948,7 +948,7 @@
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8261561378965667560">‏סינית Array</translation>
 <translation id="8262872909443689080">מדיניות האדמין</translation>
-<translation id="8264024885325823677">ההגדרה הזו מנוהלת על-ידי מנהל המערכת שלך.</translation>
+<translation id="8264024885325823677">ההגדרה הזו מנוהלת על-ידי האדמין שלך.</translation>
 <translation id="8269755669432358899">כיווץ חלוניות המשוב של הקבצים</translation>
 <translation id="8280151743281770066">ארמנית פונטית</translation>
 <translation id="8285791779547722821">עם הצפנה מסוג <ph name="ORIGINAL_MIME_TYPE" /></translation>
@@ -1046,7 +1046,7 @@
 <translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8971742885766657349">מתבצע סנכרון – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">‏סינית (מסורתית) Pinyin</translation>
-<translation id="8998871447376656508">‏אין מספיק מקום פנוי ב-Google Drive כדי להשלים את ההעלאה.</translation>
+<translation id="8998871447376656508">‏אין מספיק מקום פנוי ב-Google Drive שלך כדי להשלים את ההעלאה.</translation>
 <translation id="9003940392834790328">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, פרטים</translation>
 <translation id="9007990314804111233">‏כניסה לחשבון Microsoft</translation>
 <translation id="9017798300203431059">רוסית פונטית</translation>

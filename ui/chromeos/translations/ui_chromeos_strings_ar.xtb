@@ -274,7 +274,7 @@
 <translation id="3248185426436836442">معلَّق</translation>
 <translation id="3252266817569339921">الفرنسية</translation>
 <translation id="3253225298092156258">غير متاح</translation>
-<translation id="3254434849914415189">اختر التطبيق التلقائي لملفات <ph name="FILE_TYPE" />:</translation>
+<translation id="3254434849914415189">يرجى اختيار التطبيق التلقائي لملفات <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">العربية</translation>
 <translation id="326396468955264502">تعذّر نقل <ph name="NUMBER_OF_FILES" /> ملف لأنّها مشفَّرة.</translation>
 <translation id="3264582393905923483">السياق</translation>
@@ -315,10 +315,10 @@
 <translation id="3529424493985988200">يُرجى التواصل مع المشرف للحصول على التفاصيل.</translation>
 <translation id="3548125359243647069">لقد أدخلت رقم تعريف شخصي غير صحيح عدّة مرات.</translation>
 <translation id="3549797760399244642">‏جارٍالانتقال إلى drive.google.com...</translation>
-<translation id="3553048479571901246">‏لفتح الملفات باستخدام <ph name="APP_NAME" />، يُرجى نسخها أولاً إلى مجلد ملفات نظام التشغيل Windows.</translation>
+<translation id="3553048479571901246">‏لفتح الملفات باستخدام "<ph name="APP_NAME" />"، يُرجى نسخها أولاً إلى مجلد ملفات نظام التشغيل Windows.</translation>
 <translation id="3556731189587832921">الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح الكمبيوتر الشخصي الدولية</translation>
 <translation id="3557414470514932909">جارٍ نقل <ph name="FILE_NAME" /> إلى "المهملات"…</translation>
-<translation id="3567221313191587603">اختَر ملفًا ثم فعِّل الخيار "<ph name="OFFLINE_CHECKBOX_NAME" />" لإتاحة الوصول إلى الملف بلا اتصال بالإنترنت.</translation>
+<translation id="3567221313191587603">يُرجى اختيار ملف ثم تفعيل الخيار "<ph name="OFFLINE_CHECKBOX_NAME" />" لإتاحة الوصول إلى الملف بلا اتصال بالإنترنت.</translation>
 <translation id="357479282490346887">الليتوانية</translation>
 <translation id="3587482841069643663">الكل</translation>
 <translation id="3592251141500063301">تعذَّرت إتاحة الملف "<ph name="FILE_NAME" />" بلا اتصال بالإنترنت.</translation>
@@ -342,7 +342,7 @@
 <translation id="3727148787322499904">سيؤثر تغيير هذا الإعداد في جميع الشبكات المشتركة</translation>
 <translation id="3737576078404241332">الإزالة من الشريط الجانبي</translation>
 <translation id="3749289110408117711">اسم الملف</translation>
-<translation id="3786301125658655746">أنت غير متصل بالإنترنت.</translation>
+<translation id="3786301125658655746">لا يوجد اتصال بالإنترنت.</translation>
 <translation id="3789841737615482174">تثبيت</translation>
 <translation id="3793469551756281394">تبقّى <ph name="REMAINING_TIME_HOUR" /> و<ph name="REMAINING_TIME_MINUTE" /> تقريبًا</translation>
 <translation id="3798449238516105146">الإصدار</translation>
@@ -370,7 +370,7 @@
 <translation id="3952872973865944257">التيلوغوية الصوتية</translation>
 <translation id="3958548648197196644">كيوي</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
-<translation id="3971140002794351170">‏تنزيل الملف الشخصي لشريحة eSIM على الجهاز الجوّال، الشبكة رقم <ph name="NETWORK_INDEX" /> من أصل <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
+<translation id="3971140002794351170">‏تنزيل الملف الشخصي لشريحة eSIM على الجهاز الجوّال، الشبكة رقم <ph name="NETWORK_INDEX" /> من أصل <ph name="NETWORK_COUNT" />، "<ph name="NETWORK_NAME" />"، "<ph name="NETWORK_PROVIDER_NAME" />"</translation>
 <translation id="3973925058222872294">الإنجليزية (المملكة المتحدة)</translation>
 <translation id="3975895378829046965">البنغالية الصوتية</translation>
 <translation id="3999574733850440202">‏ملفات Microsoft التي تم فتحها مؤخرًا متوفّرة الآن في OneDrive.</translation>
@@ -462,7 +462,7 @@
 <translation id="4694604912444486114">قرد</translation>
 <translation id="469612310041132144">‏الصينية باستخدام لوحة مفاتيح Quick</translation>
 <translation id="4697043402264950621">تم ترتيب قائمة الملف تصاعديًا حسب <ph name="COLUMN_NAME" />.</translation>
-<translation id="469897186246626197">‏هذا الملف غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome لأنّه مُصمّم لأجهزة الكمبيوتر التي تستخدم نظام التشغيل Windows. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على نظام التشغيل Chrome</translation>
+<translation id="469897186246626197">‏تم تصميم هذا الملف لجهاز الكمبيوتر باستخدام برنامج Windows. وهذا الملف غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على نظام التشغيل Chrome</translation>
 <translation id="4706042980341760088">التاميلية باستخدام لوحة مفاتيح الآلة الكاتبة</translation>
 <translation id="4711094779914110278">التركية</translation>
 <translation id="4712283082407695269">جارٍ فتح "<ph name="PATH" />"</translation>
@@ -503,7 +503,7 @@
 <translation id="496656650103537022">تمت استعادة <ph name="FILE_NAME" />.</translation>
 <translation id="4969785127455456148">الألبوم</translation>
 <translation id="4972330214479971536">تعذَّر إكمال إعداد مزامنة الملفات</translation>
-<translation id="4973523518332075481">يرجى استخدام اسم يحتوي على <ph name="MAX_LENGTH" /> حرف أو أقل</translation>
+<translation id="4973523518332075481">يُرجى استخدام اسم يحتوي على <ph name="MAX_LENGTH" /> حرف أو أقل</translation>
 <translation id="4984616446166309645">اليابانية</translation>
 <translation id="4987699874727873250">الإنجليزية (الهند)</translation>
 <translation id="4988205478593450158">هل تريد بالتأكيد حذف "<ph name="FILE_NAME" />"؟</translation>
@@ -596,7 +596,7 @@
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5602622065581044566">البلغارية باستخدام لوحة المفاتيح الصوتية</translation>
 <translation id="5605830556594064952">‏الأمريكية Dvorak</translation>
-<translation id="5618330573454123917">‏هذا الملف غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome لأنّه مُصمّم لأجهزة الكمبيوتر التي تستخدم نظام التشغيل Macintosh. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على نظام التشغيل Chrome</translation>
+<translation id="5618330573454123917">‏تم تصميم هذا الملف لأجهزة الكمبيوتر التي تستخدم نظام التشغيل Macintosh. وهذا الملف غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على نظام التشغيل Chrome</translation>
 <translation id="5625294776298156701">‏التاميلية باستخدام لوحة مفاتيح Tamil99</translation>
 <translation id="5633226425545095130">يؤدي نقل هذا الملف إلى مشاركته مع جميع المستخدمين الذين يمكنهم الاطّلاع على المجلد المشترك "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">استماع</translation>
@@ -681,7 +681,7 @@
 <translation id="6269630227984243955">الملايوية</translation>
 <translation id="6271903698064569429">يتعذّر تحميل الملفات بسبب عدم توفُّر مساحة تخزين كافية في "<ph name="SHARED_DRIVE_NAME" />".</translation>
 <translation id="6279140785485544797">يُحتمل أنّ صلاحية خطة بيانات الجوّال انتهت. ننصحك بالتواصل مع مشغّل شبكة الجوّال للحصول على المساعدة.</translation>
-<translation id="6287852322318138013">حدد تطبيقًا لفتح هذا الملف من خلاله</translation>
+<translation id="6287852322318138013">تحديد تطبيق لفتح هذا الملف من خلاله</translation>
 <translation id="6295542640242147836">‏قفل شريحة SIM</translation>
 <translation id="6296410173147755564">‏رمز PUK غير صالح.</translation>
 <translation id="6308243004861726558">هذا الملف سرّي ويخضع لسياسة المشرف. يتم تطبيق الإجراءات التالية للوصول إلى الملف ونقله.</translation>
@@ -696,7 +696,7 @@
 <translation id="636254897931573416">قيمة غير صالحة لمطابقة لاحقة النطاق</translation>
 <translation id="6364301859968397756">مساحة التخزين المتوفّرة للمؤسسة ممتلئة.</translation>
 <translation id="6367976544441405720">سيارة نقل</translation>
-<translation id="637062427944097960">تم فتح هذا الملف على جهاز سطح مكتب آخر. يمكنك الانتقال إلى <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) للاطلاع عليه.</translation>
+<translation id="637062427944097960">‏تم فتح هذا الملف على كمبيوتر مكتبي آخر. ويمكنك الانتقال إلى <ph name="USER_NAME" /> ‎(<ph name="MAIL_ADDRESS" />) للاطّلاع على هذا الكمبيوتر.</translation>
 <translation id="6394388407447716302">للقراءة فقط</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> من العناصر</translation>
 <translation id="6407769893376380348">تعذّر نقل "<ph name="FILE_NAME" />" لأنّه مشفَّر.</translation>
@@ -782,7 +782,7 @@
 <translation id="7031639531908619281">التركية</translation>
 <translation id="7037472120706603960">تحويل صوتي إلى اللغة التاميلية</translation>
 <translation id="7040138676081995583">فتح باستخدام...</translation>
-<translation id="7048024426273850086">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، <ph name="PROVIDER_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، بطارية الهاتف <ph name="BATTERY_STATUS" />%، الاتصال</translation>
+<translation id="7048024426273850086">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، "<ph name="PHONE_NAME" />"، "<ph name="PROVIDER_NAME" />"، قوة الإشارة %<ph name="SIGNAL_STRENGTH" />، بطارية الهاتف %<ph name="BATTERY_STATUS" />، الاتصال</translation>
 <translation id="7070804685954057874">الإدخال المباشر</translation>
 <translation id="7075931588889865715">‏التايلاندية باستخدام لوحة مفاتيح TIS 820-2531</translation>
 <translation id="708278670402572152">قطع الاتصال لتفعيل الفحص</translation>
@@ -846,7 +846,7 @@
 <translation id="7551643184018910560">تثبيت في الرف</translation>
 <translation id="7553492409867692754">‏يمكنك منح التطبيقات التي تعمل بنظام التشغيل Linux الإذن للوصول إلى الملفات في مجلد <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">جهازك غير متصل بالإنترنت حاليًا. سيتم استئناف مزامنة الملفات بعدما يتصل جهازك بالإنترنت.</translation>
-<translation id="7589661784326793847">انتظر قليلاً</translation>
+<translation id="7589661784326793847">يرجى الانتظار قليلاً</translation>
 <translation id="7600126690270271294">الصربية</translation>
 <translation id="7603724359189955920">شبكات</translation>
 <translation id="7624010287655004652">تم القفل بواسطة مقدِّم آخر لخدمات شبكة الجوّال</translation>
@@ -920,7 +920,7 @@
 <translation id="8049184478152619004">‏إدخال مفتاح إزالة حظر رقم التعريف الشخصي (PUK)</translation>
 <translation id="8055538340801153769">هذا المجلد</translation>
 <translation id="807187749540895545">جارٍ استخراج <ph name="FILE_NAME" />...</translation>
-<translation id="8087576439476816834">تنزيل <ph name="PROFILE_NAME" /></translation>
+<translation id="8087576439476816834">تنزيل "<ph name="PROFILE_NAME" />"</translation>
 <translation id="8106045200081704138">تمت مشاركتها معي</translation>
 <translation id="8116072619078571545">ماء مثلج</translation>
 <translation id="8120392982188717723">السماح بالمزامنة على الشبكات الخاضعة للقياس</translation>
@@ -1007,7 +1007,7 @@
 <translation id="8600173386174225982">تم تغيير قائمة الملف إلى عرض الصور المصغرة.</translation>
 <translation id="8601932370724196034">‏ملف صورة Crostini</translation>
 <translation id="8609695766746872526">الآيسلندية</translation>
-<translation id="8630384863424041081">‏أدخِل رقم التعريف الشخصي لشريحة SIM أو رقم التعريف الشخصي التلقائي المقدَّم من مشغّل شبكة الجوّال. ويمكنك التواصل مع مشغّل شبكة الجوّال للحصول على الدعم.</translation>
+<translation id="8630384863424041081">‏يرجى إدخال رقم التعريف الشخصي لشريحة SIM أو رقم التعريف الشخصي التلقائي المقدَّم من مشغّل شبكة الجوّال. ويمكنك التواصل مع مشغّل شبكة الجوّال للحصول على الدعم.</translation>
 <translation id="863903787380594467">رقم التعريف الشخصي غير صحيح. يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - منفذ</translation>
 <translation id="8656407365183407932">كان يلزم إزالة الملفات المتاحة بلا اتصال بالإنترنت</translation>

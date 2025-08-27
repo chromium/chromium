@@ -458,7 +458,7 @@
 <translation id="1751544761369730824">刪除網站 <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">出紙槽 8</translation>
 <translation id="1753706481035618306">頁碼</translation>
-<translation id="1755203724116202818">為評估廣告成效，網站之間會分享特定類型的資料，例如使用者是否在瀏覽網站後購物</translation>
+<translation id="1755203724116202818">為評估廣告成效，網站之間會分享特定類型的資料，例如使用者是否在瀏覽網站後購物。</translation>
 <translation id="1755621011177747277">領養</translation>
 <translation id="1756026472674246267">在新分頁中開啟連結</translation>
 <translation id="1756555787993603971">你現可透過自動填入功能使用虛擬卡，結帳時更加安全。</translation>
@@ -3391,7 +3391,7 @@
 <translation id="6786145470008421571">6 x 9 吋信封</translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
 <translation id="6786747875388722282">擴充功能</translation>
-<translation id="6787094689637422836">我們將推出全新私隱功能，讓您更能掌握自己看到的廣告。</translation>
+<translation id="6787094689637422836">我們將推出全新私隱功能，讓你更能掌握自己看到的廣告。</translation>
 <translation id="6789062271869667677">連續 (長邊)</translation>
 <translation id="678982761784843853">受保護的 Content ID</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -3999,7 +3999,7 @@
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798389633136518089">由於政策並非透過雲端來源設定，因此已忽略。</translation>
 <translation id="7800304661137206267">連線採用 <ph name="CIPHER" /> 加密，並設有 <ph name="MAC" /> 訊息驗證及 <ph name="KX" /> 金鑰交換機制。</translation>
-<translation id="7800977246388195491">Chrome 會根據您最近的瀏覽記錄，記住您感興趣的主題。此外，您瀏覽的網站可判斷您喜歡的內容，並稍後要求提供這些資料以向您顯示個人化廣告。您可選擇系統根據哪些主題和網站顯示廣告。</translation>
+<translation id="7800977246388195491">Chrome 會根據你最近的瀏覽記錄，記住你感興趣的主題。此外，你瀏覽的網站可判斷你喜歡的內容，並稍後要求提供這些資料以向你顯示個人化廣告。你可選擇系統根據哪些主題和網站顯示廣告。</translation>
 <translation id="7802523362929240268">合法網站</translation>
 <translation id="7802989406998618639">輸入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位數安全碼，以便銀行驗證您的身份</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>

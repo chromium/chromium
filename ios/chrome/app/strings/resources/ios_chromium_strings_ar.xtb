@@ -36,11 +36,11 @@
 <translation id="1707458603865303524">‏يؤدي هذا الإعداد إلى فتح Chromium عند النقر على الروابط في الرسائل أو التطبيقات الأخرى.</translation>
 <translation id="1722370509450468186">سيتم حفظ كلمة المرور في حسابك (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">اطّلِع على خلاصة مخصَّصة لك</translation>
-<translation id="1811860791247653035">‏للحصول على خيارات مخصَّصة والاستفادة من ميزات أخرى، يمكنك تضمين متصفّح Chromium في "<ph name="FEATURE_NAME_1" />" و<ph name="FEATURE_NAME_2" /></translation>
+<translation id="1811860791247653035">‏للحصول على خيارات مخصَّصة والاستفادة من ميزات أخرى، يمكنك تضمين متصفّح Chromium في "<ph name="FEATURE_NAME_1" />" و"<ph name="FEATURE_NAME_2" />"</translation>
 <translation id="1838412507805038478">‏لقد تحقق Chromium من أن <ph name="ISSUER" /> أصدر شهادة الموقع الإلكتروني هذه.</translation>
 <translation id="1839447949248872139">‏فتح الروابط في Chromium تلقائيًا</translation>
-<translation id="1843424232666537147">‏يتمتع Chromium بميزات تساعدك على إدارة بياناتك على الإنترنت ومدى السرعة التي بمقدورك تحميل صفحات الويب من خلالها.
-<ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="1843424232666537147">‏يشتمِل Chrome على ميزات من شأنها مساعدتك على إدارة بيانات الإنترنت والوقوف على مدى السرعة التي يمكنك تحميل صفحات الويب من خلالها.
+<ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">‏"خرائط Google" في Chromium</translation>
 <translation id="1867772173333403444">‏4- اختيار Chromium</translation>
 <translation id="2006345422933397527">‏تعذّر على Chromium البحث عن تحديثات. يُرجى التحقق من الاتصال بالإنترنت.</translation>
@@ -74,7 +74,7 @@
 <translation id="2517624234762908348">‏مزامنة بيانات Chromium</translation>
 <translation id="2592940277904433508">‏مواصلة استخدام Chromium</translation>
 <translation id="2607609479243848905">‏في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chromium في حسابك<ph name="END_LINK" />.</translation>
-<translation id="2650312721222849884">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chromium، فعِّل المزامنة.</translation>
+<translation id="2650312721222849884">‏للاطّلاع على علامات التبويب من أي جهاز يُستخدم فيه Chromium، يرجى تفعيل المزامنة.</translation>
 <translation id="2684230048001240293">‏يمكنك ضبط Chromium كمتصفّح تلقائي لمزامنة كل من علامات التبويب وكلمات المرور ومعلومات الدفع على جميع أجهزتك.</translation>
 <translation id="2730884209570016437">‏يتعذر على Chromium استخدام الكاميرا نظرًا لأنها قيد الاستخدام من قِبل تطبيق آخر</translation>
 <translation id="2798503587425057129">‏فتح قائمة القراءة في Chromium</translation>
@@ -87,7 +87,7 @@
 <translation id="2942241131342758843">‏يمكنك استخدام Chromium كمتصفّح تلقائي لفتح الروابط والبحث من خلال التطبيقات المصغَّرة وملء كلمات المرور تلقائيًا في التطبيقات الأخرى.</translation>
 <translation id="2977470724722393594">‏Chromium محدّث</translation>
 <translation id="3044857325852340337">‏تم حذف بيانات Chromium</translation>
-<translation id="3054480780637153380">‏افتح إعدادات Chromium في نظام التشغيل iOS، ثم انقر على "تطبيق المتصفِّح التلقائي" واختَر Chromium.</translation>
+<translation id="3054480780637153380">‏يرجى فتح إعدادات Chromium في نظام التشغيل iOS، ثم النقر على "تطبيق المتصفِّح التلقائي" واختيار Chromium.</translation>
 <translation id="3102849287235003384">‏للخروج من حسابك على Google في جميع المواقع الإلكترونية، عليك <ph name="BEGIN_LINK" />الخروج من Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">‏هل تريد أن يكون Chromium المتصفِّح التلقائي؟</translation>
 <translation id="3180939591219927904">‏يجب تفعيل خيار "قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chromium"</translation>
@@ -268,7 +268,7 @@
 <translation id="7531461704633548377">‏من Chromium</translation>
 <translation id="7554983317097061001">‏نصيحة من Chromium: انقُل Chromium إلى شريط التطبيقات</translation>
 <translation id="7576863740961052505">‏إدارة إعدادات Chromium</translation>
-<translation id="7674213385180944843">‏افتح الإعدادات &gt; الخصوصية &gt; الكاميرا &gt; Chromium وشغِّل الكاميرا.</translation>
+<translation id="7674213385180944843">‏يُرجى فتح الإعدادات &gt; الخصوصية &gt; الكاميرا &gt; Chromium وتشغيل الكاميرا.</translation>
 <translation id="7733418656985455268">‏نصيحة من Chromium: البحث باستخدام "عدسة Google"</translation>
 <translation id="7747820849741499258">‏البحث في Chromium</translation>
 <translation id="7753923083404296545">‏تم فتح الرابط في "وضع التصفّح المتخفي" في Chromium</translation>

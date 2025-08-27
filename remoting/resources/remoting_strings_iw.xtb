@@ -30,7 +30,7 @@
 <translation id="2366718077645204424">לא ניתן להשיג את המארח, כנראה בגלל תצורת הרשת שבשימוש.</translation>
 <translation id="242591256144136845">‏זכויות יוצרים 2025‏ Google LLC. כל הזכויות שמורות.</translation>
 <translation id="2504109125669302160">מתן הרשאת 'נגישות' ל-<ph name="PRODUCT_NAME" /></translation>
-<translation id="2509394361235492552">בוצעה התחברות אל <ph name="HOSTNAME" /></translation>
+<translation id="2509394361235492552">מחובר אל <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">האם לשתף מחשב זה כך שמשתמש אחר יוכל לראות אותו ולשלוט בו?</translation>
 <translation id="2579271889603567289">המארח קרס או שלא הופעל.</translation>
 <translation id="2599300881200251572">‏שירות זה מאפשר חיבורים נכנסים מלקוחות Chrome Remote Desktop.</translation>
@@ -64,7 +64,7 @@
 <translation id="405887016757208221">המחשב המרוחק לא הצליח לאתחל את ההפעלה. אם הבעיה נמשכת, יש לנסות להגדיר שוב את המארח.</translation>
 <translation id="4060747889721220580">הורדת קובץ</translation>
 <translation id="4126409073460786861">כשתהליך ההגדרה יסתיים, צריך יהיה לרענן את הדף ואז אפשר יהיה לבחור את המכשיר שלך ולהזין את קוד האימות כדי לגשת למחשב</translation>
-<translation id="4145029455188493639">התחברת באמצעות חשבון <ph name="EMAIL_ADDRESS" />.</translation>
+<translation id="4145029455188493639">נכנסת לחשבון עם <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">חלק מהרכיבים הדרושים חסרים. יש לוודא שהתקנת את הגרסה העדכנית ביותר של התוכנה ולנסות שוב.</translation>
 <translation id="4176825807642096119">קוד גישה</translation>
 <translation id="4227991223508142681">Host Provisioning Utility</translation>

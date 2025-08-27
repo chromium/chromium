@@ -346,7 +346,7 @@
 <translation id="1569487616857761740">输入失效日期</translation>
 <translation id="1569694109004336106">Google Chrome 正在尝试开启 Windows Hello 来填充密码。</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 英寸</translation>
-<translation id="1574714699824202614">正在验证付款方式</translation>
+<translation id="1574714699824202614">正在验证支付方式</translation>
 <translation id="1576277203042721907">购物数据洞见</translation>
 <translation id="1579189948231786790">贵组织已屏蔽此网站</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -458,7 +458,7 @@
 <translation id="1751544761369730824">删除网站 <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">信箱 8</translation>
 <translation id="1753706481035618306">页码</translation>
-<translation id="1755203724116202818">为了衡量某个广告的效果，网站之间会分享有限类型的数据，例如您在访问某个网站后是否购买了商品。</translation>
+<translation id="1755203724116202818">为衡量广告效果，网站之间会分享特定类型的数据，例如您在访问某个网站后是否进行了购买交易。</translation>
 <translation id="1755621011177747277">领养</translation>
 <translation id="1756026472674246267">在新标签页中打开链接</translation>
 <translation id="1756555787993603971">您现在可以通过自动填充功能使用虚拟卡更安全地结账。</translation>
@@ -1029,7 +1029,7 @@
 <translation id="2725927759457695883">填充全名</translation>
 <translation id="2726001110728089263">侧面纸匣</translation>
 <translation id="2728127805433021124">服务器的证书是使用弱签名算法进行签名的。</translation>
-<translation id="272937284275742856">正在安全地验证付款信息…</translation>
+<translation id="272937284275742856">正在安全验证支付信息…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />运行网络连接诊断<ph name="END_LINK" /></translation>
 <translation id="2731220418440848219">详细了解 Chromium 中的搜索引擎</translation>
 <translation id="2731382536835015353">44 x 68 英寸</translation>
@@ -1579,7 +1579,7 @@
 <translation id="3678529606614285348">在新的无痕式窗口中打开网页 (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">输入 <ph name="OTP_LENGTH" /> 位数的验证码</translation>
 <translation id="3681007416295224113">证书信息</translation>
-<translation id="3681421644246505351">Chrome 会根据您近期的浏览记录来推测您感兴趣的主题。</translation>
+<translation id="3681421644246505351">Chrome 会根据您近期的浏览记录来记录您感兴趣的主题。</translation>
 <translation id="3681841880472207951">QuickTime 视频</translation>
 <translation id="3682094733650754138">已选择“填充地址”选项</translation>
 <translation id="3687920599421452763">货车与小型货车</translation>
@@ -1949,7 +1949,7 @@
 <translation id="4282280603030594840">购车</translation>
 <translation id="4282346679996504092">针对此商品的提醒已被关闭，相应书签已被移除</translation>
 <translation id="4285498937028063278">取消固定</translation>
-<translation id="4287495839370498922">在 Chrome 中加强广告隐私设置</translation>
+<translation id="4287495839370498922">强化 Chrome 上的广告隐私权</translation>
 <translation id="4288101205645068104">删除车辆</translation>
 <translation id="4290920330097335010">一律不允许</translation>
 <translation id="4296207570293932800">全新广告隐私权功能现已推出</translation>
@@ -3387,7 +3387,7 @@
 <translation id="6786145470008421571">6 x 9 英寸信封</translation>
 <translation id="67862343314499040">紫罗兰色</translation>
 <translation id="6786747875388722282">扩展程序</translation>
-<translation id="6787094689637422836">我们将推出新的隐私保护功能，让您能更好地掌控自己看到的广告。</translation>
+<translation id="6787094689637422836">我们将推出新的隐私权功能，让您能更好地掌控自己看到的广告。</translation>
 <translation id="6789062271869667677">连续纸（长边）</translation>
 <translation id="678982761784843853">受保护内容 ID</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -3583,7 +3583,7 @@
 <translation id="7119371694555167493">复制超时</translation>
 <translation id="7119414471315195487">关闭其他标签页或程序</translation>
 <translation id="7120588595737538743">下载内容和屏幕截图</translation>
-<translation id="7124354851782353862">请输入您的 CVC</translation>
+<translation id="7124354851782353862">请输入 CVC</translation>
 <translation id="7129409597930077180">无法向此地址送货。请另选一个地址。</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">禁止上传</translation>
@@ -4662,7 +4662,7 @@
 <translation id="9005998258318286617">未能加载 PDF 文档。</translation>
 <translation id="9008201768610948239">忽略</translation>
 <translation id="9012194306129927220">现在，您可以使用 Affirm 或 Zip 分期付款</translation>
-<translation id="9014705027639070815">您访问的网站可请求 Chrome 提供相关信息，以便衡量各自的广告效果。Chrome 允许网站收集有限类型的数据，例如您在访问某个网站后是否购买了商品。</translation>
+<translation id="9014705027639070815">您访问的网站可请求 Chrome 提供相关信息，以便衡量各自的广告效果。Chrome 允许网站收集特定类型的数据，例如您在访问某个网站后是否进行了购买交易。</translation>
 <translation id="9018120810758822233">输入“<ph name="CREDIT_CARD" />”的安全码</translation>
 <translation id="901834265349196618">邮箱</translation>
 <translation id="90196294733273307">显示了信用卡详细信息的对话框</translation>

@@ -10,7 +10,7 @@
 <translation id="2447485272386224171">‏Chrome קיים הודות לפרויקט הקוד הפתוח של <ph name="BEGIN_LINK_CHROMIUM" /> Chromium<ph name="END_LINK_CHROMIUM" /> ו<ph name="BEGIN_LINK_OSS" />תוכנות קוד פתוח<ph name="END_LINK_OSS" /> נוספות.</translation>
 <translation id="2588322182880276190">‏הלוגו של Chrome</translation>
 <translation id="3444832043240812445">הדף הזה מציג מידע על הקריסות האחרונות רק אם <ph name="BEGIN_LINK" />מפעילים את אפשרות הדיווח על קריסות<ph name="END_LINK" />.</translation>
-<translation id="3512634283363927263">‏הדפים האלה מיועדים למפתחי Chrome. יכול להיות שהם לא מתוחזקים או נבדקים באופן פעיל. כדי להפעיל אותם, עוברים לכתובת <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, לוחצים על הכפתור כדי להפעיל את מצב ניפוי הבאגים בדפים, ואז מנווטים בחזרה לדף הזה.</translation>
+<translation id="3512634283363927263">‏הדפים האלה מיועדים למפתחי Chrome. יכול להיות שהם לא מתוחזקים או נבדקים באופן פעיל. כדי לגשת אליהם, עוברים לכתובת <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, לוחצים על הכפתור כדי להפעיל את מצב ניפוי הבאגים בדפים, ואז מנווטים בחזרה לדף הזה.</translation>
 <translation id="3875312571075912821">‏כדאי לשנות את הגדרות חומת האש או האנטי-וירוס כדי לאפשר ל-Chrome לגשת לרשת.</translation>
 <translation id="4949828774841497663">‏נכנסים ל-"אפליקציות" &gt; "הגדרות המערכת" &gt; "רשת", ובוחרים את
           הרשת הפעילה. לוחצים על הכפתור "פרטים…" ומבטלים את הבחירה בכל שרתי ה-proxy

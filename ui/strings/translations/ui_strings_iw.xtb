@@ -36,8 +36,8 @@
 <translation id="1871244248791675517">Ins</translation>
 <translation id="1901303067676059328">בחירת &amp;הכול</translation>
 <translation id="19085484004813472">זוהי תכונה חדשה</translation>
-<translation id="2006524834898217237">יש לוודא שהמכשיר הזה מחובר לאינטרנט.</translation>
-<translation id="208586643495776849">יש לנסות שוב</translation>
+<translation id="2006524834898217237">כדאי לוודא שהמכשיר הזה מחובר לאינטרנט.</translation>
+<translation id="208586643495776849">אפשר לנסות שוב</translation>
 <translation id="2111134541987263231">מפעילים את האפשרות <ph name="BEGIN_BOLD" />לאפשר במצב פרטי<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{יום}one{# ימ}two{# ימ}other{# ימ}}</translation>
 <translation id="2148716181193084225">היום</translation>
@@ -46,11 +46,11 @@
 <translation id="2192232475740621500">שימוש בדחיסות נמוכה</translation>
 <translation id="2267918077332197517">חסימת כל ההודעות מהאתר הזה</translation>
 <translation id="2283117145434822734">F6</translation>
-<translation id="2289052229480071835">יש ללחוץ על יעדי המגע במסך.</translation>
+<translation id="2289052229480071835">צריך ללחוץ על יעדי המגע במסך.</translation>
 <translation id="2295140143284145483">סקר</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" />TB/s</translation>
 <translation id="2312704192806647271">{COUNT,plural, =1{לא ניתן למצוא תוסף עם המזהה <ph name="BEGIN_LIST" /><ph name="END_LIST" />. יש לפנות לאדמין.}one{לא ניתן למצוא תוספים עם המזהים <ph name="BEGIN_LIST" /><ph name="END_LIST" />. יש לפנות לאדמין.}two{לא ניתן למצוא תוספים עם המזהים <ph name="BEGIN_LIST" /><ph name="END_LIST" />. יש לפנות לאדמין.}other{לא ניתן למצוא תוספים עם המזהים <ph name="BEGIN_LIST" /><ph name="END_LIST" />. יש לפנות לאדמין.}}</translation>
-<translation id="2353636109065292463">בדיקת חיבור האינטרנט</translation>
+<translation id="2353636109065292463">בדיקת החיבור לאינטרנט</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2388990488038464401">להתקשר למספר הזה מהטלפון שלך?</translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
@@ -85,7 +85,7 @@
 <translation id="3295886253693811851">התקשרות באמצעות</translation>
 <translation id="3306688585798492231">מסך מובנה</translation>
 <translation id="335581015389089642">דיבור</translation>
-<translation id="3372635229069101468">לוחצים על <ph name="BEGIN_BOLD" />פרטים<ph name="END_BOLD" /></translation>
+<translation id="3372635229069101468">ללחוץ על <ph name="BEGIN_BOLD" />פרטים<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">הטקסט ארוך מדי</translation>
 <translation id="3406306243914553062">‏תוכן HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{נותר יום אחד}one{נותרו # ימים}two{נותרו יומיים}other{נותרו # ימים}}</translation>
@@ -125,7 +125,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{שנייה אחת}one{# שניות}two{# שניות}other{# שניות}}</translation>
 <translation id="4971687151119236543">טראק קודם במדיה</translation>
-<translation id="5046499563572181734">יש ללחוץ כאן</translation>
+<translation id="5046499563572181734">צריך ללחוץ כאן</translation>
 <translation id="5076340679995252485">&amp;הדבקה</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
 <translation id="5278860589123563674">השליחה נכשלה</translation>

@@ -6,11 +6,11 @@
 <translation id="145360476452865422">سياسة الصور المتحركة:</translation>
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="1588438908519853928">عادي</translation>
-<translation id="1591070050619849194">أوقف جميع صور الرسوم المتحركة.</translation>
+<translation id="1591070050619849194">إيقاف جميع صور الرسوم المتحركة</translation>
 <translation id="1703735871906654364">التصفح النصي بالمؤشر</translation>
 <translation id="1791496371305830581">اسمح بجميع الصور المتحركة.</translation>
 <translation id="1974060860693918893">الإعدادات المتقدّمة</translation>
-<translation id="1996252509865389616">هل تريد التفعيل؟</translation>
+<translation id="1996252509865389616">هل مطلوب التفعيل؟</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2179565792157161713">فتح وصف مفصل في علامة تبويب جديدة</translation>
 <translation id="2223143012868735942">تم تطبيق فلتر لون قابل للتخصيص إلى صفحات الويب لتحسين إدراك اللون.</translation>
@@ -37,7 +37,7 @@
 <translation id="5041932793799765940">تعديل اللون</translation>
 <translation id="5094574508723441140">زيادة التباين</translation>
 <translation id="5173942593318174089">أبرز موضع المؤشر بالرسوم المتحركة.</translation>
-<translation id="5287723860611749454">‏&lt;p&gt;استخدام مفاتيح الأسهم للتحرك في جميع أنحاء المستند &lt;/ P&gt; &lt;P&gt; انقر في أي مكان لتحريك المؤشر إلى ذلك الموقع. &lt;/ P&gt; &lt;P&gt; اضغط على &lt;span class='key'&gt;Shift&lt;/span&gt; + الأسهم لتحديد النص.&lt;/ P&gt;</translation>
+<translation id="5287723860611749454">‏&lt;p&gt;يمكنك استخدام مفاتيح الأسهم للتحرك في جميع أنحاء المستند. &lt;/ P&gt; &lt;P&gt; يرجى النقر في أي مكان لتحريك المؤشر إلى ذلك الموقع. &lt;/ P&gt; &lt;P&gt; يمكنك الضغط على &lt;span class='key'&gt;Shift&lt;/span&gt; + الأسهم لتحديد النص.&lt;/ P&gt;</translation>
 <translation id="5331422999063554397">لون معكوس</translation>
 <translation id="5555153510860501336">التباين العالي غير مفعّل</translation>
 <translation id="5558600050691192317">أوامر لوحة المفاتيح</translation>
@@ -66,7 +66,7 @@
 <translation id="8260673944985561857">خيارات التصفح النصي بالمؤشر</translation>
 <translation id="8321034316479930120">سياسة الصور المتحركة</translation>
 <translation id="8480209185614411573">تباين مرتفع</translation>
-<translation id="8609925175482059018">‏لتفعيل التصفح النصي بالمؤشر انقر على &lt;span class='key'&gt;F7&lt;/span&gt; ولإيقاف تشغيله انقر علىه مرة أخرى.</translation>
+<translation id="8609925175482059018">‏لتشغيل التصفح النصي بالمؤشر يُرجى النقر فوق &lt;span class='key'&gt;F7&lt;/span&gt; ولإيقاف تشغيله يُرجى النقر فوقه مرة أخرى.</translation>
 <translation id="8798099450830957504">التلقائي</translation>
 <translation id="894241283505723656">وصف مفصل في قائمة السياقات</translation>
 </translationbundle>

@@ -37,7 +37,7 @@
 <translation id="3822383571486410024">צריך להאריך את הטקסט הזה ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (כרגע הוא באורך <ph name="CURRENT_LENGTH" /> תווים).</translation>
 <translation id="383465348367842624">חלק ולאחריו '<ph name="ATSIGN" />' לא אמור לכלול את הסמל '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">יציאה ממסך מלא</translation>
-<translation id="4360991593054037559">יש להזין ערך חוקי. שני הערכים החוקיים הקרובים ביותר הם <ph name="VALID_VALUE_LOW" /> ו-<ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4360991593054037559">צריך להזין ערך תקין. שני הערכים התקינים הקרובים ביותר הם <ph name="VALID_VALUE_LOW" /> ו-<ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">פרטים</translation>
 <translation id="4664250907885839816">חלק ולאחריו '<ph name="ATSIGN" />' לא אמור לכלול את הסמל '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4703271465972936359">טראקים של אודיו</translation>
@@ -77,7 +77,7 @@
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">עליך להאריך את הטקסט ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (כרגע יש תו אחד).</translation>
 <translation id="709897737746224366">יש להתאים את הפורמט המבוקש.</translation>
-<translation id="7263440858009898357">יש לבחור פריט מהרשימה.</translation>
+<translation id="7263440858009898357">צריך לבחור פריט מהרשימה.</translation>
 <translation id="7364796246159120393">בחירת קובץ</translation>
 <translation id="739024184232394898">אחר...</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>

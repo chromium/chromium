@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1149198577555059081">אפשר להזין ביטוי לחיפוש או כתובת אתר</translation>
-<translation id="1324575488877808473">‏אפשר לפתוח את Chrome כדי שיופיעו כאן האתרים שבהם מבקרים בתדירות הגבוהה ביותר.</translation>
+<translation id="1324575488877808473">‏אפשר לפתוח את Chrome כדי שיופיעו כאן האתרים שביקרת בהם הכי הרבה.</translation>
 <translation id="2513892053093488070">חיפוש קולי</translation>
 <translation id="2535710892645968259">‏עברו למשחק Chrome Dino ממסך הנעילה.</translation>
 <translation id="2542770169955243077">‏משחק Chrome Dino</translation>
@@ -13,7 +13,7 @@
 <translation id="3501428580460217920">‏חיפוש או ניווט בכרטיסייה פרטית חדשה ב-Chrome.</translation>
 <translation id="3528874492835415837">טקסט או כתובת אתר לחיפוש</translation>
 <translation id="3798529146539130967">‏חיפוש ב-Chrome באמצעות הקול.</translation>
-<translation id="405442954313519726">‏אפשר לחפש או לנווט בכרטיסייה חדשה, במצב אנונימי, באמצעות הקול או באמצעות קוד QR.</translation>
+<translation id="405442954313519726">‏אפשר לחפש או לנווט בכרטיסייה חדשה, במצב פרטי, באמצעות הקול או באמצעות קוד QR.</translation>
 <translation id="4557098988773644458">‏מעבר מהיר למשחק Chrome Dino</translation>
 <translation id="4678859075583681103">קיצור דרך לחיפוש חדש ולאתרים הקבועים שלך – ישר ממסך הבית של האייפון.</translation>
 <translation id="4962772945748414465">‏פתיחת WEBSITE_PLACEHOLDER</translation>
@@ -41,7 +41,7 @@
 <translation id="8171952085734471362">חיפוש במצב פרטי</translation>
 <translation id="8310150944719146950">חשבון</translation>
 <translation id="8564942608461410346">‏החיפוש ב-Chrome זמין באמצעות מנוע החיפוש המועדף עליך.</translation>
-<translation id="8858765528951093286">החשבון שבו הווידג'ט משתמש הוסר. כדי לבחור חשבון אחר, לוחצים על "עריכת הווידג'ט".</translation>
+<translation id="8858765528951093286">החשבון שבו הווידג'ט משתמש הוסר. כדי לבחור חשבון אחר, צריך ללחוץ על "עריכת הווידג'ט".</translation>
 <translation id="9175676375569833962">חיפוש
 בסיסמאות</translation>
 </translationbundle>

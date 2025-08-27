@@ -346,7 +346,7 @@
 <translation id="1569487616857761740">Укажите дату окончания срока действия</translation>
 <translation id="1569694109004336106">Google Chrome пытается включить Windows Hello, чтобы указывать пароли.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" />"</translation>
-<translation id="1574714699824202614">Подтверждение способа оплаты…</translation>
+<translation id="1574714699824202614">Подтверждение способа оплаты</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1579189948231786790">Этот сайт заблокирован вашей организацией</translation>
 <translation id="1581080074034554886">CVC-код</translation>
@@ -1206,7 +1206,7 @@
 <translation id="3076865167425975822">Операционные системы</translation>
 <translation id="3080254622891793721">Изображения</translation>
 <translation id="3082007635241601060">Разрешите компании Google использовать корзины, чтобы находить для вас персонализированные скидки.</translation>
-<translation id="3086269988715347183">Вы ещё не разрешали <ph name="BLOCKED_URL" />.</translation>
+<translation id="3086269988715347183">Вы ещё не разрешали посещать <ph name="BLOCKED_URL" />.</translation>
 <translation id="3086579638707268289">Ваши действия в Интернете отслеживаются</translation>
 <translation id="3087734570205094154">Снизу</translation>
 <translation id="3090667236485488075">Стекло</translation>
