@@ -859,7 +859,7 @@ public class AccessibilityNodeInfoBuilder {
     }
 
     @FunctionalInterface
-    private static interface SpanFactory<T> {
+    private interface SpanFactory<T> {
         @Nullable ParcelableSpan createSpan(T param);
     }
 

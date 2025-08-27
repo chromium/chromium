@@ -15,15 +15,14 @@ import org.chromium.content.browser.ViewEventSinkImpl;
 @NullMarked
 public interface ViewEventSink {
     /**
-     * Interface that consumers of WebContents must implement to allow the proper
-     * dispatching of view methods through the containing view.
+     * Interface that consumers of WebContents must implement to allow the proper dispatching of
+     * view methods through the containing view.
      *
-     * <p>
-     * All methods with the "super_" prefix should be routed to the parent of the
-     * implementing container view.
+     * <p>All methods with the "super_" prefix should be routed to the parent of the implementing
+     * container view.
      */
     @SuppressWarnings("javadoc")
-    public interface InternalAccessDelegate {
+    interface InternalAccessDelegate {
         /**
          * @see View#onKeyUp(keyCode, KeyEvent)
          */
@@ -48,7 +47,7 @@ public interface ViewEventSink {
     /**
      * @return {@link ViewEventSink} instance for a given {@link WebContents}.
      */
-    public static ViewEventSink from(WebContents webContents) {
+    static ViewEventSink from(WebContents webContents) {
         return ViewEventSinkImpl.from(webContents);
     }
 

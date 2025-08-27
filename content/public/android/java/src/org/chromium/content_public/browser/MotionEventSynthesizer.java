@@ -12,7 +12,7 @@ import org.chromium.content.browser.MotionEventSynthesizerImpl;
 /** Injects synthetic touch events. All the coordinates are of physical unit. */
 @NullMarked
 public interface MotionEventSynthesizer {
-    public static MotionEventSynthesizer create(View target) {
+    static MotionEventSynthesizer create(View target) {
         return MotionEventSynthesizerImpl.create(target);
     }
 

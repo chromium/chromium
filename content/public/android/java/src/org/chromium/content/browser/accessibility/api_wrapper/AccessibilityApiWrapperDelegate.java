@@ -16,9 +16,9 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public interface AccessibilityApiWrapperDelegate {
     /** An example test API demonstrating the usage of the accessibility API wrapper library. */
-    public @Nullable CharSequence getMyTestStringApi(AccessibilityNodeInfoCompat node);
+    @Nullable CharSequence getMyTestStringApi(AccessibilityNodeInfoCompat node);
 
     /** An example test API demonstrating the usage of the accessibility API wrapper library. */
-    public void setMyTestStringApi(
+    void setMyTestStringApi(
             AccessibilityNodeInfoCompat node, @Nullable CharSequence myTestStringApi);
 }

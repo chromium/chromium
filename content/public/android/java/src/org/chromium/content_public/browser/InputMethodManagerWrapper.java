@@ -17,7 +17,7 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public interface InputMethodManagerWrapper {
     /** An embedder may implement this for multi-display support. */
-    public interface Delegate {
+    interface Delegate {
         /** Whether the delegate has established an input connection. */
         boolean hasInputConnection();
     }

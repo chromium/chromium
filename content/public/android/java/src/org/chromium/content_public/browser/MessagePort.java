@@ -16,10 +16,11 @@ import org.chromium.content.browser.AppWebMessagePort;
 @NullMarked
 public interface MessagePort {
     /** The message callback for receiving messages. */
-    public interface MessageCallback {
+    interface MessageCallback {
         /**
          * Sent when the associated {@link MessagePort} gets a postMessage.
-         * @param messagePayload   The message payload that was received.
+         *
+         * @param messagePayload The message payload that was received.
          * @param sentPorts The {@link MessagePort}s that were sent if any.
          */
         void onMessage(MessagePayload messagePayload, MessagePort @Nullable [] sentPorts);
@@ -27,9 +28,10 @@ public interface MessagePort {
 
     /**
      * Called to create an entangled pair of ports.
+     *
      * @return An array of a pair of{@link MessagePort} instances.
      */
-    public static MessagePort[] createPair() {
+    static MessagePort[] createPair() {
         return AppWebMessagePort.createPair();
     }
 

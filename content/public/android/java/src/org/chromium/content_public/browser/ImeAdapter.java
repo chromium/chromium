@@ -21,12 +21,12 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public interface ImeAdapter {
     /** Composition key code sent when user either hit a key or hit a selection. */
-    static final int COMPOSITION_KEY_CODE = 229;
+    int COMPOSITION_KEY_CODE = 229;
 
     /**
      * @param webContents {@link WebContents} object.
-     * @return {@link ImeAdapter} object used for the give WebContents.
-     *         {@code null} if not available.
+     * @return {@link ImeAdapter} object used for the give WebContents. {@code null} if not
+     *     available.
      */
     static ImeAdapter fromWebContents(WebContents webContents) {
         return ImeAdapterImpl.fromWebContents(webContents);

@@ -24,7 +24,7 @@ public interface TracingControllerAndroid {
      * @param context the Context in which to create the controller.
      * @return the controller.
      */
-    public static TracingControllerAndroid create(Context context) {
+    static TracingControllerAndroid create(Context context) {
         return new TracingControllerAndroidImpl(context);
     }
 

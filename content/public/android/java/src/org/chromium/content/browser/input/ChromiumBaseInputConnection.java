@@ -19,9 +19,8 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public interface ChromiumBaseInputConnection extends InputConnection {
     /** A factory class to create or reuse ChromiumBaseInputConnection. */
-    public interface Factory {
-        @Nullable
-        ChromiumBaseInputConnection initializeAndGet(
+    interface Factory {
+        @Nullable ChromiumBaseInputConnection initializeAndGet(
                 View view,
                 ImeAdapterImpl imeAdapter,
                 int inputType,

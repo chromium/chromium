@@ -62,10 +62,10 @@ public interface WebContents extends Parcelable {
     }
 
     /**
-     * @return a default implementation of {@link InternalsHolder} that holds a reference to
-     * {@link WebContentsInternals} object owned by {@link WebContents} instance.
+     * @return a default implementation of {@link InternalsHolder} that holds a reference to {@link
+     *     WebContentsInternals} object owned by {@link WebContents} instance.
      */
-    public static InternalsHolder createDefaultInternalsHolder() {
+    static InternalsHolder createDefaultInternalsHolder() {
         return new InternalsHolder() {
             private @Nullable WebContentsInternals mInternals;
 
@@ -675,7 +675,7 @@ public interface WebContents extends Parcelable {
      *
      * @param <T> Class to instantiate.
      */
-    public interface UserDataFactory<T> {
+    interface UserDataFactory<T> {
         T create(WebContents webContents);
     }
 
@@ -689,7 +689,7 @@ public interface WebContents extends Parcelable {
      *     yet, or {@code userDataFactory} is null, or the internal data storage is already
      *     garbage-collected.
      */
-    public <T extends UserData> @Nullable T getOrSetUserData(
+    <T extends UserData> @Nullable T getOrSetUserData(
             Class<T> key, @Nullable UserDataFactory<T> userDataFactory);
 
     /**
@@ -699,5 +699,5 @@ public interface WebContents extends Parcelable {
      * @param key The class object representing the type of user data to remove. If no user data
      *     object of this type exists, this method has no effect.
      */
-    public <T extends UserData> void removeUserData(Class<T> key);
+    <T extends UserData> void removeUserData(Class<T> key);
 }

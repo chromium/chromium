@@ -21,7 +21,7 @@ import java.util.List;
 @NullMarked
 public interface ContactsPickerListener {
     /** A container class for exchanging contact details. */
-    public static class Contact {
+    class Contact {
         public final @Nullable List<String> names;
         public final @Nullable List<String> emails;
         public final @Nullable List<String> tel;
@@ -66,7 +66,7 @@ public interface ContactsPickerListener {
         ContactsPickerAction.UNDO_SELECT_ALL
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ContactsPickerAction {
+    @interface ContactsPickerAction {
         int CANCEL = 0;
         int CONTACTS_SELECTED = 1;
         int SELECT_ALL = 2;

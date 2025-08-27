@@ -22,7 +22,7 @@ import java.util.List;
 @NullMarked
 public interface SelectionClient {
     /** The result of the text analysis. */
-    public static class Result {
+    class Result {
         /** The surrounding text including the selection. */
         public @Nullable String text;
 
@@ -83,12 +83,12 @@ public interface SelectionClient {
     }
 
     /** The interface that returns the result of the selected text analysis. */
-    public interface ResultCallback {
+    interface ResultCallback {
         /** The result is delivered with this method. */
         void onClassified(Result result);
     }
 
-    public interface SurroundingTextCallback {
+    interface SurroundingTextCallback {
         /**
          * When the surrounding text is received from the native side. This will be called
          * regardless if the selected text is valid or not.
@@ -166,7 +166,7 @@ public interface SelectionClient {
     }
 
     /** Creates a {@link SelectionClient} instance. */
-    public static @Nullable SelectionClient createSmartSelectionClient(WebContents webContents) {
+    static @Nullable SelectionClient createSmartSelectionClient(WebContents webContents) {
         SelectionPopupController selectionPopupController =
                 SelectionPopupController.fromWebContents(webContents);
         SelectionClient.ResultCallback callback = selectionPopupController.getResultCallback();
