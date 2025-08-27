@@ -141,9 +141,10 @@ mojom::OnTabGroupCreatedEventPtr ToTabGroupCreatedEvent(
   auto event = mojom::OnTabGroupCreatedEvent::New();
   event->data = tabs_api::converters::BuildMojoTabCollectionData(
       tab_group->GetCollectionHandle());
-  // TODO(crbug.com/412935315): Set the correct position.
-  event->position =
-      tabs_api::Position(0, NodeId::FromTabGroupId(tab_group_change.group));
+  // TODO(crbug.com/412935315): Determine whether a position is necessary in a
+  // TabGroupCreated event. This will have no tabs unless it has been inserted
+  // from another tabstrip.
+  event->position = tabs_api::Position(0);
   // When TabGroupChange::kCreated is fired, the TabGroupTabCollection is
   // empty. Then, TabGroupedStateChanged() is fired, which adds tabs to the
   // group.

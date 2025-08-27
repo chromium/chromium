@@ -32,9 +32,8 @@ class NodeId {
   ~NodeId() = default;
 
   static NodeId FromTabHandle(const tabs::TabHandle& handle);
-  // TODO(crbug.com/425390972): remove this helper and use TabCollectionHandle
-  // everywhere.
-  static NodeId FromTabGroupId(const tab_groups::TabGroupId& group_id);
+  static NodeId FromTabCollectionHandle(
+      const tabs::TabCollectionHandle& handle);
 
   std::optional<tabs::TabHandle> ToTabHandle() const;
   std::optional<tabs::TabCollectionHandle> ToTabCollectionHandle() const;
