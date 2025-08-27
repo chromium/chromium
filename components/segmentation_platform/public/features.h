@@ -88,9 +88,6 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformAndroidHomeModuleRankerV2);
 // Feature flag for controlling sampling of training data collection.
 BASE_DECLARE_FEATURE(kSegmentationPlatformTimeDelaySampling);
 
-// Feature flag for intoroducing delay while initializing models at startup.
-BASE_DECLARE_FEATURE(kSegmentationPlatformModelInitializationDelay);
-
 // Feature flag for turning of signal database cache.
 BASE_DECLARE_FEATURE(kSegmentationPlatformSignalDbCache);
 

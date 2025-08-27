@@ -124,10 +124,6 @@ BASE_FEATURE(kSegmentationPlatformTimeDelaySampling,
              "SegmentationPlatformTimeDelaySampling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSegmentationPlatformModelInitializationDelay,
-             "SegmentationPlatformModelInitializationDelay",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enabled only on iOS to improve startup performance of the module ranker.
 BASE_FEATURE(kSegmentationPlatformSignalDbCache,
              "SegmentationPlatformSignalDbCache",

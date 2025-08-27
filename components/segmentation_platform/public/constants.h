@@ -259,10 +259,6 @@ const char kComposePrmotionLabelDontShow[] = "DontShow";
 constexpr char kModelExecutionSamplingRateKey[] =
     "model_execution_sampling_rate";
 
-// Finch parameter key for introducing delay(in ms) in model initialization at
-// startup.
-constexpr char kModelInitializationDelay[] = "model_initialization_delay";
-
 // Input Context keys for FedCM.
 const char kFedCmHost[] = "host";
 const char kFedCmUrl[] = "url";
