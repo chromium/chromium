@@ -74,6 +74,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
+#include "chrome/browser/ui/webui/notifications_internals/notifications_internals.mojom.h"
+#include "chrome/browser/ui/webui/notifications_internals/notifications_internals_ui.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #else
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
@@ -1212,6 +1214,9 @@ void PopulateChromeWebUIFrameBinders(
 #if BUILDFLAG(IS_ANDROID)
   RegisterWebUIControllerInterfaceBinder<feed_internals::mojom::PageHandler,
                                          FeedInternalsUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      notifications_internals::mojom::PageHandler, NotificationsInternalsUI>(
+      map);
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

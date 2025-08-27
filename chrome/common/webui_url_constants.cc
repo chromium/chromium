@@ -165,6 +165,9 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUIInspectHost,
       kChromeUINewTabPageHost,
       kChromeUINewTabPageThirdPartyHost,
+#if BUILDFLAG(IS_ANDROID)
+      kChromeUINotificationsInternalsHost,
+#endif
       kChromeUISettingsHost,
       kChromeUISystemInfoHost,
 #if !BUILDFLAG(IS_CHROMEOS)

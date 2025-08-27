@@ -1,0 +1,39 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/notifications_internals/notifications_internals_ui_page_handler.h"
+
+#include "base/functional/bind.h"
+#include "base/uuid.h"
+#include "base/values.h"
+#include "chrome/browser/notifications/scheduler/public/notification_params.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/ui/webui/notifications_internals/notifications_internals.mojom.h"
+#include "content/public/browser/web_ui.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+
+NotificationsInternalsUIPageHandler::NotificationsInternalsUIPageHandler(
+    mojo::PendingReceiver<notifications_internals::mojom::PageHandler> receiver,
+    notifications::NotificationScheduleService* service)
+    : receiver_(this, std::move(receiver)), service_(service) {}
+
+NotificationsInternalsUIPageHandler::~NotificationsInternalsUIPageHandler() =
+    default;
+
+void NotificationsInternalsUIPageHandler::ScheduleNotification() {
+  notifications::ScheduleParams schedule_params;
+  schedule_params.priority =
+      notifications::ScheduleParams::Priority::kNoThrottle;
+  schedule_params.deliver_time_start = base::Time::Now();
+  schedule_params.deliver_time_end = base::Time::Now() + base::Minutes(1);
+  notifications::NotificationData data;
+  data.title = u"title";
+  data.message = u"message";
+  auto params = std::make_unique<notifications::NotificationParams>(
+      notifications::SchedulerClientType::kWebUI, std::move(data),
+      std::move(schedule_params));
+  service_->Schedule(std::move(params));
+}

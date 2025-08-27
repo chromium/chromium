@@ -319,6 +319,7 @@ group("dev_ui_resources") {
   if (is_android) {
     public_deps += [
       "//chrome/browser/resources/feed_internals:resources",
+      "//chrome/browser/resources/notifications_internals:resources",
       "//chrome/browser/resources/webapks:resources",
     ]
   } else {
@@ -392,6 +393,7 @@ repack("dev_ui_paks") {
   if (is_android) {
     sources += [
       "$root_gen_dir/chrome/feed_internals_resources.pak",
+      "$root_gen_dir/chrome/notifications_internals_resources.pak",
       "$root_gen_dir/chrome/webapks_resources.pak",
     ]
   } else {
