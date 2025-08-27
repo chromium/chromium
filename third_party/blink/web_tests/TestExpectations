@@ -2937,7 +2937,7 @@ crbug.com/440374744 external/wpt/content-security-policy/xslt/document-function-
 crbug.com/441356800 external/wpt/html/semantics/embedded-content/the-video-element/video_timeupdate_on_seek.html [ Timeout ]
 crbug.com/441360066 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/fragment_navigated/fragment_navigated.py [ Timeout ]
 crbug.com/441216889 [ Mac14 ] external/wpt/bluetooth/bidi/service/device-same-object.https.window.html [ Pass Timeout ]
-crbug.com/441216889 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/device-same-object.https.window.html [ Pass Timeout ]
+crbug.com/441216889 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/device-same-object.https.window.html [ Failure Pass Timeout ]
 crbug.com/440811029 [ Mac14-arm64 ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Pass Timeout ]
 crbug.com/440811029 [ Win11-arm64 ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Pass Timeout ]
 crbug.com/440829301 [ Mac14-arm64 ] external/wpt/content-index/idlharness.https.any.html [ Skip Timeout ]
