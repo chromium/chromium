@@ -124,6 +124,7 @@ source_set("unit_tests") {
     "distiller_url_fetcher_unittest.cc",
     "dom_distiller_request_view_base_unittest.cc",
     "dom_distiller_service_unittest.cc",
+    "extraction_utils_unittest.cc",
     "page_features_unittest.cc",
     "task_tracker_unittest.cc",
     "url_utils_unittest.cc",

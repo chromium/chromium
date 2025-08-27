@@ -39,6 +39,13 @@ constexpr base::FeatureParam<bool> kReaderModeUseReadabilityUseDistiller{
     &kReaderModeUseReadability, /*name=*/"use_distiller",
     /*default_value=*/false};
 #endif
+constexpr base::FeatureParam<int> kReaderModeUseReadabilityHeuristicMinScore{
+    &kReaderModeUseReadability, /*name=*/"heuristic_min_score",
+    /*default_value=*/35};
+constexpr base::FeatureParam<int>
+    kReaderModeUseReadabilityHeuristicMinContentLength{
+        &kReaderModeUseReadability, /*name=*/"heuristic_min_content_length",
+        /*default_value=*/140};
 
 bool ShouldUseReadabilityDistiller() {
 #if BUILDFLAG(IS_IOS)
@@ -47,6 +54,14 @@ bool ShouldUseReadabilityDistiller() {
   return base::FeatureList::IsEnabled(kReaderModeUseReadability) &&
          kReaderModeUseReadabilityUseDistiller.Get();
 #endif
+}
+
+int GetReadabilityHeuristicMinScore() {
+  return kReaderModeUseReadabilityHeuristicMinScore.Get();
+}
+
+int GetReadabilityHeuristicMinContentLength() {
+  return kReaderModeUseReadabilityHeuristicMinContentLength.Get();
 }
 
 #if BUILDFLAG(IS_ANDROID)

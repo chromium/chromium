@@ -18,6 +18,8 @@ bool ShouldStartDistillabilityService();
 BASE_DECLARE_FEATURE(kReaderModeUseReadability);
 bool ShouldUseReadabilityDistiller();
 bool ShouldUseReadabilityHeuristic();
+int GetReadabilityHeuristicMinScore();
+int GetReadabilityHeuristicMinContentLength();
 
 #if BUILDFLAG(IS_ANDROID)
 // Feature declarations below -- alphabetical order.
