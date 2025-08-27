@@ -118,6 +118,9 @@ const base::FeatureParam<bool> kAnnotatedPageContentStudyIncludeInnerText{
 const base::FeatureParam<bool> kAnnotatedPageContentOnCriticalPath{
     &kAnnotatedPageContentExtraction, "on_critical_path", false};
 
+const base::FeatureParam<std::string> kAnnotatedPageContentMode{
+    &kAnnotatedPageContentExtraction, "mode", "default"};
+
 }  // namespace
 
 // Enables page content to be annotated.
@@ -289,6 +292,10 @@ base::TimeDelta GetAnnotatedPageContentCaptureDelay() {
 
 bool ShouldAnnotatedPageContentStudyIncludeInnerText() {
   return kAnnotatedPageContentStudyIncludeInnerText.Get();
+}
+
+std::string AnnotatedPageContentMode() {
+  return kAnnotatedPageContentMode.Get();
 }
 
 }  // namespace page_content_annotations::features

@@ -136,6 +136,10 @@ base::TimeDelta GetAnnotatedPageContentCaptureDelay();
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 bool ShouldAnnotatedPageContentStudyIncludeInnerText();
 
+// The mode for extracting AnnotatedPageContent in the extraction service.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+std::string AnnotatedPageContentMode();
+
 }  // namespace page_content_annotations::features
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_FEATURES_H_

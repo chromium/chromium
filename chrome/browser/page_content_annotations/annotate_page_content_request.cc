@@ -54,7 +54,12 @@ void RecordPdfPageCountMetrics(
 std::unique_ptr<AnnotatedPageContentRequest>
 AnnotatedPageContentRequest::Create(content::WebContents* web_contents) {
   auto request = blink::mojom::AIPageContentOptions::New();
-  request->mode = blink::mojom::AIPageContentMode::kDefault;
+  request->mode =
+      (page_content_annotations::features::AnnotatedPageContentMode() ==
+       "actionable")
+          ? blink::mojom::AIPageContentMode::kActionableElements
+          : blink::mojom::AIPageContentMode::kDefault;
+  ;
   request->on_critical_path = page_content_annotations::features::
       IsAnnotatedPageContentOnCriticalPath();
 
