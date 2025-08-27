@@ -589,7 +589,10 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
   bool config_success = screen_manager_->ConfigureDisplayControllers(
       controllers_to_configure, modeset_flags);
 
-  const bool should_try_test_fallback = !is_commit && !config_success;
+  // TODO: crbug.com/441557393 - Properly handle tiled displays in BigJoiner
+  // fallback instead of skipping the entire fallback.
+  const bool should_try_test_fallback =
+      !is_commit && !config_success && !HasTiledDisplay();
   bool did_test_modeset_with_fallback = false;
   if (should_try_test_fallback) {
     did_test_modeset_with_fallback = true;
@@ -1069,6 +1072,15 @@ std::unique_ptr<drmModeModeInfo> DrmGpuDisplayManager::FindModeForDisplay(
   auto out_mode = std::make_unique<drmModeModeInfo>();
   *out_mode = *matching_modes.front();
   return out_mode;
+}
+
+bool DrmGpuDisplayManager::HasTiledDisplay() const {
+  for (const auto& display : displays_) {
+    if (display->GetTileProperty().has_value()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace ui

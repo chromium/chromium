@@ -122,6 +122,9 @@ class DrmGpuDisplayManager {
       const DrmDisplay& display,
       bool is_seamless);
 
+  // Returns true if any of the displays is a tiled display.
+  bool HasTiledDisplay() const;
+
   const raw_ptr<ScreenManager> screen_manager_;         // Not owned.
   const raw_ptr<DrmDeviceManager> drm_device_manager_;  // Not owned.
 
