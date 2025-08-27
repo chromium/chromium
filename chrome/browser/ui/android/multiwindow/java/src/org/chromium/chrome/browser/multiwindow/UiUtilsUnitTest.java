@@ -37,6 +37,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 public class UiUtilsUnitTest {
     // Title
     private static final String TITLE = "Title";
+    private static final String CUSTOM_TITLE = "Custom Title";
     private static final String EMPTY_WINDOW = "Empty Window";
     private static final String INCOGNITO = "Incognito";
 
@@ -79,6 +80,17 @@ public class UiUtilsUnitTest {
 
     @Test
     public void testItemTitle() {
+        // Normal tabs only with custom title -> custom title
+        assertEquals(
+                "Instance with normal tabs and custom title has a wrong title",
+                CUSTOM_TITLE,
+                mUiUtils.getItemTitle(mockInstance(57, 1, 0, false, CUSTOM_TITLE)));
+
+        assertEquals(
+                "Instance with normal tabs and custom title has a wrong title",
+                TITLE,
+                mUiUtils.getItemTitle(mockInstance(57, 1, 0, false, /* customTitle= */ null)));
+
         // Empty window
         assertEquals(
                 "Instance with no tabs has a wrong title",
@@ -441,6 +453,25 @@ public class UiUtilsUnitTest {
                 "https://url.com",
                 TITLE,
                 /* customTitle= */ null,
+                tabCount,
+                incognitoTabCount,
+                isIncognito,
+                0);
+    }
+
+    private InstanceInfo mockInstance(
+            int taskId,
+            int tabCount,
+            int incognitoTabCount,
+            boolean isIncognito,
+            String customTitle) {
+        return new InstanceInfo(
+                1,
+                taskId,
+                0,
+                "https://url.com",
+                TITLE,
+                customTitle,
                 tabCount,
                 incognitoTabCount,
                 isIncognito,

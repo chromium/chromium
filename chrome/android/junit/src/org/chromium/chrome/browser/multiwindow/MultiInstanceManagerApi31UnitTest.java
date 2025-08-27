@@ -56,6 +56,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Token;
@@ -806,6 +807,10 @@ public class MultiInstanceManagerApi31UnitTest {
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
 
+        final String customTitle = "My Custom Title";
+        ChromeSharedPreferences.getInstance()
+                .writeString(MultiInstanceManagerApi31.customTitleKey(INSTANCE_ID_1), customTitle);
+
         triggerSelectTab(tabModelObserver, mTab1);
         assertFalse(
                 "Normal tab should be selected",
@@ -860,6 +865,25 @@ public class MultiInstanceManagerApi31UnitTest {
                 "Null tab should not affect the URL",
                 URL2.getSpec(),
                 MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+        assertEquals(
+                "Custom title should not change when tab changes.",
+                customTitle,
+                MultiInstanceManagerApi31.readCustomTitle(INSTANCE_ID_1));
+    }
+
+    @Test
+    public void testRenameCallbackUpdatesCustomTitle() {
+        Callback<Pair<Integer, String>> renameCallback =
+                mMultiInstanceManager.getRenameCallbackForTesting();
+
+        final String newTitle = "My Renamed Window";
+        final int instanceId = 2;
+        renameCallback.onResult(new Pair<>(instanceId, newTitle));
+
+        assertEquals(
+                "Custom title should be updated in SharedPreferences.",
+                newTitle,
+                MultiInstanceManagerApi31.readCustomTitle(instanceId));
     }
 
     @Test
@@ -1060,6 +1084,8 @@ public class MultiInstanceManagerApi31UnitTest {
         ChromeSharedPreferences.getInstance().writeString(urlKey, "");
         String titleKey = MultiInstanceManagerApi31.titleKey(index);
         ChromeSharedPreferences.getInstance().writeString(titleKey, "");
+        String customTitleKey = MultiInstanceManagerApi31.customTitleKey(index);
+        ChromeSharedPreferences.getInstance().writeString(customTitleKey, "");
         String tabCountKey = MultiInstanceManagerApi31.tabCountKey(index);
         ChromeSharedPreferences.getInstance().writeInt(tabCountKey, 1);
         String tabCountForRelaunch = MultiInstanceManagerApi31.tabCountForRelaunchKey(index);
@@ -1080,6 +1106,9 @@ public class MultiInstanceManagerApi31UnitTest {
         assertFalse(
                 "Shared preference key should be removed.",
                 ChromeSharedPreferences.getInstance().contains(titleKey));
+        assertFalse(
+                "Shared preference key should be removed.",
+                ChromeSharedPreferences.getInstance().contains(customTitleKey));
         assertFalse(
                 "Shared preference key should be removed.",
                 ChromeSharedPreferences.getInstance().contains(tabCountKey));

@@ -65,7 +65,10 @@ class UiUtils {
         int totalTabCount = totalTabCount(item);
         String title;
         Resources res = mContext.getResources();
-        if (totalTabCount == 0 || isBeforeFirstTabLoad(item, totalTabCount)) {
+        // TODO (crbug.com/441312171): Add "Incognito - " prefix for incognito instances.
+        if (!TextUtils.isEmpty(item.customTitle)) {
+            title = item.customTitle;
+        } else if (totalTabCount == 0 || isBeforeFirstTabLoad(item, totalTabCount)) {
             title = res.getString(R.string.instance_switcher_entry_empty_window);
         } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
             // Show 'incognito tab' only when we have any restorable incognito tabs.

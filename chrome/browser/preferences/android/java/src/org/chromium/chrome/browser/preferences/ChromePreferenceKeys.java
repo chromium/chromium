@@ -466,8 +466,12 @@ public final class ChromePreferenceKeys {
     // terminated.
     public static final KeyPrefix MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH =
             new KeyPrefix("Chrome.MultiInstance.TabCountForRelaunch.*");
+    // The default window title, equivalent to the active tab title.
     public static final KeyPrefix MULTI_INSTANCE_TITLE =
             new KeyPrefix("Chrome.MultiInstance.Title.*");
+    // A custom window title set by the user.
+    public static final KeyPrefix MULTI_INSTANCE_CUSTOM_TITLE =
+            new KeyPrefix("Chrome.MultiInstance.CustomTitle.*");
     public static final KeyPrefix MULTI_INSTANCE_LAST_ACCESSED_TIME =
             new KeyPrefix("Chrome.MultiInstance.LastAccessedTime.*");
     public static final KeyPrefix MULTI_INSTANCE_URL = new KeyPrefix("Chrome.MultiInstance.Url.*");
@@ -1118,6 +1122,7 @@ public final class ChromePreferenceKeys {
                 MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH.pattern(),
                 MULTI_INSTANCE_TASK_MAP.pattern(),
                 MULTI_INSTANCE_TITLE.pattern(),
+                MULTI_INSTANCE_CUSTOM_TITLE.pattern(),
                 MULTI_INSTANCE_URL.pattern(),
                 NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY,
                 NOTIFICATION_PERMISSION_REQUEST_COUNT,
