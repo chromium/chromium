@@ -9626,3 +9626,6 @@ crbug.com/440589865 [ Mac14-arm64 ] virtual/webnn-service-with-gpu/external/wpt/
 crbug.com/440589865 [ Mac15-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/tensor.https.any.sharedworker.html?gpu [ Failure ]
 crbug.com/440589865 [ Mac14-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/tensor.https.any.worker.html?gpu [ Failure ]
 crbug.com/440589865 [ Mac15-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/tensor.https.any.worker.html?gpu [ Failure ]
+
+# Gardener 2025-08-26 flaky on msan
+crbug.com/441382126 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Failure ]
