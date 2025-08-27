@@ -415,6 +415,52 @@ class StandardDeviationCalculator {
   }
 }
 
+class PsnrRateCalculator {
+  constructor(component) {
+    this.component_ = component;
+  }
+  getCalculatedMetricName() {
+    return '[PSNR_' + this.component_ + ']';
+  }
+
+  calculate(id, previousReport, currentReport) {
+    if (!previousReport || !currentReport) {
+      return undefined;
+    }
+    const previousStats = previousReport.get(id);
+    const currentStats = currentReport.get(id);
+    if (!previousStats || !currentStats) {
+      return undefined;
+    }
+    const deltaTime = currentStats.timestamp - previousStats.timestamp;
+    if (deltaTime <= 0) {
+      return undefined;
+    }
+    const previousSamples = Number(previousStats['psnrMeasurements']);
+    const currentSamples = Number(currentStats['psnrMeasurements']);
+    if (typeof previousSamples !== 'number' ||
+        typeof currentSamples !== 'number') {
+      return undefined;
+    }
+    if (previousSamples == currentSamples) {
+      return undefined;
+    }
+    let previousValue = previousStats['psnrSum'];
+    let currentValue = currentStats['psnrSum'];
+    if (typeof previousValue !== 'string' || typeof currentValue !== 'string') {
+      return undefined;
+    }
+    try {
+      previousValue = JSON.parse(previousValue);
+      currentValue = JSON.parse(currentValue);
+    } catch(e) {
+      return undefined;
+    }
+    return (currentValue[this.component_] - previousValue[this.component_])
+        / (currentSamples - previousSamples);
+  }
+}
+
 // Keeps track of previous and current stats report and calculates all
 // calculated metrics.
 export class StatsRatesCalculator {
@@ -471,6 +517,8 @@ export class StatsRatesCalculator {
               'totalEncodeTime', 'framesEncoded',
               CalculatorModifier.kMillisecondsFromSeconds),
           qpSum: new RateCalculator('qpSum', 'framesEncoded'),
+          // Currently limited to a single output.
+          psnrSum: new PsnrRateCalculator('y'),
           codecId: new CodecCalculator(),
         },
       },

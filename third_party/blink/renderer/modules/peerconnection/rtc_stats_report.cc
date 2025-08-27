@@ -277,6 +277,13 @@ RTCOutboundRtpStreamStats* ToV8Stat(
   SET_STAT(webrtc_stat.frames_encoded, v8_stat->setFramesEncoded);
   SET_STAT(webrtc_stat.key_frames_encoded, v8_stat->setKeyFramesEncoded);
   SET_STAT(webrtc_stat.qp_sum, v8_stat->setQpSum);
+  if (expose_hardware_caps && webrtc_stat.psnr_sum.has_value()) {
+    Vector<std::pair<String, double>> psnr_sum;
+    for (const auto& [key, value] : *webrtc_stat.psnr_sum) {
+      psnr_sum.emplace_back(String::FromUTF8(key), value);
+    }
+    v8_stat->setPsnrSum(std::move(psnr_sum));
+  }
   SET_STAT(webrtc_stat.total_encode_time, v8_stat->setTotalEncodeTime);
   SET_STAT(webrtc_stat.total_packet_send_delay,
            v8_stat->setTotalPacketSendDelay);
