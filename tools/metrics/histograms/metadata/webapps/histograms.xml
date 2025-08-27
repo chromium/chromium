@@ -1576,6 +1576,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.NonAllowlistedAppInstallationRejected"
+    enum="ManagedSessionType" expires_after="2026-07-01">
+  <owner>rferens@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Records the session type (i.e., Managed User Session, MGS, or Kiosk) for
+    each rejected Isolated Web App (IWA) installation attempt. An installation
+    is rejected if the IWA's bundle ID is not found in the allowlist, which is
+    maintained by the KeyDistribution component and delivered by the component
+    updater.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Isolated.OrphanedBundlesCleanupJobError"
     enum="IsolatedWebAppCleanupOrphanedIWAsError" expires_after="2025-10-05">
   <owner>giovax@chromium.org</owner>
