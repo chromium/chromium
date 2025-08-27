@@ -15674,21 +15674,6 @@
             ]
         }
     ],
-    "MostVisitedTilesVisualDeduplication": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MostVisitedTilesVisualDeduplication"
-                    ]
-                }
-            ]
-        }
-    ],
     "MultiCalendarSupport": [
         {
             "platforms": [

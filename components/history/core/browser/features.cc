@@ -93,7 +93,7 @@ BASE_FEATURE(kMostVisitedTilesNewScoring,
 // If enabled, heuristically remove possible visual duplicates from top sites.
 BASE_FEATURE(kMostVisitedTilesVisualDeduplication,
              "MostVisitedTilesVisualDeduplication",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr char kMvtScoringParamRecencyFactor_Classic[] = "default";
 constexpr char kMvtScoringParamRecencyFactor_Decay[] = "decay";
