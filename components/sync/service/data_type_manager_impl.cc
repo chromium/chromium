@@ -963,13 +963,12 @@ void DataTypeManagerImpl::TriggerLocalDataMigrationForItems(
     std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items) {
   DataTypeSet supported_types = base::Intersection(
       GetDataTypesWithLocalDataBatchUploader(), GetActiveDataTypes());
-  for (auto it = items.cbegin(); it != items.cend(); /* no increment */) {
-    if (!supported_types.Has(it->first)) {
-      it = items.erase(it);  // `erase` returns the next element.
-    } else {
-      ++it;
-    }
-  }
+  std::erase_if(items,
+              [&supported_types](const std::pair<const DataType,
+                                                std::vector<syncer::LocalDataItemModel::DataId>>&
+                                     map_entry) {
+                return !supported_types.Has(map_entry.first);
+              });
 
   for (auto& [type, item_list] : items) {
     controllers_.at(type)

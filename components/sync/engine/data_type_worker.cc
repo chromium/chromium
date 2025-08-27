@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <utility>
@@ -347,27 +348,26 @@ DataTypeWorker::DataTypeWorker(DataType type,
     // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync
     // cycle has to be triggered right after we loaded persisted
     // invalidations.
-    for (int i = 0; i < data_type_state_.invalidations_size(); ++i) {
+    for (const sync_pb::DataTypeState::Invalidation& invalidation :
+         data_type_state_.invalidations()) {
       // Do not populate `received_time` on load from the disk because it is not
       // persisted.
       pending_invalidations_.emplace_back(
           std::make_unique<SyncInvalidationAdapter>(
-              data_type_state_.invalidations(i).hint(),
-              data_type_state_.invalidations(i).has_version()
-                  ? std::optional<int64_t>(
-                        data_type_state_.invalidations(i).version())
+              invalidation.hint(),
+              invalidation.has_version()
+                  ? std::optional<int64_t>(invalidation.version())
                   : std::nullopt),
           /*is_processed=*/false,
           /*received_time=*/std::nullopt);
     }
 
-    bool is_version_order_correct = true;
-    for (size_t i = 1; i < pending_invalidations_.size(); ++i) {
-      is_version_order_correct &= (SyncInvalidation::LessThanByVersion(
-          *pending_invalidations_[i - 1].pending_invalidation,
-          *pending_invalidations_[i].pending_invalidation));
-    }
-    if (!is_version_order_correct) {
+    if (!std::is_sorted(
+            pending_invalidations_.begin(), pending_invalidations_.end(),
+            [](const PendingInvalidation& a, const PendingInvalidation& b) {
+              return SyncInvalidation::LessThanByVersion(
+                  *a.pending_invalidation, *b.pending_invalidation);
+            })) {
       DVLOG(1) << "Cleaning invalidations in `data_type_state` due to "
                   "incorrect version order.";
       pending_invalidations_.clear();
