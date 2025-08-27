@@ -493,6 +493,49 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_Empty) {
   EXPECT_TRUE(result->empty());
 }
 
+TEST_F(TabGroupsPageHandlerTest,
+       GetSavedTabGroups_UseDefaultTitleForUnnamedGroups) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpTabGroupsModule, {});
+
+  std::vector<tab_groups::SavedTabGroup> groups;
+
+  // Create a group with no title and 1 tab.
+  std::vector<tab_groups::SavedTabGroupTab> tabs1;
+  tabs1.emplace_back(GURL("https://a.com/"), u"Tab 1",
+                     base::Uuid::GenerateRandomV4(), 0);
+  groups.emplace_back(/*title=*/u"", tab_groups::TabGroupColorId::kGrey,
+                      std::move(tabs1), 0);
+  groups.back().SetUpdateTime(base::Time::Now());
+
+  // Create a group with no title and 2 tabs.
+  std::vector<tab_groups::SavedTabGroupTab> tabs2;
+  tabs2.emplace_back(GURL("https://example.com/1"), u"Tab 1",
+                     base::Uuid::GenerateRandomV4(), 0);
+  tabs2.emplace_back(GURL("https://example.com/2"), u"Tab 2",
+                     base::Uuid::GenerateRandomV4(), 1);
+  groups.emplace_back(/*title=*/u"", tab_groups::TabGroupColorId::kBlue,
+                      std::move(tabs2), 0);
+  groups.back().SetUpdateTime(base::Time::Now() - base::Hours(1));
+
+  std::vector<const tab_groups::SavedTabGroup*> groups_ptr;
+  for (const auto& group : groups) {
+    groups_ptr.push_back(&group);
+  }
+
+  EXPECT_CALL(*service(), ReadAllGroups())
+      .WillOnce(testing::Return(groups_ptr));
+
+  auto result = RunGetTabGroups();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(2u, result->size());
+  // IDS_SAVED_TAB_GROUP_TABS_COUNT is translated to "Tab(s)" on MacOS, and
+  // "tab(s)" elsewhere.
+  EXPECT_EQ("1 tab", base::ToLowerASCII(result.value()[0]->title));
+  EXPECT_EQ("2 tabs", base::ToLowerASCII(result.value()[1]->title));
+}
+
 TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(

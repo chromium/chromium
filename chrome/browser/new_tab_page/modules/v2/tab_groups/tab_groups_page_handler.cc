@@ -171,7 +171,13 @@ TabGroupsPageHandler::GetSavedTabGroups() {
         std::back_inserter(favicon_urls),
         [](const tab_groups::SavedTabGroupTab& tab) { return tab.url(); });
 
-    std::string title = base::UTF16ToUTF8(group->title());
+    // Set default name for unnamed groups, e.g., "1 tab", "3 tabs".
+    std::string title =
+        group->title().empty()
+            ? l10n_util::GetPluralStringFUTF8(IDS_SAVED_TAB_GROUP_TABS_COUNT,
+                                              group->saved_tabs().size())
+            : base::UTF16ToUTF8(group->title());
+
     std::string update_time =
         base::UTF16ToUTF8(GetElapsedTimeText(group->update_time()));
     std::optional<std::string> device_name =
