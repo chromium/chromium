@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../controls/settings_radio_group.js';
 import '../privacy_page/collapse_radio_button.js';
+import '../settings_page/settings_subpage.js';
 import './site_list.js';
 import './site_settings_shared.css.js';
 
@@ -21,6 +22,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import type {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './site_data.html.js';
@@ -34,7 +36,8 @@ export interface SettingsSiteDataElement {
   };
 }
 
-const SettingsSiteDataElementBase = PrefsMixin(PolymerElement);
+const SettingsSiteDataElementBase =
+    SettingsViewMixin(PrefsMixin(PolymerElement));
 
 export class SettingsSiteDataElement extends SettingsSiteDataElementBase {
   static get is() {
@@ -120,6 +123,11 @@ export class SettingsSiteDataElement extends SettingsSiteDataElementBase {
     // Set focus back to the block button regardless of user interaction
     // with the dialog, as it was the entry point to the dialog.
     focusWithoutInk(this.$.defaultBlock);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

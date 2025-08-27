@@ -6,6 +6,7 @@ import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '../controls/settings_radio_group.js';
 import '../privacy_icons.html.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import './category_setting_exceptions.js';
 import './site_settings_shared.css.js';
@@ -13,10 +14,11 @@ import './site_settings_shared.css.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './pdf_documents_page.html.js';
 
-const PdfDocumentsPageElementBase = PolymerElement;
+const PdfDocumentsPageElementBase = SettingsViewMixin(PolymerElement);
 
 export class PdfDocumentsPageElement extends PdfDocumentsPageElementBase {
   static get is() {
@@ -39,6 +41,11 @@ export class PdfDocumentsPageElement extends PdfDocumentsPageElementBase {
   }
 
   declare private isGuest_: boolean;
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
 
 declare global {

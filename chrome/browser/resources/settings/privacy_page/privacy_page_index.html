@@ -38,28 +38,12 @@
     </template>
   </template>
 
-  <template is="dom-if" if="[[renderView_(
-      routes_.COOKIES, currentRoute, inSearchMode)]]">
-    <settings-cookies-page slot="view" id="cookies" data-parent-view-id="old"
-        prefs="{{prefs}}">
-    </settings-cookies-page>
-  </template>
-
-  <template is="dom-if" if="[[enableIncognitoTrackingProtections_]]">
-    <template is="dom-if" if="[[renderView_(
-        routes_.INCOGNITO_TRACKING_PROTECTIONS, currentRoute, inSearchMode)]]">
-      <incognito-tracking-protections-page slot="view"
-          id="incognitoTrackingProtections" data-parent-view-id="old"
-          prefs="{{prefs}}">
-      </incognito-tracking-protections-page>
-    </template>
-  </template>
-
-  <template is="dom-if" if="[[renderView_(
-      routes_.SITE_SETTINGS, currentRoute, inSearchMode)]]">
-    <settings-site-settings-page slot="view" id="siteSettings"
-        data-parent-view-id="old" prefs="{{prefs}}">
-    </settings-site-settings-page>
+  <template is="dom-if" if="[[renderOldView_(currentRoute, inSearchMode)]]">
+    <!-- TODO(crbug.com/424223101): Remove <settings-basic-page> once all UIs
+        have been migrated to standalone views. -->
+    <settings-basic-page slot="view" id="old" prefs="{{prefs}}"
+        in-search-mode="[[inSearchMode]]">
+    </settings-basic-page>
   </template>
 
   <template is="dom-if" if="[[isAdPrivacyAvailable_]]" restamp>
@@ -103,12 +87,23 @@
     </template>
   </template>
 
-  <template is="dom-if" if="[[renderOldView_(currentRoute, inSearchMode)]]">
-    <!-- TODO(crbug.com/424223101): Remove <settings-basic-page> once all UIs
-        have been migrated to standalone views. -->
-    <settings-basic-page slot="view" id="old" prefs="{{prefs}}"
-        in-search-mode="[[inSearchMode]]">
-    </settings-basic-page>
+  <!-- Keep entries below sorted based on the route name. -->
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.COOKIES, currentRoute, inSearchMode)]]">
+    <settings-cookies-page slot="view" id="cookies" data-parent-view-id="old"
+        prefs="{{prefs}}">
+    </settings-cookies-page>
+  </template>
+
+  <template is="dom-if" if="[[enableIncognitoTrackingProtections_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.INCOGNITO_TRACKING_PROTECTIONS, currentRoute, inSearchMode)]]">
+      <incognito-tracking-protections-page slot="view"
+          id="incognitoTrackingProtections" data-parent-view-id="old"
+          prefs="{{prefs}}">
+      </incognito-tracking-protections-page>
+    </template>
   </template>
 
   <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
@@ -119,6 +114,57 @@
         <security-keys-subpage></security-keys-subpage>
       </settings-subpage>
     </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS, currentRoute, inSearchMode)]]">
+    <settings-site-settings-page slot="view" id="siteSettings"
+        data-parent-view-id="old" prefs="{{prefs}}">
+    </settings-site-settings-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_HANDLERS, currentRoute, inSearchMode)]]">
+    <protocol-handlers slot="view" id="siteSettingsHandlers"
+        data-parent-view-id="old"
+        toggle-off-label="$i18n{siteSettingsHandlersBlocked}"
+        toggle-on-label="$i18n{siteSettingsHandlersAskRecommended}">
+    </protocol-handlers>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_LOCATION, currentRoute, inSearchMode)]]">
+    <settings-geolocation-page slot="view" id="siteSettingsLocation"
+        data-parent-view-id="old" prefs="{{prefs}}">
+    </settings-location-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_NOTIFICATIONS, currentRoute, inSearchMode)]]">
+    <settings-notifications-page slot="view" id="siteSettingsNotifications"
+        data-parent-view-id="old" prefs="{{prefs}}">
+    </settings-notifications-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_PDF_DOCUMENTS, currentRoute, inSearchMode)]]">
+    <settings-pdf-documents-page slot="view" id="siteSettingsPdfDocuments"
+        data-parent-view-id="old" prefs="{{prefs}}">
+    </settings-pdf-documents-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_SITE_DATA, currentRoute, inSearchMode)]]">
+    <settings-site-data slot="view" id="siteSettingsSiteData"
+        data-parent-view-id="old" prefs="{{prefs}}">
+    </settings-site-data>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_ZOOM_LEVELS, currentRoute, inSearchMode)]]">
+    <zoom-levels slot="view" id="siteSettingsZoomLevels"
+        data-parent-view-id="old">
+    </zoom-levels>
   </template>
 
 </cr-view-manager>

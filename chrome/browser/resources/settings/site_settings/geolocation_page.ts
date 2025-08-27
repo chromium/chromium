@@ -14,19 +14,22 @@ import './site_settings_shared.css.js';
 import '../controls/settings_radio_group.js';
 import '../privacy_icons.html.js';
 import '../privacy_page/collapse_radio_button.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {ContentSetting, ContentSettingsTypes, SettingsState} from './constants.js';
 import {getTemplate} from './geolocation_page.html.js';
 import type {SiteSettingsPrefsBrowserProxy} from './site_settings_prefs_browser_proxy.js';
 import {SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
-const GeolocationPageElementBase = PrefsMixin(PolymerElement);
+const GeolocationPageElementBase =
+    SettingsViewMixin(PrefsMixin(PolymerElement));
 
 export class GeolocationPageElement extends GeolocationPageElementBase {
   static get is() {
@@ -117,6 +120,11 @@ export class GeolocationPageElement extends GeolocationPageElementBase {
       this.setPrefValue('generated.geolocation', SettingsState.BLOCK);
       this.isLocationAllowed_ = false;
     }
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

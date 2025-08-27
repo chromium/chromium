@@ -21,9 +21,6 @@ import '../safety_hub/safety_hub_module.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
-import '../site_settings/geolocation_page.js';
-import '../site_settings/notifications_page.js';
-import '../site_settings/pdf_documents_page.js';
 import '../site_settings/protected_content_page.js';
 import '../site_settings/settings_category_default_radio_group.js';
 import '../site_settings/smart_card_readers_page.js';
@@ -509,6 +506,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         triggerId = 'securityLinkRow';
         break;
       case 'siteSettings':
+      case 'siteSettingsHandlers':
+      case 'siteSettingsLocation':
+      case 'siteSettingsNotifications':
+      case 'siteSettingsPdfDocuments':
+      case 'siteSettingsSiteData':
+      case 'siteSettingsZoomLevels':
         triggerId = 'permissionsLinkRow';
         break;
       case 'privacySandbox':

@@ -1,26 +1,34 @@
-    <style include="settings-shared">
-      :host {
-        display: block;
-      }
+  <style include="settings-shared">
+    :host {
+      display: block;
+    }
 
-      .zoom-label {
-        color: var(--cr-secondary-text-color);
-        margin-inline-end: 16px;
-      }
+    .zoom-label {
+      color: var(--cr-secondary-text-color);
+      margin-inline-end: 16px;
+    }
 
-      #empty {
-        margin-top: 15px;
-      }
+    #empty {
+      margin-top: 15px;
+    }
 
-      .list-item site-favicon {
-        flex-shrink: 0;
-      }
+    .list-item site-favicon {
+      flex-shrink: 0;
+    }
 
-      .list-item .middle {
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-      }
-    </style>
+    .list-item .middle {
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .content-settings-header {
+      padding: 0 var(--cr-section-padding);
+    }
+  </style>
+  <settings-subpage page-title="$i18n{siteSettingsCategoryZoomLevels}">
+    <div class="content-settings-header secondary">
+      $i18n{siteSettingsZoomLevelsDescription}
+    </div>
     <div class="list-frame vertical-list" id="listContainer">
       <iron-list id="list" preserve-focus items="[[sites_]]"
           class="cr-separators" risk-selection>
@@ -41,3 +49,4 @@
         $i18n{siteSettingsNoZoomedSites}
       </div>
     </div>
+  </settings-subpage>

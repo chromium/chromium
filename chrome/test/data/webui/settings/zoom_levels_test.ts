@@ -6,7 +6,7 @@
 import type {ZoomLevelEntry, ZoomLevelsElement} from 'chrome://settings/lazy_load.js';
 import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 // clang-format on
@@ -56,7 +56,7 @@ suite('ZoomLevels', function() {
     testElement = document.createElement('zoom-levels');
     document.body.appendChild(testElement);
     await browserProxy.whenCalled('fetchZoomLevels');
-    await waitBeforeNextRender(testElement);
+    await waitAfterNextRender(testElement);
   }
 
   /**

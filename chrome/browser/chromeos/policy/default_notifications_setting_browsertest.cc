@@ -86,6 +86,11 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
       break;
   }
 
+  // Wait for 'settings-notifications-page' custom element to be defined.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      "customElements.whenDefined('settings-notifications-page')"));
+
   // The UI has 3 radio buttons which are inside several layers of shadow DOM.
   // The buttons are:
   // (0) Sites can ask to send notifications
@@ -97,8 +102,6 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
       "  document.querySelector('settings-ui').shadowRoot."
       "  querySelector('settings-main').shadowRoot."
       "  querySelector('settings-privacy-page-index').shadowRoot."
-      "  querySelector('settings-basic-page').shadowRoot."
-      "  querySelector('settings-privacy-page').shadowRoot."
       "  querySelector('settings-notifications-page').shadowRoot."
       "  querySelectorAll('cr-radio-button');";
   std::string kGetRadiosChecked = kGetRadios +

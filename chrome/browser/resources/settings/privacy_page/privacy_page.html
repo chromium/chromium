@@ -331,46 +331,6 @@
           </settings-subpage>
         </template>
       </template>
-      <template is="dom-if" route-path="/content/siteData" no-search>
-        <settings-subpage page-title="$i18n{siteDataPageTitle}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}">
-          <settings-site-data prefs="{{prefs}}"
-              search-term="[[searchFilter_]]">
-          </settings-site-data>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/location" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsCategoryLocation}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-geolocation-page prefs="{{prefs}}"
-              search-term="[[searchFilter_]]">
-          </settings-location-page>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/handlers" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsCategoryHandlers}">
-          <protocol-handlers
-              toggle-off-label="$i18n{siteSettingsHandlersBlocked}"
-              toggle-on-label="$i18n{siteSettingsHandlersAskRecommended}">
-          </protocol-handlers>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/zoomLevels" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsCategoryZoomLevels}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsZoomLevelsDescription}
-          </div>
-          <zoom-levels></zoom-levels>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/pdfDocuments" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsPdfDocuments}">
-          <settings-pdf-documents-page prefs="{{prefs}}">
-          </settings-pdf-documents-page>
-        </settings-subpage>
-      </template>
       <template is="dom-if" route-path="/content/javascript" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryJavascript}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
@@ -479,15 +439,6 @@
               block-header="$i18n{siteSettingsMotionSensorsBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/notifications" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsCategoryNotifications}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-notifications-page prefs="{{prefs}}"
-              search-term="[[searchFilter_]]">
-          </settings-notifications-page>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/popups" no-search>

@@ -75,6 +75,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
       r.SITE_SETTINGS_ALL.createChild('/content/siteDetails');
 
   r.SITE_SETTINGS_HANDLERS = r.SITE_SETTINGS.createChild('/handlers');
+  r.SITE_SETTINGS_HANDLERS.hasMigratedToPlugin = true;
 
   // TODO(tommycli): Find a way to refactor these repetitive category
   // routes.
@@ -115,8 +116,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_SOUND = r.SITE_SETTINGS.createChild('sound');
   r.SITE_SETTINGS_SENSORS = r.SITE_SETTINGS.createChild('sensors');
   r.SITE_SETTINGS_LOCATION = r.SITE_SETTINGS.createChild('location');
+  r.SITE_SETTINGS_LOCATION.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_MICROPHONE = r.SITE_SETTINGS.createChild('microphone');
   r.SITE_SETTINGS_NOTIFICATIONS = r.SITE_SETTINGS.createChild('notifications');
+  r.SITE_SETTINGS_NOTIFICATIONS.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_POPUPS = r.SITE_SETTINGS.createChild('popups');
   r.SITE_SETTINGS_MIDI_DEVICES = r.SITE_SETTINGS.createChild('midiDevices');
   r.SITE_SETTINGS_USB_DEVICES = r.SITE_SETTINGS.createChild('usbDevices');
@@ -130,7 +133,9 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
         r.SITE_SETTINGS.createChild('bluetoothDevices');
   }
   r.SITE_SETTINGS_ZOOM_LEVELS = r.SITE_SETTINGS.createChild('zoomLevels');
+  r.SITE_SETTINGS_ZOOM_LEVELS.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_PDF_DOCUMENTS = r.SITE_SETTINGS.createChild('pdfDocuments');
+  r.SITE_SETTINGS_PDF_DOCUMENTS.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_PROTECTED_CONTENT =
       r.SITE_SETTINGS.createChild('protectedContent');
   if (loadTimeData.getBoolean('enablePaymentHandlerContentSetting')) {
@@ -142,6 +147,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
         r.SITE_SETTINGS.createChild('federatedIdentityApi');
   }
   r.SITE_SETTINGS_SITE_DATA = r.SITE_SETTINGS.createChild('siteData');
+  r.SITE_SETTINGS_SITE_DATA.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_VR = r.SITE_SETTINGS.createChild('vr');
   if (loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures')) {
     r.SITE_SETTINGS_BLUETOOTH_SCANNING =

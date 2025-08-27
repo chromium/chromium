@@ -181,6 +181,18 @@ export class SettingsPrivacyPageIndexElement extends
         return ['securityKeys'];
       case routes.SITE_SETTINGS:
         return ['siteSettings'];
+      case routes.SITE_SETTINGS_HANDLERS:
+        return ['siteSettingsHandlers'];
+      case routes.SITE_SETTINGS_LOCATION:
+        return ['siteSettingsLocation'];
+      case routes.SITE_SETTINGS_NOTIFICATIONS:
+        return ['siteSettingsNotifications'];
+      case routes.SITE_SETTINGS_PDF_DOCUMENTS:
+        return ['siteSettingsPdfDocuments'];
+      case routes.SITE_SETTINGS_SITE_DATA:
+        return ['siteSettingsSiteData'];
+      case routes.SITE_SETTINGS_ZOOM_LEVELS:
+        return ['siteSettingsZoomLevels'];
       case routes.SAFETY_HUB:
         return ['safetyHub'];
       case routes.PRIVACY_SANDBOX:

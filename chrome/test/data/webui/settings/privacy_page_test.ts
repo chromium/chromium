@@ -161,24 +161,6 @@ suite('PrivacyPage', function() {
     assertFalse(!!page.shadowRoot!.querySelector('settings-security-page'));
   });
 
-  test('NotificationPage', async function() {
-    await createPage();
-
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
-    await flushTasks();
-
-    assertTrue(isChildVisible(page, 'settings-notifications-page'));
-  });
-
-  test('GeolocationPage', async function() {
-    await createPage();
-
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_LOCATION);
-    await flushTasks();
-
-    assertTrue(isChildVisible(page, 'settings-geolocation-page'));
-  });
-
   test('privacySandboxRestricted', function() {
     assertFalse(isChildVisible(page, '#privacySandboxLinkRow'));
   });

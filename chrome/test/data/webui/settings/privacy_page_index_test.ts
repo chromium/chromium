@@ -46,7 +46,8 @@ suite('PrivacyPageIndex', function() {
 
     for (const id of viewIds) {
       assertTrue(
-          !!index.$.viewManager.querySelector(`#${id}.active[slot=view]`));
+          !!index.$.viewManager.querySelector(`#${id}.active[slot=view]`),
+          `Failed for route '${route.path}'`);
     }
   }
 
@@ -79,10 +80,39 @@ suite('PrivacyPageIndex', function() {
         parentViewId: 'safetyHubEntryPoint',
       },
       {route: routes.SECURITY, viewId: 'old'},
-      {route: routes.SITE_SETTINGS_LOCATION, viewId: 'old'},
       {
         route: routes.SITE_SETTINGS,
         viewId: 'siteSettings',
+        parentViewId: 'old',
+      },
+      {
+        route: routes.SITE_SETTINGS_HANDLERS,
+        viewId: 'siteSettingsHandlers',
+        parentViewId: 'old',
+      },
+      {
+        route: routes.SITE_SETTINGS_LOCATION,
+        viewId: 'siteSettingsLocation',
+        parentViewId: 'old',
+      },
+      {
+        route: routes.SITE_SETTINGS_NOTIFICATIONS,
+        viewId: 'siteSettingsNotifications',
+        parentViewId: 'old',
+      },
+      {
+        route: routes.SITE_SETTINGS_PDF_DOCUMENTS,
+        viewId: 'siteSettingsPdfDocuments',
+        parentViewId: 'old',
+      },
+      {
+        route: routes.SITE_SETTINGS_SITE_DATA,
+        viewId: 'siteSettingsSiteData',
+        parentViewId: 'old',
+      },
+      {
+        route: routes.SITE_SETTINGS_ZOOM_LEVELS,
+        viewId: 'siteSettingsZoomLevels',
         parentViewId: 'old',
       },
     ];
