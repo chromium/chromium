@@ -12602,6 +12602,21 @@
             ]
         }
     ],
+    "IOSAIHubNewBadge": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AIHubNewBadge"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAIModeNTPEntryPoint": [
         {
             "platforms": [
