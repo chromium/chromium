@@ -4,9 +4,11 @@
 
 import {AxReadAloudNode} from './read_aloud_types.js';
 import type {ReadAloudNode, Segment} from './read_aloud_types.js';
+import {TextSegmenter} from './text_segmenter.js';
 
 // TODO: crbug.com/440400392- Use TestReadAloudModelBrowserProxy to replace
 // FakeReadingMode.
+
 // TODO: crbug.com/440400392- Move logic into read_aloud_model. The browser
 // proxy should only be a wrapper around browser calls (e.g.
 // chrome.readingMode).
@@ -21,6 +23,12 @@ export interface ReadAloudModelBrowserProxy {
       Segment[];
   getCurrentTextSegments(): Segment[];
   getCurrentTextContent(): string;
+
+  // Returns a substring of the given text at the nearest accessible boundary
+  // that is no longer than maxSpeechLength. This is used for handling text
+  // that is too long the TTS engine to process at once. This is a workaround
+  // for when remote voices are used because some remote voices hang instead of
+  // returning a too-long-text error.
   getAccessibleBoundary(text: string, maxSpeechLength: number): number;
 
   // Handle speech positioning.
@@ -100,8 +108,9 @@ class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     return '';
   }
 
-  getAccessibleBoundary(): number {
-    return -1;
+  getAccessibleBoundary(text: string, maxSpeechLength: number): number {
+    return TextSegmenter.getInstance().getAccessibleBoundary(
+        text, maxSpeechLength);
   }
 
   resetSpeechToBeginning(): void {
