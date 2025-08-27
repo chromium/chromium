@@ -1,0 +1,49 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_SIDE_PANEL_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_SIDE_PANEL_UI_H_
+
+#include <optional>
+
+#include "chrome/browser/ui/views/side_panel/side_panel_ui_base.h"
+
+class Browser;
+class WebUIBrowserWindow;
+
+class WebUIBrowserSidePanelUI : public SidePanelUIBase {
+ public:
+  explicit WebUIBrowserSidePanelUI(Browser* browser);
+  ~WebUIBrowserSidePanelUI() override;
+
+  // SidePanelUI:
+  void Close() override;
+  void Toggle(SidePanelEntryKey key,
+              SidePanelOpenTrigger open_trigger) override;
+  void OpenInNewTab() override;
+  void UpdatePinState() override;
+  content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
+  void DisableAnimationsForTesting() override;
+  void SetNoDelaysForTesting(bool no_delays_for_testing) override;
+
+ private:
+  // SidePanelUIBase:
+  void Close(bool suppress_animations) override;
+  void Show(const UniqueKey& entry,
+            std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+            bool suppress_animations) override;
+  void PopulateSidePanel(
+      bool suppress_animations,
+      const UniqueKey& unique_key,
+      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+      SidePanelEntry* entry,
+      std::optional<std::unique_ptr<views::View>> content_view) override;
+  void MaybeShowEntryOnTabStripModelChanged(
+      SidePanelRegistry* old_contextual_registry,
+      SidePanelRegistry* new_contextual_registry) override;
+
+  WebUIBrowserWindow* GetWebUIBrowserWindow();
+};
+
+#endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_SIDE_PANEL_UI_H_

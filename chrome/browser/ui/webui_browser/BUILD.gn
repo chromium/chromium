@@ -13,6 +13,7 @@ source_set("feature_flag") {
 source_set("webui_browser") {
   sources = [
     "browser_elements_webui_browser.h",
+    "webui_browser_side_panel_ui.h",
     "webui_browser_ui.h",
     "webui_browser_window.h",
     "webui_location_bar.h",
@@ -44,6 +45,7 @@ source_set("impl") {
     "webui_browser_client_view.h",
     "webui_browser_page_handler.cc",
     "webui_browser_page_handler.h",
+    "webui_browser_side_panel_ui.cc",
     "webui_browser_ui.cc",
     "webui_browser_web_contents_delegate.cc",
     "webui_browser_web_contents_delegate.h",

@@ -101,6 +101,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui_browser/browser_elements_webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/collaboration/public/collaboration_service.h"
@@ -505,6 +506,11 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     provider->Init(views::Widget::GetWidgetForNativeWindow(
         browser->window()->GetNativeWindow()));
   }
+
+  if (webui_browser::IsWebUIBrowserEnabled()) {
+    webui_browser_side_panel_ui_ =
+        std::make_unique<WebUIBrowserSidePanelUI>(browser);
+  }
 }
 
 void BrowserWindowFeatures::InitPostBrowserViewConstruction(
@@ -727,6 +733,10 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
+  if (webui_browser::IsWebUIBrowserEnabled()) {
+    return webui_browser_side_panel_ui_.get();
+  }
+
   return side_panel_coordinator_.get();
 }
 
