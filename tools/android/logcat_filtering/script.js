@@ -140,6 +140,27 @@ document.addEventListener('click', (event) => {
   });
 });
 
+// Check for system color scheme preference on page load
+const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)');
+if (prefersDarkScheme.matches) {
+  document.body.classList.add('dark-mode');
+  document.body.classList.remove('light-mode');
+  toggleDarkModeCheckbox.checked = true;
+}
+
+// Listen for changes in system color scheme preference
+prefersDarkScheme.addEventListener('change', (event) => {
+  if (event.matches) {
+    document.body.classList.add('dark-mode');
+    document.body.classList.remove('light-mode');
+    toggleDarkModeCheckbox.checked = true;
+  } else {
+    document.body.classList.add('light-mode');
+    document.body.classList.remove('dark-mode');
+    toggleDarkModeCheckbox.checked = false;
+  }
+});
+
 // Global variables:
 
 /** @type {Array<ParsedLine>} */
