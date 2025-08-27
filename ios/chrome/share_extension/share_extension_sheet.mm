@@ -33,6 +33,8 @@ CGFloat const kSnapshotViewSize = 150;
 CGFloat const kURLStackSpacing = 8;
 CGFloat const kDefaultSnapshotViewSize = 60;
 CGFloat const kLinkIconSize = 34.0;
+CGFloat const kQuoteIconSize = 28.0;
+CGFloat const kTextStackSpacing = 30.0;
 
 // The horizontal spacing between image preview and the URL stack.
 CGFloat const kInnerViewSpacing = 30;
@@ -466,36 +468,71 @@ CGFloat const kAvatarImageDimension = 30.0;
 }
 
 - (UIView*)configureSharedTextView {
+  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kQuoteIconSize
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
+  UIImageView* quoteImageView = [[UIImageView alloc]
+      initWithImage:[UIImage systemImageNamed:@"quote.opening"
+                            withConfiguration:configuration]];
+  quoteImageView.contentMode = UIViewContentModeCenter;
+
+  UIView* imageContainer = [[UIView alloc] init];
+  imageContainer.backgroundColor = [UIColor whiteColor];
+  imageContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [imageContainer addSubview:quoteImageView];
+  quoteImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  imageContainer.layer.cornerRadius = kMainViewCornerRadius;
+  imageContainer.clipsToBounds = YES;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [imageContainer.widthAnchor
+        constraintEqualToConstant:kDefaultSnapshotViewSize],
+    [imageContainer.heightAnchor
+        constraintEqualToConstant:kDefaultSnapshotViewSize],
+    [quoteImageView.centerXAnchor
+        constraintEqualToAnchor:imageContainer.centerXAnchor],
+    [quoteImageView.centerYAnchor
+        constraintEqualToAnchor:imageContainer.centerYAnchor],
+  ]];
+
   UILabel* sharedTextLabel = [[UILabel alloc] init];
   sharedTextLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
   sharedTextLabel.adjustsFontForContentSizeCategory = YES;
   sharedTextLabel.numberOfLines = 0;
   if (!self.displayMaxLimit) {
     sharedTextLabel.text = self.sharedText;
-    return sharedTextLabel;
+  } else {
+    NSMutableAttributedString* sharedTextAttributedString =
+        [[NSMutableAttributedString alloc] initWithString:self.sharedText];
+
+    NSMutableAttributedString* attributedSpace =
+        [[NSMutableAttributedString alloc] initWithString:@" "];
+    NSMutableAttributedString* maxLimitString =
+        [[NSMutableAttributedString alloc]
+            initWithString:NSLocalizedString(
+                               @"IDS_IOS_SEARCH_MAX_LIMIT",
+                               @"The text at the end of the shared text.")
+                attributes:@{
+                  NSForegroundColorAttributeName :
+                      [UIColor colorNamed:kTextTertiaryColor],
+                  NSFontAttributeName : [UIFont
+                      preferredFontForTextStyle:UIFontTextStyleFootnote],
+                }];
+
+    [sharedTextAttributedString appendAttributedString:attributedSpace];
+    [sharedTextAttributedString appendAttributedString:maxLimitString];
+    sharedTextLabel.attributedText = sharedTextAttributedString;
   }
 
-  NSMutableAttributedString* sharedTextAttributedString =
-      [[NSMutableAttributedString alloc] initWithString:self.sharedText];
+  UIStackView* stackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ imageContainer, sharedTextLabel ]];
+  stackView.axis = UILayoutConstraintAxisVertical;
+  stackView.spacing = kTextStackSpacing;
+  stackView.alignment = UIStackViewAlignmentCenter;
 
-  NSMutableAttributedString* attributedSpace =
-      [[NSMutableAttributedString alloc] initWithString:@" "];
-  NSMutableAttributedString* maxLimitString = [[NSMutableAttributedString alloc]
-      initWithString:NSLocalizedString(
-                         @"IDS_IOS_SEARCH_MAX_LIMIT",
-                         @"The text at the end of the shared text.")
-          attributes:@{
-            NSForegroundColorAttributeName :
-                [UIColor colorNamed:kTextTertiaryColor],
-            NSFontAttributeName :
-                [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
-          }];
-
-  [sharedTextAttributedString appendAttributedString:attributedSpace];
-  [sharedTextAttributedString appendAttributedString:maxLimitString];
-  sharedTextLabel.attributedText = sharedTextAttributedString;
-  return sharedTextLabel;
+  return stackView;
 }
 
 - (UIImageView*)configureSnapshotView {
