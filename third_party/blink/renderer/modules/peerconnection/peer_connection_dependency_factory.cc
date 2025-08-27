@@ -193,6 +193,15 @@ class LocalNetworkAccessPermission final
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   }
 
+  bool ShouldRequestPermission(
+      const webrtc::SocketAddress& candidate_address) override {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    CHECK(RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled());
+
+    return network::IsLessPublicAddressSpace(
+        FromSocketAddress(candidate_address), originator_address_space_);
+  }
+
   void RequestPermission(
       const webrtc::SocketAddress& candidate_address,
       absl::AnyInvocable<void(webrtc::LocalNetworkAccessPermissionStatus)>
@@ -201,19 +210,6 @@ class LocalNetworkAccessPermission final
     CHECK(RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled());
 
     callback_ = std::move(callback);
-
-    if (!network::IsLessPublicAddressSpace(FromSocketAddress(candidate_address),
-                                           originator_address_space_)) {
-      // Can't use Frame-based task runners because this method is called on a
-      // WebRTC thread.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&LocalNetworkAccessPermission::OnPermissionRequested,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         mojom::blink::PermissionStatus::GRANTED));
-      return;
-    }
-
     permission_service_->RequestPermission(
         CreatePermissionDescriptor(
             mojom::blink::PermissionName::LOCAL_NETWORK_ACCESS),
