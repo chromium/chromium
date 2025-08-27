@@ -1016,6 +1016,7 @@ deps = {
   'src/third_party/rust-toolchain': {
     'dep_type': 'gcs',
     'bucket': 'chromium-browser-clang',
+    'condition': 'not rust_force_head_revision',
     'objects': [
       {
         'object_name': 'Linux_x64/rust-toolchain-22be76b7e259f27bf3e55eb931f354cd8b69d55f-3-llvmorg-21-init-16348-gbd809ffb.tar.xz',
