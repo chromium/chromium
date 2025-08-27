@@ -61,16 +61,18 @@ namespace exclusive_access_bubble {
 //   showed.
 //   |accelerator|: the keyboard shortcut used to exit the exclusive
 //   access mode.
-//   |origin|: the origin of the site requesting Exclusive Access.
+//   |origin_display_name|: the serialized origin of the site or the name of
+//   the isolated web app requesting Exclusive Access (optional).
 //   |has_download|: True if download in progress, which affects the text
 //   content.
 //   |notify_overridden|: True if the bubble is showing and its text needs to be
 //   overridden. Valid when |has_download| is True.
-std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
-                                         const std::u16string& accelerator,
-                                         const url::Origin& origin,
-                                         bool has_download,
-                                         bool notify_overridden);
+std::u16string GetInstructionTextForType(
+    ExclusiveAccessBubbleType type,
+    const std::u16string& accelerator,
+    const std::optional<std::u16string>& origin_display_name,
+    bool has_download,
+    bool notify_overridden);
 
 // Helpers to categorize different types of ExclusiveAccessBubbleType.
 bool IsExclusiveAccessModeBrowserFullscreen(ExclusiveAccessBubbleType type);
