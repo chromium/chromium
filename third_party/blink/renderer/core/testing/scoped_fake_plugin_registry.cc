@@ -77,7 +77,7 @@ class FakePluginRegistryImpl : public mojom::blink::PluginRegistry {
 ScopedFakePluginRegistry::ScopedFakePluginRegistry() {
   Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
       mojom::blink::PluginRegistry::Name_,
-      WTF::BindRepeating(&FakePluginRegistryImpl::Bind));
+      BindRepeating(&FakePluginRegistryImpl::Bind));
 }
 
 ScopedFakePluginRegistry::~ScopedFakePluginRegistry() {

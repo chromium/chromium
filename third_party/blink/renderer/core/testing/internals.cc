@@ -443,7 +443,7 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
       PostCrossThreadTask(*task_runner_, FROM_HERE, std::move(error_callback_));
     }
 
-    // We don't use WTF::String because this object can be accessed from
+    // We don't use blink::String because this object can be accessed from
     // multiple threads.
     std::string result_;
 
@@ -942,8 +942,8 @@ ScriptPromise<IDLLong> Internals::getInitialResourcePriority(
   auto promise = resolver->Promise();
   KURL resource_url = url_test_helpers::ToKURL(url.Utf8());
 
-  auto callback = WTF::BindOnce(&Internals::ResolveResourcePriority,
-                                WrapPersistent(this), WrapPersistent(resolver));
+  auto callback = BindOnce(&Internals::ResolveResourcePriority,
+                           WrapPersistent(this), WrapPersistent(resolver));
   document->Fetcher()->AddPriorityObserverForTesting(
       resource_url, std::move(callback), new_load_only);
 
@@ -4012,7 +4012,7 @@ ScriptPromise<IDLString> Internals::LCPPrediction(ScriptState* script_state,
   LCPCriticalPathPredictor* lcpp = document->GetFrame()->GetLCPP();
   CHECK(lcpp);
   lcpp->AddLCPPredictedCallback(
-      WTF::BindOnce(&OnLCPPredicted, WrapPersistent(resolver)));
+      BindOnce(&OnLCPPredicted, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -4045,8 +4045,8 @@ ScriptPromise<IDLUndefined> Internals::exemptUrlFromNetworkRevocation(
   auto promise = resolver->Promise();
   frame->GetLocalFrameHostRemote().ExemptUrlFromNetworkRevocationForTesting(
       url_test_helpers::ToKURL(url.Utf8()),
-      WTF::BindOnce(&ExemptUrlFromNetworkRevocationComplete,
-                    WrapPersistent(resolver)));
+      BindOnce(&ExemptUrlFromNetworkRevocationComplete,
+               WrapPersistent(resolver)));
   return promise;
 }
 

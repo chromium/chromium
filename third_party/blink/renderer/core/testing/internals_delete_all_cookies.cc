@@ -29,7 +29,7 @@ ScriptPromise<IDLUndefined> InternalsDeleteAllCookies::deleteAllCookies(
   // Get the interface so `cookie_manager` can be moved below.
   test::mojom::blink::CookieManagerAutomation* raw_cookie_manager =
       cookie_manager.get();
-  raw_cookie_manager->DeleteAllCookies(WTF::BindOnce(
+  raw_cookie_manager->DeleteAllCookies(BindOnce(
       [](ScriptPromiseResolver<IDLUndefined>* resolver,
          mojo::Remote<test::mojom::blink::CookieManagerAutomation>) {
         resolver->Resolve();

@@ -57,9 +57,8 @@ void SimTest::SetUp() {
   compositor_ = std::make_unique<SimCompositor>();
   web_frame_client_ = CreateWebFrameClientForMainFrame();
   page_ = std::make_unique<SimPage>();
-  web_view_helper_ =
-      std::make_unique<frame_test_helpers::WebViewHelper>(WTF::BindRepeating(
-          &SimTest::CreateWebFrameWidget, WTF::Unretained(this)));
+  web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>(
+      blink::BindRepeating(&SimTest::CreateWebFrameWidget, Unretained(this)));
   // These tests don't simulate a browser interface and hence fetching code
   // caching doesn't work in these tests. Currently tests that use this testing
   // set up don't test / need code caches. Disable code caches for these tests.

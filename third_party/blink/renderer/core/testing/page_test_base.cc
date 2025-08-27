@@ -92,9 +92,8 @@ void PageTestBase::MockClipboardHostProvider::Install(
   interface_broker_ = &interface_broker;
   interface_broker_->SetBinderForTesting(
       blink::mojom::blink::ClipboardHost::Name_,
-      WTF::BindRepeating(
-          &PageTestBase::MockClipboardHostProvider::BindClipboardHost,
-          WTF::Unretained(this)));
+      BindRepeating(&PageTestBase::MockClipboardHostProvider::BindClipboardHost,
+                    Unretained(this)));
 }
 
 void PageTestBase::MockClipboardHostProvider::BindClipboardHost(
@@ -282,7 +281,7 @@ void PageTestBase::InsertStyleElement(const std::string& style_rules) {
 }
 
 void PageTestBase::NavigateTo(const KURL& url,
-                              const WTF::HashMap<String, String>& headers) {
+                              const HashMap<String, String>& headers) {
   auto params = WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
 
   for (const auto& header : headers)

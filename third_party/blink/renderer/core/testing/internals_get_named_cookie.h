@@ -21,7 +21,7 @@ class InternalsGetNamedCookie {
   static ScriptPromise<IDLNullable<InternalCookie>> getNamedCookie(
       ScriptState* script_state,
       Internals& internals,
-      const WTF::String& name);
+      const String& name);
 };
 
 }  // namespace blink

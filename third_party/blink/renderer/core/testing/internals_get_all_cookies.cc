@@ -32,12 +32,11 @@ InternalsGetAllCookies::getAllCookies(ScriptState* script_state, Internals&) {
   // Get the interface so `cookie_manager` can be moved below.
   test::mojom::blink::CookieManagerAutomation* raw_cookie_manager =
       cookie_manager.get();
-  raw_cookie_manager->GetAllCookies(WTF::BindOnce(
+  raw_cookie_manager->GetAllCookies(BindOnce(
       [](ScriptPromiseResolver<IDLSequence<InternalCookie>>* resolver,
          ScriptState* script_state,
          mojo::Remote<test::mojom::blink::CookieManagerAutomation>,
-         WTF::Vector<network::mojom::blink::CookieWithAccessResultPtr>
-             cookies) {
+         Vector<network::mojom::blink::CookieWithAccessResultPtr> cookies) {
         HeapVector<Member<InternalCookie>> cookie_results;
         for (const auto& cookie : cookies) {
           cookie_results.push_back(
