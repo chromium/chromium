@@ -10,14 +10,12 @@
 #include <type_traits>
 #include <variant>
 
-#include "base/types/always_false.h"
-
 namespace base {
 namespace internal {
 
 template <typename Variant, typename T>
 struct VariantIndexOfTypeHelper {
-  static_assert(AlwaysFalse<Variant>, "Variant must be an std::variant<...>");
+  static_assert(false, "Variant must be an std::variant<...>");
 };
 
 template <typename... Ts, typename T>

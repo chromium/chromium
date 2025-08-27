@@ -34,7 +34,7 @@ namespace mojo {
 //
 template <typename DataViewType, typename T>
 struct UnionTraits {
-  static_assert(internal::AlwaysFalse<T>::value,
+  static_assert(false,
                 "Cannot find the mojo::UnionTraits specialization. Did you "
                 "forget to include the corresponding header file?");
 };
