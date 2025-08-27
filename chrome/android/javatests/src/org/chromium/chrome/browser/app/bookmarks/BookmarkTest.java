@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.bookmarks;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -509,11 +510,17 @@ public class BookmarkTest {
         assertEquals(BookmarkUiMode.FOLDER, mDelegate.getCurrentUiMode());
         assertEquals("Wrong number of items before starting search.", 2, getBookmarkCount());
 
-        enterSearch();
-        assertEquals(BookmarkUiMode.SEARCHING, mDelegate.getCurrentUiMode());
-        assertEquals("No bookmarks should be shown when starting search.", 0, getBookmarkCount());
-
-        searchBookmarks("Google");
+        final boolean isTablet =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity());
+        if (isTablet) {
+            onView(withId(R.id.row_search_text)).perform(replaceText("Google"));
+        } else {
+            enterSearch();
+            assertEquals(BookmarkUiMode.SEARCHING, mDelegate.getCurrentUiMode());
+            assertEquals(
+                    "No bookmarks should be shown when starting search.", 0, getBookmarkCount());
+            searchBookmarks("Google");
+        }
         assertEquals("Wrong number of items after searching.", 1, getBookmarkCount());
 
         BookmarkId newBookmark = addBookmark(TEST_PAGE_TITLE_GOOGLE2, mTestPage);
@@ -534,13 +541,21 @@ public class BookmarkTest {
                             is(1));
                 });
 
-        searchBookmarks("Non-existent page");
+        if (isTablet) {
+            onView(withId(R.id.row_search_text)).perform(replaceText("Non-existent page"));
+        } else {
+            searchBookmarks("Non-existent page");
+        }
         assertEquals(
                 "Wrong number of items after searching for non-existent item.",
                 0,
                 getBookmarkCount());
 
-        exitSearch();
+        if (isTablet) {
+            onView(withId(R.id.row_search_text)).perform(replaceText(""));
+        } else {
+            exitSearch();
+        }
         assertEquals(BookmarkUiMode.FOLDER, mDelegate.getCurrentUiMode());
         assertEquals("Wrong number of items after closing search UI.", 2, getBookmarkCount());
         assertEquals(TEST_FOLDER_TITLE, mToolbar.getTitle());
@@ -634,32 +649,42 @@ public class BookmarkTest {
                 mDelegate.getCurrentUiMode());
         assertEquals("Wrong number of items before starting search.", 1, getBookmarkCount());
 
-        enterSearch();
-        assertEquals(
-                "Wrong state, should be searching",
-                BookmarkUiMode.SEARCHING,
-                mDelegate.getCurrentUiMode());
-        assertEquals("Wrong number after starting search.", 0, getBookmarkCount());
-
-        searchBookmarks(TEST_PAGE_TITLE_GOOGLE);
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())) {
+            onView(withId(R.id.row_search_text)).perform(replaceText(TEST_PAGE_TITLE_GOOGLE));
+        } else {
+            enterSearch();
+            assertEquals(
+                    "Wrong state, should be searching",
+                    BookmarkUiMode.SEARCHING,
+                    mDelegate.getCurrentUiMode());
+            assertEquals("Wrong number after starting search.", 0, getBookmarkCount());
+            searchBookmarks(TEST_PAGE_TITLE_GOOGLE);
+        }
         assertEquals("Wrong number item items when searching.", 1, getBookmarkCount());
 
-        // Select testFolder and delete it. This deletion will refresh the current search, which
-        // right now is TEST_FOLDER_TITLE.
+        // Select the bookmark and delete it.
         ImprovedBookmarkRow row = getNthBookmarkRow(1);
-        startSelectionThroughMoreMenu(row);
+        startSelectionThroughLongPress(row);
         clickToolbarMenuItem(R.id.selection_mode_delete_menu_id);
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(mItemsContainer);
 
-        // Should still be searching with the folder gone.
-        assertEquals("Wrong number of items.", 0, getBookmarkCount());
+        // The user should still be searching, and the bookmark should be gone.
+        pollForModeAndCount(
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())
+                        ? BookmarkUiMode.FOLDER
+                        : BookmarkUiMode.SEARCHING,
+                0);
 
         // // Undo the deletion.
         runOnUiThreadBlocking(
                 () -> mBookmarkManagerCoordinator.getUndoControllerForTesting().onAction(null));
 
         // The user should still be searching, and the bookmark should reappear.
-        pollForModeAndCount(BookmarkUiMode.SEARCHING, 1);
+        pollForModeAndCount(
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())
+                        ? BookmarkUiMode.FOLDER
+                        : BookmarkUiMode.SEARCHING,
+                1);
     }
 
     @Test
@@ -671,26 +696,38 @@ public class BookmarkTest {
         openBookmarkManager();
 
         // Start searching, enter a query.
-        runOnUiThreadBlocking(mDelegate::openSearchUi);
-        assertEquals(
-                "Wrong state, should be searching",
-                BookmarkUiMode.SEARCHING,
-                mDelegate.getCurrentUiMode());
-        searchBookmarks("test");
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())) {
+            onView(withId(R.id.row_search_text)).perform(replaceText("test"));
+        } else {
+            runOnUiThreadBlocking(mDelegate::openSearchUi);
+            assertEquals(
+                    "Wrong state, should be searching",
+                    BookmarkUiMode.SEARCHING,
+                    mDelegate.getCurrentUiMode());
+            searchBookmarks("test");
+        }
         assertEquals("Wrong number of items after searching.", 2, getBookmarkCount());
 
         // Remove the bookmark.
         removeBookmark(testFolder);
 
         // The user should still be searching, and the bookmark should be gone.
-        pollForModeAndCount(BookmarkUiMode.SEARCHING, 0);
+        pollForModeAndCount(
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())
+                        ? BookmarkUiMode.FOLDER
+                        : BookmarkUiMode.SEARCHING,
+                0);
 
         // Undo the deletion.
         runOnUiThreadBlocking(
                 () -> mBookmarkManagerCoordinator.getUndoControllerForTesting().onAction(null));
 
         // The user should still be searching, and the bookmark should reappear.
-        pollForModeAndCount(BookmarkUiMode.SEARCHING, 2);
+        pollForModeAndCount(
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())
+                        ? BookmarkUiMode.FOLDER
+                        : BookmarkUiMode.SEARCHING,
+                2);
     }
 
     @Test

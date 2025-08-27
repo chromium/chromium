@@ -64,6 +64,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -137,7 +139,16 @@ class BookmarkManagerMediator
                     clearHighlight();
 
                     BookmarkId id = node.getId();
-                    if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
+                    boolean isTabletSearch =
+                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                                    && !TextUtils.isEmpty(getCurrentSearchText());
+
+                    if (getCurrentUiMode() == BookmarkUiMode.SEARCHING || isTabletSearch) {
+                        // We cannot rely on removing the specific list item that corresponds to the
+                        // removed node because the node might be a parent with children also shown
+                        // in the list.
+                        mPendingRefresh.post();
+                    } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
                         // If the folder is removed in folder mode, show the parent folder or falls
                         // back to all bookmarks mode.
                         if (Objects.equals(id, getCurrentFolderId())) {
@@ -172,11 +183,6 @@ class BookmarkManagerMediator
                                 }
                             }
                         }
-                    } else if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
-                        // We cannot rely on removing the specific list item that corresponds to the
-                        // removed node because the node might be a parent with children also shown
-                        // in the list.
-                        mPendingRefresh.post();
                     }
                 }
 
@@ -246,6 +252,9 @@ class BookmarkManagerMediator
                                     currentId, mCurrentPowerFilter));
                     setSearchTextAndUpdateButtonVisibility("");
                     clearSearchBoxFocus();
+                    if (!mIsExitingSearch) {
+                        maybeAutoFocusSearchBox();
+                    }
                 }
             };
 
@@ -397,6 +406,7 @@ class BookmarkManagerMediator
     private @Nullable BatchUploadCardCoordinator mBatchUploadCardCoordinator;
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
+    private boolean mIsExitingSearch;
     private @Nullable String mInitialUrl;
     private boolean mFaviconsNeedRefresh;
     private @Nullable BasicNativePage mNativePage;
@@ -563,6 +573,7 @@ class BookmarkManagerMediator
 
     void onAttachedToWindow() {
         mBookmarkUndoController.setEnabled(true);
+        maybeAutoFocusSearchBox();
     }
 
     void onDetachedFromWindow() {
@@ -819,7 +830,9 @@ class BookmarkManagerMediator
 
         // Set the state back to the folder that was previously being viewed. Listeners will be
         // notified of the change and the list of bookmarks will be updated.
+        mIsExitingSearch = true;
         setState(mStateStack.pop());
+        mIsExitingSearch = false;
     }
 
     // PartnerBookmarksReader.FaviconUpdateObserver implementation.
@@ -1102,9 +1115,20 @@ class BookmarkManagerMediator
     /** Refresh the list of bookmarks within the currently visible folder. */
     private void refresh() {
         assert !mIsDestroyed;
-        if (!mStateStack.isEmpty()) {
-            notifyUi(mStateStack.peek(), /* preserveFolderBookmarksOnEmptySearch= */ false);
+        if (mStateStack.isEmpty()) return;
+
+        // On tablets, a refresh during a search should re-run the search.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            String searchText = getCurrentSearchText();
+            if (!TextUtils.isEmpty(searchText)) {
+                setBookmarks(
+                        mBookmarkQueryHandler.buildBookmarkListForSearch(
+                                searchText, mCurrentPowerFilter));
+                return;
+            }
         }
+
+        notifyUi(mStateStack.peek(), /* preserveFolderBookmarksOnEmptySearch= */ false);
     }
 
     private @ViewType int calculatePromoHeaderType() {
@@ -1636,7 +1660,10 @@ class BookmarkManagerMediator
         PropertyModel searchModel = assumeNonNull(getSearchBoxPropertyModel());
         searchModel.set(BookmarkSearchBoxRowProperties.HAS_FOCUS, hasFocus);
         if (hasFocus) {
-            if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
+            // On phones, tapping the search box switches to a dedicated search UI. On tablets, the
+            // search box is part of the folder view and doesn't switch modes.
+            if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                    && getCurrentUiMode() == BookmarkUiMode.FOLDER) {
                 setState(BookmarkUiState.createSearchState(""));
             }
         } else {
@@ -1659,10 +1686,45 @@ class BookmarkManagerMediator
 
     private void onSearchChange(@Nullable String searchText) {
         searchText = searchText == null ? "" : searchText;
-        setState(BookmarkUiState.createSearchState(searchText));
+        // On tablets, the search box is an in-place filter. When the search text is cleared,
+        // the list should revert to the current folder's contents. On phones, search is a
+        // distinct UI mode.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            if (TextUtils.isEmpty(searchText)) {
+                refresh();
+            } else {
+                setBookmarks(
+                        mBookmarkQueryHandler.buildBookmarkListForSearch(
+                                searchText, mCurrentPowerFilter));
+            }
+        } else {
+            setState(BookmarkUiState.createSearchState(searchText));
+        }
+    }
+
+    /** The search box only focused on LFF device with a hardware keyboard attached. */
+    private void maybeAutoFocusSearchBox() {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                && DeviceInput.supportsKeyboard()) {
+            mRecyclerView.post(
+                    () -> {
+                        // The search box might not be in the model list yet, so guard this call.
+                        if (getCurrentSearchBoxIndex() < 0) return;
+                        setSearchBoxFocusAndHideKeyboardIfNeeded(true);
+                    });
+        }
     }
 
     private @Nullable String getCurrentSearchText() {
+        // On tablets, the search box is an in-place filter and the search text is stored in the
+        // property model. On phones, search is a distinct UI mode and the search text is stored in
+        // the state stack.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            PropertyModel searchModel = getSearchBoxPropertyModel();
+            return searchModel == null
+                    ? ""
+                    : searchModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT);
+        }
         return mStateStack.isEmpty() ? "" : mStateStack.peek().mSearchText;
     }
 
