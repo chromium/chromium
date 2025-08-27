@@ -24,6 +24,7 @@ import "components/optimization_guide/proto/features/proofreader_api.proto";
 import "components/optimization_guide/proto/features/scam_detection.proto";
 import "components/optimization_guide/proto/features/summarize.proto";
 import "components/optimization_guide/proto/features/tab_organization.proto";
+import "components/optimization_guide/proto/features/walletable_pass_extraction.proto";
 import "components/optimization_guide/proto/features/wallpaper_search.proto";
 import "components/optimization_guide/proto/features/writing_assistance_api.proto";
 import "components/optimization_guide/proto/features/zero_state_suggestions.proto";
@@ -90,6 +91,8 @@ message LogAiDataRequest {
     PromptApiLoggingData prompt_api = 26;
 
     SummarizeLoggingData summarize = 27;
+
+    WalletablePassExtractionLoggingData walletable_pass_extraction = 28;
 
     DefaultLoggingData default = 1000;
   }
