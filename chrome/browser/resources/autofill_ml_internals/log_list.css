@@ -17,6 +17,15 @@
   width: 250px;
   overflow-y: auto;
   overflow-x: hidden;
+  --autofill-chip-color: var(--google-blue-50);
+  --password-manager-chip-color: var(--google-green-50);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --autofill-chip-color: var(--google-blue-900);
+    --password-manager-chip-color: var(--google-green-900);
+  }
 }
 
 .filter-container {
@@ -77,11 +86,11 @@ cr-button {
 }
 
 .log-info .chip.autofill {
-  background-color: var(--google-blue-50);
+  background-color: var(--autofill-chip-color);
 }
 
 .log-info .chip.password {
-  background-color: var(--google-green-50);
+  background-color: var(--password-manager-chip-color);
 }
 
 .filter-chip {
@@ -91,11 +100,11 @@ cr-button {
 }
 
 #autofill-filter:has(input:checked) {
-  background-color: var(--google-blue-50);
+  background-color: var(--autofill-chip-color);
 }
 
 #password-filter:has(input:checked) {
-  background-color: var(--google-green-50);
+  background-color: var(--password-manager-chip-color);
 }
 
 .chip input[type="checkbox"] {

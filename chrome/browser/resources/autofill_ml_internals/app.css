@@ -9,6 +9,7 @@
 
 :host {
   background-color: var(--md-background-color);
+  color: var(--cr-primary-text-color);
   display: flex;
   flex-direction: row;
   height: 100vh;
