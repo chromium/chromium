@@ -59,6 +59,8 @@ GLenum SkColorTypeToGLDataFormat(SkColorType color_type, bool supports_rg) {
     // should only support GL_LUMINANCE.
     case kA16_float_SkColorType:
       return GL_LUMINANCE;
+    case kRGBA_F16_SkColorType:
+      return GL_RGBA16F;
     default:
       NOTREACHED() << "Unknown SkColorType " << color_type;
   }
@@ -76,6 +78,7 @@ GLenum SkColorTypeToGLDataType(SkColorType color_type) {
     case kR16G16_unorm_SkColorType:
       return GL_UNSIGNED_SHORT;
     case kA16_float_SkColorType:
+    case kRGBA_F16_SkColorType:
       return GL_HALF_FLOAT_OES;
     default:
       NOTREACHED() << "Unknown SkColorType " << color_type;

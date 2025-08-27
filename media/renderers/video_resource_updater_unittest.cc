@@ -427,6 +427,21 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameY16NonOrigin) {
   }
 }
 
+TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBAF16) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+
+  const gfx::Size coded_size(16, 16);
+  auto video_frame = VideoFrame::CreateFrame(PIXEL_FORMAT_RGBAF16, coded_size,
+                                             gfx::Rect(coded_size), coded_size,
+                                             base::TimeDelta());
+  CHECK(video_frame);
+
+  VideoFrameExternalResource resource =
+      updater->CreateExternalResourceFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
+  EXPECT_EQ(resource.resource.size, video_frame->coded_size());
+}
+
 TEST_F(VideoResourceUpdaterTest, HighBitFrameNoF16) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   scoped_refptr<VideoFrame> video_frame = CreateTestHighBitFrame();
