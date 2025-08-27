@@ -153,7 +153,9 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   if (!base::FeatureList::IsEnabled(features::kGlicZOrderChanges)) {
     params.dont_show_in_taskbar = true;
   }
-  params.force_system_menu_for_frameless = true;
+  if (!base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
+    params.force_system_menu_for_frameless = true;
+  }
 #endif
   params.sublevel = ChromeWidgetSublevel::kSublevelGlic;
   // Don't change this name. This is used by other code to identify the glic
@@ -171,10 +173,10 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   params.rounded_corners = gfx::RoundedCornersF(kGlicWidgetCornerRadius);
 #if BUILDFLAG(IS_MAC)
   params.animation_enabled = true;
+#endif
   if (UseClientView()) {
     params.remove_standard_frame = true;
   }
-#endif
   auto glic_view = std::make_unique<GlicView>(profile, initial_bounds.size(),
                                               accelerator_delegate);
   std::unique_ptr<GlicWidgetDelegate> delegate;
