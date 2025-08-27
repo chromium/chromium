@@ -351,9 +351,27 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     [self.delegate
          lensResultPageMediator:self
         didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kExploreBarTab];
+  } else if (base::FeatureList::IsEnabled(kLensSearchHeadersCheckEnabled) &&
+             lens::IsGoogleHostURL(URL) && [self shouldAddHeaders:request]) {
+    [self loadResultsURL:URL httpHeaders:_latestHttpHeaders];
+    decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
   } else {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
+}
+
+- (BOOL)shouldAddHeaders:(NSURLRequest*)request {
+  if (_latestHttpHeaders == nil) {
+    return false;
+  }
+
+  NSDictionary<NSString*, NSString*>* allHeaders = request.allHTTPHeaderFields;
+  for (NSString* key in _latestHttpHeaders) {
+    if ([allHeaders objectForKey:key] == nil) {
+      return true;
+    }
+  }
+  return false;
 }
 
 #pragma mark - CRWWebStateObserver

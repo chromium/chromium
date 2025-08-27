@@ -314,6 +314,9 @@ BASE_DECLARE_FEATURE(kLensOverlayForceShowOnboardingScreen);
 // Feature flag to add lens overlay navigation to history.
 BASE_DECLARE_FEATURE(kLensOverlayNavigationHistory);
 
+// Feature flag to check headers for lens searches.
+BASE_DECLARE_FEATURE(kLensSearchHeadersCheckEnabled);
+
 // Variations of MIA NTP entrypoint.
 extern const char kNTPMIAEntrypointParam[];
 extern const char kNTPMIAEntrypointParamOmniboxContainedSingleButton[];
