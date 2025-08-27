@@ -13,11 +13,13 @@ import java.lang.annotation.Target;
 /**
  * Annotation to parameterize flags via the command-line flags file.
  *
- * For example, the following annotation would run the test 3 times:
+ * <p>For example, the following annotation would run the test 3 times:
  *
- * 1st: No flags.
- * 2nd: --enable-features=one --one-params=p1
- * 3rd: --enable-features=two --two-params=p2
+ * <ol>
+ *   <li>1st: No flags.
+ *   <li>2nd: --enable-features=one --one-params=p1
+ *   <li>3rd: --enable-features=two --two-params=p2
+ * </ol>
  *
  * <code>
  * @ParameterizedCommandLineFlags({
@@ -32,25 +34,21 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface ParameterizedCommandLineFlags {
     /**
-     * Annotation to set commnad line flags in the command-line flags file
-     * for JUnit4 instrumentation tests.
+     * Annotation to set command line flags in the command-line flags file for JUnit4
+     * instrumentation tests.
      *
-     * E.g. if you add the following annotation to your test class:
-     *
-     * <code>
+     * <p>E.g. if you add the following annotation to your test class: <code>
      * @ParameterizedCommandLineFlags.Switches({"FLAG_A", "FLAG_B"})
      * public class MyTestClass
-     * </code>
+     * </code> The test harness would run the test once with with --FLAG_A --FLAG_B.
      *
-     * The test harness would run the test once with with --FLAG_A --FLAG_B.
-     *
-     * If you want to have the method run multiple times with different sets of
-     * parameters, see {@link ParameterizedCommandLineFlags}.
+     * <p>If you want to have the method run multiple times with different sets of parameters, see
+     * {@link ParameterizedCommandLineFlags}.
      */
     @Inherited
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.TYPE})
-    public @interface Switches {
+    @interface Switches {
         String[] value() default {};
     }
 

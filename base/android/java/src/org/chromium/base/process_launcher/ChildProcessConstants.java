@@ -14,6 +14,6 @@ public interface ChildProcessConstants {
     // specific.
 
     // Key for the browser package name.
-    public static final String EXTRA_BROWSER_PACKAGE_NAME =
+    String EXTRA_BROWSER_PACKAGE_NAME =
             "org.chromium.base.process_launcher.extra.browser_package_name";
 }

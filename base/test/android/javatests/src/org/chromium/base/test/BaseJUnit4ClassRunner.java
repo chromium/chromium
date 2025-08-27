@@ -79,7 +79,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         /**
          * @param targetContext the instrumentation context that will be used during the test.
          */
-        public void run(Context targetContext, Class<?> testClass);
+        void run(Context targetContext, Class<?> testClass);
     }
 
     /**
@@ -95,7 +95,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
          * @param targetContext the instrumentation context that will be used during the test.
          * @param testMethod the test method to be run.
          */
-        public void run(Context targetContext, FrameworkMethod testMethod);
+        void run(Context targetContext, FrameworkMethod testMethod);
     }
 
     /** Makes it more obvious that all tests are being marked as failed. */

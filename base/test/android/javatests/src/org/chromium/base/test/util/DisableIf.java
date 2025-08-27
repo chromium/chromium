@@ -42,7 +42,7 @@ public class DisableIf {
     @Target({ElementType.METHOD, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @Repeatable(Builds.class)
-    public static @interface Build {
+    public @interface Build {
         String message() default "";
 
         int sdk_is_greater_than() default 0;

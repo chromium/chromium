@@ -37,7 +37,7 @@ public class ValueChangedCallback<T> implements Callback<T> {
          * @param oldValue The previous value. Depending on what is being observed this might not be
          *     valid to use anymore.
          */
-        public void onValueChanged(@Nullable T newValue, @Nullable T oldValue);
+        void onValueChanged(@Nullable T newValue, @Nullable T oldValue);
     }
 
     private final ValueChangedObserver<T> mValueChangedObserver;

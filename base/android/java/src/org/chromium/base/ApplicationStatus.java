@@ -149,7 +149,7 @@ public class ApplicationStatus {
          * @param activity The {@link Activity} that has a window focus changed event.
          * @param hasFocus Whether or not {@code activity} gained or lost focus.
          */
-        public void onWindowFocusChanged(Activity activity, boolean hasFocus);
+        void onWindowFocusChanged(Activity activity, boolean hasFocus);
     }
 
     /** Interface to be implemented by listeners for task visibility changes. */

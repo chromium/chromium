@@ -45,8 +45,8 @@ public interface AconfigFlaggedApiDelegate {
     // within {@link ui.display.DisplayAndroidManager}.
 
     /** Interface that is used to subscribe to Display Topology Updates. */
-    public interface DisplayTopologyListener {
-        public void onDisplayTopologyChanged(SparseArray<RectF> absoluteBounds);
+    interface DisplayTopologyListener {
+        void onDisplayTopologyChanged(SparseArray<RectF> absoluteBounds);
     }
 
     /** Checks if the display topology is available, based on the API level and Aconfig flags. */

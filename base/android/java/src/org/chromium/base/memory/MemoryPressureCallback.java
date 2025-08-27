@@ -11,5 +11,5 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 @FunctionalInterface
 public interface MemoryPressureCallback {
-    public void onPressure(@MemoryPressureLevel int pressure);
+    void onPressure(@MemoryPressureLevel int pressure);
 }
