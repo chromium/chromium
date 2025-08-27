@@ -589,7 +589,16 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioConsumer) {
   // length to 2.721s - chunk length. Since GetMediaPosition uses wall time and
   // it needs extra time to process, so also loosen the upper limit to 2.8s.
   EXPECT_GT(pos, base::Seconds(2.2));
+  #if defined(ARCH_CPU_ARM64)
+  // The arm64 machines we are running are extremely low performant, reducing
+  // the expectation to 10s to reduce flakiness. The test shouldn't rely on the
+  // speed of the emulator/test bot.
+  // See the test history,
+  // https://ci.chromium.org/ui/test/chrome/ninja%3A%2F%2Ffuchsia_web%2Fwebengine%3Aweb_engine_integration_tests%2FWebEngineIntegrationMediaTest.PlayAudioToAudioConsumer
+  EXPECT_LT(pos, base::Seconds(10.0));
+  #else
   EXPECT_LT(pos, base::Seconds(2.8));
+  #endif
 
   EXPECT_EQ(fake_audio_consumer_service_.instance(0)->session_id(),
             kTestMediaSessionId);
