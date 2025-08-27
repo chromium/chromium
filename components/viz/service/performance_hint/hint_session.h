@@ -50,6 +50,8 @@ class VIZ_SERVICE_EXPORT HintSession {
 
   virtual void SetThreads(
       const base::flat_set<base::PlatformThreadId>& thread_ids) = 0;
+
+  virtual void NotifyWorkloadReset() = 0;
 };
 
 class VIZ_SERVICE_EXPORT HintSessionFactory {

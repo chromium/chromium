@@ -337,6 +337,13 @@ BASE_FEATURE(kEnableADPFSetThreads,
              "EnableADPFSetThreads",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, Chrome uses notifyWorkloadReset method on viz wakeup instead of
+// sending a timing report with a fake actual duration > target duration.
+// Supported only on Android >= 16.
+BASE_FEATURE(kEnableADPFWorkloadReset,
+             "EnableADPFWorkloadReset",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, we immediately send acks to clients when a viz surface
 // activates. This effectively removes back-pressure. This can result in wasted
 // work and contention, but should regularize the timing of client rendering.

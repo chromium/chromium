@@ -52,6 +52,11 @@ using pAPerformanceHint_closeSession =
 using pAPerformanceHint_setThreads = int (*)(APerformanceHintSession* session,
                                              const int32_t* threadIds,
                                              size_t size);
+using pAPerformanceHint_notifyWorkloadReset =
+    int (*)(APerformanceHintSession* session,
+            bool cpu,
+            bool gpu,
+            const char* identifier);
 }
 
 namespace viz {
@@ -68,6 +73,11 @@ class HintSessionFactoryImpl;
       LOG(ERROR) << "Unable to load function " << #func;        \
     }                                                           \
   } while (0)
+
+bool ShouldUseWorkloadReset() {
+  return android_get_device_api_level() > __ANDROID_API_V__ &&
+         base::FeatureList::IsEnabled(features::kEnableADPFWorkloadReset);
+}
 
 struct AdpfMethods {
   static const AdpfMethods& Get() {
@@ -90,11 +100,12 @@ struct AdpfMethods {
     LOAD_FUNCTION(main_dl_handle, APerformanceHint_updateTargetWorkDuration);
     LOAD_FUNCTION(main_dl_handle, APerformanceHint_reportActualWorkDuration);
     LOAD_FUNCTION(main_dl_handle, APerformanceHint_closeSession);
-#if BUILDFLAG(IS_ANDROID)
     if (android_get_device_api_level() >= __ANDROID_API_U__) {
       LOAD_FUNCTION(main_dl_handle, APerformanceHint_setThreads);
     }
-#endif
+    if (ShouldUseWorkloadReset()) {
+      LOAD_FUNCTION(main_dl_handle, APerformanceHint_notifyWorkloadReset);
+    }
   }
 
   ~AdpfMethods() = default;
@@ -108,6 +119,7 @@ struct AdpfMethods {
       APerformanceHint_reportActualWorkDurationFn;
   pAPerformanceHint_closeSession APerformanceHint_closeSessionFn;
   pAPerformanceHint_setThreads APerformanceHint_setThreadsFn;
+  pAPerformanceHint_notifyWorkloadReset APerformanceHint_notifyWorkloadResetFn;
 };
 
 class AdpfHintSession : public HintSession {
@@ -124,6 +136,8 @@ class AdpfHintSession : public HintSession {
                                BoostType preferable_boost_type) override;
   void SetThreads(
       const base::flat_set<base::PlatformThreadId>& thread_ids) override;
+
+  void NotifyWorkloadReset() override;
 
   void WakeUp();
 
@@ -232,10 +246,21 @@ void AdpfHintSession::SetThreads(
                       "type", type_, "success", retval == 0);
 }
 
+void AdpfHintSession::NotifyWorkloadReset() {
+  DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
+  int retval = AdpfMethods::Get().APerformanceHint_notifyWorkloadResetFn(
+      hint_session_, /*cpu=*/true, /*gpu=*/false, /*identifier=*/"viz-wakeup");
+  TRACE_EVENT_INSTANT("android.adpf", "NotifyWorkloadReset", "retval", retval);
+}
+
 void AdpfHintSession::WakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
-  ReportCpuCompletionTime(target_duration_, base::TimeTicks::Now(),
-                          BoostType::kWakeUpBoost);
+  if (ShouldUseWorkloadReset()) {
+    NotifyWorkloadReset();
+  } else {
+    ReportCpuCompletionTime(target_duration_, base::TimeTicks::Now(),
+                            BoostType::kWakeUpBoost);
+  }
 }
 
 HintSessionFactoryImpl::HintSessionFactoryImpl(
