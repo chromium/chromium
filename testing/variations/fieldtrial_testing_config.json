@@ -1279,6 +1279,21 @@
             ]
         }
     ],
+    "AnnotatedPageContentsVirtualStructure": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AnnotatedPageContentsVirtualStructure"
+                    ]
+                }
+            ]
+        }
+    ],
     "ApiPrintingMarginsAndScale": [
         {
             "platforms": [
