@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.ForwardingListObservable;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
@@ -54,6 +55,8 @@ class DateOrderedListView {
     private final GridLayoutManager mGridLayoutManager;
     private final UiConfig mUiConfig;
     private final Runnable mOnConfigurationChangedCallback;
+
+    private final @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     /** Creates an instance of a {@link DateOrderedListView} representing {@code model}. */
     public DateOrderedListView(
@@ -110,9 +113,10 @@ class DateOrderedListView {
         mGridLayoutManager = new GridLayoutManagerImpl(context);
         mView.setLayoutManager(mGridLayoutManager);
         mView.addItemDecoration(new ItemDecorationImpl());
-        if (config.edgeToEdgePadAdjusterGenerator != null) {
-            config.edgeToEdgePadAdjusterGenerator.apply(mView);
-        }
+        mEdgeToEdgePadAdjuster =
+                config.edgeToEdgePadAdjusterGenerator == null
+                        ? null
+                        : config.edgeToEdgePadAdjusterGenerator.apply(mView);
         mView.setClipToPadding(false);
 
         PropertyModelChangeProcessor.create(
@@ -147,6 +151,13 @@ class DateOrderedListView {
     /** @return The Android {@link View} representing this widget. */
     public View getView() {
         return mView;
+    }
+
+    /** Destroy this {@link DateOrderedListView}. */
+    public void destroy() {
+        if (mEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgePadAdjuster.destroy();
+        }
     }
 
     /**

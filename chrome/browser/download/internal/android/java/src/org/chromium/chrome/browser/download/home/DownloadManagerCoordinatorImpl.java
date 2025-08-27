@@ -206,6 +206,11 @@ class DownloadManagerCoordinatorImpl
         mSettingsNavigation.onResult(mActivity);
     }
 
+    @Override
+    public ViewGroup getListViewForTesting() {
+        return mListCoordinator.getListViewForTesting();
+    }
+
     private void notifyFilterChanged(@FilterType int filter) {
         mSelectionDelegate.clearSelection();
         if (mMuteFilterChanges) return;

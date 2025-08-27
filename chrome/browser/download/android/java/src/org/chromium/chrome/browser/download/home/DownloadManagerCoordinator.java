@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download.home;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -28,14 +29,20 @@ public interface DownloadManagerCoordinator {
     void destroy();
 
     /**
-     * Handlers interested in intercepting back events. The first handler has the top priority
-     * and the last one has the least.
-     * @return  Handlers which are interested in consuming back press event.
+     * Handlers interested in intercepting back events. The first handler has the top priority and
+     * the last one has the least.
+     *
+     * @return Handlers which are interested in consuming back press event.
      */
     BackPressHandler[] getBackPressHandlers();
 
-    /** @return A {@link View} representing this coordinator. */
+    /**
+     * @return A {@link View} representing this coordinator.
+     */
     View getView();
+
+    /** Returns the list view contained inside the view (see {@link #getView()}. */
+    ViewGroup getListViewForTesting();
 
     /** To be called to push the url containing internal state to the coordinator. */
     void updateForUrl(String url);
