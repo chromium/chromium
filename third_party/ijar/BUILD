@@ -12,7 +12,7 @@ cc_library(
     srcs = [
         "zip.cc",
     ] + select({
-        "//src:windows": [
+        "//src/conditions:windows": [
             "mapped_file_windows.cc",
         ],
         "//conditions:default": [
@@ -33,7 +33,7 @@ cc_library(
         ":platform_utils",
         ":zlib_client",
     ] + select({
-        "//src:windows": [
+        "//src/conditions:windows": [
             "//src/main/cpp/util:errors",
             "//src/main/cpp/util:filesystem",
             "//src/main/cpp/util:logging",
@@ -51,7 +51,7 @@ cc_library(
         "common.h",
         "zlib_client.h",
     ],
-    deps = ["//third_party/zlib"],
+    deps = ["@zlib"],
 )
 
 cc_library(
@@ -106,7 +106,7 @@ filegroup(
         "zlib_client.cc",
         "zlib_client.h",
     ] + select({
-        "//src:windows": [
+        "//src/conditions:windows": [
             "mapped_file_windows.cc",
         ],
         "//conditions:default": [
@@ -126,7 +126,6 @@ genrule(
     name = "ijar_transitive_srcs_zip",
     srcs = [
         ":ijar_srcs_zip",
-        "//src:zlib_zip",
         "//src/main/cpp/util:cpp_util_with_deps_zip",
     ],
     outs = ["ijar_srcs_with_deps.zip"],

@@ -1,7 +1,7 @@
 Name: ijar
 URL: https://github.com/bazelbuild/bazel
-Version: fed23d5a08cecbdcc4725adf77824a6c5bde1b4e
-Revision: fed23d5a08cecbdcc4725adf77824a6c5bde1b4e
+Version: N/A
+Revision: d1975d893c5244b010ee7ea68eca22a395666631
 Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
@@ -18,7 +18,7 @@ Local Modifications:
 - Added BUILD.gn
 
 Update instructions:
-git clone https://github.com/bazelbuild/bazel
+git clone --depth 1 https://github.com/bazelbuild/bazel
 cd bazel/third_party/ijar
 cp * $CHROMIUM_SRC/third_party/ijar
 # Then apply Local Modifications
