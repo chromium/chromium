@@ -304,4 +304,8 @@ BASE_FEATURE(kKeepDefaultSearchEngineRendererAlive,
              "KeepDefaultSearchEngineRendererAlive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBoostClosingTabs,
+             "BoostClosingTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace performance_manager::features

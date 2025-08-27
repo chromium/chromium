@@ -240,6 +240,9 @@ BASE_DECLARE_FEATURE(kThrottleUnimportantFrameRate);
 // (crbug.com/365958798).
 BASE_DECLARE_FEATURE(kKeepDefaultSearchEngineRendererAlive);
 
+// A feature to boost the priority of tabs that are being closed.
+BASE_DECLARE_FEATURE(kBoostClosingTabs);
+
 }  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_
