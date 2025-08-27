@@ -655,6 +655,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsCheckedStateChanged) {
+  // TODO(crbug.com/441088517): Fix the flakiness and enable this on blink.
+  if (GetParam() == ui::AXApiType::kBlink) {
+    GTEST_SKIP() << "Skipping this test case on blink because of flakiness. "
+                 << "See crbug.com/441088517";
+  }
+
   RunEventTest(FILE_PATH_LITERAL("checked-state-changed.html"));
 }
 
