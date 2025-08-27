@@ -10,15 +10,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * We use this annotation to tell where WPR archive file to load from for each
- * test cases. Typically the folder should be called wpr_tests.
- * Note the archive is a relative path from src/.
+ * We use this annotation to tell where WPR archive file to load from for each test cases. Typically
+ * the folder should be called wpr_tests. Note the archive is a relative path from src/.
  *
- * New tests should also annotate with "WPRRecordReplayTest" in @Feature.
+ * <p>New tests should also annotate with "WPRRecordReplayTest" in @Feature.
  *
- * For instance, if file_foo is used in test A, file_bar is used
- * in test B.
+ * <p>For instance, if file_foo is used in test A, file_bar is used in test B.
  *
+ * <pre>
  *     @Feature("WPRRecordReplayTest")
  *     @WPRArchiveDirectory("/path_of_file_foo")
  *     public void test_A() {
@@ -30,18 +29,19 @@ import java.lang.annotation.Target;
  *     public void test_B() {
  *        // Write the test case here.
  *     }
+ * </pre>
  *
- * During gClient runhooks, the files in /path_of_file_foo and /path_of_file_bar
- * are downloaded from GCS. Once the files are downloaded, it will be used in
- * tests as isolated.
+ * During gClient runhooks, the files in /path_of_file_foo and /path_of_file_bar are downloaded from
+ * GCS. Once the files are downloaded, it will be used in tests as isolated.
  *
- * Optionally, a test may additionally be annotated with ArchiveName. This allows multiple tests
+ * <p>Optionally, a test may additionally be annotated with ArchiveName. This allows multiple tests
  * to share the same archive. This is possible when a single test exercises the same network
  * requests needed by other tests.
  *
- * For example, these two tests use the same WPR file. You can record running testA, and then replay
- * on both testA and testB.
+ * <p>For example, these two tests use the same WPR file. You can record running testA, and then
+ * replay on both testA and testB.
  *
+ * <pre>
  *     @Feature("WPRRecordReplayTest")
  *     @WPRArchiveDirectory("/path_of_file_foo")
  *     @WPRArchiveDirectory.ArchiveName("shared.wprgo")
@@ -54,17 +54,18 @@ import java.lang.annotation.Target;
  *     @WPRArchiveDirectory.ArchiveName("shared.wprgo")
  *     public void test_B() {
  *     }
+ * </pre>
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WPRArchiveDirectory {
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface ArchiveName {
+    @interface ArchiveName {
         String[] value();
     }
 
     /**
      * @return one WPRArchiveDirectory.
      */
-    public String value();
+    String value();
 }

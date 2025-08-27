@@ -38,11 +38,12 @@ public class MockTabModel extends EmptyTabModel {
     public interface MockTabModelDelegate {
         /**
          * Creates a Tab.
+         *
          * @param id ID of the Tab.
          * @param incognito Whether the Tab is incognito.
          * @return Tab that is created.
          */
-        public MockTab createTab(int id, boolean incognito);
+        MockTab createTab(int id, boolean incognito);
     }
 
     /**
