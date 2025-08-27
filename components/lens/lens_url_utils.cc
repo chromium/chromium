@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 
+#include "base/base64url.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -135,6 +136,42 @@ bool IsLensMWebResult(const GURL& url) {
          net::GetValueForKeyInQuery(url, kLensRequestQueryParameter,
                                     &request_id) &&
          !net::GetValueForKeyInQuery(url, kLensSurfaceQueryParameter, &surface);
+}
+
+std::string Base64EncodeRequestId(lens::LensOverlayRequestId request_id) {
+  std::string serialized_request_id;
+  CHECK(request_id.SerializeToString(&serialized_request_id));
+  std::string encoded_request_id;
+  base::Base64UrlEncode(serialized_request_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_request_id);
+  return encoded_request_id;
+}
+
+std::string VitQueryParamValueForMimeType(MimeType mime_type) {
+  // Default contextual visual input type.
+  std::string vitValue = kContextualVisualInputTypeQueryParameterValue;
+  switch (mime_type) {
+    case lens::MimeType::kPdf:
+      vitValue = kPdfVisualInputTypeQueryParameterValue;
+      break;
+    case lens::MimeType::kHtml:
+    case lens::MimeType::kPlainText:
+    case lens::MimeType::kAnnotatedPageContent:
+      vitValue = kWebpageVisualInputTypeQueryParameterValue;
+      break;
+    case lens::MimeType::kUnknown:
+      break;
+    case lens::MimeType::kImage:
+      vitValue = kImageVisualInputTypeQueryParameterValue;
+      break;
+    case lens::MimeType::kVideo:
+    case lens::MimeType::kAudio:
+    case lens::MimeType::kJson:
+      // These content types are not supported for the page content upload flow.
+      NOTREACHED() << "Unsupported option in page content upload";
+  }
+  return vitValue;
 }
 
 }  // namespace lens

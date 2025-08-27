@@ -483,6 +483,9 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
                 ->routing_info()
                 .server_address(),
             kTestServerAddress);
+
+  EXPECT_EQ(controller().suggest_inputs().search_session_id(),
+            kTestSearchSessionId);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {

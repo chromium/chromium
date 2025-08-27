@@ -38,6 +38,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_request_construction.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -89,10 +90,6 @@ constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
 constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
-constexpr char kPdfVisualInputTypeQueryParameterValue[] = "pdf";
-constexpr char kWebpageVisualInputTypeQueryParameterValue[] = "wp";
-constexpr char kImageVisualInputTypeQueryParameterValue[] = "img";
-constexpr char kContextualVisualInputTypeQueryParameterValue[] = "video";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("lens_overlay", R"(
@@ -173,34 +170,10 @@ lens::CenterRotatedBox ConvertToServerCenterRotatedBox(
   return out_box;
 }
 
-std::string VitQueryParamValueForMimeType(lens::MimeType mime_type) {
-  // Default contextual visual input type.
-  std::string vitValue = kContextualVisualInputTypeQueryParameterValue;
-  switch (mime_type) {
-    case lens::MimeType::kPdf:
-      vitValue = kPdfVisualInputTypeQueryParameterValue;
-      break;
-    case lens::MimeType::kHtml:
-    case lens::MimeType::kPlainText:
-    case lens::MimeType::kAnnotatedPageContent:
-      vitValue = kWebpageVisualInputTypeQueryParameterValue;
-      break;
-    case lens::MimeType::kUnknown:
-      break;
-    case lens::MimeType::kImage:
-    case lens::MimeType::kVideo:
-    case lens::MimeType::kAudio:
-    case lens::MimeType::kJson:
-      // These content types are not supported for the page content upload flow.
-      NOTREACHED() << "Unsupported option in page content upload";
-  }
-  return vitValue;
-}
-
 std::map<std::string, std::string> AddVisualInputTypeQueryParam(
     std::map<std::string, std::string> additional_search_query_params,
     lens::MimeType content_type) {
-  std::string vitValue = VitQueryParamValueForMimeType(content_type);
+  std::string vitValue = lens::VitQueryParamValueForMimeType(content_type);
   additional_search_query_params.insert(
       {kVisualInputTypeQueryParameterKey, vitValue});
   return additional_search_query_params;
@@ -426,16 +399,6 @@ lens::Payload CreatePageContentPayload(
   return payload;
 }
 
-std::string Base64EncodeRequestId(lens::LensOverlayRequestId request_id) {
-  std::string serialized_request_id;
-  CHECK(request_id.SerializeToString(&serialized_request_id));
-  std::string encoded_request_id;
-  base::Base64UrlEncode(serialized_request_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
-  return encoded_request_id;
-}
-
 }  // namespace
 
 PageContent::PageContent() : content_type_(lens::MimeType::kUnknown) {}
@@ -512,7 +475,7 @@ void LensOverlayQueryController::StartQueryFlow(
 
   if (primary_content_type_ != lens::MimeType::kUnknown) {
     suggest_inputs_.set_contextual_visual_input_type(
-        VitQueryParamValueForMimeType(primary_content_type_));
+        lens::VitQueryParamValueForMimeType(primary_content_type_));
     RunSuggestInputsCallback();
   }
 

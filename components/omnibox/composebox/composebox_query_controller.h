@@ -194,6 +194,12 @@ class ComposeboxQueryController {
   // Session management. Virtual for testing.
   virtual void NotifySessionStarted();
   virtual void NotifySessionAbandoned();
+
+  std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
+      lens::RequestIdUpdateMode update_mode,
+      lens::MimeType mime_type,
+      lens::LensOverlayRequestId_MediaType media_type);
+
   // Called when a query has been submitted. `query_start_time` is the time
   // that the user clicked the submit button.
   GURL CreateAimUrl(const std::string& query_text, base::Time query_start_time);
@@ -208,6 +214,7 @@ class ComposeboxQueryController {
       std::unique_ptr<FileInfo> file_info,
       scoped_refptr<base::RefCountedBytes> file_data,
       std::optional<composebox::ImageEncodingOptions> image_options);
+
   // Removes file from file cache.
   virtual bool DeleteFile(const base::UnguessableToken& file_token);
 
@@ -218,6 +225,10 @@ class ComposeboxQueryController {
 
   // Return the file from `active_files_` map or nullptr if not found.
   virtual FileInfo* GetFileInfo(const base::UnguessableToken& file_token);
+
+  const lens::proto::LensOverlaySuggestInputs& suggest_inputs() const {
+    return suggest_inputs_;
+  }
 
  protected:
   // Creates the request body proto for an image and calls the callback with the
@@ -388,6 +399,8 @@ class ComposeboxQueryController {
   // TODO(crbug.com/430070871): Remove this once the server supports the
   // `lns_surface` parameter.
   bool send_lns_surface_ = false;
+
+  lens::proto::LensOverlaySuggestInputs suggest_inputs_;
 
   // The session counter, incremented when the session is stopped. This is used
   // to determine if the session is active when handling cluster info

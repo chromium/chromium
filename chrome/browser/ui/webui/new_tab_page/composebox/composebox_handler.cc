@@ -19,12 +19,15 @@ class ComposeboxOmniboxClient final : public SearchboxOmniboxClient {
  public:
   ComposeboxOmniboxClient(Profile* profile,
                           content::WebContents* web_contents,
-                          ComposeboxHandler* composebox_handler);
+                          ComposeboxHandler* composebox_handler,
+                          ComposeboxQueryController* query_controller);
+
   ~ComposeboxOmniboxClient() override;
 
   // OmniboxClient:
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override;
+
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
@@ -39,15 +42,21 @@ class ComposeboxOmniboxClient final : public SearchboxOmniboxClient {
       const AutocompleteMatch& alternative_nav_match) override;
 
  private:
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+  GetLensOverlaySuggestInputs() const override;
+
   raw_ptr<ComposeboxHandler> composebox_handler_;
+  raw_ptr<ComposeboxQueryController> query_controller_;
 };
 
 ComposeboxOmniboxClient::ComposeboxOmniboxClient(
     Profile* profile,
     content::WebContents* web_contents,
-    ComposeboxHandler* composebox_handler)
+    ComposeboxHandler* composebox_handler,
+    ComposeboxQueryController* query_controller)
     : SearchboxOmniboxClient(profile, web_contents),
-      composebox_handler_(composebox_handler) {}
+      composebox_handler_(composebox_handler),
+      query_controller_(query_controller) {}
 
 ComposeboxOmniboxClient::~ComposeboxOmniboxClient() = default;
 
@@ -69,6 +78,16 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match) {
   composebox_handler_->SubmitQuery(base::UTF16ToUTF8(text), disposition);
+}
+
+std::optional<lens::proto::LensOverlaySuggestInputs>
+ComposeboxOmniboxClient::GetLensOverlaySuggestInputs() const {
+  const auto& suggest_inputs = query_controller_->suggest_inputs();
+  if (suggest_inputs.has_encoded_request_id()) {
+    return suggest_inputs;
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace
@@ -97,7 +116,8 @@ ComposeboxHandler::ComposeboxHandler(
   // TODO(crbug.com/435470637): Consider moving to SearchboxHandler base class.
   owned_controller_ = std::make_unique<OmniboxController>(
       /*view=*/nullptr,
-      std::make_unique<ComposeboxOmniboxClient>(profile_, web_contents_, this));
+      std::make_unique<ComposeboxOmniboxClient>(profile_, web_contents_, this,
+                                                query_controller_.get()));
   controller_ = owned_controller_.get();
 
   autocomplete_controller_observation_.Observe(autocomplete_controller());
@@ -105,6 +125,9 @@ ComposeboxHandler::ComposeboxHandler(
 
 ComposeboxHandler::~ComposeboxHandler() {
   query_controller_->RemoveObserver(this);
+  autocomplete_controller_observation_.Reset();
+  controller_ = nullptr;
+  owned_controller_.reset();
 }
 
 void ComposeboxHandler::NotifySessionStarted() {

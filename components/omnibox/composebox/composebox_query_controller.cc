@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_request_construction.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
 #include "components/search_engines/util.h"
 #include "components/signin/public/base/consent_level.h"
@@ -37,6 +38,7 @@
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/lens_server_proto/lens_overlay_payload.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
@@ -176,6 +178,30 @@ void ComposeboxQueryController::NotifySessionAbandoned() {
   session_id_++;
 }
 
+std::unique_ptr<lens::LensOverlayRequestId>
+ComposeboxQueryController::GetNextRequestId(
+    lens::RequestIdUpdateMode update_mode,
+    lens::MimeType mime_type,
+    lens::LensOverlayRequestId_MediaType media_type) {
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      request_id_generator_.GetNextRequestId(update_mode);
+  request_id->set_media_type(media_type);
+
+  suggest_inputs_.set_encoded_request_id(
+      lens::Base64EncodeRequestId(*request_id));
+  if (!base::Contains(lens::kUnsupportedVitMimeTypes, mime_type)) {
+    suggest_inputs_.set_contextual_visual_input_type(
+        lens::VitQueryParamValueForMimeType(mime_type));
+  }
+  if (cluster_info_.has_value()) {
+    suggest_inputs_.set_search_session_id(cluster_info_->search_session_id());
+  } else {
+    suggest_inputs_.clear_search_session_id();
+  }
+
+  return request_id;
+}
+
 GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
                                              base::Time query_start_time) {
   num_files_in_request_ = 0;
@@ -189,14 +215,13 @@ GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
     num_files_in_request_ = 1;
     if (IsValidFileUploadStatusForMultimodalRequest(
             last_file->upload_status_)) {
-      std::unique_ptr<lens::LensOverlayRequestId> request_id =
-          request_id_generator_.GetNextRequestId(
-              lens::RequestIdUpdateMode::kSearchUrl);
-      request_id->set_media_type(last_file->request_id_->media_type());
       return GetUrlForMultimodalAim(
           template_url_service_,
           omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT, query_start_time,
-          cluster_info_->search_session_id(), std::move(request_id),
+          cluster_info_->search_session_id(),
+          GetNextRequestId(lens::RequestIdUpdateMode::kSearchUrl,
+                           last_file->mime_type_,
+                           last_file->request_id_->media_type()),
           last_file->mime_type_,
           send_lns_surface_ ? kLnsSurfaceParameterValue : std::string(),
           base::UTF8ToUTF16(query_text));
@@ -235,11 +260,11 @@ void ComposeboxQueryController::StartFileUploadFlow(
 
   // Unlike image uploads,PDF uploads need to increment the long context id
   // instead of the image sequence id.
-  current_file_info.request_id_ = request_id_generator_.GetNextRequestId(
+  current_file_info.request_id_ = GetNextRequestId(
       current_file_info.mime_type_ == lens::MimeType::kPdf
           ? lens::RequestIdUpdateMode::kPageContentRequest
-          : lens::RequestIdUpdateMode::kFullImageRequest);
-  current_file_info.request_id_->set_media_type(
+          : lens::RequestIdUpdateMode::kFullImageRequest,
+      current_file_info.mime_type_,
       current_file_info.mime_type_ == lens::MimeType::kPdf
           ? lens::LensOverlayRequestId::MEDIA_TYPE_PDF
           : lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
@@ -272,6 +297,7 @@ bool ComposeboxQueryController::DeleteFile(
 
 void ComposeboxQueryController::ClearFiles() {
   active_files_.clear();
+  suggest_inputs_.Clear();
 }
 
 // static
@@ -376,6 +402,7 @@ void ComposeboxQueryController::ClearClusterInfo() {
   cluster_info_.reset();
   request_id_generator_.ResetRequestId();
   num_files_in_request_ = 0;
+  suggest_inputs_.Clear();
 }
 
 void ComposeboxQueryController::ResetRequestClusterInfoState(int session_id) {
