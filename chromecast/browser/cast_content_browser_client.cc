@@ -66,7 +66,6 @@
 #include "chromecast/media/cma/backend/cma_backend_factory_impl.h"
 #include "chromecast/media/common/media_pipeline_backend_manager.h"
 #include "chromecast/media/common/media_resource_tracker.h"
-#include "chromecast/media/service/cast_renderer.h"
 #include "chromecast/media/service/mojom/video_geometry_setter.mojom.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "components/prefs/pref_service.h"
@@ -876,26 +875,6 @@ void CastContentBrowserClient::CreateGeneralAudienceBrowsingService() {
       std::make_unique<GeneralAudienceBrowsingService>(
           browser_main_parts()->connector(),
           cast_network_contexts_->GetSystemSharedURLLoaderFactory());
-}
-
-void CastContentBrowserClient::BindMediaRenderer(
-    mojo::PendingReceiver<::media::mojom::Renderer> receiver) {
-  auto media_task_runner = GetMediaTaskRunner();
-  if (!media_task_runner->BelongsToCurrentThread()) {
-    media_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(&CastContentBrowserClient::BindMediaRenderer,
-                                  base::Unretained(this), std::move(receiver)));
-    return;
-  }
-
-  ::media::MojoRendererService::Create(
-      nullptr /* mojo_cdm_service_context */,
-      std::make_unique<media::CastRenderer>(
-          GetCmaBackendFactory(), std::move(media_task_runner),
-          GetVideoModeSwitcher(), GetVideoResolutionPolicy(),
-          base::UnguessableToken::Create(), nullptr /* frame_interfaces */,
-          true /* is_buffering_enabled */),
-      std::move(receiver));
 }
 
 }  // namespace shell

@@ -5,18 +5,18 @@
 import("//chromecast/chromecast.gni")
 
 cast_source_set("service") {
+  public = [ "create_mojo_media_client.h" ]
   sources = [
     "cast_mojo_media_client.cc",
     "cast_mojo_media_client.h",
     "cast_renderer.cc",
     "cast_renderer.h",
+    "create_mojo_media_client_cast.cc",
   ]
-
   public_deps = [
     "//media/mojo/mojom",
     "//media/mojo/services",
   ]
-
   deps = [
     ":video_geometry_setter_service",
     "//base",

@@ -19,26 +19,27 @@ namespace media {
 
 CastMojoMediaClient::CastMojoMediaClient(
     CmaBackendFactory* backend_factory,
-    const CreateCdmFactoryCB& create_cdm_factory_cb,
+    CreateCdmFactoryCB create_cdm_factory_cb,
     VideoModeSwitcher* video_mode_switcher,
     VideoResolutionPolicy* video_resolution_policy,
-    CastMojoMediaClient::EnableBufferingCB enable_buffering_cb)
+    VideoGeometrySetterService* video_geometry_setter,
+    EnableBufferingCB enable_buffering_cb)
     : backend_factory_(backend_factory),
-      create_cdm_factory_cb_(create_cdm_factory_cb),
+      create_cdm_factory_cb_(std::move(create_cdm_factory_cb)),
       video_mode_switcher_(video_mode_switcher),
       video_resolution_policy_(video_resolution_policy),
       enable_buffering_cb_(std::move(enable_buffering_cb)) {
   DCHECK(backend_factory_);
+#if BUILDFLAG(ENABLE_CAST_RENDERER)
+  video_geometry_setter_ = video_geometry_setter;
+#else
+  (void)video_geometry_setter;
+#endif
 }
 
 CastMojoMediaClient::~CastMojoMediaClient() = default;
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
-void CastMojoMediaClient::SetVideoGeometrySetterService(
-    VideoGeometrySetterService* video_geometry_setter) {
-  video_geometry_setter_ = video_geometry_setter;
-}
-
 std::unique_ptr<::media::Renderer> CastMojoMediaClient::CreateCastRenderer(
     ::media::mojom::FrameInterfaceFactory* frame_interfaces,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,

@@ -288,9 +288,6 @@ class CastContentBrowserClient
     return cast_browser_main_parts_;
   }
 
-  void BindMediaRenderer(
-      mojo::PendingReceiver<::media::mojom::Renderer> receiver);
-
   void GetApplicationMediaInfo(std::string* application_session_id,
                                bool* mixer_audio_enabled,
                                content::RenderFrameHost* render_frame_host);
