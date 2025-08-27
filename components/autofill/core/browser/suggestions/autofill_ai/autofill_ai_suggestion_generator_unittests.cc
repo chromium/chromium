@@ -57,6 +57,13 @@ EntityInstance MakeVehicleWithRandomGuid(test::VehicleOptions options = {}) {
   return test::GetVehicleEntityInstance(options);
 }
 
+EntityInstance MakeDriversLicenseWithRandomGuid(
+    test::DriversLicenseOptions options = {}) {
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
+  options.guid = guid.AsLowercaseString();
+  return test::GetDriversLicenseEntityInstance(options);
+}
+
 Matcher<const Suggestion&> HasMainText(const std::u16string& text) {
   return ResultOf(
       "Suggestion::main_text.value",
@@ -189,6 +196,12 @@ std::u16string GetPassportName(const EntityInstance& entity) {
 
 std::u16string GetPassportNumber(const EntityInstance& entity) {
   return entity.attribute(AttributeType(AttributeTypeName::kPassportNumber))
+      ->GetCompleteInfo(kAppLocaleUS);
+}
+
+std::u16string GetDriversLicenseName(const EntityInstance& entity) {
+  return entity
+      .attribute(AttributeType(AttributeTypeName::kDriversLicenseName))
       ->GetCompleteInfo(kAppLocaleUS);
 }
 
@@ -421,6 +434,29 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasMainText(GetPassportName(passport2)),
                              HasMainText(GetPassportName(passport1))));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_GroupEntitiesOfSameType) {
+  EntityInstance passport1 =
+      MakePassportWithRandomGuid({.name = u"Bruno", .use_count = 1});
+  EntityInstance passport2 = MakePassportWithRandomGuid(
+      {.name = u"Jon Doe", .number = u"927908CYGAS1", .use_count = 10});
+  EntityInstance driversLicense1 =
+      MakeDriversLicenseWithRandomGuid({.use_count = 9});
+  EntityInstance driversLicense2 =
+      MakeDriversLicenseWithRandomGuid({.name = u"Mr Pink", .use_count = 8});
+  SetEntities({passport1, passport2, driversLicense1, driversLicense2});
+  SetForm({NAME_FULL, PASSPORT_NUMBER, DRIVERS_LICENSE_NUMBER});
+
+  // `passport1` comes before vehicle entities because the entity of highest
+  // frecency is also a passport entity.
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(
+      res, SuggestionsAre(HasMainText(GetPassportName(passport2)),
+                          HasMainText(GetPassportName(passport1)),
+                          HasMainText(GetDriversLicenseName(driversLicense1)),
+                          HasMainText(GetDriversLicenseName(driversLicense2))));
 }
 
 // Tests that an "Undo Autofill" suggestion is appended if the trigger field

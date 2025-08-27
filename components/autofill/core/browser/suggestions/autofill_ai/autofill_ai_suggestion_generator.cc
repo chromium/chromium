@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -377,20 +378,47 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
   AttributeTypeAssignment assignment =
       AttributeTypeAssignment(form.fields(), trigger_field->section());
 
+  // Sort entities based on their frecency.
+  std::vector<const EntityInstance*> sorted_entities_by_frecency =
+      base::ToVector(entities,
+                     [](const EntityInstance& entity) { return &entity; });
+  std::ranges::sort(sorted_entities_by_frecency,
+                    [comp = EntityInstance::FrecencyOrder(base::Time::Now())](
+                        const EntityInstance* lhs, const EntityInstance* rhs) {
+                      return comp(*lhs, *rhs);
+                    });
+  // Group entities based on their entity type.
+  std::map<EntityType, std::vector<const EntityInstance*>>
+      sorted_entities_by_type;
+  for (const EntityInstance* entity : sorted_entities_by_frecency) {
+    sorted_entities_by_type[entity->type()].push_back(entity);
+  }
+
+  // Entities are grouped so that the most “frecent” suggestion
+  // will be shown first, then all suggestions of the same type, then the next
+  // most “frecent” suggestion, and so on.
+  std::vector<const EntityInstance*> sorted_entities;
+  sorted_entities.reserve(sorted_entities_by_frecency.size());
+  for (const EntityInstance* entity : sorted_entities_by_frecency) {
+    base::Extend(sorted_entities,
+                 std::move(sorted_entities_by_type[entity->type()]));
+    sorted_entities_by_type[entity->type()].clear();
+  }
+
   std::vector<SuggestionWithMetadata> suggestions_with_metadata;
-  for (const EntityInstance& entity : entities) {
+  for (const EntityInstance* entity : sorted_entities) {
     base::span<const AutofillFieldWithAttributeType> fields_with_types =
-        assignment.Find(entity.type());
+        assignment.Find(entity->type());
     base::optional_ref<const AutofillFieldWithAttributeType>
         trigger_field_with_type =
             FindField(fields_with_types, trigger_field->global_id());
     if (!trigger_field_with_type ||
-        !EntityShouldProduceSuggestion(entity, *trigger_field_with_type,
+        !EntityShouldProduceSuggestion(*entity, *trigger_field_with_type,
                                        app_locale)) {
       continue;
     }
     suggestions_with_metadata.push_back(GetSuggestionForEntity(
-        entity, fields_with_types, *trigger_field_with_type, app_locale));
+        *entity, fields_with_types, *trigger_field_with_type, app_locale));
   }
 
   if (suggestions_with_metadata.empty()) {

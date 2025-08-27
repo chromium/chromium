@@ -348,6 +348,7 @@ struct PassportEntityOptionsT {
   EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
 };
 using PassportEntityOptions = PassportEntityOptionsT<>;
 
@@ -372,6 +373,7 @@ struct DriversLicenseOptionsT {
   EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
 };
 using DriversLicenseOptions = DriversLicenseOptionsT<>;
 
@@ -393,6 +395,7 @@ struct VehicleOptionsT {
   EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
 };
 using VehicleOptions = VehicleOptionsT<>;
 
@@ -410,6 +413,7 @@ struct NationalIdCardOptionsT {
   EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
 };
 using NationalIdCardOptions = NationalIdCardOptionsT<>;
 
@@ -426,6 +430,7 @@ struct KnownTravelerNumberOptionsT {
   EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
 };
 using KnownTravelerNumberOptions = KnownTravelerNumberOptionsT<>;
 
@@ -441,6 +446,7 @@ struct RedressNumberOptionsT {
   EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
 };
 using RedressNumberOptions = RedressNumberOptionsT<>;
 
