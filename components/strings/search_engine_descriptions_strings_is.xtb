@@ -1,13 +1,10 @@
-
-<?xml version="1.0" ?>
+<?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE translationbundle>
-<!-- This file is generated using
-http://go/chrome-search-engines-marketing-snippets-script.
-Do not modify it manually. -->
 <translationbundle lang="is">
-  <translation id="IDS_BING_SEARCH_DESCRIPTION">Keyrt af ChatGPT's GPT-4</translation>
-  <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">Lokaðu fyrir auglýsingar og rekja spor einhvers meðan þú vafrar á vefnum.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Notaðu Google til að finna það sem þú þarft</translation>
-  <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Leitarvél sem verndar friðhelgi þína.</translation>
-  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Vefsleitarvélin sem miðar að því að deila auglýsingatekjum með höfundum.</translation>
+  <!-- This file is generated using http://go/chrome-search-engines-marketing-snippets-script. Do not modify it manually. -->
+  <translation id="IDS_SEARCH_ENGINE_BING_DESCRIPTION">Keyrt af ChatGPT's GPT-4</translation>
+  <translation id="IDS_SEARCH_ENGINE_BRAVE_DESCRIPTION">Lokaðu fyrir auglýsingar og rekja spor einhvers meðan þú vafrar á vefnum.</translation>
+  <translation id="IDS_SEARCH_ENGINE_GOOGLE_DESCRIPTION">Notaðu Google til að finna það sem þú þarft</translation>
+  <translation id="IDS_SEARCH_ENGINE_PRIVACYWALL_DESCRIPTION">Leitarvél sem verndar friðhelgi þína.</translation>
+  <translation id="IDS_SEARCH_ENGINE_YEP_DESCRIPTION">Vefsleitarvélin sem miðar að því að deila auglýsingatekjum með höfundum.</translation>
 </translationbundle>
