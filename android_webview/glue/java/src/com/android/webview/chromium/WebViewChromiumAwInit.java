@@ -509,7 +509,7 @@ public class WebViewChromiumAwInit {
                                     .getFieldTrialParamByFeatureAsBoolean(
                                             AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY,
                                             "WebViewPrefetchFromRenderer",
-                                            false)) {
+                                            true)) {
                         PostTask.postTask(
                                 TaskTraits.BEST_EFFORT,
                                 () -> {
