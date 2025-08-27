@@ -758,7 +758,7 @@ public class ProxyTest {
     // Mockito fails on Marshmallow with NoClassDefFoundError:
     // org.mockito.internal.invocation.TypeSafeMatching$$ExternalSyntheticLambda0
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
-    public void testCallback_requestProceedAfterUrlRequestclose_doesNothing() throws Exception {
+    public void testCallback_requestProceedAfterUrlRequestCancel_doesNotCrash() throws Exception {
         try (NativeTestServer proxyServer = mNativeTestServer;
                 NativeTestServer originServer =
                         NativeTestServer.createNativeTestServerWithHTTPS(
@@ -801,15 +801,14 @@ public class ProxyTest {
             urlRequest.start();
 
             try (Proxy.Callback.Request proxyRequest = proxyRequestExchanger.exchange(null)) {
+                Mockito.verify(proxyCallback, times(1)).onBeforeTunnelRequest(any());
+                Mockito.verify(proxyCallback, never()).onTunnelHeadersReceived(anyList(), anyInt());
                 urlRequest.cancel();
                 proxyRequest.proceed(Collections.emptyList());
+                callback.blockForDone();
+                assertThat(callback.mOnCanceledCalled).isTrue();
+                assertThat(callback.mError).isNull();
             }
-
-            callback.blockForDone();
-            assertThat(callback.mOnCanceledCalled).isTrue();
-            assertThat(callback.mError).isNull();
-            Mockito.verify(proxyCallback, times(1)).onBeforeTunnelRequest(any());
-            Mockito.verify(proxyCallback, never()).onTunnelHeadersReceived(anyList(), anyInt());
         }
     }
 
