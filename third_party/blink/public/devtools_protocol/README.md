@@ -178,3 +178,74 @@ Data passed over the protocol should be suitable for handling by automated
 tools as well as UI clients supporting i18n, so passing messages (such as
 errors) in English is rarely appropriate, structured types and enums
 should be used instead.
+
+## Testing
+
+There are two main types of tests for the Chrome DevTools Protocol (CDP).
+
+### 1. Web Tests (for the Blink engine)
+
+These tests check the core parts of the protocol that are implemented in the
+Blink rendering engine. They are written in JavaScript.
+
+**Test File Locations**
+
+Where you save your test file depends on if it needs a web server:
+
+*   **If the test does NOT need a web server, use this directory:**
+    `third_party/blink/web_tests/inspector-protocol/`
+*   **If the test REQUIRES a web server, use this directory:**
+    `third_party/blink/web_tests/http/tests/inspector-protocol/`
+
+**How They Work**
+
+Each JavaScript test file (`.js`) has a matching file that contains the correct
+output (`-expected.txt`). A test passes if its output is identical to the
+content of the `-expected.txt` file.
+
+**How to Run Web Tests**
+
+You can run these tests with the following script:
+`third_party/blink/tools/run_web_tests.py`
+
+For more detailed information, please see the "Web Tests" documentation:
+
+*   https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md
+*   https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md
+
+### 2. Headless Browser Tests (for Chrome-specific features)
+
+These tests are for parts of the protocol that are specific to Chrome, and not
+part of the core Blink engine (for example, features in
+`chrome/browser/devtools/protocol/`).
+
+These tests also use JavaScript, but they are encapsulated in Headless Browser
+Tests.
+
+**How to Write and Run a Headless Browser Test**
+
+1.  **Write a JavaScript test file.** (Analogous to Web Tests).
+
+    *   Place it in the `headless/test/data/protocol/` directory.
+    *   For an example, see
+        [`headless/test/data/protocol/page/page-before-unload.js`](https://source.chromium.org/chromium/chromium/src/+/main:headless/test/data/protocol/page/page-before-unload.js;drc=e5b65ca9b408d525f787a946448b206f7f81cca9).
+
+2.  **Add your test to the C++ test suite.**
+
+    *   In the file
+        [`headless/test/headless_protocol_browsertest.cc`](https://source.chromium.org/chromium/chromium/src/+/main:headless/test/headless_protocol_browsertest.cc;drc=697ee8ce8537dc2c4fc5e41bd16c14cc0d37f429;l=279),
+        add a `HEADLESS_PROTOCOL_TEST` with the test file path from the previous
+        step.
+
+3.  **Build the `headless_browsertests` target:** `autoninja -C out/Default
+    headless_browsertests`
+
+4.  **Run your test.**
+
+    *   Use `--gtest_filter` to select the test you added. For example, to run a
+        test named `PageBeforeUnload`:
+        ```bash
+           out/Default/headless_browsertests --gtest_filter="HeadlessProtocolBrowserTest_PageBeforeUnload*"
+        ```
+    *   To update the `-expected.txt` file with new output, add the
+        `--reset-results` flag.
