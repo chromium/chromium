@@ -21,7 +21,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -133,49 +132,6 @@ void RotateCursorBitmapAndHotpoint(display::Display::Rotation rotation,
   }
 }
 
-// Create bitmaps from bitmap pixels. |image_rep| has a scale and holds
-// bitmap pixels for that scale.
-void CreateBitmapsFromPixels(const gfx::ImageSkiaRep& image_rep,
-                             float scale,
-                             display::Display::Rotation rotation,
-                             bool is_animated,
-                             std::vector<SkBitmap>* bitmaps_out,
-                             gfx::Point* hotspot_in_out) {
-  CHECK(bitmaps_out->empty());
-
-  SkBitmap bitmap = image_rep.GetBitmap();
-  if (!is_animated) {
-    // Non-animated cursor.
-    ScaleAndRotateCursorBitmapAndHotpoint(scale / image_rep.scale(), rotation,
-                                          &bitmap, hotspot_in_out);
-
-    bitmaps_out->push_back(std::move(bitmap));
-  } else {
-    // Animated cursor.
-
-    // The image is assumed to be a concatenation of animation frames from
-    // left to right. Also, each frame is assumed to be square (width ==
-    // height).
-    const int frame_width = bitmap.height();
-    const int frame_height = frame_width;
-    const int total_width = bitmap.width();
-    CHECK_EQ(total_width % frame_width, 0);
-    const int frame_count = total_width / frame_width;
-    CHECK_GT(frame_count, 0);
-
-    for (int frame = 0; frame < frame_count; ++frame) {
-      const int x_offset = frame_width * frame;
-      SkBitmap cropped = SkBitmapOperations::CreateTiledBitmap(
-          bitmap, x_offset, 0, frame_width, frame_height);
-      ScaleAndRotateCursorBitmapAndHotpoint(
-          scale / image_rep.scale(), rotation, &cropped,
-          frame == 0 ? hotspot_in_out : nullptr);
-
-      bitmaps_out->push_back(std::move(cropped));
-    }
-  }
-}
-
 // Create bitmaps from static lottie. |image_rep| is unscaled and contains
 // a paint record for the lottie animation.
 void CreateBitmapsFromStaticLottie(const gfx::ImageSkiaRep& image_rep,
@@ -245,85 +201,65 @@ void CreateBitmapsFromAnimatedLottie(int resource_id,
 struct CursorResourceData {
   CursorType type;
   int id;
-  gfx::Point hotspot_1x;
-  // TODO(crbug.com/416095366): Remove hotspot_2x when
-  // all cursor assets become lottie format.
-  gfx::Point hotspot_2x;
+  // The hotspot (in DIP) of the cursor.
+  gfx::Point hotspot;
   bool is_animated = false;
 };
 
 // Cursor resource data indexed by CursorType. Make sure to respect the order
 // defined at ui/base/cursor/mojom/cursor_type.mojom.
-constexpr auto kNormalCursorResourceData = std::to_array<
+constexpr auto kCursorResourceData = std::to_array<
     std::optional<CursorResourceData>>({
-    {{CursorType::kPointer, IDR_AURA_CURSOR_PTR_LOTTIE, {6, 4}, {6, 4}}},
-    {{CursorType::kCross,
-      IDR_AURA_CURSOR_CROSSHAIR_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kHand, IDR_AURA_CURSOR_HAND_LOTTIE, {9, 3}, {9, 3}}},
-    {{CursorType::kIBeam, IDR_AURA_CURSOR_IBEAM_LOTTIE, {12, 12}, {12, 12}}},
+    {{CursorType::kPointer, IDR_AURA_CURSOR_PTR_LOTTIE, {6, 4}}},
+    {{CursorType::kCross, IDR_AURA_CURSOR_CROSSHAIR_LOTTIE, {12, 12}}},
+    {{CursorType::kHand, IDR_AURA_CURSOR_HAND_LOTTIE, {9, 3}}},
+    {{CursorType::kIBeam, IDR_AURA_CURSOR_IBEAM_LOTTIE, {12, 12}}},
     {{CursorType::kWait,
       IDR_AURA_CURSOR_THROBBER_LOTTIE,
       {12, 12},
-      {12, 12},
       /*is_animated=*/true}},
-    {{CursorType::kHelp, IDR_AURA_CURSOR_HELP_LOTTIE, {4, 4}, {4, 4}}},
+    {{CursorType::kHelp, IDR_AURA_CURSOR_HELP_LOTTIE, {4, 4}}},
     {{CursorType::kEastResize,
       IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
       {12, 12}}},
     {{CursorType::kNorthResize,
       IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
       {12, 12}}},
     {{CursorType::kNorthEastResize,
       IDR_AURA_CURSOR_TOP_RIGHT_CORNER_LOTTIE,
-      {12, 13},
       {12, 13}}},
     {{CursorType::kNorthWestResize,
       IDR_AURA_CURSOR_TOP_LEFT_CORNER_LOTTIE,
-      {12, 12},
       {12, 12}}},
     {{CursorType::kSouthResize,
       IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
       {12, 12}}},
     {{CursorType::kSouthEastResize,
       IDR_AURA_CURSOR_TOP_LEFT_CORNER_LOTTIE,
-      {12, 12},
       {12, 12}}},
     {{CursorType::kSouthWestResize,
       IDR_AURA_CURSOR_TOP_RIGHT_CORNER_LOTTIE,
-      {12, 13},
       {12, 13}}},
     {{CursorType::kWestResize,
       IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
       {12, 12}}},
     {{CursorType::kNorthSouthResize,
       IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
       {12, 12}}},
     {{CursorType::kEastWestResize,
       IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
       {12, 12}}},
     {{CursorType::kNorthEastSouthWestResize,
       IDR_AURA_CURSOR_TOP_RIGHT_CORNER_LOTTIE,
-      {12, 13},
       {12, 13}}},
     {{CursorType::kNorthWestSouthEastResize,
       IDR_AURA_CURSOR_TOP_LEFT_CORNER_LOTTIE,
-      {12, 12},
       {12, 12}}},
     {{CursorType::kColumnResize,
       IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
       {12, 12}}},
     {{CursorType::kRowResize,
       IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
       {12, 12}}},
     /*CursorType::kMiddlePanning*/ {},
     /*CursorType::kEastPanning*/ {},
@@ -334,33 +270,23 @@ constexpr auto kNormalCursorResourceData = std::to_array<
     /*CursorType::kSouthEastPanning*/ {},
     /*CursorType::kSouthWestPanning*/ {},
     /*CursorType::kWestPanning*/ {},
-    {{CursorType::kMove, IDR_AURA_CURSOR_MOVE_LOTTIE, {12, 12}, {12, 12}}},
-    {{CursorType::kVerticalText,
-      IDR_AURA_CURSOR_XTERM_HORIZ_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kCell, IDR_AURA_CURSOR_CELL_LOTTIE, {12, 12}, {12, 12}}},
-    {{CursorType::kContextMenu,
-      IDR_AURA_CURSOR_CONTEXT_MENU_LOTTIE,
-      {3, 4},
-      {3, 4}}},
-    {{CursorType::kAlias, IDR_AURA_CURSOR_ALIAS_LOTTIE, {6, 4}, {6, 4}}},
+    {{CursorType::kMove, IDR_AURA_CURSOR_MOVE_LOTTIE, {12, 12}}},
+    {{CursorType::kVerticalText, IDR_AURA_CURSOR_XTERM_HORIZ_LOTTIE, {12, 12}}},
+    {{CursorType::kCell, IDR_AURA_CURSOR_CELL_LOTTIE, {12, 12}}},
+    {{CursorType::kContextMenu, IDR_AURA_CURSOR_CONTEXT_MENU_LOTTIE, {3, 4}}},
+    {{CursorType::kAlias, IDR_AURA_CURSOR_ALIAS_LOTTIE, {6, 4}}},
     {{CursorType::kProgress,
       IDR_AURA_CURSOR_THROBBER_LOTTIE,
       {12, 12},
-      {12, 12},
       /*is_animated=*/true}},
-    {{CursorType::kNoDrop, IDR_AURA_CURSOR_NO_DROP_LOTTIE, {8, 7}, {8, 7}}},
-    {{CursorType::kCopy, IDR_AURA_CURSOR_COPY_LOTTIE, {8, 7}, {8, 7}}},
+    {{CursorType::kNoDrop, IDR_AURA_CURSOR_NO_DROP_LOTTIE, {8, 7}}},
+    {{CursorType::kCopy, IDR_AURA_CURSOR_COPY_LOTTIE, {8, 7}}},
     /*CursorType::kNone*/ {},
-    {{CursorType::kNotAllowed, IDR_AURA_CURSOR_NO_DROP_LOTTIE, {8, 7}, {8, 7}}},
-    {{CursorType::kZoomIn, IDR_AURA_CURSOR_ZOOM_IN_LOTTIE, {10, 10}, {10, 10}}},
-    {{CursorType::kZoomOut,
-      IDR_AURA_CURSOR_ZOOM_OUT_LOTTIE,
-      {10, 10},
-      {10, 10}}},
-    {{CursorType::kGrab, IDR_AURA_CURSOR_GRAB_LOTTIE, {8, 4}, {8, 4}}},
-    {{CursorType::kGrabbing, IDR_AURA_CURSOR_GRABBING_LOTTIE, {8, 5}, {8, 5}}},
+    {{CursorType::kNotAllowed, IDR_AURA_CURSOR_NO_DROP_LOTTIE, {8, 7}}},
+    {{CursorType::kZoomIn, IDR_AURA_CURSOR_ZOOM_IN_LOTTIE, {10, 10}}},
+    {{CursorType::kZoomOut, IDR_AURA_CURSOR_ZOOM_OUT_LOTTIE, {10, 10}}},
+    {{CursorType::kGrab, IDR_AURA_CURSOR_GRAB_LOTTIE, {8, 4}}},
+    {{CursorType::kGrabbing, IDR_AURA_CURSOR_GRABBING_LOTTIE, {8, 5}}},
     /*CursorType::kMiddlePanningVertical*/ {},
     /*CursorType::kMiddlePanningHorizontal*/ {},
     /*CursorType::kCustom*/ {},
@@ -370,167 +296,25 @@ constexpr auto kNormalCursorResourceData = std::to_array<
     /*CursorType::kDndLink*/ {},
     {{CursorType::kEastWestNoResize,
       IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_BLOCK_LOTTIE,
-      {12, 14},
       {12, 14}}},
     {{CursorType::kNorthSouthNoResize,
       IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_BLOCK_LOTTIE,
-      {10, 13},
       {10, 13}}},
     {{CursorType::kNorthEastSouthWestNoResize,
       IDR_AURA_CURSOR_TOP_RIGHT_CORNER_BLOCK_LOTTIE,
-      {14, 14},
       {14, 14}}},
     {{CursorType::kNorthWestSouthEastNoResize,
       IDR_AURA_CURSOR_TOP_LEFT_CORNER_BLOCK_LOTTIE,
-      {10, 14},
       {10, 14}}},
 });
 
-static_assert(std::size(kNormalCursorResourceData) ==
-              static_cast<int>(CursorType::kMaxValue) + 1);
-
-// TODO(crbug.com/416095366): Remove kLargeCursorResourceData when
-// all cursor assets become lottie format.
-constexpr auto kLargeCursorResourceData = std::to_array<
-    std::optional<CursorResourceData>>({
-    {{CursorType::kPointer, IDR_AURA_CURSOR_PTR_LOTTIE, {6, 4}, {6, 4}}},
-    {{CursorType::kCross,
-      IDR_AURA_CURSOR_CROSSHAIR_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kHand, IDR_AURA_CURSOR_HAND_LOTTIE, {9, 3}, {9, 3}}},
-    {{CursorType::kIBeam, IDR_AURA_CURSOR_IBEAM_LOTTIE, {12, 12}, {12, 12}}},
-    {{CursorType::kWait,
-      IDR_AURA_CURSOR_THROBBER_LOTTIE,
-      {12, 12},
-      {12, 12},
-      /*is_animated=*/true}},
-    {{CursorType::kHelp, IDR_AURA_CURSOR_HELP_LOTTIE, {4, 4}, {4, 4}}},
-    {{CursorType::kEastResize,
-      IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kNorthResize,
-      IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kNorthEastResize,
-      IDR_AURA_CURSOR_TOP_RIGHT_CORNER_LOTTIE,
-      {12, 13},
-      {12, 13}}},
-    {{CursorType::kNorthWestResize,
-      IDR_AURA_CURSOR_TOP_LEFT_CORNER_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kSouthResize,
-      IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kSouthEastResize,
-      IDR_AURA_CURSOR_TOP_LEFT_CORNER_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kSouthWestResize,
-      IDR_AURA_CURSOR_TOP_RIGHT_CORNER_LOTTIE,
-      {12, 13},
-      {12, 13}}},
-    {{CursorType::kWestResize,
-      IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kNorthSouthResize,
-      IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kEastWestResize,
-      IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kNorthEastSouthWestResize,
-      IDR_AURA_CURSOR_TOP_RIGHT_CORNER_LOTTIE,
-      {12, 13},
-      {12, 13}}},
-    {{CursorType::kNorthWestSouthEastResize,
-      IDR_AURA_CURSOR_TOP_LEFT_CORNER_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kColumnResize,
-      IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kRowResize,
-      IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    /*CursorType::kMiddlePanning*/ {},
-    /*CursorType::kEastPanning*/ {},
-    /*CursorType::kNorthPanning*/ {},
-    /*CursorType::kNorthEastPanning*/ {},
-    /*CursorType::kNorthWestPanning*/ {},
-    /*CursorType::kSouthPanning*/ {},
-    /*CursorType::kSouthEastPanning*/ {},
-    /*CursorType::kSouthWestPanning*/ {},
-    /*CursorType::kWestPanning*/ {},
-    {{CursorType::kMove, IDR_AURA_CURSOR_MOVE_LOTTIE, {12, 12}, {12, 12}}},
-    {{CursorType::kVerticalText,
-      IDR_AURA_CURSOR_XTERM_HORIZ_LOTTIE,
-      {12, 12},
-      {12, 12}}},
-    {{CursorType::kCell, IDR_AURA_CURSOR_CELL_LOTTIE, {12, 12}, {12, 12}}},
-    {{CursorType::kContextMenu,
-      IDR_AURA_CURSOR_CONTEXT_MENU_LOTTIE,
-      {3, 4},
-      {3, 4}}},
-    {{CursorType::kAlias, IDR_AURA_CURSOR_ALIAS_LOTTIE, {6, 4}, {6, 4}}},
-    {{CursorType::kProgress,
-      IDR_AURA_CURSOR_THROBBER_LOTTIE,
-      {12, 12},
-      {12, 12},
-      /*is_animated=*/true}},
-    {{CursorType::kNoDrop, IDR_AURA_CURSOR_NO_DROP_LOTTIE, {8, 7}, {8, 7}}},
-    {{CursorType::kCopy, IDR_AURA_CURSOR_COPY_LOTTIE, {8, 7}, {8, 7}}},
-    /*CursorType::kNone*/ {},
-    {{CursorType::kNotAllowed, IDR_AURA_CURSOR_NO_DROP_LOTTIE, {8, 7}, {8, 7}}},
-    {{CursorType::kZoomIn, IDR_AURA_CURSOR_ZOOM_IN_LOTTIE, {10, 10}, {10, 10}}},
-    {{CursorType::kZoomOut,
-      IDR_AURA_CURSOR_ZOOM_OUT_LOTTIE,
-      {10, 10},
-      {10, 10}}},
-    {{CursorType::kGrab, IDR_AURA_CURSOR_GRAB_LOTTIE, {8, 4}, {8, 4}}},
-    {{CursorType::kGrabbing, IDR_AURA_CURSOR_GRABBING_LOTTIE, {8, 5}, {8, 5}}},
-    /*CursorType::kMiddlePanningVertical*/ {},
-    /*CursorType::kMiddlePanningHorizontal*/ {},
-    /*CursorType::kCustom*/ {},
-    /*CursorType::kDndNone*/ {},
-    /*CursorType::kDndMove*/ {},
-    /*CursorType::kDndCopy*/ {},
-    /*CursorType::kDndLink*/ {},
-    {{CursorType::kEastWestNoResize,
-      IDR_AURA_CURSOR_HORIZONTAL_DOUBLE_ARROW_BLOCK_LOTTIE,
-      {12, 14},
-      {12, 14}}},
-    {{CursorType::kNorthSouthNoResize,
-      IDR_AURA_CURSOR_VERTICAL_DOUBLE_ARROW_BLOCK_LOTTIE,
-      {10, 13},
-      {10, 13}}},
-    {{CursorType::kNorthEastSouthWestNoResize,
-      IDR_AURA_CURSOR_TOP_RIGHT_CORNER_BLOCK_LOTTIE,
-      {14, 14},
-      {14, 14}}},
-    {{CursorType::kNorthWestSouthEastNoResize,
-      IDR_AURA_CURSOR_TOP_LEFT_CORNER_BLOCK_LOTTIE,
-      {10, 14},
-      {10, 14}}},
-});
-
-static_assert(std::size(kLargeCursorResourceData) ==
+static_assert(std::size(kCursorResourceData) ==
               static_cast<int>(CursorType::kMaxValue) + 1);
 
 }  // namespace
 
 std::optional<ui::CursorData> GetCursorData(
     CursorType type,
-    ui::CursorSize size,
     float scale,
     std::optional<int> target_cursor_size_in_px,
     display::Display::Rotation rotation,
@@ -540,8 +324,7 @@ std::optional<ui::CursorData> GetCursorData(
   int resource_id;
   gfx::Point hotspot;
   bool is_animated;
-  if (!GetCursorDataFor(size, type, scale, &resource_id, &hotspot,
-                        &is_animated)) {
+  if (!GetCursorDataFor(type, &resource_id, &hotspot, &is_animated)) {
     return std::nullopt;
   }
   DCHECK_NE(type, CursorType::kNone);
@@ -549,10 +332,10 @@ std::optional<ui::CursorData> GetCursorData(
   std::vector<SkBitmap> bitmaps;
   const gfx::ImageSkia* image =
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
-  const float resource_scale = ui::GetScaleForResourceScaleFactor(
-      ui::GetSupportedResourceScaleFactorForRescale(scale));
-  const gfx::ImageSkiaRep& image_rep = image->GetRepresentation(resource_scale);
-  CHECK(image_rep.unscaled() || (image_rep.scale() == resource_scale));
+  // Since all cursor image sources are lottie image sources now, it has
+  // representations at all scales.
+  const gfx::ImageSkiaRep& image_rep = image->GetRepresentation(0.0f);
+  CHECK(image_rep.unscaled());
 
   if (target_cursor_size_in_px) {
     // If `target_cursor_size_in_px` presents, use it to calculate scale.
@@ -564,28 +347,22 @@ std::optional<ui::CursorData> GetCursorData(
             static_cast<float>(cursor_size_in_dp);
   }
 
-  if (!image_rep.unscaled()) {
-    // Bitmap-based cursor image.
-    CreateBitmapsFromPixels(image_rep, scale, rotation, is_animated, &bitmaps,
-                            &hotspot);
-  } else {
-    const gfx::Size scaled_size = ScaleToRoundedSize(
-        gfx::Size(image_rep.GetWidth(), image_rep.GetHeight()), scale);
-    const gfx::Transform rotation_transform = display::CreateRotationTransform(
-        rotation, gfx::SizeF(scaled_size.width(), scaled_size.height()));
-    hotspot = gfx::ScaleToFlooredPoint(hotspot, scale);
-    RotateCursorHotpoint(rotation, scaled_size.width(), scaled_size.height(),
-                         &hotspot);
+  const gfx::Size scaled_size = ScaleToRoundedSize(
+      gfx::Size(image_rep.GetWidth(), image_rep.GetHeight()), scale);
+  const gfx::Transform rotation_transform = display::CreateRotationTransform(
+      rotation, gfx::SizeF(scaled_size.width(), scaled_size.height()));
+  hotspot = gfx::ScaleToFlooredPoint(hotspot, scale);
+  RotateCursorHotpoint(rotation, scaled_size.width(), scaled_size.height(),
+                       &hotspot);
 
-    if (!is_animated) {
-      // Non-animated lottie cursor.
-      CreateBitmapsFromStaticLottie(image_rep, scaled_size, scale,
-                                    rotation_transform, &bitmaps);
-    } else {
-      // Animated lottie cursor.
-      CreateBitmapsFromAnimatedLottie(resource_id, scaled_size, scale,
-                                      rotation_transform, type, &bitmaps);
-    }
+  if (!is_animated) {
+    // Non-animated lottie cursor.
+    CreateBitmapsFromStaticLottie(image_rep, scaled_size, scale,
+                                  rotation_transform, &bitmaps);
+  } else {
+    // Animated lottie cursor.
+    CreateBitmapsFromAnimatedLottie(resource_id, scaled_size, scale,
+                                    rotation_transform, type, &bitmaps);
   }
 
   if (color != ui::kDefaultCursorColor) {
@@ -643,9 +420,7 @@ void ScaleAndRotateCursorBitmapAndHotpoint(float scale,
   }
 }
 
-bool GetCursorDataFor(ui::CursorSize cursor_size,
-                      CursorType type,
-                      float scale_factor,
+bool GetCursorDataFor(CursorType type,
                       int* resource_id,
                       gfx::Point* point,
                       bool* is_animated) {
@@ -659,21 +434,15 @@ bool GetCursorDataFor(ui::CursorSize cursor_size,
 
   // TODO(htts://crbug.com/1190818): currently, kNull is treated as kPointer.
   CursorType t = type == CursorType::kNull ? CursorType::kPointer : type;
-  std::optional<CursorResourceData> resource =
-      cursor_size == ui::CursorSize::kNormal
-          ? kNormalCursorResourceData[static_cast<int>(t)]
-          : kLargeCursorResourceData[static_cast<int>(t)];
+  const std::optional<CursorResourceData>& resource =
+      kCursorResourceData[static_cast<int>(t)];
   if (!resource) {
     return false;
   }
 
   DCHECK_EQ(resource->type, t);
   *resource_id = resource->id;
-  *point = resource->hotspot_1x;
-  if (ui::GetSupportedResourceScaleFactorForRescale(scale_factor) ==
-      ui::k200Percent) {
-    *point = resource->hotspot_2x;
-  }
+  *point = resource->hotspot;
   *is_animated = resource->is_animated;
   return true;
 }

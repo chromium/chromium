@@ -19,7 +19,6 @@ class Point;
 }
 
 namespace ui {
-enum class CursorSize;
 struct CursorData;
 }  // namespace ui
 
@@ -34,7 +33,6 @@ namespace wm {
 COMPONENT_EXPORT(UI_WM)
 std::optional<ui::CursorData> GetCursorData(
     ui::mojom::CursorType type,
-    ui::CursorSize size,
     float scale,
     std::optional<int> target_cursor_size_in_px,
     display::Display::Rotation rotation,
@@ -54,9 +52,7 @@ void ScaleAndRotateCursorBitmapAndHotpoint(float scale,
 // should be animated. Returns false if resource data for `type` isn't
 // available.
 COMPONENT_EXPORT(UI_WM)
-bool GetCursorDataFor(ui::CursorSize cursor_size,
-                      ui::mojom::CursorType type,
-                      float scale_factor,
+bool GetCursorDataFor(ui::mojom::CursorType type,
                       int* resource_id,
                       gfx::Point* point,
                       bool* is_animated);

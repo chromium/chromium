@@ -108,9 +108,8 @@ TEST(CursorUtil, GetCursorData) {
       for (const auto& test : kCursorTestCases) {
         SCOPED_TRACE(test.cursor);
         static constexpr auto kDefaultRotation = display::Display::ROTATE_0;
-        const auto pointer_data =
-            GetCursorData(test.cursor, size, scale, std::nullopt,
-                          kDefaultRotation, SK_ColorBLACK);
+        const auto pointer_data = GetCursorData(
+            test.cursor, scale, std::nullopt, kDefaultRotation, SK_ColorBLACK);
         ASSERT_TRUE(pointer_data);
         ASSERT_GT(pointer_data->bitmaps.size(), 0u);
         EXPECT_EQ(gfx::SkISizeToSize(pointer_data->bitmaps[0].dimensions()),
@@ -152,10 +151,9 @@ TEST(CursorUtil, GetCursorDataWithTargetCursorSize) {
            {ui::kMinLargeCursorSize, ui::kMaxLargeCursorSize}) {
         const float resource_scale = ui::GetScaleForResourceScaleFactor(
             ui::GetSupportedResourceScaleFactorForRescale(scale));
-        const auto pointer_data =
-            GetCursorData(test.cursor, ui::CursorSize::kLarge, scale,
-                          std::make_optional(target_cursor_size_in_px),
-                          kDefaultRotation, SK_ColorBLACK);
+        const auto pointer_data = GetCursorData(
+            test.cursor, scale, std::make_optional(target_cursor_size_in_px),
+            kDefaultRotation, SK_ColorBLACK);
         ASSERT_TRUE(pointer_data);
         ASSERT_GT(pointer_data->bitmaps.size(), 0u);
 
@@ -204,9 +202,9 @@ TEST(CursorUtil, GetCursorDataWithColor) {
   };
 
   for (const auto& test : kColorTestCases) {
-    auto pointer_data = GetCursorData(
-        test.cursor_type, ui::CursorSize::kNormal, 1.0f, std::nullopt,
-        display::Display::ROTATE_0, test.cursor_color);
+    auto pointer_data =
+        GetCursorData(test.cursor_type, 1.0f, std::nullopt,
+                      display::Display::ROTATE_0, test.cursor_color);
     const SkBitmap bitmap = pointer_data->bitmaps[0];
     // We should find `cursor_color` pixels in the cursor, but no black or
     // |not_found| color pixels. All black pixels are recolored.
