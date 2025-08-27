@@ -23,7 +23,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
@@ -137,7 +136,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     private final Activity mActivity;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final TabListModel mModelList;
-    private final boolean mHasEmptyView;
+    private final ViewGroup mParentView;
     private final @DrawableRes int mEmptyStateImageResId;
     private final @StringRes int mEmptyStateHeadingResId;
     private final @StringRes int mEmptyStateSubheadingResId;
@@ -231,6 +230,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         mActivity = activity;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mModelList = new TabListModel();
+        mParentView = parentView;
         mAdapter =
                 new SimpleRecyclerViewAdapter(mModelList) {
                     @Override
@@ -447,8 +447,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             mTabStripSnapshotter =
                     new TabStripSnapshotter(onModelTokenChange, mModelList, mRecyclerView);
         }
-
-        mHasEmptyView = hasEmptyView;
         mEmptyStateHeadingResId = emptyHeadingStringResId;
         mEmptyStateSubheadingResId = emptySubheadingStringResId;
         mEmptyStateImageResId = emptyImageResId;
@@ -799,11 +797,12 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         if (mIsEmptyViewInitialized) {
             return;
         }
-        if (mHasEmptyView && mTabListEmptyCoordinator != null) {
+        if (mTabListEmptyCoordinator != null) {
             mTabListEmptyCoordinator.initializeEmptyStateView(
                     mEmptyStateImageResId, mEmptyStateHeadingResId, mEmptyStateSubheadingResId);
             mTabListEmptyCoordinator.attachEmptyView();
             mIsEmptyViewInitialized = true;
+            TabUiUtils.applyXrEmptyStateBackplate(mParentView);
         }
     }
 
@@ -817,7 +816,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     }
 
     public void destroyEmptyView() {
-        if (mHasEmptyView && mTabListEmptyCoordinator != null) {
+        if (mTabListEmptyCoordinator != null) {
             mTabListEmptyCoordinator.destroyEmptyView();
             mIsEmptyViewInitialized = false;
         }
@@ -827,7 +826,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         if (!mIsEmptyViewInitialized) {
             initializeEmptyStateView();
         }
-        if (mHasEmptyView && mTabListEmptyCoordinator != null) {
+        if (mTabListEmptyCoordinator != null) {
             mTabListEmptyCoordinator.setIsTabSwitcherShowing(true);
         }
     }
@@ -840,7 +839,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     void postHiding() {
         unregisterLayoutChangeListener();
         mMediator.postHiding();
-        if (mHasEmptyView && mTabListEmptyCoordinator != null) {
+        if (mTabListEmptyCoordinator != null) {
             mTabListEmptyCoordinator.setIsTabSwitcherShowing(false);
         }
     }

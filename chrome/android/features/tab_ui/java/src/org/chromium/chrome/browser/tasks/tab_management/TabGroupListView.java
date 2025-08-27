@@ -71,6 +71,8 @@ public class TabGroupListView extends FrameLayout {
 
         mUiConfig = new UiConfig(this);
         mUiConfig.addObserver(this::onDisplayStyleChanged);
+
+        TabUiUtils.applyXrEmptyStateBackplate(this);
     }
 
     void setRecyclerViewAdapter(RecyclerView.Adapter adapter) {
