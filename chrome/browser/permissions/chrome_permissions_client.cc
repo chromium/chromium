@@ -527,8 +527,11 @@ void ChromePermissionsClient::OnPromptResolved(
   // TODO(crbug.com/412616723): Support Android
   if (base::FeatureList::IsEnabled(
           permissions::features::kPermissionPromiseLifetimeModulation)) {
-    if (ShouldShowInfobarOnPromptResolved(web_contents, request,
-                                          quiet_ui_reason, action)) {
+    bool should_show_infobar = ShouldShowInfobarOnPromptResolved(
+        web_contents, request, quiet_ui_reason, action);
+    permissions::PermissionUmaUtil::RecordPageReloadInfoBarShown(
+        should_show_infobar);
+    if (should_show_infobar) {
       ShowInfobar(web_contents);
     }
   }

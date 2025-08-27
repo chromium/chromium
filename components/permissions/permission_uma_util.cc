@@ -1641,6 +1641,12 @@ void PermissionUmaUtil::RecordPageInfoPermissionChange(
 }
 
 // static
+void PermissionUmaUtil::RecordPageReloadInfoBarShown(bool shown) {
+  base::UmaHistogramBoolean(
+      "Permissions.QuietPrompt.Preignore.PageReloadInfoBar", shown);
+}
+
+// static
 std::string PermissionUmaUtil::GetPermissionActionString(
     PermissionAction permission_action) {
   switch (permission_action) {

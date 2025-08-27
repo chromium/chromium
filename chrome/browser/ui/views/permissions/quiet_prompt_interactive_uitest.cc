@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
@@ -154,6 +155,13 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
             ->GetActiveWebContents()
             ->GetBrowserContext());
   }
+
+  const base::HistogramTester& HistogramTester() const {
+    return histogram_tester_;
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -411,6 +419,11 @@ IN_PROC_BROWSER_TEST_P(QuietPromptInteractiveParamUITest,
       If([should_show]() { return should_show; },
          Then(WaitForShow(InfobarElementId)),
          Else(EnsureNotPresent(InfobarElementId))),
+      Do([&] {
+        histogram_tester_.ExpectBucketCount(
+            "Permissions.QuietPrompt.Preignore.PageReloadInfoBar", should_show,
+            1);
+      }),
       NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),

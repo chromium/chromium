@@ -826,6 +826,10 @@ class PermissionUmaUtil {
       base::Time current_time,
       HostContentSettingsMap* hcsm);
 
+  // Records whether the 'Reload this page' info bar was shown after a quiet
+  // permission prompt was granted.
+  static void RecordPageReloadInfoBarShown(bool shown);
+
   // Records UKM metrics for ContentSettingsTypes that have user facing
   // permission prompts triggered by the user clicking on the Embedded
   // Permission Element. The passed in `permission` must be such that
