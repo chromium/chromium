@@ -338,9 +338,10 @@ void VariationsIdsProvider::InitVariationIDsCacheIfNeeded() {
 
 void VariationsIdsProvider::CacheVariationsId(const std::string& trial_name,
                                               const std::string& group_name) {
+  const auto active_group_id = MakeActiveGroupId(trial_name, group_name);
   for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
-    IDCollectionKey key = static_cast<IDCollectionKey>(i);
-    const VariationID id = GetGoogleVariationID(key, trial_name, group_name);
+    const IDCollectionKey key = static_cast<IDCollectionKey>(i);
+    const VariationID id = GetGoogleVariationID(key, active_group_id);
     // TODO(crbug.com/40214121): Handle duplicated IDs in such a way that is
     // visible to developers, but non-intrusive to users. See
     // crrev/c/3628020/comments/e278cd12_2bb863ef for discussions.
