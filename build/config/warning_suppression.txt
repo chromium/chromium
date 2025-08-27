@@ -65,6 +65,5 @@ src:*{/,\\}third_party{/,\\}tflite{/,\\}src{/,\\}third_party{/,\\}xla{/,\\}*
 src:*{/,\\}third_party{/,\\}vulkan-utility-libraries{/,\\}*
 src:*{/,\\}third_party{/,\\}webrtc{/,\\}*
 src:*{/,\\}third_party{/,\\}webrtc_overrides{/,\\}test{/,\\}*
-src:*{/,\\}v8{/,\\}*
 # TODO(crbug.com/439492886): This suppression must be fixed internally.
 src:*{/,\\}chrome{/,\\}browser{/,\\}platform_experience{/,\\}*
