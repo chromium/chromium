@@ -60,7 +60,7 @@ from build import (AddCMakeToPath, AddZlibToPath, CheckoutGitRepo, CopyFile,
                    LLVM_DIR, IsGitAncestorToHead, LLVM_BUILD_TOOLS_DIR,
                    RunCommand)
 from update import (CHROMIUM_DIR, DownloadAndUnpack, EnsureDirExists,
-                    GetDefaultHostOs, RmTree, UpdatePackage)
+                    GetDefaultHostOs, RmTree, WriteStampFile, UpdatePackage)
 
 from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
                          STAGE0_JSON_SHA256, THIRD_PARTY_DIR, VERSION_SRC_PATH,
@@ -647,6 +647,14 @@ def main():
     parser.add_argument('--skip-install',
                         action='store_true',
                         help='do not install to RUST_TOOLCHAIN_OUT_DIR')
+    parser.add_argument(
+        '--preserve-gcs-signature',
+        action='store_true',
+        help='By default, this script removes gcs hash files '
+        'so that third_party/llvm-build is clobbered on the next'
+        'run of gclient sync. This disables that, so that the'
+        'directory will be preserved when syncing. Useful for'
+        'local development.')
     parser.add_argument('--rust-force-head-revision',
                         action='store_true',
                         help='build the latest revision')
@@ -860,8 +868,8 @@ def main():
 
         xpy.run('install', xpy_args + [])
 
-        with open(VERSION_SRC_PATH, 'w') as stamp:
-            stamp.write(MakeVersionStamp(checkout_revision))
+        WriteStampFile(MakeVersionStamp(checkout_revision), VERSION_SRC_PATH,
+                       args.preserve_gcs_signature)
 
     # The Rust stdlib deps are vendored to rust-src/library/vendor, and later
     # the x.py install process copies all subdirs of rust-src/library to the
