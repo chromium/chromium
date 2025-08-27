@@ -32,6 +32,8 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /** Unit tests for {@link PaneManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PaneManagerImplUnitTest {
@@ -41,7 +43,6 @@ public class PaneManagerImplUnitTest {
     @Mock private Pane mTabSwitcherPane;
     @Mock private Pane mIncognitoTabSwitcherPane;
     @Mock private Supplier<Pane> mPaneSupplier;
-    @Mock private Runnable mRunnable;
 
     private final ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
             new ObservableSupplierImpl<>();
@@ -279,13 +280,12 @@ public class PaneManagerImplUnitTest {
     @Test
     @SmallTest
     public void testGetPaneById() {
+        final AtomicBoolean called = new AtomicBoolean();
         LazyOneshotSupplierImpl<Pane> supplier =
                 new LazyOneshotSupplierImpl<>() {
                     @Override
                     public void doSet() {
-                        mRunnable.run();
-                        // Don't call set. We'll do that manually. Call mRunnable so we can verify
-                        // called.
+                        called.set(true);
                     }
                 };
 
@@ -294,7 +294,7 @@ public class PaneManagerImplUnitTest {
                         .registerPane(PaneId.TAB_SWITCHER, supplier);
         PaneManager paneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
         assertNull(paneManager.getPaneForId(PaneId.TAB_SWITCHER));
-        verify(mRunnable).run();
+        assertTrue(called.get());
 
         supplier.set(mTabSwitcherPane);
         assertEquals(mTabSwitcherPane, paneManager.getPaneForId(PaneId.TAB_SWITCHER));

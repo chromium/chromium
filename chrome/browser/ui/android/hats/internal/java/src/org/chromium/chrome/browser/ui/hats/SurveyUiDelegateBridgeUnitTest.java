@@ -145,6 +145,7 @@ public class SurveyUiDelegateBridgeUnitTest {
     }
 
     @Implements(MessageSurveyUiDelegate.class)
+    @SuppressWarnings("DirectInvocationOnMock")
     public static class ShadowMessageSurveyUiDelegate {
         private final SurveyUiDelegate mMockDelegate;
 

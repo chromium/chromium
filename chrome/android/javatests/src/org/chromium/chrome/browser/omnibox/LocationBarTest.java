@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
-import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -107,7 +106,6 @@ public class LocationBarTest {
     @Mock private LensController mLensController;
     @Mock private LocaleManagerDelegate mLocaleManagerDelegate;
     @Mock private VoiceRecognitionHandler mVoiceRecognitionHandler;
-    @Mock private SearchEngineUtils mSearchEngineUtils;
 
     private ChromeTabbedActivity mActivity;
     private UrlBar mUrlBar;
@@ -760,13 +758,6 @@ public class LocationBarTest {
         startActivityNormally();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSearchEngineUtils.setSearchEngineIcon(
-                            new StatusIconResource(R.drawable.ic_search, 0));
-                });
-
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
     }
 

@@ -74,7 +74,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     @Mock public CustomTabToolbarCoordinator mToolbarCoordinator;
     @Mock public CloseButtonVisibilityManager mCloseButtonVisibilityManager;
 
-    @Mock TrustedWebActivityBrowserControlsVisibilityManager mController;
+    TrustedWebActivityBrowserControlsVisibilityManager mController;
 
     private @Nullable AppHeaderState mAppHeaderState;
     private Context mContext;
@@ -84,8 +84,6 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         SecurityStateModelJni.setInstanceForTesting(mSecurityStateMocks);
         when(mTabProvider.getTab()).thenReturn(mTab);
         doReturn(Tab.INVALID_TAB_ID).when(mTab).getParentId();
-        setTabSecurityLevel(ConnectionSecurityLevel.NONE);
-
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),

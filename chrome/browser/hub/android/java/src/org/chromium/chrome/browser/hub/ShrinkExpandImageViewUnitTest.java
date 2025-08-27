@@ -42,6 +42,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /** Tests for {@link RunOnNextLayoutDelegate}. */
 // TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
 @RunWith(BaseRobolectricTestRunner.class)
@@ -287,18 +289,19 @@ public class ShrinkExpandImageViewUnitTest {
         // This validates that the runnable is cleared before invocation. If the runnable was not
         // cleared this implementation would recursively iterate until a timeout or the stack limit
         // was hit.
+        AtomicInteger callCount = new AtomicInteger();
         mShrinkExpandImageView.runOnNextLayout(
                 () -> {
-                    mRunnable1.run();
+                    callCount.incrementAndGet();
                     mShrinkExpandImageView.runOnNextLayoutRunnables();
                 });
-        verify(mRunnable1, never()).run();
+        assertEquals(0, callCount.get());
 
         mShrinkExpandImageView.runOnNextLayoutRunnables();
-        verify(mRunnable1, times(1)).run();
+        assertEquals(1, callCount.get());
 
         mShrinkExpandImageView.runOnNextLayoutRunnables();
-        verify(mRunnable1, times(1)).run();
+        assertEquals(1, callCount.get());
     }
 
     @Test

@@ -597,14 +597,11 @@ public class ContextMenuUtilsUnitTest {
         int expectedY = (int) (touchPointYPx + topContentOffsetPx);
 
         if (isPopup) {
-            int[] layoutScreenLocation = new int[2];
-            mockContainerView.getLocationOnScreen(layoutScreenLocation);
-            expectedX += layoutScreenLocation[0];
-            expectedY += layoutScreenLocation[1];
+            expectedX += mockLocation[0];
+            expectedY += mockLocation[1];
 
-            var attrs = mockWindow.getAttributes();
-            expectedX += attrs.x;
-            expectedY += attrs.y;
+            expectedX += mockLayoutParams.x;
+            expectedY += mockLayoutParams.y;
         }
 
         assertEquals(expectedX, result.x);

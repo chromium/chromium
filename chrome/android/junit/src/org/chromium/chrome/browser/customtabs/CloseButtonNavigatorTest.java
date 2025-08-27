@@ -92,7 +92,7 @@ public class CloseButtonNavigatorTest {
                 reason -> {
                     // FinishCallback is invoked only if there is a single tab left to close.
                     assertTrue(mTabController.onlyOneTabRemaining());
-                    mTabController.closeTab();
+                    mTabs.pop();
                 };
         mCloseButtonNavigator =
                 new CloseButtonNavigator(

@@ -23,10 +23,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionTileBuilder.OnSuggestionClickCallback;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +36,6 @@ public class SearchResumptionTileBuilderUnitTest {
     // The search suggestions are meant to be shown on any website.
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Tab mTab;
     @Mock private SearchResumptionTileContainerView mSuggestionTilesContainerView;
     @Mock SearchResumptionTileView mTileView1;
     @Mock SearchResumptionTileView mTileView2;
@@ -101,10 +98,7 @@ public class SearchResumptionTileBuilderUnitTest {
     }
 
     private void createTileBuilder() {
-        OnSuggestionClickCallback callback =
-                (gUrl) -> {
-                    mTab.loadUrl(new LoadUrlParams(gUrl));
-                };
+        OnSuggestionClickCallback callback = unused -> {};
         mTileBuilder = new SearchResumptionTileBuilder(callback);
     }
 }

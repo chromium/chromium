@@ -75,7 +75,6 @@ public class ActionConfirmationManagerUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private Profile mProfile;
-    @Mock private Activity mActivity;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Callback<@ActionConfirmationResult Integer> mOnResult;
     @Mock private Callback<MaybeBlockingResult> mOnMaybeBlockingResult;
@@ -89,6 +88,7 @@ public class ActionConfirmationManagerUnitTest {
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelArgumentCaptor;
     @Captor private ArgumentCaptor<MaybeBlockingResult> mMaybeBlockingResultCaptor;
 
+    private Activity mActivity;
     private UserActionTester mActionTester;
 
     @Before

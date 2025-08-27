@@ -168,6 +168,7 @@ public class AutocompleteMediatorUnitTest {
     // CachedZeroSuggestionsManager shadow that helps us intercept interactions with manager's
     // static methods.
     @Implements(CachedZeroSuggestionsManager.class)
+    @SuppressWarnings("DirectInvocationOnMock")
     public static class ShadowCachedSuggestionsManager {
         public static CachedZeroSuggestionsManagerCalls mock =
                 mock(CachedZeroSuggestionsManagerCalls.class);

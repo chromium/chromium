@@ -76,7 +76,7 @@ public final class ToolbarSecurityIconTest {
 
     @Mock SecurityStateModel.Natives mSecurityStateMocks;
 
-    @Mock private LocationBarModel mLocationBarModel;
+    private LocationBarModel mLocationBarModel;
 
     @Mock private LocationBarModel.Natives mLocationBarModelJni;
 

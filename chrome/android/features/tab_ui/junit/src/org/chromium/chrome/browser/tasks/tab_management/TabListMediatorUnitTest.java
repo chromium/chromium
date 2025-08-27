@@ -213,7 +213,8 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings({
     "ArraysAsListWithZeroOrOneArgument",
     "ResultOfMethodCallIgnored",
-    "ConstantConditions"
+    "ConstantConditions",
+    "DirectInvocationOnMock"
 })
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(

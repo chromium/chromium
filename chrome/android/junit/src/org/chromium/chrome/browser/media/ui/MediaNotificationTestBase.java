@@ -97,6 +97,7 @@ public class MediaNotificationTestBase {
     }
 
     @Before
+    @SuppressWarnings("DirectInvocationOnMock") // For mMockUmaTracker
     public void setUp() {
         ShadowLog.stream = System.out;
 

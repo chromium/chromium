@@ -71,7 +71,6 @@ public class AppLaunchDrawBlockerUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private View mView;
     @Mock private ViewTreeObserver mViewTreeObserver;
-    @Mock private Intent mIntent;
     @Mock private Profile mProfile;
     @Mock private TemplateUrlServiceFactory.Natives mTemplateUrlServiceFactory;
     @Mock private TemplateUrlService mTemplateUrlService;
@@ -90,6 +89,7 @@ public class AppLaunchDrawBlockerUnitTest {
 
     private static final int INITIAL_TIME = 1000;
 
+    private Intent mIntent;
     private final Supplier<View> mViewSupplier = () -> mView;
     private final Supplier<Intent> mIntentSupplier = () -> mIntent;
     private InflationObserver mInflationObserver;

@@ -68,7 +68,6 @@ public class BookmarkBarItemsProviderTest {
     @Mock private BookmarkItem mAccountFolderItem1;
     @Mock private BookmarkItem mAccountFolderItem2;
     @Mock private ScopedBookmarkModelObservation mAccountFolderObservation;
-    @Mock private ScopedBookmarkModelObservation.Observer mAccountFolderObserver;
     @Mock private BookmarkId mLocalFolderId;
     @Mock private BookmarkItem mLocalFolderItem1;
     @Mock private BookmarkItem mLocalFolderItem2;
@@ -80,6 +79,7 @@ public class BookmarkBarItemsProviderTest {
     @Mock private BookmarkBarItemsProvider.Observer mObserver;
     @Mock private ScopedBookmarkModelObservationFactory mObservationFactory;
 
+    private ScopedBookmarkModelObservation.Observer mAccountFolderObserver;
     private List<BookmarkItem> mAccountFolderItems;
     private List<BookmarkItem> mLocalFolderItems;
     private BookmarkModelObserver mModelObserver;

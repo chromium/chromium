@@ -122,12 +122,12 @@ public class BrowserControlsManagerUnitTest {
         when(mControlContainer.getView()).thenReturn(mContainerView);
 
         // Only the last/current visibility matters and is verified by tests.
+        when(mContainerView.getVisibility()).thenReturn(View.VISIBLE);
         doCallback(
                         (Integer visibility) ->
                                 when(mContainerView.getVisibility()).thenReturn(visibility))
                 .when(mContainerView)
                 .setVisibility(anyInt());
-        mContainerView.setVisibility(View.VISIBLE);
 
         when(mTab.isUserInteractable()).thenReturn(true);
         when(mTab.isInitialized()).thenReturn(true);
@@ -582,7 +582,7 @@ public class BrowserControlsManagerUnitTest {
                 R.dimen.control_container_height);
         assertEquals(View.VISIBLE, browserControlsManager.getAndroidControlsVisibility());
 
-        mContainerView.setVisibility(View.INVISIBLE);
+        when(mContainerView.getVisibility()).thenReturn(View.INVISIBLE);
         assertEquals(View.INVISIBLE, browserControlsManager.getAndroidControlsVisibility());
     }
 

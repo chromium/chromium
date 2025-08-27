@@ -130,7 +130,6 @@ public class MostVisitedMediatorUnitTest {
 
         verify(mTileRenderer, atLeastOnce())
                 .renderTileSection(anyList(), eq(mMvTilesLayout), any());
-        verify(mMvTilesLayout).addTile(any());
         verify(mSnapshotTileGridChangedRunnable, atLeastOnce()).run();
     }
 
@@ -539,7 +538,6 @@ public class MostVisitedMediatorUnitTest {
         when(mMvTilesLayout.getChildAt(0)).thenReturn(mTileView);
         when(mMvTilesLayout.getTileCount()).thenReturn(1);
         when(mMvTilesLayout.getTileAt(0)).thenReturn(mTileView);
-        mMvTilesLayout.addTile(mTileView);
 
         mMediator =
                 new MostVisitedTilesMediator(

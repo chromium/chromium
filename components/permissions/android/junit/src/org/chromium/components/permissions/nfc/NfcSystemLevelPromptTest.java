@@ -5,7 +5,6 @@
 package org.chromium.components.permissions.nfc;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -39,7 +38,6 @@ public class NfcSystemLevelPromptTest {
     private NfcSystemLevelPrompt mNfcSystemLevelPrompt;
     private Activity mActivity;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private WindowAndroid.IntentCallback mWindowAndroidIntentCallback;
     private final CallbackHelper mDialogCallback = new CallbackHelper();
     private final CallbackHelper mIntentCallback = new CallbackHelper();
     private final MockModalDialogManager mModalDialogManager = new MockModalDialogManager();
@@ -86,14 +84,6 @@ public class NfcSystemLevelPromptTest {
                 .when(mWindowAndroid)
                 .showIntent(any(Intent.class), any(WindowAndroid.IntentCallback.class), isNull());
 
-        doAnswer(
-                        invocation -> {
-                            mDialogCallback.notifyCalled();
-                            return null;
-                        })
-                .when(mWindowAndroidIntentCallback)
-                .onIntentCompleted(anyInt(), any(Intent.class));
-
         mNfcSystemLevelPrompt = new NfcSystemLevelPrompt();
         mNfcSystemLevelPrompt.show(
                 mWindowAndroid,
@@ -133,10 +123,6 @@ public class NfcSystemLevelPromptTest {
                 .get(ModalDialogProperties.CONTROLLER)
                 .onClick(shownDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
         Assert.assertEquals(0, mDialogCallback.getCallCount());
-        Assert.assertEquals(1, mIntentCallback.getCallCount());
-
-        mWindowAndroidIntentCallback.onIntentCompleted(/* resultCode= */ 0, new Intent());
-        Assert.assertEquals(1, mDialogCallback.getCallCount());
         Assert.assertEquals(1, mIntentCallback.getCallCount());
     }
 }

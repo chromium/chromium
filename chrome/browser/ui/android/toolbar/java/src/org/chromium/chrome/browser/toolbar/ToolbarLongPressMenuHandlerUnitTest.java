@@ -146,7 +146,6 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                         mWindowAndroid,
                         () -> mUrl,
                         () -> mViewRectProvider);
-        mUrlBar.setOnLongClickListener(mToolbarLongPressMenuHandler.getOnLongClickListener());
 
         verify(mActivityLifecycleDispatcher).register(mToolbarLongPressMenuHandler);
 

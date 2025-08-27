@@ -4,6 +4,7 @@
 
 package org.chromium.ui.animation;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
@@ -32,6 +33,8 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for {@link RunOnNextLayoutDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -213,17 +216,18 @@ public class RunOnNextLayoutDelegateUnitTest {
         // This validates that the runnable is cleared before invocation. If the runnable was not
         // cleared this implementation would recursively iterate until a timeout or the stack limit
         // was hit.
+        AtomicInteger callCount = new AtomicInteger();
         mRunOnNextLayoutView.runOnNextLayout(
                 () -> {
-                    mRunnable1.run();
+                    callCount.incrementAndGet();
                     mRunOnNextLayoutView.runOnNextLayoutRunnables();
                 });
-        verify(mRunnable1, never()).run();
+        assertEquals(0, callCount.get());
 
         mRunOnNextLayoutView.runOnNextLayoutRunnables();
-        verify(mRunnable1, times(1)).run();
+        assertEquals(1, callCount.get());
 
         mRunOnNextLayoutView.runOnNextLayoutRunnables();
-        verify(mRunnable1, times(1)).run();
+        assertEquals(1, callCount.get());
     }
 }

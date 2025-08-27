@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -124,11 +123,6 @@ public class CustomTabToolbarCoordinatorUnitTest {
                 mToolbarColorController,
                 mDesktopWindowStateManager,
                 mCompositorContentInitializer);
-    }
-
-    @After
-    public void tearDown() {
-        mActivity.finish();
     }
 
     private void clickButtonAndVerifyPendingIntent() {
