@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/layout/floats_utils.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/fit_text_scale.h"
+#include "third_party/blink/renderer/core/layout/inline/fit_text_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
@@ -675,8 +676,11 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
       cloned_param.column_spanner_path = column_spanner_path_;
       cloned_param.previous_result = previous_result_;
       BlockLayoutAlgorithm cloned_algorithm(cloned_param);
-      paragraph_scale =
-          cloned_algorithm.LayoutInlineChild(node, std::nullopt).second;
+      const LayoutResult* result =
+          cloned_algorithm.LayoutInlineChild(node, std::nullopt).first;
+      paragraph_scale = MeasurePerBlockScale(
+          InlineNode(To<LayoutBlockFlow>(Node().GetLayoutBox())),
+          result->GetPhysicalFragment(), ChildAvailableSize().inline_size);
       if ((paragraph_scale < 1.0f && !shrink_consistent) ||
           (paragraph_scale > 1.0f && !grow_consistent)) {
         paragraph_scale = 1.0f;

@@ -8,7 +8,9 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/inline/fit_text_scale.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
@@ -115,6 +117,82 @@ bool ShouldApplyFitText(const InlineNode node) {
   }
 
   return apply_text_grow || apply_text_shrink;
+}
+
+float MeasurePerBlockScale(const InlineNode node,
+                           const PhysicalFragment& fragment,
+                           LayoutUnit available_width) {
+  const auto* box_fragment = DynamicTo<PhysicalBoxFragment>(fragment);
+  if (!box_fragment) {
+    return 1.0f;
+  }
+  const auto* items = box_fragment->Items();
+  if (!items) {
+    return 1.0f;
+  }
+
+  LayoutUnit epsilon(2.0 * node.GetDocument().GetFrame()->DevicePixelRatio());
+  float minimum_scale = std::numeric_limits<float>::infinity();
+  const WritingMode writing_mode = box_fragment->Style().GetWritingMode();
+
+  // Determine text-grow or text-shrink.
+  bool is_grow = true;
+  {
+    InlineCursor cursor(*box_fragment, *items);
+    for (; cursor; cursor.MoveToNextSkippingChildren()) {
+      if (!cursor.Current().IsLineBox()) {
+        continue;
+      }
+      LayoutUnit remaining_space =
+          available_width -
+          ToLogicalSize(cursor.Current().Size(), writing_mode).inline_size;
+      if (remaining_space.Abs() < epsilon) {
+        continue;
+      }
+      if (remaining_space < LayoutUnit()) {
+        is_grow = false;
+        break;
+      }
+    }
+  }
+
+  const FitText& fit_text =
+      is_grow ? node.Style().TextGrow() : node.Style().TextShrink();
+  if (fit_text.Target() != FitTextTarget::kConsistent) {
+    return 1.0f;
+  }
+  for (InlineCursor cursor(*box_fragment, *items); cursor;
+       cursor.MoveToNextSkippingChildren()) {
+    if (!cursor.Current().IsLineBox()) {
+      continue;
+    }
+    LayoutUnit remaining_space =
+        available_width -
+        ToLogicalSize(cursor.Current().Size(), writing_mode).inline_size;
+    if (remaining_space.Abs() < epsilon) {
+      continue;
+    }
+    LayoutUnit flexible_total_size;
+    for (InlineCursor descendants = cursor.CursorForDescendants(); descendants;
+         descendants.MoveToNextInlineLeaf()) {
+      const auto& current = descendants.Current();
+      if (!current.IsText()) {
+        continue;
+      }
+      // TODO(crbug.com/417306102): Handle font-size + letter-spacing cases
+      // like LineFitter::FitLine().
+      flexible_total_size +=
+          ToLogicalSize(current.Size(), writing_mode).inline_size;
+    }
+    if (!flexible_total_size ||
+        remaining_space + flexible_total_size <= LayoutUnit()) {
+      continue;
+    }
+    float scale = (remaining_space + flexible_total_size) / flexible_total_size;
+    // TODO(crbug.com/417306102): Respect to fit_text.SizeLimit().
+    minimum_scale = std::min(minimum_scale, scale);
+  }
+  return std::isfinite(minimum_scale) ? minimum_scale : 1.0f;
 }
 
 LineFitter::LineFitter(const InlineNode node, LineInfo* line_info)
