@@ -1506,7 +1506,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   display::test::DisplayManagerTestApi display_manager_test_api(
       shell_test_api.display_manager());
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
   screen->SetDisplayForNewWindows(display2);
   Browser* browser_on_secondary_display = CreateBrowser(browser()->profile());

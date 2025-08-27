@@ -113,7 +113,7 @@ class MultiscreenWindowManagementPermissionContextTest
                                       display::DisplayList::Type::PRIMARY);
     screen_.display_list().AddDisplay({2, gfx::Rect(901, 100, 802, 803)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-    ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+    ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
@@ -123,7 +123,7 @@ class MultiscreenWindowManagementPermissionContextTest
     // does not exist yet.
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
         .UpdateDisplay("100+100-801x802,901+100-802x803");
-    ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+    ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 #endif
     WindowManagementPermissionContextTest::SetUpOnMainThread();
   }

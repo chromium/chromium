@@ -1091,7 +1091,7 @@ void ArcApps::OpenNativeSettings(const std::string& app_id) {
                         ? arc::mojom::ShowPackageInfoPage::MANAGE_PERMISSIONS
                         : arc::mojom::ShowPackageInfoPage::MAIN;
   arc::ShowPackageInfo(app_info->package_name, page,
-                       display::Screen::GetScreen()->GetPrimaryDisplay().id());
+                       display::Screen::Get()->GetPrimaryDisplay().id());
 }
 
 void ArcApps::OnSupportedLinksPreferenceChanged(const std::string& app_id,

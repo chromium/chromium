@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-803x600");
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   // Navigate in a new tab to observe the test screen instance as needed.
   const GURL url(https_test_server_->GetURL("/simple.html"));
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
                                        display::DisplayList::Type::PRIMARY);
   EXPECT_EQ(screen_.display_list().displays().size(), 1u);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   content::WebContents* print_preview =
       web_contents_added_observer.GetWebContents();
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
                                     display::DisplayList::Type::NOT_PRIMARY);
   EXPECT_EQ(screen_.display_list().displays().size(), 2u);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   // Cancel print to unfreeze the tab's JS and check that no crash occurred.
   content::WebContentsDestroyedWatcher destroyed_watcher(print_preview);

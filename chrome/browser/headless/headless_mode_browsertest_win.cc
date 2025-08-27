@@ -204,7 +204,7 @@ class HeadlessModeBrowserTestWithScreenInfo : public HeadlessModeBrowserTest {
 
   display::win::ScreenWinHeadless* screen() const {
     return static_cast<display::win::ScreenWinHeadless*>(
-        display::Screen::GetScreen());
+        display::Screen::Get());
   }
 };
 
@@ -326,7 +326,7 @@ class HeadlessModeBrowserTest2ndScreen
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest2ndScreen,
                        GetWindowAt2ndScreenPoint) {
-  ASSERT_EQ(display::Screen::GetScreen()->GetNumDisplays(), 2);
+  ASSERT_EQ(display::Screen::Get()->GetNumDisplays(), 2);
 
   // Try off 2nd screen point.
   EXPECT_FALSE(screen()->GetWindowAtScreenPoint(gfx::Point(800 - 100, 0)));

@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   // This resizes the two windows so they're right next to each other.
   const gfx::NativeWindow window = browser()->window()->GetNativeWindow();
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+      display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
   const gfx::Size size(work_area.width() / 3, work_area.height() / 2);
   gfx::Rect browser_rect(work_area.origin(), size);
   browser()->window()->SetBounds(browser_rect);

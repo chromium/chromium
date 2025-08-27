@@ -93,7 +93,7 @@ TabUsageScenarioTracker::TabUsageScenarioTracker(
 TabUsageScenarioTracker::~TabUsageScenarioTracker() {
   // Make sure that this doesn't get destroyed after destroying the global
   // screen instance.
-  DCHECK(display::Screen::GetScreen());
+  DCHECK(display::Screen::Get());
 }
 
 void TabUsageScenarioTracker::OnTabAdded(content::WebContents* web_contents) {
@@ -309,7 +309,7 @@ void TabUsageScenarioTracker::OnDisplaysRemoved(const display::Displays&) {
 }
 
 int TabUsageScenarioTracker::GetNumDisplays() {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   DCHECK(screen);
   return screen->GetNumDisplays();
 }

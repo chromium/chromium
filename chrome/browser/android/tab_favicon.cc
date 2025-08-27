@@ -79,7 +79,7 @@ ScopedJavaLocalRef<jobject> TabFavicon::GetFavicon(JNIEnv* env) {
   SkBitmap favicon = favicon_driver_->GetFavicon().AsBitmap();
   if (!favicon.empty()) {
     const float device_scale_factor =
-        display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+        display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
     int target_size_dip = device_scale_factor * gfx::kFaviconSize;
     if (favicon.width() != target_size_dip ||
         favicon.height() != target_size_dip) {

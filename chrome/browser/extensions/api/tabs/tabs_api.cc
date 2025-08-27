@@ -222,7 +222,7 @@ bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds) {
   }
 
   int intersect_area = 0;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     gfx::Rect display_bounds = display.bounds();
     display_bounds.Intersect(bounds);
     intersect_area += display_bounds.size().GetArea();

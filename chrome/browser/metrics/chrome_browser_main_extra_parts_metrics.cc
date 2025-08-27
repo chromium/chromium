@@ -1155,7 +1155,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   display_count_ = screen->GetNumDisplays();
   base::UmaHistogramCounts100("Hardware.Display.Count.OnStartup",
                               display_count_);
@@ -1332,7 +1332,7 @@ void ChromeBrowserMainExtraPartsMetrics::OnDisplayMetricsChanged(
 }
 
 void ChromeBrowserMainExtraPartsMetrics::EmitDisplaysChangedMetric() {
-  int display_count = display::Screen::GetScreen()->GetNumDisplays();
+  int display_count = display::Screen::Get()->GetNumDisplays();
   if (display_count != display_count_) {
     display_count_ = display_count;
     base::UmaHistogramCounts100("Hardware.Display.Count.OnChange",

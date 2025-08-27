@@ -473,7 +473,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     // window to fit in the display.
     if (!set_window_position && set_window_size) {
       const display::Display& display =
-          display::Screen::GetScreen()->GetDisplayMatching(window_bounds);
+          display::Screen::Get()->GetDisplayMatching(window_bounds);
       window_bounds.AdjustToFit(display.bounds());
     }
 

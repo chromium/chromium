@@ -349,7 +349,7 @@ void DownloadOfflineContentProvider::GetVisualsForItem(
     VisualsCallback callback) {
   // TODO(crbug.com/40581903) Supply thumbnail if item is visible.
   DownloadItem* item = GetDownload(id.id);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (!item || !options.get_icon || !screen) {
     // No favicon is available; run the callback without visuals.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

@@ -897,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowBounds) {
 
   // Get the display bounds so we can test whether the window intersects.
   gfx::Rect displays;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     displays.Union(display.bounds());
   }
 
@@ -1114,7 +1114,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, ValidateCreateWindowState) {
 IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, ValidateCreateWindowBounds) {
   // Get the display bounds so we can test whether the window intersects.
   gfx::Rect displays;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     displays.Union(display.bounds());
   }
 

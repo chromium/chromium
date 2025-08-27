@@ -79,7 +79,7 @@ bool HasHardKeyboard() {
 }
 
 gfx::Size GetScreenSize() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
+  return display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel();
 }
 
 // TODO(rsgingerrs): This function is copied from Play. We need to find a way to

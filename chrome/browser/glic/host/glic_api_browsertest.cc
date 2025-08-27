@@ -1232,7 +1232,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testResizeWindowTooLarge) {
   // screen.
   ExecuteJsTest();
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   GlicWidget* glic_widget = window_controller().GetGlicWidget();
   ASSERT_TRUE(glic_widget);
   gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();

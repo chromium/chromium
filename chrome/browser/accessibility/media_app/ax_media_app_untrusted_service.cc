@@ -1478,7 +1478,7 @@ AXMediaAppUntrustedService::MakeTransformFromOffsetAndScale() const {
   float device_pixel_ratio = 1.0f;
   if (native_window_ && !native_window_tracker_->WasNativeWindowDestroyed()) {
     const auto maybe_device_pixel_ratio =
-        display::Screen::GetScreen()->GetPreferredScaleFactorForWindow(
+        display::Screen::Get()->GetPreferredScaleFactorForWindow(
             native_window_);
     device_pixel_ratio = maybe_device_pixel_ratio.value_or(device_pixel_ratio);
   }

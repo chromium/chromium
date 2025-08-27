@@ -219,7 +219,7 @@ display::Display GlicWidget::GetDisplay() {
   }
 
   // This should not happen after Widget::Init().
-  return display::Screen::GetScreen()->GetPrimaryDisplay();
+  return display::Screen::Get()->GetPrimaryDisplay();
 }
 
 void GlicWidget::SetMinimumSize(const gfx::Size& size) {

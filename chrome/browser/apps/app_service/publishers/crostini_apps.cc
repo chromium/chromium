@@ -39,7 +39,7 @@ bool ShouldShowDisplayDensityMenuItem(const std::string& app_id,
   }
 
   display::Display d;
-  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id, &d)) {
+  if (!display::Screen::Get()->GetDisplayWithDisplayId(display_id, &d)) {
     return true;
   }
 

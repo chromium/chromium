@@ -239,7 +239,7 @@ AccessibilityPrivateSetCursorPositionFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   gfx::Point location_in_screen(params->point.x, params->point.y);
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
+      display::Screen::Get()->GetDisplayNearestPoint(location_in_screen);
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
   if (!host) {
     return RespondNow(Error("Unable to find a window tree host"));
@@ -258,7 +258,7 @@ AccessibilityPrivateSetCursorPositionFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateGetDisplayBoundsFunction::Run() {
   const std::vector<display::Display>& displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   base::Value::List result;
   for (auto& display : displays) {
     const gfx::Rect& bounds = display.bounds();
@@ -596,7 +596,7 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
       keyboard_code, ui::UsLayoutKeyboardCodeToDomCode(keyboard_code), flags);
 
   auto* host = ash::GetWindowTreeHostForDisplay(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      display::Screen::Get()->GetPrimaryDisplay().id());
   DCHECK(host);
 
   bool dictation_enabled = AccessibilityManager::Get()->IsDictationEnabled();

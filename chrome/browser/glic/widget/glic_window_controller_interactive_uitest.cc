@@ -109,7 +109,7 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
 
   bool IsWorkAreaTooSmallForTest() {
     gfx::Rect work_area_bounds =
-        display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+        display::Screen::Get()->GetPrimaryDisplay().work_area();
     gfx::Size glic_expected_size = GlicWidget::GetInitialSize();
     gfx::Size cell_size = {work_area_bounds.width() / 3,
                            work_area_bounds.height() / 3};
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
   chrome::AddTabAt(browser(), GURL("about:blank"), 0, true);
   // Calculate default location offset from work area.
   gfx::Point top_right =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().top_right();
+      display::Screen::Get()->GetPrimaryDisplay().work_area().top_right();
   int expected_x = top_right.x() - GlicWidget::GetInitialSize().width() -
                    glic::kDefaultDetachedTopRightDistance;
   int expected_y = top_right.y() + glic::kDefaultDetachedTopRightDistance;
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
   EXPECT_EQ(initial_bounds.origin(), default_origin);
 
   gfx::Rect screen_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
 
   struct TestPair {
     gfx::Point test;
@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerLocationMetricsUiTest,
   // The GlicButton and Tabstrip are not actually shown until a tab is created.
   chrome::AddTabAt(browser(), GURL("about:blank"), 0, true);
   gfx::Rect work_area_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   // Work area is split into 9 cells.
   gfx::Size cell_size = {work_area_bounds.width() / 3,
                          work_area_bounds.height() / 3};
@@ -892,11 +892,11 @@ class GlicWindowControllerMultipleDisplaysUiTest
   // Create virtual displays as needed, ensuring 2 displays are available for
   // testing multi-screen functionality.
   bool SetUpVirtualDisplays() {
-    if (display::Screen::GetScreen()->GetNumDisplays() > 1) {
+    if (display::Screen::Get()->GetNumDisplays() > 1) {
       return true;
     }
     if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
-             display::Screen::GetScreen()))) {
+             display::Screen::Get()))) {
       virtual_display_util_->AddDisplay(
           display::test::VirtualDisplayUtil::k1024x768);
       return true;
@@ -920,9 +920,9 @@ class GlicWindowControllerMultipleDisplaysUiTest
 
   bool SetPrimaryAndSecondaryDisplay() {
     display::Display primary_display =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
+        display::Screen::Get()->GetPrimaryDisplay();
     secondary_display_ =
-        ui_test_utils::GetSecondaryDisplay(display::Screen::GetScreen());
+        ui_test_utils::GetSecondaryDisplay(display::Screen::Get());
     return primary_display.id() && secondary_display_.id();
   }
 

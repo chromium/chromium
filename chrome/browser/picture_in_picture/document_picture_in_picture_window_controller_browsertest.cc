@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        MaximumWindowOuterBounds) {
   const BrowserWindow* const browser_window = browser()->window();
   const gfx::NativeWindow native_window = browser_window->GetNativeWindow();
-  const display::Screen* const screen = display::Screen::GetScreen();
+  const display::Screen* const screen = display::Screen::Get();
   const display::Display display =
       screen->GetDisplayNearestWindow(native_window);
   const gfx::Size maximum_window_size =
@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBrowserTest,
                        MAYBE_VerifyWindowMargins) {
   const BrowserWindow* const browser_window = browser()->window();
   const gfx::NativeWindow native_window = browser_window->GetNativeWindow();
-  const display::Screen* const screen = display::Screen::GetScreen();
+  const display::Screen* const screen = display::Screen::Get();
   const display::Display display =
       screen->GetDisplayNearestWindow(native_window);
 

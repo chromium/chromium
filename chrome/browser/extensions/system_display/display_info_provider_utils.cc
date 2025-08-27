@@ -60,7 +60,7 @@ int64_t GetDisplayId(const std::string& display_id_str) {
 display::Display GetDisplayForId(const std::string& display_id_str) {
   int64_t id = GetDisplayId(display_id_str);
   display::Display display;
-  display::Screen::GetScreen()->GetDisplayWithDisplayId(id, &display);
+  display::Screen::Get()->GetDisplayWithDisplayId(id, &display);
   return display;
 }
 
@@ -134,8 +134,7 @@ std::optional<std::string> ValidateDisplayPropertiesInput(
     return "Invalid display id";
   }
 
-  const display::Display& primary =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display& primary = display::Screen::Get()->GetPrimaryDisplay();
   bool is_primary = id == primary.id() || (info.is_primary && *info.is_primary);
 
   if (info.is_unified) {

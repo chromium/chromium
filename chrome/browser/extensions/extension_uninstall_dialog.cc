@@ -53,7 +53,7 @@ constexpr char kReferrerId[] = "chrome-remove-extension-dialog";
 #endif
 
 float GetScaleFactor(gfx::NativeWindow window) {
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
   if (!screen) {
     return 1.0;  // Happens in unit_tests.
   }

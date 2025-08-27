@@ -51,7 +51,7 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreens(
           ? std::move(root_windows_for_testing_.Get())
           : ash::Shell::GetAllRootWindows();
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   blink::mojom::StreamDevicesSetPtr stream_devices_set =
       blink::mojom::StreamDevicesSet::New();
   for (aura::Window* window : root_windows) {

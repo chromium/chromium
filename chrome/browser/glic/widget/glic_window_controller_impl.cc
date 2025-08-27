@@ -123,13 +123,13 @@ display::Display GetDisplayForOpeningDetached() {
       return *widget_display;
     }
   }
-  return display::Screen::GetScreen()->GetPrimaryDisplay();
+  return display::Screen::Get()->GetPrimaryDisplay();
 }
 
 // True if |bounds| is an allowed position the Widget can be shown in.
 bool IsWidgetLocationAllowed(const gfx::Rect& bounds) {
   const std::vector<display::Display>& displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
 
   // Calculate inset corners to allow part of the widget to be off screen.
   std::array<gfx::Point, 4> inset_points = {
