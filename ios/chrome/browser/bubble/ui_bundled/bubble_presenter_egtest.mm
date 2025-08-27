@@ -9,6 +9,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_egtest_utils.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -99,6 +100,7 @@ void ReloadFromOmnibox() {
           (testLensOverlayEntrypointTipDismissedWhenOmniboxPositionChanged)]) {
     config.features_enabled.push_back(kEnableLensOverlay);
     config.features_enabled.push_back(kLensOverlayEnableLocationBarEntrypoint);
+    config.features_disabled.push_back(kPageActionMenu);
   }
 
   return config;
