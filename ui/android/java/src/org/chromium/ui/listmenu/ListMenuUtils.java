@@ -13,6 +13,7 @@ import static org.chromium.ui.listmenu.ListMenuSubmenuHeaderItemProperties.KEY_L
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.content.res.Resources;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ListView;
 
@@ -38,6 +39,39 @@ import java.util.Set;
 
 @NullMarked
 public class ListMenuUtils {
+    /**
+     * Defines a contract for managing a series of flyout popups, typically used for nested context
+     * menus. An implementing class is responsible for the lifecycle of these popups, including
+     * their creation, tracking, and dismissal as the user navigates the menu hierarchy.
+     *
+     * @param <T> The type of the object representing the flyout popup. This is generic to allow the
+     *     implementation to use any UI component.
+     */
+    public interface FlyoutHandler<T> {
+        /**
+         * Returns the list of the dialogs, along with the parent ListItem.
+         *
+         * @return A List of pairs of the parent ListItems and their corresponding dialog popups of
+         *     type T.
+         */
+        public List<Pair<@Nullable ListItem, T>> getFlyoutWindows();
+
+        /**
+         * Adds a flyout popup.
+         *
+         * @param item The ListItem that got the hover.
+         * @param view The View that got the hover.
+         */
+        public void addFlyoutWindow(ListItem item, View view);
+
+        /**
+         * Remove popups with indices above removeFromIndex.
+         *
+         * @param removeFromIndex The minimum index of the popup to be removed.
+         */
+        public void removeFlyoutWindows(int removeFromIndex);
+    }
+
     /**
      * Creates and configures a {@link ModelListAdapter} for the context menu.
      *
