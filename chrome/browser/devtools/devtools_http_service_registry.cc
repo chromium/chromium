@@ -7,6 +7,7 @@
 #include <ranges>
 
 #include "chrome/browser/devtools/aida_service_handler.h"
+#include "chrome/browser/devtools/gdp_service_handler.h"
 
 DevToolsHttpServiceRegistry::Service::Service(
     std::string service,
@@ -25,6 +26,15 @@ DevToolsHttpServiceRegistry::DevToolsHttpServiceRegistry() {
                                   {"/v1/registerClientEvent", "POST"},
                               },
                               std::make_unique<AidaServiceHandler>()));
+  services_.push_back(Service("gdpService",
+                              {
+                                  {"/v1beta1/profile:get", "GET"},
+                                  {"/v1beta1/eligibility:check", "GET"},
+                                  {"/v1beta1/profiles/me/awards", "GET"},
+                                  {"/v1beta1/profiles", "POST"},
+                                  {"/v1beta1/profiles/me/awards", "POST"},
+                              },
+                              std::make_unique<GdpServiceHandler>()));
 }
 DevToolsHttpServiceRegistry::~DevToolsHttpServiceRegistry() = default;
 

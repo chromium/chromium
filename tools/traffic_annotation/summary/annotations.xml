@@ -519,4 +519,5 @@ Refer to README.md for content description and update process.
  <item id="webview_preconnect" added_in_milestone="140" content_hash_code="03d15024" os_list="android" file_path="android_webview/browser/aw_preconnector.cc" />
  <item id="aim_eligibility_fetch" added_in_milestone="141" content_hash_code="00755d9b" os_list="linux,windows,android,chromeos" file_path="components/omnibox/browser/aim_eligibility_service.cc" />
  <item id="enterprise_logo_fetcher_for_browser" added_in_milestone="141" content_hash_code="03eb36e5" os_list="linux,windows,chromeos,android" file_path="chrome/browser/enterprise/util/managed_browser_utils.cc" />
+ <item id="devtools_gdp_service" added_in_milestone="141" content_hash_code="0240d8d3" os_list="linux,windows,android,chromeos" file_path="chrome/browser/devtools/gdp_service_handler.cc" />
 </annotations>

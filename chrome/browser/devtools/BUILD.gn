@@ -184,6 +184,8 @@ static_library("devtools") {
       "devtools_window.h",
       "features.cc",
       "features.h",
+      "gdp_service_handler.cc",
+      "gdp_service_handler.h",
       "url_constants.cc",
       "url_constants.h",
       "visual_logging.cc",
