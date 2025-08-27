@@ -4,6 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
@@ -151,6 +152,11 @@ FakeSystemIdentity* const kSecondaryIdentity =
 // Verifies no identity confirmation snackbar shows on startup when there is an
 // identity on the device but the user is signed-out.
 - (void)testNoIdentity_IdentityConfirmationToast {
+  // TODO(crbug.com/441260415): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [self prepareStartSurface];
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
 
