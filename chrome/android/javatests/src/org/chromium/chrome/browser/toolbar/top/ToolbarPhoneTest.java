@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
@@ -115,6 +116,7 @@ public class ToolbarPhoneTest {
     @Mock private MenuButtonCoordinator.SetFocusFunction mFocusFunction;
     @Mock private Runnable mRequestRenderRunnable;
     @Mock ThemeColorProvider mThemeColorProvider;
+    @Mock IncognitoStateProvider mIncognitoStateProvider;
     @Mock GradientDrawable mLocationbarBackgroundDrawable;
     @Mock OptionalButtonCoordinator mOptionalButtonCoordinator;
     @Mock private SearchEngineUtils mSearchEngineUtils;
@@ -218,6 +220,7 @@ public class ToolbarPhoneTest {
                     // Has to be created on the main thread.
                     MenuButtonCoordinator realMenuButtonCoordinator =
                             new MenuButtonCoordinator(
+                                    mActivityTestRule.getActivity(),
                                     new OneshotSupplierImpl<>(),
                                     new TestControlsVisibilityDelegate(),
                                     mActivityTestRule.getActivity().getWindowAndroid(),
@@ -226,6 +229,7 @@ public class ToolbarPhoneTest {
                                     true,
                                     () -> false,
                                     mThemeColorProvider,
+                                    mIncognitoStateProvider,
                                     () -> null,
                                     CallbackUtils.emptyRunnable(),
                                     R.id.menu_button_wrapper,

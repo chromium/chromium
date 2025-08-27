@@ -27,6 +27,7 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
@@ -55,6 +56,7 @@ public class MenuButtonCoordinatorTest {
     @Mock private AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
     @Mock private Runnable mRequestRenderRunnable;
     @Mock ThemeColorProvider mThemeColorProvider;
+    @Mock IncognitoStateProvider mIncognitoStateProvider;
     @Mock Resources mResources;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
@@ -135,6 +137,7 @@ public class MenuButtonCoordinatorTest {
         // clang-format off
         mMenuButtonCoordinator =
                 new MenuButtonCoordinator(
+                        mActivity,
                         mAppMenuSupplier,
                         mControlsVisibilityDelegate,
                         mWindowAndroid,
@@ -143,6 +146,7 @@ public class MenuButtonCoordinatorTest {
                         true,
                         () -> false,
                         mThemeColorProvider,
+                        mIncognitoStateProvider,
                         () -> null,
                         () -> {},
                         R.id.menu_button_wrapper,

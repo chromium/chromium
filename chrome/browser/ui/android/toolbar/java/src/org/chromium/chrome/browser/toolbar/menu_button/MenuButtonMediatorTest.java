@@ -30,13 +30,13 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
-import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ShowBadgeProperty;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ThemeProperty;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,7 +58,6 @@ public class MenuButtonMediatorTest {
     @Mock private AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
     @Mock private Runnable mOnMenuButtonClicked;
     @Mock private Runnable mRequestRenderRunnable;
-    @Mock ThemeColorProvider mThemeColorProvider;
     @Mock Resources mResources;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
@@ -79,9 +78,7 @@ public class MenuButtonMediatorTest {
                                 new ShowBadgeProperty(false, false))
                         .with(
                                 MenuButtonProperties.THEME,
-                                new ThemeProperty(
-                                        mThemeColorProvider.getTint(),
-                                        mThemeColorProvider.getBrandedColorScheme()))
+                                new ThemeProperty(null, BrandedColorScheme.APP_DEFAULT))
                         .with(MenuButtonProperties.IS_VISIBLE, true)
                         .build();
         doReturn(mAppMenuHandler).when(mAppMenuCoordinator).getAppMenuHandler();
@@ -170,7 +167,6 @@ public class MenuButtonMediatorTest {
                         false,
                         () -> false,
                         mRequestRenderRunnable,
-                        mThemeColorProvider,
                         () -> false,
                         mControlsVisibilityDelegate,
                         mFocusFunction,
@@ -310,7 +306,6 @@ public class MenuButtonMediatorTest {
                         true,
                         () -> false,
                         mRequestRenderRunnable,
-                        mThemeColorProvider,
                         () -> false,
                         mControlsVisibilityDelegate,
                         mFocusFunction,

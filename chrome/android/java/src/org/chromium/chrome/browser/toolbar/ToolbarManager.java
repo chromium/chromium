@@ -963,6 +963,7 @@ public class ToolbarManager
 
         mMenuButtonCoordinator =
                 new MenuButtonCoordinator(
+                        mActivity,
                         appMenuCoordinatorSupplier,
                         mControlsVisibilityDelegate,
                         mWindowAndroid,
@@ -971,6 +972,7 @@ public class ToolbarManager
                         canShowUpdateBadge,
                         isInOverviewModeSupplier,
                         menuButtonThemeColorProvider,
+                        mIncognitoStateProvider,
                         menuButtonStateSupplier,
                         onMenuButtonClicked,
                         R.id.menu_button_wrapper,
@@ -981,6 +983,7 @@ public class ToolbarManager
         // mOverviewModeMenuButtonCoordinator with mMenuButtonCoordinator when Hub is enabled.
         mOverviewModeMenuButtonCoordinator =
                 new MenuButtonCoordinator(
+                        mActivity,
                         appMenuCoordinatorSupplier,
                         mControlsVisibilityDelegate,
                         mWindowAndroid,
@@ -989,6 +992,7 @@ public class ToolbarManager
                         canShowUpdateBadge,
                         isInOverviewModeSupplier,
                         overviewModeThemeColorProvider,
+                        mIncognitoStateProvider,
                         menuButtonStateSupplier,
                         onMenuButtonClicked,
                         R.id.none,
