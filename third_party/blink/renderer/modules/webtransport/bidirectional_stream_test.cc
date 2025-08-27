@@ -193,8 +193,8 @@ class ScopedWebTransport {
   // This constructor runs the event loop.
   explicit ScopedWebTransport(const V8TestingScope& scope) {
     creator_.Init(scope.GetScriptState(),
-                  WTF::BindRepeating(&ScopedWebTransport::CreateStub,
-                            weak_ptr_factory_.GetWeakPtr()));
+                  blink::BindRepeating(&ScopedWebTransport::CreateStub,
+                                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   WebTransport* GetWebTransport() const { return creator_.GetWebTransport(); }

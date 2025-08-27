@@ -45,17 +45,17 @@ class MockShareService : public ShareService {
 
   void set_error(mojom::ShareError value) { error_ = value; }
 
-  const WTF::String& title() const { return title_; }
-  const WTF::String& text() const { return text_; }
+  const String& title() const { return title_; }
+  const String& text() const { return text_; }
   const KURL& url() const { return url_; }
-  const WTF::Vector<SharedFilePtr>& files() const { return files_; }
+  const Vector<SharedFilePtr>& files() const { return files_; }
   mojom::ShareError error() const { return error_; }
 
  private:
-  void Share(const WTF::String& title,
-             const WTF::String& text,
+  void Share(const String& title,
+             const String& text,
              const KURL& url,
-             WTF::Vector<SharedFilePtr> files,
+             Vector<SharedFilePtr> files,
              ShareCallback callback) override {
     title_ = title;
     text_ = text;
@@ -71,10 +71,10 @@ class MockShareService : public ShareService {
   }
 
   mojo::Receiver<ShareService> receiver_{this};
-  WTF::String title_;
-  WTF::String text_;
+  String title_;
+  String text_;
   KURL url_;
-  WTF::Vector<SharedFilePtr> files_;
+  Vector<SharedFilePtr> files_;
   mojom::ShareError error_;
 };
 
@@ -119,9 +119,8 @@ class NavigatorShareTest : public testing::Test {
     test::RunPendingTasks();
 
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
-        ShareService::Name_,
-        WTF::BindRepeating(&MockShareService::Bind,
-                           WTF::Unretained(&mock_share_service_)));
+        ShareService::Name_, BindRepeating(&MockShareService::Bind,
+                                           Unretained(&mock_share_service_)));
   }
 
   void TearDown() override {

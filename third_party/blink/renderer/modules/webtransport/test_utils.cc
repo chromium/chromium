@@ -71,8 +71,8 @@ void TestWebTransportCreator::Init(ScriptState* script_state,
   create_stub_ = std::move(create_stub);
   browser_interface_broker_->SetBinderForTesting(
       mojom::blink::WebTransportConnector::Name_,
-      WTF::BindRepeating(&TestWebTransportCreator::BindConnector,
-                         weak_ptr_factory_.GetWeakPtr()));
+      blink::BindRepeating(&TestWebTransportCreator::BindConnector,
+                           weak_ptr_factory_.GetWeakPtr()));
   web_transport_ = WebTransport::Create(
       script_state, "https://example.com/",
       MakeGarbageCollected<WebTransportOptions>(), ASSERT_NO_EXCEPTION);

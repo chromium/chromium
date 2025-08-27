@@ -205,14 +205,14 @@ void OutgoingStream::Init(ExceptionState& exception_state) {
 void OutgoingStream::InitWithExistingWritableStream(
     WritableStream* stream,
     ExceptionState& exception_state) {
-  write_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-                       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                       WTF::BindRepeating(&OutgoingStream::OnHandleReady,
-                                          WrapWeakPersistent(this)));
-  close_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-                       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                       WTF::BindRepeating(&OutgoingStream::OnPeerClosed,
-                                          WrapWeakPersistent(this)));
+  write_watcher_.Watch(
+      data_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+      BindRepeating(&OutgoingStream::OnHandleReady, WrapWeakPersistent(this)));
+  close_watcher_.Watch(
+      data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+      BindRepeating(&OutgoingStream::OnPeerClosed, WrapWeakPersistent(this)));
 
   writable_ = stream;
   stream->InitWithCountQueueingStrategy(

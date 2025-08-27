@@ -110,7 +110,7 @@ class WebSocketChannelImplTestBase : public PageTestBase {
 
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::WebSocketConnector::Name_,
-        WTF::BindRepeating(
+        blink::BindRepeating(
             &WebSocketChannelImplTestBase::BindWebSocketConnector,
             GetWeakPtr()));
 

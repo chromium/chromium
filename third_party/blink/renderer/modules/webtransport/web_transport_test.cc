@@ -79,7 +79,7 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
         const KURL& url,
         Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
             fingerprints,
-        Vector<WTF::String> application_protocols,
+        Vector<String> application_protocols,
         mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
             handshake_client)
         : url(url),
@@ -90,7 +90,7 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
     KURL url;
     Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
         fingerprints;
-    Vector<WTF::String> application_protocols;
+    Vector<String> application_protocols;
     mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
         handshake_client;
   };
@@ -99,7 +99,7 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
       const KURL& url,
       Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
           fingerprints,
-      const Vector<WTF::String>& application_protocols,
+      const Vector<String>& application_protocols,
       mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
           handshake_client) override {
     connect_args_.push_back(ConnectArgs(url, std::move(fingerprints),
@@ -181,8 +181,8 @@ class WebTransportTest : public ::testing::Test {
         &scope.GetExecutionContext()->GetBrowserInterfaceBroker();
     interface_broker_->SetBinderForTesting(
         mojom::blink::WebTransportConnector::Name_,
-        WTF::BindRepeating(&WebTransportTest::BindConnector,
-                  weak_ptr_factory_.GetWeakPtr()));
+        blink::BindRepeating(&WebTransportTest::BindConnector,
+                             weak_ptr_factory_.GetWeakPtr()));
   }
 
   static WebTransportOptions* EmptyOptions() {
@@ -256,7 +256,7 @@ class WebTransportTest : public ::testing::Test {
         std::move(web_transport_to_pass),
         client_remote.InitWithNewPipeAndPassReceiver(),
         network::mojom::blink::HttpResponseHeaders::New(),
-        /*selected_application_protocol=*/WTF::String(),
+        /*selected_application_protocol=*/String(),
         network::mojom::blink::WebTransportStats::New());
     client_remote_.Bind(std::move(client_remote));
   }

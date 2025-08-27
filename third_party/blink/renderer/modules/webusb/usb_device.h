@@ -210,9 +210,9 @@ class USBDevice : public ScriptWrappable,
 
   // These vectors have one entry for each interface in the currently selected
   // configured. Use the index returned by FindInterfaceIndex().
-  WTF::Vector<bool> claimed_interfaces_;
-  WTF::Vector<bool> interface_state_change_in_progress_;
-  WTF::Vector<wtf_size_t> selected_alternate_indices_;
+  Vector<bool> claimed_interfaces_;
+  Vector<bool> interface_state_change_in_progress_;
+  Vector<wtf_size_t> selected_alternate_indices_;
 
   // These bit sets have one entry for each endpoint. Index using the endpoint
   // number (lower 4 bits of the endpoint address).

@@ -152,7 +152,7 @@ class WebSocketChannelImpl::BlobLoader final
  private:
   Member<WebSocketChannelImpl> channel_;
   Member<FileReaderLoader> loader_;
-  // This doesn't use WTF::Vector because it doesn't currently support 64-bit
+  // This doesn't use Vector because it doesn't currently support 64-bit
   // sizes.
   MessageData data_;
   size_t size_ = 0;
@@ -325,10 +325,9 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   // returning "true" just indicates that this was not a mixed content error.
   if (ShouldDisallowConnection(url)) {
     execution_context_->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(
-            FROM_HERE,
-            WTF::BindOnce(&WebSocketChannelImpl::TearDownFailedConnection,
-                          WrapPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   BindOnce(&WebSocketChannelImpl::TearDownFailedConnection,
+                            WrapPersistent(this)));
     return true;
   }
 
@@ -345,10 +344,9 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
         mojom::blink::ConsoleMessageSource::kNetwork,
         mojom::blink::ConsoleMessageLevel::kError, message.ToString()));
     execution_context_->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(
-            FROM_HERE,
-            WTF::BindOnce(&WebSocketChannelImpl::TearDownFailedConnection,
-                          WrapPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   BindOnce(&WebSocketChannelImpl::TearDownFailedConnection,
+                            WrapPersistent(this)));
     return true;
   }
 
@@ -369,8 +367,8 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
           execution_context_->GetTaskRunner(TaskType::kWebSocket)),
       /*throttling_profile_id=*/devtools_token);
   handshake_client_receiver_.set_disconnect_with_reason_handler(
-      WTF::BindOnce(&WebSocketChannelImpl::OnConnectionError,
-                    WrapWeakPersistent(this), FROM_HERE));
+      blink::BindOnce(&WebSocketChannelImpl::OnConnectionError,
+                      WrapWeakPersistent(this), FROM_HERE));
   has_initiated_opening_handshake_ = true;
 
   if (handshake_throttle_) {
@@ -389,8 +387,8 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
         url, WebSecurityOrigin(execution_context_->GetSecurityOrigin()),
         isolated_security_origin ? WebSecurityOrigin(isolated_security_origin)
                                  : WebSecurityOrigin(),
-        WTF::BindOnce(&WebSocketChannelImpl::OnCompletion,
-                      WrapWeakPersistent(this)));
+        BindOnce(&WebSocketChannelImpl::OnCompletion,
+                 WrapWeakPersistent(this)));
   } else {
     // Treat no throttle as success.
     throttle_passed_ = true;
@@ -492,8 +490,8 @@ void WebSocketChannelImpl::Fail(const String& reason,
   // hence close reason must be empty in tearDownFailedConnection.
   execution_context_->GetTaskRunner(TaskType::kNetworking)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&WebSocketChannelImpl::TearDownFailedConnection,
-                               WrapPersistent(this)));
+                 BindOnce(&WebSocketChannelImpl::TearDownFailedConnection,
+                          WrapPersistent(this)));
 }
 
 void WebSocketChannelImpl::Disconnect() {
@@ -548,7 +546,7 @@ void WebSocketChannelImpl::OnOpeningHandshakeStarted(
   handshake_request_ = std::move(request);
 }
 
-void WebSocketChannelImpl::OnFailure(const WTF::String& message,
+void WebSocketChannelImpl::OnFailure(const String& message,
                                      int net_error,
                                      int response_code) {
   DVLOG(1) << this << " OnFailure(" << message << ", " << net_error << ", "
@@ -582,8 +580,8 @@ void WebSocketChannelImpl::OnConnectionEstablished(
       std::move(client_receiver),
       execution_context_->GetTaskRunner(TaskType::kNetworking));
   client_receiver_.set_disconnect_with_reason_handler(
-      WTF::BindOnce(&WebSocketChannelImpl::OnConnectionError,
-                    WrapWeakPersistent(this), FROM_HERE));
+      blink::BindOnce(&WebSocketChannelImpl::OnConnectionError,
+                      WrapWeakPersistent(this), FROM_HERE));
 
   DCHECK(!websocket_.is_bound());
   websocket_.Bind(std::move(websocket),
@@ -591,18 +589,18 @@ void WebSocketChannelImpl::OnConnectionEstablished(
   readable_ = std::move(readable);
   // TODO(suzukikeita): Implement upload via |writable_| instead of SendFrame.
   writable_ = std::move(writable);
-  const MojoResult mojo_result = readable_watcher_.Watch(
-      readable_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-      MOJO_WATCH_CONDITION_SATISFIED,
-      WTF::BindRepeating(&WebSocketChannelImpl::OnReadable,
-                         WrapWeakPersistent(this)));
+  const MojoResult mojo_result =
+      readable_watcher_.Watch(readable_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+                              MOJO_WATCH_CONDITION_SATISFIED,
+                              BindRepeating(&WebSocketChannelImpl::OnReadable,
+                                            WrapWeakPersistent(this)));
   DCHECK_EQ(mojo_result, MOJO_RESULT_OK);
 
-  const MojoResult mojo_writable_result = writable_watcher_.Watch(
-      writable_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-      MOJO_WATCH_CONDITION_SATISFIED,
-      WTF::BindRepeating(&WebSocketChannelImpl::OnWritable,
-                         WrapWeakPersistent(this)));
+  const MojoResult mojo_writable_result =
+      writable_watcher_.Watch(writable_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+                              MOJO_WATCH_CONDITION_SATISFIED,
+                              BindRepeating(&WebSocketChannelImpl::OnWritable,
+                                            WrapWeakPersistent(this)));
   DCHECK_EQ(mojo_writable_result, MOJO_RESULT_OK);
 
   if (!throttle_passed_) {

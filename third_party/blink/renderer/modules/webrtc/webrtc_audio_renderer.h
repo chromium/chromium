@@ -300,7 +300,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
   // |sink_|.
   void PrepareSink();
 
-  void SendLogMessage(const WTF::String& message);
+  void SendLogMessage(const String& message);
 
   // The LocalFrame in which the audio is rendered into |sink_|.
   WeakPersistent<LocalFrame> source_frame_;
@@ -316,7 +316,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
   Persistent<MediaStreamDescriptor> media_stream_descriptor_;
 
   // Contains a copy the unique id of the media stream. By taking a copy at
-  // construction, we can convert the id from a WebString to an WTF::string
+  // construction, we can convert the id from a WebString to an String
   // once and that saves resources when |media_stream_descriptor_id_| is added
   // to log messages.
   String media_stream_descriptor_id_;

@@ -132,7 +132,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
   // network::mojom::blink::WebSocketHandshakeClient methods:
   void OnOpeningHandshakeStarted(
       network::mojom::blink::WebSocketHandshakeRequestPtr) override;
-  void OnFailure(const WTF::String& message,
+  void OnFailure(const String& message,
                  int net_error,
                  int response_code) override;
   void OnConnectionEstablished(
@@ -381,7 +381,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
   size_t sent_size_of_top_message_ = 0;
   FrameScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
-  WTF::String failure_message_;
+  String failure_message_;
 
   const Member<const SourceLocation> location_at_construction_;
   network::mojom::blink::WebSocketHandshakeRequestPtr handshake_request_;

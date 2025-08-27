@@ -418,7 +418,7 @@ void WebSocketStream::UnderlyingSink::SendString(
     return;
   }
   // Skip one string copy by using v8::String UTF8 conversion instead of going
-  // via WTF::String.
+  // via blink::String.
   size_t utf8_length = string_chunk->Utf8LengthV2(isolate);
   std::string message(utf8_length, '\0');
   size_t written_length =
@@ -683,7 +683,7 @@ void WebSocketStream::Connect(ScriptState* script_state,
     }
 
     abort_handle_ = signal->AddAlgorithm(
-        WTF::BindOnce(&WebSocketStream::OnAbort, WrapWeakPersistent(this)));
+        BindOnce(&WebSocketStream::OnAbort, WrapWeakPersistent(this)));
   }
 
   auto result = common_.Connect(

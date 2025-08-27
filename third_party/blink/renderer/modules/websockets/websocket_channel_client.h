@@ -44,9 +44,9 @@ namespace blink {
 class MODULES_EXPORT WebSocketChannelClient : public GarbageCollectedMixin {
  public:
   virtual ~WebSocketChannelClient() = default;
-  virtual void DidConnect(const WTF::String& subprotocol,
-                          const WTF::String& extensions) {}
-  virtual void DidReceiveTextMessage(const WTF::String&) {}
+  virtual void DidConnect(const String& subprotocol, const String& extensions) {
+  }
+  virtual void DidReceiveTextMessage(const String&) {}
   virtual void DidReceiveBinaryMessage(
       const Vector<base::span<const char>>& data) {}
   virtual void DidError() {}
@@ -58,7 +58,7 @@ class MODULES_EXPORT WebSocketChannelClient : public GarbageCollectedMixin {
   };
   virtual void DidClose(ClosingHandshakeCompletionStatus,
                         uint16_t /* code */,
-                        const WTF::String& /* reason */) {}
+                        const String& /* reason */) {}
   void Trace(Visitor* visitor) const override {}
 
  protected:

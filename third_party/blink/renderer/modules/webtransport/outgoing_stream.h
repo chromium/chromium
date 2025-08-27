@@ -157,7 +157,7 @@ class MODULES_EXPORT OutgoingStream final
   // Data which has been passed to write() but still needs to be written
   // asynchronously.
   // Uses a custom CachedDataBuffer rather than a Vector because
-  // WTF::Vector is currently limited to 2GB.
+  // Vector is currently limited to 2GB.
   // TODO(ricea): Change this to a Vector when it becomes 64-bit safe.
   class CachedDataBuffer;
   std::unique_ptr<CachedDataBuffer> cached_data_;
