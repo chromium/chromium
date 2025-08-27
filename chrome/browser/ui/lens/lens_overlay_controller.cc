@@ -1609,7 +1609,7 @@ void LensOverlayController::ShowOverlay() {
     SetOverlayRoundedCorner();
 
     // Restart the live blur since the view is visible again.
-    SetLiveBlur(should_enable_live_blur_on_show_);
+    SetLiveBlur(true);
 
     // The overlay needs to be focused on show to immediately begin
     // receiving key events.
@@ -1939,6 +1939,12 @@ void LensOverlayController::OnFullscreenStateChanged() {
 void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
   CHECK(observed_view == overlay_view_);
 
+  // We now want to start the live blur since the screenshot has resized to
+  // allow the blur to peek through.
+  if (IsOverlayShowing()) {
+    SetLiveBlur(true);
+  }
+
   // Set our view to the same bounds as the contents web view so it always
   // covers the tab contents.
   if (lens_overlay_blur_layer_delegate_) {
@@ -2219,8 +2225,6 @@ void LensOverlayController::AddBackgroundBlur() {
       lens_overlay_blur_layer_delegate_->layer());
   lens_overlay_blur_layer_delegate_->layer()->SetBounds(
       overlay_web_view_->GetLocalBounds());
-
-  lens_overlay_blur_layer_delegate_->FetchBackgroundImage();
 }
 
 void LensOverlayController::CloseRequestedByOverlayCloseButton() {
@@ -2656,10 +2660,6 @@ void LensOverlayController::HideOverlay() {
   overlay_web_view_->SetVisible(false);
   MaybeHideSharedOverlayView();
 
-  // Save the current value of whether live blur is enabled so that it can be
-  // restored when the overlay is shown again.
-  should_enable_live_blur_on_show_ =
-      lens_overlay_blur_layer_delegate_->IsLiveBlurActive();
   SetLiveBlur(false);
   HidePreselectionBubble();
 }
