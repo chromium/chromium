@@ -59,12 +59,12 @@ import java.util.Collections;
 @NullMarked
 public class ChromeTabCreator extends TabCreator
         implements NeedsTabModel, NeedsTabModelOrderController {
-    final Activity mActivity;
+    protected final Activity mActivity;
     private final WindowAndroid mNativeWindow;
     private final Supplier<TabDelegateFactory> mTabDelegateFactorySupplier;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    final boolean mIncognito;
-    private final AsyncTabParamsManager mAsyncTabParamsManager;
+    protected final boolean mIncognito;
+    protected final AsyncTabParamsManager mAsyncTabParamsManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final @Nullable MultiInstanceManager mMultiInstanceManager;

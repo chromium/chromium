@@ -11,6 +11,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -59,6 +60,9 @@ public class RedirectTabCreator extends ChromeTabCreator {
             int position,
             @Nullable Intent intent,
             boolean copyHistory) {
+        // Clean up AsyncTabParams with the tab to reparent if any.
+        mAsyncTabParamsManager.remove(IntentHandler.getTabId(intent));
+
         // Sanitize the url.
         GURL url = UrlFormatter.fixupUrl(loadUrlParams.getUrl());
         loadUrlParams.setUrl(url.getValidSpecOrEmpty());
