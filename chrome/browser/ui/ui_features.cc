@@ -60,7 +60,7 @@ BASE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOfferPinToTaskbarInFirstRunExperience,
              "OfferPinToTaskbarInFirstRunExperience",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(OfferPinToTaskbarInSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
