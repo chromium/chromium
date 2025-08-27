@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 import android.os.Handler;
 
@@ -21,10 +22,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -110,7 +111,7 @@ public class SignalAccumulatorTest {
     }
 
     @Test
-    public void testTimeout() throws TimeoutException {
+    public void testTimeout() {
         HashMap<Integer, ActionProvider> actionProviders = new HashMap<>();
         ActionProvider actionProvider =
                 (tab, signalAccumulator) -> {
@@ -119,21 +120,7 @@ public class SignalAccumulatorTest {
                 };
         actionProviders.put(AdaptiveToolbarButtonVariant.READER_MODE, actionProvider);
         SignalAccumulator accumulator = new SignalAccumulator(mHandler, mMockTab, actionProviders);
-        assertEquals(100, accumulator.getActionProviderTimeoutForTesting());
-    }
-
-    @Test
-    @EnableFeatures(
-            DomDistillerFeatures.READER_MODE_IMPROVEMENTS
-                    + ":custom_cpa_timeout_enabled/true/custom_cpa_timeout/300")
-    public void testIncreasedTimeoutWithFeature() throws TimeoutException {
-        HashMap<Integer, ActionProvider> actionProviders = new HashMap<>();
-        actionProviders.put(
-                AdaptiveToolbarButtonVariant.READER_MODE,
-                (tab, signalAccumulator) ->
-                        signalAccumulator.setSignal(
-                                AdaptiveToolbarButtonVariant.READER_MODE, false));
-        SignalAccumulator accumulator = new SignalAccumulator(mHandler, mMockTab, actionProviders);
-        assertEquals(300, accumulator.getActionProviderTimeoutForTesting());
+        accumulator.getSignals(CallbackUtils.emptyRunnable());
+        verify(mHandler).postDelayed(any(), eq(300L));
     }
 }

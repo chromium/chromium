@@ -12,7 +12,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,7 @@ import java.util.Map;
 @NullMarked
 public class SignalAccumulator {
     private static final String TAG = "SegmentationPlatform";
-    private static final long DEFAULT_ACTION_PROVIDER_TIMEOUT_MS = 100;
+    private static final long DEFAULT_ACTION_PROVIDER_TIMEOUT_MS = 300;
 
     // List of signals to query.
     private final HashMap<Integer, Boolean> mSignals = new HashMap<>();
@@ -45,7 +44,6 @@ public class SignalAccumulator {
     private final Map<Integer, ActionProvider> mActionProviders;
     private final Tab mTab;
     private final Handler mHandler;
-    private final long mActionProviderTimeout;
 
     /**
      * Constructor.
@@ -59,10 +57,6 @@ public class SignalAccumulator {
         mHandler = handler;
         mTab = tab;
         mActionProviders = actionProviders;
-        mActionProviderTimeout =
-                DomDistillerFeatures.enableCustomCpaTimeout()
-                        ? DomDistillerFeatures.sReaderModeImprovementsCustomCpaTimeout.getValue()
-                        : DEFAULT_ACTION_PROVIDER_TIMEOUT_MS;
         for (var actionType : mActionProviders.keySet()) {
             mSignals.put(actionType, null);
         }
@@ -83,7 +77,7 @@ public class SignalAccumulator {
                     mHasTimedOut = true;
                     proceedToNextStepIfReady();
                 },
-                mActionProviderTimeout);
+                DEFAULT_ACTION_PROVIDER_TIMEOUT_MS);
     }
 
     public boolean hasTimedOut() {
@@ -138,9 +132,5 @@ public class SignalAccumulator {
             if (value == null) return false;
         }
         return true;
-    }
-
-    long getActionProviderTimeoutForTesting() {
-        return mActionProviderTimeout;
     }
 }
