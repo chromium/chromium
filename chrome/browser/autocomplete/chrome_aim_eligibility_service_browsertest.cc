@@ -121,7 +121,10 @@ class AimEligibilityServiceObserverHelper
 // Friend class to access private members of AimEligibilityService for testing.
 class AimEligibilityServiceFriend {
  public:
-  using ServerRequestStatus = AimEligibilityService::ServerRequestStatus;
+  using EligibilityRequestStatus =
+      AimEligibilityService::EligibilityRequestStatus;
+  using EligibilityResponseSource =
+      AimEligibilityService::EligibilityResponseSource;
 };
 
 class ChromeAimEligibilityServiceBrowserTest
@@ -251,7 +254,7 @@ INSTANTIATE_TEST_SUITE_P(,
                              ::testing::Values(true, false),
                              // Values for server response eligibility.
                              ::testing::Values(true, false),
-                             // Values for Pdf eligibility.
+                             // Values for Pdf server response eligibility.
                              ::testing::Values(true, false)));
 
 IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
@@ -259,10 +262,11 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
   auto [locale, country, server_eligibility_enabled, allowed_by_policy,
         is_google_dse, is_server_eligible, is_pdf_upload_eligible] = GetParam();
 
+  // Handle the eligibility request with a custom response.
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(is_server_eligible);
   response.set_is_pdf_upload_eligible(is_pdf_upload_eligible);
-  content::URLLoaderInterceptor url_loader_interceptor(
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
       base::BindRepeating(&OnRequest, response));
 
   base::HistogramTester histogram_tester;
@@ -273,31 +277,9 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
 
   // The service may make a network request on construction, if applicable.
   if (is_google_dse) {
-    // Wait for the observer to be notified of potential eligibility changes.
     EXPECT_TRUE(service_observer_helper.WaitForEligibilityChanged());
-
-    // Verify histograms were recorded.
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.AimEligibility.ServerRequestStatus", 2);
-    histogram_tester.ExpectBucketCount(
-        "Omnibox.AimEligibility.ServerRequestStatus",
-        AimEligibilityServiceFriend::ServerRequestStatus::kSent, 1);
-    histogram_tester.ExpectBucketCount(
-        "Omnibox.AimEligibility.ServerRequestStatus",
-        AimEligibilityServiceFriend::ServerRequestStatus::kSuccess, 1);
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.AimEligibility.ServerEligibility.is_eligible", 1);
-    histogram_tester.ExpectUniqueSample(
-        "Omnibox.AimEligibility.ServerEligibility.is_eligible",
-        is_server_eligible, 1);
   } else {
     EXPECT_FALSE(service_observer_helper.IsReady());
-
-    // Verify no histogram were recorded.
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.AimEligibility.ServerRequestStatus", 0);
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.AimEligibility.ServerEligibility.is_eligible", 0);
   }
 
   // Test country and locale detection.
@@ -316,13 +298,32 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
                            (!server_eligibility_enabled || is_server_eligible);
   EXPECT_EQ(service->IsAimEligible(), expected_eligible);
 
-  service_observer_helper.Clear();
+  // Verify eligibility response source histogram was recorded.
+  if (expected_local_eligibility && server_eligibility_enabled) {
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponseSource", 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponseSource",
+        AimEligibilityServiceFriend::EligibilityResponseSource::kServer, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponseSource", 0);
+  }
 
   // Test IsPdfUploadEligible.
   bool expected_pdf_upload_eligible =
       expected_eligible &&
       (!server_eligibility_enabled || is_pdf_upload_eligible);
   EXPECT_EQ(service->IsPdfUploadEligible(), expected_pdf_upload_eligible);
+
+  service_observer_helper.Clear();
+
+  // Handle the eligibility request with a custom response.
+  url_loader_interceptor.reset();
+  response.set_is_eligible(!is_server_eligible);
+  response.set_is_pdf_upload_eligible(!is_pdf_upload_eligible);
+  url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindRepeating(&OnRequest, response));
 
   // Test changes to the accounts in the cookie jar.
   auto* identity_manager = identity_test_env()->identity_manager();
@@ -340,5 +341,153 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
     EXPECT_TRUE(service_observer_helper.WaitForEligibilityChanged());
   } else {
     EXPECT_FALSE(service_observer_helper.IsReady());
+  }
+
+  // Verify eligibility request and response histograms were recorded.
+  {
+    // Unsliced.
+    int expected_request_status_count = is_google_dse ? 4 : 0;
+    int expected_response_code_count = is_google_dse ? 2 : 0;
+    int expected_is_eligible_count = is_google_dse ? 2 : 0;
+    int expected_is_pdf_upload_eligible_count = is_google_dse ? 2 : 0;
+    int expected_is_eligible_change_count = is_google_dse ? 2 : 0;
+    int expected_is_pdf_upload_eligible_change_count = is_google_dse ? 2 : 0;
+
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityRequestStatus",
+        expected_request_status_count);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityRequestStatus",
+        AimEligibilityServiceFriend::EligibilityRequestStatus::kSent,
+        expected_request_status_count ? 2 : 0);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityRequestStatus",
+        AimEligibilityServiceFriend::EligibilityRequestStatus::kSuccess,
+        expected_request_status_count ? 2 : 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponseCode",
+        expected_response_code_count);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponseCode", 200,
+        expected_response_code_count);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponse.is_eligible",
+        expected_is_eligible_count);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponse.is_eligible", true,
+        expected_is_eligible_count ? 1 : 0);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponse.is_eligible", false,
+        expected_is_eligible_count ? 1 : 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponse.is_pdf_upload_eligible",
+        expected_is_pdf_upload_eligible_count);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponse.is_pdf_upload_eligible",
+        true, expected_is_pdf_upload_eligible_count ? 1 : 0);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponse.is_pdf_upload_eligible",
+        false, expected_is_pdf_upload_eligible_count ? 1 : 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponseChange.is_eligible",
+        expected_is_eligible_change_count);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponseChange.is_eligible", true,
+        expected_is_eligible_change_count ? 1 : 0);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponseChange.is_eligible", false,
+        expected_is_eligible_change_count ? 1 : 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponseChange.is_pdf_upload_"
+        "eligible",
+        expected_is_pdf_upload_eligible_change_count);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponseChange.is_pdf_upload_"
+        "eligible",
+        true, expected_is_pdf_upload_eligible_change_count ? 1 : 0);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponseChange.is_pdf_upload_"
+        "eligible",
+        false, expected_is_pdf_upload_eligible_change_count ? 1 : 0);
+  }
+  {
+    // Startup slice.
+    int expected_request_status_count_startup = is_google_dse ? 2 : 0;
+    int expected_response_code_count_startup = is_google_dse ? 1 : 0;
+    int expected_is_eligible_count_startup = is_google_dse ? 1 : 0;
+    int expected_is_pdf_upload_eligible_count_startup = is_google_dse ? 1 : 0;
+
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityRequestStatus.Startup",
+        expected_request_status_count_startup);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityRequestStatus.Startup",
+        AimEligibilityServiceFriend::EligibilityRequestStatus::kSent,
+        expected_request_status_count_startup ? 1 : 0);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityRequestStatus.Startup",
+        AimEligibilityServiceFriend::EligibilityRequestStatus::kSuccess,
+        expected_request_status_count_startup ? 1 : 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponseCode.Startup",
+        expected_response_code_count_startup);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponseCode.Startup", 200,
+        expected_response_code_count_startup);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponse.Startup.is_eligible",
+        expected_is_eligible_count_startup);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponse.Startup.is_eligible",
+        is_server_eligible, expected_is_eligible_count_startup ? 1 : 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponse.Startup.is_pdf_upload_"
+        "eligible",
+        expected_is_pdf_upload_eligible_count_startup);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponse.Startup.is_pdf_upload_"
+        "eligible",
+        is_pdf_upload_eligible,
+        expected_is_pdf_upload_eligible_count_startup ? 1 : 0);
+  }
+  {
+    // CookieChange slice.
+    int expected_request_status_count_cookie = is_google_dse ? 2 : 0;
+    int expected_response_code_count_cookie = is_google_dse ? 1 : 0;
+    int expected_is_eligible_count_cookie = is_google_dse ? 1 : 0;
+    int expected_is_pdf_upload_eligible_count_cookie = is_google_dse ? 1 : 0;
+
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityRequestStatus.CookieChange",
+        expected_request_status_count_cookie);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityRequestStatus.CookieChange",
+        AimEligibilityServiceFriend::EligibilityRequestStatus::kSent,
+        expected_request_status_count_cookie ? 1 : 0);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityRequestStatus.CookieChange",
+        AimEligibilityServiceFriend::EligibilityRequestStatus::kSuccess,
+        expected_request_status_count_cookie ? 1 : 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponseCode.CookieChange",
+        expected_response_code_count_cookie);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponseCode.CookieChange", 200,
+        expected_response_code_count_cookie);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponse.CookieChange.is_eligible",
+        expected_is_eligible_count_cookie);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponse.CookieChange.is_eligible",
+        !is_server_eligible, expected_is_eligible_count_cookie ? 1 : 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.AimEligibility.EligibilityResponse.CookieChange.is_pdf_upload_"
+        "eligible",
+        expected_is_pdf_upload_eligible_count_cookie);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.AimEligibility.EligibilityResponse.CookieChange.is_pdf_upload_"
+        "eligible",
+        !is_pdf_upload_eligible,
+        expected_is_pdf_upload_eligible_count_cookie ? 1 : 0);
   }
 }
