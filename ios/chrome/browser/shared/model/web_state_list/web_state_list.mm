@@ -963,7 +963,7 @@ void WebStateList::MoveToGroupImpl(const std::set<int>& indices,
 
   // Iterate over the WebStates on the left of the group.
   // Reverse `before_group` to start from the rightmost, to keep indices valid.
-  std::reverse(before_group.begin(), before_group.end());
+  std::ranges::reverse(before_group);
   int to_index = group_range.range_end() - 1;
   for (int index : before_group) {
     MoveWebStateWrapperAt(index, to_index, /*pinned=*/false, group);

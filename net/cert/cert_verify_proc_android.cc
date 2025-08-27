@@ -337,8 +337,7 @@ bool VerifyFromAndroidTrustManager(
   }
 
   // Reverse the hash list, to maintain the leaf->root ordering.
-  std::reverse(verify_result->public_key_hashes.begin(),
-               verify_result->public_key_hashes.end());
+  std::ranges::reverse(verify_result->public_key_hashes);
 
   return true;
 }

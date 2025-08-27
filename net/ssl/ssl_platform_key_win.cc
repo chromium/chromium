@@ -171,7 +171,7 @@ class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
     signature->resize(signature_len);
 
     // CryptoAPI signs in little-endian, so reverse it.
-    std::reverse(signature->begin(), signature->end());
+    std::ranges::reverse(*signature);
     return OK;
   }
 

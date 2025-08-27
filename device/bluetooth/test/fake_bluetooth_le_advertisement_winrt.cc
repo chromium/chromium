@@ -98,7 +98,7 @@ std::vector<ComPtr<IBluetoothLEAdvertisementDataSection>> ToDataSections(
 
     // Reverse the data as UUIDs are specified in little endian order in the
     // advertisement payload.
-    std::reverse(data.begin(), data.end());
+    std::ranges::reverse(data);
 
     // Append the actual service data and append a new data section.
     data.insert(data.end(), pair.second.begin(), pair.second.end());

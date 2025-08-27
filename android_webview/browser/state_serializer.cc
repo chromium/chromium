@@ -319,7 +319,7 @@ bool RestoreFromPickle(base::PickleIterator* iterator,
 
   // The list was stored in reverse order, so flip it back (and update selected
   // index).
-  std::reverse(entries.begin(), entries.end());
+  std::ranges::reverse(entries);
   selected_entry = entries.size() - selected_entry.value() - 1;
 
   sink.Restore(selected_entry.value(), &entries);

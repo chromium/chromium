@@ -590,7 +590,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
 
         // Reverses the order of paths to store them in ascending order of
         // priority
-        std::reverse(kde_config_dirs_.begin(), kde_config_dirs_.end());
+        std::ranges::reverse(kde_config_dirs_);
       }
     }
   }
