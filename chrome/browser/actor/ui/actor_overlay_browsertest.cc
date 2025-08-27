@@ -130,19 +130,23 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ViewLifecycleAndVisibility) {
   ActorOverlayWindowController* window_controller =
       ActorOverlayWindowController::From(browser());
   ASSERT_NE(window_controller, nullptr);
+  ActorOverlayContentsContainerController* contents_controller =
+      window_controller->GetControllerForWebContents(
+          browser()->GetActiveTabInterface()->GetContents());
+  ASSERT_NE(contents_controller, nullptr);
 
   // The main actor_overlay_view container should initially be hidden. It should
   // also have no children.
   EXPECT_FALSE(IsActorOverlayVisible(browser()));
   EXPECT_EQ(NumActorOverlayChildren(browser()), 0u);
   content::BrowserContext* browser_context =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetBrowserContext();
+      browser()->GetActiveTabInterface()->GetContents()->GetBrowserContext();
 
   // Add a new WebView, initially hidden.
   auto web_view = std::make_unique<views::WebView>(browser_context);
   web_view->SetVisible(false);
   raw_ptr<views::WebView> overlay_web_view =
-      window_controller->AddChildWebView(std::move(web_view));
+      contents_controller->AddChildWebView(std::move(web_view));
   ASSERT_NE(overlay_web_view, nullptr);
 
   // Verify container size and that it remains hidden because the child is
@@ -152,12 +156,12 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ViewLifecycleAndVisibility) {
 
   // Make the added WebView visible, and update the container's visibility.
   overlay_web_view->SetVisible(true);
-  window_controller->MaybeUpdateContainerVisibility();
+  contents_controller->MaybeUpdateContainerVisibility();
 
   // Container view should now be visible.
   EXPECT_TRUE(IsActorOverlayVisible(browser()));
   std::unique_ptr<views::WebView> managed_overlay_web_view =
-      window_controller->RemoveChildWebView(overlay_web_view);
+      contents_controller->RemoveChildWebView(overlay_web_view);
   // The raw_ptr to the removed view is now invalid, so set it to nullptr.
   overlay_web_view = nullptr;
 
@@ -173,11 +177,10 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, SendStartEventAndStopEvent) {
   ActorUiStateManagerInterface* state_manager =
       ActorKeyedService::Get(profile)->GetActorUiStateManager();
   ASSERT_NE(state_manager, nullptr);
-  tabs::TabHandle tab_handle =
-      browser()->tab_strip_model()->GetActiveTab()->GetHandle();
+  tabs::TabHandle tab_handle = browser()->GetActiveTabInterface()->GetHandle();
   TestFuture<void> future;
   ActorUiTabControllerInterface* controller =
-      ActorUiTabController::From(browser()->tab_strip_model()->GetActiveTab());
+      ActorUiTabController::From(browser()->GetActiveTabInterface());
   controller->SetCallbackForTesting(future.GetCallback());
   TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(StartingToActOnTab(tab_handle, TaskId(1)),
@@ -199,12 +202,11 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayHidesOnTabBackgrounding) {
   ActorUiStateManagerInterface* state_manager =
       ActorKeyedService::Get(profile)->GetActorUiStateManager();
   ASSERT_NE(state_manager, nullptr);
-  tabs::TabHandle tab_handle =
-      browser()->tab_strip_model()->GetActiveTab()->GetHandle();
+  tabs::TabHandle tab_handle = browser()->GetActiveTabInterface()->GetHandle();
   // Set up callback logic.
   TestFuture<void> future;
   ActorUiTabControllerInterface* controller =
-      ActorUiTabController::From(browser()->tab_strip_model()->GetActiveTab());
+      ActorUiTabController::From(browser()->GetActiveTabInterface());
   controller->SetCallbackForTesting(future.GetCallback());
   TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(StartingToActOnTab(tab_handle, TaskId(1)),
@@ -234,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
   ASSERT_NE(state_manager, nullptr);
   // Initial tab setup: Create 3 tabs in the starting browser window.
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
-  tabs::TabInterface* tab_1 = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* tab_1 = browser()->GetActiveTabInterface();
   ASSERT_NE(tab_1, nullptr);
   tabs::TabInterface* tab_2 =
       tabs::TabInterface::GetFromContents(&chrome::NewTab(browser()));
@@ -329,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
   ASSERT_NE(state_manager, nullptr);
   // Initial tab setup: Start with one tab.
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
-  tabs::TabInterface* tab_1 = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* tab_1 = browser()->GetActiveTabInterface();
   ASSERT_NE(tab_1, nullptr);
   // Set up callback logic after tab_1 is created.
   TestFuture<void> future;

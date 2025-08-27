@@ -5,25 +5,26 @@
 #include "chrome/browser/actor/ui/actor_overlay_window_controller.h"
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/views/controls/webview/webview.h"
 
-DEFINE_USER_DATA(ActorOverlayWindowController);
+namespace actor::ui {
 
-ActorOverlayWindowController::ActorOverlayWindowController(
-    BrowserWindowInterface* browser_window_interface,
-    views::View* actor_overlay_view_container)
-    : actor_overlay_view_container_(actor_overlay_view_container),
-      scoped_data_holder_(browser_window_interface->GetUnownedUserDataHost(),
-                          *this) {}
-
-ActorOverlayWindowController::~ActorOverlayWindowController() = default;
-
-// static
-ActorOverlayWindowController* ActorOverlayWindowController::From(
-    BrowserWindowInterface* browser_window_interface) {
-  return Get(browser_window_interface->GetUnownedUserDataHost());
+ActorOverlayContentsContainerController::
+    ActorOverlayContentsContainerController(
+        views::WebView* contents_container_view,
+        views::View* actor_overlay_view_container)
+    : contents_container_view_(contents_container_view),
+      actor_overlay_view_container_(actor_overlay_view_container) {
+  CHECK(contents_container_view_);
+  CHECK(actor_overlay_view_container_);
 }
 
-views::WebView* ActorOverlayWindowController::AddChildWebView(
+ActorOverlayContentsContainerController::
+    ~ActorOverlayContentsContainerController() = default;
+
+views::WebView* ActorOverlayContentsContainerController::AddChildWebView(
     std::unique_ptr<views::WebView> web_view) {
   auto* web_view_result =
       actor_overlay_view_container_->AddChildView(std::move(web_view));
@@ -32,14 +33,15 @@ views::WebView* ActorOverlayWindowController::AddChildWebView(
 }
 
 [[nodiscard]] std::unique_ptr<views::WebView>
-ActorOverlayWindowController::RemoveChildWebView(views::WebView* web_view) {
+ActorOverlayContentsContainerController::RemoveChildWebView(
+    views::WebView* web_view) {
   std::unique_ptr<views::WebView> web_view_result =
       actor_overlay_view_container_->RemoveChildViewT(web_view);
   MaybeUpdateContainerVisibility();
   return web_view_result;
 }
 
-void ActorOverlayWindowController::MaybeUpdateContainerVisibility() {
+void ActorOverlayContentsContainerController::MaybeUpdateContainerVisibility() {
   bool any_child_visible =
       std::any_of(actor_overlay_view_container_->children().begin(),
                   actor_overlay_view_container_->children().end(),
@@ -49,4 +51,69 @@ void ActorOverlayWindowController::MaybeUpdateContainerVisibility() {
   if (actor_overlay_view_container_->GetVisible() != any_child_visible) {
     actor_overlay_view_container_->SetVisible(any_child_visible);
   }
+}
+
+bool ActorOverlayContentsContainerController::IsAssociatedWithWebContents(
+    content::WebContents* web_contents) {
+  if (!contents_container_view_) {
+    return false;
+  }
+  if (!web_contents) {
+    return false;
+  }
+  return contents_container_view_->web_contents() == web_contents;
+}
+
+// static
+ActorOverlayContentsContainerController*
+ActorOverlayContentsContainerController::From(
+    tabs::TabInterface* tab_interface) {
+  if (!tab_interface) {
+    return nullptr;
+  }
+  auto* window_controller = ActorOverlayWindowController::From(
+      tab_interface->GetBrowserWindowInterface());
+  if (!window_controller) {
+    return nullptr;
+  }
+
+  return window_controller->GetControllerForWebContents(
+      tab_interface->GetContents());
+}
+
+}  // namespace actor::ui
+
+DEFINE_USER_DATA(ActorOverlayWindowController);
+
+ActorOverlayWindowController::ActorOverlayWindowController(
+    BrowserWindowInterface* browser_window_interface,
+    std::vector<std::pair<views::WebView*, views::View*>>
+        container_overlay_view_pairs)
+    : browser_window_interface_(browser_window_interface),
+      scoped_data_holder_(browser_window_interface->GetUnownedUserDataHost(),
+                          *this) {
+  for (const auto& pair : container_overlay_view_pairs) {
+    contents_container_controllers_.push_back(
+        std::make_unique<actor::ui::ActorOverlayContentsContainerController>(
+            pair.first, pair.second));
+  }
+}
+
+ActorOverlayWindowController::~ActorOverlayWindowController() = default;
+
+// static
+ActorOverlayWindowController* ActorOverlayWindowController::From(
+    BrowserWindowInterface* browser_window_interface) {
+  return Get(browser_window_interface->GetUnownedUserDataHost());
+}
+
+actor::ui::ActorOverlayContentsContainerController*
+ActorOverlayWindowController::GetControllerForWebContents(
+    content::WebContents* web_contents) {
+  for (const auto& controller : contents_container_controllers_) {
+    if (controller->IsAssociatedWithWebContents(web_contents)) {
+      return controller.get();
+    }
+  }
+  return nullptr;
 }

@@ -602,12 +602,17 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     }
 
     if (features::kGlicActorUiOverlay.Get()) {
-      // TODO(crbug.com/433999185): Handle split view.
+      std::vector<std::pair<views::WebView*, views::View*>>
+          container_overlay_view_pairs;
+      for (auto* contents_container :
+           browser_view->GetContentsContainerViews()) {
+        container_overlay_view_pairs.emplace_back(
+            contents_container->contents_view(),
+            contents_container->actor_overlay_view());
+      }
       actor_overlay_window_controller_ =
           GetUserDataFactory().CreateInstance<ActorOverlayWindowController>(
-              *browser_, browser_,
-              browser_view->GetActiveContentsContainerView()
-                  ->actor_overlay_view());
+              *browser_, browser_, std::move(container_overlay_view_pairs));
     }
 
     data_protection_ui_controller_ =

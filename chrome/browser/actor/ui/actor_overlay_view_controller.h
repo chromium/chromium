@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_OVERLAY_VIEW_CONTROLLER_H_
 
 #include "chrome/browser/actor/ui/actor_overlay.mojom.h"
-#include "chrome/browser/actor/ui/actor_overlay_window_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "components/tabs/public/tab_interface.h"
@@ -14,7 +13,13 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace views {
+class WebView;
+}
+
 namespace actor::ui {
+
+class ActorOverlayContentsContainerController;
 
 // Manages the browser-side UI and lifecycle of the Actor Overlay for a specific
 // tab. This controller implements mojom::ActorOverlayPageHandler to receive
@@ -92,6 +97,11 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   // "active" or "displayed" (though possibly hidden) overlay WebView for this
   // tab in the current window.
   raw_ptr<views::WebView> overlay_web_view_ = nullptr;
+
+  // The controller for the contents container that this overlay is associated
+  // with. This is used to show and hide the overlay WebView.
+  raw_ptr<ActorOverlayContentsContainerController>
+      contents_container_controller_ = nullptr;
 
   // A unique_ptr that holds ownership of the views::WebView when it is detached
   // from the browser's views hierarchy (e.g., when a tab is dragged out of a
