@@ -105,6 +105,31 @@ class SplitTabButtonInteractiveTest
         expected_icon.name);
   }
 
+  auto CheckSplitTabButtonStrings(int string_id) {
+    std::u16string string = l10n_util::GetStringUTF16(string_id);
+    return Steps(CheckView(
+                     kToolbarSplitTabsToolbarButtonElementId,
+                     [](SplitTabsToolbarButton* button) {
+                       return button->GetTooltipText();
+                     },
+                     string),
+                 CheckView(
+                     kToolbarSplitTabsToolbarButtonElementId,
+                     [](SplitTabsToolbarButton* button) {
+                       return button->GetAccessibleName();
+                     },
+                     string));
+  }
+
+  auto CheckSplitTabButtonRole(ax::mojom::Role role) {
+    return CheckView(
+        kToolbarSplitTabsToolbarButtonElementId,
+        [](SplitTabsToolbarButton* button) {
+          return button->GetAccessibleRole();
+        },
+        role);
+  }
+
   auto CheckTabCount(int expected_count) {
     return CheckResult(
         [this]() { return browser()->tab_strip_model()->count(); },
@@ -466,4 +491,15 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ButtonUpdatesOnSplit) {
                       "Screenshot can only run in pixel_tests on Windows."),
                   Screenshot(kToolbarSplitTabsToolbarButtonElementId,
                              "SplitTabButton", "6628632"));
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, A11y) {
+  RunTestSequence(
+      UpdateSplitTabButtonPinState(true),
+      WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+      CheckSplitTabButtonStrings(IDS_ACCNAME_SPLIT_TABS_TOOLBAR_BUTTON_PINNED),
+      CheckSplitTabButtonRole(ax::mojom::Role::kButton),
+      PressButton(kToolbarSplitTabsToolbarButtonElementId),
+      CheckSplitTabButtonStrings(IDS_ACCNAME_SPLIT_TABS_TOOLBAR_BUTTON_ENABLED),
+      CheckSplitTabButtonRole(ax::mojom::Role::kPopUpButton));
 }

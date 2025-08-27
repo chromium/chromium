@@ -59,6 +59,7 @@ class SplitTabsToolbarButton : public ToolbarButton,
   void UpdateButtonIcon();
   void UpdateStatusIndicator(bool show_status_indicator);
   void UpdateAccessibilityRole(bool has_menu);
+  void UpdateAccessibilityLabel(bool is_enabled);
 
   BooleanPrefMember pin_state_;
   raw_ptr<Browser> browser_;
