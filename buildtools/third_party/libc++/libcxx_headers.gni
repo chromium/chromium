@@ -3,8 +3,14 @@
 # found in the LICENSE file.
 
 # DO NOT EDIT. This file is generated.
-# To regenerate, run buildtools/third_party/libc++/generate_libcxx_headers.py
-# then remove the assertion (until it's updated via autorolling).
+# This file should automatically be generated as a gclient hook.
+# To manually regenerate, run:
+# buildtools/third_party/libc++/generate_libcxx_headers.py
+
+import("//buildtools/deps_revisions.gni")
+
+assert(libcxx_revision == "2385d40b585ce5e9d82a0181ee19664bcc1281df",
+       "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AHint: Try running `gclient sync`$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIn any other scenario, this *should not* happen. If `gclient sync` doesn't$0x0Asolve your problem, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
   "//third_party/libc++/src/include/__algorithm/adjacent_find.h",
@@ -801,7 +807,6 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__type_traits/aligned_storage.h",
   "//third_party/libc++/src/include/__type_traits/aligned_union.h",
   "//third_party/libc++/src/include/__type_traits/alignment_of.h",
-  "//third_party/libc++/src/include/__type_traits/can_extract_key.h",
   "//third_party/libc++/src/include/__type_traits/common_reference.h",
   "//third_party/libc++/src/include/__type_traits/common_type.h",
   "//third_party/libc++/src/include/__type_traits/conditional.h",
@@ -942,6 +947,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__utility/small_buffer.h",
   "//third_party/libc++/src/include/__utility/swap.h",
   "//third_party/libc++/src/include/__utility/to_underlying.h",
+  "//third_party/libc++/src/include/__utility/try_key_extraction.h",
   "//third_party/libc++/src/include/__utility/unreachable.h",
   "//third_party/libc++/src/include/__variant/monostate.h",
   "//third_party/libc++/src/include/__vector/comparison.h",
