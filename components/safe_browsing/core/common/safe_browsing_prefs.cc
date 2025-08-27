@@ -241,9 +241,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kSafeBrowsingIncidentsSent);
   registry->RegisterDictionaryPref(
       prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
-  registry->RegisterStringPref(
-      prefs::kSafeBrowsingNextPasswordCaptureEventLogTime,
-      "0");  // int64 as string
+  registry->RegisterInt64Pref(
+      prefs::kSafeBrowsingNextPasswordCaptureEventLogTime, 0);
   registry->RegisterListPref(prefs::kSafeBrowsingAllowlistDomains);
   registry->RegisterStringPref(prefs::kPasswordProtectionChangePasswordURL, "");
   registry->RegisterListPref(prefs::kPasswordProtectionLoginURLs);
