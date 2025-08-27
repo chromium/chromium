@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.dom_distiller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import org.junit.After;
@@ -103,14 +104,17 @@ public class ReaderModeActionRateLimiterTest {
 
     @Test
     public void testOnActionShown_suppressesAtLimit() {
+        createTemporarySuppression();
+    }
+
+    @Test
+    public void testOnActionShown_permanentSuppressionAfterMultipleSuppressions() {
         for (int i = 0; i < 3; i++) {
-            mReaderModeActionRateLimiter.onActionShown();
+            createTemporarySuppression();
+            resetTemporarySuppression();
         }
+
         assertTrue(mReaderModeActionRateLimiter.isActionSuppressed());
-        assertTrue(
-                mPrefs.readLong(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP)
-                        > 0);
-        verify(mObserver).onWillStartSuppression();
     }
 
     @Test
@@ -125,5 +129,22 @@ public class ReaderModeActionRateLimiterTest {
         assertFalse(mPrefs.contains(ChromePreferenceKeys.READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP));
         assertFalse(
                 mPrefs.contains(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP));
+    }
+
+    private void createTemporarySuppression() {
+        reset(mObserver);
+        for (int i = 0; i < 3; i++) {
+            mReaderModeActionRateLimiter.onActionShown();
+        }
+        assertTrue(mReaderModeActionRateLimiter.isActionSuppressed());
+        assertTrue(
+                mPrefs.readLong(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP)
+                        > 0);
+        verify(mObserver).onWillStartSuppression();
+    }
+
+    private void resetTemporarySuppression() {
+        mPrefs.removeKeySync(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP);
+        mPrefs.removeKeySync(ChromePreferenceKeys.READER_MODE_ACTION_SHOW_COUNT);
     }
 }

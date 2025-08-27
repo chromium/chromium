@@ -739,6 +739,10 @@ public final class ChromePreferenceKeys {
             "Chrome.ReaderMode.ActionFirstShownTimestamp";
 
     /** The timestamp until which the reader mode contextual page action should be suppressed. */
+    public static final String READER_MODE_ACTION_SUPPRESSION_COUNT =
+            "Chrome.ReaderMode.ActionSuppressionCount";
+
+    /** The timestamp until which the reader mode contextual page action should be suppressed. */
     public static final String READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP =
             "Chrome.ReaderMode.ActionSuppressionEndTimestamp";
 
@@ -1164,6 +1168,7 @@ public final class ChromePreferenceKeys {
                 PWA_RESTORE_PROMO_STAGE,
                 READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP,
                 READER_MODE_ACTION_SHOW_COUNT,
+                READER_MODE_ACTION_SUPPRESSION_COUNT,
                 READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP,
                 SEARCH_ENGINE_CHOICE_OS_CHOICE_APPLIED_TIMESTAMP,
                 SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS,

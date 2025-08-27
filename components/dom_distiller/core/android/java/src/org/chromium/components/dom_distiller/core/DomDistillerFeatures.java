@@ -62,6 +62,13 @@ public class DomDistillerFeatures {
             sReaderModeDistillInApp.newIntParam(
                     "tracking_window_ms", (int) TimeUnit.DAYS.toMillis(1));
 
+    /**
+     * The number of times that the CPA can be temporarily suppressed before being permanently
+     * suppressed..
+     */
+    public static final MutableIntParamWithSafeDefault sReaderModeDistillInAppSuppressionLimit =
+            sReaderModeDistillInApp.newIntParam("suppression_limit", 3);
+
     /** The window of time to suppress the CPA after it's been shown without interaction. */
     public static final MutableIntParamWithSafeDefault sReaderModeDistillInAppSuppressionWindowMs =
             sReaderModeDistillInApp.newIntParam(

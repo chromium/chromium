@@ -12,7 +12,28 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 
-/** A class to manage rate limiting of the reader mode contextual page action. */
+/**
+ * A class to manage rate limiting of the reader mode contextual page action. This works by:
+ *
+ * <ol>
+ *   <li>Allowing a certain number of CPA show events (READER_MODE_ACTION_SHOW_COUNT) within a
+ *       certain window of time (READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP).
+ *   <li>If the READER_MODE_ACTION_SHOW_COUNT exceeds the limit in the given window then the CPA is
+ *       temporarily suppressed for a certain period of time
+ *       (READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP).
+ *   <li>If the CPA is temporarily suppressed more then the allowable amount
+ *       (READER_MODE_ACTION_SUPPRESSION_COUNT), then it's permanently suppressed.
+ * </ol>
+ *
+ * <p>Each of these parameters are configurable within finch in the following manner:
+ *
+ * <ul>
+ *   <li>READER_MODE_ACTION_SHOW_COUNT - cpa_show_limit.
+ *   <li>READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP - tracking_window_ms.
+ *   <li>READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP - suppression_window_ms
+ *   <li>READER_MODE_ACTION_SUPPRESSION_COUNT - suppression_limit
+ * </ul>
+ */
 @NullMarked
 public class ReaderModeActionRateLimiter {
     private static final int INVALID_TIME = -1;
@@ -68,6 +89,14 @@ public class ReaderModeActionRateLimiter {
      * @return True if the action should be suppressed, false otherwise.
      */
     public boolean isActionSuppressed() {
+        // If the action has been suppressed past the allowable count, then permanently suppress it
+        // until the user interacts with the feature.
+        if (ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_COUNT, 0)
+                >= DomDistillerFeatures.sReaderModeDistillInAppSuppressionLimit.getValue()) {
+            return true;
+        }
+
         long suppressionEnd =
                 ChromeSharedPreferences.getInstance()
                         .readLong(
@@ -104,25 +133,42 @@ public class ReaderModeActionRateLimiter {
         prefs.writeInt(ChromePreferenceKeys.READER_MODE_ACTION_SHOW_COUNT, showCount);
 
         // If the CPA has been shown too many times, then suppress it for a window of time.
+        // Note: Will only be called once per temporary suppression.
         if (showCount >= DomDistillerFeatures.sReaderModeDistillInAppCpaShowLimit.getValue()) {
-            long suppressionEnd =
-                    System.currentTimeMillis()
-                            + DomDistillerFeatures.sReaderModeDistillInAppSuppressionWindowMs
-                                    .getValue();
-            prefs.writeLong(
-                    ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP,
-                    suppressionEnd);
-            if (showCount == DomDistillerFeatures.sReaderModeDistillInAppCpaShowLimit.getValue()) {
-                for (Observer obs : mObservers) {
-                    obs.onWillStartSuppression();
-                }
+            startTemporarySuppression(prefs);
+            for (Observer obs : mObservers) {
+                obs.onWillStartSuppression();
             }
         }
     }
 
     /** Called when the reader mode action is clicked. */
     public void onActionClicked() {
-        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        resetTemporarySuppression(ChromeSharedPreferences.getInstance());
+    }
+
+    /**
+     * Starts the temporary suppression window by:
+     *
+     * <ol>
+     *   <li>Calculate the suppression ending timestamp, and store it.
+     *   <li>Increment the number of times that the CPA has been suppressed and store it.
+     * </ol>
+     */
+    private void startTemporarySuppression(SharedPreferencesManager prefs) {
+        long suppressionEnd =
+                System.currentTimeMillis()
+                        + DomDistillerFeatures.sReaderModeDistillInAppSuppressionWindowMs
+                                .getValue();
+        prefs.writeLong(
+                ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP, suppressionEnd);
+        prefs.writeInt(
+                ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_COUNT,
+                prefs.readInt(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_COUNT, 0) + 1);
+    }
+
+    /** Reset all temporary suppression variables. */
+    private void resetTemporarySuppression(SharedPreferencesManager prefs) {
         prefs.removeKey(ChromePreferenceKeys.READER_MODE_ACTION_SHOW_COUNT);
         prefs.removeKey(ChromePreferenceKeys.READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP);
         prefs.removeKey(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP);
