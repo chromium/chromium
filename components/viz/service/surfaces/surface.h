@@ -54,7 +54,7 @@ class SurfaceManager;
 // in SurfaceInfo: device scale factor and size. A Surface can hold up few
 // CompositorFrames at a given time:
 //
-//   Uncommitted frames: It's frame that has been received, but hasn't been
+//   Uncommitted frames: Frame that has been received, but hasn't been
 //                       processed yet. There can be up to
 //                       `max_uncommitted_frames_` in this state. If
 //                       `max_uncommitted_frames_` is zero all frames are
@@ -85,10 +85,10 @@ class SurfaceManager;
 // dependencies. The activated CompositorFrame can specify fallback behavior in
 // the event of missing dependencies at display time.
 //
-// On WebView display compositor runs asynchronously in regards of BeginFrames
-// and CompositorFrame submissions, to avoid frame drops due to racyness
-// uncommitted queue mechanism is used. When clients submits frame it goes to
-// the queue and when the display compositor draws frames are committed from
+// On WebView display compositor runs asynchronously in regards of BeginFrame
+// and CompositorFrame submissions. To avoid frame drops due to racyness,
+// uncommitted queue mechanism is used. When client submits frame it goes to
+// the queue, and when the display compositor draws, frames are committed from
 // the queue to the pending or active frame.
 
 class VIZ_SERVICE_EXPORT Surface final {
@@ -112,8 +112,6 @@ class VIZ_SERVICE_EXPORT Surface final {
     const uint32_t frame_token_;
   };
 
-  using PresentedCallback =
-      base::OnceCallback<void(const gfx::PresentationFeedback&)>;
   enum QueueFrameResult { REJECTED, ACCEPTED_ACTIVE, ACCEPTED_PENDING };
 
   using CommitPredicate =
@@ -151,10 +149,6 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   bool has_deadline() const { return deadline_ && deadline_->has_deadline(); }
 
-  std::optional<base::TimeTicks> deadline_for_testing() const {
-    return deadline_->deadline_for_testing();
-  }
-
   void SetPreviousFrameSurface(Surface* surface);
 
   // Returns false if |frame| is invalid. |frame_rejected_callback| will be
@@ -169,10 +163,6 @@ class VIZ_SERVICE_EXPORT Surface final {
   // surface from the oldest to the newest and will abort at first case of
   // returning false.
   void CommitFramesRecursively(const CommitPredicate& predicate);
-
-  // Notifies the Surface that a blocking SurfaceId now has an active
-  // frame.
-  void NotifySurfaceIdAvailable(const SurfaceId& surface_id);
 
   // Called if a deadline has been hit and this surface is not yet active but
   // it's marked as respecting deadlines.
@@ -212,11 +202,6 @@ class VIZ_SERVICE_EXPORT Surface final {
   // one of this Surface. The interpolated new frame replaces the currently
   // active one via this API.
   void SetActiveFrameForViewTransition(CompositorFrame frame);
-
-  // Returns true if the active frame has damage due to a surface animation.
-  // This means that the damage should be respected even if the active frame
-  // index has not changed.
-  bool HasSurfaceAnimationDamage() const;
 
   // Returns the currently pending frame. You must check where HasPendingFrame()
   // returns true before calling this method.
@@ -267,10 +252,6 @@ class VIZ_SERVICE_EXPORT Surface final {
     return HasActiveFrame() && !active_frame_data_->frame_acked;
   }
 
-  bool seen_first_surface_embedding() const {
-    return seen_first_surface_embedding_;
-  }
-
   SurfaceAllocationGroup* allocation_group() const { return allocation_group_; }
 
   // Called when this surface will be included in the next display frame.
@@ -302,8 +283,6 @@ class VIZ_SERVICE_EXPORT Surface final {
   void SetIsFallbackAndMaybeActivate();
 
   void ActivateIfDeadlinePassed();
-
-  std::unique_ptr<gfx::DelegatedInkMetadata> TakeDelegatedInkMetadata();
 
   base::WeakPtr<Surface> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
@@ -342,12 +321,6 @@ class VIZ_SERVICE_EXPORT Surface final {
     FrameData(FrameData&& other);
     ~FrameData();
     FrameData& operator=(FrameData&& other);
-
-    // Delegated ink metadata should only be used for a single frame, so it
-    // should be taken from the FrameData to use.
-    std::unique_ptr<gfx::DelegatedInkMetadata> TakeDelegatedInkMetadata() {
-      return std::move(frame.metadata.delegated_ink_metadata);
-    }
 
     void SendAckIfNeeded(SurfaceClient* client);
 
