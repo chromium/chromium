@@ -242,6 +242,39 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
       last_sent_partial_content_.CopyFrom(partial_pdf_document);
     }
   } else if (request.has_objects_request() &&
+             next_page_content_objects_request_should_return_metadata_error_ &&
+             !request.objects_request().has_image_data() &&
+             request.objects_request().has_payload()) {
+    // Page content upload request to receive missing metadata error.
+    num_page_content_update_requests_sent_++;
+    sent_page_content_objects_request_.CopyFrom(request.objects_request());
+    fake_server_response.mutable_error()->set_error_type(
+        lens::LensOverlayServerError_ErrorType::
+            LensOverlayServerError_ErrorType_MISSING_CHUNKS);
+    fake_server_response.mutable_error()
+        ->mutable_missing_chunks_metadata()
+        ->set_has_chunk_metadata(false);
+    fake_server_response_string = fake_server_response.SerializeAsString();
+    next_page_content_objects_request_should_return_metadata_error_ = false;
+  } else if (request.has_objects_request() &&
+             next_page_content_objects_request_should_return_chunks_error_ &&
+             !request.objects_request().has_image_data() &&
+             request.objects_request().has_payload()) {
+    // Page content upload request to receive missing chunks error.
+    num_page_content_update_requests_sent_++;
+    sent_page_content_objects_request_.CopyFrom(request.objects_request());
+    fake_server_response.mutable_error()->set_error_type(
+        lens::LensOverlayServerError_ErrorType::
+            LensOverlayServerError_ErrorType_MISSING_CHUNKS);
+    fake_server_response.mutable_error()
+        ->mutable_missing_chunks_metadata()
+        ->set_has_chunk_metadata(true);
+    fake_server_response.mutable_error()
+        ->mutable_missing_chunks_metadata()
+        ->add_missing_chunk_ids(0);
+    fake_server_response_string = fake_server_response.SerializeAsString();
+    next_page_content_objects_request_should_return_chunks_error_ = false;
+  } else if (request.has_objects_request() &&
              !request.objects_request().has_image_data() &&
              request.objects_request().has_payload()) {
     // Page content upload request.

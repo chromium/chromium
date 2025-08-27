@@ -544,11 +544,11 @@ constexpr base::FeatureParam<std::string> kLensOverlayUploadChunkEndpointUrl{
     &kLensOverlayUploadChunking, "upload-chunk-endpoint-url",
     "https://lensfrontend-pa.googleapis.com/v1/uploadChunk"};
 
-constexpr base::FeatureParam<bool> kLensOverlayUploadChunkingUseDebugOptions{
-    &kLensOverlayUploadChunking, "use-debug-options", false};
-
 constexpr base::FeatureParam<int> kLensOverlayUploadChunkRequestTimeoutMs{
     &kLensOverlayUploadChunking, "upload-chunk-request-timeout-ms", 60000};
+
+constexpr base::FeatureParam<int> kLensOverlayUploadChunkRetries{
+    &kLensOverlayUploadChunking, "upload-chunk-retries", 1};
 
 constexpr base::FeatureParam<int> kLensOverlaySliderChangedTimeout{
     &kLensOverlayCornerSliders, "slider-changed-timeout", 1000};
@@ -1181,12 +1181,12 @@ std::string GetLensOverlayUploadChunkEndpointURL() {
   return kLensOverlayUploadChunkEndpointUrl.Get();
 }
 
-bool IsLensOverlayUploadChunkingUseDebugOptionsEnabled() {
-  return kLensOverlayUploadChunkingUseDebugOptions.Get();
-}
-
 int GetLensOverlayUploadChunkRequestTimeoutMs() {
   return kLensOverlayUploadChunkRequestTimeoutMs.Get();
+}
+
+int GetLensOverlayUploadChunkRetries() {
+  return kLensOverlayUploadChunkRetries.Get();
 }
 
 bool IsLensSearchSidePanelNewFeedbackEnabled() {

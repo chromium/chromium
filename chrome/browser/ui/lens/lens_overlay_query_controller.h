@@ -437,6 +437,11 @@ class LensOverlayQueryController {
   void PrepareAndFetchUploadChunkRequestsPart2(
       std::vector<std::string> headers);
 
+  // Retries the upload chunks with the given ids.
+  void RetryUploadChunkRequests(
+      const google::protobuf::RepeatedField<int64_t>& chunk_ids,
+      std::vector<std::string> headers);
+
   // Performs the chunk upload request with the given index.
   void FetchUploadChunkRequest(size_t chunk_request_index);
 
@@ -446,7 +451,6 @@ class LensOverlayQueryController {
   void UploadChunkResponseHandler(
       lens::LensOverlayRequestId request_id,
       size_t total_chunks,
-      bool is_last,
       std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // Creates the PageContentRequest that is sent to the server and performs the
@@ -468,6 +472,11 @@ class LensOverlayQueryController {
   // Handles the endpoint fetch response for the page content request.
   void PageContentResponseHandler(
       lens::LensOverlayRequestId request_id,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
+
+  // Retry the page content upload if necessary. Returns whether or not the
+  // page content upload was retried.
+  bool MaybeRetryPageContentUpload(
       std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // Sends a page content upload latency Gen204 ping if enabled.
@@ -831,6 +840,14 @@ class LensOverlayQueryController {
   // The sequence ID for the upload chunk requests that were last started. Used
   // to verify that the responses received correspond to the latest upload.
   int upload_chunk_sequence_id;
+
+  // A copy of the page content request being sent, in case it needs to be
+  // resent.
+  lens::LensOverlayServerRequest pending_page_content_request_;
+
+  // Number of times to retry after receiving a missing chunks error. If this
+  // happens when the value is zero, proceed without attempting to resend.
+  size_t remaining_chunk_retries;
 
   // The current suggest inputs. The fields in this proto are updated
   // whenever new data is available (i.e. after an objects or interaction

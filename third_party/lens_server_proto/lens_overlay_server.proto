@@ -42,15 +42,34 @@ message LensOverlayServerClusterInfoResponse {
 }
 
 // An error encountered while handling a request.
-// Next ID: 2
+// Next ID: 4
 message LensOverlayServerError {
   enum ErrorType {
     UNKNOWN_TYPE = 0;
     MISSING_REQUEST = 1;
+    // Payload chunks are missing from the server cache.
+    MISSING_CHUNKS = 2;
   }
 
   // The error type.
   ErrorType error_type = 1;
+
+  // The metadata for missing chunks.
+  MissingChunksMetadata missing_chunks_metadata = 2;
+}
+
+// Metadata for missing chunks.
+// Next ID: 3
+message MissingChunksMetadata {
+  // Whether the chunk metadata is missing. Used to verify if
+  // the ObjectInteractionRequest was routed to the correct task.
+  // If true, the read hit the correct task, and clients should reupload
+  // the missing chunks reported.
+  // If false, the read hit the wrong task, so clients should retry the read.
+  bool has_chunk_metadata = 1;
+
+  // The ids of the missing chunks.
+  repeated int64 missing_chunk_ids = 2;
 }
 
 // Next ID: 4

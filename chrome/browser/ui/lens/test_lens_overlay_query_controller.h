@@ -69,6 +69,18 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
         next_full_image_request_should_return_error;
   }
 
+  void set_next_page_content_objects_request_should_return_metadata_error(
+      bool next_page_content_objects_request_should_return_metadata_error) {
+    next_page_content_objects_request_should_return_metadata_error_ =
+        next_page_content_objects_request_should_return_metadata_error;
+  }
+
+  void set_next_page_content_objects_request_should_return_chunks_error(
+      bool next_page_content_objects_request_should_return_chunks_error) {
+    next_page_content_objects_request_should_return_chunks_error_ =
+        next_page_content_objects_request_should_return_chunks_error;
+  }
+
   void set_disable_page_upload_response_callback(bool disable) {
     disable_page_upload_response_callback = disable;
   }
@@ -308,6 +320,14 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // If true, the next full image request will return an error.
   bool next_full_image_request_should_return_error_ = false;
+
+  // If true, the next page content objects request will return a missing
+  // metadata error.
+  bool next_page_content_objects_request_should_return_metadata_error_ = false;
+
+  // If true, the next page content objects request will return a missing chunks
+  // error.
+  bool next_page_content_objects_request_should_return_chunks_error_ = false;
 
   // If true, the CreateEndpointFetcher will not automatically respond with a
   // complete upload to the UploadProgressCallback.

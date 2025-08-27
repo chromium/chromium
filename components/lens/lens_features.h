@@ -908,13 +908,13 @@ uint32_t GetLensOverlayChunkSizeBytes();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayUploadChunkEndpointURL();
 
-// Whether to enable debug options for upload chunking.
-COMPONENT_EXPORT(LENS_FEATURES)
-bool IsLensOverlayUploadChunkingUseDebugOptionsEnabled();
-
 // The timeout set for upload chunk requests in milliseconds.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayUploadChunkRequestTimeoutMs();
+
+// The retry limit after a missing chunk error occurs.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayUploadChunkRetries();
 
 // Whether to the new feedback entry point in the side panel.
 COMPONENT_EXPORT(LENS_FEATURES)

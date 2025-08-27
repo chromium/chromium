@@ -314,18 +314,7 @@ lens::LensOverlayUploadChunkRequest CreateUploadChunkRequest(
     lens::LensOverlayRequestContext request_context) {
   lens::LensOverlayUploadChunkRequest request;
   request.mutable_request_context()->CopyFrom(request_context);
-
-  if (lens::features::IsLensOverlayUploadChunkingUseDebugOptionsEnabled()) {
-    // Only the first chunk should have this value set.
-    if (chunk_id == 0) {
-      request.mutable_debug_options()->set_total_chunks(total_chunks);
-    }
-    // Only the last chunk should set query chunks.
-    if (chunk_id == (total_chunks - 1)) {
-      request.mutable_debug_options()->set_query_chunks(true);
-    }
-  }
-
+  request.mutable_debug_options()->set_total_chunks(total_chunks);
   request.set_chunk_id(chunk_id);
   request.mutable_chunk_bytes()->assign(chunk.begin(), chunk.end());
   return request;
@@ -1261,6 +1250,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
   page_contents_request_start_time_ = base::TimeTicks::Now();
   page_content_request_in_progress_ = true;
   remaining_upload_chunk_responses_ = 0;
+  remaining_chunk_retries = lens::features::GetLensOverlayUploadChunkRetries();
 
   // The initial request id should be set by the time we get here. If not, call
   // below will crash.
@@ -1360,9 +1350,7 @@ void LensOverlayQueryController::FetchUploadChunkRequest(
       base::BindOnce(&LensOverlayQueryController::UploadChunkResponseHandler,
                      weak_ptr_factory_.GetWeakPtr(),
                      request.request_context().request_id(),
-                     pending_upload_chunk_requests_.size(),
-                     /*is_last=*/chunk_request_index ==
-                         pending_upload_chunk_requests_.size() - 1),
+                     pending_upload_chunk_requests_.size()),
       base::NullCallback(),
       GURL(lens::features::GetLensOverlayUploadChunkEndpointURL()));
 }
@@ -1370,7 +1358,6 @@ void LensOverlayQueryController::FetchUploadChunkRequest(
 void LensOverlayQueryController::UploadChunkResponseHandler(
     lens::LensOverlayRequestId request_id,
     size_t total_chunks,
-    bool is_last,
     std::unique_ptr<EndpointResponse> response) {
   // If there is a newer sequence id, a new request has been initiated before
   // this one has completed. Do nothing and return.
@@ -1379,12 +1366,9 @@ void LensOverlayQueryController::UploadChunkResponseHandler(
   }
 
   remaining_upload_chunk_responses_--;
-
-  // If this is the last chunk in sequence, perform the page content request.
-  // Note: in the case that this is also the last chunk to receive a response,
-  // PrepareAndFetchPageContentRequestPart2() is expected to send the gen204
-  // ping.
-  if (is_last) {
+  // If this is the last chunk to receive a response, perform the page content
+  // request.
+  if (remaining_upload_chunk_responses_ == 0) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&CreatePageContentPayloadForChunks,
@@ -1393,13 +1377,7 @@ void LensOverlayQueryController::UploadChunkResponseHandler(
         base::BindOnce(
             &LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2,
             weak_ptr_factory_.GetWeakPtr(), request_id));
-    return;
   }
-
-  // If the page content request has already finished, and this is the last
-  // chunk to receive a response, this will send the gen204 ping and clear the
-  // endpoint fetchers.
-  MaybeSendPageContentUploadLatencyGen204(request_id);
 }
 
 void LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2(
@@ -1415,6 +1393,9 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2(
       request_context);
 
   request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
+
+  // Save the request in case it needs to be resent.
+  pending_page_content_request_.CopyFrom(request);
 
   page_content_access_token_fetcher_ = CreateOAuthHeadersAndContinue(
       base::BindOnce(&LensOverlayQueryController::PerformPageContentRequest,
@@ -1447,6 +1428,12 @@ void LensOverlayQueryController::PageContentResponseHandler(
     std::unique_ptr<EndpointResponse> response) {
   page_content_endpoint_fetcher_.reset();
 
+  // Ensure the page content upload doesn't need to be retried.
+  // If it does, exit early.
+  if (MaybeRetryPageContentUpload(std::move(response))) {
+    return;
+  }
+
   // The upload progress handler is not guaranteed to execute, so if a response
   // is received, mark the request as no longer in progress to allow the
   // interaction request to be sent.
@@ -1455,6 +1442,57 @@ void LensOverlayQueryController::PageContentResponseHandler(
   // If the chunk uploads have already completed, or if upload chunking was not
   // done, this will send the gen204 ping and clear the endpoint fetchers.
   MaybeSendPageContentUploadLatencyGen204(request_id);
+}
+
+bool LensOverlayQueryController::MaybeRetryPageContentUpload(
+    std::unique_ptr<EndpointResponse> response) {
+  // Check if the server response contains missing chunk errors to handle.
+  // Proceed without handling if out of retries.
+  if (remaining_chunk_retries > 0) {
+    remaining_chunk_retries--;
+    lens::LensOverlayServerResponse server_response;
+    const std::string response_string = response->response;
+    bool parse_successful = server_response.ParseFromArray(
+        response_string.data(), response_string.size());
+    if (parse_successful &&
+        server_response.error().error_type() ==
+            LensOverlayServerError_ErrorType::
+                LensOverlayServerError_ErrorType_MISSING_CHUNKS) {
+      auto missing_chunks_metadata =
+          server_response.error().missing_chunks_metadata();
+      if (!missing_chunks_metadata.has_chunk_metadata()) {
+        // Interaction request likely misrouted. Resend it.
+        page_content_access_token_fetcher_ =
+            CreateOAuthHeadersAndContinue(base::BindOnce(
+                &LensOverlayQueryController::PerformPageContentRequest,
+                weak_ptr_factory_.GetWeakPtr(), pending_page_content_request_));
+        return true;
+      }
+      if (missing_chunks_metadata.missing_chunk_ids_size() > 0) {
+        // Missing chunks. Resend the missing chunks.
+        chunk_upload_access_token_fetcher_ =
+            CreateOAuthHeadersAndContinue(base::BindOnce(
+                &LensOverlayQueryController::RetryUploadChunkRequests,
+                weak_ptr_factory_.GetWeakPtr(),
+                server_response.error()
+                    .missing_chunks_metadata()
+                    .missing_chunk_ids()));
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+void LensOverlayQueryController::RetryUploadChunkRequests(
+    const google::protobuf::RepeatedField<int64_t>& chunk_ids,
+    std::vector<std::string> headers) {
+  chunk_upload_access_token_fetcher_.reset();
+  pending_upload_chunk_headers_ = headers;
+  remaining_upload_chunk_responses_ = chunk_ids.size();
+  for (int64_t chunk_id : chunk_ids) {
+    FetchUploadChunkRequest(chunk_id);
+  }
 }
 
 void LensOverlayQueryController::MaybeSendPageContentUploadLatencyGen204(
@@ -1481,6 +1519,7 @@ void LensOverlayQueryController::PageContentUploadProgressHandler(
 }
 
 void LensOverlayQueryController::PageContentUploadFinished() {
+  pending_page_content_request_.Clear();
   page_content_request_in_progress_ = false;
   if (pending_contextual_query_callback_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
