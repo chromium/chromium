@@ -23,6 +23,8 @@ struct DownloadRecord {
   DownloadRecord& operator=(DownloadRecord&& other);
   ~DownloadRecord();
 
+  bool operator==(const DownloadRecord& other) const;
+
   // Unique identifier for this download.
   std::string download_id;
   // Original download URL.

@@ -40,3 +40,23 @@ DownloadRecord& DownloadRecord::operator=(const DownloadRecord& other) =
 DownloadRecord::DownloadRecord(DownloadRecord&& other) = default;
 DownloadRecord& DownloadRecord::operator=(DownloadRecord&& other) = default;
 DownloadRecord::~DownloadRecord() = default;
+
+bool DownloadRecord::operator==(const DownloadRecord& other) const {
+  return download_id == other.download_id && file_name == other.file_name &&
+         original_url == other.original_url &&
+         redirected_url == other.redirected_url &&
+         file_path == other.file_path && response_path == other.response_path &&
+         original_mime_type == other.original_mime_type &&
+         mime_type == other.mime_type &&
+         content_disposition == other.content_disposition &&
+         originating_host == other.originating_host &&
+         http_method == other.http_method && http_code == other.http_code &&
+         error_code == other.error_code &&
+         received_bytes == other.received_bytes &&
+         total_bytes == other.total_bytes &&
+         progress_percent == other.progress_percent && state == other.state &&
+         has_performed_background_download ==
+             other.has_performed_background_download &&
+         created_time == other.created_time &&
+         completed_time == other.completed_time;
+}

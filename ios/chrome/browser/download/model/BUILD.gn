@@ -129,6 +129,7 @@ source_set("unit_tests") {
     "download_directory_util_unittest.mm",
     "download_filter_util_unittest.mm",
     "download_manager_tab_helper_unittest.mm",
+    "download_record_database_unittest.mm",
     "google_drive_app_util_unittest.mm",
     "installation_notifier_unittest.mm",
     "pass_kit_tab_helper_unittest.mm",
@@ -163,6 +164,7 @@ source_set("unit_tests") {
     "//ios/web/public/test:download_test_utils",
     "//ios/web/public/test/fakes",
     "//net",
+    "//sql",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
