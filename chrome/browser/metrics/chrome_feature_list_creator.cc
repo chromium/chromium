@@ -334,8 +334,8 @@ void ChromeFeatureListCreator::SetupInitialPrefs() {
     // clock is incorrect, this may cause some field trial expiry checks to
     // not do the right thing until the next seed update from the server,
     // when this value will be updated.
-    local_state_->SetInt64(variations::prefs::kVariationsSeedDate,
-                           base::Time::Now().ToInternalValue());
+    local_state_->SetTime(variations::prefs::kVariationsSeedDate,
+                          base::Time::Now());
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 }
