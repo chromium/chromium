@@ -59,8 +59,7 @@ uint64_t Mix32Bytes(const uint8_t* ptr, uint64_t current_state) {
     uint64_t duplicated_state2 = current_state;
 
     do {
-      // Always prefetch the next cacheline.
-      PrefetchToLocalCache(ptr + ABSL_CACHELINE_SIZE);
+      PrefetchToLocalCache(ptr + 5 * ABSL_CACHELINE_SIZE);
 
       uint64_t a = absl::base_internal::UnalignedLoad64(ptr);
       uint64_t b = absl::base_internal::UnalignedLoad64(ptr + 8);

@@ -1175,30 +1175,32 @@ constexpr size_t NormalizeCapacity(size_t n) {
 }
 
 // General notes on capacity/growth methods below:
-// - We use 7/8th as maximum load factor. For 16-wide groups, that gives an
-//   average of two empty slots per group.
-// - For (capacity+1) >= Group::kWidth, growth is 7/8*capacity.
+// - We use 27/32 as maximum load factor. For 16-wide groups, that gives an
+//   average of 2.5 empty slots per group.
 // - For (capacity+1) < Group::kWidth, growth == capacity. In this case, we
 //   never need to probe (the whole table fits in one group) so we don't need a
 //   load factor less than 1.
+// - For (capacity+1) == Group::kWidth, growth is capacity - 1 since we need
+//   at least one empty slot for probing algorithm.
+// - For (capacity+1) > Group::kWidth, growth is 27/32*capacity.
 
 // Given `capacity`, applies the load factor; i.e., it returns the maximum
 // number of values we should put into the table before a resizing rehash.
 constexpr size_t CapacityToGrowth(size_t capacity) {
   ABSL_SWISSTABLE_ASSERT(IsValidCapacity(capacity));
-  // `capacity*7/8`
+  // `capacity*27/32`
   if (Group::kWidth == 8 && capacity == 7) {
-    // x-x/8 does not work when x==7.
+    // formula does not work when x==7.
     return 6;
   }
-  return capacity - capacity / 8;
+  return capacity - capacity / 8 - capacity / 32;
 }
 
 // Given `size`, "unapplies" the load factor to find how large the capacity
 // should be to stay within the load factor.
 //
 // For size == 0, returns 0.
-// For other values, returns the same as `NormalizeCapacity(size*8/7)`.
+// For other values, returns the same as `NormalizeCapacity(size*32/27)`.
 constexpr size_t SizeToCapacity(size_t size) {
   if (size == 0) {
     return 0;
@@ -1207,18 +1209,10 @@ constexpr size_t SizeToCapacity(size_t size) {
   // Shifting right `~size_t{}` by `leading_zeros` yields
   // NormalizeCapacity(size).
   int leading_zeros = absl::countl_zero(size);
-  constexpr size_t kLast3Bits = size_t{7} << (sizeof(size_t) * 8 - 3);
-  // max_size_for_next_capacity = max_load_factor * next_capacity
-  //                            = (7/8) * (~size_t{} >> leading_zeros)
-  //                            = (7/8*~size_t{}) >> leading_zeros
-  //                            = kLast3Bits >> leading_zeros
-  size_t max_size_for_next_capacity = kLast3Bits >> leading_zeros;
+  size_t next_capacity = ~size_t{} >> leading_zeros;
+  size_t max_size_for_next_capacity = CapacityToGrowth(next_capacity);
   // Decrease shift if size is too big for the minimum capacity.
   leading_zeros -= static_cast<int>(size > max_size_for_next_capacity);
-  if constexpr (Group::kWidth == 8) {
-    // Formula doesn't work when size==7 for 8-wide groups.
-    leading_zeros -= (size == 7);
-  }
   return (~size_t{}) >> leading_zeros;
 }
 

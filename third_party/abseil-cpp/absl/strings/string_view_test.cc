@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 
+#include <array>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -130,6 +131,23 @@ TEST(StringViewTest, Ctor) {
     EXPECT_TRUE(s31.data() == hola.data());
     EXPECT_EQ(8u, s31.length());
   }
+
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
+  {
+    // Iterator constructor
+    std::string str = "hello";
+    absl::string_view s1(str.begin(), str.end());
+    EXPECT_EQ(s1, "hello");
+
+    std::array<char, 3> arr = { '1', '2', '3' };
+    absl::string_view s2(arr.begin(), arr.end());
+    EXPECT_EQ(s2, "123");
+
+    const char carr[] = "carr";
+    absl::string_view s3(carr, carr + strlen(carr));
+    EXPECT_EQ(s3, "carr");
+  }
+#endif  // ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
 
   {
     using mstring =
@@ -1154,6 +1172,18 @@ TEST(StringViewTest, ConstexprCompiles) {
 
   constexpr size_t sp_npos = sp.npos;
   EXPECT_EQ(sp_npos, static_cast<size_t>(-1));
+
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
+  {
+    static constexpr std::array<char, 3> arr = { '1', '2', '3' };
+    constexpr absl::string_view s2(arr.begin(), arr.end());
+    EXPECT_EQ(s2, "123");
+
+    static constexpr char carr[] = "carr";
+    constexpr absl::string_view s3(carr, carr + 4);
+    EXPECT_EQ(s3, "carr");
+  }
+#endif  // ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
 }
 
 constexpr char ConstexprMethodsHelper() {

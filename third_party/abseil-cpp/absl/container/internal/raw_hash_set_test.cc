@@ -276,28 +276,53 @@ TEST(Util, NormalizeCapacity) {
   EXPECT_EQ(15 * 2 + 1, NormalizeCapacity(15 + 2));
 }
 
-TEST(Util, GrowthAndCapacity) {
-  // Verify that GrowthToCapacity gives the minimum capacity that has enough
-  // growth.
+TEST(Util, SizeToCapacitySmallValues) {
   EXPECT_EQ(SizeToCapacity(0), 0);
   EXPECT_EQ(SizeToCapacity(1), 1);
   EXPECT_EQ(SizeToCapacity(2), 3);
   EXPECT_EQ(SizeToCapacity(3), 3);
+  EXPECT_EQ(SizeToCapacity(4), 7);
+  EXPECT_EQ(SizeToCapacity(5), 7);
+  EXPECT_EQ(SizeToCapacity(6), 7);
+  if (Group::kWidth == 16) {
+    EXPECT_EQ(SizeToCapacity(7), 7);
+    EXPECT_EQ(SizeToCapacity(14), 15);
+  } else {
+    EXPECT_EQ(SizeToCapacity(7), 15);
+  }
+}
+
+TEST(Util, CapacityToGrowthSmallValues) {
+  EXPECT_EQ(CapacityToGrowth(1), 1);
+  EXPECT_EQ(CapacityToGrowth(3), 3);
+  if (Group::kWidth == 16) {
+    EXPECT_EQ(CapacityToGrowth(7), 7);
+  } else {
+    EXPECT_EQ(CapacityToGrowth(7), 6);
+  }
+  EXPECT_EQ(CapacityToGrowth(15), 14);
+  EXPECT_EQ(CapacityToGrowth(31), 28);
+  EXPECT_EQ(CapacityToGrowth(63), 55);
+}
+
+TEST(Util, GrowthAndCapacity) {
+  // Verify that GrowthToCapacity gives the minimum capacity that has enough
+  // growth.
   for (size_t growth = 1; growth < 10000; ++growth) {
     SCOPED_TRACE(growth);
     size_t capacity = SizeToCapacity(growth);
     ASSERT_TRUE(IsValidCapacity(capacity));
     // The capacity is large enough for `growth`.
-    EXPECT_THAT(CapacityToGrowth(capacity), Ge(growth));
+    ASSERT_THAT(CapacityToGrowth(capacity), Ge(growth));
     // For (capacity+1) < kWidth, growth should equal capacity.
     if (capacity + 1 < Group::kWidth) {
-      EXPECT_THAT(CapacityToGrowth(capacity), Eq(capacity));
+      ASSERT_THAT(CapacityToGrowth(capacity), Eq(capacity));
     } else {
-      EXPECT_THAT(CapacityToGrowth(capacity), Lt(capacity));
+      ASSERT_THAT(CapacityToGrowth(capacity), Lt(capacity));
     }
     if (growth != 0 && capacity > 1) {
       // There is no smaller capacity that works.
-      EXPECT_THAT(CapacityToGrowth(capacity / 2), Lt(growth));
+      ASSERT_THAT(CapacityToGrowth(capacity / 2), Lt(growth)) << capacity;
     }
   }
 
@@ -305,9 +330,9 @@ TEST(Util, GrowthAndCapacity) {
        capacity = 2 * capacity + 1) {
     SCOPED_TRACE(capacity);
     size_t growth = CapacityToGrowth(capacity);
-    EXPECT_THAT(growth, Lt(capacity));
-    EXPECT_EQ(SizeToCapacity(growth), capacity);
-    EXPECT_EQ(NormalizeCapacity(SizeToCapacity(growth)), capacity);
+    ASSERT_THAT(growth, Lt(capacity));
+    ASSERT_EQ(SizeToCapacity(growth), capacity);
+    ASSERT_EQ(NormalizeCapacity(SizeToCapacity(growth)), capacity);
   }
 }
 
