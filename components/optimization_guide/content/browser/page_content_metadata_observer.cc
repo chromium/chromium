@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
 
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

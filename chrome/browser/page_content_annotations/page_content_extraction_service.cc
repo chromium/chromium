@@ -9,6 +9,7 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "content/public/browser/page.h"
 
 namespace page_content_annotations {
 

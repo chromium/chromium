@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/site_isolation/site_details.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"

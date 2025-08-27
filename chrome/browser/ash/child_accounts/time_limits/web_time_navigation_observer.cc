@@ -12,6 +12,7 @@
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 
 namespace ash::app_time {

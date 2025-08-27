@@ -8,6 +8,7 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/visibility.h"
 
 OneTimePermissionsTrackerHelper::~OneTimePermissionsTrackerHelper() = default;

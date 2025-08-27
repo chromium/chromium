@@ -42,6 +42,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/page.h"
 #include "revoked_permissions_service.h"
 #include "url/origin.h"
 

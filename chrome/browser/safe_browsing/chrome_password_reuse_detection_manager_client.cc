@@ -28,6 +28,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/clipboard/clipboard.h"

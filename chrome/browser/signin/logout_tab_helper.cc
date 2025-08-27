@@ -9,6 +9,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/page.h"
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LogoutTabHelper);
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "ui/aura/window.h"
 
 BackGestureContextualNudgeDelegate::BackGestureContextualNudgeDelegate(

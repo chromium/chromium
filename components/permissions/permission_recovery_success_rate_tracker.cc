@@ -5,6 +5,7 @@
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 
 #include "components/permissions/permission_uma_util.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 
 namespace permissions {

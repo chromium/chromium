@@ -14,6 +14,7 @@
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_widget_host_view.h"
 
 #if BUILDFLAG(IS_ANDROID)
