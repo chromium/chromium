@@ -38,6 +38,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/network/ad_auction/event_record_request_helper.h"
+#include "services/network/devtools_durable_msg.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
 #include "services/network/observer_wrapper.h"
@@ -182,7 +183,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
       bool shared_storage_writable_eligible,
-      SharedResourceChecker& shared_resource_checker);
+      SharedResourceChecker& shared_resource_checker,
+      base::WeakPtr<DevtoolsDurableMessage> devtools_durable_message);
 
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
@@ -540,6 +542,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // starting another network transaction (such as following a redirect).
   void ResetRawHeadersForRedirect();
 
+  // If Devtools Durable Message collection is enabled, copies the response
+  // chunks into `devtools_durable_message_`. If `num_bytes` <= 0, marks the
+  // message as complete.
+  void MaybeCollectDurableMessage(size_t new_data_offset, int num_bytes);
+
   const raw_ptr<net::URLRequestContext> url_request_context_;
 
   const raw_ptr<mojom::NetworkContextClient> network_context_client_;
@@ -772,6 +779,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Permissions policy of the request.
   const std::optional<network::PermissionsPolicy> permissions_policy_;
+
+  // DevTools Durable Message instance, if enabled.
+  base::WeakPtr<DevtoolsDurableMessage> devtools_durable_message_;
+
+  // Keeps track of raw body sizes transmitted to DevTools.
+  int64_t devtools_durable_message_raw_size_ = 0;
 
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };
