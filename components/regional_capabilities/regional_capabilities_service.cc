@@ -414,6 +414,12 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
   if (base::FeatureList::IsEnabled(
           switches::kResolveRegionalCapabilitiesFromDevice)) {
     program = client_->GetDeviceProgram();
+
+    if (!IsInProgramRegion(program, country_id_cache_.value())) {
+      // Interim program inconsistencies originate from asynchronous nature of
+      // their resolution. For the time being, use a reasonable default.
+      program = Program::kDefault;
+    }
   } else
 #endif  // BUILDFLAG(IS_ANDROID)
   {

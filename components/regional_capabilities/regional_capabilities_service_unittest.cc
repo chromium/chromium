@@ -6,6 +6,11 @@
 
 #include <memory>
 #include <optional>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -31,6 +36,21 @@
 #include "ui/base/device_form_factor.h"
 
 namespace regional_capabilities {
+
+void PrintTo(const Program& program, std::ostream* os) {
+  switch (program) {
+    case Program::kDefault:
+      *os << "kDefault";
+      break;
+    case Program::kTaiyaki:
+      *os << "kTaiyaki";
+      break;
+    case Program::kWaffle:
+      *os << "kWaffle";
+      break;
+  }
+}
+
 namespace {
 
 using ::country_codes::CountryId;
@@ -361,14 +381,14 @@ INSTANTIATE_TEST_SUITE_P(
                 },
         },
         ProgramDeterminationTestParam{
-            .test_name = "us_to_waffle",
+            // Waffle is not compatible with the USA, so instead choice screen
+            // settings are defaulted.
+            .test_name = "us_ignores_waffle",
             .client_fetched_country = CountryId("US"),
             .device_program_override = Program::kWaffle,
-            // TODO(crbug.com/440003541): Revisit whether this is the expected
-            // behaviour
-            .expected_program = Program::kWaffle,
-            .expected_is_in_choice_screen_region = true,
-            .expected_ose_list_type = SearchEngineListType::kShuffled,
+            .expected_program = Program::kDefault,
+            .expected_is_in_choice_screen_region = false,
+            .expected_ose_list_type = SearchEngineListType::kTopN,
             .expected_histograms =
                 {
                     {"RegionalCapabilities.LoadedCountrySource",
