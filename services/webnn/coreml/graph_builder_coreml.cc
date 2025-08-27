@@ -194,6 +194,7 @@ constexpr char kOpCosTypeName[] = "cos";
 constexpr char kOpExpTypeName[] = "exp";
 constexpr char kOpFloorTypeName[] = "floor";
 constexpr char kOpIdentityTypeName[] = "identity";
+constexpr char kOpRoundEvenTypeName[] = "round";
 constexpr char kOpSignTypeName[] = "sign";
 constexpr char kOpSinTypeName[] = "sin";
 constexpr char kOpTanTypeName[] = "tan";
@@ -1251,6 +1252,8 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // Polyfilled with add and mul.
        /*neg_input=*/{kFloatsAndInt32, kMaxRank},
        /*reciprocal_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*round_even_input=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*sign_input=*/
        {kFloatsAndInt32, kMaxRank},
@@ -2999,6 +3002,15 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
       CHECK(context_properties_.data_type_limits.identity_input.data_types.Has(
           input_operand_data_type));
       return AddUnaryOperation(kOpIdentityTypeName, input_operand_id,
+                               output_operand_id, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kRoundEven: {
+      CHECK(
+          context_properties_.data_type_limits.round_even_input.data_types.Has(
+              input_operand_data_type));
+      // TODO: crbug.com/439346653: Emulate roundEven when device type is not
+      // CPU.
+      return AddUnaryOperation(kOpRoundEvenTypeName, input_operand_id,
                                output_operand_id, block);
     }
     case mojom::ElementWiseUnary::Kind::kSign: {

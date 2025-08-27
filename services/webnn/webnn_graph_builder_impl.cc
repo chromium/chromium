@@ -1312,6 +1312,10 @@ bool OperationValidationContext::ValidateElementWiseUnary(
       return ValidateUnaryOperation(
           operation, context_properties_->data_type_limits.reciprocal_input,
           operation_id);
+    case mojom::ElementWiseUnary::Kind::kRoundEven:
+      return ValidateUnaryOperation(
+          operation, context_properties_->data_type_limits.round_even_input,
+          operation_id);
     case mojom::ElementWiseUnary::Kind::kSign:
       return ValidateUnaryOperation(
           operation, context_properties_->data_type_limits.sign_input,

@@ -59,6 +59,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors log_input,
                  SupportedTensors neg_input,
                  SupportedTensors reciprocal_input,
+                 SupportedTensors round_even_input,
                  SupportedTensors sign_input,
                  SupportedTensors sin_input,
                  SupportedTensors sqrt_input,
@@ -184,6 +185,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors log_input;
   SupportedTensors neg_input;
   SupportedTensors reciprocal_input;
+  SupportedTensors round_even_input;
   SupportedTensors sign_input;
   SupportedTensors sin_input;
   SupportedTensors sqrt_input;
@@ -302,6 +304,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.log_input == rhs.log_input &&
          lhs.neg_input == rhs.neg_input &&
          lhs.reciprocal_input == rhs.reciprocal_input &&
+         lhs.round_even_input == rhs.round_even_input &&
          lhs.sign_input == rhs.sign_input &&
          lhs.sin_input == rhs.sin_input &&
          lhs.sqrt_input == rhs.sqrt_input &&

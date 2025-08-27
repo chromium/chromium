@@ -194,6 +194,10 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.reciprocal_input;
   }
+  static webnn::SupportedTensors round_even_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.round_even_input;
+  }
   static webnn::SupportedTensors sign_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.sign_input;
@@ -518,6 +522,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadLogInput(&out->log_input) &&
            data.ReadNegInput(&out->neg_input) &&
            data.ReadReciprocalInput(&out->reciprocal_input) &&
+           data.ReadRoundEvenInput(&out->round_even_input) &&
            data.ReadSignInput(&out->sign_input) &&
            data.ReadSinInput(&out->sin_input) &&
            data.ReadSqrtInput(&out->sqrt_input) &&

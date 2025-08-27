@@ -639,6 +639,8 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          {webnn::SupportedDataTypes::All(), kMaxRank},
          /*reciprocal_input=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*round_even_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
          /*sign_input=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
          /*sin_input=*/
