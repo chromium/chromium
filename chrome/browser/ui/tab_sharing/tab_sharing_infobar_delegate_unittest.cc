@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
+#include "chrome/browser/ui/views/screen_sharing_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -35,9 +36,14 @@ const std::u16string kSinkName = u"Living Room TV";
 const std::u16string kCapturedUrl = u"https://captured.chromium.org/";
 const std::u16string kCapturingUrl = u"https://capturing.chromium.org/";
 
+// TODO(crbug.com/441128451): Eliminate the duplication of this mock
+// across multiple test suites.
 class MockTabSharingUIViews : public TabSharingUI {
  public:
-  MockTabSharingUIViews() = default;
+  MockTabSharingUIViews()
+      : uma_logger_(content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {}
+  ~MockTabSharingUIViews() override = default;
+
   MOCK_METHOD(void, StartSharing, (infobars::InfoBar * infobar));
   MOCK_METHOD(void, StopSharing, ());
 
@@ -48,8 +54,14 @@ class MockTabSharingUIViews : public TabSharingUI {
     return 0;
   }
 
+  ScreensharingControlsHistogramLogger& GetUmaLogger() override {
+    return uma_logger_;
+  }
+
   void OnRegionCaptureRectChanged(
       const std::optional<gfx::Rect>& region_capture_rect) override {}
+
+  ScreensharingControlsHistogramLogger uma_logger_;
 };
 
 }  // namespace

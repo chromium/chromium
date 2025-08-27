@@ -7,12 +7,55 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 
-using content::DesktopMediaID;
+namespace {
 
-void RecordUma(TabSharingInfoBarInteraction interaction) {
-  base::UmaHistogramEnumeration(
-      "Media.Ui.GetDisplayMedia.TabSharingInfoBarInteraction", interaction);
+using content::DesktopMediaID;
+using InteractionWithControls = GetDisplayMediaUserInteractionWithControls;
+
+// This enum is used to record UMA histogram metrics for interactions
+// with the TabSharingInfoBar.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// TODO(crbug.com/440459628): Sunset this histogram and use
+// GetDisplayMediaUserInteractionWithControls in its stead.
+//
+// LINT.IfChange(TabSharingInfoBarInteraction)
+enum class TabSharingInfoBarInteraction {
+  kCapturedToCapturing = 0,
+  kCapturingToCaptured = 1,
+  kOtherToCapturing = 2,
+  kOtherToCaptured = 3,
+  kStopButtonClicked = 4,
+  kShareThisTabInsteadButtonClicked = 5,
+  kMaxValue = kShareThisTabInsteadButtonClicked,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaUiGetDisplayMediaTabSharingInfoBarInteraction)
+
+std::optional<TabSharingInfoBarInteraction> ToLegacyUma(
+    InteractionWithControls interaction) {
+  switch (interaction) {
+    case InteractionWithControls::kNoInteraction:
+    case InteractionWithControls::kHideButtonClicked:
+      return std::nullopt;  // No corresponding value.
+    case InteractionWithControls::kStopButtonClicked:
+      return TabSharingInfoBarInteraction::kStopButtonClicked;
+    case InteractionWithControls::kCapturedToCapturingClicked:
+      return TabSharingInfoBarInteraction::kCapturedToCapturing;
+    case InteractionWithControls::kCapturingToCapturedClicked:
+      return TabSharingInfoBarInteraction::kCapturingToCaptured;
+    case InteractionWithControls::kOtherToCapturingClicked:
+      return TabSharingInfoBarInteraction::kOtherToCapturing;
+    case InteractionWithControls::kOtherToCapturedClicked:
+      return TabSharingInfoBarInteraction::kOtherToCaptured;
+    case InteractionWithControls::kShareThisTabInsteadClicked:
+      return TabSharingInfoBarInteraction::kShareThisTabInsteadButtonClicked;
+  }
+  NOTREACHED();
 }
+
+}  // namespace
 
 ScreensharingControlsHistogramLogger::ScreensharingControlsHistogramLogger(
     content::DesktopMediaID::Type captured_surface_type)
@@ -20,12 +63,12 @@ ScreensharingControlsHistogramLogger::ScreensharingControlsHistogramLogger(
 
 ScreensharingControlsHistogramLogger::~ScreensharingControlsHistogramLogger() {
   if (!interaction_with_controls_logged_) {
-    Log(GetDisplayMediaUserInteractionWithControls::kNoInteraction);
+    Log(InteractionWithControls::kNoInteraction);
   }
 }
 
 void ScreensharingControlsHistogramLogger::Log(
-    GetDisplayMediaUserInteractionWithControls interaction) {
+    InteractionWithControls interaction) {
   const char* display_surface = nullptr;
   switch (captured_surface_type_) {
     case DesktopMediaID::Type::TYPE_NONE:
@@ -48,4 +91,18 @@ void ScreensharingControlsHistogramLogger::Log(
 
   base::UmaHistogramEnumeration(name, interaction);
   interaction_with_controls_logged_ = true;
+
+  // Record legacy UMA.
+  const std::optional<TabSharingInfoBarInteraction> legacy_interaction =
+      ToLegacyUma(interaction);
+  if (legacy_interaction.has_value()) {
+    base::UmaHistogramEnumeration(
+        "Media.Ui.GetDisplayMedia.TabSharingInfoBarInteraction",
+        legacy_interaction.value());
+  }
+}
+
+base::WeakPtr<ScreensharingControlsHistogramLogger>
+ScreensharingControlsHistogramLogger::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }

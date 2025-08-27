@@ -50,17 +50,20 @@ class TabSharingStatusMessageViewTest : public ::testing::Test {
 };
 
 TEST_F(TabSharingStatusMessageViewTest, JustText) {
-  TabSharingStatusMessageView view(MessageInfo(u"Just text.", {}));
+  TabSharingStatusMessageView view(MessageInfo(u"Just text.", {}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"Just text."}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, OneButtonOnly) {
-  TabSharingStatusMessageView view(MessageInfo(u"$1", {kTab1}));
+  TabSharingStatusMessageView view(MessageInfo(u"$1", {kTab1}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"Tab1"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, OneButtonPrefix) {
-  TabSharingStatusMessageView view(MessageInfo(u"prefix-$1", {kTab1}));
+  TabSharingStatusMessageView view(MessageInfo(u"prefix-$1", {kTab1}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({
                                        "prefix-",
                                        "Tab1",
@@ -68,110 +71,125 @@ TEST_F(TabSharingStatusMessageViewTest, OneButtonPrefix) {
 }
 
 TEST_F(TabSharingStatusMessageViewTest, OneButtonPostfix) {
-  TabSharingStatusMessageView view(MessageInfo(u"$1-postfix", {kTab1}));
+  TabSharingStatusMessageView view(MessageInfo(u"$1-postfix", {kTab1}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"Tab1", "-postfix"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, OneButtonPrefixAndPostfix) {
-  TabSharingStatusMessageView view(MessageInfo(u"prefix-$1-postfix", {kTab1}));
+  TabSharingStatusMessageView view(MessageInfo(u"prefix-$1-postfix", {kTab1}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"prefix-", "Tab1", "-postfix"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, TwoButtons) {
-  TabSharingStatusMessageView view(MessageInfo(u"$1$2", {kTab1, kTab2}));
+  TabSharingStatusMessageView view(MessageInfo(u"$1$2", {kTab1, kTab2}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"Tab1", "Tab2"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, TwoButtonsPrefix) {
-  TabSharingStatusMessageView view(MessageInfo(u"prefix-$1$2", {kTab1, kTab2}));
+  TabSharingStatusMessageView view(MessageInfo(u"prefix-$1$2", {kTab1, kTab2}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"prefix-", "Tab1", "Tab2"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, TwoButtonsInfix) {
-  TabSharingStatusMessageView view(MessageInfo(u"$1-infix-$2", {kTab1, kTab2}));
+  TabSharingStatusMessageView view(MessageInfo(u"$1-infix-$2", {kTab1, kTab2}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"Tab1", "-infix-", "Tab2"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, TwoButtonsPostfix) {
-  TabSharingStatusMessageView view(
-      MessageInfo(u"$1$2-postfix", {kTab1, kTab2}));
+  TabSharingStatusMessageView view(MessageInfo(u"$1$2-postfix", {kTab1, kTab2}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"Tab1", "Tab2", "-postfix"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, TwoButtonsPrefixAndInfix) {
   TabSharingStatusMessageView view(
-      MessageInfo(u"prefix-$1-infix-$2", {kTab1, kTab2}));
+      MessageInfo(u"prefix-$1-infix-$2", {kTab1, kTab2}),
+      /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"prefix-", "Tab1", "-infix-", "Tab2"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, TwoButtonsInfixAndPostfix) {
   TabSharingStatusMessageView view(
-      MessageInfo(u"$1-infix-$2-postfix", {kTab1, kTab2}));
+      MessageInfo(u"$1-infix-$2-postfix", {kTab1, kTab2}),
+      /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"Tab1", "-infix-", "Tab2", "-postfix"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, TwoButtonsPrefixAndPostfix) {
   TabSharingStatusMessageView view(
-      MessageInfo(u"prefix-$1$2-postfix", {kTab1, kTab2}));
+      MessageInfo(u"prefix-$1$2-postfix", {kTab1, kTab2}),
+      /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"prefix-", "Tab1", "Tab2", "-postfix"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, TwoButtonsPrefixAndInfixAndPostfix) {
   TabSharingStatusMessageView view(
-      MessageInfo(u"prefix-$1-infix-$2-postfix", {kTab1, kTab2}));
+      MessageInfo(u"prefix-$1-infix-$2-postfix", {kTab1, kTab2}),
+      /*uma_logger=*/nullptr);
   EXPECT_THAT(
       GetChildTexts(view),
       ElementsAreArray({"prefix-", "Tab1", "-infix-", "Tab2", "-postfix"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtons) {
-  TabSharingStatusMessageView view(MessageInfo(u"$2$1", {kTab1, kTab2}));
+  TabSharingStatusMessageView view(MessageInfo(u"$2$1", {kTab1, kTab2}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"Tab2", "Tab1"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsPrefix) {
-  TabSharingStatusMessageView view(MessageInfo(u"prefix-$2$1", {kTab1, kTab2}));
+  TabSharingStatusMessageView view(MessageInfo(u"prefix-$2$1", {kTab1, kTab2}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"prefix-", "Tab2", "Tab1"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsInfix) {
-  TabSharingStatusMessageView view(MessageInfo(u"$2-infix-$1", {kTab1, kTab2}));
+  TabSharingStatusMessageView view(MessageInfo(u"$2-infix-$1", {kTab1, kTab2}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"Tab2", "-infix-", "Tab1"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsPostfix) {
-  TabSharingStatusMessageView view(
-      MessageInfo(u"$2$1-postfix", {kTab1, kTab2}));
+  TabSharingStatusMessageView view(MessageInfo(u"$2$1-postfix", {kTab1, kTab2}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"Tab2", "Tab1", "-postfix"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsPrefixAndInfix) {
   TabSharingStatusMessageView view(
-      MessageInfo(u"prefix-$2-infix-$1", {kTab1, kTab2}));
+      MessageInfo(u"prefix-$2-infix-$1", {kTab1, kTab2}),
+      /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"prefix-", "Tab2", "-infix-", "Tab1"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsInfixAndPostfix) {
   TabSharingStatusMessageView view(
-      MessageInfo(u"$2-infix-$1-postfix", {kTab1, kTab2}));
+      MessageInfo(u"$2-infix-$1-postfix", {kTab1, kTab2}),
+      /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"Tab2", "-infix-", "Tab1", "-postfix"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsPrefixAndPostfix) {
   TabSharingStatusMessageView view(
-      MessageInfo(u"prefix-$2$1-postfix", {kTab1, kTab2}));
+      MessageInfo(u"prefix-$2$1-postfix", {kTab1, kTab2}),
+      /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"prefix-", "Tab2", "Tab1", "-postfix"}));
 }
@@ -179,51 +197,57 @@ TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsPrefixAndPostfix) {
 TEST_F(TabSharingStatusMessageViewTest,
        ReversedTwoButtonsPrefixAndInfixAndPostfix) {
   TabSharingStatusMessageView view(
-      MessageInfo(u"prefix-$2-infix-$1-postfix", {kTab1, kTab2}));
+      MessageInfo(u"prefix-$2-infix-$1-postfix", {kTab1, kTab2}),
+      /*uma_logger=*/nullptr);
   EXPECT_THAT(
       GetChildTexts(view),
       ElementsAreArray({"prefix-", "Tab2", "-infix-", "Tab1", "-postfix"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, SpacesPrefix) {
-  TabSharingStatusMessageView view(MessageInfo(u"   $1", {kTab1}));
+  TabSharingStatusMessageView view(MessageInfo(u"   $1", {kTab1}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"   ", "Tab1"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, SpacesInfix) {
-  TabSharingStatusMessageView view(MessageInfo(u"$1   $2", {kTab1, kTab2}));
+  TabSharingStatusMessageView view(MessageInfo(u"$1   $2", {kTab1, kTab2}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"Tab1", "   ", "Tab2"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, SpacesPostfix) {
-  TabSharingStatusMessageView view(MessageInfo(u"$1   ", {kTab1}));
+  TabSharingStatusMessageView view(MessageInfo(u"$1   ", {kTab1}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"Tab1", "   "}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, TwoEndpointsWithoutId) {
   TabSharingStatusMessageView view(
-      MessageInfo(u"$1$2", {kWithoutId1, kWithoutId2}));
+      MessageInfo(u"$1$2", {kWithoutId1, kWithoutId2}), /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"WithoutId1WithoutId2"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest,
        TwoEndpointsWithoutIdPrefixAndInfixAndPostfix) {
   TabSharingStatusMessageView view(
-      MessageInfo(u"prefix-$1-infix-$2-postfix", {kWithoutId1, kWithoutId2}));
+      MessageInfo(u"prefix-$1-infix-$2-postfix", {kWithoutId1, kWithoutId2}),
+      /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"prefix-WithoutId1-infix-WithoutId2-postfix"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest, ReversedTwoEndpointsWithoutId) {
   TabSharingStatusMessageView view(
-      MessageInfo(u"$2$1", {kWithoutId1, kWithoutId2}));
+      MessageInfo(u"$2$1", {kWithoutId1, kWithoutId2}), /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"WithoutId2WithoutId1"}));
 }
 
 TEST_F(TabSharingStatusMessageViewTest,
        ReversedTwoEndpointsWithoutIdPrefixAndInfixAndPostfix) {
   TabSharingStatusMessageView view(
-      MessageInfo(u"prefix-$2-infix-$1-postfix", {kWithoutId1, kWithoutId2}));
+      MessageInfo(u"prefix-$2-infix-$1-postfix", {kWithoutId1, kWithoutId2}),
+      /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"prefix-WithoutId2-infix-WithoutId1-postfix"}));
 }
@@ -237,6 +261,7 @@ TEST_F(TabSharingStatusMessageViewTest, ReversedLongerSecondTab) {
 
   // Use format string "$2$1" to trigger the swapping logic, and place first the
   // longer text of the second tab.
-  TabSharingStatusMessageView view(MessageInfo(u"$2$1", {kTab1, kTab11}));
+  TabSharingStatusMessageView view(MessageInfo(u"$2$1", {kTab1, kTab11}),
+                                   /*uma_logger=*/nullptr);
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"Tab11", "Tab1"}));
 }

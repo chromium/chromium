@@ -27,9 +27,14 @@ const std::u16string kSharedTabName = u"example.com";
 const std::u16string kAppName = u"sharing.com";
 const std::u16string kSinkName = u"Living Room TV";
 
+// TODO(crbug.com/441128451): Eliminate the duplication of this mock
+// across multiple test suites.
 class MockTabSharingUIViews : public TabSharingUI {
  public:
-  MockTabSharingUIViews() = default;
+  MockTabSharingUIViews()
+      : uma_logger_(content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {}
+  ~MockTabSharingUIViews() override = default;
+
   MOCK_METHOD(void, StartSharing, (infobars::InfoBar * infobar));
   MOCK_METHOD(void, StopSharing, ());
 
@@ -40,8 +45,14 @@ class MockTabSharingUIViews : public TabSharingUI {
     return 0;
   }
 
+  ScreensharingControlsHistogramLogger& GetUmaLogger() override {
+    return uma_logger_;
+  }
+
   void OnRegionCaptureRectChanged(
       const std::optional<gfx::Rect>& region_capture_rect) override {}
+
+  ScreensharingControlsHistogramLogger uma_logger_;
 };
 
 class TestInfoBarManager : public infobars::InfoBarManager {

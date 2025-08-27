@@ -37,10 +37,12 @@
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
+#include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_infobar.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/screen_sharing_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -55,6 +57,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "sandbox/policy/switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -75,6 +78,34 @@
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_manager.h"
 #endif
+
+// TODO(crbug.com/441128451): Eliminate the duplication of this mock
+// across multiple test suites.
+class MockTabSharingUIViews : public TabSharingUI {
+ public:
+  MockTabSharingUIViews()
+      : uma_logger_(content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {}
+  ~MockTabSharingUIViews() override = default;
+
+  MOCK_METHOD(void, StartSharing, (infobars::InfoBar * infobar));
+  MOCK_METHOD(void, StopSharing, ());
+
+  gfx::NativeViewId OnStarted(
+      base::OnceClosure stop_callback,
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) override {
+    return 0;
+  }
+
+  ScreensharingControlsHistogramLogger& GetUmaLogger() override {
+    return uma_logger_;
+  }
+
+  void OnRegionCaptureRectChanged(
+      const std::optional<gfx::Rect>& region_capture_rect) override {}
+
+  ScreensharingControlsHistogramLogger uma_logger_;
+};
 
 class InfoBarsTest : public InProcessBrowserTest {
  public:
@@ -164,6 +195,8 @@ class InfoBarUiTest : public TestInfoBar {
 
  private:
   using IBD = infobars::InfoBarDelegate;
+
+  MockTabSharingUIViews mock_tab_sharing_ui_views_;
 };
 
 void InfoBarUiTest::ShowUi(const std::string& name) {
@@ -343,7 +376,8 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           TabSharingInfoBarDelegate::ButtonState::ENABLED,
           /*focus_target=*/content::GlobalRenderFrameHostId(),
           /*captured_surface_control_active=*/false,
-          /*ui=*/nullptr, TabSharingInfoBarDelegate::TabShareType::CAPTURE);
+          /*ui=*/&mock_tab_sharing_ui_views_,
+          TabSharingInfoBarDelegate::TabShareType::CAPTURE);
       break;
 
     default:

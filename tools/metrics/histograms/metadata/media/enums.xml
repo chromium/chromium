@@ -1675,7 +1675,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="ShareThisTabInsteadButtonClicked"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/views/screen_sharing_util.h:TabSharingInfoBarInteraction) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/views/screen_sharing_util.cc:TabSharingInfoBarInteraction) -->
 
 <enum name="MicrophoneMuteResult">
   <int value="0" label="Muted"/>

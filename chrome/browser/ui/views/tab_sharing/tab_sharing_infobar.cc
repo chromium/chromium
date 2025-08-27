@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/screen_sharing_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/vector_icons/vector_icons.h"
@@ -29,6 +30,7 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
+using InteractionWithControls = GetDisplayMediaUserInteractionWithControls;
 constexpr auto kCapturedSurfaceControlIndicatorButtonInsets =
     gfx::Insets::VH(4, 8);
 
@@ -50,8 +52,9 @@ TabSharingInfoBar::TabSharingInfoBar(
     const std::u16string& shared_tab_name,
     const std::u16string& capturer_name,
     TabSharingInfoBarDelegate::TabRole role,
-    TabSharingInfoBarDelegate::TabShareType capture_type)
-    : InfoBarView(std::move(delegate)) {
+    TabSharingInfoBarDelegate::TabShareType capture_type,
+    base::WeakPtr<ScreensharingControlsHistogramLogger> uma_logger)
+    : InfoBarView(std::move(delegate)), uma_logger_(uma_logger) {
   auto* delegate_ptr = GetDelegate();
 
   status_message_view_ = AddContentChildView(
@@ -194,7 +197,11 @@ void TabSharingInfoBar::StopButtonPressed() {
   if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
   }
-  RecordUma(TabSharingInfoBarInteraction::kStopButtonClicked);
+
+  if (uma_logger_) {
+    uma_logger_->Log(InteractionWithControls::kStopButtonClicked);
+  }
+
   GetDelegate()->Stop();
 }
 
@@ -202,7 +209,11 @@ void TabSharingInfoBar::ShareThisTabInsteadButtonPressed() {
   if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
   }
-  RecordUma(TabSharingInfoBarInteraction::kShareThisTabInsteadButtonClicked);
+
+  if (uma_logger_) {
+    uma_logger_->Log(InteractionWithControls::kShareThisTabInsteadClicked);
+  }
+
   GetDelegate()->ShareThisTabInstead();
 }
 
@@ -239,7 +250,7 @@ std::unique_ptr<views::View> TabSharingInfoBar::CreateStatusMessageView(
       GetOriginFromId(capturer_id).scheme() != extensions::kExtensionScheme) {
     return TabSharingStatusMessageView::Create(capturer_id, shared_tab_info,
                                                capturer_info, capturer_name,
-                                               role, capture_type);
+                                               role, capture_type, uma_logger_);
   } else {
     return CreateStatusMessageLabel(shared_tab_info, capturer_info,
                                     capturer_name, role, capture_type);
@@ -301,8 +312,9 @@ std::unique_ptr<infobars::InfoBar> CreateTabSharingInfoBar(
     const std::u16string& shared_tab_name,
     const std::u16string& capturer_name,
     TabSharingInfoBarDelegate::TabRole role,
-    TabSharingInfoBarDelegate::TabShareType capture_type) {
-  return std::make_unique<TabSharingInfoBar>(std::move(delegate), shared_tab_id,
-                                             capturer_id, shared_tab_name,
-                                             capturer_name, role, capture_type);
+    TabSharingInfoBarDelegate::TabShareType capture_type,
+    base::WeakPtr<ScreensharingControlsHistogramLogger> uma_logger) {
+  return std::make_unique<TabSharingInfoBar>(
+      std::move(delegate), shared_tab_id, capturer_id, shared_tab_name,
+      capturer_name, role, capture_type, uma_logger);
 }

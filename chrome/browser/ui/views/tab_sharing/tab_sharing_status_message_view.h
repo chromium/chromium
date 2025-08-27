@@ -64,7 +64,8 @@ class TabSharingStatusMessageView : public views::View {
       const TabSharingStatusMessageView::EndpointInfo& capturer_info,
       const std::u16string& capturer_name,
       TabSharingInfoBarDelegate::TabRole role,
-      TabSharingInfoBarDelegate::TabShareType capture_type);
+      TabSharingInfoBarDelegate::TabShareType capture_type,
+      base::WeakPtr<ScreensharingControlsHistogramLogger> uma_logger);
 
   static std::u16string GetMessageText(
       const TabSharingStatusMessageView::EndpointInfo& shared_tab_info,
@@ -73,7 +74,9 @@ class TabSharingStatusMessageView : public views::View {
       TabSharingInfoBarDelegate::TabRole role,
       TabSharingInfoBarDelegate::TabShareType capture_type);
 
-  explicit TabSharingStatusMessageView(const MessageInfo& info);
+  TabSharingStatusMessageView(
+      const MessageInfo& info,
+      base::WeakPtr<ScreensharingControlsHistogramLogger> uma_logger);
   TabSharingStatusMessageView(const TabSharingStatusMessageView&) = delete;
   TabSharingStatusMessageView& operator=(const TabSharingStatusMessageView&) =
       delete;
@@ -89,6 +92,8 @@ class TabSharingStatusMessageView : public views::View {
       const EndpointInfo& endpoint_info,
       int flex_layout_order,
       std::optional<TabSharingInfoBarDelegate::TabRole> tab_role_for_uma);
+
+  const base::WeakPtr<ScreensharingControlsHistogramLogger> uma_logger_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_SHARING_TAB_SHARING_STATUS_MESSAGE_VIEW_H_

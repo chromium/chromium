@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 
@@ -21,6 +22,7 @@ class InfoBarManager;
 class InfoBar;
 }  // namespace infobars
 
+class ScreensharingControlsHistogramLogger;
 class TabSharingUI;
 
 // Creates an infobar for sharing a tab using desktopCapture() API; one delegate
@@ -164,6 +166,7 @@ std::unique_ptr<infobars::InfoBar> CreateTabSharingInfoBar(
     const std::u16string& shared_tab_name,
     const std::u16string& capturer_name,
     TabSharingInfoBarDelegate::TabRole role,
-    TabSharingInfoBarDelegate::TabShareType capture_type);
+    TabSharingInfoBarDelegate::TabShareType capture_type,
+    base::WeakPtr<ScreensharingControlsHistogramLogger> uma_logger);
 
 #endif  // CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_INFOBAR_DELEGATE_H_

@@ -21,13 +21,15 @@ class MdTextButton;
 // - a button to stop the capture
 class TabSharingInfoBar : public InfoBarView {
  public:
-  TabSharingInfoBar(std::unique_ptr<TabSharingInfoBarDelegate> delegate,
-                    content::GlobalRenderFrameHostId shared_tab_id,
-                    content::GlobalRenderFrameHostId capturer_id,
-                    const std::u16string& shared_tab_name,
-                    const std::u16string& capturer_name,
-                    TabSharingInfoBarDelegate::TabRole role,
-                    TabSharingInfoBarDelegate::TabShareType capture_type);
+  TabSharingInfoBar(
+      std::unique_ptr<TabSharingInfoBarDelegate> delegate,
+      content::GlobalRenderFrameHostId shared_tab_id,
+      content::GlobalRenderFrameHostId capturer_id,
+      const std::u16string& shared_tab_name,
+      const std::u16string& capturer_name,
+      TabSharingInfoBarDelegate::TabRole role,
+      TabSharingInfoBarDelegate::TabShareType capture_type,
+      base::WeakPtr<ScreensharingControlsHistogramLogger> uma_logger);
 
   TabSharingInfoBar(const TabSharingInfoBar&) = delete;
   TabSharingInfoBar& operator=(const TabSharingInfoBar&) = delete;
@@ -79,6 +81,12 @@ class TabSharingInfoBar : public InfoBarView {
   raw_ptr<views::MdTextButton> quick_nav_button_ = nullptr;
   raw_ptr<views::MdTextButton> csc_indicator_button_ = nullptr;
   raw_ptr<views::Link> link_ = nullptr;
+
+  // Facilitates coordinated UMA logging between multiple infobars,
+  // ensuring that if the user interacts with one infobars, the other
+  // infobars do not mistakenly log "no-interaction".
+  // This is owned by TabSharingUIViews.
+  const base::WeakPtr<ScreensharingControlsHistogramLogger> uma_logger_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_SHARING_TAB_SHARING_INFOBAR_H_

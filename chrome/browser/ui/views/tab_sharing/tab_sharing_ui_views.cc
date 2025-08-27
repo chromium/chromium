@@ -201,7 +201,8 @@ TabSharingUIViews::TabSharingUIViews(
       shared_tab_scheme_display_(GetSharedTabSchemeDisplay()),
       app_preferred_current_tab_(app_preferred_current_tab),
       capture_type_(capture_type),
-      captured_surface_control_active_(captured_surface_control_active) {
+      captured_surface_control_active_(captured_surface_control_active),
+      uma_logger_(content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Observe(shared_tab_);
@@ -299,6 +300,10 @@ void TabSharingUIViews::StopSharing() {
   UpdateTabCaptureData(shared_tab_, TabCaptureUpdate::kCaptureRemoved);
   tab_capture_indicator_ui_.reset();
   shared_tab_ = nullptr;
+}
+
+ScreensharingControlsHistogramLogger& TabSharingUIViews::GetUmaLogger() {
+  return uma_logger_;
 }
 
 void TabSharingUIViews::OnBrowserAdded(Browser* browser) {
