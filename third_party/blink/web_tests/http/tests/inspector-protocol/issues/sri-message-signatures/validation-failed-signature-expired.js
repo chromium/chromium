@@ -15,7 +15,9 @@ const valid_signature_input = `signature=("unencoded-digest";sf);keyid="JrQLj5P/
   await dp.Audits.enable();
   const url = 'inspector-protocol/network/resources/hello-world.html';
   await page.navigate(url);
-  const issuePromise = dp.Audits.onceIssueAdded();
+  const issuePromise = dp.Audits.onceIssueAdded(e => {
+    return e.params.issue.code === 'SRIMessageSignatureIssue';
+  });
 
   let testURL = new URL('/inspector-protocol/resources/sri-message-signature-test.php', self.origin);
   testURL.searchParams.set('digest', valid_digest);
