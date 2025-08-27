@@ -1784,6 +1784,8 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
       return {};
     case ax::mojom::Role::kMenuItemRadio:
       return {};
+    case ax::mojom::Role::kMenuItemSeparator:
+      return {};
     case ax::mojom::Role::kMeter:
       return GetLocalizedString(IDS_AX_ROLE_METER);
     case ax::mojom::Role::kNavigation:

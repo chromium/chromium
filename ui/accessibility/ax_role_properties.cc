@@ -514,6 +514,7 @@ bool IsMenuRelated(const ax::mojom::Role role) {
     case ax::mojom::Role::kMenuItemRadio:
     case ax::mojom::Role::kMenuListOption:
     case ax::mojom::Role::kMenuListPopup:
+    case ax::mojom::Role::kMenuItemSeparator:
       return true;
     default:
       return false;

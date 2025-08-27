@@ -5882,8 +5882,13 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   child10.role = ax::mojom::Role::kLineBreak;
   root.child_ids.push_back(child10.id);
 
+  AXNodeData child11;
+  child11.id = 12;
+  child11.role = ax::mojom::Role::kMenuItemSeparator;
+  root.child_ids.push_back(child11.id);
+
   Init(root, child1, child2, child3, child4, child5, child6, child7, child8,
-       child9, child10);
+       child9, child10, child11);
 
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child1.id),
@@ -5915,6 +5920,9 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child10.id),
       UIA_ControlTypePropertyId, int{UIA_TextControlTypeId});
+  EXPECT_UIA_INT_EQ(
+      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child11.id),
+      UIA_ControlTypePropertyId, int{UIA_SeparatorControlTypeId});
 }
 
 TEST_F(AXPlatformNodeWinTest, IsUIAControlForStatusRole) {

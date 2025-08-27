@@ -50,6 +50,7 @@ bool IsLeaf(const AXNode* node) {
 
   switch (node->GetRole()) {
     case ax::mojom::Role::kImage:
+    case ax::mojom::Role::kMenuItemSeparator:
     case ax::mojom::Role::kMeter:
     case ax::mojom::Role::kScrollBar:
     case ax::mojom::Role::kSlider:

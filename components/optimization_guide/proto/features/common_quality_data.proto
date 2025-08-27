@@ -1009,7 +1009,7 @@ enum AXTextAffinity {
 }
 
 // AX Role.
-// Next ID: 213
+// Next ID: 214
 enum AXRole {
   AX_ROLE_NONE = 0;
 
@@ -1264,6 +1264,8 @@ enum AXRole {
   AX_ROLE_MENUITEMCHECKBOX = 125;
 
   AX_ROLE_MENUITEMRADIO = 126;
+
+  AX_ROLE_MENUITEMSEPARATOR = 213;
 
   AX_ROLE_MENULISTOPTION = 127;
 

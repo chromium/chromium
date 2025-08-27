@@ -436,6 +436,8 @@ const char* ToString(ax::mojom::Role role) {
       return "menuItemCheckBox";
     case ax::mojom::Role::kMenuItemRadio:
       return "menuItemRadio";
+    case ax::mojom::Role::kMenuItemSeparator:
+      return "menuItemSeparator";
     case ax::mojom::Role::kMenuListOption:
       return "menuListOption";
     case ax::mojom::Role::kMenuListPopup:
@@ -868,6 +870,8 @@ ax::mojom::Role StringToRole(const std::string& role) {
     return ax::mojom::Role::kMenuItemCheckBox;
   } else if (role == "kMenuItemRadio") {
     return ax::mojom::Role::kMenuItemRadio;
+  } else if (role == "kMenuItemSeparator") {
+    return ax::mojom::Role::kMenuItemSeparator;
   } else if (role == "kMenuListOption") {
     return ax::mojom::Role::kMenuListOption;
   } else if (role == "kMenuListPopup") {

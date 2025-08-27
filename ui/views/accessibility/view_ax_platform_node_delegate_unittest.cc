@@ -1426,7 +1426,7 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
       separator_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(separator_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(separator_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(separator_item->GetRole(), ax::mojom::Role::kSplitter);
+  EXPECT_EQ(separator_item->GetRole(), ax::mojom::Role::kMenuItemSeparator);
   EXPECT_EQ(separator_item->GetData().GetHasPopup(),
             ax::mojom::HasPopup::kFalse);
   EXPECT_FALSE(

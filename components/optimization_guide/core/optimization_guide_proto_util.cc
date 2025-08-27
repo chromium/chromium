@@ -911,6 +911,8 @@ optimization_guide::proto::AXRole AXRoleToProto(ax::mojom::Role role) {
       return optimization_guide::proto::AXRole::AX_ROLE_MENUITEMCHECKBOX;
     case ax::mojom::Role::kMenuItemRadio:
       return optimization_guide::proto::AXRole::AX_ROLE_MENUITEMRADIO;
+    case ax::mojom::Role::kMenuItemSeparator:
+      return optimization_guide::proto::AXRole::AX_ROLE_MENUITEMSEPARATOR;
     case ax::mojom::Role::kMenuListOption:
       return optimization_guide::proto::AXRole::AX_ROLE_MENULISTOPTION;
     case ax::mojom::Role::kMenuListPopup:

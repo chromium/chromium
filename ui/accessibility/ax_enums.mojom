@@ -118,8 +118,8 @@ enum Event {
 //
 // LINT.IfChange(Role)
 //
-// Next version: 8
-// Next value: 213
+// Next version: 9
+// Next value: 214
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
 enum Role {
   [Default]kUnknown = 181, // The role has not been set.
@@ -296,6 +296,7 @@ enum Role {
   kMenuItem = 124,
   kMenuItemCheckBox = 125,
   kMenuItemRadio = 126,
+  [MinVersion=8] kMenuItemSeparator = 213,
   kMenuListOption = 127,
   kMenuListPopup = 128,
   kMeter = 129,

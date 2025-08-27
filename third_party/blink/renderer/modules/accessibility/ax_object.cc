@@ -182,6 +182,7 @@ bool IsValidRole(ax::mojom::blink::Role role) {
     case ax::mojom::blink::Role::kKeyboard:
     case ax::mojom::blink::Role::kImeCandidate:
     case ax::mojom::blink::Role::kListGrid:
+    case ax::mojom::blink::Role::kMenuItemSeparator:
     case ax::mojom::blink::Role::kPane:
     case ax::mojom::blink::Role::kPdfActionableHighlight:
     case ax::mojom::blink::Role::kPdfRoot:
@@ -8376,6 +8377,7 @@ bool AXObject::SupportsNameFromContents(bool recursive,
     case ax::mojom::blink::Role::kDirectoryDeprecated:
     case ax::mojom::blink::Role::kKeyboard:
     case ax::mojom::blink::Role::kImeCandidate:
+    case ax::mojom::blink::Role::kMenuItemSeparator:
     case ax::mojom::blink::Role::kListGrid:
     case ax::mojom::blink::Role::kPane:
     case ax::mojom::blink::Role::kPdfActionableHighlight:

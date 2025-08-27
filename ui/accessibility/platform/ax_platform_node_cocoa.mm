@@ -910,6 +910,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       return NSAccessibilityMenuItemRole;
     case ax::mojom::Role::kMenuItemRadio:
       return NSAccessibilityMenuItemRole;
+    case ax::mojom::Role::kMenuItemSeparator:
+      return NSAccessibilityMenuItemRole;
     case ax::mojom::Role::kMenuListOption:
       return NSAccessibilityMenuItemRole;
     case ax::mojom::Role::kMenuListPopup:
@@ -2285,8 +2287,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (NSNumber*)AXEnabled {
-  return
-      @(_node->GetData().GetRestriction() != ax::mojom::Restriction::kDisabled);
+  return @([self isAccessibilityEnabled]);
 }
 
 - (BOOL)isAccessibilityExpanded {
@@ -2640,6 +2641,12 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 - (BOOL)isAccessibilityEnabled {
   if (!_node)
     return NO;
+
+  // Native menus expose separators as disabled menu items. Chromium mirrors
+  // this behavior.
+  if (_node->GetRole() == ax::mojom::Role::kMenuItemSeparator) {
+    return NO;
+  }
 
   return _node->GetData().GetRestriction() != ax::mojom::Restriction::kDisabled;
 }

@@ -2888,6 +2888,8 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_CHECK_MENU_ITEM;
     case ax::mojom::Role::kMenuItemRadio:
       return ATK_ROLE_RADIO_MENU_ITEM;
+    case ax::mojom::Role::kMenuItemSeparator:
+      return ATK_ROLE_SEPARATOR;
     case ax::mojom::Role::kMenuListPopup:
       return ATK_ROLE_MENU;
     case ax::mojom::Role::kMenuListOption:

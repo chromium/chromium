@@ -1284,6 +1284,10 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kDeferToControlType,
               UIA_RadioButtonControlTypeId, L"menuitemradio"};
 
+    case ax::mojom::Role::kMenuItemSeparator:
+      return {UIALocalizationStrategy::kDeferToControlType,
+              UIA_SeparatorControlTypeId, L"separator"};
+
     case ax::mojom::Role::kMenuListPopup:
       return {UIALocalizationStrategy::kSupply, UIA_ListControlTypeId, L"list"};
 
@@ -6758,6 +6762,9 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kMenuItemCheckBox:
     case ax::mojom::Role::kMenuItemRadio:
       return ROLE_SYSTEM_MENUITEM;
+
+    case ax::mojom::Role::kMenuItemSeparator:
+      return ROLE_SYSTEM_SEPARATOR;
 
     case ax::mojom::Role::kMenuListPopup:
       return ROLE_SYSTEM_LIST;
