@@ -2957,8 +2957,6 @@ crbug.com/440888473 [ Mac14-arm64 ] external/wpt/html/rendering/non-replaced-ele
 crbug.com/440888473 [ Mac14 ] external/wpt/html/rendering/non-replaced-elements/tables/table-background-print.html [ Failure ]
 crbug.com/440811030 [ Mac14-arm64 ] external/wpt/mediacapture-streams/GUM-permissions-query.https.html [ Timeout ]
 crbug.com/440811030 [ Mac14 ] external/wpt/mediacapture-streams/GUM-permissions-query.https.html [ Timeout ]
-crbug.com/440599114 [ Mac14-arm64 ] external/wpt/storage/buckets/idlharness-worker.https.any.worker.html [ Skip Timeout ]
-crbug.com/440599114 [ Mac14 ] external/wpt/storage/buckets/idlharness-worker.https.any.worker.html [ Skip Timeout ]
 crbug.com/440898625 [ Mac14-arm64 ] external/wpt/wasm/core/conversions.wast.js.html [ Timeout ]
 crbug.com/440898625 [ Mac14 ] external/wpt/wasm/core/conversions.wast.js.html [ Timeout ]
 crbug.com/440898625 [ Mac14-arm64 ] external/wpt/wasm/core/f64.wast.js.html [ Timeout ]
