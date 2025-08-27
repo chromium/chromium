@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/common/pref_names.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -202,12 +203,18 @@ TranslatePasswordStatusToError(password_manager::ImportResults::Status status) {
   }
 }
 
-// Returns false if importing passwords is disabled by enterprise policy.
-bool IsPasswordImportAllowedByPolicy(const PrefService* pref_service) {
-  return !pref_service->IsManagedPreference(
-             password_manager::prefs::kCredentialsEnableService) ||
-         pref_service->GetBoolean(
-             password_manager::prefs::kCredentialsEnableService);
+// Returns true if an import is blocked by a "disabling" policy.
+bool IsImportBlockedByDisablingPolicy(const PrefService* pref_service,
+                                      const char* pref_name) {
+  return pref_service->IsManagedPreference(pref_name) &&
+         pref_service->GetBoolean(pref_name);
+}
+
+// Returns true if an import is blocked by an "enabling" policy.
+bool IsImportBlockedByEnablingPolicy(const PrefService* pref_service,
+                                     const char* pref_name) {
+  return pref_service->IsManagedPreference(pref_name) &&
+         !pref_service->GetBoolean(pref_name);
 }
 }  // namespace
 
@@ -309,35 +316,43 @@ void SafariDataImporter::CompleteImport(
       kNumTasks, base::BindOnce(&SafariDataImporter::OnImportComplete,
                                 weak_factory_.GetWeakPtr()));
 
-  history_urls_imported_ = 0;
-  RustHistoryCallback::ParseHistoryCallback parse_history_callback =
-      base::BindPostTask(
-          GetRunner(),
-          base::BindRepeating(&SafariDataImporter::ImportHistoryEntries,
-                              weak_factory_.GetWeakPtr()));
+  if (!IsImportBlockedByDisablingPolicy(pref_service_,
+                                        prefs::kSavingBrowserHistoryDisabled)) {
+    history_urls_imported_ = 0;
+    RustHistoryCallback::ParseHistoryCallback parse_history_callback =
+        base::BindPostTask(
+            GetRunner(),
+            base::BindRepeating(&SafariDataImporter::ImportHistoryEntries,
+                                weak_factory_.GetWeakPtr()));
 
-  base::OnceClosure done_history_closure = base::BindPostTask(
-      GetRunner(), base::BindOnce(&SafariDataImporter::OnHistoryImportCompleted,
-                                  weak_factory_.GetWeakPtr())
-                       .Then(barrier_closure));
+    base::OnceClosure done_history_closure = base::BindPostTask(
+        GetRunner(),
+        base::BindOnce(&SafariDataImporter::OnHistoryImportCompleted,
+                       weak_factory_.GetWeakPtr())
+            .Then(barrier_closure));
 
-  base::OnceClosure failed_history_closure = base::BindPostTask(
-      GetRunner(), base::BindOnce(&SafariDataImporter::OnHistoryImportFailed,
-                                  weak_factory_.GetWeakPtr())
-                       .Then(barrier_closure));
+    base::OnceClosure failed_history_closure = base::BindPostTask(
+        GetRunner(), base::BindOnce(&SafariDataImporter::OnHistoryImportFailed,
+                                    weak_factory_.GetWeakPtr())
+                         .Then(barrier_closure));
 
-  metrics_recorder_.history_metrics().OnImportStarted();
-  blocking_worker_.AsyncCall(&BlockingWorker::ImportHistory)
-      .WithArgs(std::make_unique<RustHistoryCallback>(
-                    std::move(parse_history_callback),
-                    std::move(done_history_closure),
-                    std::move(failed_history_closure)),
-                history_size_threshold_);
+    metrics_recorder_.history_metrics().OnImportStarted();
+    blocking_worker_.AsyncCall(&BlockingWorker::ImportHistory)
+        .WithArgs(std::make_unique<RustHistoryCallback>(
+                      std::move(parse_history_callback),
+                      std::move(done_history_closure),
+                      std::move(failed_history_closure)),
+                  history_size_threshold_);
+  } else {
+    client_->OnHistoryImported(0);
+    barrier_closure.Run();
+  }
 
   if (password_importer_ &&
       password_importer_->IsState(
           password_manager::PasswordImporter::kUserInteractionRequired)) {
-    CHECK(IsPasswordImportAllowedByPolicy(pref_service_));
+    CHECK(!IsImportBlockedByEnablingPolicy(
+        pref_service_, password_manager::prefs::kCredentialsEnableService));
 
     metrics_recorder_.password_metrics().OnImportStarted();
 
@@ -544,7 +559,8 @@ void SafariDataImporter::PreparePasswords(std::string csv_data) {
     return;
   }
 
-  if (!IsPasswordImportAllowedByPolicy(pref_service_)) {
+  if (IsImportBlockedByEnablingPolicy(
+          pref_service_, password_manager::prefs::kCredentialsEnableService)) {
     // TODO(crbug.com/407587751): Signal to UI that passwords import is blocked
     // by policy.
     client_->OnPasswordsReady({});
@@ -662,6 +678,14 @@ void SafariDataImporter::OnBookmarkParsingError(
 }
 
 void SafariDataImporter::PrepareHistory(size_t file_size_bytes) {
+  if (IsImportBlockedByDisablingPolicy(pref_service_,
+                                       prefs::kSavingBrowserHistoryDisabled)) {
+    // TODO(crbug.com/407587751): Signal to UI that history import is blocked
+    // by policy.
+    client_->OnHistoryReady(/* estimated_count= */ 0, {});
+    return;
+  }
+
   // This is an approximation of the number of bytes per URL entry in the
   // history file.
   static const size_t kBytesPerURL = 250;

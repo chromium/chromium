@@ -7,6 +7,7 @@ include_rules = [
   "+components/bookmarks/test",
   "+components/favicon_base",
   "+components/history/core/browser",
+  "+components/history/core/common",
   "+components/history/core/test",
   "+components/password_manager/core/browser",
   "+components/password_manager/core/common",

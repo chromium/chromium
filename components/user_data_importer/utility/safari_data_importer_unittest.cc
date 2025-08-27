@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
@@ -24,6 +25,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/bookmarks/test/test_matchers.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/common/pref_names.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
@@ -153,6 +155,8 @@ class SafariDataImporterTest : public testing::Test {
 
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kSavingBrowserHistoryDisabled, false);
 
 #if BUILDFLAG(IS_IOS)
     auto parser = MakeBookmarkParser();
@@ -190,7 +194,9 @@ class SafariDataImporterTest : public testing::Test {
   void TearDown() override {
     account_store_->ShutdownOnUIThread();
     profile_store_->ShutdownOnUIThread();
+    history_service_->Shutdown();
     Synchronize();
+    task_tracker_.TryCancelAll();
   }
 
   const std::vector<ImportedBookmarkEntry>& GetPendingBookmarks() const {
@@ -340,7 +346,11 @@ class SafariDataImporterTest : public testing::Test {
     return account_store_.get();
   }
 
+  history::HistoryService* history_service() { return history_service_.get(); }
+
   testing::StrictMock<MockSafariDataImportClient> client_;
+
+  base::CancelableTaskTracker task_tracker_;
 
  private:
   void WaitUntilPresenterIsReady() {
@@ -1227,6 +1237,46 @@ TEST_F(SafariDataImporterTest,
 
   EXPECT_THAT(profile_store()->stored_passwords(), SizeIs(1));
   EXPECT_THAT(account_store()->stored_passwords(), IsEmpty());
+}
+
+// Tests that history import is blocked when disabled by enterprise policy.
+TEST_F(SafariDataImporterTest, ImportHistoryBlockedByPolicy) {
+  pref_service_.SetManagedPref(prefs::kSavingBrowserHistoryDisabled,
+                               std::make_unique<base::Value>(true));
+
+  EXPECT_CALL(client_, OnPasswordsReady(
+                           AllOf(Field(&ImportResults::number_imported, 0u),
+                                 Field(&ImportResults::number_to_import, 3u))));
+#if BUILDFLAG(IS_IOS)
+  ExpectBookmarksReady(6u);
+#else
+  ExpectBookmarksReady(5u);
+#endif
+  EXPECT_CALL(client_, OnPaymentCardsReady(3u));
+  EXPECT_CALL(client_, OnHistoryReady(0, _));
+
+  PrepareImportFromFile();
+
+  EXPECT_CALL(client_, OnPasswordsImported(
+                           AllOf(Field(&ImportResults::number_imported, 3u),
+                                 Field(&ImportResults::number_to_import, 0u))));
+  EXPECT_CALL(client_, OnBookmarksImported(5u));
+  EXPECT_CALL(client_, OnPaymentCardsImported(3u));
+  EXPECT_CALL(client_, OnHistoryImported(0));
+
+  CompleteImport({});
+
+  // TODO(crbug.com/407587751): Move this into a helper method to be
+  // reused by other tests.
+  history::QueryResults results;
+  history_service()->QueryHistory(
+      u"", history::QueryOptions(),
+      base::BindLambdaForTesting(
+          [&](history::QueryResults r) { results = std::move(r); }),
+      &task_tracker_);
+  history::BlockUntilHistoryProcessesPendingRequests(history_service());
+
+  EXPECT_TRUE(results.empty());
 }
 
 }  // namespace user_data_importer
