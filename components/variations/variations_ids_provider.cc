@@ -103,21 +103,6 @@ VariationsIdsProvider::GetClientDataHeaders(bool is_signed_in) {
   return variations::mojom::VariationsHeaders::New(headers);
 }
 
-std::string VariationsIdsProvider::GetVariationsString(
-    const std::set<IDCollectionKey>& keys) {
-  // Construct a space-separated string with leading and trailing spaces from
-  // the VariationIDs set. The IDs in the string are in sorted order as per the
-  // std::set contract.
-  std::string ids_string = " ";
-
-  for (const VariationID& id : GetVariationsVector(keys)) {
-    ids_string.append(base::NumberToString(id));
-    ids_string.push_back(' ');
-  }
-
-  return ids_string;
-}
-
 std::string VariationsIdsProvider::GetGoogleAppVariationsString() {
   return GetVariationsString({GOOGLE_APP});
 }
@@ -269,6 +254,20 @@ void VariationsIdsProvider::DestroyInstanceForTesting() {
   base::AutoLock lock(GetInstanceLock());
   delete g_instance;
   g_instance = nullptr;
+}
+
+std::string VariationsIdsProvider::GetVariationsString(
+    const std::set<IDCollectionKey>& keys) {
+  // Construct a space-separated string with leading and trailing spaces from
+  // the VariationIDs set. The IDs in the string are unique and in sorted order.
+  std::string ids_string = " ";
+
+  for (const VariationID& id : GetVariationsVector(keys)) {
+    ids_string.append(base::NumberToString(id));
+    ids_string.push_back(' ');
+  }
+
+  return ids_string;
 }
 
 void VariationsIdsProvider::OnFieldTrialGroupFinalized(
