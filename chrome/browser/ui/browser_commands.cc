@@ -105,6 +105,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -2078,6 +2079,18 @@ void ShowTabSearch(BrowserWindowInterface* bwi) {
 
 void CloseTabSearch(Browser* browser) {
   browser->window()->CloseTabSearchBubble();
+}
+
+void ToggleVerticalTabs(Browser* browser) {
+  tabs::VerticalTabStripStateController* controller =
+      browser->GetFeatures().vertical_tab_strip_state_controller();
+  if (!controller) {
+    return;
+  }
+
+  bool initial_tab_orientation = controller->IsVerticalTabsEnabled();
+
+  controller->SetVerticalTabsEnabled(!initial_tab_orientation);
 }
 
 void ShowTabDeclutter(Browser* browser) {

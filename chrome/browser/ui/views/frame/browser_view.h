@@ -911,6 +911,9 @@ class BrowserView : public BrowserWindow,
   // affected.
   void RevealTabStripIfNeeded();
 
+  void OnVerticalTabStripStateChanged(
+      tabs::VerticalTabStripStateController* controller);
+
   // Make sure the WebUI tab strip exists if it should.
   void MaybeInitializeWebUITabStrip();
 
@@ -1343,6 +1346,8 @@ class BrowserView : public BrowserWindow,
   PrefChangeRegistrar registrar_;
 
   ui::OmniboxPopupCloser omnibox_popup_closer_{this};
+
+  base::CallbackListSubscription vertical_tab_subscription_;
 
   mutable base::WeakPtrFactory<BrowserView> weak_ptr_factory_{this};
 };

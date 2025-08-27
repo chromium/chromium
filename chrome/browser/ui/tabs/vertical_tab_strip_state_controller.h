@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
 
@@ -43,6 +44,7 @@ class VerticalTabStripStateController {
   void NotifyStateChanged();
 
   const raw_ptr<PrefService> pref_service_;
+  PrefChangeRegistrar pref_change_registrar_;
   VerticalTabStripState state_;
   base::RepeatingCallbackList<void(VerticalTabStripStateController*)>
       on_state_changed_callback_list_;

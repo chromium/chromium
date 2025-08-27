@@ -704,7 +704,7 @@ if (!is_android) {
   source_set("interactive_ui_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = []
+    sources = [ "vertical_tab_strip_state_controller_interactive_uitest.cc" ]
 
     if (!is_chromeos) {
       # ChromeOS does not use desktop widgets.

@@ -101,6 +101,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
@@ -1095,6 +1096,15 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   if (GetFocusManager()) {
     focus_manager_observation_.Observe(GetFocusManager());
   }
+
+  if (tabs::AreVerticalTabsEnabled()) {
+    vertical_tab_subscription_ =
+        browser_->browser_window_features()
+            ->vertical_tab_strip_state_controller()
+            ->RegisterOnStateChanged(base::BindRepeating(
+                &BrowserView::OnVerticalTabStripStateChanged,
+                base::Unretained(this)));
+  }
 }
 
 BrowserView::~BrowserView() {
@@ -1421,6 +1431,11 @@ const ImmersiveModeController* BrowserView::immersive_mode_controller() const {
 
 bool BrowserView::IsInSplitView() const {
   return multi_contents_view_ && multi_contents_view_->IsInSplitView();
+}
+
+void BrowserView::OnVerticalTabStripStateChanged(
+    tabs::VerticalTabStripStateController* controller) {
+  InvalidateLayout();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

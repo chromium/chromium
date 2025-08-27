@@ -68,6 +68,11 @@ class FrameGrabHandle : public views::View {
   METADATA_HEADER(FrameGrabHandle, views::View)
 
  public:
+  FrameGrabHandle() {
+    SetProperty(views::kElementIdentifierKey,
+                kTabStripFrameGrabHandleElementId);
+  }
+
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
     // Reserve some space for the frame to be grabbed by, even if the tabstrip

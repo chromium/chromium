@@ -32,6 +32,10 @@ namespace web_modal {
 class WebContentsModalDialogHost;
 }
 
+namespace tabs {
+class VerticalTabStripStateController;
+}
+
 // The layout manager used in chrome browser.
 class BrowserViewLayout : public views::LayoutManager {
  public:
@@ -138,6 +142,10 @@ class BrowserViewLayout : public views::LayoutManager {
 
   void UpdateSplitViewInsets();
 
+  // Returns the current pref for vertical tabs by accessing the vertical
+  // tab strip state controller
+  bool IsVerticalTabsEnabled() const;
+
   // The delegate interface. May be a mock in tests.
   const std::unique_ptr<BrowserViewLayoutDelegate> delegate_;
 
@@ -168,6 +176,8 @@ class BrowserViewLayout : public views::LayoutManager {
   raw_ptr<views::View> loading_bar_ = nullptr;
   raw_ptr<TabStrip> tab_strip_ = nullptr;
   raw_ptr<BookmarkBarView> bookmark_bar_ = nullptr;
+  raw_ptr<tabs::VerticalTabStripStateController>
+      vertical_tab_strip_controller_ = nullptr;
 
   // The host for use in positioning the web contents modal dialog.
   std::unique_ptr<WebContentsModalDialogHostViews> dialog_host_;

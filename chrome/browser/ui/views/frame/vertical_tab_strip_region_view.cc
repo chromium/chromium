@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -74,6 +75,8 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
       state_controller->RegisterOnStateChanged(base::BindRepeating(
           &VerticalTabStripRegionView::OnCollapsedStateChanged,
           base::Unretained(this)));
+
+  SetProperty(views::kElementIdentifierKey, kVerticalTabStripRegionElementId);
 }
 
 VerticalTabStripRegionView::~VerticalTabStripRegionView() = default;
