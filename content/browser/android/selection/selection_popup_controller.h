@@ -23,6 +23,7 @@ class PointF;
 
 namespace ui {
 class MenuModel;
+class MenuModelBridge;
 }
 
 namespace content {
@@ -86,6 +87,7 @@ class SelectionPopupController : public RenderWidgetHostConnector {
   raw_ptr<RenderWidgetHostViewAndroid> rwhva_ = nullptr;
   std::unique_ptr<SelectionPopupDelegate> selection_popup_delegate_;
   // Retained to keep the model in scope until the menu is dismissed.
+  std::unique_ptr<ui::MenuModelBridge> menu_model_bridge_;
   std::unique_ptr<ui::MenuModel> extra_items_menu_model_;
 
   JavaObjectWeakGlobalRef java_obj_;

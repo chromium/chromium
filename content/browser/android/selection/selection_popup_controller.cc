@@ -306,15 +306,14 @@ bool SelectionPopupController::ShowSelectionMenu(
       params.source_type == ui::mojom::MenuSourceType::kTouch ||
       params.source_type == ui::mojom::MenuSourceType::kLongPress;
 
-  std::unique_ptr<ui::MenuModelBridge> menu_model_bridge =
-      std::make_unique<ui::MenuModelBridge>();
+  menu_model_bridge_ = std::make_unique<ui::MenuModelBridge>();
   if (selection_popup_delegate_) {
     extra_items_menu_model_.reset();
     extra_items_menu_model_ =
         selection_popup_delegate_->GetSelectionPopupExtraItems(
             *render_frame_host, params);
     if (extra_items_menu_model_) {
-      menu_model_bridge->AddExtensionItems(extra_items_menu_model_.get());
+      menu_model_bridge_->AddExtensionItems(extra_items_menu_model_.get());
     }
   }
 
@@ -326,7 +325,7 @@ bool SelectionPopupController::ShowSelectionMenu(
       can_select_all, can_edit_richly, should_suggest,
       static_cast<int>(params.source_type),
       render_frame_host->GetJavaRenderFrameHost(),
-      menu_model_bridge->GetJavaObject());
+      menu_model_bridge_->GetJavaObject());
   return true;
 }
 
@@ -357,6 +356,8 @@ void SelectionPopupController::HidePopupsAndPreserveSelection() {
   if (obj.is_null())
     return;
 
+  menu_model_bridge_.reset();
+  extra_items_menu_model_.reset();
   Java_SelectionPopupControllerImpl_hidePopupsAndPreserveSelection(env, obj);
 }
 
@@ -365,7 +366,6 @@ void SelectionPopupController::RestoreSelectionPopupsIfNecessary() {
   ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
   if (obj.is_null())
     return;
-  extra_items_menu_model_.reset();
   Java_SelectionPopupControllerImpl_restoreSelectionPopupsIfNecessary(env, obj);
 }
 
