@@ -51,6 +51,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="RegionalCapabilities.FunnelStage.RegionalPresence"
+    enum="RegionalProgramAndLocationMatch" expires_after="2025-12-28">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Reports on the relative status of the profile country and the Finch latest
+    country, in the context of the selected regional program.
+
+    Recorded when the profile is loaded, for profiles that have been determined
+    to be in-scope for a non-default program. Only one bucket is logged for a
+    profile, the most specific one. This means that &quot;region matches&quot;
+    is not logged when &quot;country matches&quot; is logged.
+  </summary>
+</histogram>
+
 <histogram name="RegionalCapabilities.LoadedCountrySource"
     enum="LoadedCapabilitiesCountrySource" expires_after="2025-12-28">
   <owner>dgn@chromium.org</owner>

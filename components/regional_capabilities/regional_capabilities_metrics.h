@@ -9,6 +9,8 @@
 
 namespace regional_capabilities {
 
+enum class Program;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -32,6 +34,21 @@ void RecordVariationsCountryMatching(
     country_codes::CountryId persisted_profile_country,
     country_codes::CountryId current_device_country,
     bool is_device_country_from_fallback);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ProgramAndLocationMatch)
+enum class ProgramAndLocationMatch {
+  SameAsProfileCountry = 0,
+  SameRegionAsProgram = 1,
+  NoMatch = 2,
+  kMaxValue = NoMatch
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/regional_capabilities/enums.xml:RegionalProgramAndLocationMatch)
+
+void RecordProgramAndLocationMatch(
+    ProgramAndLocationMatch program_and_location_match);
 
 }  // namespace regional_capabilities
 

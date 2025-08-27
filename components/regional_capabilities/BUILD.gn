@@ -15,14 +15,13 @@ static_library("regional_capabilities") {
     "regional_capabilities_prefs.h",
     "regional_capabilities_service.cc",
     "regional_capabilities_service.h",
-    "regional_capabilities_switches.cc",
-    "regional_capabilities_switches.h",
     "regional_capabilities_utils.cc",
     "regional_capabilities_utils.h",
   ]
 
   public_deps = [
     ":country_id",
+    ":switches",
     "//base",
     "//components/keyed_service/core",
   ]
@@ -59,7 +58,7 @@ source_set("country_access_reason") {
   deps = [ "//base" ]
 }
 
-static_library("country_id") {
+source_set("country_id") {
   public = [ "regional_capabilities_country_id.h" ]
 
   sources = [ "regional_capabilities_country_id.cc" ]
@@ -69,6 +68,17 @@ static_library("country_id") {
     "//base",
     "//components/country_codes",
   ]
+}
+
+source_set("switches") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "regional_capabilities_switches.cc",
+    "regional_capabilities_switches.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 source_set("data") {
@@ -85,13 +95,14 @@ source_set("data") {
   ]
 
   deps = [
+    ":switches",
     "//base",
     "//components/country_codes",
     "//ui/base",
   ]
 }
 
-static_library("test_support") {
+source_set("test_support") {
   testonly = true
   sources = [
     "regional_capabilities_test_utils.cc",

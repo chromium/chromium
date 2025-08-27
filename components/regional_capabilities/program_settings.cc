@@ -5,9 +5,11 @@
 #include "components/regional_capabilities/program_settings.h"
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/eea_countries_ids.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "ui/base/device_form_factor.h"
 
 namespace regional_capabilities {
@@ -39,6 +41,16 @@ constexpr ProgramSettings kDefaultSettings{
     .can_show_search_engine_choice_screen = false,
 };
 
+// "Fake" program used for baseline checks. Announces itself as Taiyaki, but
+// actually behaves like Default. Used when the `switches::kTaiyaki` feature is
+// disabled.
+constexpr ProgramSettings kNoOpTaiyakiSettings = []() {
+  ProgramSettings ret = kDefaultSettings;
+  ret.program = kTaiyakiSettings.program;
+  ret.associated_countries = kTaiyakiSettings.associated_countries;
+  return ret;
+}();
+
 }  // namespace
 
 bool IsInProgramRegion(Program program,
@@ -68,17 +80,24 @@ bool IsClientCompatibleWithProgram(Program program) {
     case Program::kDefault:
       return true;
   }
+  NOTREACHED();
 }
 
 const ProgramSettings& GetSettingsForProgram(Program program) {
   switch (program) {
     case Program::kTaiyaki:
-      return kTaiyakiSettings;
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+      if (base::FeatureList::IsEnabled(switches::kTaiyaki)) {
+        return kTaiyakiSettings;
+      }
+#endif
+      return kNoOpTaiyakiSettings;
     case Program::kWaffle:
       return kWaffleSettings;
     case Program::kDefault:
       return kDefaultSettings;
   }
+  NOTREACHED();
 }
 
 }  // namespace regional_capabilities

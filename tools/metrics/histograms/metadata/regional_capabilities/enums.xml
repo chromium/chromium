@@ -51,6 +51,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:LoadedCountrySource) -->
 
+<!-- LINT.IfChange(RegionalProgramAndLocationMatch) -->
+
+<enum name="RegionalProgramAndLocationMatch">
+  <int value="0" label="SameAsProfileCountry"/>
+  <int value="1" label="SameRegionAsProgram"/>
+  <int value="2" label="NoMatch"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:ProgramAndLocationMatch) -->
+
 </enums>
 
 </histogram-configuration>

@@ -55,7 +55,9 @@ class AsyncRegionalCapabilitiesServiceClient
 
   CountryId GetFallbackCountryId() override { return fallback_country_id_; }
 
-  CountryId GetVariationsLatestCountryId() override { return CountryId(); }
+  CountryId GetVariationsLatestCountryId() override {
+    return variations_latest_country_id_;
+  }
 
   void FetchCountryId(CountryIdCallback country_id_fetched_callback) override {
     ASSERT_FALSE(cached_country_id_callback_) << "Test setup error";
@@ -81,12 +83,17 @@ class AsyncRegionalCapabilitiesServiceClient
     }
   }
 
+  void SetVariationsLatestCountry(CountryId variations_latest_country_id) {
+    variations_latest_country_id_ = variations_latest_country_id;
+  }
+
   base::WeakPtr<AsyncRegionalCapabilitiesServiceClient> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
   const CountryId fallback_country_id_;
+  CountryId variations_latest_country_id_;
   std::optional<CountryId> fetched_country_id_;
   CountryIdCallback cached_country_id_callback_;
 
@@ -257,6 +264,10 @@ struct ProgramDeterminationTestParam {
   // `RegionalCapabilitiesServiceClient`.
   country_codes::CountryId client_fetched_country;
 
+  // If valid, will be injected to the service through its client's
+  // `GetVariationsLatestCountryId()`.
+  country_codes::CountryId variations_latest_country_id;
+
 #if BUILDFLAG(IS_ANDROID)
   Program device_program_override = Program::kDefault;
 #endif
@@ -343,6 +354,10 @@ TEST_P(RegionalCapabilitiesServiceProgramDeterminationTest, Run) {
       /* device_program= */ GetTestParam().device_program_override
 #endif  // BUILDFLAG(IS_ANDROID)
   );
+  if (GetTestParam().variations_latest_country_id.IsValid()) {
+    client()->SetVariationsLatestCountry(
+        GetTestParam().variations_latest_country_id);
+  }
   client()->SetFetchedCountry(GetTestParam().client_fetched_country);
 
   EXPECT_EQ(GetTestParam().expected_program,
@@ -517,7 +532,7 @@ INSTANTIATE_TEST_SUITE_P(
                 .test_name = "jp_to_taiyaki",
                 .run_only_on = kPhoneFormFactors,
                 .client_fetched_country = CountryId("JP"),
-                .expected_program = Program::kDefault,
+                .expected_program = Program::kTaiyaki,
                 .expected_is_in_choice_screen_region = false,
                 .expected_ose_list_type = SearchEngineListType::kTopN,
                 .expected_histograms =
@@ -561,6 +576,85 @@ INSTANTIATE_TEST_SUITE_P(
     &RegionalCapabilitiesServiceProgramDeterminationTest::GetTestName);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
+INSTANTIATE_TEST_SUITE_P(
+    RegionalPresence,
+    RegionalCapabilitiesServiceProgramDeterminationTest,
+    WithCompatibleTaiyakiFeatureState({
+        ProgramDeterminationTestParam{
+            .test_name = "in_scope_and_variations_country_match",
+            .client_fetched_country = CountryId("FR"),
+            .variations_latest_country_id = CountryId("FR"),
+#if BUILDFLAG(IS_ANDROID)
+            .device_program_override = Program::kWaffle,
+#endif
+            .expected_program = Program::kWaffle,
+            .expected_histograms =
+                {
+                    {"RegionalCapabilities.FunnelStage.RegionalPresence",
+                     ExpectHistogramBucket(
+                         ProgramAndLocationMatch::SameAsProfileCountry)},
+                },
+        },
+        ProgramDeterminationTestParam{
+            .test_name = "in_scope_and_variations_country_in_region",
+            .client_fetched_country = CountryId("FR"),
+            .variations_latest_country_id = CountryId("DE"),
+#if BUILDFLAG(IS_ANDROID)
+            .device_program_override = Program::kWaffle,
+#endif
+            .expected_program = Program::kWaffle,
+            .expected_histograms =
+                {
+                    {"RegionalCapabilities.FunnelStage.RegionalPresence",
+                     ExpectHistogramBucket(
+                         ProgramAndLocationMatch::SameRegionAsProgram)},
+                },
+        },
+        ProgramDeterminationTestParam{
+            .test_name = "in_scope_and_variations_country_not_in_region",
+            .client_fetched_country = CountryId("FR"),
+            .variations_latest_country_id = CountryId("US"),
+#if BUILDFLAG(IS_ANDROID)
+            .device_program_override = Program::kWaffle,
+#endif
+            .expected_program = Program::kWaffle,
+            .expected_histograms =
+                {
+                    {"RegionalCapabilities.FunnelStage.RegionalPresence",
+                     ExpectHistogramBucket(ProgramAndLocationMatch::NoMatch)},
+                },
+        },
+        ProgramDeterminationTestParam{
+            .test_name = "out_of_scope",
+            .client_fetched_country = CountryId("US"),
+            .variations_latest_country_id = CountryId("US"),
+#if BUILDFLAG(IS_ANDROID)
+            .device_program_override = Program::kDefault,
+#endif
+            .expected_program = Program::kDefault,
+            .expected_histograms =
+                {
+                    {"RegionalCapabilities.FunnelStage.RegionalPresence",
+                     ExpectHistogramNever()},
+                },
+        },
+        ProgramDeterminationTestParam{
+            .test_name = "in_scope_no_variations_country",
+            .client_fetched_country = CountryId("FR"),
+            .variations_latest_country_id = CountryId(),
+#if BUILDFLAG(IS_ANDROID)
+            .device_program_override = Program::kWaffle,
+#endif
+            .expected_program = Program::kWaffle,
+            .expected_histograms =
+                {
+                    {"RegionalCapabilities.FunnelStage.RegionalPresence",
+                     ExpectHistogramNever()},
+                },
+        },
+    }),
+    &RegionalCapabilitiesServiceProgramDeterminationTest::GetTestName);
+
 TEST_F(RegionalCapabilitiesServiceTest,
        GetCountryAndProgramCommandLineOverride) {
   // The command line value bypasses the country ID cache and does not
@@ -596,8 +690,6 @@ TEST_F(RegionalCapabilitiesServiceTest,
   SetCommandLineCountry(switches::kTaiyakiProgramOverride);
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   if (kPhoneFormFactors.Has(ui::GetDeviceFormFactor())) {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(switches::kTaiyaki);
     EXPECT_EQ(GetCountryId(*service), CountryId("JP"));
     EXPECT_EQ(GetActiveProgram(*service), Program::kTaiyaki);
   } else

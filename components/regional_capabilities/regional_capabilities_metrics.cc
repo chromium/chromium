@@ -4,8 +4,12 @@
 
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 
+#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/country_codes/country_codes.h"
+#include "components/regional_capabilities/program_settings.h"
 
 namespace regional_capabilities {
 
@@ -62,6 +66,13 @@ void RecordVariationsCountryMatching(
           : "RegionalCapabilities.FetchedCountryMatching",
       ComputeCountryMatchingStatus(current_device_country,
                                    variations_latest_country));
+}
+
+void RecordProgramAndLocationMatch(
+    ProgramAndLocationMatch program_and_location_match) {
+  base::UmaHistogramEnumeration(
+      "RegionalCapabilities.FunnelStage.RegionalPresence",
+      program_and_location_match);
 }
 
 }  // namespace regional_capabilities

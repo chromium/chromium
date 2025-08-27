@@ -163,29 +163,48 @@ std::pair<CountryId, LoadedCountrySource> SelectCountryId(
           LoadedCountrySource::kPersistedPreferredOverFallback};
 }
 
-bool CanUseTaiyakiProgram() {
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  return IsClientCompatibleWithProgram(Program::kTaiyaki) &&
-         base::FeatureList::IsEnabled(switches::kTaiyaki);
-#else
-  return false;
-#endif
-}
-
+// Pass `out_scope_check_outcome` to collect information about the outcome of
+// the program checks.
 Program CountryIdToProgram(const CountryId& country_id) {
+  static constexpr Program kCountryDerivedPrograms[] = {
 #if BUILDFLAG(IS_IOS)
-  // Only iOS can derive Taiyaki scope directly from the country.
-  if (IsInProgramRegion(Program::kTaiyaki, country_id) &&
-      CanUseTaiyakiProgram()) {
-    return Program::kTaiyaki;
-  }
+      // Only iOS can derive Taiyaki scope directly from the country.
+      Program::kTaiyaki,
 #endif
 
-  if (IsInProgramRegion(Program::kWaffle, country_id)) {
-    return Program::kWaffle;
+      Program::kWaffle,
+  };
+
+  for (Program program : kCountryDerivedPrograms) {
+    if (IsInProgramRegion(program, country_id) &&
+        IsClientCompatibleWithProgram(program)) {
+      return program;
+    }
   }
 
   return Program::kDefault;
+}
+
+std::optional<ProgramAndLocationMatch> GetProgramAndLocationMatch(
+    Program program,
+    CountryId profile_country,
+    CountryId variations_latest_country) {
+  if (program == Program::kDefault || !variations_latest_country.IsValid()) {
+    // Checking program and variations location against each other
+    // is irrelevant for the default program or when we don't have the
+    // variations country.
+    return std::nullopt;
+  }
+
+  if (profile_country == variations_latest_country) {
+    return ProgramAndLocationMatch::SameAsProfileCountry;
+  }
+
+  if (IsInProgramRegion(program, variations_latest_country)) {
+    return ProgramAndLocationMatch::SameRegionAsProgram;
+  }
+
+  return ProgramAndLocationMatch::NoMatch;
 }
 
 Program CountryOverrideToProgram(SearchEngineCountryOverride country_override) {
@@ -196,9 +215,9 @@ Program CountryOverrideToProgram(SearchEngineCountryOverride country_override) {
             switch (program_override) {
               case RegionalProgramOverride::kTaiyaki:
                 CHECK(IsClientCompatibleWithProgram(Program::kTaiyaki));
-                return CanUseTaiyakiProgram() ? Program::kTaiyaki
-                                              : Program::kDefault;
+                return Program::kTaiyaki;
             }
+            NOTREACHED();
           },
           [](SearchEngineCountryListOverride list_override) {
             switch (list_override) {
@@ -206,6 +225,7 @@ Program CountryOverrideToProgram(SearchEngineCountryOverride country_override) {
               case SearchEngineCountryListOverride::kEeaDefault:
                 return Program::kWaffle;
             }
+            NOTREACHED();
           },
       },
       country_override);
@@ -260,6 +280,7 @@ RegionalCapabilitiesService::GetRegionalPrepopulatedEngines() {
       case SearchEngineCountryListOverride::kEeaDefault:
         return GetDefaultPrepopulatedEngines();
     }
+    NOTREACHED();
   }
 
   return GetPrepopulatedEngines(
@@ -387,19 +408,27 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
 
   country_id_cache_ = selected_country_and_source.first;
 
+  Program program;
+
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           switches::kResolveRegionalCapabilitiesFromDevice)) {
-    program_settings_cache_ =
-        GetSettingsForProgram(client_->GetDeviceProgram());
+    program = client_->GetDeviceProgram();
   } else
 #endif  // BUILDFLAG(IS_ANDROID)
   {
-    program_settings_cache_ =
-        GetSettingsForProgram(CountryIdToProgram(country_id_cache_.value()));
+    program = CountryIdToProgram(country_id_cache_.value());
   }
 
+  program_settings_cache_ = GetSettingsForProgram(program);
+
   RecordLoadedCountrySource(selected_country_and_source.second);
+  if (auto program_and_location_match =
+          GetProgramAndLocationMatch(program, country_id_cache_.value(),
+                                     client_->GetVariationsLatestCountryId());
+      program_and_location_match.has_value()) {
+    RecordProgramAndLocationMatch(*program_and_location_match);
+  }
 }
 
 void RegionalCapabilitiesService::ClearCacheForTesting() {
