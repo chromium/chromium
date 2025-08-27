@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/functional/callback.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
@@ -249,6 +250,22 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
         });
     return ExecuteAction(std::move(create_tab_provider),
                          std::move(expected_result));
+  }
+
+  auto GetClientRect(ui::ElementIdentifier tab_id,
+                     std::string_view element_id,
+                     gfx::Rect& out_rect) {
+    return Steps(InAnyContext(WithElement(tab_id, [element_id, &out_rect](
+                                                      ui::TrackedElement* el) {
+      const base::Value result =
+          AsInstrumentedWebContents(el)->Evaluate(content::JsReplace(
+              "() => document.getElementById($1).getBoundingClientRect().toJSON()",
+              element_id));
+      out_rect.SetRect(base::ClampRound(*result.GetDict().FindDouble("x")),
+                       base::ClampRound(*result.GetDict().FindDouble("y")),
+                       base::ClampRound(*result.GetDict().FindDouble("width")),
+                       base::ClampRound(*result.GetDict().FindDouble("height")));
+    })));
   }
 
   auto ClickAction(std::string_view label,
@@ -1282,6 +1299,38 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
         EXPECT_TRUE(tab.has_screenshot_mime_type());
         EXPECT_EQ(tab.screenshot_mime_type(), actor::kMimeTypeJpeg);
       })
+  );
+  // clang-format on
+}
+
+// Ensure the time-of-use check can succeed when clicking on a text node rather
+// than an element.
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, TimeOfUseCheckOnTextNode) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  gfx::Rect checkbox_label_bounds;
+  auto click_provider =
+      base::BindLambdaForTesting([this, &checkbox_label_bounds]() {
+        Actions action =
+            actor::MakeClick(tab_handle_, checkbox_label_bounds.CenterPoint());
+        action.set_task_id(task_id_.value());
+        return EncodeActionProto(action);
+      });
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+
+      GetPageContextFromFocusedTab(),
+      GetClientRect(kNewActorTabId, "checkbox-label", checkbox_label_bounds),
+      ExecuteAction(std::move(click_provider)),
+
+      WaitForJsResult(kNewActorTabId, "() => document.getElementById('checkbox').checked")
   );
   // clang-format on
 }

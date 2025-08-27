@@ -4,8 +4,15 @@
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0">
   <style>
+    body,html{
+      height: 100%;
+    }
     button {
       width: 100px;
+    }
+    li {
+      /* Make the <li> element actionable in APC */
+      cursor: pointer;
     }
   </style>
 </head>
@@ -16,6 +23,12 @@
   <button style="position: absolute;top:150vh" id="offscreen">Offscreen</button>
   <button style="position: fixed;top:200vh" id="offscreenfixed">Offscreen</button>
   <p id="text">Some text</p>
+  <ul>
+    <li>
+      <input id="checkbox" type="checkbox" value="Checkbox">
+      <label id="checkbox-label" for="checkbox">Label for the checkbox</label>
+    </li>
+  </ul>
 </body>
 <script>
   let button_clicked = false;
