@@ -45,7 +45,6 @@ void CommonSetupButtonConfiguration(UIButtonConfiguration* configuration,
 // Creates a button configured for all cases.
 ChromeButton* CreateCommonButton() {
   ChromeButton* button = [ChromeButton buttonWithType:UIButtonTypeSystem];
-  button.tintColor = UIColor.greenColor;
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     if ([UIButtonConfiguration
@@ -94,7 +93,7 @@ UIButtonConfigurationUpdateHandler PrimaryActionConfigurationUpdateHandler() {
 
     UIButtonConfiguration* configuration = button.configuration;
     if (background_as_tint) {
-      configuration.background.backgroundColor = nil;
+      configuration.background.backgroundColor = UIColor.clearColor;
       button.tintColor = background_color;
     } else {
       configuration.background.backgroundColor = background_color;
@@ -130,7 +129,7 @@ PrimaryDestructiveActionConfigurationUpdateHandler() {
 
     UIButtonConfiguration* configuration = button.configuration;
     if (background_as_tint) {
-      configuration.background.backgroundColor = nil;
+      configuration.background.backgroundColor = UIColor.clearColor;
       button.tintColor = background_color;
     } else {
       configuration.background.backgroundColor = background_color;
@@ -163,6 +162,7 @@ void UpdateButtonToMatchPrimaryAction(ChromeButton* button) {
   configuration.baseForegroundColor = foregroundColor;
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
+    configuration.background.backgroundColor = UIColor.clearColor;
     button.tintColor = [UIColor colorNamed:kBlueColor];
   } else {
 #endif
@@ -181,7 +181,16 @@ void UpdateButtonToMatchPrimaryDestructiveAction(ChromeButton* button) {
       configuration, [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline],
       foregroundColor);
   configuration.baseForegroundColor = foregroundColor;
-  configuration.background.backgroundColor = [UIColor colorNamed:kRedColor];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    configuration.background.backgroundColor = UIColor.clearColor;
+    button.tintColor = [UIColor colorNamed:kRedColor];
+  } else {
+#endif
+    configuration.background.backgroundColor = [UIColor colorNamed:kRedColor];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  }
+#endif
   button.configuration = configuration;
   button.configurationUpdateHandler =
       PrimaryDestructiveActionConfigurationUpdateHandler();
@@ -195,12 +204,12 @@ void UpdateButtonToMatchSecondaryAction(ChromeButton* button) {
   if (@available(iOS 26, *)) {
     foregroundColor = [UIColor colorNamed:kSolidBlackColor];
     font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    button.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+    button.tintColor = UIColor.clearColor;
   } else {
 #endif
     foregroundColor = [UIColor colorNamed:kBlueColor];
     font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    configuration.background.backgroundColor = [UIColor clearColor];
+    configuration.background.backgroundColor = UIColor.clearColor;
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
 #endif
@@ -219,6 +228,7 @@ void UpdateButtonToMatchEqualWeightAction(ChromeButton* button) {
       foregroundColor);
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
+    configuration.background.backgroundColor = UIColor.clearColor;
     button.tintColor = [UIColor colorNamed:kBlueHaloColor];
   } else {
 #endif
