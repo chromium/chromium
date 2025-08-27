@@ -8,14 +8,12 @@ import org.chromium.build.annotations.NullMarked;
 
 import java.util.List;
 
-/**
- * Wraps android.bluetooth.le.ScanCallback, being called by ScanCallbackImpl.
- */
+/** Wraps android.bluetooth.le.ScanCallback, being called by ScanCallbackImpl. */
 @NullMarked
 public interface ScanCallbackWrapper {
-    public void onBatchScanResult(List<ScanResultWrapper> results);
+    void onBatchScanResult(List<ScanResultWrapper> results);
 
-    public void onScanResult(int callbackType, ScanResultWrapper result);
+    void onScanResult(int callbackType, ScanResultWrapper result);
 
-    public void onScanFailed(int errorCode);
+    void onScanFailed(int errorCode);
 }

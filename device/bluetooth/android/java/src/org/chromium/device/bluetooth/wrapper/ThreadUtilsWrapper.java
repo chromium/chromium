@@ -57,7 +57,7 @@ public class ThreadUtilsWrapper {
      * ThreadUtilsWrapper.getInstance().
      */
     public interface Factory {
-        public ThreadUtilsWrapper create();
+        ThreadUtilsWrapper create();
     }
 
     /**
