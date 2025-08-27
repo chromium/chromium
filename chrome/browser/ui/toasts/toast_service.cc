@@ -258,7 +258,6 @@ void ToastService::RegisterToasts(
         ToastSpecification::Builder(
             kTabGroupSharingIcon,
             IDS_COLLABORATION_SHARED_TAB_GROUPS_AVAILABLE_AGAIN_IPH_MESSAGE)
-            .AddCloseButton()
             .AddGlobalScoped()
             .Build());
   }
