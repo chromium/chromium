@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -203,7 +204,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     view->Show(AutoselectFirstSuggestion(false));
   }
 
-  void CreateAndShowView(
+  void CreateView(
       std::optional<views::Widget::InitParams> widget_params = std::nullopt,
       std::optional<AutofillPopupView::SearchBarConfig> search_bar_config =
           std::nullopt) {
@@ -220,6 +221,13 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
         GetRootWindow(widget_.get()));
     view_ = new TestPopupViewViews(controller().GetWeakPtr(),
                                    std::move(search_bar_config));
+  }
+
+  void CreateAndShowView(
+      std::optional<views::Widget::InitParams> widget_params = std::nullopt,
+      std::optional<AutofillPopupView::SearchBarConfig> search_bar_config =
+          std::nullopt) {
+    CreateView(std::move(widget_params), std::move(search_bar_config));
     ShowView(view_, *widget_);
   }
 
@@ -2053,6 +2061,73 @@ TEST_F(PopupViewViewsTest, WarningOnShowA11yFocus) {
   ASSERT_TRUE(row_view);
 
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));
+}
+
+TEST_F(PopupViewViewsTest, Show_A11yAnnouncesPasswordRecovery) {
+  const std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kBackupPasswordEntry),
+      Suggestion(SuggestionType::kPasswordEntry)};
+  controller().set_suggestions(suggestions);
+  CreateView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(
+      announcement,
+      Run(l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_RECOVERY_SHOWN_A11Y_ANNOUNCEMENT),
+          true));
+  ShowView(&view(), widget());
+}
+
+TEST_F(PopupViewViewsTest, Show_A11yDoesNotAnnounceNonPasswordRecovery) {
+  const std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kPasswordEntry),
+      Suggestion(SuggestionType::kPasswordEntry)};
+  controller().set_suggestions(suggestions);
+  CreateView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(announcement, Run).Times(0);
+  ShowView(&view(), widget());
+}
+
+TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesPasswordRecovery) {
+  const std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kBackupPasswordEntry),
+      Suggestion(SuggestionType::kPasswordEntry)};
+  controller().set_suggestions({Suggestion(SuggestionType::kAddressEntry)});
+  CreateAndShowView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(
+      announcement,
+      Run(l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_RECOVERY_SHOWN_A11Y_ANNOUNCEMENT),
+          true));
+  controller().set_suggestions(suggestions);
+  static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
+}
+
+TEST_F(PopupViewViewsTest,
+       OnSuggestionsChanged_A11yDoesNotAnnounceNonPasswordRecovery) {
+  const std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kPasswordEntry),
+      Suggestion(SuggestionType::kPasswordEntry)};
+  controller().set_suggestions({Suggestion(SuggestionType::kAddressEntry)});
+  CreateAndShowView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(announcement, Run).Times(0);
+  controller().set_suggestions(suggestions);
+  static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
 }
 
 }  // namespace

@@ -314,6 +314,7 @@ bool PopupViewViews::Show(
     }
   }
 
+  MaybeAnnouncePasswordRecoveryPopup();
   MaybeA11yFocusInformationalSuggestion();
 
   return !CanActivate() || (GetWidget() && GetWidget()->IsActive());
@@ -690,6 +691,7 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
     return;
   }
 
+  MaybeAnnouncePasswordRecoveryPopup();
   MaybeA11yFocusInformationalSuggestion();
   ShowIPHFeaturePromos();
 }
@@ -904,6 +906,20 @@ void PopupViewViews::ShowIPHFeaturePromos() {
       BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
           std::move(params));
     }
+  }
+}
+
+void PopupViewViews::MaybeAnnouncePasswordRecoveryPopup() {
+  if (!controller_ || controller_->GetSuggestions().empty()) {
+    return;
+  }
+
+  if (controller_->GetSuggestionAt(0).type ==
+      SuggestionType::kBackupPasswordEntry) {
+    a11y_announcer_.Run(
+        l10n_util::GetStringUTF16(
+            IDS_PASSWORD_MANAGER_UI_PASSWORD_RECOVERY_SHOWN_A11Y_ANNOUNCEMENT),
+        /*polite=*/true);
   }
 }
 

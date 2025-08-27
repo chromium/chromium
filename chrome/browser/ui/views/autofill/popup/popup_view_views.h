@@ -173,6 +173,10 @@ class PopupViewViews : public PopupBaseView,
   // metadata.
   void ShowIPHFeaturePromos();
 
+  // If the current suggestions are for password recovery, announces it to the
+  // user.
+  void MaybeAnnouncePasswordRecoveryPopup();
+
   // Returns the `PopupRowView` at line number `index`. Assumes that there is
   // such a view at that line number - otherwise the underlying variant will
   // check false.
