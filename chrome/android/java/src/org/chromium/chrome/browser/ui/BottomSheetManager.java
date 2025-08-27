@@ -36,7 +36,7 @@ import org.chromium.url.GURL;
  * otherwise shouldn't know about.
  */
 class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObserver {
-    /** A means of accessing the focus state of the omibox. */
+    /** A means of accessing the focus state of the omnibox. */
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
 
     /** An observer of the omnibox that suppresses the sheet when the omnibox is focused. */
