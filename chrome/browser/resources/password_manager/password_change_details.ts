@@ -11,7 +11,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_change_details.html.js';
-import {Page, Router} from './router.js';
+import type {Route} from './router.js';
+import {Page, RouteObserverMixin, Router} from './router.js';
 
 export interface PasswordChangeDetailsElement {
   $: {
@@ -19,7 +20,8 @@ export interface PasswordChangeDetailsElement {
   };
 }
 
-const PasswordChangeDetailsElementBase = I18nMixin(PolymerElement);
+const PasswordChangeDetailsElementBase =
+    I18nMixin(RouteObserverMixin(PolymerElement));
 
 export class PasswordChangeDetailsElement extends
     PasswordChangeDetailsElementBase {
@@ -29,6 +31,17 @@ export class PasswordChangeDetailsElement extends
 
   static get template() {
     return getTemplate();
+  }
+
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    if (newRoute.page !== Page.PASSWORD_CHANGE ||
+        oldRoute?.page === Page.SETTINGS) {
+      return;
+    }
+
+    setTimeout(() => {
+      this.$.back.focus();
+    }, 0);
   }
 
   private navigateBack_() {

@@ -309,9 +309,22 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     this.$.toast.hide();
   }
 
-  override currentRouteChanged(route: Route): void {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    if (newRoute.page === Page.SETTINGS &&
+        oldRoute?.page === Page.PASSWORD_CHANGE &&
+        this.isAutomatedPasswordChangeVisible_) {
+      setTimeout(() => {
+        const automatedPasswordChangeRow =
+            this.shadowRoot!.querySelector<HTMLElement>(
+                '#automatedPasswordChange');
+        if (automatedPasswordChangeRow) {
+          automatedPasswordChangeRow.focus();
+        }
+      }, 0);
+    }
+
     const triggerImportParam =
-        route.queryParameters.get(UrlParam.START_IMPORT) || '';
+        newRoute.queryParameters.get(UrlParam.START_IMPORT) || '';
     if (triggerImportParam === 'true') {
       const importer = this.shadowRoot!.querySelector('passwords-importer');
       assert(importer);
