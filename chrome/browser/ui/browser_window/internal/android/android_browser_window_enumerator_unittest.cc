@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/browser_window/internal/android/android_browser_window_enumerator.h"
 
+#include <vector>
+
 #include "base/android/jni_android.h"
 #include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -57,16 +59,18 @@ TEST_F(AndroidBrowserWindowEnumeratorTest, BasicIterator) {
   BrowserWindowInterface* browser_window_2 = CreateBrowserWindow(/*task_id=*/2);
   BrowserWindowInterface* browser_window_3 = CreateBrowserWindow(/*task_id=*/3);
 
-  std::set<BrowserWindowInterface*> visited;
+  std::vector<BrowserWindowInterface*> visited;
   AndroidBrowserWindowEnumerator enumerator(
       GetBrowserWindowInterfacesOrderedByActivationForTesting());
   while (!enumerator.empty()) {
-    visited.insert(enumerator.Next());
+    visited.push_back(enumerator.Next());
   }
 
-  EXPECT_THAT(visited,
-              testing::UnorderedElementsAre(browser_window_1, browser_window_2,
-                                            browser_window_3));
+  // In this test, windows are activated when they are created. Therefore
+  // browser_window_3 is the most recently activated, followed by
+  // browser_window_2, then browser_window_1.
+  EXPECT_THAT(visited, testing::ElementsAre(browser_window_3, browser_window_2,
+                                            browser_window_1));
 }
 
 TEST_F(AndroidBrowserWindowEnumeratorTest, IteratorWithInsertions) {
@@ -78,21 +82,25 @@ TEST_F(AndroidBrowserWindowEnumeratorTest, IteratorWithInsertions) {
   AndroidBrowserWindowEnumerator enumerator(
       GetBrowserWindowInterfacesOrderedByActivationForTesting(),
       kEnumerateNewBrowser);
-  std::set<BrowserWindowInterface*> visited;
+  std::vector<BrowserWindowInterface*> visited;
 
   if (!enumerator.empty()) {
-    visited.insert(enumerator.Next());
+    visited.push_back(enumerator.Next());
   }
 
   // Insert a browser while the list is scanned.
   BrowserWindowInterface* browser_window_3 = CreateBrowserWindow(/*task_id=*/3);
 
   while (!enumerator.empty()) {
-    visited.insert(enumerator.Next());
+    visited.push_back(enumerator.Next());
   }
 
-  EXPECT_THAT(visited,
-              testing::UnorderedElementsAre(browser_window_1, browser_window_2,
+  // As above, windows are activated in creation order. So browser_window_2 is
+  // more recently activated than browser_window_1, and thus appears first in
+  // the list. browser_window_3, however, was created after |enumerator|, and it
+  // therefore gets appended to the end of the list, despite having been
+  // activated most recently.
+  EXPECT_THAT(visited, testing::ElementsAre(browser_window_2, browser_window_1,
                                             browser_window_3));
 }
 
@@ -105,21 +113,21 @@ TEST_F(AndroidBrowserWindowEnumeratorTest, IteratorWithSkipInsertions) {
   AndroidBrowserWindowEnumerator enumerator(
       GetBrowserWindowInterfacesOrderedByActivationForTesting(),
       kEnumerateNewBrowser);
-  std::set<BrowserWindowInterface*> visited;
+  std::vector<BrowserWindowInterface*> visited;
 
   if (!enumerator.empty()) {
-    visited.insert(enumerator.Next());
+    visited.push_back(enumerator.Next());
   }
 
   // Insert a browser while the list is scanned.
   CreateBrowserWindow(/*task_id=*/3);
 
   while (!enumerator.empty()) {
-    visited.insert(enumerator.Next());
+    visited.push_back(enumerator.Next());
   }
 
-  EXPECT_THAT(visited, testing::UnorderedElementsAre(browser_window_1,
-                                                     browser_window_2));
+  EXPECT_THAT(visited,
+              testing::ElementsAre(browser_window_2, browser_window_1));
 }
 
 TEST_F(AndroidBrowserWindowEnumeratorTest, IteratorWithRemovals) {
@@ -130,19 +138,19 @@ TEST_F(AndroidBrowserWindowEnumeratorTest, IteratorWithRemovals) {
   // Start to scan the list.
   AndroidBrowserWindowEnumerator enumerator(
       GetBrowserWindowInterfacesOrderedByActivationForTesting());
-  std::set<BrowserWindowInterface*> visited;
+  std::vector<BrowserWindowInterface*> visited;
 
   if (!enumerator.empty()) {
-    visited.insert(enumerator.Next());
+    visited.push_back(enumerator.Next());
   }
 
   // Remove a browser while the list is scanned.
   DestroyBrowserWindow(2);
 
   while (!enumerator.empty()) {
-    visited.insert(enumerator.Next());
+    visited.push_back(enumerator.Next());
   }
 
-  EXPECT_THAT(visited, testing::UnorderedElementsAre(browser_window_1,
-                                                     browser_window_3));
+  EXPECT_THAT(visited,
+              testing::ElementsAre(browser_window_3, browser_window_1));
 }

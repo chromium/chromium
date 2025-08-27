@@ -24,6 +24,21 @@ final class BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport {
         return chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
     }
 
+    /**
+     * This function simulates Android OS behavior to activate a browser window. It calls into a
+     * task's onTopResumedActivityChangedWithNative() function to make sure its
+     * mLastActivatedTimeMillis is positive, which is a requirement for being able to call into
+     * ChromeAndroidTaskTrackerImpl.getNativeBrowserWindowPtrsOrderedByActivation(). Without this,
+     * |mLastActivatedTimeMillis| will always be -1 (invalid value) as the window isn't activated.
+     */
+    @CalledByNative
+    private static void activateBrowserWindow(int taskId) {
+        ChromeAndroidTaskImpl task =
+                (ChromeAndroidTaskImpl) ChromeAndroidTaskTrackerImpl.getInstance().get(taskId);
+        assert task != null;
+        task.onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ true);
+    }
+
     @CalledByNative
     private static void invokeOnTopResumedActivityChanged(
             int taskId, boolean isTopResumedActivity) {
