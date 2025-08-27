@@ -3122,7 +3122,7 @@ TEST_F(BrowserAutofillManagerTest,
        ShouldTriggerAmountExtraction_IfCreditCardFormIsClicked) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableAmountExtractionDesktop,
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
                             features::kAutofillEnableBuyNowPayLaterSyncing,
                             features::kAutofillEnableBuyNowPayLater},
       /*disabled_features=*/{});
@@ -3164,7 +3164,7 @@ TEST_F(BrowserAutofillManagerTest,
        ShouldNotTriggerAmountExtraction_IfNonCreditCardFormIsClicked) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableAmountExtractionDesktop,
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
                             features::kAutofillEnableBuyNowPayLaterSyncing,
                             features::kAutofillEnableBuyNowPayLater},
       /*disabled_features=*/{});
@@ -3197,7 +3197,7 @@ TEST_F(BrowserAutofillManagerTest,
        ShouldNotTriggerAmountExtraction_IfNoSuggestion) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableAmountExtractionDesktop,
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
                             features::kAutofillEnableBuyNowPayLaterSyncing,
                             features::kAutofillEnableBuyNowPayLater},
       /*disabled_features=*/{});
@@ -3235,7 +3235,7 @@ TEST_F(BrowserAutofillManagerTest,
        ShouldNotTriggerAmountExtraction_IfAutofillDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableAmountExtractionDesktop,
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
                             features::kAutofillEnableBuyNowPayLaterSyncing,
                             features::kAutofillEnableBuyNowPayLater},
       /*disabled_features=*/{});

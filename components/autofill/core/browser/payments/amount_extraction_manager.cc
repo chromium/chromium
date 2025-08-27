@@ -108,7 +108,7 @@ AmountExtractionManager::GetEligibleFeatures(const SuggestionsContext& context,
   // flag for eligible users.
   if (!eligible_features.empty() &&
       base::FeatureList::IsEnabled(
-          ::autofill::features::kAutofillEnableAmountExtractionDesktop)) {
+          ::autofill::features::kAutofillEnableAmountExtraction)) {
     return eligible_features;
   }
 

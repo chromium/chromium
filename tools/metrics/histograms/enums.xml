@@ -11902,6 +11902,7 @@ from previous Chrome versions.
   <int value="-847735582" label="NotificationsViaHelperApp:enabled"/>
   <int value="-847216521" label="ChromeDuplex:enabled"/>
   <int value="-846670837" label="QuickAppAccessTestUI:enabled"/>
+  <int value="-846618756" label="AutofillEnableAmountExtraction:disabled"/>
   <int value="-846321831" label="OmniboxSiteSearch:enabled"/>
   <int value="-844786349" label="ClipboardHistoryNudgeSessionReset:enabled"/>
   <int value="-844537521" label="HttpFormWarning:disabled"/>
@@ -14842,6 +14843,8 @@ from previous Chrome versions.
   <int value="229877058" label="ShelfScrollable:disabled"/>
   <int value="231949727" label="ClipboardHistoryReorder:enabled"/>
   <int value="232006131" label="InstantHotspotOnNearby:enabled"/>
+  <int value="232188832"
+      label="AutofillEnableAmountExtractionAllowlist:enabled"/>
   <int value="232859680" label="VCSegmentationModel:disabled"/>
   <int value="233202090" label="AssistantConsentModal:disabled"/>
   <int value="233721248" label="DownloadRename:disabled"/>
@@ -16052,6 +16055,8 @@ from previous Chrome versions.
   <int value="667643314" label="LitePageServerPreviews:enabled"/>
   <int value="668342684" label="TabModelInitFixes:disabled"/>
   <int value="669097106" label="NtpRealboxMatchOmniboxTheme:disabled"/>
+  <int value="669105788"
+      label="AutofillEnableAmountExtractionAllowlist:disabled"/>
   <int value="669958310" label="EnableSuggestedLocalFiles:disabled"/>
   <int value="670404276" label="ImeUsEnglishModelUpdate:disabled"/>
   <int value="670987023" label="kEnterpriseBadgingForNtpFooter:enabled"/>
@@ -18492,6 +18497,7 @@ from previous Chrome versions.
   <int value="1537693783" label="KioskEnableAppService:enabled"/>
   <int value="1538685213" label="DownloadHomeV2:enabled"/>
   <int value="1538690515" label="OneGoogleBarOnLocalNtp:enabled"/>
+  <int value="1539166258" label="AutofillEnableAmountExtraction:enabled"/>
   <int value="1539225325" label="AndroidOpenPdfInlineBackport:enabled"/>
   <int value="1539399467" label="PerAppLanguage:disabled"/>
   <int value="1539795906" label="LensOverlaySimplifiedSelection:disabled"/>

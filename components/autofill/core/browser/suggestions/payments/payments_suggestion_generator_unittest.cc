@@ -1564,7 +1564,7 @@ class PaymentsSuggestionGeneratorBnplTest
     PaymentsSuggestionGeneratorTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillEnableAmountExtractionDesktop,
+        {features::kAutofillEnableAmountExtraction,
          features::kAutofillEnableBuyNowPayLater,
          features::kAutofillEnableBuyNowPayLaterSyncing},
         /*disabled_features=*/{});

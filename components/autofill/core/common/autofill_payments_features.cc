@@ -20,24 +20,10 @@ BASE_FEATURE(kAutofillEnableAllowlistForBmoCardCategoryBenefits,
              "AutofillEnableAllowlistForBmoCardCategoryBenefits",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, Chrome will have the ability to load and query the allowlist
-// for checkout amount extraction, which will be used to check if the current
-// URL is eligible for products that use the checkout amount extraction
-// algorithm. The suffix `desktop` is kept, it was an error in original naming
-// that can not be updated due to ongoing gcl config experiments.
-BASE_FEATURE(kAutofillEnableAmountExtractionAllowlistDesktop,
-             "AutofillEnableAmountExtractionAllowlistDesktop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Chrome will extract the checkout amount from the checkout page
-// of the allowlisted merchant websites. The suffix `desktop` is kept, it was an
-// error in original naming that can not be updated due to ongoing gcl config
-// experiments.
-// TODO(crbug.com/430575808): Rename `kAutofillEnableAmountExtractionDesktop`
-// flag to `kAutofillEnableAmountExtraction` now that it is fully launched
-// on desktop and being added to Android.
-BASE_FEATURE(kAutofillEnableAmountExtractionDesktop,
-             "AutofillEnableAmountExtractionDesktop",
+// of the allowlisted merchant websites.
+BASE_FEATURE(kAutofillEnableAmountExtraction,
+             "AutofillEnableAmountExtraction",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -45,6 +31,14 @@ BASE_FEATURE(kAutofillEnableAmountExtractionDesktop,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+// When enabled, Chrome will have the ability to load and query the allowlist
+// for checkout amount extraction, which will be used to check if the current
+// URL is eligible for products that use the checkout amount extraction
+// algorithm.
+BASE_FEATURE(kAutofillEnableAmountExtractionAllowlist,
+             "AutofillEnableAmountExtractionAllowlist",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables testing of the result of checkout amount extraction on desktop.
 // This flag will allow amount extraction to run on any website when a CC

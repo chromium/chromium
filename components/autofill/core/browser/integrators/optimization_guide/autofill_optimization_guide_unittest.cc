@@ -702,7 +702,7 @@ TEST_F(AutofillOptimizationGuideTest,
        OnPaymentsDataLoaded_BuyNowPayLaterProviderAffirm) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+      {features::kAutofillEnableAmountExtractionAllowlist,
        features::kAutofillEnableBuyNowPayLaterSyncing,
        features::kAutofillEnableLoadBnplAllowlistAfterSyncing},
       {});
@@ -726,7 +726,7 @@ TEST_F(AutofillOptimizationGuideTest,
        OnPaymentsDataLoaded_BuyNowPayLaterProviderZip) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+      {features::kAutofillEnableAmountExtractionAllowlist,
        features::kAutofillEnableBuyNowPayLaterSyncing,
        features::kAutofillEnableLoadBnplAllowlistAfterSyncing},
       {});
@@ -750,7 +750,7 @@ TEST_F(AutofillOptimizationGuideTest,
        OnPaymentsDataLoaded_BuyNowPayLaterProviderKlarna) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+      {features::kAutofillEnableAmountExtractionAllowlist,
        features::kAutofillEnableBuyNowPayLaterSyncing,
        features::kAutofillEnableLoadBnplAllowlistAfterSyncing},
       {});
@@ -776,7 +776,7 @@ TEST_F(
     OnPaymentsDataLoaded_BuyNowPayLaterProviderKlarna_LoadAllowListAfterSyncingDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+      {features::kAutofillEnableAmountExtractionAllowlist,
        features::kAutofillEnableBuyNowPayLaterSyncing},
       {features::kAutofillEnableLoadBnplAllowlistAfterSyncing});
 
@@ -801,7 +801,7 @@ TEST_F(
     CreditCardFormFound_AmountExtractionAllowed_BuyNowPayLaterProviderAffirm) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+      {features::kAutofillEnableAmountExtractionAllowlist,
        features::kAutofillEnableBuyNowPayLaterSyncing},
       {});
   FormStructure form_structure{
@@ -828,7 +828,7 @@ TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_AmountExtractionAllowed_BuyNowPayLaterProviderZip) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+      {features::kAutofillEnableAmountExtractionAllowlist,
        features::kAutofillEnableBuyNowPayLaterSyncing},
       {});
   FormStructure form_structure{
@@ -856,7 +856,7 @@ TEST_F(
     CreditCardFormFound_AmountExtractionAllowed_BuyNowPayLaterProviderKlarna) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+      {features::kAutofillEnableAmountExtractionAllowlist,
        features::kAutofillEnableBuyNowPayLaterSyncing},
       {});
   FormStructure form_structure{
@@ -886,7 +886,7 @@ TEST_F(AutofillOptimizationGuideTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
       /*disabled_features=*/{
-          features::kAutofillEnableAmountExtractionAllowlistDesktop});
+          features::kAutofillEnableAmountExtractionAllowlist});
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -912,7 +912,7 @@ TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_AmountExtractionAllowed_NoBnplIssuerFound) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+      {features::kAutofillEnableAmountExtractionAllowlist,
        features::kAutofillEnableBuyNowPayLaterSyncing},
       {});
   FormStructure form_structure{
@@ -933,7 +933,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        IsUrlEligibleForBnplIssuer_AffirmUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlistDesktop};
+      features::kAutofillEnableAmountExtractionAllowlist};
 
   ON_CALL(decider(),
           CanApplyOptimization(
@@ -953,7 +953,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        IsUrlEligibleForBnplIssuer_AffirmUrlBlocked) {
   base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlistDesktop};
+      features::kAutofillEnableAmountExtractionAllowlist};
 
   ON_CALL(decider(),
           CanApplyOptimization(
@@ -972,7 +972,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        IsUrlEligibleForBnplIssuer_ZipUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlistDesktop};
+      features::kAutofillEnableAmountExtractionAllowlist};
 
   ON_CALL(decider(),
           CanApplyOptimization(
@@ -992,7 +992,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        IsUrlEligibleForBnplIssuer_ZipUrlBlocked) {
   base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlistDesktop};
+      features::kAutofillEnableAmountExtractionAllowlist};
 
   ON_CALL(decider(),
           CanApplyOptimization(
@@ -1012,7 +1012,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        IsUrlEligibleForBnplIssuer_KlarnaUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlistDesktop};
+      features::kAutofillEnableAmountExtractionAllowlist};
 
   ON_CALL(decider(),
           CanApplyOptimization(
@@ -1032,7 +1032,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        IsUrlEligibleForBnplIssuer_KlarnaUrlBlocked) {
   base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlistDesktop};
+      features::kAutofillEnableAmountExtractionAllowlist};
 
   ON_CALL(decider(),
           CanApplyOptimization(
@@ -1048,10 +1048,10 @@ TEST_F(AutofillOptimizationGuideTest,
 }
 
 // Test that we allow checkout with BNPL for Affirm on a non-allowlisted URL
-// when AmountExtractionDesktopLogging is enabled.
+// when AmountExtractionTesting is enabled.
 TEST_F(
     AutofillOptimizationGuideTest,
-    IsUrlEligibleForBnplIssuer_AmountExtractionDesktopLoggingEnabled_AffirmUrlAllowed) {
+    IsUrlEligibleForBnplIssuer_AmountExtractionTestingEnabled_AffirmUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionTesting};
 
@@ -1070,10 +1070,10 @@ TEST_F(
 }
 
 // Test that we allow checkout with BNPL for Zip on a non-allowlisted URL when
-// AmountExtractionDesktopLogging is enabled.
+// AmountExtractionTesting is enabled.
 TEST_F(
     AutofillOptimizationGuideTest,
-    IsUrlEligibleForBnplIssuer_AmountExtractionDesktopLoggingEnabled_ZipUrlAllowed) {
+    IsUrlEligibleForBnplIssuer_AmountExtractionTestingEnabled_ZipUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionTesting};
 
@@ -1092,10 +1092,10 @@ TEST_F(
 }
 
 // Test that we allow checkout with BNPL for Klarna on a non-allowlisted URL
-// when AmountExtractionDesktopLogging is enabled.
+// when AmountExtractionTesting is enabled.
 TEST_F(
     AutofillOptimizationGuideTest,
-    IsUrlEligibleForBnplIssuer_AmountExtractionDesktopLoggingEnabled_KlarnaUrlAllowed) {
+    IsUrlEligibleForBnplIssuer_AmountExtractionTestingEnabled_KlarnaUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionTesting};
 
@@ -1119,7 +1119,7 @@ TEST_F(AutofillOptimizationGuideTest,
        IsUrlEligibleForBnplIssuer_AllowlistFlagOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      features::kAutofillEnableAmountExtractionAllowlistDesktop);
+      features::kAutofillEnableAmountExtractionAllowlist);
 
   ON_CALL(decider(),
           CanApplyOptimization(

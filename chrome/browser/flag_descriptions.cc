@@ -679,34 +679,24 @@ const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[] =
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-const char kAutofillEnableAmountExtractionAllowlistDesktopName[] =
-    "Enable loading and querying the checkout amount extraction allowlist on "
-    "Chrome Desktop and Clank. The suffix `desktop` is kept, it was an error "
-    "in original naming that can not be updated due to ongoing gcl config "
-    "experiments.";
-const char kAutofillEnableAmountExtractionAllowlistDesktopDescription[] =
+const char kAutofillEnableAmountExtractionName[] =
+    "Enable checkout amount extraction.";
+const char kAutofillEnableAmountExtractionDescription[] =
+    "When enabled, Chrome will extract the checkout amount from the checkout "
+    "page of the allowlisted merchant websites.";
+const char kAutofillEnableAmountExtractionAllowlistName[] =
+    "Enable loading and querying the checkout amount extraction allowlist.";
+const char kAutofillEnableAmountExtractionAllowlistDescription[] =
     "When enabled, Chrome will have the ability to load and query the "
     "allowlist for checkout amount extraction, which will be used to check if "
     "the current URL is eligible for products that use the checkout amount "
     "extraction algorithm.";
-const char kAutofillEnableAmountExtractionDesktopName[] =
-    "Enable checkout amount extraction on Chrome desktop and Clank. The suffix "
-    "`desktop` is kept, it was an error in original naming that can not be "
-    "updated due to ongoing gcl config experiments.";
-const char kAutofillEnableAmountExtractionDesktopDescription[] =
-    "When enabled, Chrome will extract the checkout amount from the checkout "
-    "page of the allowlisted merchant websites.";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 const char kAutofillEnableAmountExtractionTestingName[] =
-    "Enable amount extraction testing on Chrome desktop and Clank";
+    "Enable amount extraction testing";
 const char kAutofillEnableAmountExtractionTestingDescription[] =
-    "Enables testing of the result of checkout amount extraction on Chrome "
-    "desktop and Clank. This flag will allow amount extraction to run on any "
-    "website when a CC form is clicked.";
+    "Enables testing of the result of checkout amount extraction. This flag "
+    "will allow amount extraction to run on any website when a CC form is "
+    "clicked.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 

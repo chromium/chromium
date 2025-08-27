@@ -12112,12 +12112,11 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-amount-extraction-desktop",
-     flag_descriptions::kAutofillEnableAmountExtractionDesktopName,
-     flag_descriptions::kAutofillEnableAmountExtractionDesktopDescription,
+    {"autofill-enable-amount-extraction",
+     flag_descriptions::kAutofillEnableAmountExtractionName,
+     flag_descriptions::kAutofillEnableAmountExtractionDescription,
      kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableAmountExtractionDesktop)},
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableAmountExtraction)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
@@ -12133,13 +12132,12 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-amount-extraction-allowlist-desktop",
-     flag_descriptions::kAutofillEnableAmountExtractionAllowlistDesktopName,
-     flag_descriptions::
-         kAutofillEnableAmountExtractionAllowlistDesktopDescription,
+    {"autofill-enable-amount-extraction-allowlist",
+     flag_descriptions::kAutofillEnableAmountExtractionAllowlistName,
+     flag_descriptions::kAutofillEnableAmountExtractionAllowlistDescription,
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableAmountExtractionAllowlistDesktop)},
+         autofill::features::kAutofillEnableAmountExtractionAllowlist)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 

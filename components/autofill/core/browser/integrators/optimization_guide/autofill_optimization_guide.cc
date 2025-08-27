@@ -209,7 +209,7 @@ void AddOptimizationTypesForBnplIssuers(
         return base::Contains(bnpl_issuers, issuer_id,
                               &BnplIssuer::issuer_id) &&
                base::FeatureList::IsEnabled(
-                   features::kAutofillEnableAmountExtractionAllowlistDesktop);
+                   features::kAutofillEnableAmountExtractionAllowlist);
       };
 
   if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplAffirm)) {
@@ -459,7 +459,7 @@ bool AutofillOptimizationGuide::IsUrlEligibleForBnplIssuer(
            optimization_guide::OptimizationGuideDecision::kTrue;
   };
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAmountExtractionAllowlistDesktop)) {
+          features::kAutofillEnableAmountExtractionAllowlist)) {
     switch (issuer_id) {
       case BnplIssuer::IssuerId::kBnplAffirm:
         return can_apply_optimization(

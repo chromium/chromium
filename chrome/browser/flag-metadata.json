@@ -757,14 +757,14 @@
     "expiry_milestone": 145
   },
   {
-    "name": "autofill-enable-amount-extraction-allowlist-desktop",
+    "name": "autofill-enable-amount-extraction",
     "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
-    "name": "autofill-enable-amount-extraction-desktop",
+    "name": "autofill-enable-amount-extraction-allowlist",
     "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "autofill-enable-amount-extraction-testing",
@@ -774,7 +774,7 @@
   {
     "name": "autofill-enable-buy-now-pay-later",
     "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
  {
     "name": "autofill-enable-buy-now-pay-later-for-externally-linked",
@@ -789,7 +789,7 @@
   {
     "name": "autofill-enable-buy-now-pay-later-syncing",
     "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "autofill-enable-card-benefits-for-american-express",

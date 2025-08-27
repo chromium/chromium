@@ -20,9 +20,9 @@ BASE_DECLARE_FEATURE(kAutofillCreditCardScannerIos);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableAllowlistForBmoCardCategoryBenefits);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableAmountExtractionAllowlistDesktop);
+BASE_DECLARE_FEATURE(kAutofillEnableAmountExtraction);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableAmountExtractionDesktop);
+BASE_DECLARE_FEATURE(kAutofillEnableAmountExtractionAllowlist);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableAmountExtractionTesting);
 COMPONENT_EXPORT(AUTOFILL)

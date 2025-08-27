@@ -66,7 +66,7 @@ class AmountExtractionManagerTest : public Test {
  public:
   AmountExtractionManagerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableAmountExtractionDesktop,
+        /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
                               features::kAutofillEnableBuyNowPayLaterSyncing,
                               features::kAutofillEnableBuyNowPayLater},
         /*disabled_features=*/{
@@ -159,7 +159,7 @@ TEST_F(AmountExtractionManagerTest, ShouldTriggerWhenEligible) {
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenCvcFieldIsClicked) {
   base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableAmountExtractionDesktop};
+      features::kAutofillEnableAmountExtraction};
 
   SuggestionsContext context;
   context.is_autofill_available = true;
@@ -183,7 +183,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFeatureIsNotEnabled) {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
                             features::kAutofillEnableBuyNowPayLater},
-      /*disabled_features=*/{features::kAutofillEnableAmountExtractionDesktop});
+      /*disabled_features=*/{features::kAutofillEnableAmountExtraction});
 
   SuggestionsContext context;
   context.is_autofill_available = true;
