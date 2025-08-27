@@ -1629,7 +1629,6 @@ ci.builder(
             "cronet_dbg_isolated_scripts",
         ],
         additional_compile_targets = [
-            "cronet_perf_test_apk",
             "cronet_smoketests_apk",
         ],
         per_test_modifications = {
@@ -1690,7 +1689,6 @@ ci.builder(
             "cronet_dbg_isolated_scripts",
         ],
         additional_compile_targets = [
-            "cronet_perf_test_apk",
             "cronet_smoketests_apk",
         ],
         per_test_modifications = {

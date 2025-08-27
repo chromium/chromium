@@ -1307,7 +1307,6 @@ ci.builder(
         ],
         additional_compile_targets = [
             "cronet_package",
-            "cronet_perf_test_apk",
         ],
         mixins = [
             "marshmallow-x86-emulator",

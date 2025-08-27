@@ -1349,8 +1349,6 @@ android_library("cronet_fake_javatests") {
 # third_party/jni_zero is an exception because it started as a
 # chromium first-party library and later switched to being a
 # third-party and we don't want to deal with version skews.
-# This must not contain buildInfo as `cronet_perf_tests` APK generates
-# another buildInfo and both of them starts colliding showing buildError.
 cronet_javatests_deps_to_package = [
   ":cronet_android_os_system_properties_java",
   ":cronet_common_javatests",
@@ -1689,52 +1687,6 @@ cronet_instrumentation_test_apk("cronet_smoketests_apk") {
   data = [ "//net/data/ssl/" ]
   proguard_enabled = true
   proguard_configs = [ "test/proguard.cfg" ]
-  srcjar_deps = [
-    ":cronet_jni_registration",
-    ":cronet_tests_jni_registration",
-  ]
-}
-
-android_apk("cronet_perf_test_apk") {
-  testonly = true
-  apk_name = "CronetPerfTest"
-  android_manifest = "test/javaperftests/AndroidManifest.xml"
-
-  shared_libraries = [ ":cronet_tests" ]
-
-  # Make sure not to depend on :cronet so we don't accidentally load it in the
-  # tests, this is especially tricky because we manipulate a global state in the
-  # CronetLibraryLoader to load a different shared library, adding this assert_no_deps
-  # will ensure that there'll only be a single shared library and any mistake will be
-  # caught immediately when trying to load the libraries.
-  assert_no_deps = [ ":cronet" ]
-  sources =
-      [ "test/javaperftests/src/org/chromium/net/CronetPerfTestActivity.java" ]
-
-  deps = [
-    ":cronet_all_java",
-    ":cronet_combine_proguard_flags",
-    ":cronet_javatests",
-    ":cronet_test_apk_java",
-    "//base:base_java",
-    "//third_party/android_sdk:android_test_mock_java",
-    "//third_party/jni_zero:jni_zero_java",
-    "//third_party/junit",
-  ]
-
-  if (!is_java_debug) {
-    proguard_enabled = true
-    proguard_configs = [
-      "$target_gen_dir/cronet_impl_native_proguard.cfg",
-      "cronet_shared_proguard.cfg",
-      "cronet_impl_common_proguard.cfg",
-      "httpengine_native_provider_proguard.cfg",
-      "test/proguard.cfg",
-      "//testing/android/proguard_for_test.flags",
-      "//third_party/jni_zero/proguard_for_test.flags",
-    ]
-    enable_proguard_checks = false
-  }
   srcjar_deps = [
     ":cronet_jni_registration",
     ":cronet_tests_jni_registration",

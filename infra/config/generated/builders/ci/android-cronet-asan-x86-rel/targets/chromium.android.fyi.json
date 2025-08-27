@@ -1,8 +1,7 @@
 {
   "android-cronet-asan-x86-rel": {
     "additional_compile_targets": [
-      "cronet_package",
-      "cronet_perf_test_apk"
+      "cronet_package"
     ],
     "gtest_tests": [
       {

@@ -760,11 +760,6 @@
     "type": "additional_compile_target",
     "skip_usage_check": True,
   },
-  "cronet_perf_test_apk": {
-    "label": "//components/cronet/android:cronet_perf_test_apk",
-    "type": "additional_compile_target",
-    "skip_usage_check": True,
-  },
   "cronet_sample_test_apk": {
     "label": "//components/cronet/android:cronet_sample_test_apk",
     "type": "console_test_launcher",

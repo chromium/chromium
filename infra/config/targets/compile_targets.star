@@ -263,13 +263,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "cronet_perf_test_apk",
-    label = "//components/cronet/android:cronet_perf_test_apk",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-)
-
-targets.compile_target(
     name = "empty_main",
     label = "//testing:empty_main",
     # All references have been moved to starlark
