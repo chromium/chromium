@@ -13345,6 +13345,21 @@
             ]
         }
     ],
+    "IOSMemoryAblation": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSMemoryAblation"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSMiniMapUniversalLink": [
         {
             "platforms": [
