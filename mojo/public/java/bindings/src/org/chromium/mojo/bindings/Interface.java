@@ -33,31 +33,31 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
      * @see java.io.Closeable#close()
      */
     @Override
-    public void close();
+    void close();
 
     /**
      * A proxy to a mojo interface. This is base class for all generated proxies. It implements the
      * Interface and each time a method is called, the parameters are serialized and sent to the
      * {@link MessageReceiverWithResponder}, along with the response callback if needed.
      */
-    public interface Proxy extends Interface {
+    interface Proxy extends Interface {
         /** Class allowing to interact with the proxy itself. */
-        public interface Handler extends Closeable {
+        interface Handler extends Closeable {
             /** Sets the {@link ConnectionErrorHandler} that will be notified of errors. */
-            public void setErrorHandler(ConnectionErrorHandler errorHandler);
+            void setErrorHandler(ConnectionErrorHandler errorHandler);
 
             /**
              * Unbinds the proxy and passes the handle. Can return null if the proxy is not bound or
              * if the proxy is not over a message pipe.
              */
-            public MessagePipeHandle passHandle();
+            MessagePipeHandle passHandle();
 
             /** Returns the version number of the interface that the remote side supports. */
-            public int getVersion();
+            int getVersion();
 
             /** Callback interface for the async response to {@link Proxy#queryVersion}. */
             interface QueryVersionCallback {
-                public void call(int version);
+                void call(int version);
             }
 
             /**
@@ -65,22 +65,22 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
              * be returned as the input of |callback|. The version number of this interface pointer
              * will also be updated.
              */
-            public void queryVersion(QueryVersionCallback callback);
+            void queryVersion(QueryVersionCallback callback);
 
             /**
              * If the remote side doesn't support the specified version, it will close its end of
              * the message pipe asynchronously. The call does nothing if |version| is no greater
              * than getVersion().
-             * <p>
-             * If you make a call to requireVersion() with a version number X which is not supported
-             * by the remote side, it is guaranteed that all calls to the interface methods after
-             * requireVersion(X) will be ignored.
+             *
+             * <p>If you make a call to requireVersion() with a version number X which is not
+             * supported by the remote side, it is guaranteed that all calls to the interface
+             * methods after requireVersion(X) will be ignored.
              */
-            public void requireVersion(int version);
+            void requireVersion(int version);
         }
 
         /** Returns the {@link Handler} object allowing to interact with the proxy itself. */
-        public Handler getProxyHandler();
+        Handler getProxyHandler();
     }
 
     /** Base implementation of {@link Proxy}. */

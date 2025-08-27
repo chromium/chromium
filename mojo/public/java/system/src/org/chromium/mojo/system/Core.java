@@ -17,10 +17,10 @@ import org.chromium.build.annotations.Nullable;
 public interface Core {
 
     /** Used to indicate an infinite deadline (timeout). */
-    public static final long DEADLINE_INFINITE = -1;
+    long DEADLINE_INFINITE = -1;
 
     /** Signals for the wait operations on handles. */
-    public static class HandleSignals extends Flags<HandleSignals> {
+    class HandleSignals extends Flags<HandleSignals> {
         /**
          * Constructor.
          *
@@ -82,10 +82,10 @@ public interface Core {
     /**
      * Returns a platform-dependent monotonically increasing tick count representing "right now."
      */
-    public long getTimeTicksNow();
+    long getTimeTicksNow();
 
     /** Returned by wait functions to indicate the signaling state of handles. */
-    public static class HandleSignalsState {
+    class HandleSignalsState {
         /** Signals that were satisfied at some time // before the call returned. */
         private final HandleSignals mSatisfiedSignals;
 
@@ -120,7 +120,7 @@ public interface Core {
      *
      * @return the set of handles for the two endpoints (ports) of the message pipe.
      */
-    public Pair<MessagePipeHandle, MessagePipeHandle> createMessagePipe(
+    Pair<MessagePipeHandle, MessagePipeHandle> createMessagePipe(
             MessagePipeHandle.@Nullable CreateOptions options);
 
     /**
@@ -133,7 +133,7 @@ public interface Core {
      *
      * @return the set of handles for the two endpoints of the data pipe.
      */
-    public Pair<DataPipe.ProducerHandle, DataPipe.ConsumerHandle> createDataPipe(
+    Pair<DataPipe.ProducerHandle, DataPipe.ConsumerHandle> createDataPipe(
             DataPipe.CreateOptions options);
 
     /**
@@ -143,8 +143,7 @@ public interface Core {
      *
      * @return the new |SharedBufferHandle|.
      */
-    public SharedBufferHandle createSharedBuffer(
-            SharedBufferHandle.CreateOptions options, long numBytes);
+    SharedBufferHandle createSharedBuffer(SharedBufferHandle.CreateOptions options, long numBytes);
 
     /**
      * Acquires a handle from the native side. The handle will be owned by the returned object and
@@ -152,7 +151,7 @@ public interface Core {
      *
      * @return a new {@link UntypedHandle} representing the native handle.
      */
-    public UntypedHandle acquireNativeHandle(long handle);
+    UntypedHandle acquireNativeHandle(long handle);
 
     /**
      * Creates and acquires a handle from the native side. The handle will be owned by the returned
@@ -161,14 +160,14 @@ public interface Core {
      * @param fd Java file descriptor to be wrapped as a native platform handle.
      * @return a new {@link UntypedHandle} representing the native handle.
      */
-    public UntypedHandle wrapFileDescriptor(ParcelFileDescriptor fd);
+    UntypedHandle wrapFileDescriptor(ParcelFileDescriptor fd);
 
     /** Returns an implementation of {@link Watcher}. */
-    public Watcher getWatcher();
+    Watcher getWatcher();
 
     /** Returns a new run loop. */
-    public RunLoop createDefaultRunLoop();
+    RunLoop createDefaultRunLoop();
 
     /** Returns the current run loop if it exists. */
-    public RunLoop getCurrentRunLoop();
+    RunLoop getCurrentRunLoop();
 }

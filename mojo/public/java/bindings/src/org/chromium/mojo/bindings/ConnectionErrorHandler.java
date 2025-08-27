@@ -13,5 +13,5 @@ import org.chromium.mojo.system.MojoException;
  */
 @NullMarked
 public interface ConnectionErrorHandler {
-    public void onConnectionError(MojoException e);
+    void onConnectionError(MojoException e);
 }

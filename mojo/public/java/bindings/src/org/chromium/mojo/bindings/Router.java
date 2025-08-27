@@ -16,14 +16,14 @@ import org.chromium.mojo.system.MessagePipeHandle;
 public interface Router extends MessageReceiverWithResponder, HandleOwner<MessagePipeHandle> {
 
     /** Start listening for incoming messages. */
-    public void start();
+    void start();
 
     /**
      * Set the {@link MessageReceiverWithResponder} that will deserialize and use the message
      * received from the pipe.
      */
-    public void setIncomingMessageReceiver(MessageReceiverWithResponder incomingMessageReceiver);
+    void setIncomingMessageReceiver(MessageReceiverWithResponder incomingMessageReceiver);
 
     /** Set the handle that will be notified of errors on the message pipe. */
-    public void setErrorHandler(ConnectionErrorHandler errorHandler);
+    void setErrorHandler(ConnectionErrorHandler errorHandler);
 }
