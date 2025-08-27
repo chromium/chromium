@@ -266,7 +266,7 @@ _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
         explanation=(
             'Usage of IS_DESKTOP_ANDROID build flag or DeviceInfo.isDesktop() '
             'is discouraged. Use system affordances to determine feature '
-            'availablility. Refer to https://source.chromium.org/chromium/chromium/src/+/main:docs/ui/android/device_form_factor.md for guidelines.'
+            'availablility. Refer to https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/device_form_factor.md for guidelines.'
             'To request an exception, file a bug at '
             'https://b.corp.google.com/issues/new?component=1753515&template=2172655'
             'Once approved, use centralized util DeviceInfo.isDesktop() '
@@ -2133,7 +2133,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         explanation=(
             'Usage of IS_DESKTOP_ANDROID build flag '
             'is discouraged. Use system affordances to determine feature '
-            'availablility. Refer to https://source.chromium.org/chromium/chromium/src/+/main:docs/ui/android/device_form_factor.md for guidelines.'
+            'availablility. Refer to https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/device_form_factor.md for guidelines.'
             'To request an exception, file a bug at '
             'https://b.corp.google.com/issues/new?component=1753515&template=2172655'
             'Once approved, use centralized util DeviceInfo.isDesktop() '
