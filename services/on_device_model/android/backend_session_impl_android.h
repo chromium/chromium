@@ -66,6 +66,11 @@ class BackendSessionImplAndroid : public BackendSession {
   void OnComplete(GenerateResult generate_result);
 
  private:
+  BackendSessionImplAndroid(
+      optimization_guide::proto::ModelExecutionFeature feature,
+      on_device_model::mojom::SessionParamsPtr params,
+      const std::vector<ml::InputPiece>& context_input_pieces);
+
   void OnResponseOnSequence(const std::string& response);
   void OnCompleteOnSequence(GenerateResult generate_result);
 
@@ -81,6 +86,9 @@ class BackendSessionImplAndroid : public BackendSession {
 
   // The feature for which this session was created.
   const optimization_guide::proto::ModelExecutionFeature feature_;
+
+  // The params used to create this session.
+  on_device_model::mojom::SessionParamsPtr params_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   SequenceCheckerHelper sequence_checker_helper_;

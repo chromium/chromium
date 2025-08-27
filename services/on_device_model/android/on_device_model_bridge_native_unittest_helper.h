@@ -21,11 +21,15 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
 
   void SetMockAiCoreFactory();
 
+  // `index` is the index of the session backend in the list of session backends
+  // created by the mock AiCoreFactory. The list is in the order of the calls to
+  // `AiCoreFactory.createSessionBackend()`.
   void VerifySessionParams(
+      int index,
       optimization_guide::proto::ModelExecutionFeature feature,
       int top_k,
       float temperature);
-  void VerifyGenerateOptions(int max_output_tokens);
+  void VerifyGenerateOptions(int index, int max_output_tokens);
 
   void SetGenerateResult(BackendSessionImplAndroid::GenerateResult result);
 

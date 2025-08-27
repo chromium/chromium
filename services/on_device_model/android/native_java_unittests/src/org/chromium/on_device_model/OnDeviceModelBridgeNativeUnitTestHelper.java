@@ -14,6 +14,9 @@ import org.chromium.on_device_model.mojom.InputPiece;
 import org.chromium.on_device_model.mojom.SessionParams;
 import org.chromium.on_device_model.mojom.Token;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Helper class to verify the JNI bridge. Invoked by native unit tests:
  * (services/on_device_model/android/backend_session_impl_android_unittest.cc).
@@ -154,7 +157,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
 
     /** A mock implementation of AiCoreFactory. */
     public static class MockAiCoreFactory implements AiCoreFactory {
-        MockAiCoreSessionBackend mSessionBackend;
+        List<MockAiCoreSessionBackend> mSessionBackends = new ArrayList<>();
         MockAiCoreModelDownloaderBackend mDownloaderBackend;
 
         public MockAiCoreFactory() {}
@@ -162,14 +165,20 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         @Override
         public AiCoreSessionBackend createSessionBackend(
                 ModelExecutionFeature feature, SessionParams params) {
-            mSessionBackend = new MockAiCoreSessionBackend(feature, params);
-            return mSessionBackend;
+            MockAiCoreSessionBackend sessionBackend = new MockAiCoreSessionBackend(feature, params);
+            mSessionBackends.add(sessionBackend);
+            return sessionBackend;
         }
 
         @Override
         public AiCoreModelDownloaderBackend createModelDownloader(ModelExecutionFeature feature) {
             mDownloaderBackend = new MockAiCoreModelDownloaderBackend();
             return mDownloaderBackend;
+        }
+
+        public MockAiCoreSessionBackend getLastSessionBackend() {
+            assert !mSessionBackends.isEmpty();
+            return mSessionBackends.get(mSessionBackends.size() - 1);
         }
     }
 
@@ -181,17 +190,19 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     }
 
     @CalledByNative
-    public void verifySessionParams(int feature, int topK, float temperature) {
+    public void verifySessionParams(int index, int feature, int topK, float temperature) {
         ModelExecutionFeature modelExecutionFeatureId = ModelExecutionFeature.forNumber(feature);
-        assertEquals(modelExecutionFeatureId, mMockAiCoreFactory.mSessionBackend.mFeature);
-        SessionParams params = mMockAiCoreFactory.mSessionBackend.mParams;
+        MockAiCoreSessionBackend sessionBackend = mMockAiCoreFactory.mSessionBackends.get(index);
+        assertEquals(modelExecutionFeatureId, sessionBackend.mFeature);
+        SessionParams params = sessionBackend.mParams;
         assertEquals(topK, params.topK);
         assertEquals(temperature, params.temperature, 0.01f);
     }
 
     @CalledByNative
-    public void verifyGenerateOptions(int maxOutputTokens) {
-        GenerateOptions generateOptions = mMockAiCoreFactory.mSessionBackend.mGenerateOptions;
+    public void verifyGenerateOptions(int index, int maxOutputTokens) {
+        GenerateOptions generateOptions =
+                mMockAiCoreFactory.mSessionBackends.get(index).mGenerateOptions;
         assertEquals(maxOutputTokens, generateOptions.maxOutputTokens);
     }
 
@@ -203,22 +214,22 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
 
     @CalledByNative
     public void setCompleteAsync() {
-        mMockAiCoreFactory.mSessionBackend.mCompleteAsync = true;
+        mMockAiCoreFactory.getLastSessionBackend().mCompleteAsync = true;
     }
 
     @CalledByNative
     public void setCallbackOnDifferentThread() {
-        mMockAiCoreFactory.mSessionBackend.mCallbackOnDifferentThread = true;
+        mMockAiCoreFactory.getLastSessionBackend().mCallbackOnDifferentThread = true;
     }
 
     @CalledByNative
     public void resumeOnCompleteCallback() {
-        mMockAiCoreFactory.mSessionBackend.resumeOnCompleteCallback();
+        mMockAiCoreFactory.getLastSessionBackend().resumeOnCompleteCallback();
     }
 
     @CalledByNative
     public void setGenerateResult(int generateResult) {
-        mMockAiCoreFactory.mSessionBackend.mGenerateResult = generateResult;
+        mMockAiCoreFactory.getLastSessionBackend().mGenerateResult = generateResult;
     }
 
     @CalledByNative

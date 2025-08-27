@@ -83,7 +83,7 @@ TEST_F(BackendModelImplAndroidTest, AppendAndGenerate) {
   std::unique_ptr<BackendSession> session = model_->CreateSession(
       /*adaptation=*/nullptr,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
-  java_helper_.VerifySessionParams(kFeature, /*top_k=*/3,
+  java_helper_.VerifySessionParams(/*index=*/0, kFeature, /*top_k=*/3,
                                    /*temperature=*/1.0f);
 
   {
@@ -118,7 +118,7 @@ TEST_F(BackendModelImplAndroidTest, AppendAndGenerate) {
       response_holder.responses(),
       ElementsAre(
           "<system>mock system input<end><user>mock user input<end><model>"));
-  java_helper_.VerifyGenerateOptions(/*max_output_tokens=*/100);
+  java_helper_.VerifyGenerateOptions(/*index=*/0, /*max_output_tokens=*/100);
   histogram_tester_.ExpectUniqueSample(
       "OnDeviceModel.Android.GenerateResult",
       BackendSessionImplAndroid::GenerateResult::kSuccess, 1);
@@ -234,6 +234,66 @@ TEST_F(BackendModelImplAndroidTest, NativeSessionDeletionIsSafe) {
   // cause a crash.
   session.reset();
   java_helper_.ResumeOnCompleteCallback();
+}
+
+TEST_F(BackendModelImplAndroidTest, CloneSession) {
+  java_helper_.SetMockAiCoreFactory();
+
+  std::unique_ptr<BackendSession> session = model_->CreateSession(
+      /*adaptation=*/nullptr,
+      MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
+  java_helper_.VerifySessionParams(/*index=*/0, kFeature, /*top_k=*/3,
+                                   /*temperature=*/1.0f);
+
+  {
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back("mock input");
+    session->Append(MakeInput(std::move(pieces)), /*client=*/{},
+                    /*on_complete=*/base::DoNothing());
+  }
+
+  std::unique_ptr<BackendSession> cloned_session = session->Clone();
+  // A new Java session should be created for the cloned session.
+  java_helper_.VerifySessionParams(/*index=*/1, kFeature, /*top_k=*/3,
+                                   /*temperature=*/1.0f);
+
+  // Generate with the cloned session. The context should be cloned too.
+  {
+    TestResponseHolder response_holder;
+    cloned_session->Generate(MakeGenerateOptions(/*max_output_tokens=*/100),
+                             response_holder.BindRemote(),
+                             /*on_complete=*/base::DoNothing());
+    response_holder.WaitForCompletion();
+    EXPECT_THAT(response_holder.responses(), ElementsAre("mock input"));
+    java_helper_.VerifyGenerateOptions(/*index=*/1, /*max_output_tokens=*/100);
+  }
+
+  // Add more context to the original session and generate.
+  {
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back(" more context");
+    session->Append(MakeInput(std::move(pieces)), /*client=*/{},
+                    /*on_complete=*/base::DoNothing());
+  }
+  {
+    TestResponseHolder response_holder;
+    session->Generate(MakeGenerateOptions(/*max_output_tokens=*/100),
+                      response_holder.BindRemote(),
+                      /*on_complete=*/base::DoNothing());
+    response_holder.WaitForCompletion();
+    EXPECT_THAT(response_holder.responses(),
+                ElementsAre("mock input more context"));
+  }
+
+  // Generate with the cloned session again to ensure its context is unchanged.
+  {
+    TestResponseHolder response_holder;
+    cloned_session->Generate(MakeGenerateOptions(/*max_output_tokens=*/100),
+                             response_holder.BindRemote(),
+                             /*on_complete=*/base::DoNothing());
+    response_holder.WaitForCompletion();
+    EXPECT_THAT(response_holder.responses(), ElementsAre("mock input"));
+  }
 }
 
 }  // namespace

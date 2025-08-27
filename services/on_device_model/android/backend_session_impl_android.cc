@@ -15,6 +15,7 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/sequence_checker.h"
@@ -34,13 +35,23 @@ namespace on_device_model {
 
 BackendSessionImplAndroid::BackendSessionImplAndroid(
     optimization_guide::proto::ModelExecutionFeature feature,
-    on_device_model::mojom::SessionParamsPtr params)
+    on_device_model::mojom::SessionParamsPtr params,
+    const std::vector<ml::InputPiece>& context_input_pieces)
     : java_session_(
-          OnDeviceModelBridge::CreateSession(feature, std::move(params))),
-      feature_(feature) {
+          OnDeviceModelBridge::CreateSession(feature, params.Clone())),
+      context_input_pieces_(context_input_pieces),
+      feature_(feature),
+      params_(std::move(params)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
+
+BackendSessionImplAndroid::BackendSessionImplAndroid(
+    optimization_guide::proto::ModelExecutionFeature feature,
+    on_device_model::mojom::SessionParamsPtr params)
+    : BackendSessionImplAndroid(feature,
+                                std::move(params),
+                                /*context_input_pieces=*/{}) {}
 
 BackendSessionImplAndroid::~BackendSessionImplAndroid() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -118,8 +129,13 @@ void BackendSessionImplAndroid::GetProbabilitiesBlocking(
 }
 
 std::unique_ptr<BackendSession> BackendSessionImplAndroid::Clone() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // AiCore doesn't support cloning natively yet. If it does in the future, we
+  // should copy the Java object and call the native Clone function here.
+  // Use `base::WrapUnique` because the constructor is private and
+  // `std::make_unique` cannot access it.
+  return base::WrapUnique(new BackendSessionImplAndroid(
+      feature_, params_.Clone(), context_input_pieces_));
 }
 
 void BackendSessionImplAndroid::AsrStream(
