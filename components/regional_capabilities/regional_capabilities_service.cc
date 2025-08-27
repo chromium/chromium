@@ -408,8 +408,9 @@ void RegionalCapabilitiesService::ClearCacheForTesting() {
   program_settings_cache_.reset();
 }
 
-Program RegionalCapabilitiesService::GetActiveProgramForTesting() {
-  return GetActiveProgramSettings().program;
+const ProgramSettings&
+RegionalCapabilitiesService::GetActiveProgramSettingsForTesting() {
+  return GetActiveProgramSettings();
 }
 
 CountryId RegionalCapabilitiesService::GetPersistedCountryId() {

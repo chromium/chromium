@@ -11,7 +11,9 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_base.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +28,7 @@
 #include "regional_capabilities_metrics.h"
 #include "regional_capabilities_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/device_form_factor.h"
 
 namespace regional_capabilities {
@@ -101,6 +104,10 @@ constexpr CountryId kBelgiumCountryId = CountryId("BE");
 
 CountryId GetCountryId(RegionalCapabilitiesService& service) {
   return service.GetCountryId().GetForTesting();
+}
+
+Program GetActiveProgram(RegionalCapabilitiesService& service) {
+  return service.GetActiveProgramSettingsForTesting().program;
 }
 
 class RegionalCapabilitiesServiceTest : public ::testing::Test {
@@ -186,18 +193,86 @@ class RegionalCapabilitiesServiceTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-struct ActiveProgramFromOverrideTestParam {
+using HistogramExpectation =
+    std::variant<base::HistogramBase::Count32,
+                 std::tuple<base::HistogramBase::Sample32,
+                            base::HistogramBase::Count32,
+                            bool>>;
+
+inline HistogramExpectation ExpectHistogramNever() {
+  return 0;
+}
+
+template <typename T>
+HistogramExpectation ExpectHistogramBucket(
+    T sample,
+    base::HistogramBase::Count32 count = 1) {
+  return std::make_tuple(static_cast<base::HistogramBase::Sample32>(sample),
+                         count, /* unique= */ false);
+}
+
+template <typename T>
+HistogramExpectation ExpectHistogramUnique(
+    T sample,
+    base::HistogramBase::Count32 count = 1) {
+  return std::make_tuple(static_cast<base::HistogramBase::Sample32>(sample),
+                         count, /* unique= */ false);
+}
+
+void CheckHistogramExpectation(const base::HistogramTester& histogram_tester,
+                               std::string_view histogram_name,
+                               const HistogramExpectation& expectation,
+                               const base::Location& location = FROM_HERE) {
+  std::visit(absl::Overload{
+                 [&](const base::HistogramBase::Count32& expected_total_count) {
+                   histogram_tester.ExpectTotalCount(
+                       histogram_name, expected_total_count, location);
+                 },
+                 [&](const std::tuple<base::HistogramBase::Sample32,
+                                      base::HistogramBase::Count32, bool>&
+                         expected_samples) {
+                   if (std::get<2>(expected_samples)) {
+                     histogram_tester.ExpectUniqueSample(
+                         histogram_name, std::get<0>(expected_samples),
+                         std::get<1>(expected_samples), location);
+                   } else {
+                     histogram_tester.ExpectBucketCount(
+                         histogram_name, std::get<0>(expected_samples),
+                         std::get<1>(expected_samples), location);
+                   }
+                 },
+             },
+             expectation);
+}
+
+struct ProgramDeterminationTestParam {
+  // Identifier of the test, will be used as parameterized test name suffix.
   std::string test_name;
-  std::string country_override;
-  Program expected_program;
+
+  // When non-empty, skips the test when the current form factor is not in the
+  // provided set.
   ui::DeviceFormFactorSet run_only_on;
+
+  // Country to apply for the current run. Will be set on the
+  // `RegionalCapabilitiesServiceClient`.
+  country_codes::CountryId client_fetched_country;
+
+#if BUILDFLAG(IS_ANDROID)
+  Program device_program_override = Program::kDefault;
+#endif
+
+  // -- Expectations ----------------------------------------------------------
+  Program expected_program;
+  std::optional<bool> expected_is_in_choice_screen_region = std::nullopt;
+  std::optional<SearchEngineListType> expected_ose_list_type = std::nullopt;
+  base::flat_map<std::string, HistogramExpectation> expected_histograms;
 };
 
 using TestParamWithTaiyakiFeatureState =
-    ::testing::tuple<ActiveProgramFromOverrideTestParam, bool>;
+    ::testing::tuple<ProgramDeterminationTestParam, bool>;
 
 auto WithCompatibleTaiyakiFeatureState(
-    std::vector<ActiveProgramFromOverrideTestParam> params_to_combine) {
+    std::vector<ProgramDeterminationTestParam> params_to_combine) {
   return ::testing::Combine(
       ::testing::ValuesIn(params_to_combine),
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
@@ -211,8 +286,8 @@ auto WithCompatibleTaiyakiFeatureState(
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 auto WithTaiyakiFeatureState(
-    std::vector<ActiveProgramFromOverrideTestParam> params_for_enabled,
-    std::vector<ActiveProgramFromOverrideTestParam> params_for_disabled) {
+    std::vector<ProgramDeterminationTestParam> params_for_enabled,
+    std::vector<ProgramDeterminationTestParam> params_for_disabled) {
   std::vector<TestParamWithTaiyakiFeatureState> output;
   for (auto& param : params_for_enabled) {
     output.emplace_back(param, true);
@@ -224,11 +299,11 @@ auto WithTaiyakiFeatureState(
 }
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
-class RegionalCapabilitiesServiceActiveProgramFromOverrideTest
+class RegionalCapabilitiesServiceProgramDeterminationTest
     : public RegionalCapabilitiesServiceTest,
       public testing::WithParamInterface<TestParamWithTaiyakiFeatureState> {
  public:
-  RegionalCapabilitiesServiceActiveProgramFromOverrideTest() {
+  RegionalCapabilitiesServiceProgramDeterminationTest() {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     scoped_feature_list_.InitWithFeatureState(switches::kTaiyaki,
                                               GetTaiyakiFeatureEnabled());
@@ -252,9 +327,7 @@ class RegionalCapabilitiesServiceActiveProgramFromOverrideTest
     }
   }
 
-  ActiveProgramFromOverrideTestParam GetTestParam() {
-    return get<0>(GetParam());
-  }
+  ProgramDeterminationTestParam GetTestParam() { return get<0>(GetParam()); }
 
   bool GetTaiyakiFeatureEnabled() { return get<1>(GetParam()); }
 
@@ -262,143 +335,290 @@ class RegionalCapabilitiesServiceActiveProgramFromOverrideTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(RegionalCapabilitiesServiceActiveProgramFromOverrideTest, Run) {
-  std::unique_ptr<RegionalCapabilitiesService> service = InitService();
+TEST_P(RegionalCapabilitiesServiceProgramDeterminationTest, Run) {
+  std::unique_ptr<RegionalCapabilitiesService> service = InitService(
+      /* fallback_country_id= */ CountryId()
+#if BUILDFLAG(IS_ANDROID)
+          ,
+      /* device_program= */ GetTestParam().device_program_override
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
+  client()->SetFetchedCountry(GetTestParam().client_fetched_country);
 
-  SetCommandLineCountry(GetTestParam().country_override);
   EXPECT_EQ(GetTestParam().expected_program,
-            service->GetActiveProgramForTesting());
+            service->GetActiveProgramSettingsForTesting().program);
+
+  if (GetTestParam().expected_is_in_choice_screen_region.has_value()) {
+    EXPECT_EQ(GetTestParam().expected_is_in_choice_screen_region.value(),
+              service->IsInSearchEngineChoiceScreenRegion());
+  }
+
+  if (GetTestParam().expected_ose_list_type.has_value()) {
+    EXPECT_EQ(
+        GetTestParam().expected_ose_list_type.value(),
+        service->GetActiveProgramSettingsForTesting().search_engine_list_type);
+  }
+
+  for (const auto& [histogram, expectation] :
+       GetTestParam().expected_histograms) {
+    CheckHistogramExpectation(histogram_tester(), histogram, expectation);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     Common,
-    RegionalCapabilitiesServiceActiveProgramFromOverrideTest,
+    RegionalCapabilitiesServiceProgramDeterminationTest,
     WithCompatibleTaiyakiFeatureState({
-        ActiveProgramFromOverrideTestParam{
+        ProgramDeterminationTestParam{
             .test_name = "fr_to_waffle",
-            .country_override = "FR",
+            .client_fetched_country = CountryId("FR"),
+#if BUILDFLAG(IS_ANDROID)
+            .device_program_override = Program::kWaffle,
+#endif  // BUILDFLAG(IS_ANDROID)
             .expected_program = Program::kWaffle,
+            .expected_is_in_choice_screen_region = true,
+            .expected_ose_list_type = SearchEngineListType::kShuffled,
+            .expected_histograms =
+                {
+                    {"RegionalCapabilities.LoadedCountrySource",
+                     ExpectHistogramBucket(LoadedCountrySource::kCurrentOnly)},
+                },
         },
-        ActiveProgramFromOverrideTestParam{
+#if BUILDFLAG(IS_ANDROID)
+        ProgramDeterminationTestParam{
+            .test_name = "fr_to_default",
+            .client_fetched_country = CountryId("FR"),
+            .device_program_override = Program::kDefault,
+            .expected_program = Program::kDefault,
+            .expected_is_in_choice_screen_region = false,
+            .expected_ose_list_type = SearchEngineListType::kTopN,
+            .expected_histograms =
+                {
+                    {"RegionalCapabilities.LoadedCountrySource",
+                     ExpectHistogramBucket(LoadedCountrySource::kCurrentOnly)},
+                },
+        },
+        ProgramDeterminationTestParam{
+            .test_name = "us_to_waffle",
+            .client_fetched_country = CountryId("US"),
+            .device_program_override = Program::kWaffle,
+            // TODO(crbug.com/440003541): Revisit whether this is the expected
+            // behaviour
+            .expected_program = Program::kWaffle,
+            .expected_is_in_choice_screen_region = true,
+            .expected_ose_list_type = SearchEngineListType::kShuffled,
+            .expected_histograms =
+                {
+                    {"RegionalCapabilities.LoadedCountrySource",
+                     ExpectHistogramBucket(LoadedCountrySource::kCurrentOnly)},
+                },
+        },
+#endif  // BUILDFLAG(IS_ANDROID)
+
+        ProgramDeterminationTestParam{
             .test_name = "us_to_default",
-            .country_override = "US",
+            .client_fetched_country = CountryId("US"),
             .expected_program = Program::kDefault,
+            .expected_is_in_choice_screen_region = false,
+            .expected_ose_list_type = SearchEngineListType::kTopN,
+            .expected_histograms =
+                {
+                    {"RegionalCapabilities.LoadedCountrySource",
+                     ExpectHistogramBucket(LoadedCountrySource::kCurrentOnly)},
+                },
         },
-        ActiveProgramFromOverrideTestParam{
+        ProgramDeterminationTestParam{
             .test_name = "err_to_default",
-            .country_override = "??",
+            .client_fetched_country = CountryId("??"),
             .expected_program = Program::kDefault,
-        },
-        ActiveProgramFromOverrideTestParam{
-            .test_name = "default_eea_list",
-            .country_override = switches::kDefaultListCountryOverride,
-            .expected_program = Program::kWaffle,
-        },
-        ActiveProgramFromOverrideTestParam{
-            .test_name = "full_eea_list",
-            .country_override = switches::kEeaListCountryOverride,
-            .expected_program = Program::kWaffle,
+            .expected_is_in_choice_screen_region = false,
+            .expected_ose_list_type = SearchEngineListType::kTopN,
+            .expected_histograms =
+                {
+                    {"RegionalCapabilities.LoadedCountrySource",
+                     ExpectHistogramBucket(
+                         LoadedCountrySource::kNoneAvailable)},
+                },
         },
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-        ActiveProgramFromOverrideTestParam{
-            .test_name = "taiyaki",
-            .country_override = switches::kTaiyakiProgramOverride,
-            .expected_program = Program::kDefault,
-        },
-        ActiveProgramFromOverrideTestParam{
+        ProgramDeterminationTestParam{
             .test_name = "jp_to_default",
-            .country_override = "JP",
+            .client_fetched_country = CountryId("JP"),
             .expected_program = Program::kDefault,
+            .expected_is_in_choice_screen_region = false,
+            .expected_ose_list_type = SearchEngineListType::kTopN,
+            .expected_histograms =
+                {
+                    {"RegionalCapabilities.LoadedCountrySource",
+                     ExpectHistogramBucket(LoadedCountrySource::kCurrentOnly)},
+                },
         },
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     }),
-    &RegionalCapabilitiesServiceActiveProgramFromOverrideTest::GetTestName);
+    &RegionalCapabilitiesServiceProgramDeterminationTest::GetTestName);
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     FeatureStateSpecific,
-    RegionalCapabilitiesServiceActiveProgramFromOverrideTest,
+    RegionalCapabilitiesServiceProgramDeterminationTest,
     WithTaiyakiFeatureState(
         /*params_for_enabled=*/
         {
-            ActiveProgramFromOverrideTestParam{
-                .test_name = "taiyaki_phone",
-                .country_override = switches::kTaiyakiProgramOverride,
-                .expected_program = Program::kTaiyaki,
-                .run_only_on = kPhoneFormFactors,
-            },
-            ActiveProgramFromOverrideTestParam{
-                .test_name = "taiyaki_non_phone",
-                .country_override = switches::kTaiyakiProgramOverride,
-                .expected_program = Program::kDefault,
-                .run_only_on = kNonPhoneFormFactors,
-            },
 #if BUILDFLAG(IS_IOS)
-            ActiveProgramFromOverrideTestParam{
+            ProgramDeterminationTestParam{
                 .test_name = "jp_to_taiyaki",
-                .country_override = "JP",
-                .expected_program = Program::kTaiyaki,
                 .run_only_on = kPhoneFormFactors,
+                .client_fetched_country = CountryId("JP"),
+                .expected_program = Program::kTaiyaki,
+                .expected_is_in_choice_screen_region = true,
+                .expected_ose_list_type = SearchEngineListType::kShuffled,
+                .expected_histograms =
+                    {
+                        {"RegionalCapabilities.LoadedCountrySource",
+                         ExpectHistogramBucket(
+                             LoadedCountrySource::kCurrentOnly)},
+                    },
             },
-            ActiveProgramFromOverrideTestParam{
+            ProgramDeterminationTestParam{
                 .test_name = "jp_to_default_non_phone",
-                .country_override = "JP",
-                .expected_program = Program::kDefault,
                 .run_only_on = kNonPhoneFormFactors,
-            },
-#else
-
-            ActiveProgramFromOverrideTestParam{
-                .test_name = "jp_to_default",
-                .country_override = "JP",
+                .client_fetched_country = CountryId("JP"),
                 .expected_program = Program::kDefault,
-                .run_only_on = kNonPhoneFormFactors,
+                .expected_is_in_choice_screen_region = false,
+                .expected_ose_list_type = SearchEngineListType::kTopN,
+                .expected_histograms =
+                    {
+                        {"RegionalCapabilities.LoadedCountrySource",
+                         ExpectHistogramBucket(
+                             LoadedCountrySource::kCurrentOnly)},
+                    },
             },
 #endif  // BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+            ProgramDeterminationTestParam{
+                .test_name = "jp_to_default",
+                .client_fetched_country = CountryId("JP"),
+                .expected_program = Program::kDefault,
+                .expected_is_in_choice_screen_region = false,
+                .expected_ose_list_type = SearchEngineListType::kTopN,
+                .expected_histograms =
+                    {
+                        {"RegionalCapabilities.LoadedCountrySource",
+                         ExpectHistogramBucket(
+                             LoadedCountrySource::kCurrentOnly)},
+                    },
+            },
+#endif  // BUILDFLAG(IS_ANDROID)
         },
         /*params_for_disabled=*/
         {
-            ActiveProgramFromOverrideTestParam{
-                .test_name = "taiyaki_to_default",
-                .country_override = switches::kTaiyakiProgramOverride,
+#if BUILDFLAG(IS_IOS)
+            ProgramDeterminationTestParam{
+                .test_name = "jp_to_taiyaki",
+                .run_only_on = kPhoneFormFactors,
+                .client_fetched_country = CountryId("JP"),
                 .expected_program = Program::kDefault,
+                .expected_is_in_choice_screen_region = false,
+                .expected_ose_list_type = SearchEngineListType::kTopN,
+                .expected_histograms =
+                    {
+                        {"RegionalCapabilities.LoadedCountrySource",
+                         ExpectHistogramBucket(
+                             LoadedCountrySource::kCurrentOnly)},
+                    },
             },
-            ActiveProgramFromOverrideTestParam{
+            ProgramDeterminationTestParam{
+                .test_name = "jp_to_default_non_phone",
+                .run_only_on = kNonPhoneFormFactors,
+                .client_fetched_country = CountryId("JP"),
+                .expected_program = Program::kDefault,
+                .expected_is_in_choice_screen_region = false,
+                .expected_ose_list_type = SearchEngineListType::kTopN,
+                .expected_histograms =
+                    {
+                        {"RegionalCapabilities.LoadedCountrySource",
+                         ExpectHistogramBucket(
+                             LoadedCountrySource::kCurrentOnly)},
+                    },
+            },
+#endif  // BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+            ProgramDeterminationTestParam{
                 .test_name = "jp_to_default",
-                .country_override = "JP",
+                .client_fetched_country = CountryId("JP"),
                 .expected_program = Program::kDefault,
+                .expected_is_in_choice_screen_region = false,
+                .expected_ose_list_type = SearchEngineListType::kTopN,
+                .expected_histograms =
+                    {
+                        {"RegionalCapabilities.LoadedCountrySource",
+                         ExpectHistogramBucket(
+                             LoadedCountrySource::kCurrentOnly)},
+                    },
             },
+#endif  // BUILDFLAG(IS_ANDROID)
         }),
-    &RegionalCapabilitiesServiceActiveProgramFromOverrideTest::GetTestName);
+    &RegionalCapabilitiesServiceProgramDeterminationTest::GetTestName);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
-TEST_F(RegionalCapabilitiesServiceTest, GetCountryIdCommandLineOverride) {
+TEST_F(RegionalCapabilitiesServiceTest,
+       GetCountryAndProgramCommandLineOverride) {
   // The command line value bypasses the country ID cache and does not
   // require recreating the service.
   std::unique_ptr<RegionalCapabilitiesService> service = InitService();
 
   SetCommandLineCountry(kBelgiumCountryCode);
   EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
+  EXPECT_EQ(GetActiveProgram(*service), Program::kWaffle);
 
   // When the command line value is not two uppercase basic Latin alphabet
   // characters, the country code should not be valid.
   SetCommandLineCountry("??");
   EXPECT_FALSE(GetCountryId(*service).IsValid());
+  EXPECT_EQ(GetActiveProgram(*service), Program::kDefault);
 
   SetCommandLineCountry("us");
   EXPECT_FALSE(GetCountryId(*service).IsValid());
+  EXPECT_EQ(GetActiveProgram(*service), Program::kDefault);
 
   SetCommandLineCountry("USA");
   EXPECT_FALSE(GetCountryId(*service).IsValid());
+  EXPECT_EQ(GetActiveProgram(*service), Program::kDefault);
 
-  histogram_tester().ExpectTotalCount(
-      "RegionalCapabilities.FetchedCountryMatching", 0);
-  histogram_tester().ExpectTotalCount(
-      "RegionalCapabilities.FallbackCountryMatching", 0);
-  histogram_tester().ExpectTotalCount(
-      "RegionalCapabilities.PersistedCountryMatching", 0);
-  histogram_tester().ExpectTotalCount(
-      "RegionalCapabilities.LoadedCountrySource", 0);
+  SetCommandLineCountry(switches::kEeaListCountryOverride);
+  EXPECT_FALSE(GetCountryId(*service).IsValid());
+  EXPECT_EQ(GetActiveProgram(*service), Program::kWaffle);
+
+  SetCommandLineCountry(switches::kDefaultListCountryOverride);
+  EXPECT_FALSE(GetCountryId(*service).IsValid());
+  EXPECT_EQ(GetActiveProgram(*service), Program::kWaffle);
+
+  SetCommandLineCountry(switches::kTaiyakiProgramOverride);
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  if (kPhoneFormFactors.Has(ui::GetDeviceFormFactor())) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(switches::kTaiyaki);
+    EXPECT_EQ(GetCountryId(*service), CountryId("JP"));
+    EXPECT_EQ(GetActiveProgram(*service), Program::kTaiyaki);
+  } else
+#endif
+  {
+    EXPECT_FALSE(GetCountryId(*service).IsValid());
+    EXPECT_EQ(GetActiveProgram(*service), Program::kDefault);
+  }
+
+  CheckHistogramExpectation(histogram_tester(),
+                            "RegionalCapabilities.FetchedCountryMatching",
+                            ExpectHistogramNever());
+  CheckHistogramExpectation(histogram_tester(),
+                            "RegionalCapabilities.FallbackCountryMatching",
+                            ExpectHistogramNever());
+  CheckHistogramExpectation(histogram_tester(),
+                            "RegionalCapabilities.PersistedCountryMatching",
+                            ExpectHistogramNever());
+  CheckHistogramExpectation(histogram_tester(),
+                            "RegionalCapabilities.LoadedCountrySource",
+                            ExpectHistogramNever());
 }
 
 TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_FetchedSync) {

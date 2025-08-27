@@ -136,7 +136,7 @@ class RegionalCapabilitiesService : public KeyedService {
   // in tests.
   void ClearCacheForTesting();
 
-  Program GetActiveProgramForTesting();
+  const ProgramSettings& GetActiveProgramSettingsForTesting();
 
 #if BUILDFLAG(IS_ANDROID)
   // -- JNI Interface ---------------------------------------------------------
