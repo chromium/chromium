@@ -83,7 +83,7 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
   params.delegate = widget_delegate_.get();
   params.native_widget = CreateNativeWidget();
   widget_->Init(std::move(params));
-  widget_->MakeCloseSynchronous(base::BindRepeating(
+  widget_->MakeCloseSynchronous(base::BindOnce(
       &WebUIBrowserWindow::OnWindowCloseRequested, base::Unretained(this)));
   auto web_view = std::make_unique<views::WebView>(browser_->profile());
 
@@ -984,6 +984,11 @@ void WebUIBrowserWindow::OnWindowCloseRequested(
   // close before we hide the window below.
   if (const auto closing_status = browser_->HandleBeforeClose();
       closing_status != BrowserClosingStatus::kPermitted) {
+    // Need to reset the synchronous close callback after each Close() call as
+    // it's reset once used.  Close() is generally called twice during shutdown.
+    widget_->MakeCloseSynchronous(base::BindOnce(
+        &WebUIBrowserWindow::OnWindowCloseRequested, base::Unretained(this)));
+
     BrowserList::NotifyBrowserCloseCancelled(browser_.get(), closing_status);
     return;
   }
