@@ -101,7 +101,7 @@ class ScrollMarkerGroupData : public GarbageCollected<ScrollMarkerGroupData>,
                                                  bool apply_snap_alignment);
   // Returns the currently selected scroll marker (selected_marker_).
   // Might be replaced by pending_selected_marker_ at the next snapshot.
-  Element* Selected() const;
+  CORE_EXPORT Element* Selected() const;
   void UpdateSelectedScrollMarker();
 
   Element* FindNextScrollMarker(const Element* current);

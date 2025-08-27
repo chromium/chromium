@@ -4208,6 +4208,19 @@ ax::mojom::blink::AriaCurrentState AXNodeObject::GetAriaCurrentState() const {
   const AtomicString& attribute_value =
       AriaTokenAttribute(html_names::kAriaCurrentAttr);
   if (attribute_value.IsNull()) {
+    if (RuntimeEnabledFeatures::CSSScrollTargetGroupAriaCurrentEnabled()) {
+      // If aria-current is not set, check if the anchor element is selected
+      // in a scroll marker group (it's now a :target-current). If so, set
+      // aria-current="true" on the element.
+      if (auto* anchor_element = DynamicTo<HTMLAnchorElement>(GetNode())) {
+        if (ScrollMarkerGroupData* data =
+                anchor_element->GetScrollTargetGroupContainerData()) {
+          if (data->Selected() == anchor_element) {
+            return ax::mojom::blink::AriaCurrentState::kTrue;
+          }
+        }
+      }
+    }
     return ax::mojom::blink::AriaCurrentState::kNone;
   }
   if (EqualIgnoringASCIICase(attribute_value, "false")) {

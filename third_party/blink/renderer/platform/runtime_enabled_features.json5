@@ -1557,6 +1557,11 @@
       status: "stable",
     },
     {
+      // scroll-target-group property sets aria-current=true on :target-current html scroll marker.
+      name: "CSSScrollTargetGroupAriaCurrent",
+      status: "experimental",
+    },
+    {
       name: "CSSSelectorFragmentAnchor",
       status: "experimental",
       base_feature: "CssSelectorFragmentAnchor",

@@ -86,6 +86,10 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable MenuElements so that the new menu elements are recognized.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "MenuElements");
+  // Enable CSSScrollTargetGroupAriaCurrent, used by
+  // TargetCurrentHtmlAnchorRole.
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "CSSScrollTargetGroupAriaCurrent");
 }
 
 void DumpAccessibilityTreeTest::SetUpOnMainThread() {
@@ -4808,6 +4812,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithCarouselTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithCarouselTest,
                        CarouselMarkerNames) {
   RunCSSTest(FILE_PATH_LITERAL("carousel-marker-names.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, TargetCurrentHtmlAnchorRole) {
+  RunCSSTest(FILE_PATH_LITERAL("target-current-html-anchor-role.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       TargetCurrentHtmlAnchorRoleDynamic) {
+  RunCSSTest(FILE_PATH_LITERAL("target-current-html-anchor-role-dynamic.html"));
 }
 
 //
