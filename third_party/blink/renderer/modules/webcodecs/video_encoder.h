@@ -150,6 +150,7 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   void ContinueConfigureWithGpuFactories(
       Request* request,
       media::GpuVideoAcceleratorFactories* gpu_factories);
+  void ContinueConfigureAfterFlush(Request* request);
   media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
   CreateAcceleratedVideoEncoder(
       media::VideoCodecProfile profile,

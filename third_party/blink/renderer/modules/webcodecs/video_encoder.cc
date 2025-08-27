@@ -757,6 +757,19 @@ VideoEncoder::CreateMediaVideoEncoder(
   return CreateSoftwareVideoEncoder(this, /*fallback=*/false, config.codec);
 }
 
+void VideoEncoder::ContinueConfigureAfterFlush(Request* request) {
+  if (active_config_->hw_pref == HardwarePreference::kPreferSoftware &&
+      !media::MayHaveAndAllowSelectOSSoftwareEncoder(active_config_->codec)) {
+    ContinueConfigureWithGpuFactories(request, nullptr);
+    return;
+  }
+
+  RetrieveGpuFactoriesWithKnownEncoderSupport(
+      CrossThreadBindOnce(&VideoEncoder::ContinueConfigureWithGpuFactories,
+                          MakeUnwrappingCrossThreadWeakHandle(this),
+                          MakeUnwrappingCrossThreadHandle(request)));
+}
+
 void VideoEncoder::ContinueConfigureWithGpuFactories(
     Request* request,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
@@ -1288,16 +1301,33 @@ void VideoEncoder::ProcessConfigure(Request* request) {
     }
   }
 
-  if (active_config_->hw_pref == HardwarePreference::kPreferSoftware &&
-      !media::MayHaveAndAllowSelectOSSoftwareEncoder(active_config_->codec)) {
-    ContinueConfigureWithGpuFactories(request, nullptr);
+  if (!media_encoder_) {
+    ContinueConfigureAfterFlush(request);
     return;
   }
 
-  RetrieveGpuFactoriesWithKnownEncoderSupport(
-      CrossThreadBindOnce(&VideoEncoder::ContinueConfigureWithGpuFactories,
-                          MakeUnwrappingCrossThreadWeakHandle(this),
-                          MakeUnwrappingCrossThreadHandle(request)));
+  auto flush_done_callback = [](VideoEncoder* self, Request* req,
+                                media::EncoderStatus status) {
+    if (!self || self->reset_count_ != req->reset_count) {
+      req->EndTracing(/*aborted=*/true);
+      return;
+    }
+    DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+    if (!status.is_ok()) {
+      self->ReportError(
+          "Encoder flush error.", std::move(status),
+          /*is_error_message_from_software_codec=*/!self->is_platform_encoder_);
+      self->blocking_request_in_progress_ = nullptr;
+      req->EndTracing();
+      return;
+    }
+
+    self->ContinueConfigureAfterFlush(req);
+  };
+
+  media_encoder_->Flush(BindOnce(flush_done_callback,
+                                 MakeUnwrappingCrossThreadWeakHandle(this),
+                                 MakeUnwrappingCrossThreadHandle(request)));
 }
 
 void VideoEncoder::ProcessReconfigure(Request* request) {
@@ -1493,8 +1523,12 @@ void VideoEncoder::CallOutputCallback(
         DCHECK(active_config->options.avc.produce_annexb ||
                codec_desc.has_value());
       }
-      DCHECK(output.key_frame) << "Encoders should generate a keyframe when "
-                               << "changing color space";
+      DCHECK(output.key_frame)
+          << "Encoders should generate a keyframe when "
+          << "changing color space."
+          << " output_color_space: " << output_color_space.ToString()
+          << " last_output_color_space: "
+          << last_output_color_space_.ToString();
 #endif
       last_output_color_space_ = output_color_space;
     } else if (active_config->codec == media::VideoCodec::kH264) {

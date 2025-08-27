@@ -213,10 +213,11 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
   ASSERT_EQ(0u, decoder_pressure_manager->pressure_for_testing());
 
   auto* config = CreateConfig();
+  media::MockVideoEncoder* first_mock_media_encoder = nullptr;
   {
     base::RunLoop run_loop;
     auto media_encoder = std::make_unique<media::MockVideoEncoder>();
-    media::MockVideoEncoder* mock_media_encoder = media_encoder.get();
+    first_mock_media_encoder = media_encoder.get();
 
     EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
         .WillOnce(DoAll(
@@ -231,7 +232,7 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
     EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
         .WillOnce(Return(ByMove(
             std::make_unique<media::MockVideoEncoderMetricsProvider>())));
-    EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
+    EXPECT_CALL(*first_mock_media_encoder, Initialize(_, _, _, _, _))
         .WillOnce(
             WithArgs<4>([quit_closure = run_loop.QuitWhenIdleClosure()](
                             media::VideoEncoder::EncoderStatusCB done_cb) {
@@ -258,8 +259,14 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
     base::RunLoop run_loop;
 
     auto media_encoder = std::make_unique<media::MockVideoEncoder>();
-    media::MockVideoEncoder* mock_media_encoder = media_encoder.get();
+    media::MockVideoEncoder* second_media_encoder = media_encoder.get();
 
+    EXPECT_CALL(*first_mock_media_encoder, Flush(_))
+        .WillOnce([](media::VideoEncoder::EncoderStatusCB done_cb) {
+          scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+              FROM_HERE, blink::BindOnce(std::move(done_cb),
+                                         media::EncoderStatus::Codes::kOk));
+        });
     EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
         .WillOnce(DoAll(
             [encoder = encoder]() {
@@ -270,7 +277,7 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
             },
             Return(ByMove(std::unique_ptr<media::VideoEncoder>(
                 std::move(media_encoder))))));
-    EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
+    EXPECT_CALL(*second_media_encoder, Initialize(_, _, _, _, _))
         .WillOnce(
             WithArgs<4>([quit_closure = run_loop.QuitWhenIdleClosure()](
                             media::VideoEncoder::EncoderStatusCB done_cb) {
