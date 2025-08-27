@@ -10,6 +10,8 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/ui/global_error/global_error.h"
+#include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -61,6 +63,29 @@ base::Time FakeUpgradeDetector::GetAnnoyanceLevelDeadline(
   // This value is not important for this test.
   return base::Time();
 }
+
+// A minimal menu-bearing GlobalError with configurable severity.
+class FakeMenuGlobalError : public GlobalError {
+ public:
+  explicit FakeMenuGlobalError(Severity severity) : severity_(severity) {}
+  FakeMenuGlobalError(const FakeMenuGlobalError&) = delete;
+  FakeMenuGlobalError& operator=(const FakeMenuGlobalError&) = delete;
+  ~FakeMenuGlobalError() override = default;
+
+  // GlobalError:
+  Severity GetSeverity() override { return severity_; }
+  bool HasMenuItem() override { return true; }
+  int MenuItemCommandID() override { return 1; }
+  std::u16string MenuItemLabel() override { return u"fake"; }
+  void ExecuteMenuItem(Browser* /*browser*/) override {}
+  bool HasShownBubbleView() override { return false; }
+  bool HasBubbleView() override { return false; }
+  void ShowBubbleView(Browser* browser) override {}
+  GlobalErrorBubbleViewBase* GetBubbleView() override { return nullptr; }
+
+ private:
+  Severity severity_;
+};
 
 }  // namespace
 
@@ -193,3 +218,43 @@ INSTANTIATE_TEST_SUITE_P(
 #else
 INSTANTIATE_TEST_SUITE_P(All, AppMenuIconControllerTest, ::testing::Values(0));
 #endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_P(AppMenuIconControllerTest, GlobalErrorLowSeverityShowsActionRequired) {
+  ::testing::NiceMock<MockAppMenuIconControllerDelegate> mock_delegate;
+  AppMenuIconController controller(upgrade_detector(), profile(),
+                                   &mock_delegate);
+
+  auto* error_service = GlobalErrorServiceFactory::GetForProfile(profile());
+  FakeMenuGlobalError low(GlobalError::SEVERITY_LOW);
+  error_service->AddUnownedGlobalError(&low);
+
+  auto state = controller.GetTypeAndSeverity();
+  EXPECT_EQ(state.type, AppMenuIconController::IconType::GLOBAL_ERROR);
+  EXPECT_EQ(state.severity, AppMenuIconController::Severity::LOW);
+
+  error_service->RemoveGlobalError(&low);
+}
+
+TEST_P(AppMenuIconControllerTest, GlobalErrorMediumOrHighShowsError) {
+  ::testing::NiceMock<MockAppMenuIconControllerDelegate> mock_delegate;
+  AppMenuIconController controller(upgrade_detector(), profile(),
+                                   &mock_delegate);
+
+  auto* error_service = GlobalErrorServiceFactory::GetForProfile(profile());
+
+  FakeMenuGlobalError medium(GlobalError::SEVERITY_MEDIUM);
+  error_service->AddUnownedGlobalError(&medium);
+  auto state = controller.GetTypeAndSeverity();
+  EXPECT_EQ(state.type, AppMenuIconController::IconType::GLOBAL_ERROR);
+  EXPECT_EQ(state.severity, AppMenuIconController::Severity::MEDIUM);
+  error_service->RemoveGlobalError(&medium);
+
+  FakeMenuGlobalError high(GlobalError::SEVERITY_HIGH);
+  error_service->AddUnownedGlobalError(&high);
+  state = controller.GetTypeAndSeverity();
+  EXPECT_EQ(state.type, AppMenuIconController::IconType::GLOBAL_ERROR);
+  EXPECT_EQ(state.severity, AppMenuIconController::Severity::HIGH);
+  error_service->RemoveGlobalError(&high);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)

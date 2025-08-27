@@ -224,7 +224,11 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
 #endif
   } else {
     tooltip_message_id = IDS_APPMENU_TOOLTIP_ALERT;
-    text = l10n_util::GetStringUTF16(IDS_APP_MENU_BUTTON_ERROR);
+    const int text_id =
+        type_and_severity_.severity == AppMenuIconController::Severity::LOW
+            ? IDS_APP_MENU_BUTTON_ACTION_REQUIRED
+            : IDS_APP_MENU_BUTTON_ERROR;
+    text = l10n_util::GetStringUTF16(text_id);
   }
 
   SetTooltipText(l10n_util::GetStringUTF16(tooltip_message_id));

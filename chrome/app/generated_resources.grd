@@ -12916,6 +12916,18 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_APP_MENU_BUTTON_ERROR" desc="Short label next to app-menu button when the user needs to resolve something.">
         Error
       </message>
+      <if expr="not use_titlecase">
+        <then>
+          <message name="IDS_APP_MENU_BUTTON_ACTION_REQUIRED" desc="Short label next to app-menu button when the user needs to resolve something that is not an error.">
+            Action required
+          </message>
+        </then>
+        <else>
+          <message name="IDS_APP_MENU_BUTTON_ACTION_REQUIRED" desc="Short label next to app-menu button when the user needs to resolve something that is not an error.">
+            Action Required
+          </message>
+        </else>
+      </if>
 
       <!-- Screen Capture strings -->
       <message name="IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TITLE" desc="Title for the prompt shown when screen capturing is requrested by an app.">

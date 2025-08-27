@@ -42,6 +42,8 @@ class AppMenuIconController : public GlobalErrorObserver,
   // The app menu icon's type and severity.
   struct TypeAndSeverity {
     IconType type;
+    // When `type` is `IconType::GLOBAL_ERROR`, this reflects the severity of
+    // the highest-severity global error.
     Severity severity;
     bool use_primary_colors = false;
   };
