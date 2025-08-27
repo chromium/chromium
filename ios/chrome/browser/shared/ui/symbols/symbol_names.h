@@ -256,7 +256,6 @@ extern NSString* const kSpeedometerSymbol;
 extern NSString* const kMovePlatterToTopPhoneSymbol;
 extern NSString* const kMovePlatterToBottomPhoneSymbol;
 extern NSString* const kMapSymbol;
-extern NSString* const kShippingBoxSymbol;
 extern NSString* const kSliderHorizontalSymbol;
 extern NSString* const kMacbookAndIPhoneSymbol;
 extern NSString* const kCheckmarkShieldSymbol;

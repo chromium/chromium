@@ -15605,6 +15605,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.HomeCustomization.MagicStackPage.ParcelTracking.Toggled">
+  <obsolete>
+    Unused as of 08/2025, as ParcelTracking code has been turned down and
+    removed from the codebase
+  </obsolete>
   <owner>adamta@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <description>

@@ -99,7 +99,6 @@ enum class CustomizationToggleType : NSInteger {
   kSetUpList,
   kSafetyCheck,
   kTapResumption,
-  kParcelTracking,
   kShopCard,
 };
 

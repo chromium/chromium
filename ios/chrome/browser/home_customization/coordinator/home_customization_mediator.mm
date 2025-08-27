@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
-#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -144,11 +143,6 @@
        [self isMagicStackCardEnabledForType:CustomizationToggleType::
                                                 kTapResumption]},
   };
-  if (IsIOSParcelTrackingEnabled()) {
-    toggleMap.insert({CustomizationToggleType::kParcelTracking,
-                      [self isMagicStackCardEnabledForType:
-                                CustomizationToggleType::kParcelTracking]});
-  }
   if (IsTipsMagicStackEnabled()) {
     toggleMap.insert(
         {CustomizationToggleType::kTips,
@@ -201,9 +195,6 @@
     case CustomizationToggleType::kTapResumption:
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
-    case CustomizationToggleType::kParcelTracking:
-      return _prefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackParcelTrackingEnabled);
     case CustomizationToggleType::kTips: {
       CHECK(IsTipsMagicStackEnabled());
       return _prefService->GetBoolean(
@@ -397,10 +388,6 @@
     case CustomizationToggleType::kTapResumption:
       _prefService->SetBoolean(
           prefs::kHomeCustomizationMagicStackTabResumptionEnabled, enabled);
-      break;
-    case CustomizationToggleType::kParcelTracking:
-      _prefService->SetBoolean(
-          prefs::kHomeCustomizationMagicStackParcelTrackingEnabled, enabled);
       break;
     case CustomizationToggleType::kTips: {
       CHECK(IsTipsMagicStackEnabled());

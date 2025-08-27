@@ -25,8 +25,6 @@ const char kSafetyCheckToggledAction[] =
     "IOS.HomeCustomization.MagicStackPage.SafetyCheck.Toggled";
 const char kTabResumptionToggledAction[] =
     "IOS.HomeCustomization.MagicStackPage.TabResumption.Toggled";
-const char kParcelTrackingToggledAction[] =
-    "IOS.HomeCustomization.MagicStackPage.ParcelTracking.Toggled";
 const char kTipsToggledAction[] =
     "IOS.HomeCustomization.MagicStackPage.Tips.Toggled";
 const char kShopCardPriceTrackingAction[] =
@@ -60,9 +58,6 @@ const char kShopCardReviewsAction[] =
       return;
     case CustomizationToggleType::kTapResumption:
       base::RecordAction(base::UserMetricsAction(kTabResumptionToggledAction));
-      return;
-    case CustomizationToggleType::kParcelTracking:
-      base::RecordAction(base::UserMetricsAction(kParcelTrackingToggledAction));
       return;
     case CustomizationToggleType::kTips:
       base::RecordAction(base::UserMetricsAction(kTipsToggledAction));
