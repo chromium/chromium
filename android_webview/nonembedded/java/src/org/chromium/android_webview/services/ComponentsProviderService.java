@@ -91,7 +91,7 @@ public class ComponentsProviderService extends Service {
      * default implementation is {@code System.currentTimeMillis()}.
      */
     @VisibleForTesting
-    public static interface Clock {
+    public interface Clock {
         long currentTimeMillis();
     }
 

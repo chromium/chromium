@@ -32,8 +32,8 @@ import java.util.function.Consumer;
 @NullMarked
 public interface WebViewBuilderBoundaryInterface {
     @Retention(RetentionPolicy.SOURCE)
-    public @interface Baseline {
-        public int DEFAULT = 0;
+    @interface Baseline {
+        int DEFAULT = 0;
     }
 
     @Target(ElementType.TYPE_USE)

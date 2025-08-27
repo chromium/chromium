@@ -20,13 +20,13 @@ import java.util.concurrent.Callable;
 /**
  * This class is responsible for calling certain client callbacks on the UI thread.
  *
- * Most callbacks do no go through here, but get forwarded to AwContentsClient directly. The
+ * <p>Most callbacks do no go through here, but get forwarded to AwContentsClient directly. The
  * messages processed here may originate from the IO or UI thread.
  */
 @Lifetime.WebView
 public class AwContentsClientCallbackHelper {
     /** Interface to tell CallbackHelper to cancel posted callbacks. */
-    public static interface CancelCallbackPoller {
+    public interface CancelCallbackPoller {
         boolean shouldCancelAllCallbacks();
     }
 

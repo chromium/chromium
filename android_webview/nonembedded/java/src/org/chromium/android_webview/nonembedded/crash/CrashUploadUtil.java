@@ -29,13 +29,13 @@ public final class CrashUploadUtil {
 
     /** Delegate interface to mock network status check and scheduling upload jobs for testing. */
     @VisibleForTesting
-    public static interface CrashUploadDelegate {
+    public interface CrashUploadDelegate {
         /**
          * Schedule a MinidumpUploadJobService to attempt uploading all ready crash minidumps.
          *
          * @param context the context where the upload job will be scheduled from.
          * @param requiresUnmeteredNetwork true if we want to restrict the upload job to unmetered
-         *         network only.
+         *     network only.
          */
         void scheduleNewJob(@NonNull Context context, boolean requiresUnmeteredNetwork);
 

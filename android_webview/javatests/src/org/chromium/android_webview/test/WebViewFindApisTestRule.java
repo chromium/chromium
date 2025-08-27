@@ -32,7 +32,7 @@ public class WebViewFindApisTestRule extends AwActivityTestRule {
 
     // Internal interface to intercept find results from AwContentsClient.
     private interface FindResultListener {
-        public void onFindResultReceived(
+        void onFindResultReceived(
                 int activeMatchOrdinal, int numberOfMatches, boolean isDoneCounting);
     }
 

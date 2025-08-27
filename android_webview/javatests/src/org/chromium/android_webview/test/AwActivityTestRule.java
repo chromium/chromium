@@ -94,7 +94,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     /** An interface to call onCreateWindow(AwContents). */
     public interface OnCreateWindowHandler {
         /** This will be called when a new window pops up from the current webview. */
-        public boolean onCreateWindow(AwContents awContents);
+        boolean onCreateWindow(AwContents awContents);
     }
 
     private Description mCurrentTestDescription;

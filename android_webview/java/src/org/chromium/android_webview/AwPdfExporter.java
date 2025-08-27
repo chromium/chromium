@@ -43,10 +43,11 @@ public class AwPdfExporter {
     public interface AwPdfExporterCallback {
         /**
          * Called by the native side when PDF generation is done.
+         *
          * @param pageCount How many pages native side wrote to PDF file descriptor. Non-positive
-         *                  value indicates native side writing failed.
+         *     value indicates native side writing failed.
          */
-        public void pdfWritingDone(int pageCount);
+        void pdfWritingDone(int pageCount);
     }
 
     AwPdfExporter(ViewGroup containerView) {

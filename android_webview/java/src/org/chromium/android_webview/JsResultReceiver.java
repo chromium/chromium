@@ -15,7 +15,7 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public interface JsResultReceiver {
-    public void confirm();
+    void confirm();
 
-    public void cancel();
+    void cancel();
 }

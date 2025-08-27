@@ -13,7 +13,7 @@ public interface SafeModeAction {
      * Returns a unique identifier for this action. This must not be used by any other registered
      * action.
      */
-    public String getId();
+    String getId();
 
     /**
      * Executes the given action. Implementations of this method should be Java-only (no JNI/C++)

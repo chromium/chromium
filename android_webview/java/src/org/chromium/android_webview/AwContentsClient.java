@@ -96,7 +96,7 @@ public abstract class AwContentsClient {
     /** See {@link android.webkit.WebChromeClient}. */
     public interface CustomViewCallback {
         /** See {@link android.webkit.WebChromeClient}. */
-        public void onCustomViewHidden();
+        void onCustomViewHidden();
     }
 
     // Alllow injection of the callback thread, for testing.

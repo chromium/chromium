@@ -11,19 +11,19 @@ import java.lang.reflect.InvocationHandler;
 /** Base-class that an AwContents embedder derives from to receive navigation-related callbacks. */
 @Lifetime.WebView
 public interface AwNavigationClient {
-    public /* WebViewNavigationClient */ InvocationHandler getSupportLibInvocationHandler();
+    /* WebViewNavigationClient */ InvocationHandler getSupportLibInvocationHandler();
 
-    public abstract void onNavigationStarted(AwNavigation navigation);
+    void onNavigationStarted(AwNavigation navigation);
 
-    public abstract void onNavigationRedirected(AwNavigation navigation);
+    void onNavigationRedirected(AwNavigation navigation);
 
-    public abstract void onNavigationCompleted(AwNavigation navigation);
+    void onNavigationCompleted(AwNavigation navigation);
 
-    public abstract void onPageDeleted(AwPage page);
+    void onPageDeleted(AwPage page);
 
-    public abstract void onPageLoadEventFired(AwPage page);
+    void onPageLoadEventFired(AwPage page);
 
-    public abstract void onPageDOMContentLoadedEventFired(AwPage page);
+    void onPageDOMContentLoadedEventFired(AwPage page);
 
-    public abstract void onFirstContentfulPaint(AwPage page);
+    void onFirstContentfulPaint(AwPage page);
 }
