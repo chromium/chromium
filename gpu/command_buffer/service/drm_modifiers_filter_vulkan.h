@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_VULKAN_DRM_MODIFIERS_FILTER_VULKAN_H_
-#define GPU_VULKAN_DRM_MODIFIERS_FILTER_VULKAN_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_DRM_MODIFIERS_FILTER_VULKAN_H_
+#define GPU_COMMAND_BUFFER_SERVICE_DRM_MODIFIERS_FILTER_VULKAN_H_
 
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/ozone/public/drm_modifiers_filter.h"
@@ -20,7 +20,7 @@ namespace gpu {
 // implementation can import is a subset of all modifiers supported by the
 // hardware and can be queried through the VK_EXT_image_drm_format_modifier
 // extension.
-class COMPONENT_EXPORT(VULKAN) DrmModifiersFilterVulkan
+class GPU_GLES2_EXPORT DrmModifiersFilterVulkan
     : public ui::DrmModifiersFilter {
  public:
   explicit DrmModifiersFilterVulkan(
@@ -37,4 +37,4 @@ class COMPONENT_EXPORT(VULKAN) DrmModifiersFilterVulkan
 
 }  // namespace gpu
 
-#endif  // GPU_VULKAN_DRM_MODIFIERS_FILTER_VULKAN_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_DRM_MODIFIERS_FILTER_VULKAN_H_

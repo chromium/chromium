@@ -168,15 +168,6 @@ if (enable_vulkan) {
       ]
     }
 
-    if (use_ozone) {
-      sources += [
-        "drm_modifiers_filter_vulkan.cc",
-        "drm_modifiers_filter_vulkan.h",
-      ]
-
-      deps += [ "//ui/ozone:drm_modifiers_filter" ]
-    }
-
     if (is_chromeos) {
       deps += [ "//ui/gfx/linux:drm" ]
     }
@@ -274,8 +265,6 @@ if (enable_vulkan) {
       }
 
       if (use_ozone) {
-        sources += [ "drm_modifiers_filter_vulkan_unittest.cc" ]
-
         deps += [ "//ui/ozone" ]
       }
 

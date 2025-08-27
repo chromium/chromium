@@ -320,6 +320,10 @@ test("gl_tests") {
   deps += [ "//third_party/angle:translator" ]
 
   if (use_ozone) {
+    if (enable_vulkan) {
+      sources +=
+          [ "command_buffer/service/drm_modifiers_filter_vulkan_unittest.cc" ]
+    }
     deps += [ "//ui/ozone" ]
     sources += [ "command_buffer/service/shared_image/ozone_image_backing_factory_unittest.cc" ]
   }

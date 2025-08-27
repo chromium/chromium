@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/vulkan/drm_modifiers_filter_vulkan.h"
+#include "gpu/command_buffer/service/drm_modifiers_filter_vulkan.h"
 
 #include "base/check.h"
 #include "base/containers/contains.h"
