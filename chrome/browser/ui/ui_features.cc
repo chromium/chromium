@@ -172,6 +172,17 @@ BASE_FEATURE_PARAM(int,
 #endif
 );
 
+BASE_FEATURE_PARAM(double,
+                   kSideBySideDropTargetHideForOSPercentage,
+                   &kSideBySide,
+                   "drop_target_hide_for_os_percentage",
+#if BUILDFLAG(IS_WIN)
+                   1.4
+#else
+                   0
+#endif
+);
+
 BASE_FEATURE(kSideBySideDropTargetNudge,
              "SideBySideDropTargetNudge",
              base::FEATURE_ENABLED_BY_DEFAULT);
