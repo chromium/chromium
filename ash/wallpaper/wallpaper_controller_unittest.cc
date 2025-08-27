@@ -1600,6 +1600,8 @@ TEST_P(WallpaperControllerTest,
   // the on-screen wallpaper doesn't change since |kUser1| is not active, but
   // wallpaper info is updated properly.
   SimulateUserLogin(kAccountId2);
+  RunAllTasksUntilIdle();
+
   ClearWallpaperCount();
   const OnlineWallpaperParams& new_params = OnlineWallpaperParams(
       kAccountId1,
@@ -4604,6 +4606,7 @@ TEST_P(WallpaperControllerTest, SetCustomWallpaper) {
   WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER;
 
   SimulateUserLogin(kAccountId1);
+  RunAllTasksUntilIdle();
 
   // Set a custom wallpaper for |kUser1|. Verify the wallpaper is set
   // successfully and wallpaper info is updated.
@@ -4629,6 +4632,9 @@ TEST_P(WallpaperControllerTest, SetCustomWallpaper) {
   // wallpaper doesn't change since |kUser1| is not active, but wallpaper info
   // is updated properly.
   SimulateUserLogin(kAccountId2);
+  RunAllTasksUntilIdle();
+  auto second_wallpaper_color = GetWallpaperColor();
+
   const SkColor custom_wallpaper_color = SK_ColorCYAN;
   image = CreateImage(640, 480, custom_wallpaper_color);
   ClearWallpaperCount();
@@ -4638,14 +4644,15 @@ TEST_P(WallpaperControllerTest, SetCustomWallpaper) {
                                          /*file_path=*/"", image);
   RunAllTasksUntilIdle();
   EXPECT_EQ(0, GetWallpaperCount());
-  EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
+  EXPECT_EQ(second_wallpaper_color, GetWallpaperColor());
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
   EXPECT_TRUE(wallpaper_info.MatchesSelection(expected_wallpaper_info));
 
   // Verify the updated wallpaper is shown after |kUser1| becomes active again.
-  SwitchActiveUser(kAccountId1);
   ClearWallpaperCount();
+  SwitchActiveUser(kAccountId1);
+
   controller_->ShowUserWallpaper(kAccountId1);
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
@@ -4897,6 +4904,7 @@ TEST_P(WallpaperControllerTest, HandleWallpaperInfoSyncedInactiveUser) {
 
   // Make kAccountId1 the inactive user.
   SimulateUserLogin(kAccountId2);
+  RunAllTasksUntilIdle();
 
   // Attempt to set an online wallpaper without providing the image data. Verify
   // it succeeds this time because |SetOnlineWallpaper| has saved the file.
@@ -5114,6 +5122,7 @@ TEST_P(WallpaperControllerTest, UpdateWallpaperOnScheduleCheckpointChanged) {
     } else {
       SimulateUserLogin(kAccountId1);
     }
+    RunAllTasksUntilIdle();
 
     const AccountId active_account_id =
         Shell::Get()->session_controller()->GetActiveAccountId();

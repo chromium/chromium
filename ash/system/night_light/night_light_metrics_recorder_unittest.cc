@@ -22,7 +22,7 @@ constexpr char kUserEmail[] = "user@example.com";
 class NightLightMetricsRecorderTest : public NoSessionAshTestBase {
  public:
   void SetUp() override {
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
@@ -64,7 +64,7 @@ TEST_F(NightLightMetricsRecorderTest,
   night_light_controller()->SetColorTemperature(temperature);
 
   // Simulate a sign out.
-  Shell::Get()->session_controller()->RequestSignOut();
+  ClearLogin();
 
   // Now that prefs have been saved, login again.
   SimulateUserLogin({kUserEmail});
@@ -91,7 +91,7 @@ TEST_F(NightLightMetricsRecorderTest,
   night_light_controller()->SetColorTemperature(temperature);
 
   // Simulate a sign out.
-  Shell::Get()->session_controller()->RequestSignOut();
+  ClearLogin();
 
   // Now that prefs have been saved, login again.
   SimulateUserLogin({kUserEmail});
@@ -118,7 +118,7 @@ TEST_F(NightLightMetricsRecorderTest,
   night_light_controller()->SetColorTemperature(temperature);
 
   // Simulate a sign out.
-  Shell::Get()->session_controller()->RequestSignOut();
+  ClearLogin();
 
   // Now that prefs have been saved, login again.
   SimulateUserLogin({kUserEmail});
@@ -159,7 +159,7 @@ TEST_P(NightLightMetricsRecorderTest_RecordScheduleType, RecordScheduleType) {
   night_light_controller()->SetScheduleType(GetParam());
 
   // Simulate a sign out.
-  Shell::Get()->session_controller()->RequestSignOut();
+  ClearLogin();
 
   // Now that prefs have been saved, login again.
   SimulateUserLogin({kUserEmail});
