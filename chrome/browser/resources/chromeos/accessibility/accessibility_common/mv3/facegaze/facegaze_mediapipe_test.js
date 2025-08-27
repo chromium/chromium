@@ -29,4 +29,6 @@ AX_TEST_F('FaceGazeMediaPipeTest', 'CreateFaceLandmarker', async function() {
   const webCamFaceLandmarker = this.getFaceGaze().webCamFaceLandmarker_;
   await this.mockAccessibilityPrivate.initializeFaceGazeAssets();
   await webCamFaceLandmarker.initWebCam_();
+  assertTrue(await Messenger.send(
+      OffscreenCommandType.FACEGAZE_HAS_FACE_LANDMARKER_FOR_TEST));
 });
