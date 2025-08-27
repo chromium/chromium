@@ -24,6 +24,7 @@
 #include "components/history/core/browser/features.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/most_visited_sites.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -77,8 +78,8 @@ MostVisitedHandler::MostVisitedHandler(
 
 MostVisitedHandler::~MostVisitedHandler() = default;
 
-void MostVisitedHandler::EnableCustomLinks(bool enable) {
-  most_visited_sites_->EnableCustomLinks(enable);
+void MostVisitedHandler::EnableTileTypes(bool enable_custom_links) {
+  most_visited_sites_->EnableTileTypes(enable_custom_links);
 }
 
 void MostVisitedHandler::SetShortcutsVisible(bool visible) {

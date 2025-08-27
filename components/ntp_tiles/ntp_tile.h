@@ -15,7 +15,8 @@
 
 namespace ntp_tiles {
 
-// A suggested site shown on the New Tab Page.
+// A suggested site shown on the New Tab Page. This is equivalent to "shortcuts"
+// which are the user facing name.
 struct NTPTile {
   std::u16string title;
   GURL url;

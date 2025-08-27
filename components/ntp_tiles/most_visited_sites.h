@@ -32,6 +32,7 @@
 #include "components/ntp_tiles/popular_sites.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_source.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/webapps/common/constants.h"
 #include "url/gurl.h"
@@ -201,10 +202,14 @@ class MostVisitedSites :
   // Returns whether custom links should be the only data source.
   bool IsExclusivelyCustomLinks();
 
-  // Enables or disables custom links, but does not (un)initialize them. Called
-  // when the user switches between custom links and Most Visited sites on the
-  // 1P Desktop NTP.
-  void EnableCustomLinks(bool enable);
+  // Sets the type of shortcuts to show, but does not (un)initialize them.
+  // Called when the user switches between custom links and Most Visited sites
+  // on the 1P Desktop NTP.
+  // TODO(crbug.com/438302330): Add `enable_top_sites` here. For android, set
+  // `enable_top_sites` and `enable_custom_links` to true. For desktop, only set
+  // `enable_custom_links` to true. See https://crrev.com/c/6871359 for more
+  // details.
+  void EnableTileTypes(bool enable_custom_links);
 
   // Returns whether custom links are enabled.
   bool IsCustomLinksEnabled() const;

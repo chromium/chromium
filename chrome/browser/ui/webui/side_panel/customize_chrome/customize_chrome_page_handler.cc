@@ -46,6 +46,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -137,7 +138,7 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      ntp_prefs::kNtpUseMostVisitedTiles,
+      ntp_prefs::kNtpShortcutsType,
       base::BindRepeating(
           &CustomizeChromePageHandler::UpdateMostVisitedSettings,
           base::Unretained(this)));
@@ -470,12 +471,17 @@ void CustomizeChromePageHandler::OpenNtpManagedByPage() {
   open_url_callback_.Run(GURL(chrome::kBrowserSettingsSearchEngineURL));
 }
 
+// TODO(crbug.com/438302330): Pass Tiletype instead of custom_links_enabled when
+// mojom is updated.
 void CustomizeChromePageHandler::SetMostVisitedSettings(
     bool custom_links_enabled,
     bool visible) {
   if (IsCustomLinksEnabled() != custom_links_enabled) {
-    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles,
-                                     !custom_links_enabled);
+    profile_->GetPrefs()->SetInteger(
+        ntp_prefs::kNtpShortcutsType,
+        custom_links_enabled
+            ? static_cast<int>(ntp_tiles::TileType::kCustomLinks)
+            : static_cast<int>(ntp_tiles::TileType::kTopSites));
     LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
   }
 
@@ -485,6 +491,8 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
   }
 }
 
+// TODO(crbug.com/438302330): Pass GetShortcutsType() instead of
+// IsCustomLinksEnabled() when mojom is updated.
 void CustomizeChromePageHandler::UpdateMostVisitedSettings() {
   page_->SetMostVisitedSettings(IsCustomLinksEnabled(), IsShortcutsVisible());
 }
@@ -653,8 +661,12 @@ void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {
   }
 }
 
+// TODO(crbug.com/438302330): Return TileType and rename function to
+// GetShortcutsType() when mojom is updated.
 bool CustomizeChromePageHandler::IsCustomLinksEnabled() const {
-  return !profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles);
+  return static_cast<ntp_tiles::TileType>(
+             profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType)) ==
+         ntp_tiles::TileType::kCustomLinks;
 }
 
 bool CustomizeChromePageHandler::IsShortcutsVisible() const {

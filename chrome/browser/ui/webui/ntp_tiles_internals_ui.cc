@@ -93,14 +93,19 @@ ChromeNTPTilesInternalsMessageHandlerClient::MakeMostVisitedSites() {
   auto most_visited_sites = ChromeMostVisitedSitesFactory::NewForProfile(
       Profile::FromWebUI(web_ui()));
 #if BUILDFLAG(IS_ANDROID)
-  // Custom links on Android: ntp_prefs::kNtpUseMostVisitedTiles is
+  // Custom links on Android: ntp_prefs::kNtpShortcutsType is
   // unavailable. Use feature list instead.
-  most_visited_sites->EnableCustomLinks(base::FeatureList::IsEnabled(
-      chrome::android::kMostVisitedTilesCustomization));
+  most_visited_sites->EnableTileTypes(
+      /*enable_custom_links=*/base::FeatureList::IsEnabled(
+          chrome::android::kMostVisitedTilesCustomization));
 #else
   // Custom links on Desktop.
-  most_visited_sites->EnableCustomLinks(
-      !GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles));
+  // TODO(crbug.com/438304256): Add `enable_enterprise_shortcuts` as a parameter
+  // to support enterprise shortcuts.
+  most_visited_sites->EnableTileTypes(
+      /*enable_custom_links=*/static_cast<ntp_tiles::TileType>(
+          GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType)) ==
+      ntp_tiles::TileType::kCustomLinks);
 #endif
   return most_visited_sites;
 }

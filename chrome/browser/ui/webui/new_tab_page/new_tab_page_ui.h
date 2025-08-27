@@ -132,6 +132,7 @@ class NewTabPageUI
   static bool IsNewTabPageOrigin(const GURL& url);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void ResetProfilePrefs(PrefService* prefs);
+  static void MigrateDeprecatedUseMostVisitedTilesPref(PrefService* prefs);
   static bool IsManagedProfile(Profile* profile);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
@@ -303,9 +304,9 @@ class NewTabPageUI
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
 
-  // Callback for when the value of the pref for showing custom links vs. most
-  // visited sites in the NTP tiles changes.
-  void OnCustomLinksEnabledPrefChanged();
+  // Callback for when the value of the pref for determining the type of NTP
+  // tiles changes.
+  void OnShortcutsTypePrefChanged();
   // Callback for when the value of the pref for showing the NTP tiles changes.
   void OnTilesVisibilityPrefChanged();
   // Called when the NTP (re)loads. Sets mutable load time data.

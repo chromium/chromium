@@ -5,6 +5,7 @@
 #include "chrome/browser/search/instant_service.h"
 
 #include <stddef.h>
+
 #include <string>
 
 #include "base/files/file_util.h"
@@ -37,6 +38,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/ntp_tiles/constants.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -66,7 +68,8 @@ InstantService::InstantService(Profile* profile)
 
   most_visited_sites_ = ChromeMostVisitedSitesFactory::NewForProfile(profile_);
   if (most_visited_sites_) {
-    most_visited_sites_->EnableCustomLinks(false);
+    most_visited_sites_->EnableTileTypes(
+        /*enable_custom_links=*/false);
     most_visited_sites_->AddMostVisitedURLsObserver(
         this, ntp_tiles::kMaxNumMostVisited);
   }

@@ -312,6 +312,7 @@
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
@@ -1634,6 +1635,11 @@ void RegisterProfilePrefsForMigration(
       kObsoleteAutofillableCredentialsProfileStoreLoginDatabase, false);
   registry->RegisterBooleanPref(
       kObsoleteAutofillableCredentialsAccountStoreLoginDatabase, false);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 08/2025.
+  registry->RegisterBooleanPref(ntp_prefs::kNtpUseMostVisitedTiles, false);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -2961,6 +2967,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
       kObsoleteAutofillableCredentialsProfileStoreLoginDatabase);
   profile_prefs->ClearPref(
       kObsoleteAutofillableCredentialsAccountStoreLoginDatabase);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 08/2025.
+  NewTabPageUI::MigrateDeprecatedUseMostVisitedTilesPref(profile_prefs);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

@@ -14,10 +14,10 @@
 #include "base/functional/bind.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/custom_links_util.h"
-#include "components/ntp_tiles/deleted_tile_type.h"
 #include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/pref_names.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
@@ -210,7 +210,7 @@ void CustomLinksManagerImpl::RemoveCustomLinksForPreinstalledApps() {
       }
     }
     if (default_app_links_deleted) {
-      metrics::RecordsMigratedDefaultAppDeleted(DeletedTileType::kCustomLink);
+      metrics::RecordsMigratedDefaultAppDeleted(TileType::kCustomLinks);
       prefs_->SetBoolean(prefs::kCustomLinksForPreinstalledAppsRemoved, true);
     }
   }

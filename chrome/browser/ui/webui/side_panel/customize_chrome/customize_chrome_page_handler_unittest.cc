@@ -46,6 +46,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -371,6 +372,8 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   raw_ptr<NtpBackgroundServiceObserver> ntp_background_service_observer_;
 };
 
+// TODO(crbug.com/438302330): Pass type instead of custom_links_enabled when
+// mojom is updated.
 TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
   bool custom_links_enabled;
   bool visible;
@@ -379,12 +382,14 @@ TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
       .WillRepeatedly(
           DoAll(SaveArg<0>(&custom_links_enabled), SaveArg<1>(&visible)));
 
-  profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles, false);
+  profile().GetPrefs()->SetInteger(
+      ntp_prefs::kNtpShortcutsType,
+      static_cast<int>(ntp_tiles::TileType::kCustomLinks));
   profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
 
   histogram_tester().ExpectTotalCount("NewTabPage.CustomizeShortcutAction", 0);
-  EXPECT_FALSE(
-      profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles));
+  EXPECT_EQ(static_cast<int>(ntp_tiles::TileType::kCustomLinks),
+            profile().GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
   EXPECT_FALSE(
       profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
 
@@ -392,8 +397,8 @@ TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
                                    /*visible=*/true);
   mock_page_.FlushForTesting();
 
-  EXPECT_TRUE(
-      profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles));
+  EXPECT_EQ(static_cast<int>(ntp_tiles::TileType::kTopSites),
+            profile().GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
   EXPECT_TRUE(
       profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
   histogram_tester().ExpectTotalCount("NewTabPage.CustomizeShortcutAction", 2);

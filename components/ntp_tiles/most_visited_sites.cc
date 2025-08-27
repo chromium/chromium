@@ -22,7 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/ntp_tiles/constants.h"
-#include "components/ntp_tiles/deleted_tile_type.h"
 #include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/icon_cacher.h"
 #include "components/ntp_tiles/metrics.h"
@@ -339,9 +338,11 @@ bool MostVisitedSites::IsExclusivelyCustomLinks() {
   return !is_custom_links_mixable_ && IsCustomLinksInitialized();
 }
 
-void MostVisitedSites::EnableCustomLinks(bool enable) {
-  if (is_custom_links_enabled_ != enable) {
-    is_custom_links_enabled_ = enable;
+// TODO(crbug.com/438304256): Add `enable_enterprise_shortcuts` as a parameter
+// to support enterprise shortcuts.
+void MostVisitedSites::EnableTileTypes(bool enable_custom_links) {
+  if (is_custom_links_enabled_ != enable_custom_links) {
+    is_custom_links_enabled_ = enable_custom_links;
     BuildCurrentTiles(/* is_user_triggered= */ true);
   }
 }
@@ -816,8 +817,7 @@ void MostVisitedSites::SaveTilesAndNotify(
                                    : new_tiles;
 
   if (fixed_tiles.size() != new_tiles.size()) {
-    metrics::RecordsMigratedDefaultAppDeleted(
-        DeletedTileType::kMostVisitedSite);
+    metrics::RecordsMigratedDefaultAppDeleted(TileType::kTopSites);
   }
 
   fixed_tiles = ImposeCustomLinks(std::move(fixed_tiles));

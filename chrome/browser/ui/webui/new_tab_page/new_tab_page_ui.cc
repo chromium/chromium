@@ -87,6 +87,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history_clusters/core/features.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/composebox/composebox_metrics_recorder.h"
@@ -726,8 +727,8 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
-      ntp_prefs::kNtpUseMostVisitedTiles,
-      base::BindRepeating(&NewTabPageUI::OnCustomLinksEnabledPrefChanged,
+      ntp_prefs::kNtpShortcutsType,
+      base::BindRepeating(&NewTabPageUI::OnShortcutsTypePrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   pref_change_registrar_.Add(
       ntp_prefs::kNtpShortcutsVisible,
@@ -770,7 +771,9 @@ bool NewTabPageUI::IsNewTabPageOrigin(const GURL& url) {
 // static
 void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kPrevNavigationTimePrefName, base::Time());
-  registry->RegisterBooleanPref(ntp_prefs::kNtpUseMostVisitedTiles, false);
+  registry->RegisterIntegerPref(
+      ntp_prefs::kNtpShortcutsType,
+      static_cast<int>(ntp_tiles::TileType::kCustomLinks));
   registry->RegisterBooleanPref(ntp_prefs::kNtpShortcutsVisible, true);
   registry->RegisterBooleanPref(prefs::kNtpPromoVisible, true);
 }
@@ -778,8 +781,30 @@ void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 // static
 void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
   ntp_tiles::MostVisitedSites::ResetProfilePrefs(prefs);
-  prefs->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles, false);
+  prefs->SetInteger(ntp_prefs::kNtpShortcutsType,
+                    static_cast<int>(ntp_tiles::TileType::kCustomLinks));
   prefs->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+}
+
+// static
+void NewTabPageUI::MigrateDeprecatedUseMostVisitedTilesPref(
+    PrefService* prefs) {
+  // Skip migration if the new preference is already set.
+  if (prefs->HasPrefPath(ntp_prefs::kNtpShortcutsType)) {
+    return;
+  }
+  const base::Value* user_value =
+      prefs->GetUserPrefValue(ntp_prefs::kNtpUseMostVisitedTiles);
+  if (user_value) {
+    if (user_value->is_bool()) {
+      prefs->SetInteger(
+          ntp_prefs::kNtpShortcutsType,
+          user_value->GetBool()
+              ? static_cast<int>(ntp_tiles::TileType::kTopSites)
+              : static_cast<int>(ntp_tiles::TileType::kCustomLinks));
+    }
+    prefs->ClearPref(ntp_prefs::kNtpUseMostVisitedTiles);
+  }
 }
 
 // static
@@ -1002,7 +1027,8 @@ void NewTabPageUI::CreatePageHandler(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       web_contents(), GURL(chrome::kChromeUINewTabPageURL),
       navigation_start_time_);
-  most_visited_page_handler_->EnableCustomLinks(IsCustomLinksEnabled());
+  most_visited_page_handler_->EnableTileTypes(
+      /*enable_custom_links=*/IsCustomLinksEnabled());
   most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
 }
 
@@ -1115,16 +1141,18 @@ void NewTabPageUI::DidStartNavigation(
 }
 
 bool NewTabPageUI::IsCustomLinksEnabled() const {
-  return !profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles);
+  return profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType) ==
+         static_cast<int>(ntp_tiles::TileType::kCustomLinks);
 }
 
 bool NewTabPageUI::IsShortcutsVisible() const {
   return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible);
 }
 
-void NewTabPageUI::OnCustomLinksEnabledPrefChanged() {
+void NewTabPageUI::OnShortcutsTypePrefChanged() {
   if (most_visited_page_handler_) {
-    most_visited_page_handler_->EnableCustomLinks(IsCustomLinksEnabled());
+    most_visited_page_handler_->EnableTileTypes(
+        /*enable_custom_links=*/IsCustomLinksEnabled());
   }
 }
 

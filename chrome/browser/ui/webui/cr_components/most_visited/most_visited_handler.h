@@ -45,8 +45,8 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
   MostVisitedHandler& operator=(const MostVisitedHandler&) = delete;
   ~MostVisitedHandler() override;
 
-  // See MostVisitedSites::EnableCustomLinks.
-  void EnableCustomLinks(bool enable);
+  // See MostVisitedSites::EnableTileTypes.
+  void EnableTileTypes(bool enable_custom_links);
   // See MostVisitedSites::SetShortcutsVisible.
   void SetShortcutsVisible(bool visible);
 

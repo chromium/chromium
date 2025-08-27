@@ -8,6 +8,7 @@
 namespace ntp_prefs {
 extern const char kNtpShortcutsVisible[];
 extern const char kNtpUseMostVisitedTiles[];
+extern const char kNtpShortcutsType[];
 }  // namespace ntp_prefs
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NTP_PREF_NAMES_H_

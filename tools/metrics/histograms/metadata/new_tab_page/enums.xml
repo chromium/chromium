@@ -654,7 +654,7 @@ chromium-metrics-reviews@google.com.
     This enum denotes the type of app on the deleted ntp_tile as part of bug fix
     for crbug.com/1250463
   </summary>
-  <int value="0" label="Default App from most visited links"/>
+  <int value="0" label="Default App from top sites links"/>
   <int value="1" label="Default App with custom links"/>
 </enum>
 

@@ -42,8 +42,8 @@ using base::android::ScopedJavaLocalRef;
 using ntp_tiles::MostVisitedSites;
 using ntp_tiles::NTPTilesVector;
 using ntp_tiles::SectionType;
-using ntp_tiles::TileTitleSource;
 using ntp_tiles::TileSource;
+using ntp_tiles::TileTitleSource;
 using ntp_tiles::TileVisualType;
 
 namespace {
@@ -179,7 +179,7 @@ MostVisitedSitesBridge::MostVisitedSitesBridge(Profile* profile,
     : most_visited_(ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       profile_(profile) {
   DCHECK(!profile->IsOffTheRecord());
-  most_visited_->EnableCustomLinks(enable_custom_links);
+  most_visited_->EnableTileTypes(enable_custom_links);
 }
 
 MostVisitedSitesBridge::~MostVisitedSitesBridge() = default;

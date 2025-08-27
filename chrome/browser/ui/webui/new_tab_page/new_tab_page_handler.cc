@@ -75,6 +75,7 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -580,6 +581,8 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kNtpComposeButtonShownCountPrefName, 0);
 }
 
+// TODO(crbug.com/438302330): Pass Tiletype instead of custom_links_enabled when
+// mojom is updated.
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
                                                bool visible) {
   bool old_visible = IsShortcutsVisible();
@@ -591,13 +594,18 @@ void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
 
   bool old_custom_links_enabled = IsCustomLinksEnabled();
   if (old_custom_links_enabled != custom_links_enabled) {
-    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles,
-                                     !custom_links_enabled);
+    profile_->GetPrefs()->SetInteger(
+        ntp_prefs::kNtpShortcutsType,
+        custom_links_enabled
+            ? static_cast<int>(ntp_tiles::TileType::kCustomLinks)
+            : static_cast<int>(ntp_tiles::TileType::kTopSites));
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE,
                      base::TimeDelta() /* unused */);
   }
 }
 
+// TODO(crbug.com/438302330): Return type instead of custom_links_enabled when
+// mojom is updated.
 void NewTabPageHandler::GetMostVisitedSettings(
     GetMostVisitedSettingsCallback callback) {
   bool custom_links_enabled = IsCustomLinksEnabled();
@@ -1444,8 +1452,12 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
   std::move(callback).Run(target_url_params, interaction_log_url, encoded_ei);
 }
 
+// TODO(crbug.com/438302330): Return TileType and rename function to
+// GetShortcutsType() when mojom is updated.
 bool NewTabPageHandler::IsCustomLinksEnabled() const {
-  return !profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles);
+  return static_cast<ntp_tiles::TileType>(
+             profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType)) ==
+         ntp_tiles::TileType::kCustomLinks;
 }
 
 bool NewTabPageHandler::IsShortcutsVisible() const {

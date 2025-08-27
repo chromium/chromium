@@ -1330,13 +1330,13 @@ TEST_F(MostVisitedSitesWithCustomLinksTest,
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
           MostVisitedURLList{MakeMostVisitedURL(kTestTitle, kTestUrl)}));
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_, _)).Times(1);
-  most_visited_sites_->EnableCustomLinks(false);
+  most_visited_sites_->EnableTileTypes(/*enable_custom_links=*/false);
   base::RunLoop().RunUntilIdle();
 
   // Try to disable custom links again. This should not rebuild the tiles.
   EXPECT_CALL(*mock_top_sites_, GetMostVisitedURLs(_)).Times(0);
   EXPECT_CALL(*mock_custom_links_manager_, GetLinks()).Times(0);
-  most_visited_sites_->EnableCustomLinks(false);
+  most_visited_sites_->EnableTileTypes(/*enable_custom_links=*/false);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1373,7 +1373,7 @@ TEST_F(MostVisitedSitesWithCustomLinksTest, DisableCustomLinksWhenInitialized) {
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_, _))
       .WillOnce(SaveArg<1>(&sections));
 
-  most_visited_sites_->EnableCustomLinks(false);
+  most_visited_sites_->EnableTileTypes(/*enable_custom_links=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(
       sections.at(SectionType::PERSONALIZED),
@@ -1383,7 +1383,7 @@ TEST_F(MostVisitedSitesWithCustomLinksTest, DisableCustomLinksWhenInitialized) {
 
   // Re-enable custom links. Tiles should rebuild and return custom links.
   SetUpBuildWithCustomLinks(expected_links, &sections);
-  most_visited_sites_->EnableCustomLinks(true);
+  most_visited_sites_->EnableTileTypes(/*enable_custom_links=*/true);
   base::RunLoop().RunUntilIdle();
   CheckSingleCustomLink(sections.at(SectionType::PERSONALIZED), kTestTitle,
                         kTestUrl);
