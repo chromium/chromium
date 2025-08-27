@@ -17,6 +17,8 @@ desc: |-
 
   This policy has no effect when set on a machine level.
 
+  This policy does not apply to or function within Incognito mode.
+
 supported_on:
 - chrome.*:119-
 
