@@ -71,9 +71,9 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
-    private void showCreditCards(
+    private void showPaymentMethods(
             @JniType("std::vector") Object[] suggestions, boolean shouldShowScanCreditCard) {
-        mComponent.showCreditCards(
+        mComponent.showPaymentMethods(
                 (List<AutofillSuggestion>) (List<?>) Arrays.asList(suggestions),
                 shouldShowScanCreditCard);
     }

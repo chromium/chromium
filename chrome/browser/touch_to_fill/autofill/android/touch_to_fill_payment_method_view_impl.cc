@@ -70,7 +70,7 @@ bool TouchToFillPaymentMethodViewImpl::IsReadyToShow(
   return true;
 }
 
-bool TouchToFillPaymentMethodViewImpl::ShowCreditCards(
+bool TouchToFillPaymentMethodViewImpl::ShowPaymentMethods(
     TouchToFillPaymentMethodViewController* controller,
     base::span<const Suggestion> suggestions,
     bool should_show_scan_credit_card) {
@@ -112,7 +112,7 @@ bool TouchToFillPaymentMethodViewImpl::ShowCreditCards(
             android_icon_id, suggestion.HasDeactivatedStyle(),
             payments_payload.CreateJavaObject()));
   }
-  Java_TouchToFillPaymentMethodViewBridge_showCreditCards(
+  Java_TouchToFillPaymentMethodViewBridge_showPaymentMethods(
       env, java_object_, std::move(suggestions_array),
       should_show_scan_credit_card);
   return true;

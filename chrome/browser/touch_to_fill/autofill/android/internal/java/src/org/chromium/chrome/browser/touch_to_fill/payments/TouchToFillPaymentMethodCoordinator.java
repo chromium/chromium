@@ -86,10 +86,10 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     }
 
     @Override
-    public void showCreditCards(
+    public void showPaymentMethods(
             List<AutofillSuggestion> suggestions, boolean shouldShowScanCreditCard) {
         assert mCardImageFunction != null : "Attempting to call showCreditCards before initialize.";
-        mMediator.showCreditCards(suggestions, shouldShowScanCreditCard, mCardImageFunction);
+        mMediator.showPaymentMethods(suggestions, shouldShowScanCreditCard, mCardImageFunction);
     }
 
     @Override

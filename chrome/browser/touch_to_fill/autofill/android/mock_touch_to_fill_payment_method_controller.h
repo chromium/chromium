@@ -34,7 +34,7 @@ class MockTouchToFillPaymentMethodController
   ~MockTouchToFillPaymentMethodController() override;
 
   MOCK_METHOD(bool,
-              ShowCreditCards,
+              ShowPaymentMethods,
               (std::unique_ptr<TouchToFillPaymentMethodView>,
                base::WeakPtr<TouchToFillDelegate>,
                base::span<const Suggestion>),

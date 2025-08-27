@@ -224,7 +224,7 @@ class TouchToFillPaymentMethodMediator {
         mBottomSheetFocusHelper = bottomSheetFocusHelper;
     }
 
-    void showCreditCards(
+    void showPaymentMethods(
             List<AutofillSuggestion> suggestions,
             boolean shouldShowScanCreditCard,
             Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>

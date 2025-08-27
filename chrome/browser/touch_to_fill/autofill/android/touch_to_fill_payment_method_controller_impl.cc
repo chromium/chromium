@@ -62,7 +62,7 @@ TouchToFillPaymentMethodControllerImpl::
   ResetJavaObject();
 }
 
-bool TouchToFillPaymentMethodControllerImpl::ShowCreditCards(
+bool TouchToFillPaymentMethodControllerImpl::ShowPaymentMethods(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const Suggestion> suggestions) {
@@ -75,8 +75,8 @@ bool TouchToFillPaymentMethodControllerImpl::ShowCreditCards(
     return false;
   }
 
-  if (!view->ShowCreditCards(this, suggestions,
-                             delegate->ShouldShowScanCreditCard())) {
+  if (!view->ShowPaymentMethods(this, suggestions,
+                                delegate->ShouldShowScanCreditCard())) {
     ResetJavaObject();
     return false;
   }

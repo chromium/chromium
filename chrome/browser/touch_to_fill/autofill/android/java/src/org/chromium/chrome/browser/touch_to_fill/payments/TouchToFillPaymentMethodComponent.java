@@ -90,7 +90,7 @@ interface TouchToFillPaymentMethodComponent {
             BottomSheetFocusHelper bottomSheetFocusHelper);
 
     /**
-     * Displays a new credit card bottom sheet.
+     * Displays a new payment methods bottom sheet.
      *
      * @param suggestions A list of {@link AutofillSuggestion}, each generated from a corresponding
      *     credit card. It includes a boolean that denotes if the card is acceptable for the given
@@ -98,7 +98,7 @@ interface TouchToFillPaymentMethodComponent {
      * @param shouldShowScanCreditCard A boolean that conveys whether 'ScanCreditCard' should be
      *     shown.
      */
-    void showCreditCards(List<AutofillSuggestion> suggestions, boolean shouldShowScanCreditCard);
+    void showPaymentMethods(List<AutofillSuggestion> suggestions, boolean shouldShowScanCreditCard);
 
     /** Displays a new IBAN bottom sheet. */
     void showIbans(List<PersonalDataManager.Iban> ibans);

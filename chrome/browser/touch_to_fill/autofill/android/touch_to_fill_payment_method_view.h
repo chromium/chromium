@@ -20,7 +20,7 @@ class TouchToFillPaymentMethodView {
  public:
   virtual ~TouchToFillPaymentMethodView() = default;
 
-  virtual bool ShowCreditCards(
+  virtual bool ShowPaymentMethods(
       TouchToFillPaymentMethodViewController* controller,
       base::span<const Suggestion> suggestions,
       bool should_show_scan_credit_card) = 0;

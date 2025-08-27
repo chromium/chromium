@@ -43,9 +43,9 @@ class TouchToFillPaymentMethodControllerImpl
   ~TouchToFillPaymentMethodControllerImpl() override;
 
   // TouchToFillPaymentMethodController:
-  bool ShowCreditCards(std::unique_ptr<TouchToFillPaymentMethodView> view,
-                       base::WeakPtr<TouchToFillDelegate> delegate,
-                       base::span<const Suggestion> suggestions) override;
+  bool ShowPaymentMethods(std::unique_ptr<TouchToFillPaymentMethodView> view,
+                          base::WeakPtr<TouchToFillDelegate> delegate,
+                          base::span<const Suggestion> suggestions) override;
   bool ShowIbans(std::unique_ptr<TouchToFillPaymentMethodView> view,
                  base::WeakPtr<TouchToFillDelegate> delegate,
                  base::span<const Iban> ibans_to_suggest) override;

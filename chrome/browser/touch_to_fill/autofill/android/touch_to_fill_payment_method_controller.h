@@ -35,7 +35,7 @@ class TouchToFillPaymentMethodController
   // field determines which card suggestions should be disabled and grayed out
   // for the current merchant. Returns whether the surface was successfully
   // shown.
-  virtual bool ShowCreditCards(
+  virtual bool ShowPaymentMethods(
       std::unique_ptr<TouchToFillPaymentMethodView> view,
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const Suggestion> suggestions) = 0;

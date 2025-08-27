@@ -36,13 +36,13 @@ using ::testing::Return;
 class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
  public:
   MockTouchToFillPaymentMethodViewImpl() {
-    ON_CALL(*this, ShowCreditCards).WillByDefault(Return(true));
+    ON_CALL(*this, ShowPaymentMethods).WillByDefault(Return(true));
     ON_CALL(*this, ShowIbans).WillByDefault(Return(true));
   }
   ~MockTouchToFillPaymentMethodViewImpl() override = default;
 
   MOCK_METHOD(bool,
-              ShowCreditCards,
+              ShowPaymentMethods,
               ((TouchToFillPaymentMethodViewController * controller),
                (base::span<const Suggestion> suggestions),
                (bool should_show_scan_credit_card)));
@@ -218,14 +218,14 @@ class TouchToFillPaymentMethodControllerTest
 };
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
-       ShowCreditCardsPassesCardsToTheView) {
+       ShowPaymentMethodsPassesCreditCardsToTheView) {
   // Test that the cards have propagated to the view.
   EXPECT_CALL(*mock_view_,
-              ShowCreditCards(&payment_method_controller(),
-                              ElementsAreArray(suggestions_),
-                              /*should_show_scan_credit_card=*/true));
+              ShowPaymentMethods(&payment_method_controller(),
+                                 ElementsAreArray(suggestions_),
+                                 /*should_show_scan_credit_card=*/true));
   OnBeforeAskForValuesToFill();
-  payment_method_controller().ShowCreditCards(
+  payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   OnAfterAskForValuesToFill();
 }
@@ -259,7 +259,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
 TEST_F(TouchToFillPaymentMethodControllerTest, ScanCreditCardIsCalled) {
   OnBeforeAskForValuesToFill();
-  payment_method_controller().ShowCreditCards(
+  payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   OnAfterAskForValuesToFill();
   EXPECT_CALL(ttf_delegate(), ScanCreditCard);
@@ -269,7 +269,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest, ScanCreditCardIsCalled) {
 TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowPaymentMethodSettingsIsCalledForCards) {
   OnBeforeAskForValuesToFill();
-  payment_method_controller().ShowCreditCards(
+  payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   OnAfterAskForValuesToFill();
   EXPECT_CALL(ttf_delegate(), ShowPaymentMethodSettings);
@@ -289,7 +289,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
 TEST_F(TouchToFillPaymentMethodControllerTest, OnDismissedIsCalled) {
   OnBeforeAskForValuesToFill();
-  payment_method_controller().ShowCreditCards(
+  payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   OnAfterAskForValuesToFill();
 

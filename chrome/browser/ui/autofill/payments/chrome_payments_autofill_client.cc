@@ -913,7 +913,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
           ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
           !suggestions.empty());
 
-  return GetTouchToFillPaymentMethodController()->ShowCreditCards(
+  return GetTouchToFillPaymentMethodController()->ShowPaymentMethods(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
       delegate, std::move(suggestions));
 #else

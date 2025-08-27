@@ -36,9 +36,9 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
   bool IsReadyToShow(TouchToFillPaymentMethodViewController* controller,
                      JNIEnv* env);
   // TouchToFillPaymentMethodView:
-  bool ShowCreditCards(TouchToFillPaymentMethodViewController* controller,
-                       base::span<const Suggestion> suggestions,
-                       bool should_show_scan_credit_card) override;
+  bool ShowPaymentMethods(TouchToFillPaymentMethodViewController* controller,
+                          base::span<const Suggestion> suggestions,
+                          bool should_show_scan_credit_card) override;
   bool ShowIbans(TouchToFillPaymentMethodViewController* controller,
                  base::span<const autofill::Iban> ibans_to_suggest) override;
   bool ShowLoyaltyCards(TouchToFillPaymentMethodViewController* controller,
