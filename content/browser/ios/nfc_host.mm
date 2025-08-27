@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/apple/foundation_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "content/public/browser/browser_context.h"
