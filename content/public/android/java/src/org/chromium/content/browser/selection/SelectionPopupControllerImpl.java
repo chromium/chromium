@@ -78,6 +78,7 @@ import org.chromium.ui.base.ViewAndroidDelegate.ContainerViewObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.ui.touch_selection.SelectionEventType;
 import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
@@ -229,6 +230,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     /** Custom {@link android.view.View.OnClickListener} map for ActionMode menu items. */
     private final Map<MenuItem, View.OnClickListener> mCustomActionMenuItemClickListeners;
+
+    /** Menu model bridge used to display extra items. */
+    private @Nullable MenuModelBridge mMenuModelBridge;
 
     /** An interface for getting {@link View} for readback. */
     public interface ReadbackViewCallback {
@@ -523,6 +527,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             int sourceType,
             RenderFrameHost renderFrameHost,
             MenuModelBridge menuModelBridge) {
+        mMenuModelBridge = menuModelBridge;
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.ShowSelectionMenuSourceType", sourceType, MenuSourceType.MAX_VALUE);
 
@@ -754,6 +759,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                                 + mWebContents.getRenderCoordinates().getContentOffsetYPix()));
 
         MVCListAdapter.ModelList items = getDropdownItems();
+        if (mMenuModelBridge != null) {
+            for (ListItem listItem : mMenuModelBridge.getListItems()) {
+                items.add(listItem);
+            }
+        }
         SelectionDropdownMenuDelegate.ItemClickListener itemClickListener =
                 getDropdownItemClickListener(mDropdownMenuDelegate);
         mDropdownMenuDelegate.show(mContext, mView, items, itemClickListener, x, y);
@@ -803,6 +813,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 destroyDropdownMenu();
                 break;
         }
+        mMenuModelBridge = null;
     }
 
     /**

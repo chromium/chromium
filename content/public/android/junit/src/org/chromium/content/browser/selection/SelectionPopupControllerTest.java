@@ -20,6 +20,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +42,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -67,7 +71,11 @@ import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelega
 import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.ui.touch_selection.SelectionEventType;
 import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
@@ -81,7 +89,7 @@ import java.util.SortedSet;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SelectionPopupControllerTest {
-    private final MenuModelBridge mMenuModelBridge = new MenuModelBridge();
+    private MenuModelBridge mMenuModelBridge;
     private SelectionPopupControllerImpl mController;
     private Context mContext;
     private WeakReference<Context> mWeakContext;
@@ -104,6 +112,7 @@ public class SelectionPopupControllerTest {
     private static final String MOUNTAIN = "Mountain";
     private static final String AMPHITHEATRE_FULL = "1600 Amphitheatre Parkway";
     private static final String AMPHITHEATRE = "Amphitheatre";
+    private static final String EXTRA_MENU_ITEM_TITLE = "Extra Menu Item Title";
 
     private static class TestSelectionClient implements SelectionClient {
         private SelectionClient.Result mResult;
@@ -173,6 +182,7 @@ public class SelectionPopupControllerTest {
         mLogger = Mockito.mock(SmartSelectionEventProcessor.class);
         mPopupController = Mockito.mock(PopupController.class);
         mGestureStateListenerManager = Mockito.mock(GestureListenerManagerImpl.class);
+        mMenuModelBridge = Mockito.mock(MenuModelBridge.class);
 
         setDropdownMenuFeatureEnabled(false);
 
@@ -193,6 +203,7 @@ public class SelectionPopupControllerTest {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mGestureStateListenerManager.isScrollInProgress()).thenReturn(false);
         when(mWindowAndroid.getContext()).thenReturn(mWeakContext);
+        when(mMenuModelBridge.getListItems()).thenReturn(List.of());
 
         mController = SelectionPopupControllerImpl.createForTesting(mWebContents, mPopupController);
         GestureListenerManagerImpl.setInstanceForTesting(mGestureStateListenerManager);
@@ -940,6 +951,39 @@ public class SelectionPopupControllerTest {
         when(mWebContents.getViewAndroidDelegate()).thenReturn(null);
         mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED, 0, 0, 0, 0);
         Mockito.verify(mView, never()).setSystemGestureExclusionRects(anyList());
+    }
+
+    @Test
+    @Feature("ExtensionContextMenuItems")
+    public void testExtraMenuItems() {
+        setDropdownMenuFeatureEnabled(true);
+        List<ListItem> extraItems =
+                List.of(
+                        new ListItem(
+                                MENU_ITEM,
+                                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                        .with(TITLE, EXTRA_MENU_ITEM_TITLE)
+                                        .build()));
+        when(mMenuModelBridge.getListItems()).thenReturn(extraItems);
+        SelectionPopupControllerImpl spyController = Mockito.spy(mController);
+        SelectionDropdownMenuDelegate dropdownMenuDelegate =
+                Mockito.spy(new TestSelectionDropdownMenuDelegate());
+        spyController.setDropdownMenuDelegate(dropdownMenuDelegate);
+        showSelectionMenu(
+                spyController,
+                AMPHITHEATRE_FULL,
+                /* selectionStartOffset= */ 0,
+                MenuSourceType.MOUSE);
+        ArgumentCaptor<ModelList> modelList = ArgumentCaptor.captor();
+        Mockito.verify(dropdownMenuDelegate, times(1))
+                .show(any(), any(), modelList.capture(), any(), anyInt(), anyInt());
+        // Assert that extra item inserted at end.
+        ModelList result = modelList.getValue();
+        ListItem lastItem = result.get(result.size() - 1);
+        assertEquals(
+                "Expected extra item to have title " + EXTRA_MENU_ITEM_TITLE,
+                EXTRA_MENU_ITEM_TITLE,
+                lastItem.model.get(TITLE));
     }
 
     private void showSelectionMenu(
