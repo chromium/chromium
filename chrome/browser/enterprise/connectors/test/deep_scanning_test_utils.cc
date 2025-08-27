@@ -42,6 +42,32 @@ using ::testing::_;
 
 namespace enterprise_connectors::test {
 
+namespace {
+
+// Namespace alias to reduce verbosity when using event protos.
+namespace proto = ::chrome::cros::reporting::proto;
+
+proto::EventResult GetEventResultProto(const std::string& event_result) {
+  if (event_result == "EVENT_RESULT_UNKNOWN") {
+    return proto::EventResult::EVENT_RESULT_UNSPECIFIED;
+  }
+  if (event_result == "EVENT_RESULT_ALLOWED") {
+    return proto::EventResult::EVENT_RESULT_ALLOWED;
+  }
+  if (event_result == "EVENT_RESULT_WARNED") {
+    return proto::EventResult::EVENT_RESULT_WARNED;
+  }
+  if (event_result == "EVENT_RESULT_BLOCKED") {
+    return proto::EventResult::EVENT_RESULT_BLOCKED;
+  }
+  if (event_result == "EVENT_RESULT_BYPASSED") {
+    return proto::EventResult::EVENT_RESULT_BYPASSED;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 using base::test::EqualsProto;
 
 EventReportValidator::EventReportValidator(
@@ -267,6 +293,70 @@ void EventReportValidator::ExpectSensitiveDataEvent(
             if (!done_closure_.is_null()) {
               done_closure_.Run();
             }
+          });
+}
+
+void EventReportValidator::ExpectSensitiveDataEvents(
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent
+        expected_sensitive_data_event,
+    const std::vector<std::string>& expected_filenames,
+    const std::vector<std::string>& expected_sha256s,
+    const std::vector<std::string>& expected_results,
+    const std::vector<std::string>& expected_scan_ids) {
+  base::flat_map<std::string, ContentAnalysisResponse::Result> dlp_verdicts;
+  base::flat_map<std::string, std::string> results;
+  base::flat_map<std::string, std::string> filenames_and_hashes;
+  base::flat_map<std::string, std::string> scan_ids;
+
+  for (size_t i = 0; i < expected_filenames.size(); ++i) {
+    filenames_and_hashes[expected_filenames[i]] = expected_sha256s[i];
+    results[expected_filenames[i]] = expected_results[i];
+    scan_ids[expected_filenames[i]] = expected_scan_ids[i];
+  }
+
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      expected_filenames.size(), base::BindOnce(
+                                     [](base::RepeatingClosure closure) {
+                                       if (!closure.is_null()) {
+                                         closure.Run();
+                                       }
+                                     },
+                                     std::move(done_closure_)));
+
+  EXPECT_CALL(*client_, UploadSecurityEvent)
+      .Times(expected_filenames.size())
+      .WillRepeatedly(
+          [expected_sensitive_data_event, dlp_verdicts, results,
+           filenames_and_hashes, scan_ids, barrier_closure](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            // There should only be 1 event per test.
+            ASSERT_EQ(1, request.events_size());
+            ASSERT_TRUE(request.events().Get(0).has_sensitive_data_event());
+            auto sensitive_data_event =
+                request.events().Get(0).sensitive_data_event();
+
+            EXPECT_EQ(filenames_and_hashes.at(sensitive_data_event.file_name()),
+                      sensitive_data_event.download_digest_sha_256());
+            EXPECT_EQ(scan_ids.at(sensitive_data_event.file_name()),
+                      sensitive_data_event.scan_id());
+            EXPECT_EQ(GetEventResultProto(
+                          results.at(sensitive_data_event.file_name())),
+                      sensitive_data_event.event_result());
+
+            // Clear the validated fields, so that the captured proto can match
+            // the expected protos
+            sensitive_data_event.clear_file_name();
+            sensitive_data_event.clear_scan_id();
+            sensitive_data_event.clear_event_result();
+            sensitive_data_event.clear_download_digest_sha_256();
+
+            EXPECT_THAT(sensitive_data_event,
+                        EqualsProto(expected_sensitive_data_event));
+
+            barrier_closure.Run();
           });
 }
 

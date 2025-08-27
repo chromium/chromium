@@ -357,5 +357,14 @@ std::string PostTestCaseName(const ::testing::TestParamInfo<TestCase>& test) {
   return test.param.GetFullName();
 }
 
+std::string PostTestCaseNameWithBool(
+    const ::testing::TestParamInfo<std::tuple<TestCase, bool>>& test) {
+  if (std::get<1>(test.param)) {
+    return std::get<0>(test.param).GetFullName() + "UploadUseProto";
+  } else {
+    return std::get<0>(test.param).GetFullName() + "UploadUseJson";
+  }
+}
+
 }  // namespace test
 }  // namespace file_manager
