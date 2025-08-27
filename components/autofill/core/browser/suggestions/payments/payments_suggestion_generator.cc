@@ -1154,6 +1154,15 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     FieldType trigger_field_type,
     bool should_show_scan_credit_card,
     CreditCardSuggestionSummary& summary) {
+  // Early return if CVC suggestions are triggered but the client does not
+  // support CVC saving (e.g., for iOS WebView). This avoids unnecessary
+  // processing, which would ultimately result in an empty suggestion list
+  // anyway.
+  if (kCvcFieldTypes.contains(trigger_field_type) &&
+      !client.IsCvcSavingSupported()) {
+    return {};
+  }
+
   if (trigger_field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE &&
       !base::FeatureList::IsEnabled(
           features::

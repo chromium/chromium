@@ -1452,7 +1452,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
       CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/true, summary);
 
-  EXPECT_TRUE(suggestions.empty());
+  EXPECT_THAT(suggestions, IsEmpty());
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowScanCreditCard) {
@@ -2243,7 +2243,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
 
-  EXPECT_TRUE(suggestions.empty());
+  EXPECT_THAT(suggestions, IsEmpty());
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest,
@@ -2271,7 +2271,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
 
-  EXPECT_TRUE(suggestions.empty());
+  EXPECT_THAT(suggestions, IsEmpty());
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest,
@@ -2289,7 +2289,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
 
-  EXPECT_TRUE(suggestions.empty());
+  EXPECT_THAT(suggestions, IsEmpty());
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest,
@@ -2321,7 +2321,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
 
-  EXPECT_TRUE(suggestions.empty());
+  EXPECT_THAT(suggestions, IsEmpty());
 }
 
 // Verify "Save and Fill" suggestion is offered when the user is not in
@@ -2742,6 +2742,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 // server card suggestion when the CVC field is focused.
 TEST_F(AutofillCreditCardSuggestionContentTest,
        GetCreditCardOrCvcFieldSuggestions_CvcField) {
+  autofill_client()->set_is_cvc_saving_supported(true);
   // Create one server card and one local card with CVC.
   CreditCard local_card = CreateLocalCard();
   // We used last 4 to deduplicate local card and server card so we should set
@@ -2782,10 +2783,38 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
 }
 
+#if BUILDFLAG(IS_IOS)
+// Verifies that no CVC suggestions are generated in an iOS WebView.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       GetCreditCardOrCvcFieldSuggestions_CvcField_UnsupportedClient) {
+  // Simulate the iOS WebView context.
+  autofill_client()->set_is_cvc_saving_supported(false);
+
+  // Create one server card and one local card with CVC.
+  CreditCard local_card = CreateLocalCard();
+  local_card.SetNumber(u"5454545454545454");
+  payments_data().AddCreditCard(std::move(local_card));
+  payments_data().AddServerCreditCard(CreateServerCard());
+
+  CreditCardSuggestionSummary summary;
+  const std::vector<Suggestion> suggestions =
+      GetCreditCardOrCvcFieldSuggestions(
+          *autofill_client(), FormFieldData(),
+          /*four_digit_combinations_in_dom=*/{},
+          /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+          CREDIT_CARD_VERIFICATION_CODE,
+          /*should_show_scan_credit_card=*/false, summary);
+
+  // No suggestions should be returned in an iOS WebView for a CVC field.
+  EXPECT_THAT(suggestions, IsEmpty());
+}
+#endif
+
 // Verify that the suggestion's texts are populated correctly for a duplicate
 // local and server card suggestion when the CVC field is focused.
 TEST_F(AutofillCreditCardSuggestionContentTest,
        GetCreditCardOrCvcFieldSuggestions_Duplicate_CvcField) {
+  autofill_client()->set_is_cvc_saving_supported(true);
   // Create 2 duplicate local and server card with same last 4.
   payments_data().AddCreditCard(CreateLocalCard());
   payments_data().AddServerCreditCard(CreateServerCard());
@@ -3868,10 +3897,11 @@ TEST_P(SuggestionIphBubbleTest,
 // -- FieldType get_trigger_field_type: Indicates triggered field type.
 class GetFilteredCardsToSuggestTest
     : public PaymentsSuggestionGeneratorTest,
-      public testing::WithParamInterface<std::tuple<bool, FieldType>> {
+      public testing::WithParamInterface<std::tuple<bool, FieldType, bool>> {
  public:
   bool IsCvcStorageEnhancementEnabled() { return std::get<0>(GetParam()); }
   FieldType get_trigger_field_type() { return std::get<1>(GetParam()); }
+  bool IsCvcSavingSupported() { return std::get<2>(GetParam()); }
 
  private:
   void SetUp() override {
@@ -3879,6 +3909,7 @@ class GetFilteredCardsToSuggestTest
     scoped_feature_list_.InitWithFeatureState(
         features::kAutofillEnableCvcStorageAndFillingEnhancement,
         IsCvcStorageEnhancementEnabled());
+    autofill_client()->set_is_cvc_saving_supported(IsCvcSavingSupported());
     // Create 2 local cards and 2 server cards.
     payments_data().ClearCreditCards();
     CreditCard local_card_1 =
@@ -3909,7 +3940,13 @@ INSTANTIATE_TEST_SUITE_P(
     GetFilteredCardsToSuggestTest,
     testing::Combine(testing::Bool(),
                      testing::Values(FieldType::CREDIT_CARD_VERIFICATION_CODE,
-                                     FieldType::CREDIT_CARD_NUMBER)));
+                                     FieldType::CREDIT_CARD_NUMBER),
+#if BUILDFLAG(IS_IOS)
+                     testing::Bool()
+#else
+                     testing::Values(false)
+#endif
+                         ));
 
 // Verify that suggestions are filtered based on
 // `autofilled_last_four_digits_in_form_for_filtering` when flag is
@@ -3917,15 +3954,17 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(GetFilteredCardsToSuggestTest, GetFilteredCardsToSuggest) {
   FormFieldData field;
   CreditCardSuggestionSummary summary;
-
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"1111",
       get_trigger_field_type(),
       /*should_show_scan_credit_card=*/false, summary);
-
-  if (IsCvcStorageEnhancementEnabled() &&
-      get_trigger_field_type() == FieldType::CREDIT_CARD_VERIFICATION_CODE) {
+  if (get_trigger_field_type() == FieldType::CREDIT_CARD_VERIFICATION_CODE &&
+      !IsCvcSavingSupported()) {
+    EXPECT_THAT(suggestions, IsEmpty());
+  } else if (IsCvcStorageEnhancementEnabled() &&
+             get_trigger_field_type() ==
+                 FieldType::CREDIT_CARD_VERIFICATION_CODE) {
     // There are 3 suggestions, 1 for local card suggestion, followed by a
     // separator, and followed by "Manage payment methods..." which redirects to
     // the Chrome payment methods settings page.
@@ -3971,7 +4010,11 @@ TEST_P(GetFilteredCardsToSuggestTest, EmptyFilteringSet) {
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
       get_trigger_field_type(),
       /*should_show_scan_credit_card=*/false, summary);
-
+  if (get_trigger_field_type() == FieldType::CREDIT_CARD_VERIFICATION_CODE &&
+      !IsCvcSavingSupported()) {
+    EXPECT_THAT(suggestions, IsEmpty());
+    return;
+  }
   // There are 6 suggestions, 4 for card suggestions, followed by a separator,
   // and followed by "Manage payment methods..." which redirects to the Chrome
   // payment methods settings page.
@@ -4027,15 +4070,17 @@ TEST_P(GetFilteredCardsToSuggestTest, TriggerFieldIsNotCvc) {
 TEST_P(GetFilteredCardsToSuggestTest, NoMatchCard) {
   FormFieldData field;
   CreditCardSuggestionSummary summary;
-
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       u"9999", get_trigger_field_type(),
       /*should_show_scan_credit_card=*/false, summary);
-
-  if (IsCvcStorageEnhancementEnabled() &&
-      get_trigger_field_type() == FieldType::CREDIT_CARD_VERIFICATION_CODE) {
+  if (get_trigger_field_type() == FieldType::CREDIT_CARD_VERIFICATION_CODE &&
+      !IsCvcSavingSupported()) {
+    EXPECT_THAT(suggestions, IsEmpty());
+  } else if (IsCvcStorageEnhancementEnabled() &&
+             get_trigger_field_type() ==
+                 FieldType::CREDIT_CARD_VERIFICATION_CODE) {
     // There are no suggestions.
     EXPECT_EQ(suggestions.size(), 0U);
   } else {
@@ -4060,13 +4105,17 @@ TEST_P(GetFilteredCardsToSuggestTest, NoMatchCard) {
 // is enabled.
 class CvcStorageAndFillingStandaloneFormEnhancementTest
     : public PaymentsSuggestionGeneratorTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  bool IsCvcStorageStandaloneFormEnhancementEnabled() { return GetParam(); }
+  bool IsCvcStorageStandaloneFormEnhancementEnabled() {
+    return std::get<0>(GetParam());
+  }
+  bool IsCvcSavingSupported() { return std::get<1>(GetParam()); }
 
  private:
   void SetUp() override {
     PaymentsSuggestionGeneratorTest::SetUp();
+    autofill_client()->set_is_cvc_saving_supported(IsCvcSavingSupported());
     if (IsCvcStorageStandaloneFormEnhancementEnabled()) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
@@ -4109,7 +4158,13 @@ class CvcStorageAndFillingStandaloneFormEnhancementTest
 
 INSTANTIATE_TEST_SUITE_P(PaymentsSuggestionGeneratorTest,
                          CvcStorageAndFillingStandaloneFormEnhancementTest,
-                         testing::Bool());
+                         testing::Combine(testing::Bool(),
+#if BUILDFLAG(IS_IOS)
+                                          testing::Bool()
+#else
+                                          testing::Values(false)
+#endif
+                                              ));
 
 // Tests that GetCreditCardSuggestions function correctly returns masked server
 // card suggestions when no VCN suggestions for a standalone cvc field.
@@ -4124,7 +4179,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*four_digit_combinations_in_dom=*/{"1111", "1113"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
 
-  if (IsCvcStorageStandaloneFormEnhancementEnabled()) {
+  if (IsCvcStorageStandaloneFormEnhancementEnabled() &&
+      IsCvcSavingSupported()) {
     // There are 4 suggestions, 2 for card suggestions, followed by a separator,
     // and followed by "Manage payment methods..." which redirects to the Chrome
     // payment methods settings page.
@@ -4158,7 +4214,10 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*four_digit_combinations_in_dom=*/{"1113"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       u"1111");
-
+  if (!IsCvcSavingSupported()) {
+    EXPECT_THAT(suggestions, IsEmpty());
+    return;
+  }
   // There are 3 suggestions, 1 for card suggestions, followed by a separator,
   // and followed by "Manage payment methods..." which redirects to the Chrome
   // payment methods settings page.
