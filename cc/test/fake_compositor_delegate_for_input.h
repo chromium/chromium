@@ -76,6 +76,7 @@ class FakeCompositorDelegateForInput : public CompositorDelegateForInput {
   void DidStartScroll() override {}
   void DidEndScroll() override {}
   void DidMouseLeave() override {}
+  void DidMouseEnterNonViewportScroller(ElementId element_id) override {}
   bool IsInHighLatencyMode() const override;
   void WillScrollContent(ElementId element_id) override {}
   void DidScrollContent(ElementId element_id,

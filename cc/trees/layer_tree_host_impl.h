@@ -359,6 +359,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void DidEndPinchZoom() override;
   void DidStartScroll() override;
   void DidEndScroll() override;
+  void DidMouseEnterNonViewportScroller(ElementId element_id) override;
   void DidMouseLeave() override;
   bool IsInHighLatencyMode() const override;
   void WillScrollContent(ElementId element_id) override;

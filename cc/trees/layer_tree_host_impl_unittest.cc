@@ -6077,6 +6077,64 @@ TEST_P(LayerTreeHostImplTestMultiScrollable,
   ResetScrollbars();
 }
 
+TEST_P(LayerTreeHostImplTestMultiScrollable, ScrollbarFlashWhenMouseEnter) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.scrollbar_fade_delay = base::Milliseconds(500);
+  settings.scrollbar_fade_duration = base::Milliseconds(300);
+  settings.scrollbar_animator = LayerTreeSettings::AURA_OVERLAY;
+  settings.scrollbar_flash_when_mouse_enter = true;
+
+  SetUpLayers(settings);
+
+  constexpr size_t kNumberOfRepeats = 3;
+  for (size_t i = 0; i < kNumberOfRepeats; i++) {
+    ScrollbarAnimationController* scrollbar_animation_controller =
+        host_impl_->ScrollbarAnimationControllerForElementId(
+            scrollbar_1_->scroll_element_id());
+
+    const float kMouseMoveDistanceToTriggerFadeIn =
+        scrollbar_animation_controller
+            ->GetScrollbarAnimationController(ScrollbarOrientation::kVertical)
+            .MouseMoveDistanceToTriggerFadeIn();
+    const int thumb_thickness = scrollbar_1_->ThumbThickness();
+
+    GetInputHandler().MouseMoveAt(
+        gfx::Point(thumb_thickness + kMouseMoveDistanceToTriggerFadeIn + 1, 1));
+    EXPECT_FALSE(scrollbar_animation_controller->MouseIsNearScrollbar(
+        ScrollbarOrientation::kVertical));
+    EXPECT_FALSE(scrollbar_animation_controller->MouseIsNearScrollbarThumb(
+        ScrollbarOrientation::kVertical));
+
+    EXPECT_FALSE(scrollbar_1_->Opacity());
+    EXPECT_FALSE(scrollbar_2_->Opacity());
+
+    ResetScrollbars();
+
+    ScrollbarAnimationController* scrollbar_animation_controller2 =
+        host_impl_->ScrollbarAnimationControllerForElementId(
+            scrollbar_2_->scroll_element_id());
+
+    const float kMouseMoveDistanceToTriggerFadeInChild =
+        scrollbar_animation_controller2
+            ->GetScrollbarAnimationController(ScrollbarOrientation::kVertical)
+            .MouseMoveDistanceToTriggerFadeIn();
+    const int kThumbThicknessChild = scrollbar_2_->ThumbThickness();
+
+    GetInputHandler().MouseMoveAt(gfx::Point(
+        kThumbThicknessChild + kMouseMoveDistanceToTriggerFadeInChild + 50,
+        50));
+    EXPECT_FALSE(scrollbar_animation_controller2->MouseIsNearScrollbar(
+        ScrollbarOrientation::kVertical));
+    EXPECT_FALSE(scrollbar_animation_controller2->MouseIsNearScrollbarThumb(
+        ScrollbarOrientation::kVertical));
+
+    EXPECT_FALSE(scrollbar_1_->Opacity());
+    EXPECT_TRUE(scrollbar_2_->Opacity());
+
+    ResetScrollbars();
+  }
+}
+
 TEST_P(LayerTreeHostImplTest, ScrollHitTestOnScrollbar) {
   LayerTreeSettings settings = DefaultSettings();
   settings.scrollbar_fade_delay = base::Milliseconds(500);

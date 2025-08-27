@@ -354,6 +354,13 @@ void LayerTreeHostImpl::DidEndScroll() {
 #endif
 }
 
+void LayerTreeHostImpl::DidMouseEnterNonViewportScroller(ElementId element_id) {
+  if (ScrollbarAnimationController* animation_controller =
+          ScrollbarAnimationControllerForElementId(element_id)) {
+    animation_controller->DidScrollUpdate();
+  }
+}
+
 void LayerTreeHostImpl::DidMouseLeave() {
   for (auto& pair : scrollbar_animation_controllers_)
     pair.second->DidMouseLeave();

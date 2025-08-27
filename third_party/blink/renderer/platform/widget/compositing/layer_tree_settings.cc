@@ -495,6 +495,8 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       settings.scrollbar_flash_after_any_scroll_update = !flash_once_enabled;
       settings.scrollbar_flash_once_visible_on_viewport =
           settings.scrollbar_flash_once_after_scroll_update;
+      settings.scrollbar_flash_when_mouse_enter = base::FeatureList::IsEnabled(
+          ::features::kOverlayScrollbarFlashWhenMouseEnter);
     }
     // Avoid animating in web tests to improve reliability.
     if (settings.enable_fluent_overlay_scrollbar) {

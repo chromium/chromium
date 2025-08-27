@@ -663,6 +663,15 @@ InputHandlerPointerResult InputHandler::MouseMoveAt(
     compositor_delegate_->ScrollbarAnimationMouseLeave(
         scroll_element_id_mouse_currently_over_);
     scroll_element_id_mouse_currently_over_ = scroll_element_id;
+
+    // Do not send mouse enter event for inner and outer viewport scrollbars to
+    // avoid unnecessary flashes. Only children scrollbars should flash when
+    // mouse enters.
+    if (!scroll_node->scrolls_inner_viewport &&
+        !scroll_node->scrolls_outer_viewport &&
+        compositor_delegate_->GetSettings().scrollbar_flash_when_mouse_enter) {
+      compositor_delegate_->DidMouseEnterNonViewportScroller(scroll_element_id);
+    }
   }
 
   compositor_delegate_->ScrollbarAnimationMouseMove(scroll_element_id,
