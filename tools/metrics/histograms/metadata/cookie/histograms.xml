@@ -778,7 +778,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     This histogram records the number of partitioned cookies in requests. Only
-    recorded when partitioned cookies are enabled to reduce noise.
+    measured for requests that include at least one cookie, partitioned or not.
   </summary>
 </histogram>
 
