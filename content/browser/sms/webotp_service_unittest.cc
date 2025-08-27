@@ -48,7 +48,6 @@ using std::optional;
 using std::string;
 using ::testing::_;
 using ::testing::ByMove;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::StrictMock;
@@ -216,11 +215,11 @@ class WebOTPServiceTest : public RenderViewHostTestHarness {
     ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                           ukm_loop.QuitClosure());
 
-    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&]() {
       service.NotifyFailure(failure_type);
       // Triggers the timer immediately to emulate the timeout behavior.
       service.ActivateTimer();
-    }));
+    });
 
     service.MakeRequest(base::DoNothing());
 
@@ -237,10 +236,10 @@ class WebOTPServiceTest : public RenderViewHostTestHarness {
     Service service(web_contents());
 
     base::RunLoop loop;
-    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&]() {
       service.NotifyFailure(failure_type);
       loop.Quit();
-    }));
+    });
 
     service.MakeRequest(base::DoNothing());
 
@@ -258,10 +257,10 @@ class WebOTPServiceTest : public RenderViewHostTestHarness {
     Service service(web_contents());
 
     base::RunLoop loop;
-    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&]() {
       service.NotifyFailure(failure_type);
       loop.Quit();
-    }));
+    });
 
     service.MakeRequest(base::DoNothing());
 
@@ -270,9 +269,9 @@ class WebOTPServiceTest : public RenderViewHostTestHarness {
     ::testing::Mock::VerifyAndClear(&service);
     base::RunLoop loop2;
 
-    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&]() {
       loop2.Quit();
-    }));
+    });
 
     // The second request to the same service cancels the previous outstanding
     // request.
@@ -292,10 +291,10 @@ class WebOTPServiceTest : public RenderViewHostTestHarness {
       Service service(web_contents());
 
       base::RunLoop loop;
-      EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
+      EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&]() {
         service.NotifyFailure(failure_type);
         loop.Quit();
-      }));
+      });
 
       service.MakeRequest(base::DoNothing());
 
@@ -321,9 +320,9 @@ TEST_F(WebOTPServiceTest, Basic) {
 
   base::RunLoop loop;
 
-  EXPECT_CALL(*service.provider(), Retrieve(_, _))
-      .WillOnce(Invoke(
-          [&service]() { service.NotifyReceive(GURL(kTestUrl), "hi"); }));
+  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+    service.NotifyReceive(GURL(kTestUrl), "hi");
+  });
 
   service.MakeRequest(BindLambdaForTesting(
       [&loop](SmsStatus status, const optional<string>& otp) {
@@ -345,9 +344,9 @@ TEST_F(WebOTPServiceTest, HandlesMultipleCalls) {
   {
     base::RunLoop loop;
 
-    EXPECT_CALL(*service.provider(), Retrieve(_, _))
-        .WillOnce(Invoke(
-            [&service]() { service.NotifyReceive(GURL(kTestUrl), "first"); }));
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+      service.NotifyReceive(GURL(kTestUrl), "first");
+    });
 
     service.MakeRequest(BindLambdaForTesting(
         [&loop](SmsStatus status, const optional<string>& otp) {
@@ -362,9 +361,9 @@ TEST_F(WebOTPServiceTest, HandlesMultipleCalls) {
   {
     base::RunLoop loop;
 
-    EXPECT_CALL(*service.provider(), Retrieve(_, _))
-        .WillOnce(Invoke(
-            [&service]() { service.NotifyReceive(GURL(kTestUrl), "second"); }));
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+      service.NotifyReceive(GURL(kTestUrl), "second");
+    });
 
     service.MakeRequest(BindLambdaForTesting(
         [&loop](SmsStatus status, const optional<string>& otp) {
@@ -387,13 +386,12 @@ TEST_F(WebOTPServiceTest, IgnoreFromOtherOrigins) {
 
   base::RunLoop sms_loop;
 
-  EXPECT_CALL(*service.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service]() {
-        // Delivers an SMS from an unrelated origin first and expect the
-        // receiver to ignore it.
-        service.NotifyReceive(GURL("http://b.com"), "wrong");
-        service.NotifyReceive(GURL(kTestUrl), "right");
-      }));
+  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+    // Delivers an SMS from an unrelated origin first and expect the
+    // receiver to ignore it.
+    service.NotifyReceive(GURL("http://b.com"), "wrong");
+    service.NotifyReceive(GURL(kTestUrl), "right");
+  });
 
   service.MakeRequest(
       BindLambdaForTesting([&sms_status, &response, &sms_loop](
@@ -419,15 +417,14 @@ TEST_F(WebOTPServiceTest, ExpectOneReceiveTwo) {
 
   base::RunLoop sms_loop;
 
-  EXPECT_CALL(*service.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service]() {
-        // Delivers two SMSes for the same origin, even if only one was being
-        // expected.
-        ASSERT_TRUE(service.fetcher()->HasSubscribers());
-        service.NotifyReceive(GURL(kTestUrl), "first");
-        ASSERT_FALSE(service.fetcher()->HasSubscribers());
-        service.NotifyReceive(GURL(kTestUrl), "second");
-      }));
+  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+    // Delivers two SMSes for the same origin, even if only one was being
+    // expected.
+    ASSERT_TRUE(service.fetcher()->HasSubscribers());
+    service.NotifyReceive(GURL(kTestUrl), "first");
+    ASSERT_FALSE(service.fetcher()->HasSubscribers());
+    service.NotifyReceive(GURL(kTestUrl), "second");
+  });
 
   service.MakeRequest(
       BindLambdaForTesting([&sms_status, &response, &sms_loop](
@@ -457,8 +454,8 @@ TEST_F(WebOTPServiceTest, AtMostOneSmsRequestPerOrigin) {
 
   EXPECT_CALL(*service.provider(), Retrieve(_, _))
       .WillOnce(Return())
-      .WillOnce(Invoke(
-          [&service]() { service.NotifyReceive(GURL(kTestUrl), "second"); }));
+      .WillOnce(
+          [&service]() { service.NotifyReceive(GURL(kTestUrl), "second"); });
 
   service.MakeRequest(
       BindLambdaForTesting([&sms_status1, &response1, &sms1_loop](
@@ -504,9 +501,9 @@ TEST_F(WebOTPServiceTest, CleansUp) {
 
   base::RunLoop navigate;
 
-  EXPECT_CALL(provider, Retrieve(_, _)).WillOnce(Invoke([&navigate]() {
+  EXPECT_CALL(provider, Retrieve(_, _)).WillOnce([&navigate]() {
     navigate.Quit();
-  }));
+  });
 
   base::RunLoop reload;
 
@@ -572,15 +569,15 @@ class ServiceWithPrompt : public Service {
 
   void ExpectRequestUserConsent() {
     EXPECT_CALL(*mock_handler_, RequestUserConsent(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [=, this](const std::string&, CompletionCallback on_complete) {
               on_complete_callback_ = std::move(on_complete);
-            }));
+            });
 
     EXPECT_CALL(*mock_handler_, is_async()).WillRepeatedly(Return(true));
-    EXPECT_CALL(*mock_handler_, is_active()).WillRepeatedly(Invoke([=, this]() {
+    EXPECT_CALL(*mock_handler_, is_active()).WillRepeatedly([=, this]() {
       return !on_complete_callback_.is_null();
-    }));
+    });
   }
 
   void ConfirmPrompt() {
@@ -625,11 +622,9 @@ TEST_F(WebOTPServiceTest, SecondRequestDuringPrompt) {
   // Expect SMS Prompt to be created once.
   service.ExpectRequestUserConsent();
 
-  EXPECT_CALL(*service.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service]() {
-        service.NotifyReceive(GURL(kTestUrl), "second",
-                              UserConsent::kNotObtained);
-      }));
+  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+    service.NotifyReceive(GURL(kTestUrl), "second", UserConsent::kNotObtained);
+  });
 
   // First request.
   service.MakeRequest(
@@ -674,12 +669,11 @@ TEST_F(WebOTPServiceTest, AbortWhilePrompt) {
         loop.Quit();
       }));
 
-  EXPECT_CALL(*service.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service]() {
-        service.NotifyReceive(GURL(kTestUrl), "ABC", UserConsent::kNotObtained);
-        EXPECT_TRUE(service.IsPromptOpen());
-        service.AbortRequest();
-      }));
+  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+    service.NotifyReceive(GURL(kTestUrl), "ABC", UserConsent::kNotObtained);
+    EXPECT_TRUE(service.IsPromptOpen());
+    service.AbortRequest();
+  });
 
   loop.Run();
 
@@ -705,13 +699,11 @@ TEST_F(WebOTPServiceTest, RequestAfterAbortWhilePrompt) {
           loop.Quit();
         }));
 
-    EXPECT_CALL(*service.provider(), Retrieve(_, _))
-        .WillOnce(Invoke([&service]() {
-          service.NotifyReceive(GURL(kTestUrl), "hi",
-                                UserConsent::kNotObtained);
-          EXPECT_TRUE(service.IsPromptOpen());
-          service.AbortRequest();
-        }));
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+      service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
+      EXPECT_TRUE(service.IsPromptOpen());
+      service.AbortRequest();
+    });
 
     loop.Run();
   }
@@ -735,12 +727,10 @@ TEST_F(WebOTPServiceTest, RequestAfterAbortWhilePrompt) {
           loop.Quit();
         }));
 
-    EXPECT_CALL(*service.provider(), Retrieve(_, _))
-        .WillOnce(Invoke([&service]() {
-          service.NotifyReceive(GURL(kTestUrl), "hi2",
-                                UserConsent::kNotObtained);
-          service.ConfirmPrompt();
-        }));
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+      service.NotifyReceive(GURL(kTestUrl), "hi2", UserConsent::kNotObtained);
+      service.ConfirmPrompt();
+    });
 
     loop.Run();
   }
@@ -762,11 +752,10 @@ TEST_F(WebOTPServiceTest, SecondRequestWhilePrompt) {
         callback_loop1.Quit();
       }));
 
-  EXPECT_CALL(*service.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service]() {
-        service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
-        service.AbortRequest();
-      }));
+  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+    service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
+    service.AbortRequest();
+  });
 
   callback_loop1.Run();
 
@@ -800,11 +789,10 @@ TEST_F(WebOTPServiceTest, RecordTimeMetricsForContinueOnSuccess) {
 
   service.ExpectRequestUserConsent();
 
-  EXPECT_CALL(*service.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service]() {
-        service.NotifyReceive(GURL(kTestUrl), "ABC", UserConsent::kNotObtained);
-        service.ConfirmPrompt();
-      }));
+  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+    service.NotifyReceive(GURL(kTestUrl), "ABC", UserConsent::kNotObtained);
+    service.ConfirmPrompt();
+  });
 
   service.MakeRequest(BindLambdaForTesting(
       [&loop](SmsStatus status, const optional<string>& otp) { loop.Quit(); }));
@@ -826,11 +814,10 @@ TEST_F(WebOTPServiceTest, RecordMetricsForCancelOnSuccess) {
 
   service.ExpectRequestUserConsent();
 
-  EXPECT_CALL(*service.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service]() {
-        service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
-        service.DismissPrompt();
-      }));
+  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+    service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
+    service.DismissPrompt();
+  });
 
   service.MakeRequest(BindLambdaForTesting(
       [&loop](SmsStatus status, const optional<string>& otp) { loop.Quit(); }));
@@ -853,11 +840,10 @@ TEST_F(WebOTPServiceTest, RecordTimeoutAsOutcomeWithoutFailure) {
                                         ukm_loop.QuitClosure());
 
   service.ExpectRequestUserConsent();
-  EXPECT_CALL(*service.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service]() {
-        service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
-        service.ActivateTimer();
-      }));
+  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+    service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
+    service.ActivateTimer();
+  });
 
   service.MakeRequest(base::DoNothing());
 
@@ -922,11 +908,10 @@ TEST_F(WebOTPServiceTest, RecordUserDismissPrompt) {
                                         ukm_loop.QuitClosure());
 
   service.ExpectRequestUserConsent();
-  EXPECT_CALL(*service.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service]() {
-        service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
-        service.DismissPrompt();
-      }));
+  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+    service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
+    service.DismissPrompt();
+  });
 
   service.MakeRequest(base::DoNothing());
 
@@ -957,9 +942,9 @@ TEST_F(WebOTPServiceTest, RecordUnhandledRequestOnNavigation) {
 
   base::RunLoop navigate;
 
-  EXPECT_CALL(provider, Retrieve(_, _)).WillOnce(Invoke([&navigate]() {
+  EXPECT_CALL(provider, Retrieve(_, _)).WillOnce([&navigate]() {
     navigate.Quit();
-  }));
+  });
 
   base::RunLoop reload;
 
@@ -1006,12 +991,10 @@ TEST_F(WebOTPServiceTest, NotRecordUnhandledRequestWhenRequestIsHandled) {
                                           ukm_loop.QuitClosure());
 
     service.ExpectRequestUserConsent();
-    EXPECT_CALL(*service.provider(), Retrieve(_, _))
-        .WillOnce(Invoke([&service]() {
-          service.NotifyReceive(GURL(kTestUrl), "hi",
-                                UserConsent::kNotObtained);
-          service.DismissPrompt();
-        }));
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+      service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
+      service.DismissPrompt();
+    });
 
     service.MakeRequest(base::DoNothing());
 
@@ -1034,10 +1017,9 @@ TEST_F(WebOTPServiceTest, RecordWebContentsVisibilityForUserConsentAPI) {
 
   base::RunLoop loop1;
 
-  EXPECT_CALL(*service1.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service1]() {
-        service1.NotifyReceive(GURL(kTestUrl), "ABC", UserConsent::kObtained);
-      }));
+  EXPECT_CALL(*service1.provider(), Retrieve(_, _)).WillOnce([&service1]() {
+    service1.NotifyReceive(GURL(kTestUrl), "ABC", UserConsent::kObtained);
+  });
 
   service1.MakeRequest(BindLambdaForTesting(
       [&loop1](SmsStatus status, const optional<string>& otp) {
@@ -1057,10 +1039,9 @@ TEST_F(WebOTPServiceTest, RecordWebContentsVisibilityForUserConsentAPI) {
   Service service2(web_contents_impl);
 
   base::RunLoop loop2;
-  EXPECT_CALL(*service2.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service2]() {
-        service2.NotifyReceive(GURL(kTestUrl), "ABC", UserConsent::kObtained);
-      }));
+  EXPECT_CALL(*service2.provider(), Retrieve(_, _)).WillOnce([&service2]() {
+    service2.NotifyReceive(GURL(kTestUrl), "ABC", UserConsent::kObtained);
+  });
 
   service2.MakeRequest(BindLambdaForTesting(
       [&loop2](SmsStatus status, const optional<string>& otp) {
@@ -1087,7 +1068,7 @@ TEST_F(WebOTPServiceTest, RecordCancelledAsOutcome) {
 
   EXPECT_CALL(*service.provider(), Retrieve(_, _))
       .WillOnce(Return())
-      .WillOnce(Invoke([&sms2_loop]() { sms2_loop.Quit(); }));
+      .WillOnce([&sms2_loop]() { sms2_loop.Quit(); });
 
   service.MakeRequest(BindLambdaForTesting(
       [&sms1_loop](SmsStatus status, const optional<string>& otp) {
